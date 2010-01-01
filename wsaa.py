@@ -55,8 +55,8 @@ def create_tra(service=SERVICE):
     #tra.header.addChild('source','subject=...')
     #tra.header.addChild('destination','cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239')
     tra.header.addChild('uniqueId',date('U'))
-    tra.header.addChild('generationTime',date('c',date('U')-600))
-    tra.header.addChild('expirationTime',date('c',date('U')+600))
+    tra.header.addChild('generationTime',date('c',date('U')-2400))
+    tra.header.addChild('expirationTime',date('c',date('U')+2400))
     tra.addChild('service',service)
     return tra.asXML()
 
@@ -118,7 +118,7 @@ if __name__=="__main__":
     #cms = open("TRA.tmp").read()
     print "Llamando WSAA..."
     try:
-        ta = call_wsaa(cms,url)#parse_proxy("localhost:81")
+        ta = call_wsaa(cms,url) #parse_proxy("localhost:81")
     except SoapFault,e:
         sys.exit("Falla SOAP: %s\n%s\n" % (e.faultcode,e.faultstring))
     try:

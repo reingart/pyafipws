@@ -19,6 +19,7 @@ __version__ = "1.0"
 
 import xml.dom.minidom
 
+
 class SimpleXMLElement(object):
     "Clase para Manejo simple de XMLs (simil PHP)"
     def __init__(self, text = None, elements = None, document = None):
@@ -40,11 +41,14 @@ class SimpleXMLElement(object):
         return self.__document.toxml('utf8')
     def __getattr__(self,tag):
         try:
+            elements = self.__elements[0].getElementsByTagName(tag)
+            if not elements:
+                raise IndexError()
             return SimpleXMLElement(
-                elements=self.__elements[0].getElementsByTagName(tag),
+                elements=elements,
                 document=self.__document)
-        except:
-            raise #RuntimeError("Tag not found: %s" % tag)
+        except IndexError:
+            raise RuntimeError("Tag not found: %s" % tag)
     def __iter__(self):
         "Iterate over xml tags"
         try:
@@ -53,7 +57,7 @@ class SimpleXMLElement(object):
                     elements=[__element],
                     document=self.__document)
         except:
-            raise #RuntimeError("Tag not found: %s" % tag)        
+            raise RuntimeError("Tag not found: %s" % tag)        
     def __getitem__(self,item):
         "Return xml attribute"
         return getattr(self.__element, item)
@@ -65,15 +69,18 @@ class SimpleXMLElement(object):
         if self.__element.childNodes:
             return self.__element.childNodes[0].data.encode("utf8","ignore")
         return ''
-        #raise IndexError(self.__element.toxml())
-            #raise IndexError("No data:"self.__element)
     def __repr__(self):
         return repr(self.__str__())
     def __int__(self):
         return int(self.__str__())
     def __float__(self):
-        return float(self.__str__())
+        try:
+            return float(self.__str__())
+        except:
+            import pdb; pdb.set_trace()
+            raise IndexError(self.__element.toxml())    
     __element = property(lambda self: self.__elements[0])
+
 
 if __name__ == "__main__":
     span = SimpleXMLElement('<span><a href="google.com">google</a><prueba><i>1</i><float>1.5</float></prueba></span>')

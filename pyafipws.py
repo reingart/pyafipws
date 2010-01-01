@@ -15,14 +15,15 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08"
+__version__ = "1.17"
 
 import sys
-import wsaa,wsfe
-from php import SimpleXMLElement, SoapFault, SoapClient
+import wsaa, wsfe, wsbfe
+from php import SimpleXMLElement, SoapFault, SoapClient, parse_proxy
 import traceback
 from win32com.server.exception import COMException
 import winerror
+import socks
 
 HOMO = True
 
@@ -56,16 +57,17 @@ class WSAA:
         self.Token = self.Sign = None
         self.Version = __version__
         
-    def CreateTRA(self):
-        return wsaa.create_tra()
+    def CreateTRA(self, service="wsfe"):
+        return wsaa.create_tra(service)
 
     def SignTRA(self, tra, cert, privatekey):
         return wsaa.sign_tra(str(tra),str(cert),str(privatekey))
 
-    def CallWSAA(self, cms, url=""):
+    def CallWSAA(self, cms, url="", proxy=None):
         try:
             if HOMO or not url: url = wsaa.WSAAURL
-            xml = wsaa.call_wsaa(str(cms),url)
+            proxy_dict = parse_proxy(proxy)
+            xml = wsaa.call_wsaa(str(cms),url, proxy_dict)
             ta = SimpleXMLElement(xml)
             self.Token = str(ta.credentials.token)
             self.Sign = str(ta.credentials.sign)
@@ -95,18 +97,19 @@ class WSFE:
         self.client = None
         self.Version = __version__
 
-    def Conectar(self, url=""):
+    def Conectar(self, url="", proxy=""):
         if HOMO or not url: url = wsfe.WSFEURL
+        proxy_dict = parse_proxy(proxy)
         try:
             self.client = SoapClient(url, 
                 action = wsfe.SOAP_ACTION, 
                 namespace = wsfe.SOAP_NS,
                 trace = False,
-                exceptions = True)
+                exceptions = True, proxy = proxy_dict)
             return True
-        except:
-            raise
-            #raisePythonException(e)
+        except Exception, e:
+            ##raise
+            raisePythonException(e)
 
     def RecuperarQty(self):
         try:
@@ -192,9 +195,198 @@ class WSFE:
         self.AuthServerStatus = str(results.authserver)
         
 
+class WSBFE:
+    "Interfase para el WebService de Bono Fiscal Electrónico (FE Bs. Capital)"
+    _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
+                        'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
+    _public_attrs_ = ['Token', 'Sign', 'Cuit', 
+        'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
+        'XmlRequest', 'XmlResponse', 'Version',
+        'Resultado', 'Obs', 'Reproceso',
+        'CAE','Vencimiento', 'Eventos', 
+        'FechaCbte', 'ImpNeto', 'ImptoLiq','ImpTotal']
+        
+    _reg_progid_ = "WSBFE"
+    _reg_clsid_ = "{02CBC6DA-455D-4EE6-8302-411D13253CBF}"
+
+    def __init__(self):
+        self.Token = self.Sign = self.Cuit = None
+        self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
+        self.XmlRequest = ''
+        self.XmlResponse = ''
+        self.Resultado = self.Motivo = self.Reproceso = ''
+        self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
+        self.client = None
+        self.Version = __version__
+        self.factura = None
+        self.FechaCbte = ImpNeto = ImptoLiq = ImpTotal = None
+
+    def Conectar(self, url="", proxy=""):
+        if HOMO or not url: url = wsbfe.WSBFEURL
+        proxy_dict = parse_proxy(proxy)
+        try:
+            self.client = SoapClient(url, 
+                action = wsbfe.SOAP_ACTION, 
+                namespace = wsbfe.SOAP_NS,
+                trace = False,
+                exceptions = True, proxy = proxy_dict)
+            return True
+        except Exception, e:
+            ##raise
+            raisePythonException(e)
+
+    def CrearFactura(self, tipo_doc=80, nro_doc=23111111113,
+            zona=0, tipo_cbte=1, punto_vta=1, cbte_nro=0, fecha_cbte=None,
+            imp_total=0.0, imp_neto=0.0, impto_liq=0.0,
+            imp_tot_conc=0.0, impto_liq_rni=0.00, imp_op_ex=0.00,
+            imp_perc=0.00, imp_iibb=0.00, imp_perc_mun=0.00, imp_internos=0.00,
+            imp_moneda_id=0, imp_moneda_ctz=1.0):
+        "Creo un objeto factura (interna)"
+        # Creo una factura para bonos fiscales electrónicos
+        factura = wsbfe.FacturaBF()
+        # Establezco el encabezado
+        factura.tipo_doc = tipo_doc
+        factura.nro_doc = nro_doc
+        factura.zona = zona
+        factura.tipo_cbte = tipo_cbte
+        factura.punto_vta = punto_vta
+        factura.cbte_nro = cbte_nro
+        factura.fecha_cbte = fecha_cbte
+        factura.imp_total = imp_total
+        factura.imp_neto = imp_neto
+        factura.impto_liq = impto_liq
+        factura.imp_tot_conc = impto_liq
+        factura.impto_liq_rni = impto_liq_rni
+        factura.imp_op_ex = imp_op_ex
+        factura.imp_perc = imp_perc
+        factura.imp_iibb = imp_iibb
+        factura.imp_perc_mun = imp_perc_mun
+        factura.imp_internos = imp_internos
+        factura.imp_moneda_id = imp_moneda_id
+        factura.imp_moneda_ctz = imp_moneda_ctz
+        self.factura = factura
+        
+    def AgregarItem(self, ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total):
+        "Agrego un item a una factura (interna)"
+        # Nota: no se calcula neto, iva, etc (deben venir calculados!)
+        item = wsbfe.ItemBF(ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total)
+        self.factura.items.append(item)
+
+    def Authorize(self, id):
+        "Autoriza la factura en memoria"
+        try:
+            # llamo al web service
+            auth, events = wsbfe.authorize(self.client, 
+                                     self.Token, self.Sign, self.Cuit, 
+                                     id=id, factura=self.factura.to_dict())
+                       
+            # Resultado: A: Aceptado, R: Rechazado
+            self.Resultado = auth['resultado']
+            # Obs:
+            self.Obs = auth['obs'].strip(" ")
+            self.Reproceso = auth['reproceso']
+            self.CAE = auth['cae']
+            # por el momento no tiene vencimiento:
+            ##vto = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.fecha_vto)
+            ##self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+            self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+            return self.CAE
+        except wsbfe.BFEError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+        
+    def Dummy(self):
+        results = wsbfe.dummy(self.client)
+        self.AppServerStatus = str(results['appserver'])
+        self.DbServerStatus = str(results['dbserver'])
+        self.AuthServerStatus = str(results['authserver'])
+
+    def GetCMP(self, tipo_cbte, punto_vta, cbte_nro):
+        try:
+            cbt, events = wsbfe.get_cmp(self.client, 
+                                    self.Token, self.Sign, self.Cuit, 
+                                    tipo_cbte, punto_vta, cbte_nro)
+            
+            self.FechaCbte = cbt['fch_cbte']
+            self.ImpTotal = cbt['imp_total']
+            self.ImpNeto = cbt['imp_neto']
+            self.ImptoLiq = cbt['impto_liq']
+
+            # Obs, cae y fecha cae
+            self.Obs = cbt['obs'].strip(" ")
+            self.CAE = cbt['cae']
+            ##vto = str(cmp['fch_cae'])
+            ##self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+
+            self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+            return self.CAE
+
+        except wsbfe.BFEError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    def Factura(self):
+        return self.factura
+
+    def GetLastCMP(self, tipo_cbte, punto_vta):
+        try:
+            cbte_nro, cbte_fecha, events = wsbfe.get_last_cmp(self.client, 
+                                    self.Token, self.Sign, self.Cuit, 
+                                    tipo_cbte, punto_vta)
+            return cbte_nro
+        except wsbfe.BFEError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    def GetLastID(self):
+        try:
+            id, events = wsbfe.get_last_id(self.client, 
+                                    self.Token, self.Sign, self.Cuit)
+            return id
+        except wsbfe.BFEError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
 if __name__ == '__main__':
     if len(sys.argv)==1:
         sys.argv.append("/register")
     import win32com.server.register
     win32com.server.register.UseCommandLine(WSAA)
     win32com.server.register.UseCommandLine(WSFE)
+    win32com.server.register.UseCommandLine(WSBFE)

@@ -19,7 +19,7 @@ Devuelve CAE (Código de autorización de impresión o electrónico de WSFE)
 
 __author__ = "Marcelo Alaniz (alanizmarcelo@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Marcelo Alaniz"
-__license__ = "GPL 3.0"
+__license__ = "LGPL 3.0"
 __version__ = "1.0"
 
 import sys

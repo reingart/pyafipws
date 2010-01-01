@@ -17,22 +17,23 @@ electrónico del web service WSBFE de AFIP (Bono Fiscal Electrónico)
 __author__ = "Mariano Reingart <mariano@nsis.com.ar>"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.0"
+__version__ = "1.13"
 
 import sys
 from php import date, SimpleXMLElement, SoapClient
 
-WSBFEURL = "http://wswhomo.afip.gov.ar/wsbfe/service.asmx"
+WSBFEURL = "https://wswhomo.afip.gov.ar/wsbfe/service.asmx"
+##WSBFEURL = "https://servicios1.afip.gov.ar/wsbfe/service.asmx"
 SOAP_ACTION = 'http://ar.gov.afip.dif.bfe/'
 SOAP_NS = "http://ar.gov.afip.dif.bfe/"
 
 class BFEError(RuntimeError):
     "Clase para informar errores del WSBFE"
     def __init__(self, bfeerror):
-        self.code = str(bfeerror.errcode)
-        self.msg = unicode(bfeerror.errmsg)
+        self.code = str(bfeerror.ErrCode)
+        self.msg = unicode(bfeerror.ErrMsg)
 
-    def __str__(self):
+    def __unicode__(self):
         return u"BFEError %s: %s" % (self.code, self.msg)
 
 def get_param_mon(client, token, sign, cuit):
@@ -56,7 +57,7 @@ def get_param_ncm(client, token, sign, cuit):
     response = client.BFEGetPARAM_NCM(
         Auth= {"Token": token, "Sign": sign, "Cuit": long(cuit)}) 
     
-    if int(response.BFEGetPARAM_NCMResult.BFEErr.errcode) != 0:
+    if int(response.BFEGetPARAM_NCMResult.BFEErr.ErrCode) != 0:
         raise BFEError(response.BFEGetPARAM_NCMResult.BFEErr)
 
     ncms = [] # productos
@@ -73,7 +74,7 @@ def get_param_tipo_cbte(client, token, sign, cuit):
     response = client.BFEGetPARAM_Tipo_Cbte(
         auth= {"Token": token, "Sign": sign, "Cuit": long(cuit)}) 
     
-    if int(response.BFEGetPARAM_Tipo_CbteResult.BFEErr.errcode) != 0:
+    if int(response.BFEGetPARAM_Tipo_CbteResult.BFEErr.ErrCode) != 0:
         raise BFEError(response.BFEGetPARAM_Tipo_CbteResult.BFEErr)
 
     cbtes = [] # tipos de comprobantes
@@ -89,7 +90,7 @@ def get_param_tipo_iva(client, token, sign, cuit):
     response = client.BFEGetPARAM_Tipo_IVA(
         auth= {"Token": token, "Sign": sign, "Cuit": long(cuit)}) 
     
-    if int(response.BFEGetPARAM_Tipo_IVAResult.BFEErr.errcode) != 0:
+    if int(response.BFEGetPARAM_Tipo_IVAResult.BFEErr.ErrCode) != 0:
         raise BFEError(response.BFEGetPARAM_Tipo_IVAResult.BFEErr)
 
     ivas= [] # tipos de iva
@@ -105,7 +106,7 @@ def get_param_umed(client, token, sign, cuit):
     response = client.BFEGetPARAM_UMed(
         auth= {"Token": token, "Sign": sign, "Cuit": long(cuit)}) 
     
-    if int(response.BFEGetPARAM_UMedResult.BFEErr.errcode) != 0:
+    if int(response.BFEGetPARAM_UMedResult.BFEErr.ErrCode) != 0:
         raise BFEError(response.BFEGetPARAM_UMedResult.BFEErr)
 
     umeds = [] # unidades de medida
@@ -121,7 +122,7 @@ def get_param_zonas(client, token, sign, cuit):
     response = client.BFEGetPARAM_Zonas(
         auth= {"Token": token, "Sign": sign, "Cuit": long(cuit)}) 
     
-    if int(response.BFEGetPARAM_ZonasResult.BFEErr.errcode) != 0:
+    if int(response.BFEGetPARAM_ZonasResult.BFEErr.ErrCode) != 0:
         raise BFEError(response.BFEGetPARAM_ZonasResult.BFEErr)
 
     zonas = [] # unidades de medida
@@ -145,7 +146,7 @@ def authorize(client, token, sign, cuit, id, factura):
     response = client.BFEAuthorize(Auth=auth, Cmp=cmp)
 
     # hubo error?
-    if int(response.BFEAuthorizeResult.BFEErr.errcode) != 0:
+    if int(response.BFEAuthorizeResult.BFEErr.ErrCode) != 0:
         raise BFEError(response.BFEAuthorizeResult.BFEErr)
 
     # extraigo la respuesta (auth y eventos)
@@ -155,10 +156,87 @@ def authorize(client, token, sign, cuit, id, factura):
                reproceso=str(result.Reproceso), obs=str(result.Obs))
     events = []
     for bfe_event in response.BFEAuthorizeResult.BFEEvents:
-        events.append(dict(code=bfe_event.eventcode, msg=bfe_event.eventmsg))
+        events.append(dict(code=bfe_event.EventCode, msg=bfe_event.EventMsg))
 
     return auth, events
 
+def get_cmp(client, token, sign, cuit, tipo_cbte, punto_vta, cbte_nro):
+    "Recupera los datos completos de un comprobante ya autorizado"
+    response = client.BFEGetCMP(
+        Auth={"Token": token, "Sign": sign, "Cuit": long(cuit)},
+        Cmp={"Tipo_cbte": tipo_cbte,
+             "Punto_vta": punto_vta, "Cbte_nro": cbte_nro}) 
+
+    if int(response.BFEGetCMPResult.BFEErr.ErrCode) != 0:
+        raise BFEError(response.BFEGetCMPResult.BFEErr)
+
+    result = response.BFEGetCMPResult.BFEResultGet    
+    ##print result.Id
+    cbt = dict(cuit=int(result.Cuit), cae=str(result.Cae), 
+               fch_cbte=str(result.Fecha_cbte_orig), 
+               fch_cae=str(result.Fecha_cbte_cae),
+               imp_total=str(result.Imp_total),
+               imp_neto=str(result.Imp_neto),
+               impto_liq=str(result.Impto_liq),
+               obs=str(result.Obs))
+    events = []
+    for bfe_event in response.BFEGetCMPResult.BFEEvents:
+        events.append(dict(code=bfe_event.EventCode, msg=bfe_event.EventMsg))
+    return cbt, events
+
+def get_last_cmp(client, token, sign, cuit, tipo_cbte, punto_vta):
+    "Recupera el ultimos comprobante autorizado"
+    response = client.BFEGetLast_CMP(
+        Auth={"Token": token, "Sign": sign, "Cuit": long(cuit),
+              "Tipo_cbte": tipo_cbte,
+              "Pto_venta": punto_vta}) 
+
+    if int(response.BFEGetLast_CMPResult.BFEErr.ErrCode) != 0:
+        raise BFEError(response.BFEGetLast_CMPResult.BFEErr)
+
+    result = response.BFEGetLast_CMPResult.BFEResult_LastCMP    
+    cbte_nro = int(result.Cbte_nro)
+    try:
+        cbte_fecha = str(result.Cbte_fecha)
+    except RuntimeError:
+        cbte_fecha = ""
+        
+    events = []
+    for bfe_event in response.BFEGetLast_CMPResult.BFEEvents:
+        events.append(dict(code=bfe_event.EventCode, msg=bfe_event.EventMsg))
+    return cbte_nro, cbte_fecha, events
+
+def get_last_id(client, token, sign, cuit):
+    "Recupera el ultimo ID y su fecha"
+    response = client.BFEGetLast_ID(
+        Auth={"Token": token, "Sign": sign, "Cuit": long(cuit)},
+        ) 
+
+    if int(response.BFEGetLast_IDResult.BFEErr.ErrCode) != 0:
+        raise BFEError(response.BFEGetLast_IDResult.BFEErr)
+
+    result = response.BFEGetLast_IDResult.BFEResultGet    
+    id = int(result.Id)
+    events = []
+    for bfe_event in response.BFEGetLast_IDResult.BFEEvents:
+        events.append(dict(code=bfe_event.EventCode, msg=bfe_event.EventMsg))
+    return id, events
+
+def dummy(client):
+    "Metodo dummy para verificacion de funcionamiento"
+    response = client.BFEDummy()
+    result = response.BFEDummyResult
+    appserver = dbserver = authserver = None
+    try:
+        appserver = str(result.AppServer)
+        dbserver = str(result.DbServer)
+        authserver = str(result.AuthServer)
+    except (RuntimeError, IndexError), e:
+        pass
+    return {'appserver': appserver,
+            'dbserver': dbserver,
+            'authserver': authserver}
+   
 # Clases para facilitar la autorización de facturas
 
 class FacturaBF:
@@ -170,14 +248,24 @@ class FacturaBF:
     imp_tot_conc = 0.0; impto_liq_rni = 0.00; imp_op_ex = 0.00 
     imp_perc = 0.00; imp_iibb = 0.00; imp_perc_mun = 0.00; imp_internos=0.00
     imp_moneda_id = 0; imp_moneda_ctz = 1.0
+    # datos del cliente (para impresion)
+    nombre = ""
+    domicilio = ""; localidad = ""; provincia = ""
+    email = ""; telefono = ""; observaciones = ""
+    categoria = ""
     items = None
 
-    def __init__(self):
+    def __init__(self,**kwargs):
         self.items = []
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
-    def add_item(self, item):
+    def add_item(self, item, calc=True):
         self.items.append(item)
         total = item.imp_total
+        if not calc:
+            return
+        
         if item.iva_id==1: #'No gravado'
             self.imp_tot_conc += total
         elif item.iva_id==2: # exento
@@ -189,21 +277,28 @@ class FacturaBF:
             total += iva
         self.imp_total += total
     
-    def to_dict(self):
+    def to_dict(self, completo=False):
         "Convierte el objeto factura en un diccionario serializable por xml"
-        return {
+        dic = {
             'Tipo_doc': self.tipo_doc, 'Nro_doc':  self.nro_doc, 
             'Zona': self.zona, 
             'Tipo_cbte': self.tipo_cbte, 'Fecha_cbte': self.fecha_cbte,
             'Punto_vta': self.punto_vta, 'Cbte_nro': self.cbte_nro,
-            'imp_total': self.imp_total, 'imp_tot_conc': self.imp_tot_conc, 
-            'imp_neto': self.imp_neto, 'impto_liq': self.impto_liq, 
-            'impto_liq_rni': self.impto_liq_rni, 'imp_op_ex': self.imp_op_ex,
+            'Imp_total': self.imp_total, 'Imp_tot_conc': self.imp_tot_conc, 
+            'Imp_neto': self.imp_neto, 'Impto_liq': self.impto_liq, 
+            'Impto_liq_rni': self.impto_liq_rni, 'Imp_op_ex': self.imp_op_ex,
             'Imp_perc': self.imp_perc, 'Imp_iibb': self.imp_iibb, 
             'Imp_perc_mun': self.imp_perc_mun, 'Imp_internos': self.imp_internos,
             'Imp_moneda_Id': self.imp_moneda_id, 'Imp_moneda_ctz': self.imp_moneda_ctz,
-            'Items': [{'item': item.to_dict()} for item in self.items],
+            'Items': [{'Item': item.to_dict()} for item in self.items],
             }
+        if completo:
+            dic.update({'nombre': self.nombre, 'categoria': self.categoria,
+                        'domicilio': self.domicilio, 'localidad': self.localidad, 'provincia': self.provincia,
+                        'email': self.email, 'telefono': self.telefono, 
+                        'observaciones': self.observaciones,
+                        })
+        return dic
 
 
 class ItemBF:
@@ -219,7 +314,7 @@ class ItemBF:
     imp_total = 0.0
     iva_id = 5
 
-    def __init__(self, ncm="", sec="", ds="", qty=1, umed=7, precio=0.00, bonif=0.00, iva_id=5):
+    def __init__(self, ncm="", sec="", ds="", qty=1, umed=7, precio=0.00, bonif=0.00, iva_id=5, imp_total=0.00, **kwargs):
         "Constructor" #TODO: revisar cálculo de iva y totales
         self.pro_codigo_ncm = ncm
         self.pro_codigo_sec = sec
@@ -228,7 +323,7 @@ class ItemBF:
         self.pro_umed = umed
         self.pro_precio_uni = precio
         self.imp_bonif = bonif
-        self.imp_total = precio*qty - bonif
+        self.imp_total = imp_total or (precio*qty - bonif)
         self.iva_id = iva_id
 
     def to_dict(self):
@@ -252,7 +347,7 @@ def main():
     client = SoapClient(WSBFEURL, 
         action = SOAP_ACTION, 
         namespace = SOAP_NS,
-        trace = False)
+        trace = True)
 
     # obteniendo el TA
     import wsaa
@@ -261,19 +356,21 @@ def main():
     cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
     print "call"
     ta_string = wsaa.call_wsaa(cms)
-    ##open("ta.xml","w").write(ta_string)
-    ##ta_string=open("ta.xml").read()
-    ##print ta_string
+    open("ta.xml","w").write(ta_string)
+    ta_string=open("ta.xml").read()
+    print ta_string
     ta = SimpleXMLElement(ta_string)
     token = str(ta.credentials.token)
     sign = str(ta.credentials.sign)
     # fin TA
 
     CUIT = "20267565393"
+
+    print dummy(client)    
     
     # Recuperar parámetros:
-    ##monedas = get_param_mon(client, token, sign, CUIT)    
-    ##print dict([(m['id'],m['ds']) for m in monedas])
+    #monedas = get_param_mon(client, token, sign, CUIT)    
+    #print dict([(m['id'],m['ds']) for m in monedas])
     
     ##productos = get_param_ncm(client, token, sign, CUIT)
     ##print dict([(m['codigo'],m['ds']) for m in productos])
@@ -296,13 +393,22 @@ def main():
     umeds = {1: u'kilogramos', 2: u'metros', 3: u'metros cuadrados', 4: u'metros c\xfabicos', 5: u'litros', 6: u'1000 kWh', 7: u'unidades', 8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 14: u'gramos', 15: u'milimetros', 16: u'mm c\xfabicos', 17: u'kil\xf3metros', 18: u'hectolitros', 20: u'cent\xedmetros', 25: u'jgo. pqt. mazo naipes', 27: u'cm c\xfabicos', 29: u'toneladas', 30: u'dam c\xfabicos', 31: u'hm c\xfabicos', 32: u'km c\xfabicos', 33: u'microgramos', 34: u'nanogramos', 35: u'picogramos', 41: u'miligramos', 47: u'mililitros', 48: u'curie', 49: u'milicurie', 50: u'microcurie', 51: u'uiacthor', 52: u'muiacthor', 53: u'kg base', 54: u'gruesa', 61: u'kg bruto', 62: u'uiactant', 63: u'muiactant', 64: u'uiactig', 65: u'muiactig', 66: u'kg activo', 67: u'gramo activo', 68: u'gramo base', 96: u'packs', 97: u'hormas', 98: u'bonificaci\xf2n', 99: u'otras unidades'}
 
     # ncm=7308.10.00, 7308.20.00 
- 
+
+    # recupero ultimo comprobante y id
+    tipo_cbte = 1
+    punto_vta = 5
+    cbte_nro, cbte_fecha, events = get_last_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta)
+    id, events = get_last_id(client, token, sign, CUIT)    
+    
+    #cbte_nro = 1
+    #id = 1002 # 99000000000098
+
     # creo una factura de prueba
     f = FacturaBF()
-    f.punto_vta=2
-    f.cbte_nro=13
+    f.punto_vta = punto_vta
+    f.cbte_nro = cbte_nro+1
     f.imp_moneda_id = '010'
-    f.fecha_cbte = '20090527'
+    f.fecha_cbte = date('Ymd')
     it = ItemBF(ncm='7308.10.00', sec='', ds='prueba', qty=2.0, precio=100.0, bonif=0.0, iva_id=5)
     f.add_item(it)
     it = ItemBF(ncm='7308.20.00', sec='', ds='prueba 2', qty=4.0, precio=50.0, bonif=10.0, iva_id=5)
@@ -311,15 +417,18 @@ def main():
 
     try:
         # autorizar...
-        auth, events = authorize(client, token, sign, CUIT, id=99000000000091, factura=f.to_dict())
+        auth, events = authorize(client, token, sign, CUIT, id=id+1, factura=f.to_dict())
         cae = auth['cae']
         print "auth", auth
         print "events", events
+        auth, events = get_cmp(client, token, sign, CUIT, f.tipo_cbte, f.punto_vta, f.cbte_nro)
+        print "get_cmp: auth", auth
+        print "get_cmp: events", events        
     except:
         raise
         ##l= client.xml_request.splitlines()
         ##print l[4][1150:1200]
         ##import pdb; pdb.set_trace()
-    
+
 if __name__ == '__main__':
     main()
