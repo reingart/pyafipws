@@ -32,7 +32,10 @@ class SimpleXMLElement(object):
     def addChild(self,tag,text=None):
         element = self.__document.createElement(tag) 
         if text:
-            element.appendChild(self.__document.createTextNode(str(text)))
+            if isinstance(text, unicode):
+                element.appendChild(self.__document.createTextNode(text))
+            else:
+                element.appendChild(self.__document.createTextNode(str(text)))
         self.__element.appendChild(element)
         return SimpleXMLElement(
                     elements=[element],

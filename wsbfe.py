@@ -409,7 +409,7 @@ def main():
     f.cbte_nro = cbte_nro+1
     f.imp_moneda_id = '010'
     f.fecha_cbte = date('Ymd')
-    it = ItemBF(ncm='7308.10.00', sec='', ds='prueba', qty=2.0, precio=100.0, bonif=0.0, iva_id=5)
+    it = ItemBF(ncm='7308.10.00', sec='', ds=u'prueba Anafe económico', qty=2.0, precio=100.0, bonif=0.0, iva_id=5)
     f.add_item(it)
     it = ItemBF(ncm='7308.20.00', sec='', ds='prueba 2', qty=4.0, precio=50.0, bonif=10.0, iva_id=5)
     f.add_item(it)

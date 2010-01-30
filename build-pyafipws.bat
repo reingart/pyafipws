@@ -6,10 +6,10 @@ del pyafipws.7z
 del pyafipws.exe
 del dist\*.*
 python setup.py py2exe
-copy instalar.bat dist
-copy licencia.txt dist
+copy instalar-pyafipws.bat dist\instalar.bat
+copy licencia-pyafipws.txt dist\licencia.txt
 copy rece.ini.dist dist\rece.ini
 copy ghf.key dist
 copy ghf.crt dist
-"c:\Archivos de programa\7-Zip\7z.exe" a pyafipws.7z dist -mx
+"c:\Archivos de programa\7-Zip\7z.exe" a pyafipws.7z dist -m0=BCJ2 -m1=LZMA:d25:fb255 -m2=LZMA:d19 -m3=LZMA:d19 -mb0:1 -mb0s1:2 -mb0s2:3 -mx
 copy /b 7zSD.sfx + config.txt + pyafipws.7z pyafipws.exe

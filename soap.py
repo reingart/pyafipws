@@ -88,6 +88,8 @@ class SoapClient(object):
             child=node.addChild(tag)
             for t in value:
                 self.parse(child,tag,t, False)
+        elif isinstance(value, basestring): # no volver a convertir los strings y unicodes
+            node.addChild(tag,value)
         else: # el resto de los objetos se convierten a string 
             node.addChild(tag,str(value)) # habria que agregar un método asXML?
     

@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16"
+__version__ = "1.18"
 
 import csv
 from decimal import Decimal
@@ -98,7 +98,7 @@ class PyRece(model.Background):
     paths = property(get_paths, set_paths)
         
     def log(self, msg):
-        self.components.txtEstado.text = msg+ u"\n" + self.components.txtEstado.text
+        self.components.txtEstado.text = msg.decode("latin1","ignore") + u"\n" + self.components.txtEstado.text.decode("latin1", "ignore")
         wx.SafeYield()
     
     def progreso(self, value):
@@ -135,13 +135,13 @@ class PyRece(model.Background):
             64:u"Liquidación B"}
 
         result = dialog.singleChoiceDialog(self, "Tipo de comprobante", 
-            "Consulta Último Nro. Comprobante", 
+            u"Consulta Último Nro. Comprobante", 
                 [v for k,v in sorted([(k,v) for k,v in tipos.items()])])
         if not result.accepted:
             return
         tipocbte = [k for k,v in tipos.items() if v==result.selection][0]
-        result = dialog.textEntryDialog(self, "Punto de venta",
-            "Consulta Último Nro. Comprobante", '2')
+        result = dialog.textEntryDialog(self, u"Punto de venta",
+            u"Consulta Último Nro. Comprobante", '2')
         if not result.accepted:
             return
         ptovta = result.text
@@ -150,8 +150,8 @@ class PyRece(model.Background):
             ultcmp = wsfe.recuperar_last_cmp(self.client, self.token, self.sign, 
                 cuit, ptovta, tipocbte)
             dialog.alertDialog(self, u"Último comprobante: %s\n" 
-                "Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, tipos[tipocbte], 
-                    tipocbte, ptovta), 'Consulta Último Nro. Comprobante')
+                u"Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, tipos[tipocbte], 
+                    tipocbte, ptovta), u'Consulta Último Nro. Comprobante')
         except SoapFault,e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
@@ -159,13 +159,13 @@ class PyRece(model.Background):
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
-            self.error('Excepción',unicode(str(e),"latin1","ignore"))
+            self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
     def on_menuConsultasLastID_select(self, event):
         try:
             ultnro = wsfe.ultnro(self.client, self.token, self.sign, cuit)
-            dialog.alertDialog(self, "Último ID (máximo): %s" % (ultnro), 
-                'Consulta Último ID')
+            dialog.alertDialog(self, u"Último ID (máximo): %s" % (ultnro), 
+                u'Consulta Último ID')
         except SoapFault,e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
@@ -173,7 +173,7 @@ class PyRece(model.Background):
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
-            self.error('Excepción',unicode(e))
+            self.error(u'Excepción',unicode(e))
 
 
     def on_btnAyuda_mouseClick(self, event):
@@ -224,7 +224,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         except SoapFault,e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
         except Exception, e:
-            self.error('Excepción',unicode(e))
+            self.error(u'Excepción',unicode(e))
     
     def on_btnExaminar_mouseClick(self, event):
         wildcard = "Archivos CSV (*.csv)|*.csv"
@@ -266,7 +266,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             f.close()
             dialog.alertDialog(self, u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
         except Exception, e:
-            self.error('Excepción',unicode(e))
+            self.error(u'Excepción',unicode(e))
 
     def on_btnAutorizar_mouseClick(self, event):
         try:
@@ -305,7 +305,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
-            self.error('Excepción',unicode(e))
+            self.error(u'Excepción',unicode(e))
 
     def on_btnAutorizarLote_mouseClick(self, event):
         try:
@@ -395,15 +395,18 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
-            self.error('Excepción',unicode(e))
+            self.error(u'Excepción',unicode(e))
 
     def on_btnPrevisualizar_mouseClick(self, event):
         try:
             for i, item in self.get_selected_items():
                 archivo = self.generar_factura(item)
-                os.system(archivo)
+                if sys.platform.startswith("linux"):
+                    os.system("evince %s" % archivo)
+                else:
+                    os.system(archivo)
         except Exception, e:
-            self.error('Excepción',unicode(e))
+            self.error(u'Excepción',unicode(e))
 
     def on_btnGenerar_mouseClick(self, event):
         for item in self.items:
@@ -425,7 +428,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.progreso(len(self.items))
             dialog.alertDialog(self, 'Proceso finalizado OK!\n\nEnviados: %d\nNo enviados: %d' % (ok, no), 'Envio de Email')
         except Exception, e:
-            self.error('Excepción',unicode(e))
+            self.error(u'Excepción',unicode(e))
             
     def generar_factura(self, item):
         fmtdate = lambda d: len(d)==8 and "%s/%s/%s" % (d[6:8], d[4:6], d[0:4]) or ''
@@ -485,14 +488,21 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             if 'importe%d' % i in item:
                 f.set('Item.Importe%02d' % i, fmtimp(item['importe%d' % i]))
                 li = 0
-        if li:
+        if li and letra=='A':
             f.set('Item.Importe%02d' % li, fmtimp(item['imp_neto']))
+        elif li and letra=='B':
+            f.set('Item.Importe%02d' % li, fmtimp(item['imp_total']))
 
         if 'observaciones' in item:
             f.set('Observaciones', item['observaciones'])
         
-        f.set('NETO', fmtimp(item['imp_neto']))
-        f.set('IVA21', fmtimp(item['impto_liq']))
+        if letra=='A':
+            f.set('NETO', fmtimp(item['imp_neto']))
+            f.set('IVA21', fmtimp(item['impto_liq']))
+        else:
+            f.hide('NETO.L')
+            f.hide('IVA.L')
+            f.show('LeyendaIVA')
         f.set('TOTAL', fmtimp(item['imp_total']))
 
         f.set('CAE', item['cae'])
@@ -546,7 +556,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         self.smtp.login(conf_mail['usuario'], conf_mail['clave'])
                 self.smtp.sendmail(msg['From'], msg['To'], msg.as_string())
             except Exception,e:
-                self.error('Excepción',unicode(e))
+                self.error(u'Excepción',unicode(e))
             
         
 if __name__ == '__main__':

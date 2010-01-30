@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17"
+__version__ = "1.18"
 
 import sys
 import wsaa, wsfe, wsbfe
@@ -268,6 +268,7 @@ class WSBFE:
         
     def AgregarItem(self, ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total):
         "Agrego un item a una factura (interna)"
+        ##ds = unicode(ds, "latin1") # convierto a latin1
         # Nota: no se calcula neto, iva, etc (deben venir calculados!)
         item = wsbfe.ItemBF(ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total)
         self.factura.items.append(item)

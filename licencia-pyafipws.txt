@@ -1,10 +1,10 @@
-PyRece: Aplicativo AdHoc para generar Facturas Electr¢nicas
-Copyright (C) 2009 Mariano Reingart mariano@nsis.com.ar
+PyAfipWs: Interfaz para generar Facturas Electr¢nicas
+Copyright (C) 2008/2009 Mariano Reingart mariano@nsis.com.ar
 
-Este programa se entrega ABSOLUTAMENTE SIN GARANTIA bajo la licencia GPLv3 (ver abajo),
+Este programa se entrega ABSOLUTAMENTE SIN GARANTIA bajo la licencia GPLv3 (ver abajo), 
 es software libre, y es bienvenido a redistribuirlo bajo ciertas condiciones.
 
-Para información adicional y descargas ver http://www.sistemasagiles.com.ar/trac/wiki/PyRece
+Para información adicional y descargas ver http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 
 
                     GNU GENERAL PUBLIC LICENSE
