@@ -11,7 +11,7 @@
 # for more details.
 
 """Módulo para obtener código de autorización de impresión o 
-electrónico del web service WSBFE de AFIP (Bono Fiscal Electrónico)
+electrónico del web service WSFEX de AFIP (Factura Electrónica Exportación)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
