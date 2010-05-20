@@ -22,7 +22,8 @@ import xml.dom.minidom
 
 class SimpleXMLElement(object):
     "Clase para Manejo simple de XMLs (simil PHP)"
-    def __init__(self, text = None, elements = None, document = None):
+    def __init__(self, text = None, elements = None, document = None, namespace = None):
+        self.__ns = namespace
         if text:
             self.__document = xml.dom.minidom.parseString(text)
             self.__elements = [self.__document.documentElement]
@@ -30,7 +31,8 @@ class SimpleXMLElement(object):
             self.__elements = elements
             self.__document = document
     def addChild(self,tag,text=None):
-        element = self.__document.createElement(tag) 
+        element = self.__document.createElement(tag)
+        
         if text:
             if isinstance(text, unicode):
                 element.appendChild(self.__document.createTextNode(text))
@@ -41,17 +43,20 @@ class SimpleXMLElement(object):
                     elements=[element],
                     document=self.__document)
     def asXML(self,filename=None):
-        return self.__document.toxml('utf8')
+        return self.__document.toxml('UTF-8')
     def __getattr__(self,tag):
         try:
-            elements = self.__elements[0].getElementsByTagName(tag)
+            if self.__ns:
+                elements = self.__elements[0].getElementsByTagNameNS(self.__ns, tag)
+            if not self.__ns or not elements:
+                elements = self.__elements[0].getElementsByTagName(tag)
             if not elements:
-                raise IndexError()
+                raise IndexError("Sin elementos")
             return SimpleXMLElement(
                 elements=elements,
                 document=self.__document)
-        except IndexError:
-            raise RuntimeError("Tag not found: %s" % tag)
+        except IndexError, e:
+            raise RuntimeError("Tag not found: %s (%s)" % (tag, str(e)))
     def __iter__(self):
         "Iterate over xml tags"
         try:
@@ -80,7 +85,6 @@ class SimpleXMLElement(object):
         try:
             return float(self.__str__())
         except:
-            import pdb; pdb.set_trace()
             raise IndexError(self.__element.toxml())    
     __element = property(lambda self: self.__elements[0])
 

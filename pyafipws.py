@@ -1,4 +1,4 @@
-#!/usr/bin/python
+    #!/usr/bin/python
 # -*- coding: latin-1 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
@@ -15,10 +15,10 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18"
+__version__ = "1.22"
 
 import sys
-import wsaa, wsfe, wsbfe
+import wsaa, wsfe, wsbfe, wsfex
 from php import SimpleXMLElement, SoapFault, SoapClient, parse_proxy
 import traceback
 from win32com.server.exception import COMException
@@ -48,7 +48,7 @@ def raisePythonException(e):
 
 class WSAA:
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA']
-    _public_attrs_ = ['Token', 'Sign', 'Version']
+    _public_attrs_ = ['Token', 'Sign', 'Version', 'XmlResponse']
     _readonly_attrs_ = _public_attrs_
     _reg_progid_ = "WSAA"
     _reg_clsid_ = "{6268820C-8900-4AE9-8A2D-F0A1EBD4CAC5}"
@@ -384,6 +384,204 @@ class WSBFE:
             self.XmlRequest = self.client.xml_request
             self.XmlResponse = self.client.xml_response
 
+
+class WSFEX:
+    "Interfase para el WebService de Factura Electrónica Exportación"
+    _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
+                        'AgregarPermiso', 'AgregarCmpAsoc',
+                        'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
+    _public_attrs_ = ['Token', 'Sign', 'Cuit', 
+        'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
+        'XmlRequest', 'XmlResponse', 'Version',
+        'Resultado', 'Obs', 'Reproceso',
+        'CAE','Vencimiento', 'Eventos', 
+        'FechaCbte', 'ImpTotal']
+        
+    _reg_progid_ = "WSFEX"
+    _reg_clsid_ = "{B3C8D3D3-D5DA-44C9-B003-11845803B2BD}"
+
+    def __init__(self):
+        self.Token = self.Sign = self.Cuit = None
+        self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
+        self.XmlRequest = ''
+        self.XmlResponse = ''
+        self.Resultado = self.Motivo = self.Reproceso = ''
+        self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
+        self.client = None
+        self.Version = __version__
+        self.factura = None
+        self.FechaCbte = ImpTotal = None
+
+    def Conectar(self, url="", proxy=""):
+        if HOMO or not url: url = wsfex.WSFEXURL
+        proxy_dict = parse_proxy(proxy)
+        try:
+            self.client = SoapClient(url, 
+                action = wsfex.SOAP_ACTION, 
+                namespace = wsfex.SOAP_NS,
+                trace = False,
+                exceptions = True, proxy = proxy_dict)
+            return True
+        except Exception, e:
+            ##raise
+            raisePythonException(e)
+
+    def CrearFactura(self, tipo_cbte=19, punto_vta=1, cbte_nro=0, fecha_cbte=None,
+            imp_total=0.0, tipo_expo=1, permiso_existente="N", dst_cmp=None,
+            cliente="", cuit_pais_cliente="", domicilio_cliente="",
+            id_impositivo="", moneda_id="PES", moneda_ctz=1.0,
+            obs_comerciales="", obs="", forma_pago="", incoterms="", 
+            idioma_cbte=7):
+        "Creo un objeto factura (interna)"
+        # Creo una factura electronica de exportación 
+        factura = wsfex.FacturaEX()
+        # Establezco el encabezado
+        factura.tipo_cbte = tipo_cbte
+        factura.punto_vta = punto_vta
+        factura.cbte_nro = cbte_nro
+        factura.fecha_cbte = fecha_cbte
+        factura.tipo_expo = tipo_expo
+        factura.permiso_existente = permiso_existente
+        factura.dst_cmp = dst_cmp
+        factura.cliente = cliente
+        factura.cuit_pais_cliente = cuit_pais_cliente
+        factura.domicilio_cliente = domicilio_cliente
+        factura.id_impositivo = id_impositivo
+        factura.moneda_id = moneda_id
+        factura.moneda_ctz = moneda_ctz
+        factura.obs_comerciales = obs_comerciales
+        factura.obs = obs
+        factura.forma_pago = forma_pago
+        factura.incoterms = incoterms
+        factura.idioma_cbte = idioma_cbte
+        factura.imp_total = imp_total
+        self.factura = factura
+        
+    def AgregarItem(self, codigo, ds, qty, umed, precio, imp_total):
+        "Agrego un item a una factura (interna)"
+        # Nota: no se calcula total (debe venir calculado!)
+        item = wsfex.ItemFEX(codigo, ds, qty, umed, precio, imp_total)
+        self.factura.items.append(item)
+       
+    def AgregarPermiso(self, id, dst):
+        "Agrego un permiso a una factura (interna)"
+        permiso = wsfex.PermisoFEX(id, dst)
+        self.factura.add_permiso(permiso)
+
+    def AgregarCmpAsoc(self, tipo=19, punto_vta=0, cbte_nro=0):
+        "Agrego un comprobante asociado a una factura (interna)"
+        cmp_asoc = wsfex.CmpAsocFEX(tipo, punto_vta, cbte_nro)
+        self.factura.add_cmp_asoc(cmp_asoc)
+
+    def Authorize(self, id):
+        "Autoriza la factura cargada en memoria"
+        try:
+            # llamo al web service
+            auth, events = wsfex.authorize(self.client, 
+                                     self.Token, self.Sign, self.Cuit, 
+                                     id=id, factura=self.factura.to_dict())
+                       
+            # Resultado: A: Aceptado, R: Rechazado
+            self.Resultado = auth['resultado']
+            # Obs:
+            self.Obs = auth['obs'].strip(" ")
+            self.Reproceso = auth['reproceso']
+            self.CAE = auth['cae']
+            vto = str(auth['fch_venc_cae'])
+            self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+            self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+            return self.CAE
+        except wsfex.FEXError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+        
+    def Dummy(self):
+        results = wsfex.dummy(self.client)
+        self.AppServerStatus = str(results['appserver'])
+        self.DbServerStatus = str(results['dbserver'])
+        self.AuthServerStatus = str(results['authserver'])
+
+    def GetCMP(self, tipo_cbte, punto_vta, cbte_nro):
+        try:
+            cbt, events = wsfex.get_cmp(self.client, 
+                                    self.Token, self.Sign, self.Cuit, 
+                                    tipo_cbte, punto_vta, cbte_nro)
+            
+            self.FechaCbte = cbt['fch_cbte']
+            self.ImpTotal = cbt['imp_total']
+
+            # Obs, cae y fecha cae
+            self.Obs = cbt['obs'].strip(" ")
+            self.CAE = cbt['cae']
+            vto = str(cbt['fch_venc_cae'])
+            self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+
+            self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+            return self.CAE
+
+        except wsfex.FEXError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    def Factura(self):
+        return self.factura
+
+    def GetLastCMP(self, tipo_cbte, punto_vta):
+        try:
+            cbte_nro, cbte_fecha, events = wsfex.get_last_cmp(self.client, 
+                                    self.Token, self.Sign, self.Cuit, 
+                                    tipo_cbte, punto_vta)
+            return cbte_nro
+        except wsbfe.BFEError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    def GetLastID(self):
+        try:
+            id, events = wsfex.get_last_id(self.client, 
+                                    self.Token, self.Sign, self.Cuit)
+            return id
+        except wsbfe.BFEError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+
 if __name__ == '__main__':
     if len(sys.argv)==1:
         sys.argv.append("/register")
@@ -391,3 +589,4 @@ if __name__ == '__main__':
     win32com.server.register.UseCommandLine(WSAA)
     win32com.server.register.UseCommandLine(WSFE)
     win32com.server.register.UseCommandLine(WSBFE)
+    win32com.server.register.UseCommandLine(WSFEX)

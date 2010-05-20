@@ -10,12 +10,12 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo de Intefase para archivos de texto (bono fiscal)"
+"Módulo de Intefase para archivos de texto (exportación)"
 
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
-__copyright__ = "Copyright (C) 2009 Mariano Reingart"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
+__copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17"
+__version__ = "1.20"
 
 import sys
 import time
@@ -23,7 +23,7 @@ import traceback
 from ConfigParser import SafeConfigParser
 
 # revisar la instalación de pyafip.ws:
-import wsaa,wsbfe
+import wsaa, wsfex
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
@@ -33,8 +33,8 @@ XML = False
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
-receb.py: Interfaz de texto para generar Facturas Electrónicas Bienes de Capital
-Copyright (C) 2008/2009 Mariano Reingart reingart@gmail.com
+recex.py: Interfaz de texto para generar Facturas Electrónica Exportación
+Copyright (C) 2010 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -53,31 +53,49 @@ ENCABEZADO = [
     ('fecha_cbte', 8, A),
     ('tipo_cbte', 2, N), ('punto_vta', 4, N),
     ('cbte_nro', 8, N), 
-    ('tipo_doc', 2, N), ('nro_doc', 11, N),
-    ('imp_total', 15, I), ('imp_tot_conc', 15, I),
-    ('imp_neto', 15, I), ('impto_liq', 15, I),
-    ('impto_liq_rni', 15, I), ('imp_op_ex', 15, I),
-    ('impto_perc', 15, I), ('imp_iibb', 15, I),
-    ('impto_perc_mun', 15, I), ('imp_internos', 15, I),
-    ('imp_moneda_id', 3, A),
-    ('imp_moneda_ctz', 10, I),
-    ('zona', 5, A),
-    ('cae', 14, N), ('fecha_vto', 8, A), 
-    ('resultado', 1, A), ('obs', 2, A), ('reproceso', 1, A),
+    ('tipo_expo', 1, N), # 1:bienes, 2:servicios,... 
+    ('permiso_existente', 1, A), # S/N/
+    ('dst_cmp', 3, N), # 203
+    ('cliente', 200, A), # 'Joao Da Silva'
+    ('cuit_pais_cliente', 11, N), # 50000000016
+    ('domicilio_cliente', 300, A), # 'Rua 76 km 34.5 Alagoas'
+    ('id_impositivo', 50, A), # 'PJ54482221-l'    
+    ('imp_total', 15, I), 
+    ('moneda_id', 3, A),
+    ('moneda_ctz', 10, I), #10,6
+    ('obs_comerciales', 1000, A),
+    ('obs', 1000, A),
+    ('forma_pago', 50, A),
+    ('incoterms', 3, A),
+    ('incoterms_ds', 20, A),
+    ('idioma_cbte', 1, A),
+    ('cae', 14, N), ('fecha_vto', 8, A),
+    ('resultado', 1, A), 
+    ('reproceso', 1, A),
+    ('motivos_obs', 40, A),
     ('id', 15, N),
     ]
 
 DETALLE = [
     ('tipo_reg', 1, N), # 1: detalle item
-    ('ncm', 15, A),
-    ('sec', 15, A),
-    ('qty', 15, I),
-    ('umed', 5, N),
-    ('precio', 15, I),
-    ('bonif', 15, I),
-    ('imp_total', 15, I),
-    ('iva_id', 5, N),
-    ('ds', 200, A),
+    ('codigo', 30, A),
+    ('qty', 12, I),
+    ('umed', 2, N),
+    ('precio', 12, I),
+    ('imp_total', 14, I),
+    ('ds', 4000, A),
+    ]
+
+PERMISO = [
+    ('tipo_reg', 1, N), # 2: permiso
+    ('id_permiso', 16, A),
+    ('dst_merc', 3, N),
+    ]
+
+CMP_ASOC = [
+    ('tipo_reg', 1, N), # 3: comprobante asociado
+    ('cbte_tipo', 3, N), ('cbte_punto_vta', 4, N),
+    ('cbte_nro', 8, N), 
     ]
 
 def leer(linea, formato):
@@ -85,20 +103,34 @@ def leer(linea, formato):
     comienzo = 1
     for (clave, longitud, tipo) in formato:    
         valor = linea[comienzo-1:comienzo-1+longitud].strip()
-        if tipo == N and valor:
-            valor = str(int(valor))
-        if tipo == I:
-            if valor:
-                valor = float("%s.%02d" % (int(valor[:-2]), int(valor[-2:])))
+        try:
+            if tipo == N:
+                if valor:
+                    valor = str(int(valor))
+                else:
+                    valor = '0'
+            elif tipo == I:
+                if valor:
+                    try:
+                        valor = valor.strip(" ")
+                        valor = float("%s.%02d" % (int(valor[:-2] or '0'), int(valor[-2:] or '0')))
+                    except ValueError:
+                        raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
+                else:
+                    valor = 0.00
             else:
-                valor = 0.00
-        dic[clave] = valor
+                valor = valor.decode("ascii","ignore")
+            dic[clave] = valor
 
-        comienzo += longitud
+            comienzo += longitud
+        except Exception, e:
+            raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
+                clave, comienzo, valor, str(e)))
     return dic
 
-translate_keys = {'ncm':'Pro_codigo_ncm', 'bonif':'Imp_bonif', 'precio':'Pro_precio_uni', 'sec':'Pro_codigo_sec', 
-                'ds':'Pro_ds', 'umed':'Pro_umed', 'qty':'Pro_qty', 'imp_moneda_id':'Imp_moneda_Id'}
+translate_keys = {'moneda_id':'Moneda_Id', 
+                'codigo':'Pro_codigo', 'precio':'Pro_precio_uni','imp_total':'Pro_total_item',  
+                'ds':'Pro_ds', 'umed':'Pro_umed', 'qty':'Pro_qty', }
 def escribir(dic, formato):
     linea = " " * 335
     comienzo = 1
@@ -119,7 +151,7 @@ def escribir(dic, formato):
     return linea + "\n"
 
 def autenticar(cert, privatekey, url):
-    tra = wsaa.create_tra("wsbfe")
+    tra = wsaa.create_tra("wsfex")
     cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
     xml = wsaa.call_wsaa(str(cms),url)
     ta = SimpleXMLElement(xml)
@@ -129,9 +161,10 @@ def autenticar(cert, privatekey, url):
 
 def autorizar(client, token, sign, cuit, entrada, salida):
     # recupero el último número de transacción
-    ##id = wsbfe.ultnro(client, token, sign, cuit)
+    ##id = wsfex.ultnro(client, token, sign, cuit)
 
     detalles = []
+    permisos = []
     encabezado = {}
     for linea in entrada:
         if str(linea[0])=='0':
@@ -139,34 +172,37 @@ def autorizar(client, token, sign, cuit, entrada, salida):
         elif str(linea[0])=='1':
             detalle = leer(linea, DETALLE)
             detalles.append(detalle)
+        elif str(linea[0])=='2':
+            permiso = leer(linea, PERMISO)
+            permisos.append(permiso)
         else:
             print "Tipo de registro incorrecto:", linea[0]
 
-    if not encabezado['id'].strip():
+    if not encabezado['id'].strip() or int(encabezado['id'])==0:
         # TODO: habria que leer y/o grabar el id en el archivo
         ##id += 1 # incremento el nº de transacción 
         # Por el momento, el id se calcula con el tipo, pv y nº de comprobant
         i = long(encabezado['cbte_nro'])
         i += (int(encabezado['cbte_nro'])*10**4 + int(encabezado['punto_vta']))*10**8
-        encabezado['id'] = i
-
-    if not encabezado['zona'].strip():
-        encabezado['zona'] = 0
+        encabezado['id'] = wsfex.get_last_id(client, token, sign, cuit)[0] + 1
     
-    ##encabezado['imp_moneda_ctz'] = 1.00
-    factura = wsbfe.FacturaBF(**encabezado)
+    factura = wsfex.FacturaEX(**encabezado)
     for detalle in detalles:
-        it = wsbfe.ItemBF(**detalle)
-        factura.add_item(it,calc=False)
-            
+        it = wsfex.ItemFEX(**detalle)
+        factura.add_item(it, calcular=False)
+    for permiso in permisos:
+        p = wsfex.PermisoFEX(**permiso)
+        factura.add_permiso(p)
+
     if DEBUG:
-        print '\n'.join(["%s='%s'" % (k,v) for k,v in factura.to_dict().items()])
+        #print f.to_dict()
+        print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in factura.to_dict().items()])
         print 'id:', encabezado['id']
     if not DEBUG or raw_input("Facturar?")=="S":
-        auth, events = wsbfe.authorize(client, token, sign, cuit, 
-                                       id=encabezado['id'],
-                                       factura=factura.to_dict())
         dic = factura.to_dict()
+        auth, events = wsfex.authorize(client, token, sign, cuit,
+                                       id=encabezado['id'],
+                                       factura=dic)
         dic.update(auth)
         escribir_factura(dic, salida)
         print "ID:", dic['id'], "CAE:",dic['cae'],"Obs:",dic['obs'],"Reproceso:",dic['reproceso']
@@ -177,7 +213,10 @@ def escribir_factura(dic, archivo):
     for it in dic['Items']:
         it['Item']['tipo_reg'] = 1
         archivo.write(escribir(it['Item'], DETALLE))
-
+    for it in dic['Permisos']:
+        it['Permiso']['tipo_reg'] = 2
+        archivo.write(escribir(it['Permiso'], PERMISO))
+            
 def depurar_xml(client):
     fecha = time.strftime("%Y%m%d%H%M%S")
     f=open("request-%s.xml" % fecha,"w")
@@ -208,18 +247,18 @@ if __name__ == "__main__":
     config.read(CONFIG_FILE)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
-    cuit = config.get('WSBFE','CUIT')
-    entrada = config.get('WSBFE','ENTRADA')
-    salida = config.get('WSBFE','SALIDA')
+    cuit = config.get('WSFEX','CUIT')
+    entrada = config.get('WSFEX','ENTRADA')
+    salida = config.get('WSFEX','SALIDA')
     
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')
     else:
         wsaa_url = wsaa.WSAAURL
-    if config.has_option('WSBFE','URL') and not HOMO:
-        wsbfe_url = config.get('WSBFE','URL')
+    if config.has_option('WSFEX','URL') and not HOMO:
+        wsfex_url = config.get('WSFEX','URL')
     else:
-        wsbfe_url = wsbfe.WSBFEURL
+        wsfex_url = wsfex.WSFEXURL
 
     if '/debug'in sys.argv:
         DEBUG = True
@@ -228,20 +267,20 @@ if __name__ == "__main__":
         XML = True
 
     if DEBUG:
-        print "wsaa_url %s\nwsbfe_url %s" % (wsaa_url, wsbfe_url)
+        print "wsaa_url %s\nwsfex_url %s" % (wsaa_url, wsfex_url)
     
     try:
-        client = SoapClient(wsbfe_url, action=wsbfe.SOAP_ACTION, namespace=wsbfe.SOAP_NS,
+        client = SoapClient(wsfex_url, action=wsfex.SOAP_ACTION, namespace=wsfex.SOAP_NS,
                             trace=False, exceptions=True)
 
         if '/dummy' in sys.argv:
             print "Consultando estado de servidores..."
-            print wsbfe.dummy(client)
+            print wsfex.dummy(client)
             sys.exit(0)
 
         if '/formato' in sys.argv:
             print "Formato:"
-            for msg, formato in [('Encabezado', ENCABEZADO), ('Detalle', DETALLE)]:
+            for msg, formato in [('Encabezado', ENCABEZADO), ('Detalle', DETALLE), ('Permiso', PERMISO), ('Comprobante Asociado', CMP_ASOC)]:
                 comienzo = 1
                 print "== %s ==" % msg
                 for (clave, longitud, tipo) in formato:
@@ -253,29 +292,49 @@ if __name__ == "__main__":
         # TODO: esto habría que guardarlo en un archivo y no tener que autenticar cada vez
         token, sign = autenticar(cert, privatekey, wsaa_url)
 
-        if '/prueba' in sys.argv or False:
+        if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             fecha = date('Ymd')
             tipo_cbte = 1
-            punto_vta = 2
-            ult_cbte, fecha, events = wsbfe.get_last_cmp(client, token, sign, cuit, punto_vta, tipo_cbte)
-            ult_id, events = wsbfe.get_last_id(client, token, sign, cuit)
+            punto_vta = 3
+            ult_cbte, fecha, events = wsfex.get_last_cmp(client, token, sign, cuit, punto_vta, tipo_cbte)
+            ult_id, events = wsfex.get_last_id(client, token, sign, cuit)
 
             f_entrada = open(entrada,"w")
 
-            f = wsbfe.FacturaBF()
+            f = wsfex.FacturaEX()
             f.punto_vta = punto_vta
             f.cbte_nro = ult_cbte+1
             f.imp_moneda_id = 'PES'
             f.fecha_cbte = date('Ymd')
-            it = wsbfe.ItemBF(ncm='7308.10.00', sec='', ds='prueba', qty=2.0, precio=100.0, bonif=0.0, iva_id=5)
+            f.tipo_expo = 1
+            f.permiso_existente = 'S'
+            f.dst_cmp = 203
+            f.cliente = 'Joao Da Silva'
+            f.cuit_pais_cliente = 50000000016
+            f.domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
+            f.id_impositivo = 'PJ54482221-l'
+            f.moneda_id = '012'
+            f.moneda_ctz = 0.5
+            f.obs_comerciales = 'Observaciones comerciales'
+            f.obs = 'Sin observaciones'
+            f.forma_pago = '30 dias'
+            f.incoterms = 'FOB'
+            f.idioma_cbte = 1
+            # agrego los items
+            it = wsfex.ItemFEX(codigo='PRO1', ds=u'Producto Tipo 1 Exportacion MERCOSUR ISO 9001', 
+                         qty=1, precio=125)
             f.add_item(it)
-            it = wsbfe.ItemBF(ncm='7308.20.00', sec='', ds='prueba 2', qty=4.0, precio=50.0, bonif=10.0, iva_id=5)
+            it = wsfex.ItemFEX(codigo='PRO2', ds=u'Producto Tipo 2 Exportacion MERCOSUR ISO 9001', 
+                         qty=1, precio=125)
             f.add_item(it)
-            ##print f.to_dict()
+            permiso = wsfex.PermisoFEX(id_permiso="99999AAXX999999A",dst_merc=225)
+            f.add_permiso(permiso)
+                
+            print f.to_dict()
 
             dic = f.to_dict()
-            dic['id'] = ult_id
+            dic['id'] = ult_id+1
             escribir_factura(dic, f_entrada)            
             f_entrada.close()
         
@@ -283,7 +342,7 @@ if __name__ == "__main__":
             print "Consultar ultimo numero:"
             tipo_cbte = int(raw_input("Tipo de comprobante: "))
             punto_vta = int(raw_input("Punto de venta: "))
-            ult_cbte, fecha, events = wsbfe.get_last_cmp(client, token, sign, cuit, tipo_cbte, punto_vta)
+            ult_cbte, fecha, events = wsfex.get_last_cmp(client, token, sign, cuit, tipo_cbte, punto_vta)
             print "Ultimo numero: ", ult_cbte
             print "Fecha: ", fecha
             depurar_xml(client)
@@ -294,7 +353,7 @@ if __name__ == "__main__":
             tipo_cbte = int(raw_input("Tipo de comprobante: "))
             punto_vta = int(raw_input("Punto de venta: "))
             cbte_nro = int(raw_input("Numero de comprobante: "))
-            cbt, events = wsbfe.get_cmp(client, token, sign, cuit, tipo_cbte, punto_vta, cbte_nro)
+            cbt, events = wsfex.get_cmp(client, token, sign, cuit, tipo_cbte, punto_vta, cbte_nro)
             for k,v in cbt.items():
                 print "%s = %s" % (k, v)
             depurar_xml(client)
@@ -306,7 +365,7 @@ if __name__ == "__main__":
             f_salida = open(salida,"w")
             try:
                 autorizar(client, token, sign, cuit, f_entrada, f_salida)
-            except SoapFault,wsbfe.BFEError:
+            except SoapFault, wsfex.FEXError:
                 XML = True
                 raise
         finally:
@@ -319,7 +378,7 @@ if __name__ == "__main__":
     except SoapFault,e:
         print e.faultcode, e.faultstring.encode("ascii","ignore")
         sys.exit(3)
-    except wsbfe.BFEError,e:
+    except wsfex.FEXError,e:
         print e.code, e.msg.encode("ascii","ignore")
         sys.exit(4)
     except Exception, e:

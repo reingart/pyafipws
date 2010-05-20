@@ -24,6 +24,6 @@ opts = {
 
 setup( name = "PyAfipWs",
     com_server = ["pyafipws"],
-    console=['rece.py', 'receb.py', 'rg1361.py'],
+    console=['rece.py', 'receb.py', 'recex.py', 'rg1361.py'],
     options=opts,
        )

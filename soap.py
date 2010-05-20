@@ -28,7 +28,7 @@ class SoapFault(RuntimeError):
 class SoapClient(object):
     "Manejo de Cliente SOAP Simple (símil PHP)"
     def __init__(self, location = None, action = None, namespace = None,
-                 cert = None, trace = False, exceptions = False, proxy = None ):
+                 cert = None, trace = False, exceptions = False, proxy = None, ns=False):
         self.certssl = cert             
         self.keyssl = None              
         self.location = location        # server location (url)
@@ -36,9 +36,10 @@ class SoapClient(object):
         self.namespace = namespace      # message 
         self.trace = trace              # show debug messages
         self.exceptions = exceptions    # lanzar execpiones? (Soap Faults)
+        self.xml_request = self.xml_response = ''
 
         if not proxy:
-            self.http = httplib2.Http('.cache')
+            self.http = httplib2.Http()
         else:
             import socks
             ##httplib2.debuglevel=4
@@ -46,30 +47,48 @@ class SoapClient(object):
                 proxy_type=socks.PROXY_TYPE_HTTP, **proxy))
         #if self.certssl: # esto funciona para validar al server?
         #    self.http.add_certificate(self.keyssl, self.keyssl, self.certssl)
-
-    def __getattr__(self, attr):
-        "Devuelve un pseudo-método que puede ser llamado"
-        return lambda self=self,xml="", *args, **kwargs: self.call(attr,xml,*args,**kwargs)
-    
-    def call(self, method, *args, **kwargs):
-        "Prepara el xml y realiza la llamada SOAP, devuelve un SimpleXMLElement"
-        # Mensaje de Solicitud SOAP básico:
-        xml = """<?xml version="1.0" encoding="utf-8"?> 
+        self.__ns = ns
+        if not ns:
+            self.__xml = """<?xml version="1.0" encoding="UTF-8"?> 
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> 
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 <soap:Body>
     <%(method)s xmlns="%(namespace)s">
     </%(method)s>
 </soap:Body>
-</soap:Envelope>""" % dict(method=method, namespace= self.namespace)
-        request = SimpleXMLElement(xml)
+</soap:Envelope>"""
+        else:
+            self.__xml = """<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope
+xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+xmlns:%(ns)s="http://impl.service.wsctg.afip.gov.ar/CTGService/">
+<soapenv:Header/>
+<soapenv:Body>
+    <%(ns)s:%(method)s>
+    </%(ns)s:%(method)s>
+</soapenv:Body>
+</soapenv:Envelope>"""
+
+    def __getattr__(self, attr):
+        "Devuelve un pseudo-método que puede ser llamado"
+        return lambda self=self, *args, **kwargs: self.call(attr,*args,**kwargs)
+    
+    def call(self, method, *args, **kwargs):
+        "Prepara el xml y realiza la llamada SOAP, devuelve un SimpleXMLElement"
+        # Mensaje de Solicitud SOAP básico:
+        xml = self.__xml % dict(method=method, namespace=self.namespace, ns=self.__ns)
+        request = SimpleXMLElement(xml,namespace=self.__ns and self.namespace)
         # parsear argumentos
-        for k,v in kwargs.items(): # dict: tag=valor
+        if kwargs:
+            parameters = kwargs.items()
+        else:
+            parameters = args
+        for k,v in parameters: # dict: tag=valor
             self.parse(getattr(request,method),k,v)
         self.xml_request = request.asXML()
         self.xml_response = self.send(method, self.xml_request)
-        response = SimpleXMLElement(self.xml_response)
+        response = SimpleXMLElement(self.xml_response, namespace=self.namespace)
         if self.exceptions and ("soapenv:Fault" in response or "soap:Fault" in response):
             raise SoapFault(unicode(response.faultcode), unicode(response.faultstring))
         return response
@@ -80,7 +99,7 @@ class SoapClient(object):
             child = add_child and node.addChild(tag) or node
             for k,v in value.items():
                 self.parse(child, k, v)
-        elif isinstance(value, tuple):  # serializar diccionario (<key>value</key>)
+        elif isinstance(value, tuple):  # serializar tupla(<key>value</key>)
             child = add_child and node.addChild(tag) or node
             for k,v in value:
                 self.parse(getattr(node,tag), k, v)
@@ -137,6 +156,22 @@ def parse_proxy(proxy_str):
     
     
 if __name__=="__main__":
+    client = SoapClient(
+        location = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService",
+        action = 'http://impl.service.wsctg.afip.gov.ar/CTGService/', # SOAPAction
+        namespace = "http://impl.service.wsctg.afip.gov.ar/CTGService/",
+        trace = True,
+        ns = True)
+    
+    response = client.dummy()
+    result = response.dummyResponse
+    print str(result.appserver)
+    print str(result.dbserver)
+    print str(result.authserver)
+
+    sys.exit(0)
+
+    
     # Demo & Test: Feriados (Ministerio del Interior):
     from datetime import datetime, timedelta
     client = SoapClient(

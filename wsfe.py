@@ -180,7 +180,7 @@ def main():
     last_cbte = recuperar_last_cmp(client, token, sign, CUIT, punto_vta, tipo_cbte)
     #import pdb; pdb.set_trace()
     dic = aut(client, token, sign,
-        CUIT, last_id +1, last_cbte +1,
+        CUIT, id=last_id +1, cbte_desde=last_cbte +1, cbte_hasta=last_cbte +1,
         tipo_doc=80, nro_doc=23111111113, 
         punto_vta=punto_vta, tipo_cbte=tipo_cbte,
         imp_total=0.01, imp_neto=0.01, impto_liq=0.00)

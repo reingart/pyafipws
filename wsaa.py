@@ -80,7 +80,7 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY):
         if filename == "smime.p7s":                 # es la parte firmada?
             return part.get_payload(decode=False)   # devolver CMS
 
-def call_wsaa(cms, location = WSAAURL, proxy=None):
+def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
     "Llamar web service con CMS para obtener ticket de autorización (TA)"
   
     # cliente soap del web service
@@ -88,15 +88,19 @@ def call_wsaa(cms, location = WSAAURL, proxy=None):
         action = SOAP_ACTION,
         namespace = SOAP_NS,
         cert = REMCACERT,  # certificado remoto (revisar)
-        trace = False,     # imprimir mensajes de depuración
+        trace = trace,     # imprimir mensajes de depuración
         exceptions = True, # lanzar Fallas Soap
         proxy = proxy,      # datos del servidor proxy (opcional)
         )
         
 
-    results = client.loginCms(in0=cms)
-    return str(results.loginCmsReturn)
-
+    try:
+        results = client.loginCms(in0=cms)
+        return str(results.loginCmsReturn)
+    except:
+        #print client.xml_request
+        #print client.xml_response
+        raise
 if __name__=="__main__":
 
     # Leer argumentos desde la linea de comando (si no viene tomar default)
