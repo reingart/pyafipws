@@ -15,8 +15,9 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20"
+__version__ = "1.23b"
 
+import os
 import sys
 import time
 import traceback
@@ -98,6 +99,7 @@ CMP_ASOC = [
     ('cbte_nro', 8, N), 
     ]
 
+
 def leer(linea, formato):
     dic = {}
     comienzo = 1
@@ -151,10 +153,16 @@ def escribir(dic, formato):
     return linea + "\n"
 
 def autenticar(cert, privatekey, url):
-    tra = wsaa.create_tra("wsfex")
-    cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
-    xml = wsaa.call_wsaa(str(cms),url)
-    ta = SimpleXMLElement(xml)
+    "Obtener el TA"
+    TA = "TA.xml"
+    if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
+        import wsaa
+        tra = wsaa.create_tra(service="wsfex")
+        cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
+        ta_string = wsaa.call_wsaa(cms)
+        open(TA,"w").write(ta_string)
+    ta_string=open(TA).read()
+    ta = SimpleXMLElement(ta_string)
     token = str(ta.credentials.token)
     sign = str(ta.credentials.sign)
     return token, sign
@@ -165,6 +173,7 @@ def autorizar(client, token, sign, cuit, entrada, salida):
 
     detalles = []
     permisos = []
+    cbtasocs = []
     encabezado = {}
     for linea in entrada:
         if str(linea[0])=='0':
@@ -175,6 +184,9 @@ def autorizar(client, token, sign, cuit, entrada, salida):
         elif str(linea[0])=='2':
             permiso = leer(linea, PERMISO)
             permisos.append(permiso)
+        elif str(linea[0])=='3':
+            cbtasoc = leer(linea, CMP_ASOC)
+            cbtasocs.append(cbtasoc)
         else:
             print "Tipo de registro incorrecto:", linea[0]
 
@@ -193,6 +205,9 @@ def autorizar(client, token, sign, cuit, entrada, salida):
     for permiso in permisos:
         p = wsfex.PermisoFEX(**permiso)
         factura.add_permiso(p)
+    for cbtasoc in cbtasocs:
+        c = wsfex.CmpAsocFEX(**cbtasoc)
+        factura.add_cmp_asoc(c)
 
     if DEBUG:
         #print f.to_dict()
@@ -295,9 +310,10 @@ if __name__ == "__main__":
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             fecha = date('Ymd')
-            tipo_cbte = 1
+            tipo_cbte = 19
             punto_vta = 3
-            ult_cbte, fecha, events = wsfex.get_last_cmp(client, token, sign, cuit, punto_vta, tipo_cbte)
+            ult_cbte, fecha, events = wsfex.get_last_cmp(client, token, sign, cuit, tipo_cbte, punto_vta)
+
             ult_id, events = wsfex.get_last_id(client, token, sign, cuit)
 
             f_entrada = open(entrada,"w")
