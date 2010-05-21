@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23b"
+__version__ = "1.22b"
 
 import os
 import sys
@@ -347,7 +347,8 @@ if __name__ == "__main__":
             permiso = wsfex.PermisoFEX(id_permiso="99999AAXX999999A",dst_merc=225)
             f.add_permiso(permiso)
                 
-            print f.to_dict()
+            if DEBUG:
+                print f.to_dict()
 
             dic = f.to_dict()
             dic['id'] = ult_id+1
