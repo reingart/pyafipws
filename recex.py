@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22b"
+__version__ = "1.23a"
 
 import os
 import sys
@@ -63,7 +63,7 @@ ENCABEZADO = [
     ('id_impositivo', 50, A), # 'PJ54482221-l'    
     ('imp_total', 15, I), 
     ('moneda_id', 3, A),
-    ('moneda_ctz', 10, I), #10,6
+    ('moneda_ctz', 10, I, 6), #10,6
     ('obs_comerciales', 1000, A),
     ('obs', 1000, A),
     ('forma_pago', 50, A),
@@ -103,7 +103,9 @@ CMP_ASOC = [
 def leer(linea, formato):
     dic = {}
     comienzo = 1
-    for (clave, longitud, tipo) in formato:    
+    for fmt in formato:    
+        clave, longitud, tipo = fmt[0:3]
+        dec = len(fmt)>3 and fmt[3] or 2
         valor = linea[comienzo-1:comienzo-1+longitud].strip()
         try:
             if tipo == N:
@@ -115,7 +117,7 @@ def leer(linea, formato):
                 if valor:
                     try:
                         valor = valor.strip(" ")
-                        valor = float("%s.%02d" % (int(valor[:-2] or '0'), int(valor[-2:] or '0')))
+                        valor = float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
                     except ValueError:
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
@@ -136,7 +138,9 @@ translate_keys = {'moneda_id':'Moneda_Id',
 def escribir(dic, formato):
     linea = " " * 335
     comienzo = 1
-    for (clave, longitud, tipo) in formato:
+    for fmt in formato:
+        clave, longitud, tipo = fmt[0:3]
+        dec = len(fmt)>3 and fmt[3] or 2
         if clave.capitalize() in dic:
             clave = clave.capitalize()
         valor = str(dic.get(clave,""))
@@ -145,7 +149,7 @@ def escribir(dic, formato):
         if tipo == N and valor and valor!="NULL":
             valor = ("%%0%dd" % longitud) % int(valor)
         elif tipo == I and valor:
-            valor = ("%%0%dd" % longitud) % (float(valor)*100)
+            valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
         else:
             valor = ("%%0%ds" % longitud) % valor
         linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
@@ -330,8 +334,8 @@ if __name__ == "__main__":
             f.cuit_pais_cliente = 50000000016
             f.domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
             f.id_impositivo = 'PJ54482221-l'
-            f.moneda_id = '012'
-            f.moneda_ctz = 0.5
+            f.moneda_id = 'DOL'
+            f.moneda_ctz = 3.875
             f.obs_comerciales = 'Observaciones comerciales'
             f.obs = 'Sin observaciones'
             f.forma_pago = '30 dias'
