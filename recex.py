@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23a"
+__version__ = "1.23b"
 
 import os
 import sys
@@ -75,6 +75,7 @@ ENCABEZADO = [
     ('reproceso', 1, A),
     ('motivos_obs', 40, A),
     ('id', 15, N),
+    ('fch_venc_cae', 8, A),
     ]
 
 DETALLE = [
