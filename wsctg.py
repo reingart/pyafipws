@@ -238,6 +238,7 @@ if __name__ == '__main__':
         client = SoapClient(wsctg_url, 
             action = SOAP_ACTION, 
             namespace = SOAP_NS, exceptions = True,
+            soap_ns = 'soapenv',
             trace = XML, ns = "ctg")
         
         if '--dummy' in sys.argv:

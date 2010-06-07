@@ -15,10 +15,10 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23a"
+__version__ = "1.23b"
 
 import sys
-import wsaa, wsfe, wsbfe, wsfex, wdigdepfiel
+import wsaa, wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
 from php import SimpleXMLElement, SoapFault, SoapClient, parse_proxy
 import traceback
 from win32com.server.exception import COMException
@@ -583,14 +583,107 @@ class WSFEX:
 
 
 class WSCTG:
-    _public_methods_ = []
+    _public_methods_ = ['Conectar','Dummy','SolicitarCTG','ConfirmarCTG']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version', ]
+        'XmlRequest', 'XmlResponse', 'Version', 'NumeroCTG',
+        'CodigoTransaccion', 'Observaciones']
     _reg_progid_ = "WSCTG"
     _reg_clsid_ = "{8F1CE1EA-6D7A-45E7-A5BB-B17E2EB1F965}"
 
+    def __init__(self):
+        self.Token = self.Sign = self.Cuit = None
+        self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
+        self.XmlRequest = ''
+        self.XmlResponse = ''
+        self.CodError = self.DescError = ''
+        self.client = None
+        self.Version = __version__
+        self.NumeroCTG = ''
+        self.CodigoTransaccion = self.Observaciones = ''
+        
+    
+    def Conectar(self, url="", proxy=""):
+        if HOMO or not url: url = wsctg.WSCTGURL
+        proxy_dict = parse_proxy(proxy)
+        try:
+            self.client = SoapClient(url,
+                action = wsctg.SOAP_ACTION, 
+                namespace = wsctg.SOAP_NS,
+                trace = False, ns = 'ctg', soap_ns = 'soapenv',
+                exceptions = True, proxy = proxy_dict)
+            return True
+        except Exception, e:
+            ##raise
+            raisePythonException(e)
 
+    def Dummy(self):
+        try:
+            results = wsctg.dummy(self.client)
+            self.AppServerStatus = str(results['appserver'])
+            self.DbServerStatus = str(results['dbserver'])
+            self.AuthServerStatus = str(results['authserver'])
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    def SolicitarCTG(self, numero_carta_de_porte, codigo_especie,
+        cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen, 
+        codigo_localidad_destino, codigo_cosecha, peso_neto_carga, cant_horas, 
+        patente_vehiculo, cuit_transportista):
+        try:
+            ret = wsctg.solicitar_ctg(self.client, self.Token, self.Sign, self.Cuit, 
+                    numeroCartaDePorte=numero_carta_de_porte, codigoEspecie=codigo_especie,
+                    cuitRemitenteComercial=cuit_remitente_comercial, 
+                    cuitDestino=cuit_destino, 
+                    cuitDestinatario=cuit_destinatario, 
+                    codigoLocalidadOrigen=codigo_localidad_origen,
+                    codigoLocalidadDestino=codigo_localidad_destino, 
+                    codigoCosecha=codigo_cosecha, 
+                    pesoNetoCarga=peso_neto_carga, cantHoras=cant_horas,
+                    patenteVehiculo=patente_vehiculo, cuitTransportista=cuit_transportista)
+            self.NumeroCTG = ret
+            return self.NumeroCTG
+        
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    def ConfirmarCTG(self, numero_carta_de_porte, numero_CTG, cuit_transportista, peso_neto_carga):
+        try:
+            ret = wsctg.confirmar_ctg(self.client, self.Token, self.Sign, self.Cuit, 
+                        numeroCartaDePorte=numero_carta_de_porte, 
+                        numeroCTG=numero_CTG,
+                        cuitTransportista=cuit_transportista, 
+                        pesoNetoCarga=peso_neto_carga)
+            self.CodigoTransaccion, self.Observaciones = ret
+            return self.CodigoTransaccion
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+            
+            
 class wDigDepFiel:
     _public_methods_ = ['Conectar', 'Dummy', 'AvisoDigit', 'AvisoRecepAcept', 'IniciarAviso', 'AgregarFamilia']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
@@ -616,7 +709,7 @@ class wDigDepFiel:
             self.client = SoapClient(url,
                 action = wdigdepfiel.SOAP_ACTION, 
                 namespace = wdigdepfiel.SOAP_NS,
-                trace = False, ns = 'ar',
+                trace = False, ns = 'ar', soap_ns='soap',
                 exceptions = True, proxy = proxy_dict)
             return True
         except Exception, e:
@@ -691,4 +784,5 @@ if __name__ == '__main__':
     win32com.server.register.UseCommandLine(WSFE)
     win32com.server.register.UseCommandLine(WSBFE)
     win32com.server.register.UseCommandLine(WSFEX)
+    win32com.server.register.UseCommandLine(WSCTG)
     win32com.server.register.UseCommandLine(wDigDepFiel)

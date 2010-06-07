@@ -133,7 +133,7 @@ if __name__ == '__main__':
         client = SoapClient(WSDDFURL, 
             action = SOAP_ACTION, 
             namespace = SOAP_NS, exceptions = True,
-            trace = True, ns = 'ar')
+            trace = True, ns = 'ar', soap_ns='soap')
         
         if '--dummy' in sys.argv:
             ret = dummy(client)
