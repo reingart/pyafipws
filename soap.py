@@ -25,10 +25,19 @@ class SoapFault(RuntimeError):
         self.faultcode = faultcode
         self.faultstring = faultstring
 
+# soap protocol specification & namespace
+soap_namespaces = dict(
+    soap11="http://schemas.xmlsoap.org/soap/envelope/",
+    soap="http://schemas.xmlsoap.org/soap/envelope/",
+    soapenv="http://schemas.xmlsoap.org/soap/envelope/",
+    soap12="http://www.w3.org/2003/05/soap-env",
+)
+
 class SoapClient(object):
     "Manejo de Cliente SOAP Simple (símil PHP)"
     def __init__(self, location = None, action = None, namespace = None,
-                 cert = None, trace = False, exceptions = False, proxy = None, ns=False):
+                 cert = None, trace = False, exceptions = False, proxy = None, ns=False, 
+                 soap_ns=None):
         self.certssl = cert             
         self.keyssl = None              
         self.location = location        # server location (url)
@@ -37,6 +46,12 @@ class SoapClient(object):
         self.trace = trace              # show debug messages
         self.exceptions = exceptions    # lanzar execpiones? (Soap Faults)
         self.xml_request = self.xml_response = ''
+        if not soap_ns and not ns:
+            self.__soap_ns = 'soap' # 1.1
+        elif not soap_ns and ns:
+            self.__soap_ns = 'soapenv' # 1.2
+        else:
+            self.__soap_ns = soap_ns
 
         if not proxy:
             self.http = httplib2.Http()
@@ -50,24 +65,23 @@ class SoapClient(object):
         self.__ns = ns
         if not ns:
             self.__xml = """<?xml version="1.0" encoding="UTF-8"?> 
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<%(soap_ns)s:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-<soap:Body>
+    xmlns:%(soap_ns)s="%(soap_uri)s">
+<%(soap_ns)s:Body>
     <%(method)s xmlns="%(namespace)s">
     </%(method)s>
-</soap:Body>
-</soap:Envelope>"""
+</%(soap_ns)s:Body>
+</%(soap_ns)s:Envelope>"""
         else:
             self.__xml = """<?xml version="1.0" encoding="UTF-8"?>
-<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" 
-xmlns:%(ns)s="%(namespace)s">
-<soap:Header/>
-<soap:Body>
+<%(soap_ns)s:Envelope xmlns:%(soap_ns)s="%(soap_uri)s" xmlns:%(ns)s="%(namespace)s">
+<%(soap_ns)s:Header/>
+<%(soap_ns)s:Body>
     <%(ns)s:%(method)s>
     </%(ns)s:%(method)s>
-</soap:Body>
-</soap:Envelope>"""
+</%(soap_ns)s:Body>
+</%(soap_ns)s:Envelope>"""
 
     def __getattr__(self, attr):
         "Devuelve un pseudo-método que puede ser llamado"
@@ -76,7 +90,8 @@ xmlns:%(ns)s="%(namespace)s">
     def call(self, method, *args, **kwargs):
         "Prepara el xml y realiza la llamada SOAP, devuelve un SimpleXMLElement"
         # Mensaje de Solicitud SOAP básico:
-        xml = self.__xml % dict(method=method, namespace=self.namespace, ns=self.__ns)
+        xml = self.__xml % dict(method=method, namespace=self.namespace, ns=self.__ns,
+                                soap_ns=self.__soap_ns, soap_uri=soap_namespaces[self.__soap_ns])
         request = SimpleXMLElement(xml,namespace=self.__ns and self.namespace, prefix=self.__ns)
         # parsear argumentos
         if kwargs:
@@ -94,22 +109,23 @@ xmlns:%(ns)s="%(namespace)s">
     
     def parse(self, node, tag, value, add_child=True):
         "Analiza un objeto y devuelve su representación XML"
+        ns = self.__soap_ns!='soapenv' # not add ns to childs in for soap1.1
         if isinstance(value, dict):  # serializar diccionario (<key>value</key>)
-            child = add_child and node.addChild(tag) or node
+            child = add_child and node.addChild(tag,ns=ns) or node
             for k,v in value.items():
                 self.parse(child, k, v)
         elif isinstance(value, tuple):  # serializar tupla(<key>value</key>)
-            child = add_child and node.addChild(tag) or node
+            child = add_child and node.addChild(tag,ns=ns) or node
             for k,v in value:
                 self.parse(getattr(node,tag), k, v)
         elif isinstance(value, list): # serializar listas
-            child=node.addChild(tag)
+            child=node.addChild(tag,ns=ns)
             for t in value:
                 self.parse(child,tag,t, False)
         elif isinstance(value, basestring): # no volver a convertir los strings y unicodes
-            node.addChild(tag,value)
+            node.addChild(tag,value,ns=ns)
         else: # el resto de los objetos se convierten a string 
-            node.addChild(tag,str(value)) # habria que agregar un método asXML?
+            node.addChild(tag,str(value),ns=ns) # habria que agregar un método asXML?
     
     def send(self, method, xml):
         "Envía el pedido SOAP por HTTP (llama al método con el xml como cuerpo)"

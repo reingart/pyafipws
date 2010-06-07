@@ -20,23 +20,30 @@ __version__ = "1.0"
 import xml.dom.minidom
 
 
+DEBUG = False
+
+
 class SimpleXMLElement(object):
     "Clase para Manejo simple de XMLs (simil PHP)"
     def __init__(self, text = None, elements = None, document = None, namespace = None, prefix=None):
         self.__ns = namespace
         self.__prefix = prefix
         if text:
-            self.__document = xml.dom.minidom.parseString(text)
+            try:
+                self.__document = xml.dom.minidom.parseString(text)
+            except:
+                if DEBUG: print text
+                raise
             self.__elements = [self.__document.documentElement]
         else:
             self.__elements = elements
             self.__document = document
-    def addChild(self,tag,text=None):
-        if not self.__ns:
-            print "adding %s ns %s" % (tag, self.__ns)
+    def addChild(self,tag,text=None,ns=True):
+        if not ns or not self.__ns:
+            if DEBUG: print "adding %s ns %s %s" % (tag, self.__ns,ns)
             element = self.__document.createElement(tag)
         else:
-            print "adding %s ns %s" % (tag, self.__ns)
+            if DEBUG: print "adding %s ns %s %s" % (tag, self.__ns,ns)
             element = self.__document.createElementNS(self.__ns, "%s:%s" % (self.__prefix, tag))
         if text:
             if isinstance(text, unicode):
@@ -54,13 +61,13 @@ class SimpleXMLElement(object):
     def __getattr__(self,tag):
         try:
             if self.__ns:
-                print "searching %s by ns=%s" % (tag,self.__ns)
+                if DEBUG: print "searching %s by ns=%s" % (tag,self.__ns)
                 elements = self.__elements[0].getElementsByTagNameNS(self.__ns, tag)
             if not self.__ns or not elements:
-                print "searching %s " % (tag)
+                if DEBUG: print "searching %s " % (tag)
                 elements = self.__elements[0].getElementsByTagName(tag)
             if not elements:
-                print self.__elements[0].toxml()
+                if DEBUG: print self.__elements[0].toxml()
                 raise IndexError("Sin elementos")
             return SimpleXMLElement(
                 elements=elements,
