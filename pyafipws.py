@@ -12,13 +12,13 @@
 
 "Módulo de Servidor COM para interface con Windows"
 
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22b"
+__version__ = "1.23a"
 
 import sys
-import wsaa, wsfe, wsbfe, wsfex
+import wsaa, wsfe, wsbfe, wsfex, wdigdepfiel
 from php import SimpleXMLElement, SoapFault, SoapClient, parse_proxy
 import traceback
 from win32com.server.exception import COMException
@@ -582,6 +582,107 @@ class WSFEX:
             self.XmlResponse = self.client.xml_response
 
 
+class WSCTG:
+    _public_methods_ = []
+    _public_attrs_ = ['Token', 'Sign', 'Cuit', 
+        'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
+        'XmlRequest', 'XmlResponse', 'Version', ]
+    _reg_progid_ = "WSCTG"
+    _reg_clsid_ = "{8F1CE1EA-6D7A-45E7-A5BB-B17E2EB1F965}"
+
+
+class wDigDepFiel:
+    _public_methods_ = ['Conectar', 'Dummy', 'AvisoDigit', 'AvisoRecepAcept', 'IniciarAviso', 'AgregarFamilia']
+    _public_attrs_ = ['Token', 'Sign', 'Cuit', 
+        'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
+        'XmlRequest', 'XmlResponse', 'Version',
+        'CodError', 'DescError']
+    _reg_progid_ = "wDigDepFiel"
+    _reg_clsid_ = "{20516CB7-2B85-4562-8821-8F9D699CCAB6}"
+
+    def __init__(self):
+        self.Token = self.Sign = self.Cuit = None
+        self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
+        self.XmlRequest = ''
+        self.XmlResponse = ''
+        self.CodError = self.DescError = ''
+        self.client = None
+        self.Version = __version__
+    
+    def Conectar(self, url="", proxy=""):
+        if HOMO or not url: url = wdigdepfiel.WSDDFURL
+        proxy_dict = parse_proxy(proxy)
+        try:
+            self.client = SoapClient(url,
+                action = wdigdepfiel.SOAP_ACTION, 
+                namespace = wdigdepfiel.SOAP_NS,
+                trace = False, ns = 'ar',
+                exceptions = True, proxy = proxy_dict)
+            return True
+        except Exception, e:
+            ##raise
+            raisePythonException(e)
+
+    def Dummy(self):
+        results = wdigdepfiel.dummy(self.client)
+        self.AppServerStatus = str(results['appserver'])
+        self.DbServerStatus = str(results['dbserver'])
+        self.AuthServerStatus = str(results['authserver'])
+
+    def AvisoRecepAcept(self, tipo_agente, rol, 
+                        nro_legajo, cuit_declarante, cuit_psad, cuit_ie,
+                        codigo, fecha_hora_acept, ticket):
+        try:
+            ret = wdigdepfiel.aviso_recep_acept(
+                    self.client, self.Token, self.Sign, self.Cuit, tipo_agente, rol,
+                    nro_legajo, cuit_declarante, cuit_psad, cuit_ie,
+                    codigo, fecha_hora_acept, ticket)
+            
+            self.CodError, self.DescError  = ret
+            return self.CodError
+
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    def IniciarAviso(self):
+        self.familias = []
+
+    def AgregarFamilia(self, codigo, cantidad):
+        self.familias.append({'Familia': {'codigo': codigo, 'cantidad': cantidad}})
+
+    def AvisoDigit(self, tipo_agente, rol,
+                         nro_legajo, cuit_declarante, cuit_psad, cuit_ie, cuit_ata,
+                         codigo, url, ticket, hashing, cantidad_total):
+        try:
+            familias = self.familias
+            ret = wdigdepfiel.aviso_digit(
+                    self.client, self.Token, self.Sign, self.Cuit, tipo_agente, rol,
+                    nro_legajo, cuit_declarante, cuit_psad, cuit_ie, cuit_ata,
+                    codigo, url, familias, ticket, hashing, cantidad_total)
+            
+            self.CodError, self.DescError  = ret
+            return self.CodError
+
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+
 if __name__ == '__main__':
     if len(sys.argv)==1:
         sys.argv.append("/register")
@@ -590,3 +691,4 @@ if __name__ == '__main__':
     win32com.server.register.UseCommandLine(WSFE)
     win32com.server.register.UseCommandLine(WSBFE)
     win32com.server.register.UseCommandLine(WSFEX)
+    win32com.server.register.UseCommandLine(wDigDepFiel)
