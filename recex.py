@@ -303,7 +303,8 @@ if __name__ == "__main__":
             for msg, formato in [('Encabezado', ENCABEZADO), ('Detalle', DETALLE), ('Permiso', PERMISO), ('Comprobante Asociado', CMP_ASOC)]:
                 comienzo = 1
                 print "== %s ==" % msg
-                for (clave, longitud, tipo) in formato:
+                for fmt in formato:
+                    clave, longitud, tipo = fmt[0:3]
                     print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s" % (
                         clave, comienzo, longitud, tipo)
                     comienzo += longitud
