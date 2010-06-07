@@ -22,8 +22,9 @@ import xml.dom.minidom
 
 class SimpleXMLElement(object):
     "Clase para Manejo simple de XMLs (simil PHP)"
-    def __init__(self, text = None, elements = None, document = None, namespace = None):
+    def __init__(self, text = None, elements = None, document = None, namespace = None, prefix=None):
         self.__ns = namespace
+        self.__prefix = prefix
         if text:
             self.__document = xml.dom.minidom.parseString(text)
             self.__elements = [self.__document.documentElement]
@@ -31,8 +32,12 @@ class SimpleXMLElement(object):
             self.__elements = elements
             self.__document = document
     def addChild(self,tag,text=None):
-        element = self.__document.createElement(tag)
-        
+        if not self.__ns:
+            print "adding %s ns %s" % (tag, self.__ns)
+            element = self.__document.createElement(tag)
+        else:
+            print "adding %s ns %s" % (tag, self.__ns)
+            element = self.__document.createElementNS(self.__ns, "%s:%s" % (self.__prefix, tag))
         if text:
             if isinstance(text, unicode):
                 element.appendChild(self.__document.createTextNode(text))
@@ -41,20 +46,27 @@ class SimpleXMLElement(object):
         self.__element.appendChild(element)
         return SimpleXMLElement(
                     elements=[element],
-                    document=self.__document)
+                    document=self.__document,
+                    namespace=self.__ns,
+                    prefix=self.__prefix)
     def asXML(self,filename=None):
         return self.__document.toxml('UTF-8')
     def __getattr__(self,tag):
         try:
             if self.__ns:
+                print "searching %s by ns=%s" % (tag,self.__ns)
                 elements = self.__elements[0].getElementsByTagNameNS(self.__ns, tag)
             if not self.__ns or not elements:
+                print "searching %s " % (tag)
                 elements = self.__elements[0].getElementsByTagName(tag)
             if not elements:
+                print self.__elements[0].toxml()
                 raise IndexError("Sin elementos")
             return SimpleXMLElement(
                 elements=elements,
-                document=self.__document)
+                document=self.__document,
+                namespace=self.__ns,
+                prefix=self.__prefix)
         except IndexError, e:
             raise RuntimeError("Tag not found: %s (%s)" % (tag, str(e)))
     def __iter__(self):
@@ -63,7 +75,9 @@ class SimpleXMLElement(object):
             for __element in self.__elements:
                 yield SimpleXMLElement(
                     elements=[__element],
-                    document=self.__document)
+                    document=self.__document,
+                    namespace=self.__ns,
+                    prefix=self.__prefix)
         except:
             raise RuntimeError("Tag not found: %s" % tag)        
     def __getitem__(self,item):
@@ -75,7 +89,11 @@ class SimpleXMLElement(object):
         return self.__element.childNodes[0].data
     def __str__(self):
         if self.__element.childNodes:
-            return self.__element.childNodes[0].data.encode("utf8","ignore")
+            rc = ""
+            for node in self.__element.childNodes:
+                if node.nodeType == node.TEXT_NODE:
+                    rc = rc + node.data.encode("utf8","ignore")
+            return rc
         return ''
     def __repr__(self):
         return repr(self.__str__())

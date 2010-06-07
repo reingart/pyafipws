@@ -60,15 +60,14 @@ class SoapClient(object):
 </soap:Envelope>"""
         else:
             self.__xml = """<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope
-xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-xmlns:%(ns)s="http://impl.service.wsctg.afip.gov.ar/CTGService/">
-<soapenv:Header/>
-<soapenv:Body>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" 
+xmlns:%(ns)s="%(namespace)s">
+<soap:Header/>
+<soap:Body>
     <%(ns)s:%(method)s>
     </%(ns)s:%(method)s>
-</soapenv:Body>
-</soapenv:Envelope>"""
+</soap:Body>
+</soap:Envelope>"""
 
     def __getattr__(self, attr):
         "Devuelve un pseudo-método que puede ser llamado"
@@ -78,7 +77,7 @@ xmlns:%(ns)s="http://impl.service.wsctg.afip.gov.ar/CTGService/">
         "Prepara el xml y realiza la llamada SOAP, devuelve un SimpleXMLElement"
         # Mensaje de Solicitud SOAP básico:
         xml = self.__xml % dict(method=method, namespace=self.namespace, ns=self.__ns)
-        request = SimpleXMLElement(xml,namespace=self.__ns and self.namespace)
+        request = SimpleXMLElement(xml,namespace=self.__ns and self.namespace, prefix=self.__ns)
         # parsear argumentos
         if kwargs:
             parameters = kwargs.items()
