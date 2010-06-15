@@ -224,7 +224,12 @@ def get_last_cmp(client, token, sign, cuit, tipo_cbte, punto_vta):
         
     events = []
     for FEX_event in response.FEXGetLast_CMPResult.FEXEvents:
-        events.append(dict(code=FEX_event.EventCode, msg=FEX_event.EventMsg))
+        code = FEX_event.EventCode
+        try:
+            msg = FEX_event.EventMsg
+        except AttributeError:
+            msg = ''
+        events.append(dict(code=code, msg=msg))
     return cbte_nro, cbte_fecha, events
 
 def get_last_id(client, token, sign, cuit):
@@ -240,7 +245,12 @@ def get_last_id(client, token, sign, cuit):
     id = int(result.Id)
     events = []
     for FEX_event in response.FEXGetLast_IDResult.FEXEvents:
-        events.append(dict(code=FEX_event.EventCode, msg=FEX_event.EventMsg))
+        code = FEX_event.EventCode
+        try:
+            msg = FEX_event.EventMsg
+        except AttributeError:
+            msg = ''
+        events.append(dict(code=code, msg=msg))
     return id, events
 
 
@@ -268,7 +278,12 @@ def authorize(client, token, sign, cuit, id, factura):
                reproceso=str(result.Reproceso), obs=str(result.Motivos_Obs))
     events = []
     for FEX_event in response.FEXAuthorizeResult.FEXEvents:
-        events.append(dict(code=FEX_event.EventCode, msg=FEX_event.EventMsg))
+        code = FEX_event.EventCode
+        try:
+            msg = FEX_event.EventMsg
+        except AttributeError:
+            msg = ''
+        events.append(dict(code=code, msg=msg))
 
     return auth, events
 
@@ -291,7 +306,12 @@ def get_cmp(client, token, sign, cuit, tipo_cbte, punto_vta, cbte_nro):
                obs=str(result.Obs))
     events = []
     for FEX_event in response.FEXGetCMPResult.FEXEvents:
-        events.append(dict(code=FEX_event.EventCode, msg=FEX_event.EventMsg))
+        code = FEX_event.EventCode
+        try:
+            msg = FEX_event.EventMsg
+        except AttributeError:
+            msg = ''
+        events.append(dict(code=code, msg=msg))
     return cbt, events
 
 

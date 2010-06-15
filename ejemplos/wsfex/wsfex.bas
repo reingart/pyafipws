@@ -96,16 +96,20 @@ Sub Main()
     ok = WSFEX.AgregarItem(codigo, ds, qty, umed, precio, imp_total)
     
     ' Agrego un permiso (ver manual para el desarrollador)
-    id = "99999AAXX999999A"
-    dst = 225 ' país destino de la mercaderia
-    ok = WSFEX.AgregarPermiso(id, dst)
-        
+    If permiso_existente = "S" Then
+        id = "99999AAXX999999A"
+        dst = 225 ' país destino de la mercaderia
+        ok = WSFEX.AgregarPermiso(id, dst)
+    End If
+    
     ' Agrego un comprobante asociado (ver manual para el desarrollador)
-    tipo_cbte_asoc = 19
-    punto_vta_asoc = 2
-    cbte_nro_asoc = 1
-    ''ok = WSFEX.AgregarCmpAsoc(tipo_cbte_asoc, punto_vta_asoc, cbte_nro_asoc)
-        
+    If tipo_cbte <> 19 Then
+        tipo_cbte_asoc = 19
+        punto_vta_asoc = 2
+        cbte_nro_asoc = 1
+        ok = WSFEX.AgregarCmpAsoc(tipo_cbte_asoc, punto_vta_asoc, cbte_nro_asoc)
+    End If
+    
     'id = "99000000000100" ' número propio de transacción
     ' obtengo el último ID y le adiciono 1 (advertencia: evitar overflow!)
     id = CStr(CCur(WSFEX.GetLastID()) + 1)
