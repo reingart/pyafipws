@@ -18,15 +18,15 @@ Sub Main()
     Path = CurDir() + "\"
     ' Certificado: certificado es el firmado por la AFIP
     ' ClavePrivada: la clave privada usada para crear el certificado
-    Certificado = "..\reingart.crt" ' certificado de prueba
-    ClavePrivada = "..\reingart.key" ' clave privada de prueba
+    Certificado = "..\..\reingart.crt" ' certificado de prueba
+    ClavePrivada = "..\..\reingart.key" ' clave privada de prueba
     
     ' Generar el mensaje firmado (CMS)
     cms = WSAA.SignTRA(tra, Path + Certificado, Path + ClavePrivada)
     Debug.Print cms
     
     ' Llamar al web service para autenticar:
-    ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") ' Homologación
+    ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") ' Homologación
 
     ' Imprimir el ticket de acceso, ToKen y Sign de autorización
     Debug.Print ta
@@ -46,7 +46,7 @@ Sub Main()
     WSFEX.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    ok = WSFEX.Conectar("http://servicios1.afip.gov.ar/WSFEX/service.asmx") ' homologación
+    ok = WSFEX.Conectar("http://wswhomo.afip.gov.ar/WSFEX/service.asmx") ' homologación
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSFEX.Dummy

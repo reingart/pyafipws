@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23b"
+__version__ = "1.23d"
 
 import os
 import sys
@@ -61,7 +61,7 @@ ENCABEZADO = [
     ('cuit_pais_cliente', 11, N), # 50000000016
     ('domicilio_cliente', 300, A), # 'Rua 76 km 34.5 Alagoas'
     ('id_impositivo', 50, A), # 'PJ54482221-l'    
-    ('imp_total', 15, I), 
+    ('imp_total', 15, I, 3), 
     ('moneda_id', 3, A),
     ('moneda_ctz', 10, I, 6), #10,6
     ('obs_comerciales', 1000, A),
@@ -83,8 +83,8 @@ DETALLE = [
     ('codigo', 30, A),
     ('qty', 12, I),
     ('umed', 2, N),
-    ('precio', 12, I),
-    ('imp_total', 14, I),
+    ('precio', 12, I, 3),
+    ('imp_total', 14, I, 3),
     ('ds', 4000, A),
     ]
 
@@ -233,9 +233,10 @@ def escribir_factura(dic, archivo):
     for it in dic['Items']:
         it['Item']['tipo_reg'] = 1
         archivo.write(escribir(it['Item'], DETALLE))
-    for it in dic['Permisos']:
-        it['Permiso']['tipo_reg'] = 2
-        archivo.write(escribir(it['Permiso'], PERMISO))
+    if 'Permisos' in dic:    
+        for it in dic['Permisos']:
+            it['Permiso']['tipo_reg'] = 2
+            archivo.write(escribir(it['Permiso'], PERMISO))
             
 def depurar_xml(client):
     fecha = time.strftime("%Y%m%d%H%M%S")

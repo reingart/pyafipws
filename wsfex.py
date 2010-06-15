@@ -61,7 +61,7 @@ def get_param_mon(client, token, sign, cuit):
 
     mons = [] # monedas
     for m in response.FEXGetPARAM_MONResult.FEXResultGet.ClsFEXResponse_Mon:
-        mon = {'id': str(m.Mon_Id), 'ds': unicode(m.Mon_Ds), 
+        mon = {'id': str(m.Mon_Id), 'ds': str(m.Mon_Ds).decode('utf8'), 
                'vig_desde': str(m.Mon_vig_desde), 
                'vig_hasta': str(m.Mon_vig_hasta)}
         mons.append(mon)
@@ -77,7 +77,7 @@ def get_param_tipo_cbte(client, token, sign, cuit):
 
     cbtes = [] # tipos de comprobantes
     for c in response.FEXGetPARAM_Tipo_CbteResult.FEXResultGet.ClsFEXResponse_Tipo_Cbte:
-        cbte = {'id': int(c.Cbte_Id), 'ds': unicode(c.Cbte_Ds), 
+        cbte = {'id': int(c.Cbte_Id), 'ds': str(c.Cbte_Ds).decode('utf8'), 
                 'vig_desde': str(c.Cbte_vig_desde), 
                 'vig_hasta': str(c.Cbte_vig_hasta)}
         cbtes.append(cbte)
@@ -93,7 +93,7 @@ def get_param_tipo_expo(client, token, sign, cuit):
 
     tipos = [] # tipos de exportación
     for t in response.FEXGetPARAM_Tipo_ExpoResult.FEXResultGet.ClsFEXResponse_Tex:
-        tipo = {'id': int(t.Tex_Id), 'ds': unicode(t.Tex_Ds), 
+        tipo = {'id': int(t.Tex_Id), 'ds': str(t.Tex_Ds).decode('utf8'), 
                 'vig_desde': str(t.Tex_vig_desde), 
                 'vig_hasta': str(t.Tex_vig_hasta)}
         tipos.append(tipo)
@@ -109,7 +109,7 @@ def get_param_idiomas(client, token, sign, cuit):
 
     tipos = [] # tipos de exportación
     for t in response.FEXGetPARAM_IdiomasResult.FEXResultGet.ClsFEXResponse_Idi:
-        tipo = {'id': int(t.Idi_Id), 'ds': unicode(t.Idi_Ds), 
+        tipo = {'id': int(t.Idi_Id), 'ds': str(t.Idi_Ds).decode('utf8'), 
                 'vig_desde': str(t.Idi_vig_desde), 
                 'vig_hasta': str(t.Idi_vig_hasta)}
         tipos.append(tipo)
@@ -125,7 +125,7 @@ def get_param_umed(client, token, sign, cuit):
 
     umeds = [] # unidades de medida
     for u in response.FEXGetPARAM_UMedResult.FEXResultGet.ClsFEXResponse_UMed:
-        umed = {'id': int(u.Umed_Id), 'ds': unicode(u.Umed_Ds), 
+        umed = {'id': int(u.Umed_Id), 'ds': str(u.Umed_Ds).decode('utf8'), 
                 'vig_desde': str(u.Umed_vig_desde), 
                 'vig_hasta': str(u.Umed_vig_hasta)}
         umeds.append(umed)
@@ -141,7 +141,7 @@ def get_param_dst_pais(client, token, sign, cuit):
 
     paises = [] 
     for p in response.FEXGetPARAM_DST_paisResult.FEXResultGet.ClsFEXResponse_DST_pais:
-        pais = {'codigo': int(p.DST_Codigo), 'ds': unicode(p.DST_Ds)}
+        pais = {'codigo': int(p.DST_Codigo), 'ds': str(p.DST_Ds).decode('utf8')}
         paises.append(pais)
     return paises
 
@@ -155,7 +155,7 @@ def get_param_dst_cuit(client, token, sign, cuit):
 
     paises = [] 
     for p in response.FEXGetPARAM_DST_CUITResult.FEXResultGet.ClsFEXResponse_DST_cuit:
-        pais = {'cuit': int(p.DST_CUIT), 'ds': unicode(p.DST_Ds)}
+        pais = {'cuit': int(p.DST_CUIT), 'ds': str(p.DST_Ds).decode('utf8')}
         paises.append(pais)
     return paises
 
@@ -182,7 +182,7 @@ def get_param_pto_venta(client, token, sign, cuit):
     pto_vtas = [] 
     try:
         for p in response.FEXGetPARAM_PtoVentaResult.FEXResultGet.ClsFEXResponse_PtoVenta:
-            pais = {'nro': int(p.Pve_Nro), 'bloqueado': unicode(p.Pve_Bloqueado),
+            pais = {'nro': int(p.Pve_Nro), 'bloqueado': str(p.Pve_Bloqueado).decode('utf8'),
                     'baja': str(p.Pve_FchBaja), }
             pto_vtas.append(pais)
     except RuntimeError:
@@ -199,7 +199,7 @@ def get_param_incoterms(client, token, sign, cuit):
 
     incoterms = []
     for p in response.FEXGetPARAM_IncotermsResult.FEXResultGet.ClsFEXResponse_Inc:
-        pais = {'id': str(p.Inc_Id), 'ds': unicode(p.Inc_Ds),
+        pais = {'id': str(p.Inc_Id), 'ds': str(p.Inc_Ds).decode('utf8'),
                 'desde': str(p.Inc_vig_desde), 
                 'hasta': str(p.Inc_vig_hasta), }
         incoterms.append(pais)
@@ -300,7 +300,7 @@ def get_cmp(client, token, sign, cuit, tipo_cbte, punto_vta, cbte_nro):
 
 class FacturaEX:
     "Factura Electrónica Exportación"
-    # valores por defecto del encabezado de la factura
+        # valores por defecto del encabezado de la factura
     tipo_cbte = 19; punto_vta = 1; cbte_nro = 0; fecha_cbte = None
     imp_total = 0.0
     tipo_expo = 1; permiso_existente = 1
@@ -463,40 +463,70 @@ def main():
     
     # Recuperar parámetros:
     if "--params" in sys.argv:
+        import codecs, locale
+        sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
+    
+        print "=== Monedas ==="
         monedas = get_param_mon(client, token, sign, CUIT)    
-        print dict([(m['id'],m['ds']) for m in monedas])
+        for m in monedas:
+            print "||%(id)s||%(ds)s||" % m
+        monedas = dict([(m['id'],m['ds']) for m in monedas])
         
+        print "=== Tipos Comprobante ==="
         cbtes = get_param_tipo_cbte(client, token, sign, CUIT)
-        print dict([(c['id'],c['ds']) for c in cbtes])
+        for c in cbtes:
+            print "||%(id)s||%(ds)s||" % c
+        comprobantes =  dict([(c['id'],c['ds']) for c in cbtes])
 
+        print u"=== Tipos Exportación ==="
         tipos = get_param_tipo_expo(client, token, sign, CUIT)
-        print dict([(t['id'],t['ds']) for t in tipos])
+        for t in tipos:
+            print "||%(id)s||%(ds)s||" % t
+        tipos_expo = dict([(t['id'],t['ds']) for t in tipos])
 
+        print "=== Idiomas ==="
         tipos = get_param_idiomas(client, token, sign, CUIT)
-        print dict([(t['id'],t['ds']) for t in tipos])
+        for t in tipos:
+            print "||%(id)s||%(ds)s||" % t
+        idiomas = dict([(t['id'],t['ds']) for t in tipos])
            
+        print "=== Unidades de medida ==="
         umedidas = get_param_umed(client, token, sign, CUIT)    
-        print dict([(u['id'],u['ds']) for u in umedidas])
+        for u in umedidas:
+            print "||%(id)s||%(ds)s||" % u
+        umeds = dict([(u['id'],u['ds']) for u in umedidas])
 
+        print "=== INCOTERMs ==="
+        incoterms = get_param_incoterms(client, token, sign, CUIT)
+        for i in incoterms:
+            print "||%(id)s||%(ds)s||" % i
+        incoterms = dict([(t['id'],t['ds']) for t in incoterms])
+
+        print "=== Pais Destino ==="
         pais = get_param_dst_pais(client, token, sign, CUIT)    
-        print dict([(p['codigo'],p['ds']) for p in pais])
+        for p in pais:
+            print "||%(codigo)s||%(ds)s||" % p
+        paises = dict([(p['codigo'],p['ds']) for p in pais])
 
+        print "=== CUIT Pais Destino ==="
         pais = get_param_dst_cuit(client, token, sign, CUIT)    
-        print dict([(p['cuit'],p['ds']) for p in pais])
+        for p in pais:
+            print "||%(cuit)s||%(ds)s||" % p
+        cuits = dict([(p['cuit'],p['ds']) for p in pais])
 
         ctz = get_param_ctz(client, token, sign, CUIT, 'DOL')
         print ctz
         
         print get_param_pto_venta(client, token, sign, CUIT)
-        incoterms = get_param_incoterms(client, token, sign, CUIT)
-        print dict([(t['id'],t['ds']) for t in incoterms])
-    
-    monedas = {'DOL': u'D\xf3lar Estadounidense', 'PES': u'Pesos Argentinos', '010': u'Pesos Mejicanos', '011': u'Pesos Uruguayos', '012': u'Real', '014': u'Coronas Danesas', '015': u'Coronas Noruegas', '016': u'Coronas Suecas', '019': u'Yens', '018': u'D\xf3lar Canadiense', '033': u'Peso Chileno', '056': u'Forint (Hungr\xeda)', '031': u'Peso Boliviano', '036': u'Sucre Ecuatoriano', '051': u'D\xf3lar de Hong Kong', '034': u'Rand Sudafricano', '053': u'D\xf3lar de Jamaica', '057': u'Baht (Tailandia)', '043': u'Balboas Paname\xf1as', '042': u'Peso Dominicano', '052': u'D\xf3lar de Singapur', '032': u'Peso Colombiano', '035': u'Nuevo Sol Peruano', '061': u'Zloty Polaco', '060': u'Euro', '063': u'Lempira Hondure\xf1a', '062': u'Rupia Hind\xfa', '064': u'Yuan (Rep. Pop. China)', '009': u'Franco Suizo', '025': u'Dinar Yugoslavo', '002': u'D\xf3lar Libre EEUU', '027': u'Dracma Griego', '026': u'D\xf3lar Australiano', '007': u'Florines Holandeses', '023': u'Bol\xedvar Venezolano', '047': u'Riyal Saudita', '046': u'Libra Egipcia', '045': u'Dirham Marroqu\xed', '044': u'C\xf3rdoba Nicarag\xfcense', '029': u'G\xfcaran\xed', '028': u'Flor\xedn (Antillas Holandesas)', '054': u'D\xf3lar de Taiwan', '040': u'Lei Rumano', '024': u'Corona Checa', '030': u'Shekel (Israel)', '021': u'Libra Esterlina', '055': u'Quetzal Guatemalteco', '059': u'Dinar Kuwaiti'}
-    comprobantes = {19: u'Facturas de Exportaci\xf3n\n', 20: u'Nota de D\xe9bito por Operaciones con el Exterior\n', 21: u'Nota de Cr\xe9dito por Operaciones con el Exterior\n'}
-    tipos_expo = {1: u'Exportaci\xf3n definitiva de Bienes', 2: u'Servicios', 4: u'Otros'}
-    idiomas = {1: u'Espa\xf1ol', 2: u'Ingl\xe9s', 3: u'Portugu\xe9s'}
-    umeds = {0: u' ', 1: u'kilogramos', 2: u'metros', 3: u'metros cuadrados', 4: u'metros c\xfabicos', 5: u'litros', 6: u'1000 kWh', 7: u'unidades', 8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 14: u'gramos', 15: u'milimetros', 16: u'mm c\xfabicos', 17: u'kil\xf3metros', 18: u'hectolitros', 20: u'cent\xedmetros', 25: u'jgo. pqt. mazo naipes', 27: u'cm c\xfabicos', 29: u'toneladas', 30: u'dam c\xfabicos', 31: u'hm c\xfabicos', 32: u'km c\xfabicos', 33: u'microgramos', 34: u'nanogramos', 35: u'picogramos', 41: u'miligramos', 47: u'mililitros', 48: u'curie', 49: u'milicurie', 50: u'microcurie', 51: u'uiacthor', 52: u'muiacthor', 53: u'kg base', 54: u'gruesa', 61: u'kg bruto', 62: u'uiactant', 63: u'muiactant', 64: u'uiactig', 65: u'muiactig', 66: u'kg activo', 67: u'gramo activo', 68: u'gramo base', 96: u'packs', 97: u'hormas', 98: u'bonificaci\xf3n', 99: u'otras unidades'}
-    incoterms = {'DAF': u'DAF', 'DDP': u'DDP', 'CIF': u'CIF', 'FCA': u'FCA', 'FAS': u'FAS', 'DES': u'DES', 'CPT': u'CPT', 'EXW': u'EXW', 'CIP': u'CIP', 'DDU': u'DDU', 'FOB': u'FOB', 'DEQ': u'DEQ', 'CFR': u'CFR'}
+        
+
+    else:
+        monedas = {'DOL': u'D\xf3lar Estadounidense', 'PES': u'Pesos Argentinos', '010': u'Pesos Mejicanos', '011': u'Pesos Uruguayos', '012': u'Real', '014': u'Coronas Danesas', '015': u'Coronas Noruegas', '016': u'Coronas Suecas', '019': u'Yens', '018': u'D\xf3lar Canadiense', '033': u'Peso Chileno', '056': u'Forint (Hungr\xeda)', '031': u'Peso Boliviano', '036': u'Sucre Ecuatoriano', '051': u'D\xf3lar de Hong Kong', '034': u'Rand Sudafricano', '053': u'D\xf3lar de Jamaica', '057': u'Baht (Tailandia)', '043': u'Balboas Paname\xf1as', '042': u'Peso Dominicano', '052': u'D\xf3lar de Singapur', '032': u'Peso Colombiano', '035': u'Nuevo Sol Peruano', '061': u'Zloty Polaco', '060': u'Euro', '063': u'Lempira Hondure\xf1a', '062': u'Rupia Hind\xfa', '064': u'Yuan (Rep. Pop. China)', '009': u'Franco Suizo', '025': u'Dinar Yugoslavo', '002': u'D\xf3lar Libre EEUU', '027': u'Dracma Griego', '026': u'D\xf3lar Australiano', '007': u'Florines Holandeses', '023': u'Bol\xedvar Venezolano', '047': u'Riyal Saudita', '046': u'Libra Egipcia', '045': u'Dirham Marroqu\xed', '044': u'C\xf3rdoba Nicarag\xfcense', '029': u'G\xfcaran\xed', '028': u'Flor\xedn (Antillas Holandesas)', '054': u'D\xf3lar de Taiwan', '040': u'Lei Rumano', '024': u'Corona Checa', '030': u'Shekel (Israel)', '021': u'Libra Esterlina', '055': u'Quetzal Guatemalteco', '059': u'Dinar Kuwaiti'}
+        comprobantes = {19: u'Facturas de Exportaci\xf3n\n', 20: u'Nota de D\xe9bito por Operaciones con el Exterior\n', 21: u'Nota de Cr\xe9dito por Operaciones con el Exterior\n'}
+        tipos_expo = {1: u'Exportaci\xf3n definitiva de Bienes', 2: u'Servicios', 4: u'Otros'}
+        idiomas = {1: u'Espa\xf1ol', 2: u'Ingl\xe9s', 3: u'Portugu\xe9s'}
+        umeds = {0: u' ', 1: u'kilogramos', 2: u'metros', 3: u'metros cuadrados', 4: u'metros c\xfabicos', 5: u'litros', 6: u'1000 kWh', 7: u'unidades', 8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 14: u'gramos', 15: u'milimetros', 16: u'mm c\xfabicos', 17: u'kil\xf3metros', 18: u'hectolitros', 20: u'cent\xedmetros', 25: u'jgo. pqt. mazo naipes', 27: u'cm c\xfabicos', 29: u'toneladas', 30: u'dam c\xfabicos', 31: u'hm c\xfabicos', 32: u'km c\xfabicos', 33: u'microgramos', 34: u'nanogramos', 35: u'picogramos', 41: u'miligramos', 47: u'mililitros', 48: u'curie', 49: u'milicurie', 50: u'microcurie', 51: u'uiacthor', 52: u'muiacthor', 53: u'kg base', 54: u'gruesa', 61: u'kg bruto', 62: u'uiactant', 63: u'muiactant', 64: u'uiactig', 65: u'muiactig', 66: u'kg activo', 67: u'gramo activo', 68: u'gramo base', 96: u'packs', 97: u'hormas', 98: u'bonificaci\xf3n', 99: u'otras unidades'}
+        incoterms = {'DAF': u'DAF', 'DDP': u'DDP', 'CIF': u'CIF', 'FCA': u'FCA', 'FAS': u'FAS', 'DES': u'DES', 'CPT': u'CPT', 'EXW': u'EXW', 'CIP': u'CIP', 'DDU': u'DDU', 'FOB': u'FOB', 'DEQ': u'DEQ', 'CFR': u'CFR'}
 
     # recupero ultimo comprobante y id
     tipo_cbte = 19
