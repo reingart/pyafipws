@@ -68,14 +68,14 @@ class SimpleXMLElement(object):
                 elements = self.__elements[0].getElementsByTagName(tag)
             if not elements:
                 if DEBUG: print self.__elements[0].toxml()
-                raise IndexError("Sin elementos")
+                raise AttributeError("Sin elementos")
             return SimpleXMLElement(
                 elements=elements,
                 document=self.__document,
                 namespace=self.__ns,
                 prefix=self.__prefix)
-        except IndexError, e:
-            raise RuntimeError("Tag not found: %s (%s)" % (tag, str(e)))
+        except AttributeError, e:
+            raise AttributeError("Tag not found: %s (%s)" % (tag, str(e)))
     def __iter__(self):
         "Iterate over xml tags"
         try:
@@ -86,7 +86,7 @@ class SimpleXMLElement(object):
                     namespace=self.__ns,
                     prefix=self.__prefix)
         except:
-            raise RuntimeError("Tag not found: %s" % tag)        
+            raise
     def __getitem__(self,item):
         "Return xml attribute"
         return getattr(self.__element, item)
