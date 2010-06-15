@@ -198,7 +198,7 @@ def get_last_cmp(client, token, sign, cuit, tipo_cbte, punto_vta):
     cbte_nro = int(result.Cbte_nro)
     try:
         cbte_fecha = str(result.Cbte_fecha)
-    except RuntimeError:
+    except AttributeError:
         cbte_fecha = ""
         
     events = []
@@ -231,7 +231,7 @@ def dummy(client):
         appserver = str(result.AppServer)
         dbserver = str(result.DbServer)
         authserver = str(result.AuthServer)
-    except (RuntimeError, IndexError), e:
+    except (RuntimeError, IndexError, AttributeError), e:
         pass
     return {'appserver': appserver,
             'dbserver': dbserver,

@@ -51,7 +51,7 @@ def dummy(client):
         appserver = str(result.appserver)
         dbserver = str(result.dbserver)
         authserver = str(result.authserver)
-    except (RuntimeError, IndexError), e:
+    except (RuntimeError, IndexError, AttributeError), e:
         pass
     return {'appserver': appserver,
             'dbserver': dbserver,
