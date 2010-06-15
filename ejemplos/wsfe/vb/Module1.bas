@@ -18,11 +18,9 @@ Sub Main()
     Path = CurDir() + "\"
     ' Certificado: certificado es el firmado por la AFIP
     ' ClavePrivada: la clave privada usada para crear el certificado
-    Certificado = "..\..\reingart.crt" ' certificado de prueba
-    ClavePrivada = "..\..\reingart.key" ' clave privada de prueba
+    Certificado = "..\..\..\reingart.crt" ' certificado de prueba
+    ClavePrivada = "..\..\..\reingart.key" ' clave privada de prueba
     
-    Certificado = "ROAL.CRT" ' certificado de prueba
-    ClavePrivada = "ROAL.KEY" ' clave privada de prueba
     
     ' Generar el mensaje firmado (CMS)
     cms = WSAA.SignTRA(tra, Path + Certificado, Path + ClavePrivada)
@@ -48,7 +46,6 @@ Sub Main()
     
     ' CUIT del emisor (debe estar registrado en la AFIP)
     WSFE.cuit = "20267565393"
-    WSFE.cuit = "30650187012"
     
     ' Conectar al Servicio Web de Facturación
     ok = WSFE.Conectar("https://wswhomo.afip.gov.ar/wsfe/service.asmx") ' homologación
@@ -70,7 +67,6 @@ Sub Main()
     tipo_cbte = 1: punto_vta = 1
     LastCBTE = WSFE.RecuperaLastCMP(punto_vta, tipo_cbte)
     
-    End
     ' Establezco los valores de la factura o lote a autorizar:
     Fecha = Format(Date, "yyyymmdd")
     id = LastId + 1: presta_serv = 1
