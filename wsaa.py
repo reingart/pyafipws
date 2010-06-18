@@ -101,20 +101,23 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
         #print client.xml_request
         #print client.xml_response
         raise
+
+
 if __name__=="__main__":
 
     # Leer argumentos desde la linea de comando (si no viene tomar default)
     cert = len(sys.argv)>1 and sys.argv[1] or CERT
     privatekey = len(sys.argv)>2 and sys.argv[2] or PRIVATEKEY
     url = len(sys.argv)>3 and sys.argv[3] or WSAAURL
+    service = len(sys.argv)>4 and sys.argv[4] or "wsfe"
 
-    print "Usando CERT=%s PRIVATEKEY=%s URL=%s" % (cert,privatekey,url)
+    print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s" % (cert,privatekey,url,service)
 
     for filename in (cert,privatekey):
         if not os.access(filename,os.R_OK):
             sys.exit("Imposible abrir %s\n" % filename)
     print "Creando TRA..."
-    tra = create_tra()
+    tra = create_tra(service)
     #open("TRA.xml","w").write(tra)
     print "Frimando TRA..."
     cms = sign_tra(tra,cert,privatekey)
@@ -122,7 +125,7 @@ if __name__=="__main__":
     #cms = open("TRA.tmp").read()
     print "Llamando WSAA..."
     try:
-        ta = call_wsaa(cms,url) #parse_proxy("localhost:81")
+        ta = call_wsaa(cms,url, trace='trace' in sys.argv) #parse_proxy("localhost:81")
     except SoapFault,e:
         sys.exit("Falla SOAP: %s\n%s\n" % (e.faultcode,e.faultstring))
     try:

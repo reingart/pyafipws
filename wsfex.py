@@ -17,7 +17,7 @@ electrónico del web service WSFEX de AFIP (Factura Electrónica Exportación)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01"
+__version__ = "1.23e"
 
 import sys
 from php import date, SimpleXMLElement, SoapClient
@@ -447,7 +447,7 @@ class CmpAsocFEX:
         "Convierte el objeto permiso en un diccionario serializable por xml"
         return {
            'Cmp_asoc': {
-             'Cbte_tipo': self.tipo,
+             'CBte_tipo': self.tipo,
              'Cbte_punto_vta': self.punto_vta,
              'Cbte_nro': self.nro,}
            }
