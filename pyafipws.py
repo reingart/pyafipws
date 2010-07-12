@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24a"
+__version__ = "1.24b"
 
 import sys
 import wsaa, wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -25,7 +25,7 @@ from win32com.server.exception import COMException
 import winerror
 import socks
 
-HOMO = True
+HOMO = False
 
 debugging = 1
 if debugging:
@@ -56,7 +56,7 @@ class WSAA:
     
     def __init__(self):
         self.Token = self.Sign = None
-        self.Version = __version__
+        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         
     def CreateTRA(self, service="wsfe", ttl=2400):
         "Crear un Ticket de Requerimiento de Acceso (TRA)"
@@ -100,8 +100,8 @@ class WSFE:
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
         self.client = None
-        self.Version = __version__
-
+        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+        
     def Conectar(self, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = wsfe.WSFEURL
@@ -229,7 +229,7 @@ class WSBFE:
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
         self.client = None
-        self.Version = __version__
+        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.FechaCbte = ImpNeto = ImptoLiq = ImpTotal = None
 
@@ -451,7 +451,7 @@ class WSFEX:
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
         self.client = None
-        self.Version = __version__
+        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.FechaCbte = ImpTotal = None
 
@@ -706,7 +706,7 @@ class WSCTG:
         self.XmlResponse = ''
         self.CodError = self.DescError = ''
         self.client = None
-        self.Version = __version__
+        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.NumeroCTG = ''
         self.CodigoTransaccion = self.Observaciones = ''
         
@@ -813,7 +813,7 @@ class wDigDepFiel:
         self.XmlResponse = ''
         self.CodError = self.DescError = ''
         self.client = None
-        self.Version = __version__
+        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
     def Conectar(self, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
