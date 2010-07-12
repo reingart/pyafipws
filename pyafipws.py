@@ -47,6 +47,7 @@ def raisePythonException(e):
     raise COMException(scode = vbObjectError, desc=''.join(ex),source=u"Python")
 
 class WSAA:
+    "Interfase para el WebService de Autenticación y Autorización"
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA']
     _public_attrs_ = ['Token', 'Sign', 'Version', 'XmlResponse']
     _readonly_attrs_ = _public_attrs_
@@ -58,12 +59,15 @@ class WSAA:
         self.Version = __version__
         
     def CreateTRA(self, service="wsfe", ttl=2400):
+        "Crear un Ticket de Requerimiento de Acceso (TRA)"
         return wsaa.create_tra(service,ttl)
 
     def SignTRA(self, tra, cert, privatekey):
+        "Firmar el TRA y devolver CMS"
         return wsaa.sign_tra(str(tra),str(cert),str(privatekey))
 
     def CallWSAA(self, cms, url="", proxy=None):
+        "Obtener ticket de autorización (TA)"
         try:
             if HOMO or not url: url = wsaa.WSAAURL
             proxy_dict = parse_proxy(proxy)
@@ -78,6 +82,7 @@ class WSAA:
             raisePythonException(e)
 
 class WSFE:
+    "Interfase para el WebService de Factura Electrónica"
     _public_methods_ = ['RecuperarQty', 'UltNro', 'RecuperaLastCMP', 'Aut', 'Dummy', 'Conectar' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -98,6 +103,7 @@ class WSFE:
         self.Version = __version__
 
     def Conectar(self, url="", proxy=""):
+        "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = wsfe.WSFEURL
         proxy_dict = parse_proxy(proxy)
         try:
@@ -112,6 +118,7 @@ class WSFE:
             raisePythonException(e)
 
     def RecuperarQty(self):
+        "Recuperar cantidad máxima de registros de detalle"
         try:
             results = self.client.FERecuperaQTYRequest( argAuth= {
                 "Token": self.Token, "Sign": self.Sign, "cuit":long(self.Cuit)})
@@ -124,6 +131,7 @@ class WSFE:
             raise RuntimeError(''.join(ex))
 
     def UltNro(self):
+        "Recuperar el último número de transacción (id)"
         results = self.client.FEUltNroRequest(argAuth= {
             'Token': self.Token, 'Sign' : self.Sign, 'cuit' : long(self.Cuit)})
         checkError(results.FEUltNroRequestResult)
@@ -132,6 +140,7 @@ class WSFE:
         return str(nro)
 
     def RecuperaLastCMP(self, ptovta, tipocbte):
+        "Recuperar último número de comprobante autorizado"
         results = self.client.FERecuperaLastCMPRequest(argAuth={
             'Token': self.Token, 'Sign' : self.Sign, 'cuit': long(self.Cuit)},
             argTCMP={'PtoVta': ptovta, 'TipoCbte': tipocbte } )
@@ -144,6 +153,7 @@ class WSFE:
             cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
             impto_liq, impto_liq_rni, imp_op_ex, fecha_cbte, fecha_venc_pago, 
             fecha_serv_desde="", fecha_serv_hasta=""):
+        "Autorizar la factura y devuelve CAE"
         try:
             detalle = { 'tipo_doc': tipo_doc, 'nro_doc':  nro_doc,
                         'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
@@ -189,6 +199,7 @@ class WSFE:
             raisePythonException(e)
         
     def Dummy(self):
+        "Obtener el estado de los servidores de la AFIP"
         results = self.client.FEDummy()
         self.AppServerStatus = str(results.appserver)
         self.DbServerStatus = str(results.dbserver)
@@ -222,6 +233,7 @@ class WSBFE:
         self.FechaCbte = ImpNeto = ImptoLiq = ImpTotal = None
 
     def Conectar(self, url="", proxy=""):
+        "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = wsbfe.WSBFEURL
         proxy_dict = parse_proxy(proxy)
         try:
@@ -274,7 +286,7 @@ class WSBFE:
         self.factura.items.append(item)
 
     def Authorize(self, id):
-        "Autoriza la factura en memoria"
+        "Autoriza la factura en memoria (interna)"
         try:
             # llamo al web service
             auth, events = wsbfe.authorize(self.client, 
@@ -306,6 +318,7 @@ class WSBFE:
             self.XmlResponse = self.client.xml_response
         
     def Dummy(self):
+        "Obtener el estado de los servidores de la AFIP"
         results = wsbfe.dummy(self.client)
         self.AppServerStatus = str(results['appserver'])
         self.DbServerStatus = str(results['dbserver'])
@@ -348,6 +361,7 @@ class WSBFE:
         return self.factura
 
     def GetLastCMP(self, tipo_cbte, punto_vta):
+        "Recuperar último número de comprobante emitido"
         try:
             cbte_nro, cbte_fecha, events = wsbfe.get_last_cmp(self.client, 
                                     self.Token, self.Sign, self.Cuit, 
@@ -366,6 +380,7 @@ class WSBFE:
             self.XmlResponse = self.client.xml_response
 
     def GetLastID(self):
+        "Recuperar último número de transacción (ID)"
         try:
             id, events = wsbfe.get_last_id(self.client, 
                                     self.Token, self.Sign, self.Cuit)
@@ -415,6 +430,7 @@ class WSFEX:
         self.FechaCbte = ImpTotal = None
 
     def Conectar(self, url="", proxy=""):
+        "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = wsfex.WSFEXURL
         proxy_dict = parse_proxy(proxy)
         try:
@@ -508,12 +524,14 @@ class WSFEX:
             self.XmlResponse = self.client.xml_response
         
     def Dummy(self):
+        "Obtener el estado de los servidores de la AFIP"
         results = wsfex.dummy(self.client)
         self.AppServerStatus = str(results['appserver'])
         self.DbServerStatus = str(results['dbserver'])
         self.AuthServerStatus = str(results['authserver'])
 
     def GetCMP(self, tipo_cbte, punto_vta, cbte_nro):
+        "Recuperar los datos completos de un comprobante ya autorizado"
         try:
             cbt, events = wsfex.get_cmp(self.client, 
                                     self.Token, self.Sign, self.Cuit, 
@@ -549,6 +567,7 @@ class WSFEX:
         return self.factura
 
     def GetLastCMP(self, tipo_cbte, punto_vta):
+        "Recuperar último número de comprobante emitido"
         try:
             cbte_nro, cbte_fecha, events = wsfex.get_last_cmp(self.client, 
                                     self.Token, self.Sign, self.Cuit, 
@@ -567,6 +586,7 @@ class WSFEX:
             self.XmlResponse = self.client.xml_response
 
     def GetLastID(self):
+        "Recuperar último número de transacción (ID)"
         try:
             id, events = wsfex.get_last_id(self.client, 
                                     self.Token, self.Sign, self.Cuit)
@@ -584,38 +604,47 @@ class WSFEX:
             self.XmlResponse = self.client.xml_response
 
     def GetParamMon(self):
+        "Recuperar lista de valores referenciales de codigos de Moneda"
         params = wsfex.get_param_mon(self.client, self.Token, self.Sign, self.Cuit)    
         return ['%s: %s' % (p['id'],p['ds']) for p in params]
 
     def GetParamTipoCbte(self):
-        params = wsfex.get_param_tipo_cbte(self.client, self.Token, self.Sign, self.Cuit)    
+        "Recuperar lista de valores referenciales de códigos de Tipos de comprobante"
+        params = wsfex.get_param_tipo_cbte(self.client, self.Token, self.Sign, self.Cuit)
         return ['%s: %s' % (p['id'],p['ds']) for p in params]
 
     def GetParamTipoExpo(self):
+        "Recuperar lista de valores referenciales de códigos de Tipo de exportación"
         params = wsfex.get_param_tipo_expo(self.client, self.Token, self.Sign, self.Cuit)    
         return ['%s: %s' % (p['id'],p['ds']) for p in params]
 
     def GetParamIdiomas(self):
+        "Recuperar lista de valores referenciales de códigos de Idiomas"
         params = wsfex.get_param_idiomas(self.client, self.Token, self.Sign, self.Cuit)    
         return ['%s: %s' % (p['id'],p['ds']) for p in params]
 
     def GetParamUMed(self):
+        "Recuperar lista de valores referenciales de Unidades de Medidas"
         params = wsfex.get_param_umed(self.client, self.Token, self.Sign, self.Cuit)    
         return ['%s: %s' % (p['id'],p['ds']) for p in params]
 
     def GetParamIncoterms(self):
-        params = wsfex.get_param_incoterms(self.client, self.Token, self.Sign, self.Cuit)    
+        "Recuperar lista de valores referenciales de Incoterms"
+        params = wsfex.get_param_incoterms(self.client, self.Token, self.Sign, self.Cuit)
         return ['%s: %s' % (p['id'],p['ds']) for p in params]
 
     def GetParamDstPais(self):
+        "Recuperar lista de valores referenciales de códigos de Países"
         params = wsfex.get_param_dst_pais(self.client, self.Token, self.Sign, self.Cuit)    
         return ['%s: %s' % (p['codigo'],p['ds']) for p in params]
 
     def GetParamDstCUIT(self):
+        "Recuperar lista de valores referenciales de CUIT de Países"
         params = wsfex.get_param_dst_cuit(self.client, self.Token, self.Sign, self.Cuit)    
         return ['%s: %s' % (p['cuit'],p['ds']) for p in params]
 
     def GetParamCtz(self, moneda_id='DOL'):
+        "Recuperar cotización de moneda"
         try:
             param = wsfex.get_param_ctz(self.client, self.Token, self.Sign, self.Cuit, moneda_id)
             return "%(fecha)s: %(ctz)s" % param
@@ -635,6 +664,7 @@ class WSFEX:
 
 
 class WSCTG:
+    "Interfase para el WebService de Código de Trazabilidad de Granos"    
     _public_methods_ = ['Conectar','Dummy','SolicitarCTG','ConfirmarCTG']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -656,6 +686,7 @@ class WSCTG:
         
     
     def Conectar(self, url="", proxy=""):
+        "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = wsctg.WSCTGURL
         proxy_dict = parse_proxy(proxy)
         try:
@@ -670,6 +701,7 @@ class WSCTG:
             raisePythonException(e)
 
     def Dummy(self):
+        "Obtener el estado de los servidores de la AFIP"
         try:
             results = wsctg.dummy(self.client)
             self.AppServerStatus = str(results['appserver'])
@@ -687,9 +719,10 @@ class WSCTG:
             self.XmlResponse = self.client.xml_response
 
     def SolicitarCTG(self, numero_carta_de_porte, codigo_especie,
-        cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen, 
+        cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen,
         codigo_localidad_destino, codigo_cosecha, peso_neto_carga, cant_horas, 
         patente_vehiculo, cuit_transportista):
+        "Obtener Número de CTG"
         try:
             ret = wsctg.solicitar_ctg(self.client, self.Token, self.Sign, self.Cuit, 
                     numeroCartaDePorte=numero_carta_de_porte, codigoEspecie=codigo_especie,
@@ -716,6 +749,7 @@ class WSCTG:
             self.XmlResponse = self.client.xml_response
 
     def ConfirmarCTG(self, numero_carta_de_porte, numero_CTG, cuit_transportista, peso_neto_carga):
+        "Confirma número de CTG"
         try:
             ret = wsctg.confirmar_ctg(self.client, self.Token, self.Sign, self.Cuit, 
                         numeroCartaDePorte=numero_carta_de_porte, 
@@ -737,6 +771,7 @@ class WSCTG:
             
             
 class wDigDepFiel:
+    "Interfase para el WebService de Depositario Fiel"
     _public_methods_ = ['Conectar', 'Dummy', 'AvisoDigit', 'AvisoRecepAcept', 'IniciarAviso', 'AgregarFamilia']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -755,6 +790,7 @@ class wDigDepFiel:
         self.Version = __version__
     
     def Conectar(self, url="", proxy=""):
+        "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = wdigdepfiel.WSDDFURL
         proxy_dict = parse_proxy(proxy)
         try:
@@ -769,6 +805,7 @@ class wDigDepFiel:
             raisePythonException(e)
 
     def Dummy(self):
+        "Obtener el estado de los servidores de la AFIP"
         results = wdigdepfiel.dummy(self.client)
         self.AppServerStatus = str(results['appserver'])
         self.DbServerStatus = str(results['dbserver'])
@@ -777,6 +814,7 @@ class wDigDepFiel:
     def AvisoRecepAcept(self, tipo_agente, rol, 
                         nro_legajo, cuit_declarante, cuit_psad, cuit_ie,
                         codigo, fecha_hora_acept, ticket):
+        "Aviso de Recepción y Aceptación"
         try:
             ret = wdigdepfiel.aviso_recep_acept(
                     self.client, self.Token, self.Sign, self.Cuit, tipo_agente, rol,
@@ -798,14 +836,17 @@ class wDigDepFiel:
             self.XmlResponse = self.client.xml_response
 
     def IniciarAviso(self):
+        "Inicializar familias para Aviso de Digitalización"
         self.familias = []
 
     def AgregarFamilia(self, codigo, cantidad):
+        "Agregar famila para Aviso de Digitalización"
         self.familias.append({'Familia': {'codigo': codigo, 'cantidad': cantidad}})
 
     def AvisoDigit(self, tipo_agente, rol,
                          nro_legajo, cuit_declarante, cuit_psad, cuit_ie, cuit_ata,
                          codigo, url, ticket, hashing, cantidad_total):
+        "Aviso de Digitalización"
         try:
             familias = self.familias
             ret = wdigdepfiel.aviso_digit(
