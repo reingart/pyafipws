@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23e"
+__version__ = "1.23f"
 
 import os
 import sys
@@ -306,8 +306,9 @@ if __name__ == "__main__":
                 print "== %s ==" % msg
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
-                    print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s" % (
-                        clave, comienzo, longitud, tipo)
+                    dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                    print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                        clave, comienzo, longitud, tipo, dec)
                     comienzo += longitud
             sys.exit(0)
 
