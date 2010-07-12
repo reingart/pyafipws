@@ -550,7 +550,7 @@ class WSFEX:
                                     self.Token, self.Sign, self.Cuit, 
                                     tipo_cbte, punto_vta)
             return cbte_nro
-        except wsbfe.BFEError, e:
+        except wsfex.FEXError, e:
             raise COMException(scode = vbObjectError + int(e.code),
                                desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
@@ -567,7 +567,7 @@ class WSFEX:
             id, events = wsfex.get_last_id(self.client, 
                                     self.Token, self.Sign, self.Cuit)
             return id
-        except wsbfe.BFEError, e:
+        except wsfex.FEXError, e:
             raise COMException(scode = vbObjectError + int(e.code),
                                desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
