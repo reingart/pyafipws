@@ -41,7 +41,7 @@ def get_param_mon(client, token, sign, cuit):
     response = client.BFEGetPARAM_MON(
         auth={"Token": token, "Sign": sign, "Cuit":long(cuit)})
     
-    if int(response.BFEGetPARAM_MONResult.BFEErr.errcode) != 0:
+    if int(response.BFEGetPARAM_MONResult.BFEErr.ErrCode) != 0:
         raise BFEError(response.BFEGetPARAM_MONResult.BFEErr)
 
     mons = [] # monedas
@@ -344,93 +344,122 @@ class ItemBF:
     
 def main():
     "Función principal de pruebas (obtener CAE)"
+    import os, time
+    import sys, codecs, locale
+    if sys.stdout.encoding is None:
+        sys.stdout = codecs.getwriter("latin1")(sys.stdout,"replace");
+
+    url = len(sys.argv)>2 and sys.argv[2].startswith("http") and sys.argv[2] or WSBFEURL
 
     # cliente soap del web service
-    client = SoapClient(WSBFEURL, 
+    client = SoapClient(url, 
         action = SOAP_ACTION, 
         namespace = SOAP_NS,
-        trace = True)
+        trace = "--trace" in sys.argv)
 
     # obteniendo el TA
-    import wsaa
-    tra = wsaa.create_tra(service="wsbfe")
-    print "tra:", tra
-    cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
-    print "call"
-    ta_string = wsaa.call_wsaa(cms)
-    open("ta.xml","w").write(ta_string)
-    ta_string=open("ta.xml").read()
-    print ta_string
+    TA = "TA.xml"
+    if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
+        import wsaa
+        tra = wsaa.create_tra(service="wsbfe")
+        cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
+        ta_string = wsaa.call_wsaa(cms)
+        open("TA.xml","w").write(ta_string)
+    ta_string=open(TA).read()
     ta = SimpleXMLElement(ta_string)
     token = str(ta.credentials.token)
     sign = str(ta.credentials.sign)
     # fin TA
 
-    CUIT = "20267565393"
+    CUIT = len(sys.argv)>1 and sys.argv[1] or "20267565393"
 
-    print dummy(client)    
+    if "--dummy" in sys.argv:
+        print dummy(client)
     
     # Recuperar parámetros:
-    #monedas = get_param_mon(client, token, sign, CUIT)    
-    #print dict([(m['id'],m['ds']) for m in monedas])
+    if "--params" in sys.argv:
     
-    ##productos = get_param_ncm(client, token, sign, CUIT)
-    ##print dict([(m['codigo'],m['ds']) for m in productos])
-    
-    ##cbtes = get_param_tipo_cbte(client, token, sign, CUIT)
-    ##print dict([(c['id'],c['ds']) for c in cbtes])
-    
-    ##ivas = get_param_tipo_iva(client, token, sign, CUIT)
-    ##print dict([(i['id'],i['ds']) for i in ivas])
+        print "=== Monedas ==="
+        monedas = get_param_mon(client, token, sign, CUIT)    
+        for m in monedas:
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % m
+        monedas = dict([(m['id'],m['ds']) for m in monedas])
+        
+        print "=== NCM ==="
+        productos = get_param_ncm(client, token, sign, CUIT)
+        for p in productos:
+            print "||%(codigo)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % p
+        productos = dict([(m['codigo'],m['ds']) for m in productos])
+        
+        print "=== Tipos de Comprobante ==="
+        cbtes = get_param_tipo_cbte(client, token, sign, CUIT)
+        for c in cbtes:
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % c
+        cbtes = dict([(c['id'],c['ds']) for c in cbtes])
+        
+        print "=== Tipos de IVA ==="
+        ivas = get_param_tipo_iva(client, token, sign, CUIT)
+        for i in ivas:
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % i
+        ivas = dict([(i['id'],i['ds']) for i in ivas])
 
-    ##umedidas = get_param_umed(client, token, sign, CUIT)    
-    ##print dict([(u['id'],u['ds']) for u in umedidas])
+        print "=== Unidades de Medida ==="
+        umedidas = get_param_umed(client, token, sign, CUIT)    
+        for u in umedidas:
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u
+        umeds = dict([(u['id'],u['ds']) for u in umedidas])
 
-    ##zonas = get_param_zonas(client, token, sign, CUIT)    
-    ##print dict([(z['id'],z['ds']) for z in zonas])
+        ##zonas = get_param_zonas(client, token, sign, CUIT)    
+        ##print dict([(z['id'],z['ds']) for z in zonas])
 
-    monedas = {'DOL': u'D\xf3lar Estadounidense', 'PES': u'Pesos Argentinos', '010': u'Pesos Mejicanos', '011': u'Pesos Uruguayos', '012': u'Real', '014': u'Coronas Danesas', '015': u'Coronas Noruegas', '016': u'Coronas Suecas', '019': u'Yens', '018': u'D\xf3lar Canadiense', '033': u'Peso Chileno', '056': u'Forint (Hungr\xeda)', '031': u'Peso Boliviano', '036': u'Sucre Ecuatoriano', '051': u'D\xf3lar de Hong Kong', '034': u'Rand Sudafricano', '053': u'D\xf3lar de Jamaica', '057': u'Baht (Tailandia)', '043': u'Balboas Paname\xf1as', '042': u'Peso Dominicano', '052': u'D\xf3lar de Singapur', '032': u'Peso Colombiano', '035': u'Nuevo Sol Peruano', '061': u'Zloty Polaco', '060': u'Euro', '063': u'Lempira Hondure\xf1a', '062': u'Rupia Hind\xfa', '064': u'Yuan (Rep. Pop. China)', '025': u'Dinar Yugoslavo', '002': u'D\xf3lar Libre EEUU', '027': u'Dracma Griego', '026': u'D\xf3lar Australiano', '007': u'Florines Holandeses', '023': u'Bol\xedvar Venezolano', '047': u'Riyal Saudita', '046': u'Libra Egipcia', '045': u'Dirham Marroqu\xed', '044': u'C\xf3rdoba Nicarag\xfcense', '029': u'G\xfcaran\xed', '028': u'Flor\xedn (Antillas Holandesas)', '054': u'D\xf3lar de Taiwan', '040': u'Lei Rumano', '024': u'Corona Checa', '030': u'Shekel (Israel)', '021': u'Libra Esterlina', '055': u'Quetzal Guatemalteco', '059': u'Dinar Kuwaiti'}
-    comprobantes = {1: u'Factura A', 2: u'Nota de D\xe9bito A', 3: u'Nota de Cr\xe9dito A', 4: u'Recibo A', 6: u'Factura B', 7: u'Nota de D\xe9bito B', 8: u'Nota de Cr\xe9dito B', 9: u'Recibo B', 11: u'Factura C', 12: u'Nota de D\xe9bito C', 13: u'Nota de Cr\xe9dito C', 15: u'Recibo C', 51: u'Factura M', 52: u'Nota de D\xe9bito M', 53: u'Nota de Cr\xe9dito M', 54: u'Recibo M'}
-    ivas = {1: u'No gravado', 2: u'Exento', 3: u'0%', 4: u'10.5%', 5: u'21%', 6: u'27%'}
-    umeds = {1: u'kilogramos', 2: u'metros', 3: u'metros cuadrados', 4: u'metros c\xfabicos', 5: u'litros', 6: u'1000 kWh', 7: u'unidades', 8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 14: u'gramos', 15: u'milimetros', 16: u'mm c\xfabicos', 17: u'kil\xf3metros', 18: u'hectolitros', 20: u'cent\xedmetros', 25: u'jgo. pqt. mazo naipes', 27: u'cm c\xfabicos', 29: u'toneladas', 30: u'dam c\xfabicos', 31: u'hm c\xfabicos', 32: u'km c\xfabicos', 33: u'microgramos', 34: u'nanogramos', 35: u'picogramos', 41: u'miligramos', 47: u'mililitros', 48: u'curie', 49: u'milicurie', 50: u'microcurie', 51: u'uiacthor', 52: u'muiacthor', 53: u'kg base', 54: u'gruesa', 61: u'kg bruto', 62: u'uiactant', 63: u'muiactant', 64: u'uiactig', 65: u'muiactig', 66: u'kg activo', 67: u'gramo activo', 68: u'gramo base', 96: u'packs', 97: u'hormas', 98: u'bonificaci\xf2n', 99: u'otras unidades'}
+    else:
+
+        monedas = {'DOL': u'D\xf3lar Estadounidense', 'PES': u'Pesos Argentinos', '010': u'Pesos Mejicanos', '011': u'Pesos Uruguayos', '012': u'Real', '014': u'Coronas Danesas', '015': u'Coronas Noruegas', '016': u'Coronas Suecas', '019': u'Yens', '018': u'D\xf3lar Canadiense', '033': u'Peso Chileno', '056': u'Forint (Hungr\xeda)', '031': u'Peso Boliviano', '036': u'Sucre Ecuatoriano', '051': u'D\xf3lar de Hong Kong', '034': u'Rand Sudafricano', '053': u'D\xf3lar de Jamaica', '057': u'Baht (Tailandia)', '043': u'Balboas Paname\xf1as', '042': u'Peso Dominicano', '052': u'D\xf3lar de Singapur', '032': u'Peso Colombiano', '035': u'Nuevo Sol Peruano', '061': u'Zloty Polaco', '060': u'Euro', '063': u'Lempira Hondure\xf1a', '062': u'Rupia Hind\xfa', '064': u'Yuan (Rep. Pop. China)', '025': u'Dinar Yugoslavo', '002': u'D\xf3lar Libre EEUU', '027': u'Dracma Griego', '026': u'D\xf3lar Australiano', '007': u'Florines Holandeses', '023': u'Bol\xedvar Venezolano', '047': u'Riyal Saudita', '046': u'Libra Egipcia', '045': u'Dirham Marroqu\xed', '044': u'C\xf3rdoba Nicarag\xfcense', '029': u'G\xfcaran\xed', '028': u'Flor\xedn (Antillas Holandesas)', '054': u'D\xf3lar de Taiwan', '040': u'Lei Rumano', '024': u'Corona Checa', '030': u'Shekel (Israel)', '021': u'Libra Esterlina', '055': u'Quetzal Guatemalteco', '059': u'Dinar Kuwaiti'}
+        comprobantes = {1: u'Factura A', 2: u'Nota de D\xe9bito A', 3: u'Nota de Cr\xe9dito A', 4: u'Recibo A', 6: u'Factura B', 7: u'Nota de D\xe9bito B', 8: u'Nota de Cr\xe9dito B', 9: u'Recibo B', 11: u'Factura C', 12: u'Nota de D\xe9bito C', 13: u'Nota de Cr\xe9dito C', 15: u'Recibo C', 51: u'Factura M', 52: u'Nota de D\xe9bito M', 53: u'Nota de Cr\xe9dito M', 54: u'Recibo M'}
+        ivas = {1: u'No gravado', 2: u'Exento', 3: u'0%', 4: u'10.5%', 5: u'21%', 6: u'27%'}
+        umeds = {1: u'kilogramos', 2: u'metros', 3: u'metros cuadrados', 4: u'metros c\xfabicos', 5: u'litros', 6: u'1000 kWh', 7: u'unidades', 8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 14: u'gramos', 15: u'milimetros', 16: u'mm c\xfabicos', 17: u'kil\xf3metros', 18: u'hectolitros', 20: u'cent\xedmetros', 25: u'jgo. pqt. mazo naipes', 27: u'cm c\xfabicos', 29: u'toneladas', 30: u'dam c\xfabicos', 31: u'hm c\xfabicos', 32: u'km c\xfabicos', 33: u'microgramos', 34: u'nanogramos', 35: u'picogramos', 41: u'miligramos', 47: u'mililitros', 48: u'curie', 49: u'milicurie', 50: u'microcurie', 51: u'uiacthor', 52: u'muiacthor', 53: u'kg base', 54: u'gruesa', 61: u'kg bruto', 62: u'uiactant', 63: u'muiactant', 64: u'uiactig', 65: u'muiactig', 66: u'kg activo', 67: u'gramo activo', 68: u'gramo base', 96: u'packs', 97: u'hormas', 98: u'bonificaci\xf2n', 99: u'otras unidades'}
 
     # ncm=7308.10.00, 7308.20.00 
 
-    # recupero ultimo comprobante y id
-    tipo_cbte = 1
-    punto_vta = 5
-    cbte_nro, cbte_fecha, events = get_last_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta)
-    id, events = get_last_id(client, token, sign, CUIT)    
-    
-    #cbte_nro = 1
-    #id = 1002 # 99000000000098
+    if "--prueba" in sys.argv:
 
-    # creo una factura de prueba
-    f = FacturaBF()
-    f.punto_vta = punto_vta
-    f.cbte_nro = cbte_nro+1
-    f.imp_moneda_id = '010'
-    f.fecha_cbte = date('Ymd')
-    it = ItemBF(ncm='7308.10.00', sec='', ds=u'prueba Anafe económico', qty=2.0, precio=100.0, bonif=0.0, iva_id=5)
-    f.add_item(it)
-    it = ItemBF(ncm='7308.20.00', sec='', ds='prueba 2', qty=4.0, precio=50.0, bonif=10.0, iva_id=5)
-    f.add_item(it)
-    print f.to_dict()
+        # recupero ultimo comprobante y id
+        tipo_cbte = 1
+        punto_vta = 5
+        cbte_nro, cbte_fecha, events = get_last_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta)
+        id, events = get_last_id(client, token, sign, CUIT)    
+        
+        #cbte_nro = 1
+        #id = 1002 # 99000000000098
 
-    try:
-        # autorizar...
-        auth, events = authorize(client, token, sign, CUIT, id=id+1, factura=f.to_dict())
-        cae = auth['cae']
-        print "auth", auth
-        print "events", events
-        auth, events = get_cmp(client, token, sign, CUIT, f.tipo_cbte, f.punto_vta, f.cbte_nro)
-        print "get_cmp: auth", auth
-        print "get_cmp: events", events        
-    except:
-        raise
-        ##l= client.xml_request.splitlines()
-        ##print l[4][1150:1200]
-        ##import pdb; pdb.set_trace()
+        # creo una factura de prueba
+        f = FacturaBF()
+        f.punto_vta = punto_vta
+        f.cbte_nro = cbte_nro+1
+        f.imp_moneda_id = '010'
+        f.fecha_cbte = date('Ymd')
+        it = ItemBF(ncm='7308.10.00', sec='', ds=u'prueba Anafe económico', qty=2.0, precio=100.0, bonif=0.0, iva_id=5)
+        f.add_item(it)
+        it = ItemBF(ncm='7308.20.00', sec='', ds='prueba 2', qty=4.0, precio=50.0, bonif=10.0, iva_id=5)
+        f.add_item(it)
+        print f.to_dict()
+
+        try:
+            # autorizar...
+            auth, events = authorize(client, token, sign, CUIT, id=id+1, factura=f.to_dict())
+            cae = auth['cae']
+            print "auth", auth
+            print "events", events
+            auth, events = get_cmp(client, token, sign, CUIT, f.tipo_cbte, f.punto_vta, f.cbte_nro)
+            print "get_cmp: auth", auth
+            print "get_cmp: events", events        
+        except:
+            raise
+            ##l= client.xml_request.splitlines()
+            ##print l[4][1150:1200]
+            ##import pdb; pdb.set_trace()
+
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()

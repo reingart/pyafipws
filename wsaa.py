@@ -108,9 +108,9 @@ if __name__=="__main__":
     # Leer argumentos desde la linea de comando (si no viene tomar default)
     cert = len(sys.argv)>1 and sys.argv[1] or CERT
     privatekey = len(sys.argv)>2 and sys.argv[2] or PRIVATEKEY
-    url = len(sys.argv)>3 and sys.argv[3] or WSAAURL
-    service = len(sys.argv)>4 and sys.argv[4] or "wsfe"
-    ttl = len(sys.argv)>5 and int(sys.argv[5]) or 2400
+    service = len(sys.argv)>3 and sys.argv[3] or "wsfe"
+    ttl = len(sys.argv)>4 and not sys.argv[4].startswith("--") and int(sys.argv[4]) or 2400
+    url = len(sys.argv)>5 and sys.argv[5].startswith("http") and sys.argv[5] or WSAAURL
 
     print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s TTL=%s" % (cert,privatekey,url,service, ttl)
 
@@ -126,7 +126,7 @@ if __name__=="__main__":
     #cms = open("TRA.tmp").read()
     print "Llamando WSAA..."
     try:
-        ta = call_wsaa(cms,url, trace='trace' in sys.argv) #parse_proxy("localhost:81")
+        ta = call_wsaa(cms,url, trace='--trace' in sys.argv) #parse_proxy("localhost:81")
     except SoapFault,e:
         sys.exit("Falla SOAP: %s\n%s\n" % (e.faultcode,e.faultstring))
     try:

@@ -200,8 +200,8 @@ def get_param_incoterms(client, token, sign, cuit):
     incoterms = []
     for p in response.FEXGetPARAM_IncotermsResult.FEXResultGet.ClsFEXResponse_Inc:
         pais = {'id': str(p.Inc_Id), 'ds': str(p.Inc_Ds).decode('utf8'),
-                'desde': str(p.Inc_vig_desde), 
-                'hasta': str(p.Inc_vig_hasta), }
+                'vig_desde': str(p.Inc_vig_desde), 
+                'vig_hasta': str(p.Inc_vig_hasta), }
         incoterms.append(pais)
     return incoterms
 
@@ -456,11 +456,13 @@ def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
 
+    url = len(sys.argv)>2 and sys.argv[2].startswith("http") and sys.argv[2] or WSFEXURL
+
     # cliente soap del web service
-    client = SoapClient(WSFEXURL, 
+    client = SoapClient(url, 
         action = SOAP_ACTION, 
         namespace = SOAP_NS,
-        trace = False)
+        trace = "--trace" in sys.argv)
 
     # obteniendo el TA
     TA = "TA.xml"
@@ -489,37 +491,37 @@ def main():
         print "=== Monedas ==="
         monedas = get_param_mon(client, token, sign, CUIT)    
         for m in monedas:
-            print "||%(id)s||%(ds)s||" % m
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % m
         monedas = dict([(m['id'],m['ds']) for m in monedas])
         
         print "=== Tipos Comprobante ==="
         cbtes = get_param_tipo_cbte(client, token, sign, CUIT)
         for c in cbtes:
-            print "||%(id)s||%(ds)s||" % c
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % c
         comprobantes =  dict([(c['id'],c['ds']) for c in cbtes])
 
         print u"=== Tipos Exportación ==="
         tipos = get_param_tipo_expo(client, token, sign, CUIT)
         for t in tipos:
-            print "||%(id)s||%(ds)s||" % t
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % t
         tipos_expo = dict([(t['id'],t['ds']) for t in tipos])
 
         print "=== Idiomas ==="
         tipos = get_param_idiomas(client, token, sign, CUIT)
         for t in tipos:
-            print "||%(id)s||%(ds)s||" % t
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % t
         idiomas = dict([(t['id'],t['ds']) for t in tipos])
            
         print "=== Unidades de medida ==="
         umedidas = get_param_umed(client, token, sign, CUIT)    
         for u in umedidas:
-            print "||%(id)s||%(ds)s||" % u
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u
         umeds = dict([(u['id'],u['ds']) for u in umedidas])
 
         print "=== INCOTERMs ==="
         incoterms = get_param_incoterms(client, token, sign, CUIT)
         for i in incoterms:
-            print "||%(id)s||%(ds)s||" % i
+            print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % i
         incoterms = dict([(t['id'],t['ds']) for t in incoterms])
 
         print "=== Pais Destino ==="
@@ -548,113 +550,115 @@ def main():
         umeds = {0: u' ', 1: u'kilogramos', 2: u'metros', 3: u'metros cuadrados', 4: u'metros c\xfabicos', 5: u'litros', 6: u'1000 kWh', 7: u'unidades', 8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 14: u'gramos', 15: u'milimetros', 16: u'mm c\xfabicos', 17: u'kil\xf3metros', 18: u'hectolitros', 20: u'cent\xedmetros', 25: u'jgo. pqt. mazo naipes', 27: u'cm c\xfabicos', 29: u'toneladas', 30: u'dam c\xfabicos', 31: u'hm c\xfabicos', 32: u'km c\xfabicos', 33: u'microgramos', 34: u'nanogramos', 35: u'picogramos', 41: u'miligramos', 47: u'mililitros', 48: u'curie', 49: u'milicurie', 50: u'microcurie', 51: u'uiacthor', 52: u'muiacthor', 53: u'kg base', 54: u'gruesa', 61: u'kg bruto', 62: u'uiactant', 63: u'muiactant', 64: u'uiactig', 65: u'muiactig', 66: u'kg activo', 67: u'gramo activo', 68: u'gramo base', 96: u'packs', 97: u'hormas', 98: u'bonificaci\xf3n', 99: u'otras unidades'}
         incoterms = {'DAF': u'DAF', 'DDP': u'DDP', 'CIF': u'CIF', 'FCA': u'FCA', 'FAS': u'FAS', 'DES': u'DES', 'CPT': u'CPT', 'EXW': u'EXW', 'CIP': u'CIP', 'DDU': u'DDU', 'FOB': u'FOB', 'DEQ': u'DEQ', 'CFR': u'CFR'}
 
-    # recupero ultimo comprobante y id
-    tipo_cbte = 19
-    punto_vta = 1
-    cbte_nro, cbte_fecha, events = get_last_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta)
-    id, events = get_last_id(client, token, sign, CUIT)
+    if "--prueba" in sys.argv:
 
-    print "last_cmp", cbte_nro, cbte_fecha
-    print "last_id", id
-    
-    cbte_nro +=1
-    id += 1
+        # recupero ultimo comprobante y id
+        tipo_cbte = 19
+        punto_vta = 1
+        cbte_nro, cbte_fecha, events = get_last_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta)
+        id, events = get_last_id(client, token, sign, CUIT)
 
-    if False: # prueba a mano
-        f = {
-            'Id': id,
-            'Fecha_cbte': date('Ymd'),
-            'Tipo_cbte': tipo_cbte, 
-            'Punto_vta': punto_vta, 
-            'Cbte_nro': cbte_nro,
-            'Tipo_expo': 1,
-            'Permiso_existente': 'N',
-            'Dst_cmp': 225,
-            'Cliente': 'Jose Yorugua',
-            'Cuit_pais_cliente': 50000000016,
-            'Domicilio_cliente': 'Montevideo, UY',
-            'Id_impositivo': 'RUC 123123',
-            'Moneda_Id': 'DOL',
-            'Moneda_ctz': 3.85,
-            'Obs_comerciales': 'Observaciones comerciales',
-            'Imp_total': 60.00,
-            'Obs': 'Observaciones',
-            'Forma_pago': 'Taka taka',
-            'Incoterms': 'FOB',
-            'Idioma_cbte': 2,
-            'Items': [{
-               'Item': {
-                 'Pro_codigo': "kbd",
-                 'Pro_ds': "Keyboard (uruguayan layout)",
-                 'Pro_qty': 1,
-                 'Pro_umed': 7,
-                 'Pro_precio_uni': 50.000049,
-                 'Pro_total_item': 50.000049}
-               },{
-               'Item': {
-                 'Pro_codigo': "mice",
-                 'Pro_ds': "Optical Mouse",
-                 'Pro_qty': 1,
-                 'Pro_umed': 7,
-                 'Pro_precio_uni': 10.50,
-                 'Pro_total_item': 10.50}
-               }]
-            }
-    else:
-        # creo una factura de prueba
-        f = FacturaEX()
-        f.punto_vta = punto_vta
-        f.cbte_nro = cbte_nro
-        f.fecha_cbte = date('Ymd')
-        f.tipo_expo = 1
-        f.permiso_existente = 'S'
-        f.dst_cmp = 203
-        f.cliente = 'Joao Da Silva'
-        f.cuit_pais_cliente = 50000000016
-        f.domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
-        f.id_impositivo = 'PJ54482221-l'
-        f.moneda_id = '012'
-        f.moneda_ctz = 0.5
-        f.obs_comerciales = 'Observaciones comerciales'
-        f.obs = 'Sin observaciones'
-        f.forma_pago = '30 dias'
-        f.incoterms = 'FOB'
-        f.idioma_cbte = 1
-        # agrego los items
-        it = ItemFEX(codigo='PRO1', ds=u'Producto Tipo 1 Exportacion MERCOSUR ISO 9001', 
-                     qty=1, precio=125)
-        f.add_item(it)
-        it = ItemFEX(codigo='PRO2', ds=u'Producto Tipo 2 Exportacion MERCOSUR ISO 9001', 
-                     qty=1, precio=125)
-        f.add_item(it)
-        permiso = PermisoFEX(id_permiso="99999AAXX999999A",dst_merc=225)
-        f.add_permiso(permiso)
-        permiso = PermisoFEX(id_permiso="99999AAXX999999B",dst_merc=225)
-        f.add_permiso(permiso)
-        if f.tipo_cbte!=19: 
-            cmp_asoc = CmpAsocFEX(tipo=19, punto_vta=2, cbte_nro=1)
-            f.add_cmp_asoc(cmp_asoc)
-            cmp_asoc = CmpAsocFEX(tipo=19, punto_vta=2, cbte_nro=2)
-            f.add_cmp_asoc(cmp_asoc)
-        f = f.to_dict()
-        print f
+        print "last_cmp", cbte_nro, cbte_fecha
+        print "last_id", id
+        
+        cbte_nro +=1
+        id += 1
 
-    try:
-        auth, events = authorize(client, token, sign, CUIT, id=id, factura=f)
-    except FEXError, fex:
-        print "FEX_error:", fex.msg
-        print client.xml_response
-        sys.exit(1)
-    cae = auth['cae']
-    print "auth", auth
-    print "events", events
-    try:
-        auth, events = get_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta, cbte_nro)
-    except:
-        print client.xml_response
-        sys.exit(1)
-    print "get_cmp: auth", auth
-    print "get_cmp: events", events        
+        if False: # prueba a mano
+            f = {
+                'Id': id,
+                'Fecha_cbte': date('Ymd'),
+                'Tipo_cbte': tipo_cbte, 
+                'Punto_vta': punto_vta, 
+                'Cbte_nro': cbte_nro,
+                'Tipo_expo': 1,
+                'Permiso_existente': 'N',
+                'Dst_cmp': 225,
+                'Cliente': 'Jose Yorugua',
+                'Cuit_pais_cliente': 50000000016,
+                'Domicilio_cliente': 'Montevideo, UY',
+                'Id_impositivo': 'RUC 123123',
+                'Moneda_Id': 'DOL',
+                'Moneda_ctz': 3.85,
+                'Obs_comerciales': 'Observaciones comerciales',
+                'Imp_total': 60.00,
+                'Obs': 'Observaciones',
+                'Forma_pago': 'Taka taka',
+                'Incoterms': 'FOB',
+                'Idioma_cbte': 2,
+                'Items': [{
+                   'Item': {
+                     'Pro_codigo': "kbd",
+                     'Pro_ds': "Keyboard (uruguayan layout)",
+                     'Pro_qty': 1,
+                     'Pro_umed': 7,
+                     'Pro_precio_uni': 50.000049,
+                     'Pro_total_item': 50.000049}
+                   },{
+                   'Item': {
+                     'Pro_codigo': "mice",
+                     'Pro_ds': "Optical Mouse",
+                     'Pro_qty': 1,
+                     'Pro_umed': 7,
+                     'Pro_precio_uni': 10.50,
+                     'Pro_total_item': 10.50}
+                   }]
+                }
+        else:
+            # creo una factura de prueba
+            f = FacturaEX()
+            f.punto_vta = punto_vta
+            f.cbte_nro = cbte_nro
+            f.fecha_cbte = date('Ymd')
+            f.tipo_expo = 1
+            f.permiso_existente = 'S'
+            f.dst_cmp = 203
+            f.cliente = 'Joao Da Silva'
+            f.cuit_pais_cliente = 50000000016
+            f.domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
+            f.id_impositivo = 'PJ54482221-l'
+            f.moneda_id = '012'
+            f.moneda_ctz = 0.5
+            f.obs_comerciales = 'Observaciones comerciales'
+            f.obs = 'Sin observaciones'
+            f.forma_pago = '30 dias'
+            f.incoterms = 'FOB'
+            f.idioma_cbte = 1
+            # agrego los items
+            it = ItemFEX(codigo='PRO1', ds=u'Producto Tipo 1 Exportacion MERCOSUR ISO 9001', 
+                         qty=1, precio=125)
+            f.add_item(it)
+            it = ItemFEX(codigo='PRO2', ds=u'Producto Tipo 2 Exportacion MERCOSUR ISO 9001', 
+                         qty=1, precio=125)
+            f.add_item(it)
+            permiso = PermisoFEX(id_permiso="99999AAXX999999A",dst_merc=225)
+            f.add_permiso(permiso)
+            permiso = PermisoFEX(id_permiso="99999AAXX999999B",dst_merc=225)
+            f.add_permiso(permiso)
+            if f.tipo_cbte!=19: 
+                cmp_asoc = CmpAsocFEX(tipo=19, punto_vta=2, cbte_nro=1)
+                f.add_cmp_asoc(cmp_asoc)
+                cmp_asoc = CmpAsocFEX(tipo=19, punto_vta=2, cbte_nro=2)
+                f.add_cmp_asoc(cmp_asoc)
+            f = f.to_dict()
+            print f
+
+        try:
+            auth, events = authorize(client, token, sign, CUIT, id=id, factura=f)
+        except FEXError, fex:
+            print "FEX_error:", fex.msg
+            print client.xml_response
+            sys.exit(1)
+        cae = auth['cae']
+        print "auth", auth
+        print "events", events
+        try:
+            auth, events = get_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta, cbte_nro)
+        except:
+            print client.xml_response
+            sys.exit(1)
+        print "get_cmp: auth", auth
+        print "get_cmp: events", events        
 
     sys.exit(0)
 
