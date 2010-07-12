@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23e"
+__version__ = "1.24a"
 
 import sys
 import wsaa, wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -255,7 +255,7 @@ class WSBFE:
         factura.imp_total = imp_total
         factura.imp_neto = imp_neto
         factura.impto_liq = impto_liq
-        factura.imp_tot_conc = impto_liq
+        factura.imp_tot_conc = imp_tot_conc
         factura.impto_liq_rni = impto_liq_rni
         factura.imp_op_ex = imp_op_ex
         factura.imp_perc = imp_perc
@@ -287,9 +287,8 @@ class WSBFE:
             self.Obs = auth['obs'].strip(" ")
             self.Reproceso = auth['reproceso']
             self.CAE = auth['cae']
-            # por el momento no tiene vencimiento:
-            ##vto = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.fecha_vto)
-            ##self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+            vto = str(auth['fch_venc_cae'])
+            self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
             self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
             return self.CAE
         except wsbfe.BFEError, e:
@@ -326,9 +325,8 @@ class WSBFE:
             # Obs, cae y fecha cae
             self.Obs = cbt['obs'].strip(" ")
             self.CAE = cbt['cae']
-            ##vto = str(cmp['fch_cae'])
-            ##self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
-
+            vto = str(cbt['fch_venc_cae'])
+            self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
             self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
             return self.CAE
 

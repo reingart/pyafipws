@@ -153,6 +153,7 @@ def authorize(client, token, sign, cuit, id, factura):
     result = response.BFEAuthorizeResult.BFEResultAuth
     auth = dict(id=int(result.Id), cuit=int(result.Cuit), cae=str(result.Cae), 
                fch_cbte=str(result.Fch_cbte), resultado=str(result.Resultado),
+               fch_venc_cae=str(result.Fch_venc_Cae),
                reproceso=str(result.Reproceso), obs=str(result.Obs))
     events = []
     for bfe_event in response.BFEAuthorizeResult.BFEEvents:
@@ -175,6 +176,7 @@ def get_cmp(client, token, sign, cuit, tipo_cbte, punto_vta, cbte_nro):
     cbt = dict(cuit=int(result.Cuit), cae=str(result.Cae), 
                fch_cbte=str(result.Fecha_cbte_orig), 
                fch_cae=str(result.Fecha_cbte_cae),
+               fch_venc_cae=str(result.Fch_venc_Cae),
                imp_total=str(result.Imp_total),
                imp_neto=str(result.Imp_neto),
                impto_liq=str(result.Impto_liq),
