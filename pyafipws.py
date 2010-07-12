@@ -57,8 +57,8 @@ class WSAA:
         self.Token = self.Sign = None
         self.Version = __version__
         
-    def CreateTRA(self, service="wsfe"):
-        return wsaa.create_tra(service)
+    def CreateTRA(self, service="wsfe", ttl=2400):
+        return wsaa.create_tra(service,ttl)
 
     def SignTRA(self, tra, cert, privatekey):
         return wsaa.sign_tra(str(tra),str(cert),str(privatekey))

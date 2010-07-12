@@ -44,7 +44,7 @@ REMCACERT = "AFIPcerthomo.crt" # WSAA homologacion CA Cert
 
 # No debería ser necesario modificar nada despues de esta linea
 
-def create_tra(service=SERVICE):
+def create_tra(service=SERVICE,ttl=2400):
     "Crear un Ticket de Requerimiento de Acceso (TRA)"
     tra = SimpleXMLElement(
         '<?xml version="1.0" encoding="UTF-8"?>'
@@ -55,8 +55,8 @@ def create_tra(service=SERVICE):
     #tra.header.addChild('source','subject=...')
     #tra.header.addChild('destination','cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239')
     tra.header.addChild('uniqueId',date('U'))
-    tra.header.addChild('generationTime',date('c',date('U')-2400))
-    tra.header.addChild('expirationTime',date('c',date('U')+2400))
+    tra.header.addChild('generationTime',date('c',date('U')-ttl))
+    tra.header.addChild('expirationTime',date('c',date('U')+ttl))
     tra.addChild('service',service)
     return tra.asXML()
 
@@ -110,14 +110,15 @@ if __name__=="__main__":
     privatekey = len(sys.argv)>2 and sys.argv[2] or PRIVATEKEY
     url = len(sys.argv)>3 and sys.argv[3] or WSAAURL
     service = len(sys.argv)>4 and sys.argv[4] or "wsfe"
+    ttl = len(sys.argv)>5 and int(sys.argv[5]) or 2400
 
-    print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s" % (cert,privatekey,url,service)
+    print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s TTL=%s" % (cert,privatekey,url,service, ttl)
 
     for filename in (cert,privatekey):
         if not os.access(filename,os.R_OK):
             sys.exit("Imposible abrir %s\n" % filename)
     print "Creando TRA..."
-    tra = create_tra(service)
+    tra = create_tra(service,ttl)
     #open("TRA.xml","w").write(tra)
     print "Frimando TRA..."
     cms = sign_tra(tra,cert,privatekey)
