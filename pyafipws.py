@@ -387,6 +387,10 @@ class WSFEX:
     "Interfase para el WebService de Factura Electrónica Exportación"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
                         'AgregarPermiso', 'AgregarCmpAsoc',
+                        'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
+                        'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
+                        'GetParamDstPais','GetParamDstCUIT',
+                        'GetParamCtz',
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -572,6 +576,56 @@ class WSFEX:
                                desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
             raiseSoapError(e)
+        except Exception, e:
+            raisePythonException(e)
+        finally:
+            # guardo datos de depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    def GetParamMon(self):
+        params = wsfex.get_param_mon(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%s: %s' % (p['id'],p['ds']) for p in params]
+
+    def GetParamTipoCbte(self):
+        params = wsfex.get_param_tipo_cbte(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%s: %s' % (p['id'],p['ds']) for p in params]
+
+    def GetParamTipoExpo(self):
+        params = wsfex.get_param_tipo_expo(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%s: %s' % (p['id'],p['ds']) for p in params]
+
+    def GetParamIdiomas(self):
+        params = wsfex.get_param_idiomas(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%s: %s' % (p['id'],p['ds']) for p in params]
+
+    def GetParamUMed(self):
+        params = wsfex.get_param_umed(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%s: %s' % (p['id'],p['ds']) for p in params]
+
+    def GetParamIncoterms(self):
+        params = wsfex.get_param_incoterms(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%s: %s' % (p['id'],p['ds']) for p in params]
+
+    def GetParamDstPais(self):
+        params = wsfex.get_param_dst_pais(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%s: %s' % (p['codigo'],p['ds']) for p in params]
+
+    def GetParamDstCUIT(self):
+        params = wsfex.get_param_dst_cuit(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%s: %s' % (p['cuit'],p['ds']) for p in params]
+
+    def GetParamCtz(self, moneda_id='DOL'):
+        try:
+            param = wsfex.get_param_ctz(self.client, self.Token, self.Sign, self.Cuit, moneda_id)
+            return "%(fecha)s: %(ctz)s" % param
+        except wsfex.FEXError, e:
+            raise COMException(scode = vbObjectError + int(e.code),
+                               desc=unicode(e.msg), source="WebService")
+        except SoapFault,e:
+            raiseSoapError(e)
+        except COMException:
+            raise
         except Exception, e:
             raisePythonException(e)
         finally:
