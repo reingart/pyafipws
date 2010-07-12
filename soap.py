@@ -140,7 +140,7 @@ class SoapClient(object):
             print "-"*80
             print "POST %s" % location
             print '\n'.join(["%s: %s" % (k,v) for k,v in headers.items()])
-            print "\n%s" % xml
+            print u"\n%s" % xml.decode("utf8","ignore")
         response, content = self.http.request(
             location,"POST", body=xml, headers=headers )
         self.response = response
@@ -148,7 +148,7 @@ class SoapClient(object):
         if self.trace: 
             print 
             print '\n'.join(["%s: %s" % (k,v) for k,v in response.items()])
-            print content
+            print content.decode("utf8","ignore")
             print "="*80
         return content
 
