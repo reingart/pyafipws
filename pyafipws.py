@@ -209,6 +209,7 @@ class WSFE:
 class WSBFE:
     "Interfase para el WebService de Bono Fiscal Electrónico (FE Bs. Capital)"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
+                        'GetParamMon', 'GetParamTipoCbte', 'GetParamUMed', 'GetParamTipoIVA', 'GetParamNCM',
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -396,6 +397,31 @@ class WSBFE:
             # guardo datos de depuración
             self.XmlRequest = self.client.xml_request
             self.XmlResponse = self.client.xml_response
+
+    def GetParamMon(self):
+        "Recuperar lista de valores referenciales de codigos de Moneda"
+        params = wsbfe.get_param_mon(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
+
+    def GetParamTipoCbte(self):
+        "Recuperar lista de valores referenciales de códigos de Tipos de comprobante"
+        params = wsbfe.get_param_tipo_cbte(self.client, self.Token, self.Sign, self.Cuit)
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]    
+
+    def GetParamUMed(self):
+        "Recuperar lista de valores referenciales de Unidades de Medidas"
+        params = wsbfe.get_param_umed(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
+    
+    def GetParamTipoIVA(self):
+        "Recuperar lista de valores referenciales de tipos de IVA (alícuotas)"
+        params = wsbfe.get_param_tipo_iva(self.client, self.Token, self.Sign, self.Cuit)
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
+    
+    def GetParamNCM(self):
+        "Recuperar lista de valores referenciales de códigos del Nomenclador Común del Mercosur"
+        params = wsbfe.get_param_ncm(self.client, self.Token, self.Sign, self.Cuit)    
+        return ['%(codigo)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
 
 
 class WSFEX:
@@ -606,33 +632,33 @@ class WSFEX:
     def GetParamMon(self):
         "Recuperar lista de valores referenciales de codigos de Moneda"
         params = wsfex.get_param_mon(self.client, self.Token, self.Sign, self.Cuit)    
-        return ['%s: %s' % (p['id'],p['ds']) for p in params]
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
 
     def GetParamTipoCbte(self):
         "Recuperar lista de valores referenciales de códigos de Tipos de comprobante"
         params = wsfex.get_param_tipo_cbte(self.client, self.Token, self.Sign, self.Cuit)
-        return ['%s: %s' % (p['id'],p['ds']) for p in params]
-
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
+    
     def GetParamTipoExpo(self):
         "Recuperar lista de valores referenciales de códigos de Tipo de exportación"
         params = wsfex.get_param_tipo_expo(self.client, self.Token, self.Sign, self.Cuit)    
-        return ['%s: %s' % (p['id'],p['ds']) for p in params]
-
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
+    
     def GetParamIdiomas(self):
         "Recuperar lista de valores referenciales de códigos de Idiomas"
         params = wsfex.get_param_idiomas(self.client, self.Token, self.Sign, self.Cuit)    
-        return ['%s: %s' % (p['id'],p['ds']) for p in params]
-
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
+    
     def GetParamUMed(self):
         "Recuperar lista de valores referenciales de Unidades de Medidas"
         params = wsfex.get_param_umed(self.client, self.Token, self.Sign, self.Cuit)    
-        return ['%s: %s' % (p['id'],p['ds']) for p in params]
-
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
+    
     def GetParamIncoterms(self):
         "Recuperar lista de valores referenciales de Incoterms"
         params = wsfex.get_param_incoterms(self.client, self.Token, self.Sign, self.Cuit)
-        return ['%s: %s' % (p['id'],p['ds']) for p in params]
-
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in params]
+    
     def GetParamDstPais(self):
         "Recuperar lista de valores referenciales de códigos de Países"
         params = wsfex.get_param_dst_pais(self.client, self.Token, self.Sign, self.Cuit)    
