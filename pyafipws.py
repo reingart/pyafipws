@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24b"
+__version__ = "1.24c"
 
 import sys
 import wsaa, wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -25,7 +25,7 @@ from win32com.server.exception import COMException
 import winerror
 import socks
 
-HOMO = False
+HOMO = True
 
 debugging = 1
 if debugging:
@@ -88,6 +88,7 @@ class WSFE:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version',
         'Resultado', 'Motivo', 'Reproceso',
+        'CbtDesde', 'CbtHasta', 'FechaCbte', 'ImpTotal', 'ImpNeto', 'ImptoLiq',
         'LastID','LastCMP','CAE','Vencimiento']
     _reg_progid_ = "WSFE"
     _reg_clsid_ = "{247A418E-BF48-48B4-B936-D6FF158C0168}"
@@ -101,6 +102,8 @@ class WSFE:
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
         self.client = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+        self.CbtDesde = self.CbtHasta = self.FechaCbte = None
+        self.ImpTotal = self.ImpNeto = self.ImptoLiq = None
         
     def Conectar(self, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
@@ -178,6 +181,7 @@ class WSFE:
             
             if not 'FEAutRequestResult' in results:
                 return ''
+            
             checkError(results.FEAutRequestResult)
             self.Resultado = str(results.FEAutRequestResult.resultado)
             # Motivo general:
@@ -190,6 +194,15 @@ class WSFE:
             self.CAE = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.cae)
             vto = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.fecha_vto)
             self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+            
+            # completo los campos devueltos
+            self.CbtDesde = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.cbt_desde)
+            self.CbtHasta = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.cbt_hasta)
+            self.FechaCbte = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.fecha_cbte)
+            self.ImpTotal = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.imp_total)
+            self.ImpNeto = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.imp_neto)
+            self.ImptoLiq = str(results.FEAutRequestResult.FedResp.FEDetalleResponse.impto_liq)
+
             return self.CAE
         except SoapFault,e:
             raiseSoapError(e)
@@ -438,7 +451,7 @@ class WSFEX:
         'XmlRequest', 'XmlResponse', 'Version',
         'Resultado', 'Obs', 'Reproceso',
         'CAE','Vencimiento', 'Eventos', 
-        'FechaCbte', 'ImpTotal']
+        'CbteNro', 'FechaCbte', 'ImpTotal']
         
     _reg_progid_ = "WSFEX"
     _reg_clsid_ = "{B3C8D3D3-D5DA-44C9-B003-11845803B2BD}"
@@ -453,7 +466,7 @@ class WSFEX:
         self.client = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
-        self.FechaCbte = ImpTotal = None
+        self.CbteNro = self.FechaCbte = ImpTotal = None
 
     def Conectar(self, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
@@ -531,6 +544,7 @@ class WSFEX:
             self.Obs = auth['obs'].strip(" ")
             self.Reproceso = auth['reproceso']
             self.CAE = auth['cae']
+            self.CbteNro  = auth['cbte_nro']
             vto = str(auth['fch_venc_cae'])
             self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
             self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]

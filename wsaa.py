@@ -119,6 +119,10 @@ if __name__=="__main__":
             sys.exit("Imposible abrir %s\n" % filename)
     print "Creando TRA..."
     tra = create_tra(service,ttl)
+    if '--trace' in sys.argv:
+        print "-" * 78
+        print tra
+        print "-" * 78
     #open("TRA.xml","w").write(tra)
     print "Frimando TRA..."
     cms = sign_tra(tra,cert,privatekey)

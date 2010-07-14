@@ -124,6 +124,8 @@ Sub Main()
         MsgBox "Se asignó CAE pero con advertencias. Observación (motivos): " & WSFEX.obs, vbInformation + vbOKOnly
     End If
     
+    Debug.Print "Numero de comprobante:", WSFEX.CbteNro
+    
     ' Imprimo pedido y respuesta XML para depuración (errores de formato)
     Debug.Print WSFEX.XmlRequest
     Debug.Print WSFEX.XmlResponse

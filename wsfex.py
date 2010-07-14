@@ -274,7 +274,7 @@ def authorize(client, token, sign, cuit, id, factura):
     result = response.FEXAuthorizeResult.FEXResultAuth
     auth = dict(id=int(result.Id), cuit=int(result.Cuit), cae=str(result.Cae), 
                fch_cbte=str(result.Fch_cbte), fch_venc_cae=str(result.Fch_venc_Cae),
-               resultado=str(result.Resultado),
+               resultado=str(result.Resultado), cbte_nro=str(result.Cbte_nro), 
                reproceso=str(result.Reproceso), obs=str(result.Motivos_Obs))
     events = []
     for FEX_event in response.FEXAuthorizeResult.FEXEvents:

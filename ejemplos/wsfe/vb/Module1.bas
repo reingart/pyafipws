@@ -103,6 +103,11 @@ Sub Main()
     Debug.Print WSFE.XmlResponse
     
     MsgBox "QTY: " & qty & vbCrLf & "LastId: " & LastId & vbCrLf & "LastCBTE:" & LastCBTE & vbCrLf & "CAE: " & cae, vbInformation + vbOKOnly
+    MsgBox "Número: " & WSFE.CbtDesde & " - " & WSFE.CbtHasta & vbCrLf & _
+           "Fecha: " & WSFE.FechaCbte & vbCrLf & _
+           "Total: " & WSFE.ImpTotal & vbCrLf & _
+           "Neto: " & WSFE.ImpNeto & vbCrLf & _
+           "Iva: " & WSFE.ImptoLiq
     Exit Sub
 ManejoError:
     ' Si hubo error:
