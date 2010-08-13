@@ -660,6 +660,31 @@ def main():
         print "get_cmp: auth", auth
         print "get_cmp: events", events        
 
+    if '--ult' in sys.argv:
+        print "Consultar ultimo numero:"
+        tipo_cbte = int(raw_input("Tipo de comprobante: "))
+        punto_vta = int(raw_input("Punto de venta: "))
+        try:
+            ult_cbte, fecha, events = get_last_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta)
+            print "Ultimo numero: ", ult_cbte
+            print "Fecha: ", fecha
+        finally:
+            print client.xml_request
+            print client.xml_response
+
+    if '--get' in sys.argv:
+        print "Recuperar comprobante:"
+        tipo_cbte = int(raw_input("Tipo de comprobante: "))
+        punto_vta = int(raw_input("Punto de venta: "))
+        cbte_nro = int(raw_input("Numero de comprobante: "))
+        try:
+            cbt, events = get_cmp(client, token, sign, CUIT, tipo_cbte, punto_vta, cbte_nro)
+            for k,v in cbt.items():
+                print "%s = %s" % (k, v)
+        finally:
+            print client.xml_request
+            print client.xml_response
+
     sys.exit(0)
 
 
