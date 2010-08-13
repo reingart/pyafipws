@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23f"
+__version__ = "1.24a"
 
 import os
 import sys
@@ -160,11 +160,12 @@ def escribir(dic, formato):
 def autenticar(cert, privatekey, url):
     "Obtener el TA"
     TA = "TA.xml"
-    if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
+    ttl = 60*60*5
+    if not os.path.exists(TA) or os.path.getmtime(TA)+(ttl)<time.time():
         import wsaa
-        tra = wsaa.create_tra(service="wsfex")
+        tra = wsaa.create_tra(service="wsfex",ttl=ttl)
         cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
-        ta_string = wsaa.call_wsaa(cms)
+        ta_string = wsaa.call_wsaa(cms,wsaa_url,trace=DEBUG)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
     ta = SimpleXMLElement(ta_string)
