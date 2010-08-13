@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18"
+__version__ = "1.19"
 
 import csv
 from decimal import Decimal
@@ -399,12 +399,16 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
 
     def on_btnPrevisualizar_mouseClick(self, event):
         try:
+            j = 0
             for i, item in self.get_selected_items():
+                j += 1
                 archivo = self.generar_factura(item)
-                if sys.platform.startswith("linux"):
-                    os.system("evince %s" % archivo)
-                else:
-                    os.system(archivo)
+            if j != 1:
+                pass # no abrir más de 1 factura
+            elif sys.platform.startswith("linux"):
+                os.system("evince %s" % archivo)
+            else:
+                os.system(archivo)
         except Exception, e:
             self.error(u'Excepción',unicode(e))
 
@@ -436,7 +440,14 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         fmtcuit = lambda c: len(c)==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
         
         f = Form(conf_fact.get('formato','factura.csv'))
+        f.add_page()
+
+        # establezco campos desde configuración
         for k,v in conf_pdf.items():
+            f.set(k,v)
+
+        # establezco campos desde planilla
+        for k,v in item.items():
             f.set(k,v)
 
         numero = "%04d-%08d" % (int(item['punto_vta']), int(item['cbt_numero']))
@@ -499,10 +510,10 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         if letra=='A':
             f.set('NETO', fmtimp(item['imp_neto']))
             f.set('IVA21', fmtimp(item['impto_liq']))
+            f.set('LeyendaIVA',"")
         else:
-            f.hide('NETO.L')
-            f.hide('IVA.L')
-            f.show('LeyendaIVA')
+            f.set('NETO.L',"")
+            f.set('IVA.L',"")
         f.set('TOTAL', fmtimp(item['imp_total']))
 
         f.set('CAE', item['cae'])
