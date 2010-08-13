@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24c"
+__version__ = "1.24d"
 
 import sys
 import wsaa, wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -175,10 +175,7 @@ class WSFE:
                 Fer={'Fecr':{
                     'id': long(id), 'cantidadreg': 1, 'presta_serv': int(presta_serv) },
                     'Fedr': {'FEDetalleRequest': detalle,}}) 
-            
-            self.XmlRequest = self.client.xml_request
-            self.XmlResponse = self.client.xml_response
-            
+                        
             if not 'FEAutRequestResult' in results:
                 return ''
             
@@ -210,7 +207,12 @@ class WSFE:
             raise
         except Exception, e:
             raisePythonException(e)
-        
+        finally:
+            # guardo los mensajes para depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
+
+    
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         results = self.client.FEDummy()
