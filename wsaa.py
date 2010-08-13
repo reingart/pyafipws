@@ -36,7 +36,7 @@ SERVICE = "wsfe"        # El nombre del web service al que se le pide el TA
 #WSAAURL = "https://wsaa.afip.gov.ar/ws/services/LoginCms" # PRODUCCION!!!
 WSAAURL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms" # homologacion (pruebas)
 SOAP_ACTION = 'http://ar.gov.afip.dif.facturaelectronica/' # Revisar WSDL
-SOAP_NS = "http://ar.gov.afip.dif.facturaelectronica/"     # Revisar WSDL 
+SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL 
 
 # Verificación del web server remoto (opcional?) igual no se usa
 REMCN = "wsaahomo.afip.gov.ar" # WSAA homologacion CN (CommonName)
@@ -87,6 +87,8 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
     client = SoapClient(location = location , 
         action = SOAP_ACTION,
         namespace = SOAP_NS,
+        ns = "wsaa",
+        soap_ns = "soapenv",
         cert = REMCACERT,  # certificado remoto (revisar)
         trace = trace,     # imprimir mensajes de depuración
         exceptions = True, # lanzar Fallas Soap
