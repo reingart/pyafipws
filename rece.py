@@ -17,6 +17,7 @@ __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.17"
 
+import os
 import sys
 import traceback
 from ConfigParser import SafeConfigParser
@@ -26,7 +27,7 @@ import wsaa,wsfe
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
-HOMO = True
+HOMO = False
 DEBUG = False
 CONFIG_FILE = "rece.ini"
 
@@ -87,10 +88,17 @@ def escribir(dic, formato):
     return linea + "\n"
 
 def autenticar(cert, privatekey, url):
-    tra = wsaa.create_tra()
-    cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
-    xml = wsaa.call_wsaa(str(cms),url)
-    ta = SimpleXMLElement(xml)
+    "Obtener el TA"
+    TA = "TA-wsfe.xml"
+    ttl = 60*60*5
+    if not os.path.exists(TA) or os.path.getmtime(TA)+(ttl)<time.time():
+        import wsaa
+        tra = wsaa.create_tra(service="wsfe",ttl=ttl)
+        cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
+        ta_string = wsaa.call_wsaa(cms,wsaa_url,trace=DEBUG)
+        open(TA,"w").write(ta_string)
+    ta_string=open(TA).read()
+    ta = SimpleXMLElement(ta_string)
     token = str(ta.credentials.token)
     sign = str(ta.credentials.sign)
     return token, sign
