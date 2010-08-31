@@ -68,11 +68,15 @@ def leer(linea, formato):
     dic = {}
     for clave, (comienzo, longitud, tipo) in formato.items():
         valor = linea[comienzo-1:comienzo-1+longitud].strip()
-        if tipo == N and valor:
-            valor = str(int(valor))
-        if tipo == I and valor:
-            valor = "%s.%02d" % (int(valor[:-2]), int(valor[-2:]))
-        dic[clave] = valor
+        try:
+            if tipo == N and valor:
+                valor = str(int(valor))
+            if tipo == I and valor:
+                valor = "%s.%02d" % (int(valor[:-2]), int(valor[-2:]))
+            dic[clave] = valor
+        except Exception, e:
+            raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
+                clave, comienzo, valor, str(e)))
     return dic
 
 def escribir(dic, formato):
