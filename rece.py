@@ -28,7 +28,7 @@ import wsaa,wsfe
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
-HOMO = False
+HOMO = True
 DEBUG = False
 CONFIG_FILE = "rece.ini"
 
@@ -130,6 +130,16 @@ def autorizar(client, token, sign, cuit, entrada, salida, formato):
             print "ID:", kargs['id'], "CAE:",kargs['cae'],"Motivo:",kargs['motivo'],"Reproceso:",kargs['reproceso']
 
 
+def depurar_xml(client):
+    fecha = time.strftime("%Y%m%d%H%M%S")
+    f=open("request-%s.xml" % fecha,"w")
+    f.write(client.xml_request)
+    f.close()
+    f=open("response-%s.xml" % fecha,"w")
+    f.write(client.xml_response)
+    f.close()
+
+
 if __name__ == "__main__":
     if '/ayuda' in sys.argv:
         print LICENCIA
@@ -164,12 +174,14 @@ if __name__ == "__main__":
     if '/debug'in sys.argv:
         DEBUG = True
 
+    XML = '/xml' in sys.argv
+
     if DEBUG:
         print "wsaa_url %s\nwsfe_url %s" % (wsaa_url, wsfe_url)
     
     try:
         client = SoapClient(wsfe_url, action=wsfe.SOAP_ACTION, namespace=wsfe.SOAP_NS,
-                            trace=False, exceptions=True)
+                            trace=DEBUG, exceptions=True)
 
         if '/dummy' in sys.argv:
             print "Consultando estado de servidores..."
@@ -216,6 +228,9 @@ if __name__ == "__main__":
         finally:
             if f_entrada is not None: f_entrada.close()
             if f_salida is not None: f_salida.close()
+            if XML:
+                depurar_xml(client)
+
         sys.exit(0)
     
     except SoapFault,e:
