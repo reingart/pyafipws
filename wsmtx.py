@@ -22,6 +22,7 @@ __version__ = "1.00a"
 import datetime
 import decimal
 import sys
+import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault
 
 HOMO = True
@@ -34,8 +35,10 @@ def inicializar_y_capturar_execepciones(func):
         try:
             # inicializo (limpio variables)
             self.Resultado = self.CAE = self.Vencimiento = ""
+            self.Evento = self.Obs = ""
             self.FechaCbte = self.CbteNro = self.PuntoVenta = self.ImpTotal = None
             self.Errores = []
+            self.Observaciones = []
             # llamo a la función
             return func(self, *args, **kwargs)
         except SoapFault, e:
@@ -43,27 +46,41 @@ def inicializar_y_capturar_execepciones(func):
             self.ErrCode = unicode(e.faultcode)
             self.ErrMsg = unicode(e.faultstring)
             raise
+        except Exception, e:
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            raise
         finally:
             # guardo datos de depuración
-            self.XmlRequest = self.client.xml_request
-            self.XmlResponse = self.client.xml_response
+            if self.client:
+                self.XmlRequest = self.client.xml_request
+                self.XmlResponse = self.client.xml_response
     return capturar_errores_wrapper
     
 class WSMTXCA:
     "Interfase para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc',
-                        'AutorizarComprobante'
+                        'AutorizarComprobante', 'ConsultarUltimoComprobanteAutorizado',
+                        'ConsultarComprobante',
+                        'ConsultarTiposComprobante', 
+                        'ConsultarTiposDocumento',
+                        'ConsultarAlicuotasIVA',
+                        'ConsultarCondicionesIVA',
+                        'ConsultarMonedas',
+                        'ConsultarUnidadesMedida',
+                        'ConsultarTiposTributo',
+                        'ConsultarCotizacionMoneda',
                         'Dummy', 'Conectar', ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version',
-        'Resultado', 'Obs', 'ErrCode', 'ErrMsg'
-        'CAE','Vencimiento', 'Eventos', 'Errores',
+        'Resultado', 'Obs', 'Observaciones', 'ErrCode', 'ErrMsg',
+        'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback',
         'CbteNro', 'FechaCbte', 'PuntoVenta', 'ImpTotal']
         
     _reg_progid_ = "WSMTXCA"
-    _reg_clsid_ = "{regenerar}"
+    _reg_clsid_ = "{8128E6AB-FB22-4952-8EA6-BD41C29B17CA}"
 
     def __init__(self):
         self.Token = self.Sign = self.Cuit = None
@@ -76,7 +93,7 @@ class WSMTXCA:
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
-        self.ErrCode = self.ErrMsg = ""
+        self.ErrCode = self.ErrMsg = self.Traceback = ""
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -87,7 +104,8 @@ class WSMTXCA:
                     error['codigoDescripcion']['codigo'],
                     error['codigoDescripcion']['descripcion'],
                     ))
-
+                    
+    @inicializar_y_capturar_execepciones
     def Conectar(self, cache="cache"):
         # cliente soap del web service
         self.client = SoapClient( 
@@ -196,11 +214,16 @@ class WSMTXCA:
             #self. = cbteresp['cuit'] # 20267565393L
             #self. = cbteresp['codigoTipoComprobante'] 
             self.Vencimiento = cbteresp['fechaVencimientoCAE'].strftime("%Y/%m/%d")
-            self.CAE = cbteresp['CAE'] # 60423794871430L
+            self.CAE = str(cbteresp['CAE']) # 60423794871430L
         self.__analizar_errores(ret)
         
-        #self.Obs = auth['obs'].strip(" ")
-        #self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+        for error in ret.get('arrayObservaciones', []):
+            self.Observaciones.append("%(codigo)s: %(descripcion)s" % (
+                error['codigoDescripcion']))
+        self.Obs = '\n'.join(self.Observaciones)
+
+        if 'evento' in ret:
+            self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
         return self.CAE
 
     @inicializar_y_capturar_execepciones
@@ -216,7 +239,7 @@ class WSMTXCA:
         return nro
     
     @inicializar_y_capturar_execepciones
-    def ConsultaComprobante(self, tipo_cbte, punto_vta, cbte_nro):
+    def ConsultarComprobante(self, tipo_cbte, punto_vta, cbte_nro):
         "Recuperar los datos completos de un comprobante ya autorizado"
         ret = self.client.consultarComprobante(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
@@ -233,9 +256,9 @@ class WSMTXCA:
                 self.PuntoVenta = cbteresp['numeroPuntoVenta'] # 4000
                 self.Vencimiento = cbteresp['fechaVencimiento'].strftime("%Y/%m/%d")
                 self.ImpTotal = str(cbteresp['importeTotal'])
-                self.CAE = cbteresp['codigoAutorizacion'] # 60423794871430L
+                self.CAE = str(cbteresp['codigoAutorizacion']) # 60423794871430L
         self.__analizar_errores(ret)
-        return True
+        return self.CAE
 
 
     @inicializar_y_capturar_execepciones
