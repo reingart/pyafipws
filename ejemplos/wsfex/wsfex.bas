@@ -38,6 +38,8 @@ Sub Main()
     
     ' Crear objeto interface Web Service de Factura Electrónica de Exportación
     Set WSFEX = CreateObject("WSFEX")
+    Debug.Print WSFEX.version
+    
     ' Setear tocken y sing de autorización (pasos previos)
     WSFEX.Token = WSAA.Token
     WSFEX.Sign = WSAA.Sign
@@ -63,7 +65,7 @@ Sub Main()
     fecha_cbte = Format(Date, "yyyymmdd")
     tipo_expo = 1 ' tipo de exportación (ver tabla de parámetros)
     permiso_existente = "N"
-    dst_cmp = 203 ' país destino
+    dst_cmp = 2035 ' país destino
     cliente = "Joao Da Silva"
     cuit_pais_cliente = "50000000016"
     domicilio_cliente = "Rua 76 km 34.5 Alagoas"
@@ -156,6 +158,7 @@ Sub Main()
     Exit Sub
 ManejoError:
     ' Si hubo error:
+    Debug.Print WSFEX.ErrCode, WSFEX.ErrMsg
     Debug.Print Err.Description            ' descripción error afip
     Debug.Print Err.Number - vbObjectError ' codigo error afip
     Select Case MsgBox(Err.Description, vbCritical + vbRetryCancel, "Error:" & Err.Number - vbObjectError & " en " & Err.Source)
