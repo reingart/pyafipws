@@ -454,7 +454,7 @@ def main():
         
 if __name__ == '__main__':
 
-    if "/register" in sys.argv:
+    if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSMTXCA)
     else:
