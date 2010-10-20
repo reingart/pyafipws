@@ -124,8 +124,9 @@ class SoapClient(object):
                 self.parse(child,tag,t, False)
         elif isinstance(value, basestring): # no volver a convertir los strings y unicodes
             node.addChild(tag,value,ns=ns)
-        else: # el resto de los objetos se convierten a string 
-            node.addChild(tag,str(value),ns=ns) # habria que agregar un método asXML?
+        else: # el resto de los objetos se convierten a string
+            if value is not None:
+                node.addChild(tag,str(value),ns=ns) # habria que agregar un método asXML?
     
     def send(self, method, xml):
         "Envía el pedido SOAP por HTTP (llama al método con el xml como cuerpo)"
