@@ -22,7 +22,8 @@ __version__ = "1.00a"
 import datetime
 import decimal
 import sys
-from pysimplesoap.client import SimpleXMLElement, SoapClient
+import traceback
+from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault
 
 HOMO = True
 
@@ -30,16 +31,49 @@ HOMO = True
 WSDL="http://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 #WSDL="http://www.afip.gov.ar/fe/documentos/wsdl_viejo_wsfe.xml"
 
+
+def inicializar_y_capturar_execepciones(func):
+    "Decorador para inicializar y capturar errores"
+    def capturar_errores_wrapper(self, *args, **kwargs):
+        try:
+            # inicializo (limpio variables)
+            self.Resultado = self.CAE = self.Vencimiento = ""
+            self.Evento = self.Obs = ""
+            self.FechaCbte = self.CbteNro = self.PuntoVenta = self.ImpTotal = None
+            self.Errores = []
+            self.Observaciones = []
+            self.Eventos = []
+            self.Traceback = ""
+            # llamo a la función
+            return func(self, *args, **kwargs)
+        except SoapFault, e:
+            # guardo destalle de la excepción SOAP
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
+            raise
+        except Exception, e:
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            raise
+        finally:
+            # guardo datos de depuración
+            if self.client:
+                self.XmlRequest = self.client.xml_request
+                self.XmlResponse = self.client.xml_response
+    return capturar_errores_wrapper
+
+
 class WSFEv1:
     "Interfase para el WebService de Factura Electrónica Version 1"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc',
+                        'CompUltimoAutorizado', 'CompConsultar',
                         'Dummy', 'Conectar', ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version',
-        'Resultado', 'Obs', 'Reproceso',
-        'CAE','Vencimiento', 'Eventos', 'Errs',
+        'Resultado', 'Obs', 'Observaciones', 'Traceback',
+        'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
         'CbteNro', 'FechaCbte', 'ImpTotal']
         
     _reg_progid_ = "WSFEv1"
@@ -56,7 +90,19 @@ class WSFEv1:
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
+        self.Traceback = ""
 
+    def __analizar_errores(self, ret):
+        "Comprueba y extrae errores si existen en la respuesta XML"
+        if 'arrayErrores' in ret:
+            errores = ret['Errors']
+            for error in errores:
+                self.Errores.append("%s: %s" % (
+                    error['Err']['Code'],
+                    error['Err']['Msg'],
+                    ))
+
+    @inicializar_y_capturar_execepciones
     def Conectar(self,cache="cache"):
         # cliente soap del web service
         self.client = SoapClient( 
@@ -64,7 +110,7 @@ class WSFEv1:
             cache = cache,
             trace = "--trace" in sys.argv)
 
-
+    @inicializar_y_capturar_execepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.FEDummy()['FEDummyResult']
@@ -114,6 +160,7 @@ class WSFEv1:
         iva = { 'id': id, 'base_imp': base_imp, 'importe': importe }
         self.factura['iva'].append(iva)
 
+    @inicializar_y_capturar_execepciones
     def CAESolicitar(self):
         f = self.factura
         ret = self.client.FECAESolicitar(
@@ -172,16 +219,51 @@ class WSFEv1:
         print result['FeDetResp']
         fedetresp = result['FeDetResp'][0]['FECAEDetResponse']
         # Obs:
-        #self.Obs = auth['obs'].strip(" ")
-        #self.Reproceso = auth['reproceso']
-        self.CAE = fedetresp['CAE']
+        for obs in fedetresp.get('Observaciones', []):
+            self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+        self.Obs = '\n'.join(self.Observaciones)
+        self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
         #vto = str(auth['fch_venc_cae'])
         #self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
         #self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+        self.__analizar_errores(result)
         return self.CAE
 
+    @inicializar_y_capturar_execepciones
+    def CompUltimoAutorizado(self, tipo_cbte, punto_vta):
+        ret = self.client.FECompUltimoAutorizado(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            PtoVta=punto_vta,
+            CbteTipo=tipo_cbte,
+            )
+        
+        result = ret['FECompUltimoAutorizadoResult']
+        nro = result['CbteNro']
+        self.__analizar_errores(result)
+        return nro
 
-
+    @inicializar_y_capturar_execepciones
+    def CompConsultar(self, tipo_cbte, punto_vta, cbte_nro):
+        ret = self.client.FECompConsultar(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            FeCompConsReq={
+                'CbteTipo': tipo_cbte,
+                'CbteNro': cbte_nro,
+                'PtoVta': punto_vta,
+            })
+        
+        result = ret['FECompConsultarResult']
+        if 'ResultGet' in result:
+            resultget = result['ResultGet']
+            self.FechaCbte = resultget['CbteFch'] #.strftime("%Y/%m/%d")
+            self.CbteNro = resultget['CbteHasta'] # 1L
+            self.PuntoVenta = resultget['PtoVta'] # 4000
+            self.Vencimiento = resultget['FchVto'] #.strftime("%Y/%m/%d")
+            self.ImpTotal = str(resultget['ImpTotal'])
+            self.CAE = resultget['CodAutorizacion'] and str(resultget['CodAutorizacion']) or ''# 60423794871430L
+        self.__analizar_errores(result)
+        return self.CAE
+    
 def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
