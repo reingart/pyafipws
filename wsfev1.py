@@ -263,7 +263,93 @@ class WSFEv1:
             self.CAE = resultget['CodAutorizacion'] and str(resultget['CodAutorizacion']) or ''# 60423794871430L
         self.__analizar_errores(result)
         return self.CAE
-    
+
+
+    @inicializar_y_capturar_execepciones
+    def ParamGetTiposCbte(self):
+        "Recuperador de valores referenciales de códigos de Tipos de Comprobantes"
+        ret = self.client.FEParamGetTiposCbte(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposCbteResult']
+        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['CbteTipo']
+                 for p in res['ResultGet']]
+
+    @inicializar_y_capturar_execepciones
+    def ParamGetTiposConcepto(self):
+        "Recuperador de valores referenciales de códigos de Tipos de Conceptos"
+        ret = self.client.FEParamGetTiposConcepto(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposConceptoResult']
+        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['ConceptoTipo']
+                 for p in res['ResultGet']]
+                
+
+    @inicializar_y_capturar_execepciones
+    def ParamGetTiposDoc(self):
+        "Recuperador de valores referenciales de códigos de Tipos de Documentos"
+        ret = self.client.FEParamGetTiposDoc(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposDocResult']
+        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['DocTipo']
+                 for p in res['ResultGet']]
+
+    @inicializar_y_capturar_execepciones
+    def ParamGetTiposIva(self):
+        "Recuperador de valores referenciales de códigos de Tipos de Alícuotas"
+        ret = self.client.FEParamGetTiposIva(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposIvaResult']
+        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['IvaTipo']
+                 for p in res['ResultGet']]
+
+    @inicializar_y_capturar_execepciones
+    def ParamGetTiposMonedas(self):
+        "Recuperador de valores referenciales de códigos de Monedas"
+        ret = self.client.FEParamGetTiposMonedas(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposMonedasResult']
+        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['Moneda']
+                 for p in res['ResultGet']]
+
+    @inicializar_y_capturar_execepciones
+    def ParamGetTiposOpcional(self):
+        "Recuperador de valores referenciales de códigos de Tipos de datos opcionales"
+        ret = self.client.FEParamGetTiposOpcional(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposOpcionalResult']
+        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['OpcionalTipo']
+                 for p in res['ResultGet']]
+
+    @inicializar_y_capturar_execepciones
+    def ParamGetTiposTributos(self):
+        "Recuperador de valores referenciales de códigos de Tipos de Tributos"
+        "Este método permite consultar los tipos de tributos habilitados en este WS"
+        ret = self.client.FEParamGetTiposTributos(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposTributosResult']
+        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['TributoTipo']
+                 for p in res['ResultGet']]
+
+    @inicializar_y_capturar_execepciones
+    def ParamGetCotizacion(self, moneda_id):
+        "Recuperador de cotización de moneda"
+        ret = self.client.FEParamGetCotizacion(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            MonId=moneda_id,
+            )
+        self.__analizar_errores(ret)
+        res = ret['FEParamGetCotizacionResult']['ResultGet']
+        if 'MonCotiz' in res:
+            return res['MonCotiz']
+
+
 def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
@@ -340,6 +426,30 @@ def main():
         print "Resultado", wsfev1.Resultado
         print "CAE", wsfev1.CAE
         
+    if "--parametros" in sys.argv:
+        import codecs, locale, traceback
+        if sys.stdout.encoding is None:
+            sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
+            sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
+
+        print "=== Tipos de Comprobante ==="
+        print u'\n'.join(wsfev1.ParamGetTiposCbte())
+        print "=== Tipos de Concepto ==="
+        print u'\n'.join(wsfev1.ParamGetTiposConcepto())
+        print "=== Tipos de Documento ==="
+        print u'\n'.join(wsfev1.ParamGetTiposDoc())
+        print "=== Alicuotas de IVA ==="
+        print u'\n'.join(wsfev1.ParamGetTiposIva())
+        print "=== Monedas ==="
+        print u'\n'.join(wsfev1.ParamGetTiposMonedas())
+        print "=== Tipos de datos opcionales ==="
+        print u'\n'.join(wsfev1.ParamGetTiposOpcional())
+        print "=== Tipos de Tributo ==="
+        print u'\n'.join(wsfev1.ParamGetTiposTributos())
+
+    if "--cotizacion" in sys.argv:
+        print wsfev1.ParamGetCotizacion('DOL')
+
 
 if __name__ == '__main__':
 
