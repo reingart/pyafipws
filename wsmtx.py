@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.00a"
+__version__ = "1.00b"
 
 import datetime
 import decimal
@@ -206,7 +206,7 @@ class WSMTXCA:
         
         self.Resultado = ret['resultado'] # u'A'
         self.Errores = []
-        if ret['resultado'] == "A":
+        if ret['resultado'] in ("A", "O"):
             cbteresp = ret['comprobanteResponse']
             self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
             self.CbteNro = cbteresp['numeroComprobante'] # 1L
