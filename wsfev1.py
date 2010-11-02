@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.00a"
+__version__ = "1.00b"
 
 import datetime
 import decimal
@@ -68,6 +68,14 @@ class WSFEv1:
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc',
                         'CompUltimoAutorizado', 'CompConsultar',
+                        'ParamGetTiposCbte',
+                        'ParamGetTiposConcepto',
+                        'ParamGetTiposDoc',
+                        'ParamGetTiposIva',
+                        'ParamGetTiposMonedas',
+                        'ParamGetTiposOpcional',
+                        'ParamGetTiposTributos',
+                        'ParamGetCotizacion',
                         'Dummy', 'Conectar', ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -223,8 +231,8 @@ class WSFEv1:
             self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
         self.Obs = '\n'.join(self.Observaciones)
         self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
-        #vto = str(auth['fch_venc_cae'])
-        #self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+        vto = str(fedetresp['CAEFchVto'])
+        self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
         #self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
         self.__analizar_errores(result)
         return self.CAE
@@ -453,7 +461,7 @@ def main():
 
 if __name__ == '__main__':
 
-    if "/register" in sys.argv:
+    if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSFEv1)
     else:
