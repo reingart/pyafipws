@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.00b"
+__version__ = "1.01b"
 
 import datetime
 import decimal
@@ -111,10 +111,12 @@ class WSFEv1:
                     ))
 
     @inicializar_y_capturar_execepciones
-    def Conectar(self,cache="cache"):
+    def Conectar(self, cache="cache", wsdl=None):
         # cliente soap del web service
+        if HOMO or not wsdl:
+            wsdl = WSDL
         self.client = SoapClient( 
-            wsdl = WSDL,        
+            wsdl = wsdl,        
             cache = cache,
             trace = "--trace" in sys.argv)
 
@@ -190,9 +192,10 @@ class WSFEv1:
                     'ImpOpEx': f['imp_op_ex'],
                     'ImpTrib': f['imp_trib'],
                     'ImpIVA': f['imp_iva'],
-                    'FchServDesde': f['fecha_serv_desde'],
-                    'FchServHasta': f['fecha_serv_hasta'],
-                    'FchVtoPago': f['fecha_venc_pago'],
+                    # Fechas solo se informan si Concepto in (2,3)
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
+                    'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],                
                     'CbtesAsoc': [
@@ -231,8 +234,7 @@ class WSFEv1:
             self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
         self.Obs = '\n'.join(self.Observaciones)
         self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
-        vto = str(fedetresp['CAEFchVto'])
-        self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+        self.Vencimiento = fedetresp['CAEFchVto']
         #self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
         self.__analizar_errores(result)
         return self.CAE
