@@ -44,6 +44,8 @@ def inicializar_y_capturar_execepciones(func):
             self.Observaciones = []
             self.Eventos = []
             self.Traceback = ""
+            self.ErrCode = ""
+            self.ErrMsg = ""
             # llamo a la función
             return func(self, *args, **kwargs)
         except SoapFault, e:
@@ -102,13 +104,14 @@ class WSFEv1:
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        if 'arrayErrores' in ret:
+        if 'Errors' in ret:
             errores = ret['Errors']
             for error in errores:
                 self.Errores.append("%s: %s" % (
                     error['Err']['Code'],
                     error['Err']['Msg'],
                     ))
+            self.ErrMsg = '\n'.join(self.Errores)
 
     @inicializar_y_capturar_execepciones
     def Conectar(self,cache="cache"):
@@ -190,8 +193,8 @@ class WSFEv1:
                     'ImpOpEx': f['imp_op_ex'],
                     'ImpTrib': f['imp_trib'],
                     'ImpIVA': f['imp_iva'],
-                    'FchServDesde': f['fecha_serv_desde'],
-                    'FchServHasta': f['fecha_serv_hasta'],
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],                
