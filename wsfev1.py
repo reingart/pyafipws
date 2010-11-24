@@ -44,6 +44,8 @@ def inicializar_y_capturar_execepciones(func):
             self.Observaciones = []
             self.Eventos = []
             self.Traceback = ""
+            self.ErrCode = ""
+            self.ErrMsg = ""
             # llamo a la función
             return func(self, *args, **kwargs)
         except SoapFault, e:
@@ -102,13 +104,14 @@ class WSFEv1:
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        if 'arrayErrores' in ret:
+        if 'Errors' in ret:
             errores = ret['Errors']
             for error in errores:
                 self.Errores.append("%s: %s" % (
                     error['Err']['Code'],
                     error['Err']['Msg'],
                     ))
+            self.ErrMsg = '\n'.join(self.Errores)
 
     @inicializar_y_capturar_execepciones
     def Conectar(self, cache="cache", wsdl=None):
@@ -128,11 +131,11 @@ class WSFEv1:
         self.DbServerStatus = result['DbServer']
         self.AuthServerStatus = result['AuthServer']
 
-    def CrearFactura(self, concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-            cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-            imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
-            fecha_serv_desde, fecha_serv_hasta, #--
-            moneda_id, moneda_ctz,
+    def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
+            cbt_desde=0, cbt_hasta=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
+            imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago="", 
+            fecha_serv_desde=None, fecha_serv_hasta=None, #--
+            moneda_id="PES", moneda_ctz="1.0000", **kwargs
             ):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
@@ -154,18 +157,18 @@ class WSFEv1:
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
         self.factura = fact
 
-    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0):
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwarg):
         "Agrego un comprobante asociado a una factura (interna)"
         cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
         self.factura['cbtes_asoc'].append(cmp_asoc)
 
-    def AgregarTributo(self, id, desc, base_imp, alic, importe):
+    def AgregarTributo(self, id=0, desc="", base_imp=0.00, alic=0, importe=0.00, **kwarg):
         "Agrego un tributo a una factura (interna)"
         tributo = { 'id': id, 'desc': desc, 'base_imp': base_imp, 
                     'alic': alic, 'importe': importe}
         self.factura['tributos'].append(tributo)
 
-    def AgregarIva(self, id, base_imp, importe):
+    def AgregarIva(self, id=0, base_imp=0.0, importe=0.0, **kwarg):
         "Agrego un tributo a una factura (interna)"
         iva = { 'id': id, 'base_imp': base_imp, 'importe': importe }
         self.factura['iva'].append(iva)
@@ -196,6 +199,9 @@ class WSFEv1:
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
+                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],                
                     'CbtesAsoc': [
@@ -227,7 +233,7 @@ class WSFEv1:
         result = ret['FECAESolicitarResult']
         fecabresp = result['FeCabResp']
         self.Resultado = fecabresp['Resultado']
-        print result['FeDetResp']
+        ##print result['FeDetResp']
         fedetresp = result['FeDetResp'][0]['FECAEDetResponse']
         # Obs:
         for obs in fedetresp.get('Observaciones', []):
