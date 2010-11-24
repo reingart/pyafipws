@@ -50,7 +50,7 @@ Sub Main()
     WSFEv1.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    ok = WSFEv1.Conectar("") ' homologación
+    ok = WSFEv1.Conectar("", "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL") ' homologación
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSFEv1.Dummy
@@ -59,18 +59,19 @@ Sub Main()
     Debug.Print "authserver status", WSFEv1.AuthServerStatus
        
     ' Establezco los valores de la factura a autorizar:
-    tipo_cbte = 1
+    tipo_cbte = 6
     punto_vta = 4001
     cbte_nro = WSFEv1.CompUltimoAutorizado(tipo_cbte, punto_vta)
     fecha = Format(Date, "yyyymmdd")
     concepto = 1
-    tipo_doc = 80: nro_doc = "20267565393"
-    cbt_desde = cbte_nro + 1: cbt_hasta = cbte_nro + 1
+    tipo_doc = 80: nro_doc = "27269434894"
+    cbte_nro = cbte_nro + 1
+    cbt_desde = cbte_nro: cbt_hasta = cbte_nro
     imp_total = "122.00": imp_tot_conc = "0.00": imp_neto = "100.00"
     imp_iva = "21.00": imp_trib = "1.00": imp_op_ex = "0.00"
-    fecha_cbte = fecha: fecha_venc_pago = fecha
+    fecha_cbte = fecha: fecha_venc_pago = ""
     ' Fechas del período del servicio facturado (solo si concepto = 1?)
-    fecha_serv_desde = fecha: fecha_serv_hasta = fecha
+    fecha_serv_desde = "": fecha_serv_hasta = ""
     moneda_id = "PES": moneda_ctz = "1.000"
 
     ok = WSFEv1.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta, _

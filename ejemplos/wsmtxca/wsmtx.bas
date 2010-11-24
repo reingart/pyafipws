@@ -51,7 +51,8 @@ Sub Main()
     WSMTXCA.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    ok = WSMTXCA.Conectar("")   ' homologación
+    WSDL = "https://serviciosjava.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
+    ok = WSMTXCA.Conectar("", WSDL)   ' producción
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSMTXCA.Dummy
@@ -64,7 +65,7 @@ Sub Main()
     punto_vta = 4000
     cbte_nro = WSMTXCA.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
     fecha = Format(Date, "yyyy-mm-dd")
-    concepto = 1
+    concepto = 3
     tipo_doc = 80: nro_doc = "30000000007"
     cbt_desde = cbte_nro + 1: cbt_hasta = cbte_nro + 1
     imp_total = "122.00": imp_tot_conc = "0.00": imp_neto = "100.00"
@@ -105,7 +106,7 @@ Sub Main()
     ok = WSMTXCA.AgregarIva(id, base_imp, importe)
     
     u_mtx = 123456
-    cod_mtx = "12345678901234"
+    cod_mtx = "1234567890"
     codigo = "P0001"
     ds = "Descripcion del producto P0001"
     qty = "1.0000"
@@ -173,6 +174,7 @@ ManejoError:
             Debug.Print WSMTXCA.ErrCode
             Debug.Print WSMTXCA.ErrMsg
             Debug.Print WSMTXCA.Traceback
+            Debug.Print WSMTXCA.XmlResponse
             Debug.Assert False
             Resume
         Case vbCancel
