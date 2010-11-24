@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.00b"
+__version__ = "1.01a"
 
 import datetime
 import decimal
@@ -106,10 +106,12 @@ class WSMTXCA:
                     ))
                     
     @inicializar_y_capturar_execepciones
-    def Conectar(self, cache="cache"):
+    def Conectar(self, cache="cache", wsdl=None):
         # cliente soap del web service
+        if HOMO or not wsdl:
+            wsdl = WSDL
         self.client = SoapClient( 
-            wsdl = WSDL,        
+            wsdl = wsdl,        
             cache = cache,
             ns = "ser",
             trace = "--trace" in sys.argv)
