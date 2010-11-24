@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24d"
+__version__ = "1.24e"
 
 import sys
 import wsaa, wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -452,7 +452,7 @@ class WSFEX:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version',
         'Resultado', 'Obs', 'Reproceso',
-        'CAE','Vencimiento', 'Eventos', 
+        'CAE','Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg',
         'CbteNro', 'FechaCbte', 'ImpTotal']
         
     _reg_progid_ = "WSFEX"
@@ -469,6 +469,7 @@ class WSFEX:
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
+        self.ErrCode = self.ErrMsg = None
 
     def Conectar(self, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
@@ -552,9 +553,13 @@ class WSFEX:
             self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
             return self.CAE
         except wsfex.FEXError, e:
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
             raise COMException(scode = vbObjectError + int(e.code),
                                desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
             raiseSoapError(e)
         except COMException:
             raise
@@ -592,9 +597,13 @@ class WSFEX:
             return self.CAE
 
         except wsfex.FEXError, e:
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
             raise COMException(scode = vbObjectError + int(e.code),
                                desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
             raiseSoapError(e)
         except COMException:
             raise
@@ -616,9 +625,13 @@ class WSFEX:
                                     tipo_cbte, punto_vta)
             return cbte_nro
         except wsfex.FEXError, e:
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
             raise COMException(scode = vbObjectError + int(e.code),
                                desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
             raiseSoapError(e)
         except Exception, e:
             raisePythonException(e)
@@ -634,9 +647,13 @@ class WSFEX:
                                     self.Token, self.Sign, self.Cuit)
             return id
         except wsfex.FEXError, e:
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
             raise COMException(scode = vbObjectError + int(e.code),
                                desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
             raiseSoapError(e)
         except Exception, e:
             raisePythonException(e)
@@ -691,9 +708,13 @@ class WSFEX:
             param = wsfex.get_param_ctz(self.client, self.Token, self.Sign, self.Cuit, moneda_id)
             return "%(fecha)s: %(ctz)s" % param
         except wsfex.FEXError, e:
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
             raise COMException(scode = vbObjectError + int(e.code),
                                desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
             raiseSoapError(e)
         except COMException:
             raise
