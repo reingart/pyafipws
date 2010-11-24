@@ -202,7 +202,8 @@ def escribir(dic, formato):
             if str(valor):
                 valor = ("%%0%dd" % longitud) % int(str(valor).replace(".",""))
             else:
-                raise ValueError("Valor incorrecto para campo %s = %s" % (clave, valor))
+                valor =''
+                #raise ValueError("Valor incorrecto para campo %s = %s" % (clave, valor))
         if tipo == B:
             valor = ' ' * longitud
         else:
@@ -218,7 +219,7 @@ def format_as_dict(format):
 
 def generar_encabezado(entrada):
     items = []
-    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=";")
+    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=",")
     for row in csv_reader:
         items.append(row)
     if len(items) < 2:
@@ -227,6 +228,8 @@ def generar_encabezado(entrada):
 
     # armar diccionario por cada linea
     items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
+
+    print items
 
     periodo = items[0]['fecha_cbte'][:6]
 
@@ -275,7 +278,7 @@ def generar_encabezado(entrada):
 
 def generar_detalle(entrada):
     items = []
-    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=";")
+    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=",")
     for row in csv_reader:
         items.append(row)
     if len(items) < 2:
@@ -319,7 +322,7 @@ def generar_detalle(entrada):
 
 def generar_ventas(entrada):
     items = []
-    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=";")
+    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=",")
     for row in csv_reader:
         items.append(row)
     if len(items) < 2:
