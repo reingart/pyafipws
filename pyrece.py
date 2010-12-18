@@ -25,7 +25,7 @@ import wx
 from PythonCard import dialog, model
 import traceback
 from ConfigParser import SafeConfigParser
-import wsaa,wsfe
+import wsaa, wsfe, wsfev1
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
@@ -63,9 +63,8 @@ class PyRece(model.Background):
         self.items = []
         self.paths = [entrada]
         self.token = self.sign = ""
-        self.client = SoapClient(wsfe_url, action=wsfe.SOAP_ACTION, namespace=wsfe.SOAP_NS,
-                                trace=False, exceptions=True)
         self.smtp = None
+        self.webservice = None
     
     def set_cols(self, cols):
         self.__cols = cols
@@ -206,11 +205,33 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
     def on_btnLimpiar_mouseClick(self, event):
         self.components.txtEstado.text = ""
 
+    def on_cboWebservice_select(self, event):
+        self.webservice = self.components.cboWebservice.stringSelection
+        self.ws = None
+        self.token = None
+        self.sign = None
+        if self.webservice == "wsfe":
+            self.client = SoapClient(wsfe_url, action=wsfe.SOAP_ACTION, namespace=wsfe.SOAP_NS,
+                        trace=False, exceptions=True)
+        elif self.webservice == "wsfev1":
+            self.ws = wsfev1.WSFEv1()
+            self.ws.Conectar("cache","") #file:///C:/PYAFIP/WS/wsfev1_wsdl.xml")
+            self.ws.Cuit = cuit
+
     def on_btnAutenticar_mouseClick(self, event):
         try:
-            self.log("Creando TRA...")
-            tra = wsaa.create_tra()
-            self.log("Frimando TRA (CMS)...")
+            
+            if self.webservice in ('wsfe', 'wsfev1'):
+                service = "wsfe"
+            elif self.webservice in ('wsfex', ):
+                service = "wsfex"
+            else:
+                dialog.alertDialog(self, 'Debe seleccionar servicio web!', 'Advertencia')
+                return
+
+            self.log("Creando TRA %s ..." % service)
+            tra = wsaa.create_tra(service)
+            self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
             cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
             self.log("Llamando a WSAA...")
             xml = wsaa.call_wsaa(str(cms),wsaa_url)
@@ -220,6 +241,11 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.sign = str(ta.credentials.sign)
             self.log("Token: %s" % self.token)
             self.log("Sign: %s" % self.sign)
+
+            if self.webservice == "wsfev1":
+                self.ws.Token = self.token
+                self.ws.Sign = self.sign
+
             dialog.alertDialog(self, 'Autenticado OK!', 'Advertencia')
         except SoapFault,e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
@@ -236,7 +262,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
     def on_btnCargar_mouseClick(self, event):
         items = []
         for fn in self.paths:
-            csv_reader = csv.reader(open(fn), dialect='excel', delimiter=";")
+            csv_reader = csv.reader(open(fn), dialect='excel', delimiter=",")
             for row in csv_reader:
                 items.append(row)
         if len(items) < 2:
@@ -277,19 +303,82 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.progreso(0)
             for i, kargs in self.get_selected_items():
                 kargs['cbt_desde'] = kargs['cbt_hasta'] = kargs ['cbt_numero']
-                if 'id' not in kargs or kargs['id'] == "":
-                    id = long(kargs['cbt_desde'])
-                    id += (int(kargs['tipo_cbte'])*10**4 + int(kargs['punto_vta']))*10**8
-                    kargs['id'] = id
                 for key in kargs:
                     if isinstance(kargs[key], basestring):
                         kargs[key] = kargs[key].replace(",",".")
-                if DEBUG:
-                    self.log('\n'.join(["%s='%s'" % (k,v) for k,v in kargs.items()]))
-                ret = wsfe.aut(self.client, self.token, self.sign, cuit, **kargs)
-                kargs.update(ret)
-                del kargs['cbt_desde'] 
-                del kargs['cbt_hasta']
+                if self.webservice == 'wsfe':
+                    if 'id' not in kargs or kargs['id'] == "":
+                        id = long(kargs['cbt_desde'])
+                        id += (int(kargs['tipo_cbte'])*10**4 + int(kargs['punto_vta']))*10**8
+                        kargs['id'] = id
+                    if DEBUG:
+                        self.log('\n'.join(["%s='%s'" % (k,v) for k,v in kargs.items()]))
+                    ret = wsfe.aut(self.client, self.token, self.sign, cuit, **kargs)
+                    kargs.update(ret)
+                    del kargs['cbt_desde'] 
+                    del kargs['cbt_hasta']
+                elif self.webservice == 'wsfev1':
+                    encabezado = {}
+                    for k in ('concepto', 'tipo_doc', 'nro_doc', 'tipo_cbte', 'punto_vta',
+                              'cbt_desde', 'cbt_hasta', 'imp_total', 'imp_tot_conc', 'imp_neto',
+                              'imp_iva', 'imp_trib', 'imp_op_ex', 'fecha_cbte', 
+                              'moneda_id', 'moneda_ctz'):
+                        encabezado[k] = kargs[k]
+                            
+                    for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta'):
+                        if k in kargs:
+                            encabezado[k] = kargs.get(k)
+                        
+                    self.ws.CrearFactura(**encabezado)
+                    
+                    for i in range(1,1000):
+                        k = 'tributo_%%s_%s' % i
+                        if (k % 'id') in kargs:
+                            id = kargs[k % 'id']
+                            desc = kargs[k % 'desc']
+                            base_imp = kargs[k % 'base_imp']
+                            alic = kargs[k % 'alic']
+                            importe = kargs[k % 'importe']
+                            self.ws.AgregarTributo(id, desc, base_imp, alic, importe)
+                        else:
+                            break
+
+                    for i in range(1,1000):
+                        k = 'iva_%%s_%s' % i
+                        if (k % 'id') in kargs:
+                            id = kargs[k % 'id']
+                            base_imp = kargs[k % 'base_imp']
+                            importe = kargs[k % 'importe']
+                            self.ws.AgregarIva(id, base_imp, importe)
+                        else:
+                            break
+                        
+                    for i in range(1,1000):
+                        k = 'cbte_asoc_%%s_%s' % i
+                        if (k % 'tipo') in kargs:
+                            tipo = kargs[k % 'tipo']
+                            pto_vta = kargs[k % 'pto_vta']
+                            nro = kargs[k % 'nro']
+                            self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                        else:
+                            break
+                
+                    if DEBUG or 1:
+                        self.log('\n'.join(["%s='%s'" % (k,v) for k,v in self.ws.factura.items()]))
+
+                    cae = self.ws.CAESolicitar()
+                    kargs.update({
+                        'cae': self.ws.CAE,
+                        'fecha_vto': self.ws.Vencimiento,
+                        'resultado': self.ws.Resultado,
+                        'motivo': self.ws.Obs,
+                        'reproceso': 'N',
+                        'err_code': self.ws.ErrCode,
+                        'err_msg': self.ws.ErrMsg,
+                        })
+                    if self.ws.ErrMsg:
+                        dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
+                
                 self.items[i] = kargs
                 self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 if kargs['resultado'] == "R":
@@ -300,10 +389,12 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.items = self.items # refrescar, ver de corregir
             self.progreso(len(self.items))
             dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
-        except SoapFault,e:
+        except (SoapFault, wsfev1.SoapFault),e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
+        except KeyError, e:
+            self.error("Error",u'Campo obligatorio no encontrado: %s' % e)
         except Exception, e:
             self.error(u'Excepción',unicode(e))
 
@@ -571,17 +662,17 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             
         
 if __name__ == '__main__':
-    if len(sys.argv)>1:
+    if len(sys.argv)>1 and not sys.argv[1].startswith("-"):
         CONFIG_FILE = sys.argv[1]
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFE','CUIT')
-    if config.has_option('WSFE','ENTRADA'):
+    if False and config.has_option('WSFE','ENTRADA'):
         entrada = config.get('WSFE','ENTRADA')
     else:
-        entrada = "facturas.csv"
+        entrada = "facturas-wsfev1.csv"
     if config.has_option('WSFE','ENTRADA'):
         salida = config.get('WSFE','SALIDA')
     else:
