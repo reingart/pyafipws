@@ -266,7 +266,11 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
     def on_btnCargar_mouseClick(self, event):
         items = []
         for fn in self.paths:
-            csv_reader = csv.reader(open(fn), dialect='excel', delimiter=",")
+            csvfile = open(fn, "rb")
+            # deducir dialecto y delimitador
+            dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
+            csvfile.seek(0)
+            csv_reader = csv.reader(csvfile, dialect)
             for row in csv_reader:
                 items.append(row)
         if len(items) < 2:
