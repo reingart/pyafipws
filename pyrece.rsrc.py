@@ -155,7 +155,7 @@
     'columnHeadings':[], 
     'font':{'faceName': u'Tahoma', 'family': 'sansSerif', 'size': 8}, 
     'items':[], 
-    'maxColumns':20, 
+    'maxColumns':1000, 
     'rules':1, 
     },
 
