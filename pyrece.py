@@ -146,8 +146,12 @@ class PyRece(model.Background):
         ptovta = result.text
 
         try:
-            ultcmp = wsfe.recuperar_last_cmp(self.client, self.token, self.sign, 
-                cuit, ptovta, tipocbte)
+            if self.webservice=="wsfe":
+                ultcmp = wsfe.recuperar_last_cmp(self.client, self.token, self.sign, 
+                    cuit, ptovta, tipocbte)
+            elif  self.webservice=="wsfev1":
+                ultcmp = "wsfev1 %s" % self.ws.CompUltimoAutorizado(tipocbte, ptovta) 
+                    
             dialog.alertDialog(self, u"Último comprobante: %s\n" 
                 u"Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, tipos[tipocbte], 
                     tipocbte, ptovta), u'Consulta Último Nro. Comprobante')
@@ -268,6 +272,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         if len(items) < 2:
             dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
         cols = [str(it).strip() for it in items[0]]
+        print "Cols",cols
         # armar diccionario por cada linea
         items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
         self.cols = cols
@@ -331,8 +336,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         
                     self.ws.CrearFactura(**encabezado)
                     
-                    for i in range(1,1000):
-                        k = 'tributo_%%s_%s' % i
+                    for l in range(1,1000):
+                        k = 'tributo_%%s_%s' % l
                         if (k % 'id') in kargs:
                             id = kargs[k % 'id']
                             desc = kargs[k % 'desc']
@@ -343,8 +348,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         else:
                             break
 
-                    for i in range(1,1000):
-                        k = 'iva_%%s_%s' % i
+                    for l in range(1,1000):
+                        k = 'iva_%%s_%s' % l
                         if (k % 'id') in kargs:
                             id = kargs[k % 'id']
                             base_imp = kargs[k % 'base_imp']
@@ -353,8 +358,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         else:
                             break
                         
-                    for i in range(1,1000):
-                        k = 'cbte_asoc_%%s_%s' % i
+                    for l in range(1,1000):
+                        k = 'cbte_asoc_%%s_%s' % l
                         if (k % 'tipo') in kargs:
                             tipo = kargs[k % 'tipo']
                             pto_vta = kargs[k % 'pto_vta']
