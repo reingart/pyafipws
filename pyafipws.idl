@@ -1,0 +1,48 @@
+//
+// pyafipws.idl: source PyAfipWs COM Type Library 
+// influenced by msdn example2.idl and pythoncom's pippo.idl
+//
+
+import "unknwn.idl","oaidl.idl"; 
+
+[
+	uuid(65D24842-8691-4FB5-9B52-82393F12F4C6),
+	helpstring("PyAfipWs WSAA interface"),
+	pointer_default(unique),
+	dual,
+	object
+	//oleautomation
+] 
+interface IWSAA : IDispatch
+{
+	[id(1)] HRESULT CreateTRA([in] BSTR service, [in] int ttl,
+					[out, retval] BSTR * tra);
+	[id(2)] HRESULT SignTRA([in] BSTR tra, [in] BSTR cert, [in] BSTR privatekey,
+					[out, retval] BSTR * cms);
+	[id(3)] HRESULT CallWSAA([in] BSTR cms, [in] BSTR proxy, [in] BSTR url,
+					[out, retval] BSTR * ta);
+
+	[propget, id(4)] HRESULT Token( [out, retval] BSTR *  token); 
+	[propget, id(5)] HRESULT Sign( [out, retval] BSTR *  sign); 
+	[propget, id(6)] HRESULT Version( [out, retval] BSTR *  sign); 
+	[propget, id(7)] HRESULT XmlResponse( [out, retval] BSTR *  sign); 
+
+};  //end interface def
+
+
+[
+	uuid(84A3B5EC-D019-4B27-8DB8-469D8D8E97D1),
+	version(1.02),
+	helpstring("PyAfipWs Type Library"),
+] library PyAfipWs
+{
+	importlib("stdole32.tlb");
+
+	[
+		uuid(25949BFC-AE90-43D5-A577-C18F65F86B26),
+		helpstring("WSAA Component Class")
+	] coclass WSAA
+	{
+		[default]interface IWSAA;
+	}
+}; //end library def
