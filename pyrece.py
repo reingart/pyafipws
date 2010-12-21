@@ -219,7 +219,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         trace=False, exceptions=True)
         elif self.webservice == "wsfev1":
             self.ws = wsfev1.WSFEv1()
-            self.ws.Conectar("cache","") #file:///C:/PYAFIP/WS/wsfev1_wsdl.xml")
+            self.ws.Conectar("cache","file:///wsfev1_wsdl.xml")
             self.ws.Cuit = cuit
 
     def on_btnAutenticar_mouseClick(self, event):

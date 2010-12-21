@@ -31,7 +31,7 @@ for filename in os.listdir('.'):
 includes=[]
 for comp in ['button','image','staticbox','radiogroup', 'imagebutton',
             'statictext','textarea','textfield','passwordfield', 'checkbox',
-             'tree','multicolumnlist','list','gauge',
+             'tree','multicolumnlist','list','gauge','choice',
             ]:
     includes += ['PythonCard.components.'+comp]
 print 'includes',includes

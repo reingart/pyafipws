@@ -23,6 +23,11 @@ copy logo.png dist
 copy ghf.key dist\homo.key
 copy ghf.crt dist\homo.crt
 
+copy C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll dist
+copy C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll dist
+
+copy wsfev1_wsdl.xml dist
+
 rem Comprimir 
 "c:\Archivos de programa\7-Zip\7z.exe" a instalador-pyrece.7z dist -mx
 
