@@ -151,21 +151,6 @@ MAP_DET = {
     'bonif': 'bonificacion',
     }
 
-# Mapeo de nombres internos ws vs facturador-plus (detalle)
-MAP_DET = {
-    'codigo': 'cod',
-    'ds': 'desc',
-    'umed': 'unimed',
-    'qty': 'cant',
-    'precio': 'preciounit',
-    'imp_total': 'importe',
-    'iva_id':'tasaiva',
-    'imp_iva': 'importeiva',
-    'ncm': 'ncm',
-    'sec': 'sec',
-    'bonif': 'bonificacion',
-    }
-
 
 # Mapeo de nombres internos ws vs facturador-plus (ivas)
 MAP_IVA = {
@@ -190,6 +175,16 @@ XML_BASE = """\
 <comprobantes/>
 """
 
+def mapear(new, old, MAP, swap=False):
+    try:
+        for k, v in MAP.items():
+            if swap:
+                k, v = v, k
+            new[k] = old.get(v)
+        return new
+    except:
+        print new, old, MAP
+        raise
 
 def leer(fn="entrada.xml"):
     "Analiza un archivo XML y devuelve un diccionario"
@@ -197,108 +192,163 @@ def leer(fn="entrada.xml"):
 
     dic = xml.unmarshall(XML_FORMAT)
     
-    cols_e = ["id","nombre","domicilio","localidad","telefono","categoria","email",
-            "tipo_cbte","punto_vta","cbt_numero","fecha_cbte",
-            "tipo_doc","nro_doc","moneda_id","moneda_ctz",
-            "imp_neto","imp_iva","imp_trib","imp_op_ex","imp_tot_conc","imp_total",
-            "concepto","fecha_venc_pago","fecha_serv_desde","fecha_serv_hasta",
-            "cae","fecha_vto","resultado","motivo","reproceso",
-            ]
-
-    cols_d = [] # detalle
-    cols_i = [] # "iva_id_1","iva_base_imp_1","iva_importe_1",
-    cols_t = [] # "tributo_id_1","tributo_desc_1","tributo_base_imp_1","tributo_alic_1","tributo_importe_1",
-
-    filas = []
+    regs = []
     for dic_comprobante in dic['comprobantes']:
-        fila = {}
+        reg = {
+            'detalles': [],
+            'ivas': [],
+            'tributos': [],
+            'permisos': [],
+            'cmps_asocs': [],
+            }
         comp = dic_comprobante['comprobante']
-        for k, v in MAP_ENC.items():
-            fila[k] = comp[v]
-            for i, detalles in enumerate(comp['detalles']):
-                li = i+1
-                det = detalles['detalle']
-                fila.update({
-                        'codigo%s' % li: det['cod'],
-                        'descripcion%s' % li: det['desc'],
-                        'umed%s' % li: det.get('unimed'),
-                        'cantidad%s' % li: det['cant'],
-                        'precio%s' % li: det.get('preciounit'),
-                        'importe%s' % li: det['importe'],
-                        'iva_id%s' % li: det.get('tasaiva'),
-                        'imp_iva%s' % li: det.get('importeiva'),
-                        })
-            for i, ivas in enumerate(comp['ivas']):
-                li = i+1
-                iva = ivas['iva']
-                fila.update({
-                        'iva_id_%s' % li: iva['id'],
-                        'iva_base_imp_%s' % li: iva['baseimp'],
-                            'iva_importe_%s' % li: iva['importe'],
-                        })
-            for i, tributos in enumerate(comp['tributos']):
-                li = i+1
-                tributo = tributos['tributo']
-                fila.update({
-                        'tributo_id_%s' % li: tributo['id'],
-                        'tributo_base_imp_%s' % li: tributo['baseimp'],
-                        'tributo_desc_%s' % li: det['desc'],
-                        'tributo_alic_%s' % li: tributo['alic'],
-                        'tributo_importe_%s' % li: tributo['importe'],
-                        })
+        mapear(reg, comp, MAP_ENC)
+
+        for detalles in comp['detalles']:
+            det = detalles['detalle']
+            reg['detalles'].append(mapear({}, det, MAP_DET))
+            
+        for ivas in comp['ivas']:
+            iva = ivas['iva']
+            reg['ivas'].append(mapear({}, iva, MAP_IVA))
+
+        for tributos in comp['tributos']:
+            tributo = tributos['tributo']
+            reg['tributos'].append(mapear({}, tributo, MAP_TRIB))
+
+        regs.append(reg)
+    return regs
+
+
+def aplanar(regs):
+    "Convierte una estructura python en planilla CSV (PyRece)"
+    
+    filas = []
+    for reg in regs:
+        fila = {}
+        for k in MAP_ENC:
+            fila[k] = reg[k]
+
+        for i, det in enumerate(reg['detalles']):
+            li = i+1
+            fila.update({
+                    'codigo%s' % li: det['codigo'],
+                    'descripcion%s' % li: det['ds'],
+                    'umed%s' % li: det.get('umed'),
+                    'cantidad%s' % li: det['qty'],
+                    'precio%s' % li: det.get('precio'),
+                    'importe%s' % li: det['imp_total'],
+                    'iva_id%s' % li: det.get('iva_id'),
+                    'imp_iva%s' % li: det.get('imp_iva'),
+                    })
+        for i, iva in enumerate(reg['ivas']):
+            li = i+1
+            fila.update({
+                    'iva_id_%s' % li: iva['id'],
+                    'iva_base_imp_%s' % li: iva['base_imp'],
+                        'iva_importe_%s' % li: iva['importe'],
+                    })
+        for i, tributo in enumerate(reg['tributos']):
+            li = i+1
+            fila.update({
+                    'tributo_id_%s' % li: tributo['id'],
+                    'tributo_base_imp_%s' % li: tributo['base_imp'],
+                    'tributo_desc_%s' % li: tributo['desc'],
+                    'tributo_alic_%s' % li: tributo['alic'],
+                    'tributo_importe_%s' % li: tributo['importe'],
+                    })
         filas.append(fila)
-    return filas
+    
+    
+    cols = ["id",
+        "tipo_cbte","punto_vta","cbt_numero","fecha_cbte",
+        "tipo_doc","nro_doc","moneda_id","moneda_ctz",
+        "imp_neto","imp_iva","imp_trib","imp_op_ex","imp_tot_conc","imp_total",
+        "concepto","fecha_venc_pago","fecha_serv_desde","fecha_serv_hasta",
+        "cae","fecha_vto","resultado","motivo","reproceso",
+        "nombre","domicilio","localidad","telefono","categoria","email",
+        ]
+
+    # filtro y ordeno las columnas
+    l = [k for f in filas for k in f.keys()]
+    s = set(l) - set(cols)
+    cols = cols + list(s)
+ 
+    ret = [cols]
+    for fila in filas:
+        ret.append([fila.get(k) for k in cols])
+        
+    return ret
 
 
-def escribir(filas, fn="salida.xml"):
-    "Dado una lista de comprobantes (diccionarios), convierte y escribe"
-    xml = SimpleXMLElement(XML_BASE)
+def desaplanar(filas):
+    "Dado una planilla, conviertir en estructura python"
 
     def max_li(colname): 
-        tmp = max([k for k in fila if k.startswith(colname)])
+        tmp = max([k for k in filas[0] if k.startswith(colname)])
         if max_li:
             return int(tmp[len(colname):])+1
         else:
             return 0
 
+    regs = []
+    for fila in filas[1:]:
+        dic = dict([(filas[0][i], v) for i, v in enumerate(fila)])
+        reg = {}
+        for k in MAP_ENC:
+            reg[k] = dic[k]
+
+        reg['detalles'] = [{
+                'codigo': dic['codigo%s' % li],
+                'ds': dic['descripcion%s' % li],
+                'umed': dic['umed%s' % li],
+                'qty': dic['cantidad%s' % li],
+                'precio': dic['precio%s' % li],
+                'importe': dic['importe%s' % li],
+                'iva_id': dic['iva_id%s' % li],
+                'imp_iva': dic['imp_iva%s'% li],                                               
+                } for li in xrange(1, max_li("cantidad"))]
+                
+        reg['tributos'] = [{
+                'id': dic['tributo_id_%s'  % li],
+                'desc': dic['tributo_desc_%s'  % li],
+                'base_imp': dic['tributo_base_imp_%s'  % li],
+                'alic': dic['tributo_alic_%s'  % li],
+                'importe': dic['tributo_importe_%s'  % li],
+                } for li in xrange(1, max_li("tributo_id_"))]
+
+        reg['ivas'] = [{
+                'id': dic['iva_id_%s'  % li],
+                'baseimp': dic['iva_base_imp_%s'  % li],
+                'importe': dic['iva_importe_%s'  % li],
+                } for li in xrange(1, max_li("iva_id_"))]
+                
+        regs.append(reg)
+
+    return regs
+
+
+def escribir(regs, fn="salida.xml"):
+    "Dado una lista de comprobantes (diccionarios), convierte y escribe"
+    xml = SimpleXMLElement(XML_BASE)
+
+
     comprobantes = []
-    for fila in filas:
+    for reg in regs:
         dic = {}
         for k, v in MAP_ENC.items():
-            dic[v] = fila[k]
-
+            dic[v] = reg[k]
+                
         dic.update({
-                
                 'detalles': [{
-                    'detalle': {
-                        'cod': fila['codigo%s' % li],
-                        'desc': fila['descripcion%s' % li],
-                        'unimed': fila['umed%s' % li],
-                        'cant': fila['cantidad%s' % li],
-                        'preciounit': fila['precio%s' % li],
-                        'importe': fila['importe%s' % li],
-                        'tasaiva': fila['iva_id%s' % li],
-                        'importeiva': fila['imp_iva%s'% li],                                               
-                        },
-                    } for li in xrange(1, max_li("cantidad"))],
-                
+                    'detalle': mapear({}, det, MAP_DET, swap=True),
+                    } for det in reg['detalles']],                
                 'tributos': [{
-                    'tributo': {
-                        'id': fila['tributo_id_%s'  % li],
-                        'desc': fila['tributo_desc_%s'  % li],
-                        'baseimp': fila['tributo_base_imp_%s'  % li],
-                        'alic': fila['tributo_alic_%s'  % li],
-                        'importe': fila['tributo_importe_%s'  % li],
-                        },
-                    } for li in xrange(1, max_li("tributo_id_"))],
-
+                    'tributo': mapear({}, trib, MAP_TRIB, swap=True),
+                    } for trib in reg['tributos']],
                 'ivas': [{
-                    'iva': {
-                        'id': fila['iva_id_%s'  % li],
-                        'baseimp': fila['iva_base_imp_%s'  % li],
-                        'importe': fila['iva_importe_%s'  % li],
-                        },
-                    } for li in xrange(1, max_li("iva_id_"))],
+                    'iva': mapear({}, iva, MAP_IVA, swap=True),
+                    } for iva in reg['ivas']],
                 })
         comprobantes.append(dic)
 
@@ -307,6 +357,10 @@ def escribir(filas, fn="salida.xml"):
 
 # pruebas básicas
 if __name__ == '__main__':
-    d = leer()
-    d[0]['cae']='0'*15
-    escribir(d)
+    regs = leer()
+    regs[0]['cae']='1'*15
+    filas = aplanar(regs)   
+    reg1 = desaplanar(filas)
+    print reg1
+    print reg1 == regs
+    escribir(reg1)

@@ -35,7 +35,7 @@ from smtplib import SMTP
 from PyFPDF.ejemplos.form import Form
 
 HOMO = False
-DEBUG = False
+DEBUG = True
 CONFIG_FILE = "rece.ini"
 
 def digito_verificador_modulo10(codigo):
@@ -97,7 +97,9 @@ class PyRece(model.Background):
     paths = property(get_paths, set_paths)
         
     def log(self, msg):
-        self.components.txtEstado.text = msg.decode("latin1","ignore") + u"\n" + self.components.txtEstado.text.decode("latin1", "ignore")
+        if not isinstance(msg, unicode):
+            msg = msg.decode("latin1","ignore")
+        self.components.txtEstado.text = msg + u"\n" + self.components.txtEstado.text
         wx.SafeYield()
     
     def progreso(self, value):
@@ -107,7 +109,7 @@ class PyRece(model.Background):
 
     def error(self, code, text):
         ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-        self.log(''.join(ex))
+        self.log(u''.join(ex))
         dialog.alertDialog(self, text, 'Error %s' % code)
 
     def on_btnMarcarTodo_mouseClick(self, event):
@@ -266,13 +268,18 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
     def on_btnCargar_mouseClick(self, event):
         items = []
         for fn in self.paths:
-            csvfile = open(fn, "rb")
-            # deducir dialecto y delimitador
-            dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
-            csvfile.seek(0)
-            csv_reader = csv.reader(csvfile, dialect)
-            for row in csv_reader:
-                items.append(row)
+            if fn.endswith(".csv"):
+                csvfile = open(fn, "rb")
+                # deducir dialecto y delimitador
+                dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
+                csvfile.seek(0)
+                csv_reader = csv.reader(csvfile, dialect)
+                for row in csv_reader:
+                    items.append(row)
+            elif fn.endswith(".xml"):
+                import formato_xml
+                regs = formato_xml.leer(fn)
+                items.extend(formato_xml.aplanar(regs))
         if len(items) < 2:
             dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
         cols = [str(it).strip() for it in items[0]]
@@ -284,7 +291,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
 
     def on_btnGrabar_mouseClick(self, event):
         try:
-            wildcard = "Archivos CSV (*.csv)|*.csv"
+            wildcard = "Archivos CSV (*.csv)|*.csv|Archivos XML (*.xml)|*.xml"
             if self.paths:
                 path = self.paths[0]
             else:
@@ -294,11 +301,16 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             if not result.accepted:
                 return
             fn = result.paths[0]
-            f = open(fn,"wb")
-            csv_writer = csv.writer(f, dialect='excel', delimiter=";")
-            csv_writer.writerows([self.cols])
-            csv_writer.writerows([[item[k] for k in self.cols] for item in self.items])
-            f.close()
+            if fn.endswith(".csv"):
+                f = open(fn,"wb")
+                csv_writer = csv.writer(f, dialect='excel', delimiter=";")
+                csv_writer.writerows([self.cols])
+                csv_writer.writerows([[item[k] for k in self.cols] for item in self.items])
+                f.close()
+            else:
+                import formato_xml
+                regs = formato_xml.desaplanar([self.cols] + [[item[k] for k in self.cols] for item in self.items])
+                formato_xml.escribir(regs, fn)                
             dialog.alertDialog(self, u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
         except Exception, e:
             self.error(u'Excepción',unicode(e))
@@ -389,7 +401,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
                 
                 self.items[i] = kargs
-                self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
+                self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 if kargs['resultado'] == "R":
                     rechazadas += 1
                 else:
@@ -406,6 +418,11 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.error("Error",u'Campo obligatorio no encontrado: %s' % e)
         except Exception, e:
             self.error(u'Excepción',unicode(e))
+        finally:
+            if DEBUG:
+                if self.webservice == 'wsfev1':
+                    self.log(self.ws.XmlRequest)
+                    self.log(self.ws.XmlResponse)
 
     def on_btnAutorizarLote_mouseClick(self, event):
         try:
@@ -681,7 +698,7 @@ if __name__ == '__main__':
     if False and config.has_option('WSFE','ENTRADA'):
         entrada = config.get('WSFE','ENTRADA')
     else:
-        entrada = "facturas-wsfev1.csv"
+        entrada = "entrada.xml" #"facturas-wsfev1.csv"
     if config.has_option('WSFE','ENTRADA'):
         salida = config.get('WSFE','SALIDA')
     else:
