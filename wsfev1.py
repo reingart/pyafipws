@@ -17,18 +17,18 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.01d"
 
 import datetime
 import decimal
 import sys
 import traceback
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault
+from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
 
 HOMO = True
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
-WSDL="http://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
+WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 #WSDL="http://www.afip.gov.ar/fe/documentos/wsdl_viejo_wsfe.xml"
 
 
@@ -114,13 +114,15 @@ class WSFEv1:
             self.ErrMsg = '\n'.join(self.Errores)
 
     @inicializar_y_capturar_execepciones
-    def Conectar(self, cache="cache", wsdl=None):
+    def Conectar(self, cache="cache", wsdl=None, proxy=""):
         # cliente soap del web service
+        proxy_dict = parse_proxy(proxy)
         if HOMO or not wsdl:
             wsdl = WSDL
         self.client = SoapClient( 
             wsdl = wsdl,        
             cache = cache,
+            proxy = proxy_dict,
             trace = "--trace" in sys.argv)
 
     @inicializar_y_capturar_execepciones
@@ -231,17 +233,18 @@ class WSFEv1:
             })
         
         result = ret['FECAESolicitarResult']
-        fecabresp = result['FeCabResp']
-        self.Resultado = fecabresp['Resultado']
-        ##print result['FeDetResp']
-        fedetresp = result['FeDetResp'][0]['FECAEDetResponse']
-        # Obs:
-        for obs in fedetresp.get('Observaciones', []):
-            self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
-        self.Obs = '\n'.join(self.Observaciones)
-        self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
-        self.Vencimiento = fedetresp['CAEFchVto']
-        #self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+        if 'FeCabResp' in result:
+            fecabresp = result['FeCabResp']
+            self.Resultado = fecabresp['Resultado']
+            ##print result['FeDetResp']
+            fedetresp = result['FeDetResp'][0]['FECAEDetResponse']
+            # Obs:
+            for obs in fedetresp.get('Observaciones', []):
+                self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+            self.Obs = '\n'.join(self.Observaciones)
+            self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
+            self.Vencimiento = fedetresp['CAEFchVto']
+            #self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
         self.__analizar_errores(result)
         return self.CAE
 
@@ -401,10 +404,10 @@ def main():
 
         tipo_cbte = 2
         punto_vta = 4001
-        cbte_nro = 0
+        cbte_nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
-        concepto = 1
-        tipo_doc = 80; nro_doc = "20267565393"
+        concepto = 2
+        tipo_doc = 80; nro_doc = "33693450239" # CUIT AFIP
         cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
         imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
         imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
