@@ -221,7 +221,9 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         trace=False, exceptions=True)
         elif self.webservice == "wsfev1":
             self.ws = wsfev1.WSFEv1()
+            wx.SafeYield()
             self.ws.Conectar("cache","file:///wsfev1_wsdl.xml")
+            wx.SafeYield()
             self.ws.Cuit = cuit
 
     def on_btnAutenticar_mouseClick(self, event):
@@ -626,7 +628,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         
         if letra=='A':
             f.set('NETO', fmtimp(item['imp_neto']))
-            f.set('IVA21', fmtimp(item['impto_liq']))
+            f.set('IVA21', fmtimp(item.get('impto_liq', item.get('imp_iva'))))
             f.set('LeyendaIVA',"")
         else:
             f.set('NETO.L',"")
