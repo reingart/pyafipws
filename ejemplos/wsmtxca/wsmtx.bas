@@ -67,7 +67,8 @@ Sub Main()
     fecha = Format(Date, "yyyy-mm-dd")
     concepto = 3
     tipo_doc = 80: nro_doc = "30000000007"
-    cbt_desde = cbte_nro + 1: cbt_hasta = cbte_nro + 1
+    cbte_nro = CLng(cbte_nro) + 1
+    cbt_desde = cbte_nro: cbt_hasta = cbte_nro
     imp_total = "122.00": imp_tot_conc = "0.00": imp_neto = "100.00"
     imp_trib = "1.00": imp_op_ex = "0.00": imp_subtotal = "100.00"
     fecha_cbte = fecha: fecha_venc_pago = fecha

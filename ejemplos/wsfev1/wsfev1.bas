@@ -50,7 +50,10 @@ Sub Main()
     WSFEv1.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    ok = WSFEv1.Conectar("", "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL") ' homologación
+    'proxy = "usuario:clave@localhost:8010"
+    'wsdl = "file:///C:/pyafip/ws/ejemplos/wsfev1/wsfev1-homo.wsdl"
+    'cache = path
+    ok = WSFEv1.Conectar(cache, wsdl, proxy) ' homologación
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSFEv1.Dummy
@@ -64,8 +67,8 @@ Sub Main()
     cbte_nro = WSFEv1.CompUltimoAutorizado(tipo_cbte, punto_vta)
     fecha = Format(Date, "yyyymmdd")
     concepto = 1
-    tipo_doc = 80: nro_doc = "27269434894"
-    cbte_nro = cbte_nro + 1
+    tipo_doc = 80: nro_doc = "33693450239"
+    cbte_nro = CLng(cbte_nro) + 1
     cbt_desde = cbte_nro: cbt_hasta = cbte_nro
     imp_total = "122.00": imp_tot_conc = "0.00": imp_neto = "100.00"
     imp_iva = "21.00": imp_trib = "1.00": imp_op_ex = "0.00"
@@ -144,7 +147,7 @@ ManejoError:
         Case vbRetry
             Debug.Print WSFEv1.XmlRequest
             Debug.Print WSFEv1.XmlResponse
-            Debug.Print WSFEv1.Traceback
+            Debug.Print WSFEv1.traceback
             Debug.Assert False
             Resume
         Case vbCancel
@@ -152,5 +155,5 @@ ManejoError:
     End Select
     Debug.Print WSFEv1.XmlRequest
     Debug.Assert False
-
+    Debug.Print WSFEv1.traceback
 End Sub
