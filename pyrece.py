@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19"
+__version__ = "1.19d"
 
 import csv
 from decimal import Decimal
@@ -216,20 +216,26 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         self.ws = None
         self.token = None
         self.sign = None
+        
         if self.webservice == "wsfe":
             self.client = SoapClient(wsfe_url, action=wsfe.SOAP_ACTION, namespace=wsfe.SOAP_NS,
                         trace=False, exceptions=True)
         elif self.webservice == "wsfev1":
             self.ws = wsfev1.WSFEv1()
-            wx.SafeYield()
-            self.ws.Conectar("cache","file:///wsfev1_wsdl.xml")
-            wx.SafeYield()
+            self.ws.Conectar("","file:///C:/pyrece/wsfev1_wsdl.xml")
             self.ws.Cuit = cuit
+            self.log("Conectado WSFEv1!")
+
 
     def on_btnAutenticar_mouseClick(self, event):
         try:
-            
-            if self.webservice in ('wsfe', 'wsfev1'):
+
+            if self.webservice in ('wsfe', ):
+                service = "wsfe"
+            elif self.webservice in ('wsfev1', ):
+                self.log("Conectando WSFEv1...")
+                self.ws.Conectar("","file:///C:/pyrece/wsfev1_wsdl.xml")
+                self.ws.Cuit = cuit
                 service = "wsfe"
             elif self.webservice in ('wsfex', ):
                 service = "wsfex"
@@ -362,7 +368,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                             base_imp = kargs[k % 'base_imp']
                             alic = kargs[k % 'alic']
                             importe = kargs[k % 'importe']
-                            self.ws.AgregarTributo(id, desc, base_imp, alic, importe)
+                            if id:
+                                self.ws.AgregarTributo(id, desc, base_imp, alic, importe)
                         else:
                             break
 
@@ -372,7 +379,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                             id = kargs[k % 'id']
                             base_imp = kargs[k % 'base_imp']
                             importe = kargs[k % 'importe']
-                            self.ws.AgregarIva(id, base_imp, importe)
+                            if id:
+                                self.ws.AgregarIva(id, base_imp, importe)
                         else:
                             break
                         
@@ -382,7 +390,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                             tipo = kargs[k % 'tipo']
                             pto_vta = kargs[k % 'pto_vta']
                             nro = kargs[k % 'nro']
-                            self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                            if id:
+                                self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
                         else:
                             break
                 
@@ -396,11 +405,11 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         'resultado': self.ws.Resultado,
                         'motivo': self.ws.Obs,
                         'reproceso': 'N',
-                        'err_code': self.ws.ErrCode,
-                        'err_msg': self.ws.ErrMsg,
+                        'err_code': self.ws.ErrCode.encode("latin1"),
+                        'err_msg': self.ws.ErrMsg.encode("latin1"),
                         })
                     if self.ws.ErrMsg:
-                        dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
+                            dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
                 
                 self.items[i] = kargs
                 self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
@@ -638,8 +647,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         f.set('CAE', item['cae'])
         f.set('CAE.Vencimiento', fmtdate(item['fecha_vto']))
         if item['cae']!="NULL":
-            barras = ''.join([cuit, item['tipo_cbte'], item['punto_vta'], 
-                item['cae'], item['fecha_vto']])
+            barras = '%11s%02d%04d%s%8s' % (cuit, int(item['tipo_cbte']), int(item['punto_vta']),item['cae'], item['fecha_vto'])
             barras = barras + digito_verificador_modulo10(barras)
         else:
             barras = ""
@@ -700,7 +708,7 @@ if __name__ == '__main__':
     if False and config.has_option('WSFE','ENTRADA'):
         entrada = config.get('WSFE','ENTRADA')
     else:
-        entrada = "entrada.xml" #"facturas-wsfev1.csv"
+        entrada = "" #"facturas-wsfev1.csv"
     if config.has_option('WSFE','ENTRADA'):
         salida = config.get('WSFE','SALIDA')
     else:
