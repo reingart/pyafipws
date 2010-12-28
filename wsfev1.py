@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01d"
+__version__ = "1.01e"
 
 import datetime
 import decimal
@@ -124,6 +124,7 @@ class WSFEv1:
             cache = cache,
             proxy = proxy_dict,
             trace = "--trace" in sys.argv)
+        return True
 
     @inicializar_y_capturar_execepciones
     def Dummy(self):
@@ -132,6 +133,7 @@ class WSFEv1:
         self.AppServerStatus = result['AppServer']
         self.DbServerStatus = result['DbServer']
         self.AuthServerStatus = result['AuthServer']
+        return True
 
     def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
             cbt_desde=0, cbt_hasta=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
@@ -158,22 +160,26 @@ class WSFEv1:
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
         self.factura = fact
+        return True
 
     def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwarg):
         "Agrego un comprobante asociado a una factura (interna)"
         cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
         self.factura['cbtes_asoc'].append(cmp_asoc)
+        return True
 
     def AgregarTributo(self, id=0, desc="", base_imp=0.00, alic=0, importe=0.00, **kwarg):
         "Agrego un tributo a una factura (interna)"
         tributo = { 'id': id, 'desc': desc, 'base_imp': base_imp, 
                     'alic': alic, 'importe': importe}
         self.factura['tributos'].append(tributo)
+        return True
 
     def AgregarIva(self, id=0, base_imp=0.0, importe=0.0, **kwarg):
         "Agrego un tributo a una factura (interna)"
         iva = { 'id': id, 'base_imp': base_imp, 'importe': importe }
         self.factura['iva'].append(iva)
+        return True
 
     @inicializar_y_capturar_execepciones
     def CAESolicitar(self):
@@ -257,9 +263,9 @@ class WSFEv1:
             )
         
         result = ret['FECompUltimoAutorizadoResult']
-        nro = result['CbteNro']
+        self.CbteNro = result['CbteNro']
         self.__analizar_errores(result)
-        return nro
+        return self.CbteNro and str(self.CbteNro) or ''
 
     @inicializar_y_capturar_execepciones
     def CompConsultar(self, tipo_cbte, punto_vta, cbte_nro):
@@ -365,8 +371,7 @@ class WSFEv1:
             )
         self.__analizar_errores(ret)
         res = ret['FEParamGetCotizacionResult']['ResultGet']
-        if 'MonCotiz' in res:
-            return res['MonCotiz']
+        return str(res.get('MonCotiz',""))
 
 
 def main():

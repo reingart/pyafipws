@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import datetime
 import decimal
@@ -115,6 +115,7 @@ class WSMTXCA:
             cache = cache,
             ns = "ser",
             trace = "--trace" in sys.argv)
+        return True
 
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
@@ -122,6 +123,7 @@ class WSMTXCA:
         self.AppServerStatus = result['appserver']
         self.DbServerStatus = result['dbserver']
         self.AuthServerStatus = result['authserver']
+        return True
 
     def CrearFactura(self, concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
             cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
@@ -151,6 +153,7 @@ class WSMTXCA:
         if fecha_serv_desde: fact['fechaServicioDesde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fechaServicioHasta'] = fecha_serv_hasta
         self.factura = fact
+        return True
 
     def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0):
         "Agrego un comprobante asociado a una factura (interna)"
@@ -159,6 +162,7 @@ class WSMTXCA:
             'numeroPuntoVenta': pto_vta, 
             'numeroComprobante': nro}}
         self.factura['arrayComprobantesAsociados'].append(cmp_asoc)
+        return True
 
     def AgregarTributo(self, cod, desc, base_imp, alic, importe):
         "Agrego un tributo a una factura (interna)"
@@ -169,6 +173,7 @@ class WSMTXCA:
             'importe': importe,
             }}
         self.factura['arrayOtrosTributos'].append(tributo)
+        return True
 
     def AgregarIva(self, cod, base_imp, importe):
         "Agrego un tributo a una factura (interna)"
@@ -177,6 +182,7 @@ class WSMTXCA:
                 'importe': importe,
               }}
         self.factura['arraySubtotalesIVA'].append(iva)
+        return True
 
     def AgregarItem(self, u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                     cod_iva, imp_iva, imp_subtotal, ):
@@ -197,6 +203,7 @@ class WSMTXCA:
                 'importeItem': imp_subtotal
                 }
         self.factura['arrayItems'].append({'item': item})
+        return True
     
     @inicializar_y_capturar_execepciones
     def AutorizarComprobante(self):
@@ -238,7 +245,8 @@ class WSMTXCA:
             )
         nro = ret.get('numeroComprobante')
         self.__analizar_errores(ret)
-        return nro
+        self.CbteNro = nro
+        return str(nro)
     
     @inicializar_y_capturar_execepciones
     def ConsultarComprobante(self, tipo_cbte, punto_vta, cbte_nro):
