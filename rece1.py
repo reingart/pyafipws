@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24a"
+__version__ = "1.25a"
 
 import datetime
 import os
@@ -60,6 +60,7 @@ ENCABEZADO = [
     ('tipo_doc', 2, N), # 80
     ('nro_doc', 11, N), # 50000000016    
     ('imp_total', 15, I, 3), 
+    ('imp_tot_conc', 15, I, 3), 
     ('imp_tot_conc', 15, I, 3), 
     ('imp_neto', 15, I, 3), 
     ('imp_iva', 15, I, 3), 
@@ -275,10 +276,10 @@ if __name__ == "__main__":
         wsaa_url = config.get('WSAA','URL')
     else:
         wsaa_url = wsaa.WSAAURL
-    ##if config.has_option('WSFEv1','URL') and not HOMO:
-    ##    wsfex_url = config.get('WSFEv1','URL')
-    ##else:
-    ##    wsfex_url = wsfex.WSFEXURL
+    if config.has_option('WSFEv1','URL') and not HOMO:
+        wsfev1_url = config.get('WSFEv1','URL')
+    else:
+        wsfev1_url = None
 
     if '/debug'in sys.argv:
         DEBUG = True
@@ -291,7 +292,7 @@ if __name__ == "__main__":
     
     try:
         ws = wsfev1.WSFEv1()
-        ws.Conectar("")
+        ws.Conectar("", wsfev1_url)
         ws.Cuit = cuit
 
         if '/dummy' in sys.argv:
@@ -323,7 +324,7 @@ if __name__ == "__main__":
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             tipo_cbte = 1
-            punto_vta = 4001
+            punto_vta = 4002
             cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 1
