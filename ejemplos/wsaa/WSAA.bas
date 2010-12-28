@@ -20,8 +20,8 @@ Sub Main()
     Path = CurDir() + "\"
     ' Certificado: certificado es el firmado por la AFIP
     ' ClavePrivada: la clave privada usada para crear el certificado
-    Certificado = "..\..\..\reingart.crt" ' certificado de prueba
-    ClavePrivada = "..\..\..\reingart.key" ' clave privada de prueba
+    Certificado = "reingart.crt" ' certificado de prueba
+    ClavePrivada = "reingart.key" ' clave privada de prueba
     
     
     ' Generar el mensaje firmado (CMS)
