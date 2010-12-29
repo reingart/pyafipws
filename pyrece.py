@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19"
+__version__ = "1.19b"
 
 import csv
 from decimal import Decimal
@@ -66,6 +66,7 @@ class PyRece(model.Background):
         self.client = SoapClient(wsfe_url, action=wsfe.SOAP_ACTION, namespace=wsfe.SOAP_NS,
                                 trace=False, exceptions=True)
         self.smtp = None
+        self.cargar()
     
     def set_cols(self, cols):
         self.__cols = cols
@@ -89,6 +90,10 @@ class PyRece(model.Background):
         while itemidx >= 0:
             yield itemidx, self.__items[itemidx]
             itemidx = self.components.lvwListado.GetNextItem(itemidx, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
+
+    def set_selected_items(self, selected):
+        for itemidx in selected:
+            self.components.lvwListado.Select(itemidx, on=True)
 
     def set_paths(self, paths):
         self.__paths = paths
@@ -234,18 +239,24 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         self.paths = result.paths
 
     def on_btnCargar_mouseClick(self, event):
-        items = []
-        for fn in self.paths:
-            csv_reader = csv.reader(open(fn), dialect='excel', delimiter=";")
-            for row in csv_reader:
-                items.append(row)
-        if len(items) < 2:
-            dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
-        cols = [str(it).strip() for it in items[0]]
-        # armar diccionario por cada linea
-        items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
-        self.cols = cols
-        self.items = items
+        self.cargar()
+        
+    def cargar(self):
+        try:
+            items = []
+            for fn in self.paths:
+                csv_reader = csv.reader(open(fn), dialect='excel', delimiter=";")
+                for row in csv_reader:
+                    items.append(row)
+            if len(items) < 2:
+                dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
+            cols = [str(it).strip() for it in items[0]]
+            # armar diccionario por cada linea
+            items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
+            self.cols = cols
+            self.items = items
+        except Exception,e:
+                self.error(u'Excepción',unicode(e))
 
     def on_btnGrabar_mouseClick(self, event):
         try:
@@ -275,7 +286,9 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             cols = self.cols
             items = []
             self.progreso(0)
+            selected = []
             for i, kargs in self.get_selected_items():
+                selected.append(i)
                 kargs['cbt_desde'] = kargs['cbt_hasta'] = kargs ['cbt_numero']
                 if 'id' not in kargs or kargs['id'] == "":
                     id = long(kargs['cbt_desde'])
@@ -297,7 +310,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                 else:
                     ok += 1
                 self.progreso(i)
-            self.items = self.items # refrescar, ver de corregir
+            self.items = self.items 
+            self.set_selected_items(selected)
             self.progreso(len(self.items))
             dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
         except SoapFault,e:
@@ -519,8 +533,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         f.set('CAE', item['cae'])
         f.set('CAE.Vencimiento', fmtdate(item['fecha_vto']))
         if item['cae']!="NULL":
-            barras = ''.join([cuit, item['tipo_cbte'], item['punto_vta'], 
-                item['cae'], item['fecha_vto']])
+            barras = '%11s%02d%04d%s%8s' % (cuit, int(item['tipo_cbte']), int(item['punto_vta']),item['cae'], item['fecha_vto'])
             barras = barras + digito_verificador_modulo10(barras)
         else:
             barras = ""
