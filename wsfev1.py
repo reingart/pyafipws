@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01e"
+__version__ = "1.02a"
 
 import datetime
 import decimal
@@ -286,6 +286,7 @@ class WSFEv1:
             self.Vencimiento = resultget['FchVto'] #.strftime("%Y/%m/%d")
             self.ImpTotal = str(resultget['ImpTotal'])
             self.CAE = resultget['CodAutorizacion'] and str(resultget['CodAutorizacion']) or ''# 60423794871430L
+            self.Resultado = resultget['Resultado']
         self.__analizar_errores(result)
         return self.CAE
 
