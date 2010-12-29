@@ -130,6 +130,7 @@ Sub Main()
     Debug.Print "Fecha Comprobante:", WSFEv1.FechaCbte
     Debug.Print "Fecha Vencimiento CAE", WSFEv1.Vencimiento
     Debug.Print "Importe Total:", WSFEv1.ImpTotal
+    Debug.Print "Resultado:", WSFEv1.Resultado
     
     If cae <> cae2 Then
         MsgBox "El CAE de la factura no concuerdan con el recuperado en la AFIP!: " & cae & " vs " & cae2
