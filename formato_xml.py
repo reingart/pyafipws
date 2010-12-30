@@ -36,6 +36,13 @@ XML_FORMAT = {
             'nrodocreceptor': long,
             'receptor': str,
             'domicilioreceptor': str,
+            'idimpositivoreceptor': str,
+
+            'ape': str,
+            'incoterms': str,
+            'detalleincoterms': str,
+            'destinocmp': int,
+            
             'importetotal': Decimal,
             
             'importetotalconcepto': Decimal,
@@ -62,7 +69,13 @@ XML_FORMAT = {
                     'preciounit': Decimal,
                     'importe': Decimal,
                     'tasaiva': int,
+                    'aliciva': Decimal,
                     'importeiva': Decimal,
+                    
+                    #'desctributo': str,
+                    #'alictributo': Decimal,
+                    #'importetributo': Decimal,
+                    
                     },
                 }],
             
@@ -84,6 +97,22 @@ XML_FORMAT = {
                     },
                 }],
             
+            'permisosdestinos': [{
+                'permisodestino': {
+                    'permisoemb': str,
+                    'permisoemb': str,
+                    'destino': int,
+                    },
+                }],
+                
+            'cmpasociados': [{
+                'cmpasociado': {
+                    'tipoasoc': int,
+                    'ptovtaasoc': int,
+                    'nroasoc': int,
+                    },
+                }],
+                
             'otrosdatosgenerales': str,
 
             'fechaservdesde': str,
@@ -190,7 +219,7 @@ def leer(fn="entrada.xml"):
     "Analiza un archivo XML y devuelve un diccionario"
     xml = SimpleXMLElement(open(fn,"rb").read())
 
-    dic = xml.unmarshall(XML_FORMAT)
+    dic = xml.unmarshall(XML_FORMAT, strict=True)
     
     regs = []
     for dic_comprobante in dic['comprobantes']:
@@ -357,9 +386,10 @@ def escribir(regs, fn="salida.xml"):
 
 # pruebas básicas
 if __name__ == '__main__':
-    regs = leer()
+    regs = leer("")
     regs[0]['cae']='1'*15
     filas = aplanar(regs)   
+    print filas
     reg1 = desaplanar(filas)
     print reg1
     print reg1 == regs
