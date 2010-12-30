@@ -12,10 +12,10 @@
 
 "Aplicativo AdHoc Para generación de Facturas Electrónicas"
 
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19d"
+__version__ = "1.20a"
 
 import csv
 from decimal import Decimal
@@ -65,7 +65,8 @@ class PyRece(model.Background):
         self.token = self.sign = ""
         self.smtp = None
         self.webservice = None
-        self.cargar()
+        if entrada:
+            self.cargar()
     
     def set_cols(self, cols):
         self.__cols = cols
@@ -77,7 +78,7 @@ class PyRece(model.Background):
     def set_items(self, items):
         cols = self.cols
         self.__items = items
-        self.components.lvwListado.items = [[str(item[col]) for col in cols] for item in items]
+        self.components.lvwListado.items = [[(item[col] is not None and unicode(item[col]) or '') for col in cols] for item in items]
         wx.SafeYield()
     def get_items(self):
         return self.__items
@@ -227,10 +228,6 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         trace=False, exceptions=True)
         elif self.webservice == "wsfev1":
             self.ws = wsfev1.WSFEv1()
-            self.ws.Conectar("","file:///C:/pyrece/wsfev1_wsdl.xml")
-            self.ws.Cuit = cuit
-            self.log("Conectado WSFEv1!")
-
 
     def on_btnAutenticar_mouseClick(self, event):
         try:
@@ -272,7 +269,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.error(u'Excepción',unicode(e))
     
     def on_btnExaminar_mouseClick(self, event):
-        wildcard = "Archivos CSV (*.csv)|*.csv"
+        wildcard = "Archivos CSV (*.csv)|*.csv|Archivos XML (*.xml)|*.xml"
+
         result = dialog.fileDialog(self, 'Abrir', '', '', wildcard )
         if not result.accepted:
             return
@@ -283,28 +281,33 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         
     def cargar(self):
         try:
-        items = []
-        for fn in self.paths:
-            if fn.endswith(".csv"):
-                csvfile = open(fn, "rb")
-                # deducir dialecto y delimitador
-                dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
-                csvfile.seek(0)
-                csv_reader = csv.reader(csvfile, dialect)
-                for row in csv_reader:
-                    items.append(row)
-            elif fn.endswith(".xml"):
-                import formato_xml
-                regs = formato_xml.leer(fn)
-                items.extend(formato_xml.aplanar(regs))
-        if len(items) < 2:
-            dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
-        cols = [str(it).strip() for it in items[0]]
-        print "Cols",cols
-        # armar diccionario por cada linea
-        items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
-        self.cols = cols
-        self.items = items
+            items = []
+            for fn in self.paths:
+                if fn.endswith(".csv"):
+                    csvfile = open(fn, "rb")
+                    # deducir dialecto y delimitador
+                    dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
+                    csvfile.seek(0)
+                    csv_reader = csv.reader(csvfile, dialect)
+                    for row in csv_reader:
+                        r = []
+                        for c in row:
+                            if isinstance(c, basestring):
+                                c=c.strip()
+                            r.append(c)
+                        items.append(r)
+                elif fn.endswith(".xml"):
+                    import formato_xml
+                    regs = formato_xml.leer(fn)
+                    items.extend(formato_xml.aplanar(regs))
+            if len(items) < 2:
+                dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
+            cols = [str(it).strip() for it in items[0]]
+            print "Cols",cols
+            # armar diccionario por cada linea
+            items = [dict([(cols[i],v) for i,v in enumerate(item)]) for item in items[1:]]
+            self.cols = cols
+            self.items = items
         except Exception,e:
                 self.error(u'Excepción',unicode(e))
 
@@ -370,7 +373,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                     for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta'):
                         if k in kargs:
                             encabezado[k] = kargs.get(k)
-                        
+                    
                     self.ws.CrearFactura(**encabezado)
                     
                     for l in range(1,1000):
