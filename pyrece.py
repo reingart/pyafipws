@@ -65,6 +65,7 @@ class PyRece(model.Background):
         self.token = self.sign = ""
         self.smtp = None
         self.webservice = None
+        self.cargar()
     
     def set_cols(self, cols):
         self.__cols = cols
@@ -88,6 +89,10 @@ class PyRece(model.Background):
         while itemidx >= 0:
             yield itemidx, self.__items[itemidx]
             itemidx = self.components.lvwListado.GetNextItem(itemidx, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
+
+    def set_selected_items(self, selected):
+        for itemidx in selected:
+            self.components.lvwListado.Select(itemidx, on=True)
 
     def set_paths(self, paths):
         self.__paths = paths
@@ -274,6 +279,10 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         self.paths = result.paths
 
     def on_btnCargar_mouseClick(self, event):
+        self.cargar()
+        
+    def cargar(self):
+        try:
         items = []
         for fn in self.paths:
             if fn.endswith(".csv"):
@@ -296,6 +305,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
         self.cols = cols
         self.items = items
+        except Exception,e:
+                self.error(u'Excepción',unicode(e))
 
     def on_btnGrabar_mouseClick(self, event):
         try:
@@ -330,7 +341,9 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             cols = self.cols
             items = []
             self.progreso(0)
+            selected = []
             for i, kargs in self.get_selected_items():
+                selected.append(i)
                 kargs['cbt_desde'] = kargs['cbt_hasta'] = kargs ['cbt_numero']
                 for key in kargs:
                     if isinstance(kargs[key], basestring):
@@ -418,7 +431,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                 else:
                     ok += 1
                 self.progreso(i)
-            self.items = self.items # refrescar, ver de corregir
+            self.items = self.items 
+            self.set_selected_items(selected)
             self.progreso(len(self.items))
             dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
         except (SoapFault, wsfev1.SoapFault),e:
