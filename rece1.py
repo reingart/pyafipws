@@ -292,7 +292,7 @@ if __name__ == "__main__":
     
     try:
         ws = wsfev1.WSFEv1()
-        ws.Conectar("", wsfev1_url)
+        ws.Conectar(".", wsfev1_url)
         ws.Cuit = cuit
 
         if '/dummy' in sys.argv:
@@ -394,6 +394,30 @@ if __name__ == "__main__":
             print "Vencimiento = ", ws.Vencimiento
 
             depurar_xml(ws.client)
+            sys.exit(0)
+
+        if '/solicitarcaea' in sys.argv:
+            periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
+            orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
+
+            if DEBUG: 
+                print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
+            
+            caea = ws.CAEASolicitar(periodo, orden)
+            print "CAEA:", caea
+
+            if ws.Errores:
+                print "Errores:"
+                for error in ws.Errores:
+                    print error
+                
+            if DEBUG:
+                print "Periodo:", ws.Periodo 
+                print "Orden:", ws.Orden 
+                print "FchVigDesde:", ws.FchVigDesde 
+                print "FchVigHasta:", ws.FchVigHasta 
+                print "FchTopeInf:", ws.FchTopeInf 
+                print "FchProceso:", ws.FchProceso
             sys.exit(0)
 
         f_entrada = f_salida = None

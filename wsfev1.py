@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.03a"
 
 import datetime
 import decimal
@@ -46,6 +46,8 @@ def inicializar_y_capturar_execepciones(func):
             self.Traceback = ""
             self.ErrCode = ""
             self.ErrMsg = ""
+            self.CAEA = ""
+
             # llamo a la función
             return func(self, *args, **kwargs)
         except SoapFault, e:
@@ -101,7 +103,11 @@ class WSFEv1:
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
         self.Traceback = ""
-
+        self.CAEA = ""
+        self.Periodo = self.Orden = ""
+        self.FchVigDesde = self.FchVigHasta = ""
+        self.FchTopeInf = self.FchProceso = ""
+        
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
         if 'Errors' in ret:
@@ -292,6 +298,31 @@ class WSFEv1:
 
 
     @inicializar_y_capturar_execepciones
+    def CAEASolicitar(self, periodo, orden):
+        ret = self.client.FECAEASolicitar(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            Periodo=periodo, 
+            Orden=orden,
+            )
+        
+        result = ret['FECAEASolicitarResult']
+        self.__analizar_errores(result)
+
+        if 'ResultGet' in result:
+            result = result['ResultGet']
+            if 'CAEA' in result:
+                self.CAEA = result['CAEA']
+                self.Periodo = result['Periodo']
+                self.Orden = result['Orden']
+                self.FchVigDesde = result['FchVigDesde']
+                self.FchVigHasta = result['FchVigHasta']
+                self.FchTopeInf = result['FchTopeInf']
+                self.FchProceso = result['FchProceso']
+
+        return self.CAEA and str(self.CAEA) or ''
+    
+
+    @inicializar_y_capturar_execepciones
     def ParamGetTiposCbte(self):
         "Recuperador de valores referenciales de códigos de Tipos de Comprobantes"
         ret = self.client.FEParamGetTiposCbte(
@@ -384,15 +415,22 @@ def main():
     if 'wsaa' in sys.argv or not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
         import wsaa
         tra = wsaa.create_tra(service="wsfe")
-        cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
+        cms = wsaa.sign_tra(tra,"homo.crt","homo.key")
         ta_string = wsaa.call_wsaa(cms)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
     ta = SimpleXMLElement(ta_string)
     # fin TA
 
+    DEBUG = '--debug' in sys.argv
+
+    if '--cuit' in sys.argv:
+        cuit = sys.argv[sys.argv.index("--cuit")+1]
+    else:
+        cuit = "20267565393"
+
     wsfev1 = WSFEv1()
-    wsfev1.Cuit = "20267565393"
+    wsfev1.Cuit = cuit
     wsfev1.Token = str(ta.credentials.token)
     wsfev1.Sign = str(ta.credentials.sign)
 
@@ -475,6 +513,29 @@ def main():
     if "--cotizacion" in sys.argv:
         print wsfev1.ParamGetCotizacion('DOL')
 
+
+    if "--solicitar-caea" in sys.argv:
+        periodo = sys.argv[sys.argv.index("--solicitar-caea")+1]
+        orden = sys.argv[sys.argv.index("--solicitar-caea")+2]
+
+        if DEBUG: 
+            print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
+        
+        caea = wsfev1.CAEASolicitar(periodo, orden)
+        print "CAEA:", caea
+
+        if wsfev1.Errores:
+            print "Errores:"
+            for error in wsfev1.Errores:
+                print error
+            
+        if DEBUG:
+            print "periodo:", wsfev1.Periodo 
+            print "orden:", wsfev1.Orden 
+            print "fch_vig_desde:", wsfev1.FchVigDesde 
+            print "fch_vig_hasta:", wsfev1.FchVigHasta 
+            print "fch_tope_inf:", wsfev1.FchTopeInf 
+            print "fch_proceso:", wsfev1.FchProceso
 
 if __name__ == '__main__':
 
