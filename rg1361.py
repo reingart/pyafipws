@@ -38,6 +38,7 @@ import traceback
 C = 1 # caracter alfabetico
 N = 2 # numerico
 A = 3 # alfanumerico
+I = 4 # importes
 B = 9 # blanco
 
 CUIT = '20267565393'
@@ -62,133 +63,134 @@ codigos_operacion = {
 }
 
 CAB_FAC_TIPO1 = [
-    ('tipo_reg', 1, 2),
-    ('fecha_cbte', 8, 2),
-    ('tipo_cbte', 2, 2),
-    ('ctl_fiscal', 1, 1),
-    ('punto_vta', 4, 2),
-    ('cbt_numero', 8, 2),
-    ('cbte_nro_reg', 8, 2),
-    ('cant_hojas', 3, 2),
-    ('tipo_doc', 2, 2),
-    ('nro_doc', 11, 2),
-    ('nombre', 30, 3),
-    ('imp_total', 15, 2),
-    ('imp_tot_conc', 15, 2),
-    ('imp_neto', 15, 2),
-    ('impto_liq', 15, 2),
-    ('impto_liq_rni', 15, 2),
-    ('imp_op_ex', 15, 2),
-    ('impto_perc', 15, 2),
-    ('imp_iibb', 15, 2),
-    ('impto_perc_mun', 15, 2),
-    ('imp_internos', 15, 2),
-    ('transporte', 15, 2),
-    ('categoria', 2, 2),
-    ('imp_moneda_id', 3, 3),
-    ('imp_moneda_ctz', 10, 2),
-    ('alicuotas_iva', 1, 2),
-    ('codigo_operacion', 1, 1),
-    ('cae', 14, 2),
-    ('fecha_vto', 8, 2),
-    ('fecha_anulacion', 8, 3),
+    ('tipo_reg', 1, N),
+    ('fecha_cbte', 8, N),
+    ('tipo_cbte', 2, N),
+    ('ctl_fiscal', 1, C),
+    ('punto_vta', 4, N),
+    ('cbt_numero', 8, N),
+    ('cbte_nro_reg', 8, N),
+    ('cant_hojas', 3, N),
+    ('tipo_doc', 2, N),
+    ('nro_doc', 11, N),
+    ('nombre', 30, A),
+    ('imp_total', 15, I),
+    ('imp_tot_conc', 15, I),
+    ('imp_neto', 15, I),
+    ('impto_liq', 15, I),
+    ('impto_liq_rni', 15, I),
+    ('imp_op_ex', 15, I),
+    ('impto_perc', 15, I),
+    ('imp_iibb', 15, I),
+    ('impto_perc_mun', 15, I),
+    ('imp_internos', 15, I),
+    ('transporte', 15, I),
+    ('categoria', 2, N),
+    ('imp_moneda_id', 3, A),
+    ('imp_moneda_ctz', 10, I),
+    ('alicuotas_iva', 1, N),
+    ('codigo_operacion', 1, C),
+    ('cae', 14, N),
+    ('fecha_vto', 8, N),
+    ('fecha_anulacion', 8, A),
     ]
 
 # total
 CAB_FAC_TIPO2 = [
-    ('tipo_reg', 1, 2),
-    ('periodo', 6, 2),
-    ('relleno', 13, 9),
-    ('cant_reg_tipo_1', 8, 2),
-    ('relleno', 17, 9),
-    ('cuit', 11, 2),
-    ('relleno', 22, 9),
-    ('imp_total', 15, 2),
-    ('imp_tot_conc', 15, 2),
-    ('imp_neto', 15, 2),
-    ('impto_liq', 15, 2),
-    ('impto_liq_rni', 15, 2),
-    ('imp_op_ex', 15, 2),
-    ('impto_perc', 15, 2),
-    ('imp_iibb', 15, 2),
-    ('impto_perc_mun', 15, 2),
-    ('imp_internos', 15, 2),
-    ('relleno', 62, 9),
+    ('tipo_reg', 1, N),
+    ('periodo', 6, N),
+    ('relleno', 13, B),
+    ('cant_reg_tipo_1', 8, N),
+    ('relleno', 17, B),
+    ('cuit', 11, N),
+    ('relleno', 22, B),
+    ('imp_total', 15, I),
+    ('imp_tot_conc', 15, I),
+    ('imp_neto', 15, I),
+    ('impto_liq', 15, I),
+    ('impto_liq_rni', 15, I),
+    ('imp_op_ex', 15, I),
+    ('impto_perc', 15, I),
+    ('imp_iibb', 15, I),
+    ('impto_perc_mun', 15, I),
+    ('imp_internos', 15, I),
+    ('relleno', 62, B),
     ]
 
 DETALLE = [
-    ('tipo_cbte', 2, 2),
-    ('ctl_fiscal', 1, 1),
-    ('fecha_cbte', 8, 2),
-    ('punto_vta', 4, 2),
-    ('cbt_numero', 8, 2),
-    ('cbte_nro_reg', 8, 2),
-    ('qty', 12, 2),
-    ('pro_umed', 2, 2),
-    ('pro_precio_uni', 16, 2),
-    ('imp_bonif', 15, 2),
-    ('imp_ajuste', 16, 2),
-    ('imp_total', 16, 2),
-    ('alicuota_iva', 4, 2),
-    ('gravado', 1, 1),
-    ('anulacion', 1, 1),
-    ('diseño_libre', 75-0, 9),
+    ('tipo_cbte', 2, N),
+    ('ctl_fiscal', 1, C),
+    ('fecha_cbte', 8, N),
+    ('punto_vta', 4, N),
+    ('cbt_numero', 8, N),
+    ('cbte_nro_reg', 8, N),
+    ('qty', 12, I),
+    ('pro_umed', 2, N),
+    ('pro_precio_uni', 16, I),
+    ('imp_bonif', 15, I),
+    ('imp_ajuste', 16, I),
+    ('imp_total', 16, I),
+    ('alicuota_iva', 4, I),
+    ('gravado', 1, C),
+    ('anulacion', 1, C),
+    ('diseño_libre', 75-0, B),
     ]
 
 VENTAS_TIPO1 = [
-    ('tipo_reg', 1, 2),
-    ('fecha_cbte', 8, 2),
-    ('tipo_cbte', 2, 2),
-    ('ctl_fiscal', 1, 1),
-    ('punto_vta', 4, 2),
-    ('cbt_numero', 20, 2),
-    ('cbte_nro_reg', 20, 2),
-    ('tipo_doc', 2, 2),
-    ('nro_doc', 11, 2),
-    ('nombre', 30, 3),
-    ('imp_total', 15, 2),
-    ('imp_tot_conc', 15, 2),
-    ('imp_neto', 15, 2),
-    ('alicuota_iva', 4, 2),
-    ('impto_liq', 15, 2),
-    ('impto_liq_rni', 15, 2),
-    ('imp_op_ex', 15, 2),
-    ('impto_perc', 15, 2),
-    ('imp_iibb', 15, 2),
-    ('impto_perc_mun', 15, 2),
-    ('imp_internos', 15, 2),
-    ('categoria', 2, 2),
-    ('imp_moneda_id', 3, 3),
-    ('imp_moneda_ctz', 10, 2),
-    ('alicuotas_iva', 1, 2),
-    ('codigo_operacion', 1, 1),
-    ('cae', 14, 2),
-    ('fecha_vto', 8, 2),
-    ('fecha_anulacion', 8, 3),
-    ('info_adic', 75-0, 9),
+    ('tipo_reg', 1, N),
+    ('fecha_cbte', 8, N),
+    ('tipo_cbte', 2, N),
+    ('ctl_fiscal', 1, C),
+    ('punto_vta', 4, N),
+    ('cbt_numero', 20, N),
+    ('cbte_nro_reg', 20, N),
+    ('tipo_doc', 2, N),
+    ('nro_doc', 11, N),
+    ('nombre', 30, A),
+    ('imp_total', 15, I),
+    ('imp_tot_conc', 15, I),
+    ('imp_neto', 15, I),
+    ('alicuota_iva', 4, I),
+    ('impto_liq', 15, I),
+    ('impto_liq_rni', 15, I),
+    ('imp_op_ex', 15, I),
+    ('impto_perc', 15, I),
+    ('imp_iibb', 15, I),
+    ('impto_perc_mun', 15, I),
+    ('imp_internos', 15, I),
+    ('categoria', 2, N),
+    ('imp_moneda_id', 3, A),
+    ('imp_moneda_ctz', 10, I),
+    ('alicuotas_iva', 1, N),
+    ('codigo_operacion', 1, C),
+    ('cae', 14, N),
+    ('fecha_vto', 8, N),
+    ('fecha_anulacion', 8, A),
+    ('info_adic', 75-0, B),
     ]
 
 VENTAS_TIPO2 = [
-    ('tipo_reg', 1, 2),
-    ('periodo', 6, 2),
-    ('relleno', 29, 9),
-    ('cant_reg_tipo_1', 12, 2),
-    ('relleno', 10, 9),
-    ('cuit', 11, 2),
-    ('relleno', 30, 9),
-    ('imp_total', 15, 2),
-    ('imp_tot_conc', 15, 2),
-    ('imp_neto', 15, 2),
-    ('Relleno', 4, 9),
-    ('impto_liq', 15, 2),
-    ('impto_liq_rni', 15, 2),
-    ('imp_op_ex', 15, 2),
-    ('impto_perc', 15, 2),
-    ('imp_iibb', 15, 2),
-    ('impto_perc_mun', 15, 2),
-    ('imp_internos', 15, 2),
-    ('relleno', 122, 9),
+    ('tipo_reg', 1, N),
+    ('periodo', 6, N),
+    ('relleno', 29, B),
+    ('cant_reg_tipo_1', 12, N),
+    ('relleno', 10, B),
+    ('cuit', 11, N),
+    ('relleno', 30, B),
+    ('imp_total', 15, I),
+    ('imp_tot_conc', 15, I),
+    ('imp_neto', 15, I),
+    ('Relleno', 4, B),
+    ('impto_liq', 15, I),
+    ('impto_liq_rni', 15, I),
+    ('imp_op_ex', 15, I),
+    ('impto_perc', 15, I),
+    ('imp_iibb', 15, I),
+    ('impto_perc_mun', 15, I),
+    ('imp_internos', 15, I),
+    ('relleno', 122, B),
     ]
+    
 def escribir(dic, formato):
     linea = " " * sum([l for n, l, t in formato])
     comienzo = 1
@@ -197,6 +199,10 @@ def escribir(dic, formato):
             clave = clave.capitalize()
         valor = str(dic.get(clave,""))
         if tipo == N:
+            if valor is None or valor=='None':
+                valor = '0'
+            valor = ("%%0%dd" % longitud) % int(valor)
+        elif tipo == I:
             if valor is None or valor=='None':
                 valor = "0.00"
             if str(valor):
@@ -212,6 +218,37 @@ def escribir(dic, formato):
         comienzo += longitud
     return linea + "\n"
 
+def leer(linea, formato):
+    dic = {}
+    comienzo = 1
+    for fmt in formato:    
+        clave, longitud, tipo = fmt[0:3]
+        dec = len(fmt)>3 and fmt[3] or 2
+        valor = linea[comienzo-1:comienzo-1+longitud].strip()
+        try:
+            if tipo == N:
+                if valor:
+                    valor = str(int(valor))
+                else:
+                    valor = '0'
+            elif tipo == I:
+                if valor:
+                    try:
+                        valor = valor.strip(" ")
+                        valor = float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
+                    except ValueError:
+                        raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
+                else:
+                    valor = 0.00
+            else:
+                valor = valor.decode("ascii","ignore")
+            dic[clave] = valor
+
+            comienzo += longitud
+        except Exception, e:
+            raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
+                clave, comienzo, valor, str(e)))
+    return dic
 
 def format_as_dict(format):
     return dict([(k[0], None) for k in format])
@@ -390,13 +427,24 @@ if __name__ == '__main__':
             entrada = sys.argv[1]
         else:
             entrada = 'facturas3.csv'
-        
-        print "Generando encabezado..."
-        generar_encabezado(entrada)
-        print "Generando detalle..."
-        generar_detalle(entrada)
-        print "Generando ventas..."
-        generar_ventas(entrada)
+
+        if '--leer' in sys.argv:
+            claves = [clave for clave, pos, leng in VENTAS_TIPO1 if clave not in ('tipo','info_adic')]
+            csv = csv.DictWriter(open("ventas.csv","wb"), claves, extrasaction='ignore')
+            csv.writerow(dict([(k, k) for k in claves]))
+            f = open("VENTAS.txt")
+            for linea in f:
+                if str(linea[0])=='1':
+                    datos = leer(linea, VENTAS_TIPO1)
+                    csv.writerow(datos)
+            f.close()
+        else:
+            print "Generando encabezado..."
+            generar_encabezado(entrada)
+            print "Generando detalle..."
+            generar_detalle(entrada)
+            print "Generando ventas..."
+            generar_ventas(entrada)
         print "Hecho."
     except Exception, e:
         print "Error: por favor corriga los datos y vuelva a intentar:"
