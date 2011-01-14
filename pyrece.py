@@ -42,6 +42,9 @@ def digito_verificador_modulo10(codigo):
     "Rutina para el cálculo del dígito verificador 'módulo 10'"
     # http://www.consejo.org.ar/Bib_elect/diciembre04_CT/documentos/rafip1702.htm
     # Etapa 1: comenzar desde la izquierda, sumar todos los caracteres ubicados en las posiciones impares.
+    codigo = codigo.strip()
+    if not codigo or not codigo.isdigit():
+        return ''
     etapa1 = sum([int(c) for i,c in enumerate(codigo) if not i%2])
     # Etapa 2: multiplicar la suma obtenida en la etapa 1 por el número 3
     etapa2 = etapa1 * 3
@@ -269,9 +272,12 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.error(u'Excepción',unicode(e))
     
     def on_btnExaminar_mouseClick(self, event):
-        wildcard = "Archivos CSV (*.csv)|*.csv|Archivos XML (*.xml)|*.xml"
+        filename = entrada
+        wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml"]
+        if entrada.endswith("xml"):
+            wildcard.sort(reverse=True)
 
-        result = dialog.fileDialog(self, 'Abrir', '', '', wildcard )
+        result = dialog.fileDialog(self, 'Abrir', '', filename, '|'.join(wildcard))
         if not result.accepted:
             return
         self.paths = result.paths
@@ -312,17 +318,30 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                 self.error(u'Excepción',unicode(e))
 
     def on_btnGrabar_mouseClick(self, event):
-        try:
-            wildcard = "Archivos CSV (*.csv)|*.csv|Archivos XML (*.xml)|*.xml"
+            filename = entrada
+            wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml"]
+            if entrada.endswith("xml"):
+                wildcard.sort(reverse=True)
             if self.paths:
                 path = self.paths[0]
             else:
                 path = salida
             result = dialog.saveFileDialog(self, title='Guardar', filename=path, 
-                wildcard=wildcard )
+                wildcard='|'.join(wildcard))
             if not result.accepted:
                 return
             fn = result.paths[0]
+            self.grabar(fn)
+            
+    def grabar(self, fn=None):
+        try:
+            if fn is None and salida:
+                if salida.startswith("-") and self.paths:
+                    fn = os.path.splitext(self.paths[0])[0] + salida
+                else:
+                    fn = salida
+            elif not fn:
+                raise RuntimeError("Debe indicar un nombre de archivo para grabar")
             if fn.endswith(".csv"):
                 f = open(fn,"wb")
                 csv_writer = csv.writer(f, dialect='excel', delimiter=";")
@@ -358,7 +377,9 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         kargs['id'] = id
                     if DEBUG:
                         self.log('\n'.join(["%s='%s'" % (k,v) for k,v in kargs.items()]))
-                    ret = wsfe.aut(self.client, self.token, self.sign, cuit, **kargs)
+                    if not cuit in kargs:
+                        kargs['cuit'] = cuit
+                    ret = wsfe.aut(self.client, self.token, self.sign, **kargs)
                     kargs.update(ret)
                     del kargs['cbt_desde'] 
                     del kargs['cbt_hasta']
@@ -438,6 +459,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.set_selected_items(selected)
             self.progreso(len(self.items))
             dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
+            self.grabar()
         except (SoapFault, wsfev1.SoapFault),e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
         except wsfe.WSFEError,e:
@@ -533,6 +555,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                 self.items = self.items # refrescar, ver de corregir
                 self.progreso(len(self.items))
                 dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
+                self.grabar()
         except SoapFault,e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
@@ -580,9 +603,22 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.error(u'Excepción',unicode(e))
             
     def generar_factura(self, item):
-        fmtdate = lambda d: len(d)==8 and "%s/%s/%s" % (d[6:8], d[4:6], d[0:4]) or ''
-        fmtimp = lambda i: ("%0.2f" % Decimal(str(i).replace(",","."))).replace(".",",")
-        fmtcuit = lambda c: len(c)==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
+        def fmtdate(d):
+            if d is not None and str(d):
+                d = str(d)
+                return "%s/%s/%s" % (d[6:8], d[4:6], d[0:4]) or ''
+            else:
+                return ''
+        def fmtimp (i):
+            if i is not None and str(i):
+                return ("%0.2f" % Decimal(str(i).replace(",","."))).replace(".",",")
+            else:
+                return ''
+        def fmtcuit(c):
+            if c is not None and str(c):
+                c=str(c)
+                return len(str(c))==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
+            return ''
         
         f = Form(conf_fact.get('formato','factura.csv'))
         f.add_page()
@@ -638,6 +674,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         for i in range(25):
             if 'cantidad%d' % i in item:
                 f.set('Item.Cantidad%02d' % i, item['cantidad%d' % i])
+            if 'numero_despacho%d' % i in item:
+                f.set('Item.Numero_Despacho%02d' % i, item['numero_despacho%d' % i])
             if 'descripcion%d' % i in item:
                 f.set('Item.Descripcion%02d' % i, item['descripcion%d' % i])
                 li = i
@@ -722,11 +760,11 @@ if __name__ == '__main__':
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFE','CUIT')
-    if False and config.has_option('WSFE','ENTRADA'):
+    if config.has_option('WSFE','ENTRADA'):
         entrada = config.get('WSFE','ENTRADA')
     else:
         entrada = "" #"facturas-wsfev1.csv"
-    if config.has_option('WSFE','ENTRADA'):
+    if config.has_option('WSFE','SALIDA'):
         salida = config.get('WSFE','SALIDA')
     else:
         salida = "resultado.csv"
