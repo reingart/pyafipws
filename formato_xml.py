@@ -37,6 +37,12 @@ XML_FORMAT = {
             'receptor': str,
             'domicilioreceptor': str,
             'idimpositivoreceptor': str,
+            
+            'numero_cliente': str,
+            'numero_orden_compra': str,
+            'condicion_frente_iva': str,
+            'numero_cotizacion': str,
+            'numero_remito': str,
 
             'ape': str,
             'incoterms': str,
@@ -72,9 +78,16 @@ XML_FORMAT = {
                     'aliciva': Decimal,
                     'importeiva': Decimal,
                     
+                    'ncm': str,
+                    'sec': str,
+                    'bonificacion': str,
+                    'importe': str,
+                    
                     #'desctributo': str,
                     #'alictributo': Decimal,
                     #'importetributo': Decimal,
+                    
+                    'numero_despacho': str,
                     
                     },
                 }],
@@ -146,6 +159,12 @@ MAP_ENC = {
     "nombre": 'receptor',
     "domicilio": 'domicilioreceptor',
 
+    'numero_cliente': 'numero_cliente',
+    'numero_orden_compra': 'numero_orden_compra',
+    'condicion_frente_iva': 'condicion_frente_iva',
+    'numero_cotizacion': 'numero_cotizacion',
+    'numero_remito': 'numero_remito',
+
     "imp_total": 'importetotal',
     "imp_tot_conc": 'importetotalconcepto',
     "imp_neto": 'importeneto',
@@ -178,6 +197,8 @@ MAP_DET = {
     'ncm': 'ncm',
     'sec': 'sec',
     'bonif': 'bonificacion',
+    
+    'numero_despacho': 'numero_despacho',
     }
 
 
@@ -269,6 +290,7 @@ def aplanar(regs):
                     'importe%s' % li: det['imp_total'],
                     'iva_id%s' % li: det.get('iva_id'),
                     'imp_iva%s' % li: det.get('imp_iva'),
+                    'numero_despacho%s' % li: det.get('numero_despacho'),
                     })
         for i, iva in enumerate(reg['ivas']):
             li = i+1
@@ -296,6 +318,8 @@ def aplanar(regs):
         "concepto","fecha_venc_pago","fecha_serv_desde","fecha_serv_hasta",
         "cae","fecha_vto","resultado","motivo","reproceso",
         "nombre","domicilio","localidad","telefono","categoria","email",
+        'numero_cliente', 'numero_orden_compra', 'condicion_frente_iva',
+        'numero_cotizacion', 'numero_remito',
         ]
 
     # filtro y ordeno las columnas
@@ -336,6 +360,7 @@ def desaplanar(filas):
                 'importe': dic['importe%s' % li],
                 'iva_id': dic['iva_id%s' % li],
                 'imp_iva': dic['imp_iva%s'% li],                                               
+                'numero_despacho': dic['numero_despacho%s'% li],
                 } for li in xrange(1, max_li("cantidad"))]
                 
         reg['tributos'] = [{
