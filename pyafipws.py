@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25a"
+__version__ = "1.25b"
 
 import sys
 import wsaa, wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -68,7 +68,7 @@ class WSAA:
 
     def SignTRA(self, tra, cert, privatekey):
         "Firmar el TRA y devolver CMS"
-        return wsaa.sign_tra(str(tra),str(cert),str(privatekey))
+        return wsaa.sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'))
 
     def CallWSAA(self, cms, url="", proxy=None):
         "Obtener ticket de autorización (TA)"
