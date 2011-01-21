@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20a"
+__version__ = "1.20c"
 
 import csv
 from decimal import Decimal
@@ -68,9 +68,12 @@ class PyRece(model.Background):
         self.token = self.sign = ""
         self.smtp = None
         self.webservice = None
-        if entrada:
+        if entrada and os.path.exists(entrada):
             self.cargar()
-    
+        
+        self.components.cboWebservice.stringSelection = "wsfev1"
+        self.on_cboWebservice_select(event)
+        
     def set_cols(self, cols):
         self.__cols = cols
         self.components.lvwListado.columnHeadings = [col.replace("_"," ").title() for col in cols]
