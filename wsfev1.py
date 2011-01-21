@@ -29,7 +29,6 @@ HOMO = True
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
-#WSDL="http://www.afip.gov.ar/fe/documentos/wsdl_viejo_wsfe.xml"
 
 
 def inicializar_y_capturar_execepciones(func):
@@ -410,6 +409,19 @@ def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
 
+    wsfev1 = WSFEv1()
+
+    wsfev1.Conectar()
+    
+    if "--dummy" in sys.argv:
+        print wsfev1.client.help("FEDummy")
+        wsfev1.Dummy()
+        print "AppServerStatus", wsfev1.AppServerStatus
+        print "DbServerStatus", wsfev1.DbServerStatus
+        print "AuthServerStatus", wsfev1.AuthServerStatus
+        sys.exit(0)
+
+
     # obteniendo el TA
     TA = "TA-wsfe.xml"
     if 'wsaa' in sys.argv or not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
@@ -429,19 +441,9 @@ def main():
     else:
         cuit = "20267565393"
 
-    wsfev1 = WSFEv1()
     wsfev1.Cuit = cuit
     wsfev1.Token = str(ta.credentials.token)
     wsfev1.Sign = str(ta.credentials.sign)
-
-    wsfev1.Conectar()
-    
-    if "--dummy" in sys.argv:
-        print wsfev1.client.help("FEDummy")
-        wsfev1.Dummy()
-        print "AppServerStatus", wsfev1.AppServerStatus
-        print "DbServerStatus", wsfev1.DbServerStatus
-        print "AuthServerStatus", wsfev1.AuthServerStatus
     
     if "--prueba" in sys.argv:
         print wsfev1.client.help("FECAESolicitar").encode("latin1")
