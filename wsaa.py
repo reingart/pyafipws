@@ -116,6 +116,12 @@ if __name__=="__main__":
 
     print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s TTL=%s" % (cert,privatekey,url,service, ttl)
 
+    if '--proxy' in sys.argv:
+        proxy = parse_proxy(sys.argv[sys.argv.index("--proxy")+1])
+        print "Usando PROXY:", proxy
+    else:
+        proxy = None
+
     for filename in (cert,privatekey):
         if not os.access(filename,os.R_OK):
             sys.exit("Imposible abrir %s\n" % filename)
@@ -132,7 +138,7 @@ if __name__=="__main__":
     #cms = open("TRA.tmp").read()
     print "Llamando WSAA..."
     try:
-        ta = call_wsaa(cms,url, trace='--trace' in sys.argv) #parse_proxy("localhost:81")
+        ta = call_wsaa(cms,url, trace='--trace' in sys.argv, proxy=proxy)
     except SoapFault,e:
         sys.exit("Falla SOAP: %s\n%s\n" % (e.faultcode,e.faultstring))
     try:
