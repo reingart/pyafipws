@@ -39,6 +39,8 @@ def inicializar_y_capturar_execepciones(func):
             self.Resultado = self.CAE = self.Vencimiento = ""
             self.Evento = self.Obs = ""
             self.FechaCbte = self.CbteNro = self.PuntoVenta = self.ImpTotal = None
+            self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
+            self.CbtDesde = self.CbtHasta = self.FechaCbte = None
             self.Errores = []
             self.Observaciones = []
             self.Eventos = []
@@ -85,7 +87,9 @@ class WSFEv1:
         'XmlRequest', 'XmlResponse', 'Version',
         'Resultado', 'Obs', 'Observaciones', 'Traceback',
         'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
-        'CbteNro', 'FechaCbte', 'ImpTotal']
+        'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte', 
+        'ImpTotal', 'ImpNeto', 'ImptoLiq', 'ImpOpEx'
+        'ImptIVA', 'ImpOpEx', 'ImpTrib',]
         
     _reg_progid_ = "WSFEv1"
     _reg_clsid_ = "{CA0E604D-E3D7-493A-8880-F6CDD604185E}"
@@ -101,6 +105,7 @@ class WSFEv1:
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
+        self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
         self.Traceback = ""
         self.CAEA = ""
         self.Periodo = self.Orden = ""
@@ -117,6 +122,10 @@ class WSFEv1:
                     error['Err']['Msg'],
                     ))
             self.ErrMsg = '\n'.join(self.Errores)
+        if 'Events' in ret:
+            events = ret['Events']
+            self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+
 
     @inicializar_y_capturar_execepciones
     def Conectar(self, cache="cache", wsdl=None, proxy=""):
@@ -255,8 +264,12 @@ class WSFEv1:
             self.Obs = '\n'.join(self.Observaciones)
             self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
             self.Vencimiento = fedetresp['CAEFchVto']
-            #self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
-        self.__analizar_errores(result)
+            self.FechaCbte = fedetresp['CbteFch'] #.strftime("%Y/%m/%d")
+            self.CbteNro = fedetresp['CbteHasta'] # 1L
+            self.PuntoVenta = fecabresp['PtoVta'] # 4000
+            self.CbtDesde =fedetresp['CbteDesde']
+            self.CbtHasta = fedetresp['CbteHasta']
+            self.__analizar_errores(result)
         return self.CAE
 
     @inicializar_y_capturar_execepciones
@@ -268,7 +281,7 @@ class WSFEv1:
             )
         
         result = ret['FECompUltimoAutorizadoResult']
-        self.CbteNro = result['CbteNro']
+        self.CbteNro = result['CbteNro']        
         self.__analizar_errores(result)
         return self.CbteNro and str(self.CbteNro) or ''
 
@@ -292,6 +305,14 @@ class WSFEv1:
             self.ImpTotal = str(resultget['ImpTotal'])
             self.CAE = resultget['CodAutorizacion'] and str(resultget['CodAutorizacion']) or ''# 60423794871430L
             self.Resultado = resultget['Resultado']
+            self.CbtDesde =resultget['CbteDesde']
+            self.CbtHasta = resultget['CbteHasta']
+            self.ImpTotal = resultget['ImpTotal']
+            self.ImpNeto = resultget['ImpNeto']
+            self.ImptoLiq = self.ImpIVA = resultget['ImpIVA']
+            self.ImpOpEx = resultget['ImpOpEx']
+            self.ImpTrib = resultget['ImpTrib']
+
         self.__analizar_errores(result)
         return self.CAE
 
