@@ -41,6 +41,7 @@ Sub Main()
     ' Crear objeto interface Web Service de Factura Electrónica de Mercado Interno
     Set WSFEv1 = CreateObject("WSFEv1")
     Debug.Print WSFEv1.version
+    'Debug.Print WSFEv1.InstDir
     
     ' Setear tocken y sing de autorización (pasos previos)
     WSFEv1.Token = WSAA.Token
@@ -51,8 +52,8 @@ Sub Main()
     
     ' Conectar al Servicio Web de Facturación
     'proxy = "usuario:clave@localhost:8010"
-    'wsdl = "file:///C:/pyafip/ws/ejemplos/wsfev1/wsfev1-homo.wsdl"
-    'cache = path
+    wsdl = "file:///C:/archivos de programa/wsfev1/wsfev1_wsdl_homo.xml"
+    cache = Path
     ok = WSFEv1.Conectar(cache, wsdl, proxy) ' homologación
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)

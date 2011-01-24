@@ -17,10 +17,12 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.04a"
 
 import datetime
 import decimal
+import os
+import socket
 import sys
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
@@ -49,8 +51,18 @@ def inicializar_y_capturar_execepciones(func):
             self.ErrMsg = ""
             self.CAEA = ""
 
-            # llamo a la función
-            return func(self, *args, **kwargs)
+            # llamo a la función (con reintentos)
+            retry = 5
+            while retry:
+                try:
+                    retry -= 1
+                    return func(self, *args, **kwargs)
+                except socket.error, e:
+                    if e[0] != 10054:
+                        # solo reintentar si el error es de conexión
+                        # (10054, 'Connection reset by peer')
+                        raise
+
         except SoapFault, e:
             # guardo destalle de la excepción SOAP
             self.ErrCode = unicode(e.faultcode)
@@ -84,7 +96,7 @@ class WSFEv1:
                         'Dummy', 'Conectar', ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version',
+        'XmlRequest', 'XmlResponse', 'Version', 
         'Resultado', 'Obs', 'Observaciones', 'Traceback',
         'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
         'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte', 
