@@ -31,16 +31,37 @@ nsi_base_script = """\
 
 ; WARNING: This script has been created by py2exe. Changes to this script
 ; will be overwritten the next time py2exe is run!
-        
+
+XPStyle on
+
+Page license
+Page directory
+;Page components
+Page instfiles
+
+RequestExecutionLevel admin
+
+LoadLanguageFile "${NSISDIR}\Contrib\Language files\English.nlf"
+LoadLanguageFile "${NSISDIR}\Contrib\Language files\Spanish.nlf"
+
+# set license page
+LicenseText ""
+LicenseData "licencia.txt"
+LicenseForceSelection checkbox
+
+; use the default string for the directory page.
+DirText ""
+
 Name "%(description)s"
 OutFile "%(out_file)s"
+;SetCompress off ; disable compression (testing)
 SetCompressor /SOLID lzma
 ;InstallDir %(install_dir)s
 InstallDir $PROGRAMFILES\%(install_dir)s
 
 InstallDirRegKey HKLM "Software\%(reg_key)s" "Install_Dir"
 
-Section "Install"
+Section %(name)s
     ; uninstall old version
 
     ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "UninstallString"
@@ -74,6 +95,26 @@ Section "Uninstall"
     RMDir "$INSTDIR"
 
 SectionEnd
+
+;--------------------------------
+
+Function .onInit
+
+    ;Language selection dialog
+
+    Push ""
+    Push ${LANG_ENGLISH}
+    Push English
+    Push ${LANG_SPANISH}
+    Push Spanish
+    Push A ; A means auto count languages
+           ; for the auto count to work the first empty push (Push "") must remain
+    LangDLL::LangDialog "Installer Language" "Please select the language of the installer"
+
+    Pop $LANGUAGE
+    StrCmp $LANGUAGE "cancel" 0 +2
+        Abort
+FunctionEnd
 
 """
 

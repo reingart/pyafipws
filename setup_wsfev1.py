@@ -15,13 +15,17 @@ import sys
 # includes for py2exe
 includes=['email.generator', 'email.iterators', 'email.message', 'email.utils']
 
+# don't pull in all this MFC stuff used by the makepy UI.
+excludes=["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui"]
+
 opts = { 
     'py2exe': {
     'includes':includes,
-    'optimize':2}
-    }
+    'optimize':2,
+    'excludes': excludes,
+    }}
 
-data_files = (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml",]) 
+data_files = (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt"]) 
 
 import wsfev1
 from nsis import build_installer
