@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25a"
+__version__ = "1.26a"
 
 import datetime
 import os
@@ -181,7 +181,7 @@ def autenticar(cert, privatekey, url):
     sign = str(ta.credentials.sign)
     return token, sign
 
-def autorizar(ws, entrada, salida):
+def autorizar(ws, entrada, salida, informar_caea=False):
     tributos = []
     ivas = []
     cbtasocs = []
@@ -201,6 +201,11 @@ def autorizar(ws, entrada, salida):
         else:
             print "Tipo de registro incorrecto:", linea[0]
 
+    if informar_caea:
+        if '/testing' in sys.argv:
+            encabezado['cae'] = '20523029300270'
+        encabezado['caea'] = encabezado['cae']
+
     ws.CrearFactura(**encabezado)
     for tributo in tributos:
         ws.AgregarTributo(**tributo)
@@ -212,8 +217,12 @@ def autorizar(ws, entrada, salida):
     if DEBUG:
         print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
     if not DEBUG or raw_input("Facturar?")=="S":
-        cae = ws.CAESolicitar()
-        dic = ws.factura
+        if not informar_caea:
+            cae = ws.CAESolicitar()
+            dic = ws.factura
+        else:
+            cae = ws.CAEARegInformativo()
+            dic = ws.factura
         dic.update({
             'cae':ws.CAE,
             'fch_venc_cae': ws.Vencimiento,
@@ -223,7 +232,7 @@ def autorizar(ws, entrada, salida):
             'err_msg': ws.ErrMsg,
             })
         escribir_factura(dic, salida)
-        print "NRO:", dic['cbt_desde'], "CAE:",dic['cae'],"Obs:",dic['motivos_obs'], "Err:", dic['err_msg']
+        print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], informar_caea and "CAEA" or "CAE:",dic['cae'],"Obs:",dic['motivos_obs'], "Err:", dic['err_msg']
 
 def escribir_factura(dic, archivo):
     dic['tipo_reg'] = 0
@@ -269,7 +278,10 @@ if __name__ == "__main__":
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFEv1','CUIT')
-    entrada = config.get('WSFEv1','ENTRADA')
+    if '/entrada' in sys.argv:
+        entrada = sys.argv[sys.argv.index("/entrada")+1]
+    else:
+        entrada = config.get('WSFEv1','ENTRADA')
     salida = config.get('WSFEv1','SALIDA')
     
     if config.has_option('WSAA','URL') and not HOMO:
@@ -420,12 +432,38 @@ if __name__ == "__main__":
                 print "FchProceso:", ws.FchProceso
             sys.exit(0)
 
+        if '/consultarcaea' in sys.argv:
+            periodo = raw_input("Periodo: ")
+            orden = raw_input("Orden: ")
+
+            if DEBUG: 
+                print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
+            
+            caea = ws.CAEAConsultar(periodo, orden)
+            print "CAEA:", caea
+
+            if ws.Errores:
+                print "Errores:"
+                for error in ws.Errores:
+                    print error
+                
+            if DEBUG:
+                print "Periodo:", ws.Periodo 
+                print "Orden:", ws.Orden 
+                print "FchVigDesde:", ws.FchVigDesde 
+                print "FchVigHasta:", ws.FchVigHasta 
+                print "FchTopeInf:", ws.FchTopeInf 
+                print "FchProceso:", ws.FchProceso
+            sys.exit(0)
+
+
         f_entrada = f_salida = None
         try:
             f_entrada = open(entrada,"r")
             f_salida = open(salida,"w")
             try:
-                autorizar(ws, f_entrada, f_salida)
+                if DEBUG: print "Autorizando usando entrada:", entrada
+                autorizar(ws, f_entrada, f_salida, '/informarcaea' in sys.argv)
             except SoapFault:
                 XML = True
                 raise

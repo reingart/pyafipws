@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.05a"
 
 import datetime
 import decimal
@@ -165,7 +165,7 @@ class WSFEv1:
             cbt_desde=0, cbt_hasta=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago="", 
             fecha_serv_desde=None, fecha_serv_hasta=None, #--
-            moneda_id="PES", moneda_ctz="1.0000", **kwargs
+            moneda_id="PES", moneda_ctz="1.0000", caea=None, **kwargs
             ):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
@@ -185,6 +185,8 @@ class WSFEv1:
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
+        if caea: fact['caea'] = caea
+
         self.factura = fact
         return True
 
@@ -352,7 +354,110 @@ class WSFEv1:
                 self.FchProceso = result['FchProceso']
 
         return self.CAEA and str(self.CAEA) or ''
+
+
+    @inicializar_y_capturar_execepciones
+    def CAEAConsultar(self, periodo, orden):
+        "Método de consulta de CAEA"
+        ret = self.client.FECAEAConsultar(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            Periodo=periodo, 
+            Orden=orden,
+            )
+        
+        result = ret['FECAEAConsultarResult']
+        self.__analizar_errores(result)
+
+        if 'ResultGet' in result:
+            result = result['ResultGet']
+            if 'CAEA' in result:
+                self.CAEA = result['CAEA']
+                self.Periodo = result['Periodo']
+                self.Orden = result['Orden']
+                self.FchVigDesde = result['FchVigDesde']
+                self.FchVigHasta = result['FchVigHasta']
+                self.FchTopeInf = result['FchTopeInf']
+                self.FchProceso = result['FchProceso']
+
+        return self.CAEA and str(self.CAEA) or ''
     
+    @inicializar_y_capturar_execepciones
+    def CAEARegInformativo(self):
+        "Método para informar comprobantes emitidos con CAEA"
+        f = self.factura
+        ret = self.client.FECAEARegInformativo(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            FeCAEARegInfReq={
+                'FeCabReq': {'CantReg': 1, 
+                    'PtoVta': f['punto_vta'], 
+                    'CbteTipo': f['tipo_cbte']},
+                'FeDetReq': [{'FECAEADetRequest': {
+                    'Concepto': f['concepto'],
+                    'DocTipo': f['tipo_doc'],
+                    'DocNro': f['nro_doc'],
+                    'CbteDesde': f['cbt_desde'],
+                    'CbteHasta': f['cbt_hasta'],
+                    'CbteFch': f['fecha_cbte'],
+                    'ImpTotal': f['imp_total'],
+                    'ImpTotConc': f['imp_tot_conc'],
+                    'ImpNeto': f['imp_neto'],
+                    'ImpOpEx': f['imp_op_ex'],
+                    'ImpTrib': f['imp_trib'],
+                    'ImpIVA': f['imp_iva'],
+                    # Fechas solo se informan si Concepto in (2,3)
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
+                    'FchVtoPago': f.get('fecha_venc_pago'),
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
+                    'FchVtoPago': f['fecha_venc_pago'],
+                    'MonId': f['moneda_id'],
+                    'MonCotiz': f['moneda_ctz'],                
+                    'CbtesAsoc': [
+                        {'CbteAsoc': {
+                            'Tipo': cbte_asoc['tipo'],
+                            'PtoVta': cbte_asoc['pto_vta'], 
+                            'Nro': cbte_asoc['nro']}}
+                        for cbte_asoc in f['cbtes_asoc']],
+                    'Tributos': [
+                        {'Tributo': {
+                            'Id': tributo['id'], 
+                            'Desc': tributo['desc'],
+                            'BaseImp': tributo['base_imp'],
+                            'Alic': tributo['alic'],
+                            'Importe': tributo['importe'],
+                            }}
+                        for tributo in f['tributos']],
+                    'Iva': [ 
+                        {'AlicIva': {
+                            'Id': iva['id'],
+                            'BaseImp': iva['base_imp'],
+                            'Importe': iva['importe'],
+                            }}
+                        for iva in f['iva']],
+                    'CAEA': f['caea'],
+                    }
+                }]
+            })
+        
+        result = ret['FECAEARegInformativoResult']
+        if 'FeCabResp' in result:
+            fecabresp = result['FeCabResp']
+            self.Resultado = fecabresp['Resultado']
+            ##print result['FeDetResp']
+            fedetresp = result['FeDetResp'][0]['FECAEADetResponse']
+            # Obs:
+            for obs in fedetresp.get('Observaciones', []):
+                self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+            self.Obs = '\n'.join(self.Observaciones)
+            self.CAEA = fedetresp['CAEA'] and str(fedetresp['CAEA']) or ""
+            self.FechaCbte = fedetresp['CbteFch'] #.strftime("%Y/%m/%d")
+            self.CbteNro = fedetresp['CbteHasta'] # 1L
+            self.PuntoVenta = fecabresp['PtoVta'] # 4000
+            self.CbtDesde =fedetresp['CbteDesde']
+            self.CbtHasta = fedetresp['CbteHasta']
+            self.__analizar_errores(result)
+        return self.CAE
 
     @inicializar_y_capturar_execepciones
     def ParamGetTiposCbte(self):
