@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20c"
+__version__ = "1.20d"
 
 import csv
 from decimal import Decimal
@@ -84,7 +84,16 @@ class PyRece(model.Background):
     def set_items(self, items):
         cols = self.cols
         self.__items = items
-        self.components.lvwListado.items = [[(item[col] is not None and unicode(item[col]) or '') for col in cols] for item in items]
+        def convert_str(value):
+            if value is None:
+                return ''
+            elif isinstance(value, str):
+                return unicode(value,'latin1')
+            elif isinstance(value, unicode):
+                return value
+            else:
+                return str(value)
+        self.components.lvwListado.items = [[convert_str(item[col]) for col in cols] for item in items]
         wx.SafeYield()
     def get_items(self):
         return self.__items
@@ -110,7 +119,7 @@ class PyRece(model.Background):
         
     def log(self, msg):
         if not isinstance(msg, unicode):
-            msg = msg.decode("latin1","ignore")
+            msg = unicode(msg, "latin1","ignore")
         self.components.txtEstado.text = msg + u"\n" + self.components.txtEstado.text
         wx.SafeYield()
     
@@ -121,7 +130,7 @@ class PyRece(model.Background):
 
     def error(self, code, text):
         ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-        self.log(u''.join(ex))
+        self.log(''.join(ex))
         dialog.alertDialog(self, text, 'Error %s' % code)
 
     def on_btnMarcarTodo_mouseClick(self, event):
@@ -581,7 +590,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             else:
                 os.system(archivo)
         except Exception, e:
-            self.error(u'Excepción',unicode(e))
+            print e
+            self.error(u'Excepción', e)
 
     def on_btnGenerar_mouseClick(self, event):
         for item in self.items:
@@ -623,7 +633,9 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                 return len(str(c))==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
             return ''
         
-        f = Form(conf_fact.get('formato','factura.csv'))
+        f = Form(conf_fact.get('formato','factura.csv'), 
+                 format=conf_fact.get("papel", 'A4'), 
+                 orientation=conf_fact.get("orientacion", 'portrait'), )
         f.add_page()
 
         # establezco campos desde configuración
@@ -706,7 +718,11 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         f.set('CAE.Vencimiento', fmtdate(item['fecha_vto']))
         if item['cae']!="NULL":
             barras = '%11s%02d%04d%s%8s' % (cuit, int(item['tipo_cbte']), int(item['punto_vta']),item['cae'], item['fecha_vto'])
-            barras = barras + digito_verificador_modulo10(barras)
+            digito = digito_verificador_modulo10(barras)
+            if digito:
+                barras = barras + digito_verificador_modulo10(barras)
+            else:
+                barras = ''
         else:
             barras = ""
 
