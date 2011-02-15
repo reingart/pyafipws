@@ -86,6 +86,7 @@ class WSFEv1:
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc',
                         'CompUltimoAutorizado', 'CompConsultar',
+                        'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
                         'ParamGetTiposCbte',
                         'ParamGetTiposConcepto',
                         'ParamGetTiposDoc',

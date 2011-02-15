@@ -1,7 +1,7 @@
 Attribute VB_Name = "Module1"
 ' Ejemplo de Uso de Interface COM con Web Service Factura Electrónica Mercado Interno AFIP
-' Según RG2904 Artículo 4 Opción B (sin detalle, Version 1)
-' 2010 (C) Mariano Reingart <reingart@gmail.com>
+' Según RG2904 Artículo 4 Opción B (sin detalle, CAE Anticipado)
+' 2011 (C) Mariano Reingart <reingart@gmail.com>
 ' Licencia: GPLv3
 
 Sub Main()
@@ -28,7 +28,7 @@ Sub Main()
     Debug.Print cms
     
     ' Llamar al web service para autenticar:
-    ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") ' Homologación
+    ta = WSAA.CallWSAA(cms) ' Homologación
 
     ' Imprimir el ticket de acceso, ToKen y Sign de autorización
     Debug.Print ta
@@ -38,11 +38,8 @@ Sub Main()
     ' Una vez obtenido, se puede usar el mismo token y sign por 24 horas
     ' (este período se puede cambiar)
     
-    ' Crear objeto interface Web Service de Factura Electrónica de Mercado Interno
+    ' Crear objeto interface Web Service de Factura Electrónica Mercado Interno
     Set WSFEv1 = CreateObject("WSFEv1")
-    Debug.Print WSFEv1.Version
-    Debug.Print WSFEv1.InstallDir
-    
     ' Setear tocken y sing de autorización (pasos previos)
     WSFEv1.Token = WSAA.Token
     WSFEv1.Sign = WSAA.Sign
@@ -51,24 +48,32 @@ Sub Main()
     WSFEv1.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    'proxy = "usuario:clave@localhost:8010"
-    wsdl = "" '"file:///C:/archivos de programa/wsfev1/wsfev1_wsdl_homo.xml"
-    cache = "" 'Path
+    ok = WSFEv1.Conectar("", "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL") ' homologación
         
-    ok = WSFEv1.Conectar(cache, wsdl, proxy) ' homologación
+    ' PASO 1: Solicito CAE Anticipado para el período
+    ' NOTA: solicitar por única vez para un determinado período
+    ' consultar si se ha solicitado previamente
     
-    ' mostrar bitácora de depuración:
-    Debug.Print WSFEv1.DebugLog
+    periodo = "201102"  ' Año y mes
+    orden = "2"         ' Segunda Quincena
     
-    ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
-    WSFEv1.Dummy
-    Debug.Print "appserver status", WSFEv1.AppServerStatus
-    Debug.Print "dbserver status", WSFEv1.DbServerStatus
-    Debug.Print "authserver status", WSFEv1.AuthServerStatus
-       
-    ' Establezco los valores de la factura a autorizar:
+    ' consulto CAEA ya solicitado
+    CAEA = WSFEv1.CAEAConsultar(periodo, orden)
+    If CAEA = "" Then
+        ' solicito nuevo CAEA
+        CAEA = WSFEv1.CAEASolicitar(periodo, orden)
+    End If
+
+    MsgBox "Periodo: " & periodo & " Orden " & orden & vbCrLf & "CAEA: " & CAEA & vbCrLf & _
+            "Obs:" & WSFEv1.Obs & vbCrLf & _
+            "Errores:" & WSFEv1.ErrMsg
+    
+    ' Si no tengo CAEA, termino
+    If CAEA = "" Then End
+    
+    ' PASO 2: Establezco los valores de la factura a informar:
     tipo_cbte = 6
-    punto_vta = 4002
+    punto_vta = 4005
     cbte_nro = WSFEv1.CompUltimoAutorizado(tipo_cbte, punto_vta)
     If cbte_nro = "" Then
         cbte_nro = 0                ' no hay comprobantes emitidos
@@ -87,11 +92,12 @@ Sub Main()
     fecha_serv_desde = "": fecha_serv_hasta = ""
     moneda_id = "PES": moneda_ctz = "1.000"
 
+    ' creo una factura (con CAEA)
     ok = WSFEv1.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta, _
         cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto, _
         imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, _
         fecha_serv_desde, fecha_serv_hasta, _
-        moneda_id, moneda_ctz)
+        moneda_id, moneda_ctz, CAEA)
     
     ' Agrego los comprobantes asociados:
     If False Then ' solo nc/nd
@@ -115,19 +121,18 @@ Sub Main()
     importe = "21.00"
     ok = WSFEv1.AgregarIva(id, base_imp, importe)
     
-    ' Solicito CAE:
-    cae = WSFEv1.CAESolicitar()
+    ' Informo comprobante emitido con CAE anticipado:
+    cae = WSFEv1.CAEARegInformativo()
     
     Debug.Print "Resultado", WSFEv1.Resultado
-    Debug.Print "CAE", WSFEv1.cae
 
     Debug.Print "Numero de comprobante:", WSFEv1.CbteNro
     
     ' Imprimo pedido y respuesta XML para depuración (errores de formato)
-    Debug.Print WSFEv1.XmlRequest
-    Debug.Print WSFEv1.XmlResponse
+    Debug.Print WSFEv1.xmlrequest
+    Debug.Print WSFEv1.xmlresponse
     
-    MsgBox "Resultado:" & WSFEv1.Resultado & " CAE: " & cae & " Venc: " & WSFEv1.Vencimiento & " Obs: " & WSFEv1.obs, vbInformation + vbOKOnly
+    MsgBox "Resultado:" & WSFEv1.Resultado & " CAE: " & cae & " Venc: " & WSFEv1.Vencimiento & " Obs: " & WSFEv1.Obs, vbInformation + vbOKOnly
     
     ' Muestro los eventos (mantenimiento programados y otros mensajes de la AFIP)
     For Each evento In WSFEv1.eventos:
@@ -137,18 +142,14 @@ Sub Main()
     ' Buscar la factura
     cae2 = WSFEv1.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
     
+    Debug.Print WSFEv1.xmlresponse
+    
     Debug.Print "Fecha Comprobante:", WSFEv1.FechaCbte
     Debug.Print "Fecha Vencimiento CAE", WSFEv1.Vencimiento
     Debug.Print "Importe Total:", WSFEv1.ImpTotal
     Debug.Print "Resultado:", WSFEv1.Resultado
     
-    If cae <> cae2 Then
-        MsgBox "El CAE de la factura no concuerdan con el recuperado en la AFIP!: " & cae & " vs " & cae2
-    Else
-        MsgBox "El CAE de la factura concuerdan con el recuperado de la AFIP"
-    End If
-        
-
+    
     Exit Sub
 ManejoError:
     ' Si hubo error:
@@ -156,15 +157,16 @@ ManejoError:
     Debug.Print Err.Number - vbObjectError ' codigo error afip
     Select Case MsgBox(Err.Description, vbCritical + vbRetryCancel, "Error:" & Err.Number - vbObjectError & " en " & Err.Source)
         Case vbRetry
-            Debug.Print WSFEv1.XmlRequest
-            Debug.Print WSFEv1.XmlResponse
-            Debug.Print WSFEv1.traceback
+            Debug.Print WSFEv1.Traceback
+            Debug.Print WSFEv1.xmlrequest
+            Debug.Print WSFEv1.xmlresponse
             Debug.Assert False
             Resume
         Case vbCancel
             Debug.Print Err.Description
     End Select
-    Debug.Print WSFEv1.XmlRequest
+    Debug.Print WSFEv1.xmlrequest
+    Debug.Print WSFEv1.xmlresponse
     Debug.Assert False
-    Debug.Print WSFEv1.traceback
+
 End Sub
