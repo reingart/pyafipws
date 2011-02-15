@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.06a"
 
 import datetime
 import decimal
@@ -25,9 +25,10 @@ import os
 import socket
 import sys
 import traceback
+from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
 
-HOMO = False
+HOMO = True
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
@@ -93,11 +94,11 @@ class WSFEv1:
                         'ParamGetTiposOpcional',
                         'ParamGetTiposTributos',
                         'ParamGetCotizacion',
-                        'Dummy', 'Conectar', ]
+                        'Dummy', 'Conectar', 'DebugLog',]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 
-        'Resultado', 'Obs', 'Observaciones', 'Traceback',
+        'Resultado', 'Obs', 'Observaciones', 'Traceback', 
         'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
         'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte', 
         'ImpTotal', 'ImpNeto', 'ImptoLiq', 'ImpOpEx'
@@ -123,6 +124,7 @@ class WSFEv1:
         self.Periodo = self.Orden = ""
         self.FchVigDesde = self.FchVigHasta = ""
         self.FchTopeInf = self.FchProceso = ""
+        self.Log = None
         
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -138,6 +140,24 @@ class WSFEv1:
             events = ret['Events']
             self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
 
+    def __log(self, msg):
+        if not isinstance(msg, unicode):
+            msg = unicode(msg, 'utf8', 'ignore')
+        if not self.Log:
+            self.Log = StringIO()
+        self.Log.write(msg)
+        self.Log.write('\n\r')
+        
+    def DebugLog(self):
+        "Devolver y limpiar la bitácora de depuración"
+        if self.Log:
+            msg = self.Log.getvalue()
+            # limpiar log
+            self.Log.close()
+            self.Log = None
+        else:
+            msg = u''
+        return msg    
 
     @inicializar_y_capturar_execepciones
     def Conectar(self, cache=None, wsdl=None, proxy=""):
@@ -146,11 +166,13 @@ class WSFEv1:
         if HOMO or not wsdl:
             wsdl = WSDL
         if not cache or HOMO:
-            if hasattr(sys,"frozen") and sys.frozen in ("windows_exe", "console_exe"):
-                basedir = os.path.dirname(os.path.abspath(sys.executable)) 
-            else:
-                basedir = os.path.dirname(os.path.abspath(__file__))
+            # use 'cache' from installation base directory 
+            basedir = os.path.dirname(os.path.abspath(__file__))
+            if hasattr(sys, "frozen"): 
+                # remove library.zip
+                basedir = os.path.dirname(basedir)
             cache = os.path.join(basedir, 'cache')
+        self.__log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
         self.client = SoapClient(
             wsdl = wsdl,        
             cache = cache,
@@ -562,7 +584,10 @@ def main():
     wsfev1 = WSFEv1()
 
     wsfev1.Conectar()
-    
+
+    if DEBUG:
+        print "LOG: ", wsfev1.DebugLog()
+        
     if "--dummy" in sys.argv:
         print wsfev1.client.help("FEDummy")
         wsfev1.Dummy()
