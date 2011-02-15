@@ -9,7 +9,7 @@ __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 
 from distutils.core import setup
 import py2exe
-import sys
+import glob, sys
 
 
 # includes for py2exe
@@ -25,7 +25,10 @@ opts = {
     'excludes': excludes,
     }}
 
-data_files = (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt"]) 
+data_files = [
+    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt"]),
+    ("cache", glob.glob("cache/*")),
+    ]
 
 import wsfev1
 from nsis import build_installer
@@ -42,6 +45,6 @@ setup(
     com_server = ["wsfev1"],
     console=['wsfev1.py', 'rece1.py', 'wsaa.py'],
     options=opts,
-    data_files = [ data_files],
+    data_files = data_files,
     cmdclass = {"py2exe": build_installer}
        )
