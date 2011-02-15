@@ -337,7 +337,7 @@ if __name__ == "__main__":
             # generar el archivo de prueba para la próxima factura
             tipo_cbte = 1
             punto_vta = 4002
-            cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
+            cbte_nro = int(ws.CompUltimoAutorizado(tipo_cbte, punto_vta))
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 1
             tipo_doc = 80; nro_doc = "33693450239"
