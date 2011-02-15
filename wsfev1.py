@@ -94,11 +94,11 @@ class WSFEv1:
                         'ParamGetTiposOpcional',
                         'ParamGetTiposTributos',
                         'ParamGetCotizacion',
-                        'Dummy', 'Conectar', 'DebugLog',]
+                        'Dummy', 'Conectar', 'DebugLog', 'Eval']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 
-        'Resultado', 'Obs', 'Observaciones', 'Traceback', 
+        'Resultado', 'Obs', 'Observaciones', 'Traceback', 'InstallDir',
         'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
         'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte', 
         'ImpTotal', 'ImpNeto', 'ImptoLiq', 'ImpOpEx'
@@ -125,6 +125,14 @@ class WSFEv1:
         self.FchVigDesde = self.FchVigHasta = ""
         self.FchTopeInf = self.FchProceso = ""
         self.Log = None
+        if not hasattr(sys, "frozen"): 
+            basepath = __file__
+        elif sys.frozen=='dll':
+            import win32api
+            basepath = win32api.GetModuleFileName(sys.frozendllhandle)
+        else:
+            basepath = sys.executable
+        self.InstallDir = os.path.dirname(os.path.abspath(basepath))
         
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -147,7 +155,12 @@ class WSFEv1:
             self.Log = StringIO()
         self.Log.write(msg)
         self.Log.write('\n\r')
-        
+    
+    def Eval(self, code):
+        "Devolver el resultado de ejecutar una expresión (para depuración)"
+        if not HOMO:
+            return str(eval(code))
+    
     def DebugLog(self):
         "Devolver y limpiar la bitácora de depuración"
         if self.Log:
@@ -167,11 +180,7 @@ class WSFEv1:
             wsdl = WSDL
         if not cache or HOMO:
             # use 'cache' from installation base directory 
-            basedir = os.path.dirname(os.path.abspath(__file__))
-            if hasattr(sys, "frozen"): 
-                # remove library.zip
-                basedir = os.path.dirname(basedir)
-            cache = os.path.join(basedir, 'cache')
+            cache = os.path.join(self.InstallDir, 'cache')
         self.__log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
         self.client = SoapClient(
             wsdl = wsdl,        

@@ -40,8 +40,8 @@ Sub Main()
     
     ' Crear objeto interface Web Service de Factura Electrónica de Mercado Interno
     Set WSFEv1 = CreateObject("WSFEv1")
-    Debug.Print WSFEv1.version
-    'Debug.Print WSFEv1.InstDir
+    Debug.Print WSFEv1.Version
+    Debug.Print WSFEv1.InstallDir
     
     ' Setear tocken y sing de autorización (pasos previos)
     WSFEv1.Token = WSAA.Token
@@ -54,6 +54,7 @@ Sub Main()
     'proxy = "usuario:clave@localhost:8010"
     wsdl = "" '"file:///C:/archivos de programa/wsfev1/wsfev1_wsdl_homo.xml"
     cache = "" 'Path
+        
     ok = WSFEv1.Conectar(cache, wsdl, proxy) ' homologación
     
     ' mostrar bitácora de depuración:
