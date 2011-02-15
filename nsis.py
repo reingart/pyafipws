@@ -123,6 +123,8 @@ class build_installer(py2exe):
     # This class first builds the exe file(s), then creates a Windows installer.
     # You need NSIS (Nullsoft Scriptable Install System) for it.
     def run(self):
+        # Clean up
+        os.system("del /S /Q dist")
         # First, let py2exe do it's work.
         py2exe.run(self)
 
