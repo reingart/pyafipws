@@ -52,9 +52,12 @@ Sub Main()
     
     ' Conectar al Servicio Web de Facturación
     'proxy = "usuario:clave@localhost:8010"
-    wsdl = "file:///C:/archivos de programa/wsfev1/wsfev1_wsdl_homo.xml"
-    cache = Path
+    wsdl = "" '"file:///C:/archivos de programa/wsfev1/wsfev1_wsdl_homo.xml"
+    cache = "" 'Path
     ok = WSFEv1.Conectar(cache, wsdl, proxy) ' homologación
+    
+    ' mostrar bitácora de depuración:
+    Debug.Print WSFEv1.DebugLog
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSFEv1.Dummy
