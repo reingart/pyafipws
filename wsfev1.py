@@ -27,7 +27,7 @@ import sys
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
 
-HOMO = True
+HOMO = False
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
@@ -140,12 +140,18 @@ class WSFEv1:
 
 
     @inicializar_y_capturar_execepciones
-    def Conectar(self, cache="cache", wsdl=None, proxy=""):
+    def Conectar(self, cache=None, wsdl=None, proxy=""):
         # cliente soap del web service
         proxy_dict = parse_proxy(proxy)
         if HOMO or not wsdl:
             wsdl = WSDL
-        self.client = SoapClient( 
+        if not cache or HOMO:
+            if hasattr(sys,"frozen") and sys.frozen in ("windows_exe", "console_exe"):
+                basedir = os.path.dirname(os.path.abspath(sys.executable)) 
+            else:
+                basedir = os.path.dirname(os.path.abspath(__file__))
+            cache = os.path.join(basedir, 'cache')
+        self.client = SoapClient(
             wsdl = wsdl,        
             cache = cache,
             proxy = proxy_dict,
@@ -547,6 +553,12 @@ def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
 
+    DEBUG = '--debug' in sys.argv
+
+    if DEBUG:
+        from pysimplesoap.client import __version__ as soapver
+        print "pysimplesoap.__version__ = ", soapver
+
     wsfev1 = WSFEv1()
 
     wsfev1.Conectar()
@@ -571,8 +583,6 @@ def main():
     ta_string=open(TA).read()
     ta = SimpleXMLElement(ta_string)
     # fin TA
-
-    DEBUG = '--debug' in sys.argv
 
     if '--cuit' in sys.argv:
         cuit = sys.argv[sys.argv.index("--cuit")+1]
