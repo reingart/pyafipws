@@ -58,7 +58,7 @@ def digito_verificador_modulo10(codigo):
         digito = 0
     return str(digito)
 
-
+    
 class PyRece(model.Background):
 
     def on_initialize(self, event):
@@ -632,7 +632,9 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                 c=str(c)
                 return len(str(c))==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
             return ''
-        
+
+        monedas_ds = {'DOL': u'USD: Dólar', 'PES': u'ARS: Pesos', '010': u'MXN: Pesos Mejicanos', '011': u'UYU: Pesos Uruguayos', '012': u'BRL: Real', '014': u'Coronas Danesas', '015': u'Coronas Noruegas', '016': u'Coronas Suecas', '019': u'JPY: Yens', '018': u'CAD: D\xf3lar Canadiense', '033': u'CLP: Peso Chileno', '056': u'Forint (Hungr\xeda)', '031': u'BOV: Peso Boliviano', '036': u'Sucre Ecuatoriano', '051': u'D\xf3lar de Hong Kong', '034': u'Rand Sudafricano', '053': u'D\xf3lar de Jamaica', '057': u'Baht (Tailandia)', '043': u'Balboas Paname\xf1as', '042': u'Peso Dominicano', '052': u'D\xf3lar de Singapur', '032': u'Peso Colombiano', '035': u'Nuevo Sol Peruano', '061': u'Zloty Polaco', '060': u'EUR: Euro', '063': u'Lempira Hondure\xf1a', '062': u'Rupia Hind\xfa', '064': u'Yuan (Rep. Pop. China)', '009': u'Franco Suizo', '025': u'Dinar Yugoslavo', '002': u'USD: D\xf3lar Libre EEUU', '027': u'Dracma Griego', '026': u'D\xf3lar Australiano', '007': u'Florines Holandeses', '023': u'VEB: Bol\xedvar Venezolano', '047': u'Riyal Saudita', '046': u'Libra Egipcia', '045': u'Dirham Marroqu\xed', '044': u'C\xf3rdoba Nicarag\xfcense', '029': u'G\xfcaran\xed', '028': u'Flor\xedn (Antillas Holandesas)', '054': u'D\xf3lar de Taiwan', '040': u'Lei Rumano', '024': u'Corona Checa', '030': u'Shekel (Israel)', '021': u'Libra Esterlina', '055': u'Quetzal Guatemalteco', '059': u'Dinar Kuwaiti'}
+
         f = Form(conf_fact.get('formato','factura.csv'), 
                  format=conf_fact.get("papel", 'A4'), 
                  orientation=conf_fact.get("orientacion", 'portrait'), )
@@ -653,13 +655,18 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         
         if int(item['tipo_cbte']) in (1, 2, 3, 4, 5, 39, 60, 63):
             letra = "A"
+        elif int(item['tipo_cbte']) in (6, 7, 8):
+            letra = "C"
+        elif int(item['tipo_cbte']) in (19, 20, 21):
+            letra = "E"
         else:
-            letra = "B"
+            letra = "X"
+            
         f.set('LETRA', letra)
         f.set('TipoCBTE', "COD.%02d" % int(item['tipo_cbte']))
 
-        tipos = { (1, 6): 'Factura', (2, 7): 'Nota de Débito', 
-            (3, 8): 'Nota de Crédito',
+        tipos = { (1, 6, 19): 'Factura', (2, 7, 20): 'Nota de Débito', 
+            (3, 8, 21): 'Nota de Crédito',
             (4, 9): 'Recibo', (10,): 'Notas de Venta al contado', 
             (60, 61): 'Cuenta de Venta y Líquido producto',
             (63, 64): 'Liquidación',
@@ -685,6 +692,20 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         if 'cliente.observaciones' in item:
             f.set('Cliente.Observaciones', item['cliente.observaciones'])
 
+        if item['moneda_id']:
+            f.set('moneda_id', '')
+            f.set('moneda_ds', monedas_ds.get(item['moneda_id'],''))
+            if item['moneda_id']=='PES':
+                for k in 'moneda_ctz.L', 'moneda_ctz':
+                    f.set(k, '')
+        else:
+            for k in 'moneda.L', 'moneda_id', 'moneda_ds', 'moneda_ctz.L', 'moneda_ctz':
+                f.set(k, '')
+
+        if letra!='E':
+            for k in 'incoterms.L', 'incoterms', 'incoterms_ds':
+                f.set(k, '')
+
         li = 1
         for i in range(25):
             if 'cantidad%d' % i in item:
@@ -707,11 +728,20 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         
         if letra=='A':
             f.set('NETO', fmtimp(item['imp_neto']))
-            f.set('IVA21', fmtimp(item.get('impto_liq', item.get('imp_iva'))))
+            f.set('IVALIQ', fmtimp(item.get('impto_liq', item.get('imp_iva'))))
             f.set('LeyendaIVA',"")
+            
+            for n in range(1,5):
+                if 'iva_id_%s' % n in item:
+                    a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[item['iva_id_%s' % n]]
+                    f.set('IVA%s' % a, fmtimp(item.get('iva_importe_%s' % n, 0)))
         else:
             f.set('NETO.L',"")
             f.set('IVA.L',"")
+            f.set('IVA21.L',"")
+            f.set('IVA10.5.L',"")
+            f.set('IVA27.L',"")
+
         f.set('TOTAL', fmtimp(item['imp_total']))
 
         f.set('CAE', item['cae'])
@@ -734,6 +764,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             os.mkdir(d)
         fs = conf_fact.get('archivo','numero').split(",")
         it = item.copy()
+        it['tipo'] = tipo
+        it['letra'] = letra
         it['numero'] = numero
         it['mes'] = item['fecha_cbte'][4:6]
         it['año'] = item['fecha_cbte'][0:4]

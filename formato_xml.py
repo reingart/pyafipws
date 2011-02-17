@@ -253,6 +253,8 @@ def leer(fn="entrada.xml"):
             }
         comp = dic_comprobante['comprobante']
         mapear(reg, comp, MAP_ENC)
+        reg['formas_pago']= [d['formapago'] for d in comp['formaspago']]
+
 
         for detalles in comp['detalles']:
             det = detalles['detalle']
@@ -278,6 +280,9 @@ def aplanar(regs):
         fila = {}
         for k in MAP_ENC:
             fila[k] = reg[k]
+
+        fila['forma_pago']=reg['formas_pago'][0]['descripcion']
+
 
         for i, det in enumerate(reg['detalles']):
             li = i+1
