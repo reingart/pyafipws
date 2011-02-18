@@ -341,6 +341,15 @@ class WSFEv1:
         return self.CAE
 
     @inicializar_y_capturar_execepciones
+    def CompTotXRequest(self):
+        ret = self.client.FECompTotXRequest (
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        
+        result = ret['FECompTotXRequestResult']
+        return result['RegXReq']
+
+    @inicializar_y_capturar_execepciones
     def CompUltimoAutorizado(self, tipo_cbte, punto_vta):
         ret = self.client.FECompUltimoAutorizado(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
@@ -645,7 +654,7 @@ def main():
     if 'wsaa' in sys.argv or not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
         import wsaa
         tra = wsaa.create_tra(service="wsfe")
-        cms = wsaa.sign_tra(tra,"homo.crt","homo.key")
+        cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
         ta_string = wsaa.call_wsaa(cms)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
@@ -731,6 +740,8 @@ def main():
     if "--cotizacion" in sys.argv:
         print wsfev1.ParamGetCotizacion('DOL')
 
+    if "--comptox" in sys.argv:
+        print wsfev1.CompTotXRequest()
 
     if "--solicitar-caea" in sys.argv:
         periodo = sys.argv[sys.argv.index("--solicitar-caea")+1]
