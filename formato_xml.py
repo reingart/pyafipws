@@ -243,6 +243,7 @@ def leer(fn="entrada.xml"):
     dic = xml.unmarshall(XML_FORMAT, strict=True)
     
     regs = []
+
     for dic_comprobante in dic['comprobantes']:
         reg = {
             'detalles': [],
@@ -382,6 +383,7 @@ def desaplanar(filas):
                 'importe': dic['iva_importe_%s'  % li],
                 } for li in xrange(1, max_li("iva_id_"))]
                 
+        reg['formas_pago']=[{'descripcion': dic['forma_pago']}]
         regs.append(reg)
 
     return regs
@@ -408,6 +410,11 @@ def escribir(regs, fn="salida.xml"):
                 'ivas': [{
                     'iva': mapear({}, iva, MAP_IVA, swap=True),
                     } for iva in reg['ivas']],
+                'formaspago': [{
+                'formapago': {
+                    'codigo': '',
+                    'descripcion': reg['formas_pago'][0]['descripcion'],
+                    }}]
                 })
         comprobantes.append(dic)
 
