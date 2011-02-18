@@ -48,5 +48,7 @@ setup( name = "PyRece",
        data_files = [ (".", pycard_resources),
                       (".",["logo.png",]) ],
        options=opts,
-       **{buildstyle: ["pyrece.py"]}
+       **{buildstyle: ["pyrece.py"],
+          'console': [{"script": "pyrece.py", "dest_base": "pyrece_consola"}]
+        }
        )

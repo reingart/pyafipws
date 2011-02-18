@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20d"
+__version__ = "1.20e"
 
 import csv
 from decimal import Decimal
@@ -35,7 +35,7 @@ from smtplib import SMTP
 from PyFPDF.ejemplos.form import Form
 
 HOMO = False
-DEBUG = True
+DEBUG = '--debug' in sys.argv
 CONFIG_FILE = "rece.ini"
 
 def digito_verificador_modulo10(codigo):
@@ -73,6 +73,25 @@ class PyRece(model.Background):
         
         self.components.cboWebservice.stringSelection = "wsfev1"
         self.on_cboWebservice_select(event)
+        
+        self.tipos = {
+            1:u"Factura A",
+            2:u"Notas de Débito A",
+            3:u"Notas de Crédito A",
+            4:u"Recibos A",
+            5:u"Notas de Venta al contado A",
+            6:u"Facturas B",
+            7:u"Notas de Débito B",
+            8:u"uNotas de Crédito B",
+            9:u"uRecibos B",
+            10:u"Notas de Venta al contado B",
+            39:u"Otros comprobantes A que cumplan con la R.G. N° 3419",
+            40:u"Otros comprobantes B que cumplan con la R.G. N° 3419",
+            60:u"Cuenta de Venta y Líquido producto A",
+            61:u"Cuenta de Venta y Líquido producto B",
+            63:u"Liquidación A",
+            64:u"Liquidación B"}
+
         
     def set_cols(self, cols):
         self.__cols = cols
@@ -133,35 +152,26 @@ class PyRece(model.Background):
         self.log(''.join(ex))
         dialog.alertDialog(self, text, 'Error %s' % code)
 
+    def verifica_ws(self):
+        if not self.ws:
+            dialog.alertDialog(self, "Debe seleccionar el webservice a utilizar!", 'Advertencia')
+            raise RuntimeError()
+        if not self.token or not self.sign:
+            dialog.alertDialog(self, "Debe autenticarse con AFIP!", 'Advertencia')
+            raise RuntimeError()
+
     def on_btnMarcarTodo_mouseClick(self, event):
         for i in range(len(self.__items)):
             self.components.lvwListado.SetSelection(i)
 
     def on_menuConsultasLastCBTE_select(self, event):
-        tipos = {
-            1:u"Factura A",
-            2:u"Notas de Débito A",
-            3:u"Notas de Crédito A",
-            4:u"Recibos A",
-            5:u"Notas de Venta al contado A",
-            6:u"Facturas B",
-            7:u"Notas de Débito B",
-            8:u"uNotas de Crédito B",
-            9:u"uRecibos B",
-            10:u"Notas de Venta al contado B",
-            39:u"Otros comprobantes A que cumplan con la R.G. N° 3419",
-            40:u"Otros comprobantes B que cumplan con la R.G. N° 3419",
-            60:u"Cuenta de Venta y Líquido producto A",
-            61:u"Cuenta de Venta y Líquido producto B",
-            63:u"Liquidación A",
-            64:u"Liquidación B"}
-
-        result = dialog.singleChoiceDialog(self, "Tipo de comprobante", 
+        self.verifica_ws()
+        result = dialog.singleChoiceDialog(self, "Tipo de comprobante",
             u"Consulta Último Nro. Comprobante", 
-                [v for k,v in sorted([(k,v) for k,v in tipos.items()])])
+                [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])])
         if not result.accepted:
             return
-        tipocbte = [k for k,v in tipos.items() if v==result.selection][0]
+        tipocbte = [k for k,v in self.tipos.items() if v==result.selection][0]
         result = dialog.textEntryDialog(self, u"Punto de venta",
             u"Consulta Último Nro. Comprobante", '2')
         if not result.accepted:
@@ -173,10 +183,10 @@ class PyRece(model.Background):
                 ultcmp = wsfe.recuperar_last_cmp(self.client, self.token, self.sign, 
                     cuit, ptovta, tipocbte)
             elif  self.webservice=="wsfev1":
-                ultcmp = "wsfev1 %s" % self.ws.CompUltimoAutorizado(tipocbte, ptovta) 
+                ultcmp = "%s (wsfev1)" % self.ws.CompUltimoAutorizado(tipocbte, ptovta) 
                     
             dialog.alertDialog(self, u"Último comprobante: %s\n" 
-                u"Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, tipos[tipocbte], 
+                u"Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, self.tipos[tipocbte], 
                     tipocbte, ptovta), u'Consulta Último Nro. Comprobante')
         except SoapFault,e:
             self.log(self.client.xml_request)
@@ -187,7 +197,57 @@ class PyRece(model.Background):
         except Exception, e:
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
+    def on_menuConsultasGetCAE_select(self, event):
+        self.verifica_ws()
+        result = dialog.singleChoiceDialog(self, "Tipo de comprobante",
+            u"Consulta Comprobante", 
+                [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])])
+        if not result.accepted:
+            return
+        tipocbte = [k for k,v in self.tipos.items() if v==result.selection][0]
+        result = dialog.textEntryDialog(self, u"Punto de venta",
+            u"Consulta Comprobante", '2')
+        if not result.accepted:
+            return
+        ptovta = result.text
+        result = dialog.textEntryDialog(self, u"Nº de comprobante",
+            u"Consulta Comprobante", '2')
+        if not result.accepted:
+            return
+        nrocbte = result.text
+
+        try:
+            if self.webservice=="wsfe":
+                cae = 'no soportado'
+            elif  self.webservice=="wsfev1":
+                cae = "%s (wsfev1)" % self.ws.CompConsultar(tipocbte, ptovta, nrocbte)
+                self.log('CAE: %s' % self.ws.CAE)
+                self.log('FechaCbte: %s' % self.ws.FechaCbte)
+                self.log('PuntoVenta: %s' % self.ws.PuntoVenta)
+                self.log('CbteNro: %s' % self.ws.CbteNro)
+                self.log('ImpTotal: %s' % self.ws.ImpTotal)
+                self.log('ImpNeto: %s' % self.ws.ImpNeto)
+                self.log('ImptoLiq: %s' % self.ws.ImptoLiq)
+                self.log('EmisionTipo: %s' % self.ws.EmisionTipo)
+                    
+            dialog.alertDialog(self, u"CAE: %s\n" 
+                u"Tipo: %s (%s)\nPunto de Venta: %s\nNumero: %s\nFecha: %s" % (
+                    cae, self.tipos[tipocbte],
+                    tipocbte, ptovta, nrocbte, self.ws.FechaCbte), 
+                    u'Consulta Comprobante')
+
+        except SoapFault,e:
+            self.log(self.client.xml_request)
+            self.log(self.client.xml_response)
+            self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
+        except wsfe.WSFEError,e:
+            self.error(e.code, e.msg.encode("ascii","ignore"))
+        except Exception, e:
+            self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
+
+
     def on_menuConsultasLastID_select(self, event):
+        self.verifica_ws()
         try:
             ultnro = wsfe.ultnro(self.client, self.token, self.sign, cuit)
             dialog.alertDialog(self, u"Último ID (máximo): %s" % (ultnro), 
@@ -250,8 +310,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             if self.webservice in ('wsfe', ):
                 service = "wsfe"
             elif self.webservice in ('wsfev1', ):
-                self.log("Conectando WSFEv1...")
-                self.ws.Conectar("","file:///C:/pyrece/wsfev1_wsdl.xml")
+                self.log("Conectando WSFEv1... " + wsfev1_url)
+                self.ws.Conectar("",wsfev1_url)
                 self.ws.Cuit = cuit
                 service = "wsfe"
             elif self.webservice in ('wsfex', ):
@@ -264,15 +324,18 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             tra = wsaa.create_tra(service)
             self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
             cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
-            self.log("Llamando a WSAA...")
-            xml = wsaa.call_wsaa(str(cms),wsaa_url)
+            self.log("Llamando a WSAA... " + wsaa_url)
+            xml = wsaa.call_wsaa(str(cms),wsaa_url,trace=DEBUG)
             self.log("Procesando respuesta...")
             ta = SimpleXMLElement(xml)
             self.token = str(ta.credentials.token)
             self.sign = str(ta.credentials.sign)
-            self.log("Token: %s" % self.token)
-            self.log("Sign: %s" % self.sign)
-
+            if DEBUG:
+                self.log("Token: %s" % self.token)
+                self.log("Sign: %s" % self.sign)
+            elif self.token and self.sign:
+                self.log("Token: %s... OK" % self.token[:10])
+                self.log("Sign: %s... OK" % self.sign[:10])
             if self.webservice == "wsfev1":
                 self.ws.Token = self.token
                 self.ws.Sign = self.sign
@@ -320,8 +383,8 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                     items.extend(formato_xml.aplanar(regs))
             if len(items) < 2:
                 dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
-            cols = [str(it).strip() for it in items[0]]
-            print "Cols",cols
+            cols = items and [str(it).strip() for it in items[0]] or []
+            if DEBUG: print "Cols",cols
             # armar diccionario por cada linea
             items = [dict([(cols[i],v) for i,v in enumerate(item)]) for item in items[1:]]
             self.cols = cols
@@ -369,6 +432,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.error(u'Excepción',unicode(e))
 
     def on_btnAutorizar_mouseClick(self, event):
+        self.verifica_ws()
         try:
             ok = 0
             rechazadas = 0
@@ -444,7 +508,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         else:
                             break
                 
-                    if DEBUG or 1:
+                    if DEBUG:
                         self.log('\n'.join(["%s='%s'" % (k,v) for k,v in self.ws.factura.items()]))
 
                     cae = self.ws.CAESolicitar()
@@ -453,13 +517,14 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         'fecha_vto': self.ws.Vencimiento,
                         'resultado': self.ws.Resultado,
                         'motivo': self.ws.Obs,
-                        'reproceso': 'N',
+                        'reproceso': self.ws.Reproceso,
                         'err_code': self.ws.ErrCode.encode("latin1"),
                         'err_msg': self.ws.ErrMsg.encode("latin1"),
                         })
                     if self.ws.ErrMsg:
-                            dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
-                
+                        dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
+                    if self.ws.Obs and self.ws.Obs!='00':
+                        dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
                 self.items[i] = kargs
                 self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 if kargs['resultado'] == "R":
@@ -482,11 +547,12 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.error(u'Excepción',unicode(e))
         finally:
             if DEBUG:
-                if self.webservice == 'wsfev1':
-                    self.log(self.ws.XmlRequest)
-                    self.log(self.ws.XmlResponse)
+                if self.webservice == 'wsfev1' and DEBUG:
+                    print self.ws.XmlRequest
+                    print self.ws.XmlResponse
 
     def on_btnAutorizarLote_mouseClick(self, event):
+        self.verifica_ws()
         try:
             ok = 0
             rechazadas = 0
@@ -561,7 +627,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                 self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 if kargs['resultado'] == "R":
                     rechazadas += 1
-                else:
+                elif kargs['resultado'] == "A":
                     ok += 1
 
                 self.items = self.items # refrescar, ver de corregir
@@ -683,7 +749,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
         
         f.set('Cliente.Nombre', item['nombre'])
         f.set('Cliente.Domicilio', item['domicilio'])
-        f.set('Cliente.Localidad', item['localidad'])
+        f.set('Cliente.Localidad', item['localidad'] or '')
         if 'provincia' in item:
             f.set('Cliente.Provincia', item['provincia'])
         f.set('Cliente.Telefono', item['telefono'])
@@ -836,6 +902,11 @@ if __name__ == '__main__':
         wsfe_url = config.get('WSFE','URL')
     else:
         wsfe_url = wsfe.WSFEURL
+
+    if config.has_option('WSFEv1','URL') and not HOMO:
+        wsfev1_url = config.get('WSFEv1','URL')
+    else:
+        wsfev1_url = wsfev1.WSDL
 
     app = model.Application(PyRece)
     app.MainLoop()

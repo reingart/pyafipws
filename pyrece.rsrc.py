@@ -20,6 +20,10 @@
                    'name':'menuConsultasLastID',
                    'label':u'\xdalt. ID',
                   },
+                  {'type':'MenuItem',
+                   'name':'menuConsultasGetCAE',
+                   'label':u'Recuperar CAE',
+                  },
               ]
              },
          ]
