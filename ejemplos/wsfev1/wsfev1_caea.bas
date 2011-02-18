@@ -49,7 +49,7 @@ Sub Main()
     
     ' Conectar al Servicio Web de Facturación
     ok = WSFEv1.Conectar("", "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL") ' homologación
-        
+                
     ' PASO 1: Solicito CAE Anticipado para el período
     ' NOTA: solicitar por única vez para un determinado período
     ' consultar si se ha solicitado previamente
@@ -121,8 +121,11 @@ Sub Main()
     importe = "21.00"
     ok = WSFEv1.AgregarIva(id, base_imp, importe)
     
+    ' Habilito reprocesamiento automático (predeterminado):
+    WSFEv1.Reprocesar = True
+    
     ' Informo comprobante emitido con CAE anticipado:
-    cae = WSFEv1.CAEARegInformativo()
+    CAE = WSFEv1.CAEARegInformativo()
     
     Debug.Print "Resultado", WSFEv1.Resultado
 
@@ -132,7 +135,17 @@ Sub Main()
     Debug.Print WSFEv1.xmlrequest
     Debug.Print WSFEv1.xmlresponse
     
-    MsgBox "Resultado:" & WSFEv1.Resultado & " CAE: " & cae & " Venc: " & WSFEv1.Vencimiento & " Obs: " & WSFEv1.Obs, vbInformation + vbOKOnly
+    Debug.Print "Reprocesar:", WSFEv1.Reprocesar
+    Debug.Print "Reproceso:", WSFEv1.Reproceso
+    Debug.Print "CAEA:", WSFEv1.CAEA
+    Debug.Print "EmisionTipo:", WSFEv1.EmisionTipo
+
+    MsgBox "Resultado:" & WSFEv1.Resultado & " CAE: " & CAE & " Venc: " & WSFEv1.Vencimiento & " Obs: " & WSFEv1.Obs & " Reproceso: " & WSFEv1.Reproceso, vbInformation + vbOKOnly
+    
+    ' Muestro los errores
+    If WSFEv1.ErrMsg <> "" Then
+        MsgBox WSFEv1.ErrMsg, vbExclamation, "Error"
+    End If
     
     ' Muestro los eventos (mantenimiento programados y otros mensajes de la AFIP)
     For Each evento In WSFEv1.eventos:

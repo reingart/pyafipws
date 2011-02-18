@@ -115,11 +115,14 @@ Sub Main()
     importe = "21.00"
     ok = WSFEv1.AgregarIva(id, base_imp, importe)
     
+    ' Habilito reprocesamiento automático (predeterminado):
+    WSFEv1.Reprocesar = True
+
     ' Solicito CAE:
-    cae = WSFEv1.CAESolicitar()
+    CAE = WSFEv1.CAESolicitar()
     
     Debug.Print "Resultado", WSFEv1.Resultado
-    Debug.Print "CAE", WSFEv1.cae
+    Debug.Print "CAE", WSFEv1.CAE
 
     Debug.Print "Numero de comprobante:", WSFEv1.CbteNro
     
@@ -127,7 +130,17 @@ Sub Main()
     Debug.Print WSFEv1.XmlRequest
     Debug.Print WSFEv1.XmlResponse
     
-    MsgBox "Resultado:" & WSFEv1.Resultado & " CAE: " & cae & " Venc: " & WSFEv1.Vencimiento & " Obs: " & WSFEv1.obs, vbInformation + vbOKOnly
+    Debug.Print "Reprocesar:", WSFEv1.Reprocesar
+    Debug.Print "Reproceso:", WSFEv1.Reproceso
+    Debug.Print "CAE:", WSFEv1.CAE
+    Debug.Print "EmisionTipo:", WSFEv1.EmisionTipo
+
+    MsgBox "Resultado:" & WSFEv1.Resultado & " CAE: " & CAE & " Venc: " & WSFEv1.Vencimiento & " Obs: " & WSFEv1.obs & " Reproceso: " & WSFEv1.Reproceso, vbInformation + vbOKOnly
+    
+    ' Muestro los errores
+    If WSFEv1.ErrMsg <> "" Then
+        MsgBox WSFEv1.ErrMsg, vbExclamation, "Error"
+    End If
     
     ' Muestro los eventos (mantenimiento programados y otros mensajes de la AFIP)
     For Each evento In WSFEv1.eventos:
@@ -142,8 +155,8 @@ Sub Main()
     Debug.Print "Importe Total:", WSFEv1.ImpTotal
     Debug.Print "Resultado:", WSFEv1.Resultado
     
-    If cae <> cae2 Then
-        MsgBox "El CAE de la factura no concuerdan con el recuperado en la AFIP!: " & cae & " vs " & cae2
+    If CAE <> cae2 Then
+        MsgBox "El CAE de la factura no concuerdan con el recuperado en la AFIP!: " & CAE & " vs " & cae2
     Else
         MsgBox "El CAE de la factura concuerdan con el recuperado de la AFIP"
     End If
