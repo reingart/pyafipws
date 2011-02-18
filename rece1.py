@@ -74,6 +74,8 @@ ENCABEZADO = [
     ('motivos_obs', 1000, A),
     ('err_code', 6, A),
     ('err_msg', 1000, A),
+    ('reproceso', 1, A),
+    ('emision_tipo', 4, A),
     ]
                    
 #DETALLE = [
@@ -203,7 +205,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
     if informar_caea:
         if '/testing' in sys.argv:
-            encabezado['cae'] = '20523029300270'
+            encabezado['cae'] = '21073372218437'
         encabezado['caea'] = encabezado['cae']
 
     ws.CrearFactura(**encabezado)
@@ -224,15 +226,17 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             cae = ws.CAEARegInformativo()
             dic = ws.factura
         dic.update({
-            'cae':ws.CAE,
+            'cae':cae,
             'fch_venc_cae': ws.Vencimiento,
             'resultado': ws.Resultado,
             'motivos_obs': ws.Obs,
             'err_code': ws.ErrCode,
             'err_msg': ws.ErrMsg,
+            'reproceso': ws.Reproceso,
+            'emision_tipo': ws.EmisionTipo,
             })
         escribir_factura(dic, salida)
-        print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], informar_caea and "CAEA" or "CAE:",dic['cae'],"Obs:",dic['motivos_obs'], "Err:", dic['err_msg']
+        print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'], "Err:", dic['err_msg'], "Reproceso:", dic['reproceso']
 
 def escribir_factura(dic, archivo):
     dic['tipo_reg'] = 0
@@ -293,6 +297,11 @@ if __name__ == "__main__":
     else:
         wsfev1_url = None
 
+    if config.has_option('WSFEv1','REPROCESAR'):
+        wsfev1_reprocesar = config.get('WSFEv1','REPROCESAR') == 'S'
+    else:
+        wsfev1_reprocesar = None
+
     if '/debug'in sys.argv:
         DEBUG = True
 
@@ -306,6 +315,8 @@ if __name__ == "__main__":
         ws = wsfev1.WSFEv1()
         ws.Conectar(".", wsfev1_url)
         ws.Cuit = cuit
+        if wsfev1_reprocesar is not None:
+            ws.Reprocesar = wsfev1_reprocesar
 
         if '/dummy' in sys.argv:
             print "Consultando estado de servidores..."
@@ -404,6 +415,7 @@ if __name__ == "__main__":
             print "ImpTotal =", ws.ImpTotal
             print "CAE = ", ws.CAE
             print "Vencimiento = ", ws.Vencimiento
+            print "EmisionTipo = ", ws.EmisionTipo
 
             depurar_xml(ws.client)
             sys.exit(0)
