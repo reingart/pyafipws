@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.07b"
 
 import datetime
 import decimal
@@ -44,6 +44,7 @@ def inicializar_y_capturar_execepciones(func):
             self.FechaCbte = self.CbteNro = self.PuntoVenta = self.ImpTotal = None
             self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
             self.CbtDesde = self.CbtHasta = self.FechaCbte = None
+            self.Reproceso = self.EmisionTipo = ''
             self.Errores = []
             self.Observaciones = []
             self.Eventos = []
@@ -101,6 +102,7 @@ class WSFEv1:
         'XmlRequest', 'XmlResponse', 'Version', 
         'Resultado', 'Obs', 'Observaciones', 'Traceback', 'InstallDir',
         'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
+        'Reprocesar', 'EmisionTipo',
         'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte', 
         'ImpTotal', 'ImpNeto', 'ImptoLiq', 'ImpOpEx'
         'ImptIVA', 'ImpOpEx', 'ImpTrib',]
@@ -134,11 +136,13 @@ class WSFEv1:
         else:
             basepath = sys.executable
         self.InstallDir = os.path.dirname(os.path.abspath(basepath))
+        self.Reprocesar = True # recuperar automaticamente CAE emitidos
         
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
         if 'Errors' in ret:
             errores = ret['Errors']
+            self.Errores = []
             for error in errores:
                 self.Errores.append("%s: %s" % (
                     error['Err']['Code'],
@@ -310,6 +314,18 @@ class WSFEv1:
             self.Resultado = fecabresp['Resultado']
             ##print result['FeDetResp']
             fedetresp = result['FeDetResp'][0]['FECAEDetResponse']
+            
+            # Reprocesar en caso de error (recuperar CAE emitido anteriormente)
+            if self.Reprocesar and 'Errors' in result:
+                for error in result['Errors']:
+                    err_code = str(error['Err']['Code'])
+                    if fedetresp['Resultado']=='R' and err_code=='10016':
+                        cae = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'])
+                        if cae:
+                            self.Reproceso = 'S'
+                            return cae
+                        self.Reproceso = 'N'
+            
             # Obs:
             for obs in fedetresp.get('Observaciones', []):
                 self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
@@ -364,6 +380,7 @@ class WSFEv1:
             self.ImptoLiq = self.ImpIVA = resultget['ImpIVA']
             self.ImpOpEx = resultget['ImpOpEx']
             self.ImpTrib = resultget['ImpTrib']
+            self.EmisionTipo = resultget['EmisionTipo']
 
         self.__analizar_errores(result)
         return self.CAE
