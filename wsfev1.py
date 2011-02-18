@@ -330,6 +330,7 @@ class WSFEv1:
                 self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
             self.Obs = '\n'.join(self.Observaciones)
             self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
+            self.EmisionTipo = 'CAE'
             self.Vencimiento = fedetresp['CAEFchVto']
             self.FechaCbte = fedetresp['CbteFch'] #.strftime("%Y/%m/%d")
             self.CbteNro = fedetresp['CbteHasta'] # 1L
@@ -520,6 +521,7 @@ class WSFEv1:
                 self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
             self.Obs = '\n'.join(self.Observaciones)
             self.CAEA = fedetresp['CAEA'] and str(fedetresp['CAEA']) or ""
+            self.EmisionTipo = 'CAEA'
             self.FechaCbte = fedetresp['CbteFch'] #.strftime("%Y/%m/%d")
             self.CbteNro = fedetresp['CbteHasta'] # 1L
             self.PuntoVenta = fecabresp['PtoVta'] # 4000
