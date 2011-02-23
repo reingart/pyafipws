@@ -434,8 +434,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
     def on_btnAutorizar_mouseClick(self, event):
         self.verifica_ws()
         try:
-            ok = 0
-            rechazadas = 0
+            ok = procesadas = rechazadas = 0
             cols = self.cols
             items = []
             self.progreso(0)
@@ -527,15 +526,19 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                         dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
                 self.items[i] = kargs
                 self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
+                procesadas += 1
                 if kargs['resultado'] == "R":
                     rechazadas += 1
-                else:
+                elif kargs['resultado'] == "A":
                     ok += 1
                 self.progreso(i)
             self.items = self.items 
             self.set_selected_items(selected)
             self.progreso(len(self.items))
-            dialog.alertDialog(self, u'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), u'Autorización')
+            dialog.alertDialog(self, u'Proceso finalizado, procesadas %d\n\n'
+                    'Aceptadas: %d\n'
+                    'Rechazadas: %d' % (procesadas, ok, rechazadas), 
+                    u'Autorización')
             self.grabar()
         except (SoapFault, wsfev1.SoapFault),e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
@@ -657,7 +660,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                 os.system(archivo)
         except Exception, e:
             print e
-            self.error(u'Excepción', e)
+            self.error(u'Excepción', unicode(e))
 
     def on_btnGenerar_mouseClick(self, event):
         for item in self.items:
