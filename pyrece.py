@@ -38,7 +38,7 @@ HOMO = False
 DEBUG = '--debug' in sys.argv
 CONFIG_FILE = "rece.ini"
 
-AYUDA = u"""
+ACERCA_DE = u"""
 PyRece: Aplicativo AdHoc para generar Facturas Electrónicas
 Copyright (C) 2008/2009/2010/2011 Mariano Reingart reingart@gmail.com
 
@@ -48,7 +48,9 @@ y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
 Para información adicional y descargas ver:
 http://www.sistemasagiles.com.ar/
+"""
 
+INSTRUCTIVO = U"""
 Forma de uso:
 
  * Examinar: para buscar el archivo a procesar (opcional)
@@ -289,11 +291,15 @@ class PyRece(model.Background):
             self.error(u'Excepción',unicode(e))
 
 
-    def on_btnAyuda_mouseClick(self, event):
-        text = AYUDA
-        dialog.alertDialog(self, text, u'Ayuda')
+    def on_menuAyudaAcercaDe_select(self, event):
+        text = ACERCA_DE
+        dialog.alertDialog(self, text, u'Acerca de PyRece')
 
-    def on_btnLimpiar_mouseClick(self, event):
+    def on_menuAyudaInstructivo_select(self, event):
+        text = INSTRUCTIVO
+        dialog.alertDialog(self, text, u'Instructivo de PyRece')
+
+    def on_menuAyudaLimpiar_select(self, event):
         self.components.txtEstado.text = ""
 
     def on_cboWebservice_select(self, event):

@@ -26,6 +26,24 @@
                   },
               ]
              },
+             {'type':'Menu',
+             'name':'menuAyuda',
+             'label':u'Ayuda',
+             'items': [
+                  {'type':'MenuItem',
+                   'name':'menuAyudaInstructivo',
+                   'label':u'Instructivo',
+                  },
+                  {'type':'MenuItem',
+                   'name':'menuAyudaAcercaDe',
+                   'label':u'Acerca de',
+                  },
+                  {'type':'MenuItem',
+                   'name':'menuAyudaLimpiar',
+                   'label':u'Limpiar estado',
+                  },
+              ]
+             },
          ]
      },
          'components': [
@@ -41,12 +59,6 @@
     'position':(82, 5), 
     'size':(69, -1), 
     'items':[u'wsfe', u'wsfev1', u'wsfex'], 
-    },
-
-{'type':'Button', 
-    'name':'btnAyuda', 
-    'position':(480, 393), 
-    'label':u'Ayuda', 
     },
 
 {'type':'Button', 
@@ -76,11 +88,6 @@
     'label':u'Previsualizar', 
     },
 
-{'type':'Button', 
-    'name':'btnLimpiar', 
-    'position':(20, 393), 
-    'label':u'Limpiar', 
-    },
 
 {'type':'Button', 
     'name':'btnAutenticar', 
@@ -91,8 +98,8 @@
 
 {'type':'TextArea', 
     'name':'txtEstado', 
-    'position':(20, 234), 
-    'size':(534, 152), 
+    'position':(20, 243), 
+    'size':(534, 212), 
     'font':{'faceName': u'Sans', 'family': 'sansSerif', 'size': 8}, 
     'text':u'\n', 
     },
