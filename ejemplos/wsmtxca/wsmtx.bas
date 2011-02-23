@@ -51,7 +51,7 @@ Sub Main()
     WSMTXCA.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    WSDL = "https://serviciosjava.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
+    WSDL = "" '"https://serviciosjava.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
     ok = WSMTXCA.Conectar("", WSDL)   ' producción
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
@@ -63,7 +63,7 @@ Sub Main()
     ' Establezco los valores de la factura a autorizar:
     tipo_cbte = 1
     punto_vta = 4000
-    cbte_nro = WSMTXCA.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+    cbte_nro = WSMTXCA.CompUltimoAutorizado(tipo_cbte, punto_vta)
     fecha = Format(Date, "yyyy-mm-dd")
     concepto = 3
     tipo_doc = 80: nro_doc = "30000000007"

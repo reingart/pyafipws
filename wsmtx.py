@@ -11,19 +11,21 @@
 # for more details.
 
 """Módulo para obtener código de autorización electrónico del web service 
-WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A)
+WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.02a"
 
 import datetime
 import decimal
+import os
 import sys
 import traceback
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault
+from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
+from cStringIO import StringIO
 
 HOMO = True
 
@@ -61,7 +63,8 @@ class WSMTXCA:
     "Interfase para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc',
-                        'AutorizarComprobante', 'ConsultarUltimoComprobanteAutorizado',
+                        'AutorizarComprobante', 
+                        'ConsultarUltimoComprobanteAutorizado', 'CompUltimoAutorizado', 
                         'ConsultarComprobante',
                         'ConsultarTiposComprobante', 
                         'ConsultarTiposDocumento',
@@ -71,10 +74,10 @@ class WSMTXCA:
                         'ConsultarUnidadesMedida',
                         'ConsultarTiposTributo',
                         'ConsultarCotizacionMoneda',
-                        'Dummy', 'Conectar', ]
+                        'Dummy', 'Conectar', 'Eval', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version',
+        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir',
         'Resultado', 'Obs', 'Observaciones', 'ErrCode', 'ErrMsg',
         'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback',
         'CbteNro', 'FechaCbte', 'PuntoVenta', 'ImpTotal']
@@ -94,6 +97,15 @@ class WSMTXCA:
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
         self.ErrCode = self.ErrMsg = self.Traceback = ""
+        self.Log = None
+        if not hasattr(sys, "frozen"): 
+            basepath = __file__
+        elif sys.frozen=='dll':
+            import win32api
+            basepath = win32api.GetModuleFileName(sys.frozendllhandle)
+        else:
+            basepath = sys.executable
+        self.InstallDir = os.path.dirname(os.path.abspath(basepath))
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -104,16 +116,46 @@ class WSMTXCA:
                     error['codigoDescripcion']['codigo'],
                     error['codigoDescripcion']['descripcion'],
                     ))
-                    
+                   
+    def __log(self, msg):
+        if not isinstance(msg, unicode):
+            msg = unicode(msg, 'utf8', 'ignore')
+        if not self.Log:
+            self.Log = StringIO()
+        self.Log.write(msg)
+        self.Log.write('\n\r')
+    
+    def Eval(self, code):
+        "Devolver el resultado de ejecutar una expresión (para depuración)"
+        if not HOMO:
+            return str(eval(code))
+
+    def DebugLog(self):
+        "Devolver y limpiar la bitácora de depuración"
+        if self.Log:
+            msg = self.Log.getvalue()
+            # limpiar log
+            self.Log.close()
+            self.Log = None
+        else:
+            msg = u''
+        return msg    
+
     @inicializar_y_capturar_execepciones
-    def Conectar(self, cache="cache", wsdl=None):
+    def Conectar(self, cache=None, wsdl=None, proxy=""):
         # cliente soap del web service
+        proxy_dict = parse_proxy(proxy)
         if HOMO or not wsdl:
             wsdl = WSDL
-        self.client = SoapClient( 
+        if not cache or HOMO:
+            # use 'cache' from installation base directory 
+            cache = os.path.join(self.InstallDir, 'cache')
+        self.__log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
+        self.client = SoapClient(
             wsdl = wsdl,        
             cache = cache,
-            ns = "ser",
+            proxy = proxy_dict,
+            ns='ser',
             trace = "--trace" in sys.argv)
         return True
 
@@ -247,7 +289,9 @@ class WSMTXCA:
         self.__analizar_errores(ret)
         self.CbteNro = nro
         return str(nro)
-    
+
+    CompUltimoAutorizado = ConsultarUltimoComprobanteAutorizado
+
     @inicializar_y_capturar_execepciones
     def ConsultarComprobante(self, tipo_cbte, punto_vta, cbte_nro):
         "Recuperar los datos completos de un comprobante ya autorizado"
@@ -382,9 +426,10 @@ def main():
             punto_vta = 4000
             cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
-            concepto = 1
+            concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
-            cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
+            cbte_nro = long(cbte_nro) + 1
+            cbt_desde = cbte_nro; cbt_hasta = cbt_desde
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
@@ -417,7 +462,7 @@ def main():
             wsmtxca.AgregarIva(cod, base_imp, importe)
             
             u_mtx = 123456
-            cod_mtx = 12345678901234
+            cod_mtx = 1234567890123
             codigo = "P0001"
             ds = "Descripcion del producto P0001"
             qty = 1.00
@@ -431,14 +476,14 @@ def main():
                         cod_iva, imp_iva, imp_subtotal)
             
             wsmtxca.AutorizarComprobante()
-            
+
             print "Resultado", wsmtxca.Resultado
             print "CAE", wsmtxca.CAE
             print "Vencimiento", wsmtxca.Vencimiento
             
             cae = wsmtxca.CAE
             
-            wsmtxca.ConsultaComprobante(tipo_cbte, punto_vta, cbte_nro)
+            wsmtxca.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
             print "CAE consulta", wsmtxca.CAE, wsmtxca.CAE==cae 
             print "NRO consulta", wsmtxca.CbteNro, wsmtxca.CbteNro==cbte_nro 
             print "TOTAL consulta", wsmtxca.ImpTotal, wsmtxca.ImpTotal==imp_total
@@ -448,6 +493,7 @@ def main():
             print wsmtxca.XmlResponse        
             print wsmtxca.ErrCode
             print wsmtxca.ErrMsg
+
 
     if "--parametros" in sys.argv:
         print wsmtxca.ConsultarTiposComprobante()

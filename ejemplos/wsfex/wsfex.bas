@@ -64,8 +64,8 @@ Sub Main()
     'End
     fecha_cbte = Format(Date, "yyyymmdd")
     tipo_expo = 1 ' tipo de exportación (ver tabla de parámetros)
-    permiso_existente = "N"
-    dst_cmp = 2035 ' país destino
+    permiso_existente = ""
+    dst_cmp = 235 ' país destino
     cliente = "Joao Da Silva"
     cuit_pais_cliente = "50000000016"
     domicilio_cliente = "Rua 76 km 34.5 Alagoas"
@@ -117,7 +117,7 @@ Sub Main()
     id = CStr(CCur(WSFEX.GetLastID()) + 1)
     
     ' Llamo al WebService de Autorización para obtener el CAE
-    cae = WSFEX.Authorize(id)
+    cae = WSFEX.Authorize(CCur(id))
         
     ' Verifico que no haya rechazo o advertencia al generar el CAE
     If cae = "" Or WSFEX.Resultado <> "A" Then
@@ -129,8 +129,9 @@ Sub Main()
     Debug.Print "Numero de comprobante:", WSFEX.CbteNro
     
     ' Imprimo pedido y respuesta XML para depuración (errores de formato)
-    Debug.Print WSFEX.XmlRequest
+    Debug.Print WSFEX.xmlrequest
     Debug.Print WSFEX.XmlResponse
+    Debug.Assert False
     
     MsgBox "Resultado:" & WSFEX.Resultado & " CAE: " & cae & " Venc: " & WSFEX.Vencimiento & " Reproceso: " & WSFEX.Reproceso & " Obs: " & WSFEX.obs, vbInformation + vbOKOnly
     
@@ -168,7 +169,7 @@ ManejoError:
         Case vbCancel
             Debug.Print Err.Description
     End Select
-    Debug.Print WSFEX.XmlRequest
+    Debug.Print WSFEX.xmlrequest
     Debug.Assert False
 
 End Sub

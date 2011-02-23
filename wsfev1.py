@@ -400,6 +400,96 @@ class WSFEv1:
 
 
     @inicializar_y_capturar_execepciones
+    def CAESolicitarLote(self):
+        f = self.factura
+        ret = self.client.FECAESolicitar(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            FeCAEReq={
+                'FeCabReq': {'CantReg': 250, 
+                    'PtoVta': f['punto_vta'], 
+                    'CbteTipo': f['tipo_cbte']},
+                'FeDetReq': [{'FECAEDetRequest': {
+                    'Concepto': f['concepto'],
+                    'DocTipo': f['tipo_doc'],
+                    'DocNro': f['nro_doc'],
+                    'CbteDesde': f['cbt_desde']+k,
+                    'CbteHasta': f['cbt_hasta']+k,
+                    'CbteFch': f['fecha_cbte'],
+                    'ImpTotal': f['imp_total'],
+                    'ImpTotConc': f['imp_tot_conc'],
+                    'ImpNeto': f['imp_neto'],
+                    'ImpOpEx': f['imp_op_ex'],
+                    'ImpTrib': f['imp_trib'],
+                    'ImpIVA': f['imp_iva'],
+                    # Fechas solo se informan si Concepto in (2,3)
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
+                    'FchVtoPago': f.get('fecha_venc_pago'),
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
+                    'FchVtoPago': f['fecha_venc_pago'],
+                    'MonId': f['moneda_id'],
+                    'MonCotiz': f['moneda_ctz'],                
+                    'CbtesAsoc': [
+                        {'CbteAsoc': {
+                            'Tipo': cbte_asoc['tipo'],
+                            'PtoVta': cbte_asoc['pto_vta'], 
+                            'Nro': cbte_asoc['nro']}}
+                        for cbte_asoc in f['cbtes_asoc']],
+                    'Tributos': [
+                        {'Tributo': {
+                            'Id': tributo['id'], 
+                            'Desc': tributo['desc'],
+                            'BaseImp': tributo['base_imp'],
+                            'Alic': tributo['alic'],
+                            'Importe': tributo['importe'],
+                            }}
+                        for tributo in f['tributos']],
+                    'Iva': [ 
+                        {'AlicIva': {
+                            'Id': iva['id'],
+                            'BaseImp': iva['base_imp'],
+                            'Importe': iva['importe'],
+                            }}
+                        for iva in f['iva']],
+                    }
+                } for k in range (250)]
+            })
+        
+        result = ret['FECAESolicitarResult']
+        if 'FeCabResp' in result:
+            fecabresp = result['FeCabResp']
+            fedetresp = result['FeDetResp'][0]['FECAEDetResponse']
+            
+            # Reprocesar en caso de error (recuperar CAE emitido anteriormente)
+            if self.Reprocesar and 'Errors' in result:
+                for error in result['Errors']:
+                    err_code = str(error['Err']['Code'])
+                    if fedetresp['Resultado']=='R' and err_code=='10016':
+                        cae = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'])
+                        if cae:
+                            self.Reproceso = 'S'
+                            return cae
+                        self.Reproceso = 'N'
+            
+            self.Resultado = fecabresp['Resultado']
+            # Obs:
+            for obs in fedetresp.get('Observaciones', []):
+                self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+            self.Obs = '\n'.join(self.Observaciones)
+            self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
+            self.EmisionTipo = 'CAE'
+            self.Vencimiento = fedetresp['CAEFchVto']
+            self.FechaCbte = fedetresp['CbteFch'] #.strftime("%Y/%m/%d")
+            self.CbteNro = fedetresp['CbteHasta'] # 1L
+            self.PuntoVenta = fecabresp['PtoVta'] # 4000
+            self.CbtDesde =fedetresp['CbteDesde']
+            self.CbtHasta = fedetresp['CbteHasta']
+            self.__analizar_errores(result)
+        return self.CAE
+
+
+    @inicializar_y_capturar_execepciones
     def CAEASolicitar(self, periodo, orden):
         ret = self.client.FECAEASolicitar(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
@@ -675,7 +765,7 @@ def main():
 
         tipo_cbte = 2
         punto_vta = 4001
-        cbte_nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
+        cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
         concepto = 2
         tipo_doc = 80; nro_doc = "33693450239" # CUIT AFIP
@@ -711,11 +801,21 @@ def main():
         importe = 21
         wsfev1.AgregarIva(id, base_imp, importe)
         
+        import time
+        t0 = time.time()
         wsfev1.CAESolicitar()
+        t1 = time.time()
         
         print "Resultado", wsfev1.Resultado
         print "CAE", wsfev1.CAE
-        
+        if DEBUG:
+            print "t0", t0
+            print "t1", t1
+            print "lapso", t1-t0
+            open("xmlrequest.xml","wb").write(wsfev1.XmlRequest)
+            open("xmlresponse.xml","wb").write(wsfev1.XmlResponse)
+            
+
     if "--parametros" in sys.argv:
         import codecs, locale, traceback
         if sys.stdout.encoding is None:
