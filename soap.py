@@ -54,7 +54,7 @@ class SoapClient(object):
             self.__soap_ns = soap_ns
 
         if not proxy:
-            self.http = httplib2.Http()
+            self.http = httplib2.Http(timeout=60)
         else:
             import socks
             ##httplib2.debuglevel=4
