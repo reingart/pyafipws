@@ -143,9 +143,10 @@ class PyRece(model.Background):
         wx.SafeYield()
     
     def progreso(self, value):
-        per = (value+1)/float(len(self.items))*100
-        self.components.pbProgreso.value = per
-        wx.SafeYield()
+        if self.items:
+            per = (value+1)/float(len(self.items))*100
+            self.components.pbProgreso.value = per
+            wx.SafeYield()
 
     def error(self, code, text):
         ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
@@ -556,6 +557,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
 
     def on_btnAutorizarLote_mouseClick(self, event):
         self.verifica_ws()
+        if not self.items: return
         try:
             ok = 0
             rechazadas = 0
