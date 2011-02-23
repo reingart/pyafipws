@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 import datetime
 import decimal
@@ -341,7 +341,7 @@ class WSMTXCA:
             )
         self.__analizar_errores(ret)
         if 'cotizacionMoneda' in ret:
-            return ret['cotizacionMoneda']
+            return str(ret['cotizacionMoneda'])
 
 
 
