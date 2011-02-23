@@ -70,14 +70,14 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY):
     s.load_key(privatekey, cert)            # Cargar certificados
     p7 = s.sign(buf,0)                      # Firmar el buffer
     out = BIO.MemoryBuffer()                # Crear un buffer para la salida 
-    s.write(out, p7, buf)                   # Generar p7 en formato mail
+    s.write(out, p7)                        # Generar p7 en formato mail
     #Rand.save_file('randpool.dat')         # Guardar el estado del PRNG's
 
     # extraer el cuerpo del mensaje (parte firmada)
     msg = email.message_from_string(out.read())
     for part in msg.walk():
         filename = part.get_filename()
-        if filename == "smime.p7s":                 # es la parte firmada?
+        if filename == "smime.p7m":                 # es la parte firmada?
             return part.get_payload(decode=False)   # devolver CMS
 
 def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
