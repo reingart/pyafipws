@@ -382,7 +382,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
                     regs = formato_xml.leer(fn)
                     items.extend(formato_xml.aplanar(regs))
             if len(items) < 2:
-                dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
+                dialog.alertDialog(self, u'El archivo no tiene datos válidos', 'Advertencia')
             cols = items and [str(it).strip() for it in items[0]] or []
             if DEBUG: print "Cols",cols
             # armar diccionario por cada linea
@@ -535,7 +535,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             self.items = self.items 
             self.set_selected_items(selected)
             self.progreso(len(self.items))
-            dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
+            dialog.alertDialog(self, u'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), u'Autorización')
             self.grabar()
         except (SoapFault, wsfev1.SoapFault),e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
@@ -870,6 +870,7 @@ Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
             
         
 if __name__ == '__main__':
+
     if len(sys.argv)>1 and not sys.argv[1].startswith("-"):
         CONFIG_FILE = sys.argv[1]
     config = SafeConfigParser()
