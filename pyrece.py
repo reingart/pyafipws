@@ -38,6 +38,32 @@ HOMO = False
 DEBUG = '--debug' in sys.argv
 CONFIG_FILE = "rece.ini"
 
+AYUDA = u"""
+PyRece: Aplicativo AdHoc para generar Facturas Electrónicas
+Copyright (C) 2008/2009/2010/2011 Mariano Reingart reingart@gmail.com
+
+Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
+y es bienvenido a redistribuirlo bajo la licencia GPLv3.
+
+
+Para información adicional y descargas ver:
+http://www.sistemasagiles.com.ar/
+
+Forma de uso:
+
+ * Examinar: para buscar el archivo a procesar (opcional)
+ * Cargar: para leer los datos del archivo de facturas a procesar 
+ * Autenticar: para iniciar la sesión en los servidores de AFIP (obligatorio antes de autorizar)
+ * Marcar Todo: para seleccionar todas las facturas
+ * Autorizar: para autorizar las facturas seleccionadas, completando el CAE y demás datos
+ * Autorizar Lote: para autorizar en un solo lote las facturas seleccionadas
+ * Grabar: para almacenar los datos procesados en el archivo de facturas 
+ * Previsualizar: para ver por pantalla la factura seleccionadas
+ * Enviar: para envia por correo electrónico las facturas seleccionadas
+
+Para solicitar soporte comercial, escriba a pyrece@sistemasagiles.com.ar
+"""
+
 def digito_verificador_modulo10(codigo):
     "Rutina para el cálculo del dígito verificador 'módulo 10'"
     # http://www.consejo.org.ar/Bib_elect/diciembre04_CT/documentos/rafip1702.htm
@@ -264,31 +290,8 @@ class PyRece(model.Background):
 
 
     def on_btnAyuda_mouseClick(self, event):
-        text = """
-PyRece: Aplicativo AdHoc para generar Facturas Electrónicas
-Copyright (C) 2008/2009 Mariano Reingart reingart@gmail.com
-
-Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
-y es bienvenido a redistribuirlo bajo la licencia GPLv3.
-
-Para información adicional y descargas ver:
-http://www.sistemasagiles.com.ar/
-
-Forma de uso:
-
- * Examinar: para buscar el archivo a procesar (opcional)
- * Cargar: para leer los datos del archivo de facturas a procesar 
- * Autenticar: para iniciar la sesión en los servidores de AFIP (obligatorio antes de autorizar)
- * Marcar Todo: para seleccionar todas las facturas
- * Autorizar: para autorizar las facturas seleccionadas, completando el CAE y demás datos
- * Autorizar Lote: para autorizar en un solo lote las facturas seleccionadas
- * Grabar: para almacenar los datos procesados en el archivo de facturas 
- * Previsualizar: para ver por pantalla la factura seleccionadas
- * Enviar: para envia por correo electrónico las facturas seleccionadas
-
-Para solicitar soporte comercial, escriba a pyafipws@nsis.com.ar
-"""
-        dialog.alertDialog(self, text, 'Ayuda')
+        text = AYUDA
+        dialog.alertDialog(self, text, u'Ayuda')
 
     def on_btnLimpiar_mouseClick(self, event):
         self.components.txtEstado.text = ""
