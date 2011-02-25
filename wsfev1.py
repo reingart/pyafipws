@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07c"
+__version__ = "1.07d"
 
 import datetime
 import decimal
@@ -314,16 +314,22 @@ class WSFEv1:
             fedetresp = result['FeDetResp'][0]['FECAEDetResponse']
             
             # Reprocesar en caso de error (recuperar CAE emitido anteriormente)
-            if self.Reprocesar and 'Errors' in result:
-                for error in result['Errors']:
-                    err_code = str(error['Err']['Code'])
+            if self.Reprocesar and ('Errors' in result or 'Observaciones' in fedetresp):
+                for error in result.get('Errors',[])+fedetresp.get('Observaciones',[]):
+                    err_code = str(error.get('Err', error.get('Obs'))['Code'])
                     if fedetresp['Resultado']=='R' and err_code=='10016':
-                        cae = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'])
-                        if cae:
+                        # guardo los mensajes xml originales
+                        xml_request = self.client.xml_request
+                        xml_response = self.client.xml_response
+                        cae = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
+                        if cae and self.EmisionTipo=='CAE':
                             self.Reproceso = 'S'
                             return cae
                         self.Reproceso = 'N'
-            
+                        # reestablesco los mensajes xml originales
+                        self.client.xml_request = xml_request
+                        self.client.xml_response = xml_response
+                        
             self.Resultado = fecabresp['Resultado']
             # Obs:
             for obs in fedetresp.get('Observaciones', []):
@@ -363,7 +369,9 @@ class WSFEv1:
         return self.CbteNro and str(self.CbteNro) or ''
 
     @inicializar_y_capturar_execepciones
-    def CompConsultar(self, tipo_cbte, punto_vta, cbte_nro):
+    def CompConsultar(self, tipo_cbte, punto_vta, cbte_nro, reproceso=False):
+        difs = [] # si hay reproceso, verifico las diferencias con AFIP
+
         ret = self.client.FECompConsultar(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             FeCompConsReq={
@@ -375,6 +383,69 @@ class WSFEv1:
         result = ret['FECompConsultarResult']
         if 'ResultGet' in result:
             resultget = result['ResultGet']
+            
+            if reproceso:
+                # verifico los campos registrados coincidan con los enviados:
+                f = self.factura
+                verificaciones = {
+                    'Concepto': f['concepto'],
+                    'DocTipo': f['tipo_doc'],
+                    'DocNro': f['nro_doc'],
+                    'CbteDesde': f['cbt_desde'],
+                    'CbteHasta': f['cbt_hasta'],
+                    'CbteFch': f['fecha_cbte'],
+                    'ImpTotal': float(f['imp_total']),
+                    'ImpTotConc': float(f['imp_tot_conc']),
+                    'ImpNeto': float(f['imp_neto']),
+                    'ImpOpEx': float(f['imp_op_ex']),
+                    'ImpTrib': float(f['imp_trib']),
+                    'ImpIVA': float(f['imp_iva']),
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
+                    'FchVtoPago': f.get('fecha_venc_pago'),
+                    'FchServDesde': f.get('fecha_serv_desde'),
+                    'FchServHasta': f.get('fecha_serv_hasta'),
+                    'FchVtoPago': f['fecha_venc_pago'],
+                    'MonId': f['moneda_id'],
+                    'MonCotiz': float(f['moneda_ctz']),
+                    'CbtesAsoc': [
+                        {'CbteAsoc': {
+                            'Tipo': cbte_asoc['tipo'],
+                            'PtoVta': cbte_asoc['pto_vta'], 
+                            'Nro': cbte_asoc['nro']}}
+                        for cbte_asoc in f['cbtes_asoc']],
+                    'Tributos': [
+                        {'Tributo': {
+                            'Id': tributo['id'], 
+                            'Desc': tributo['desc'],
+                            'BaseImp': float(tributo['base_imp']),
+                            'Alic': float(tributo['alic']),
+                            'Importe': float(tributo['importe']),
+                            }}
+                        for tributo in f['tributos']],
+                    'Iva': [ 
+                        {'AlicIva': {
+                            'Id': iva['id'],
+                            'BaseImp': float(iva['base_imp']),
+                            'Importe': float(iva['importe']),
+                            }}
+                        for iva in f['iva']],
+                    }
+                def verifica(ver_list,res_dict):
+                    for k, v in ver_list.items():
+                        if isinstance(v, list):
+                            for i, vl in enumerate(v):
+                                verifica(vl, res_dict[k][i])
+                        elif isinstance(v, dict):
+                            verifica(v, res_dict[k])
+                        elif unicode(res_dict[k]) != unicode(v):
+                            difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict[k])))
+                        else:
+                            pass
+                            #print "%s: %s==%s" % (k, repr(v), repr(res_dict[k]))
+                verifica(verificaciones, resultget)
+                if difs:
+                    print "Diferencias:", difs
             self.FechaCbte = resultget['CbteFch'] #.strftime("%Y/%m/%d")
             self.CbteNro = resultget['CbteHasta'] # 1L
             self.PuntoVenta = resultget['PtoVta'] # 4000
@@ -396,7 +467,10 @@ class WSFEv1:
                 self.CAEA = cod_aut
 
         self.__analizar_errores(result)
-        return self.CAE or self.CAEA
+        if not difs:
+            return self.CAE or self.CAEA
+        else:
+            return ''
 
 
     @inicializar_y_capturar_execepciones
@@ -466,8 +540,8 @@ class WSFEv1:
                 for error in result['Errors']:
                     err_code = str(error['Err']['Code'])
                     if fedetresp['Resultado']=='R' and err_code=='10016':
-                        cae = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'])
-                        if cae:
+                        cae = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
+                        if cae and self.EmisionTipo=='CAEA':
                             self.Reproceso = 'S'
                             return cae
                         self.Reproceso = 'N'
@@ -608,8 +682,8 @@ class WSFEv1:
                 for error in result['Errors']:
                     err_code = str(error['Err']['Code'])
                     if fedetresp['Resultado']=='R' and err_code=='703':
-                        caea = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'])
-                        if caea:
+                        caea = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
+                        if caea and self.EmisionTipo=='CAE':
                             self.Reproceso = 'S'
                             return caea
                         self.Reproceso = 'N'
@@ -807,6 +881,7 @@ def main():
         t1 = time.time()
         
         print "Resultado", wsfev1.Resultado
+        print "Reproceso", wsfev1.Reproceso
         print "CAE", wsfev1.CAE
         if DEBUG:
             print "t0", t0
@@ -814,7 +889,6 @@ def main():
             print "lapso", t1-t0
             open("xmlrequest.xml","wb").write(wsfev1.XmlRequest)
             open("xmlresponse.xml","wb").write(wsfev1.XmlResponse)
-            
 
     if "--parametros" in sys.argv:
         import codecs, locale, traceback
