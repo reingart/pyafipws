@@ -433,7 +433,9 @@ class WSFEv1:
                     }
                 def verifica(ver_list,res_dict):
                     for k, v in ver_list.items():
-                        if isinstance(v, list):
+                        if not k in res_dict:
+                            difs.append("falta tag %s" % k)
+                        elif isinstance(v, list):
                             for i, vl in enumerate(v):
                                 verifica(vl, res_dict[k][i])
                         elif isinstance(v, dict):
