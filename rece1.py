@@ -161,7 +161,7 @@ def escribir(dic, formato):
             if tipo == N and valor and valor!="NULL":
                 valor = ("%%0%dd" % longitud) % int(valor)
             elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
+                valor = ("%%0%dd" % longitud) % int(float(valor)*(10**dec))
             else:
                 valor = ("%%0%ds" % longitud) % valor
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
