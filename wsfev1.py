@@ -433,15 +433,18 @@ class WSFEv1:
                     }
                 def verifica(ver_list,res_dict):
                     for k, v in ver_list.items():
-                        if not k in res_dict:
-                            difs.append("falta tag %s" % k)
-                        elif isinstance(v, list):
-                            for i, vl in enumerate(v):
-                                verifica(vl, res_dict[k][i])
+                        if isinstance(v, list):
+                            if v and not k in res_dict and v:
+                                difs.append("falta tag %s: %s %s" % (k, repr(v), repr(res_dict.get(k))))
+                            elif len(res_dict.get(k, []))!=len(v or []):
+                                difs.append("tag %s len !=: %s %s" % (k, repr(v), repr(res_dict.get(k))))
+                            else:
+                                for i, vl in enumerate(v):
+                                    verifica(vl, res_dict[k][i])
                         elif isinstance(v, dict):
-                            verifica(v, res_dict[k])
-                        elif unicode(res_dict[k]) != unicode(v):
-                            difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict[k])))
+                            verifica(v, res_dict.get(k, {}))
+                        elif unicode(res_dict.get(k)) != unicode(v):
+                            difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
                         else:
                             pass
                             #print "%s: %s==%s" % (k, repr(v), repr(res_dict[k]))
