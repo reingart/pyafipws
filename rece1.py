@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26a"
+__version__ = "1.26b"
 
 import datetime
 import os
@@ -150,21 +150,25 @@ def escribir(dic, formato):
     comienzo = 1
     for fmt in formato:
         clave, longitud, tipo = fmt[0:3]
-        dec = len(fmt)>3 and fmt[3] or 2
-        if clave.capitalize() in dic:
-            clave = clave.capitalize()
-        s = dic.get(clave,"")
-        if isinstance(s, unicode):
-            s = s.encode("latin1")
-        valor = str(s)
-        if tipo == N and valor and valor!="NULL":
-            valor = ("%%0%dd" % longitud) % int(valor)
-        elif tipo == I and valor:
-            valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
-        else:
-            valor = ("%%0%ds" % longitud) % valor
-        linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
-        comienzo += longitud
+        try:
+            dec = len(fmt)>3 and fmt[3] or 2
+            if clave.capitalize() in dic:
+                clave = clave.capitalize()
+            s = dic.get(clave,"")
+            if isinstance(s, unicode):
+                s = s.encode("latin1")
+            valor = str(s)
+            if tipo == N and valor and valor!="NULL":
+                valor = ("%%0%dd" % longitud) % int(valor)
+            elif tipo == I and valor:
+                valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
+            else:
+                valor = ("%%0%ds" % longitud) % valor
+            linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
+            comienzo += longitud
+        except Exception, e:
+            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
+                clave, comienzo, valor, str(e)))
     return linea + "\n"
 
 def autenticar(cert, privatekey, url):
@@ -236,7 +240,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             'emision_tipo': ws.EmisionTipo,
             })
         escribir_factura(dic, salida)
-        print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'], "Err:", dic['err_msg'], "Reproceso:", dic['reproceso']
+        print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
 
 def escribir_factura(dic, archivo):
     dic['tipo_reg'] = 0
