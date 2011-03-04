@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20f"
+__version__ = "1.20g"
 
 import csv
 from decimal import Decimal
@@ -321,7 +321,7 @@ class PyRece(model.Background):
                 service = "wsfe"
             elif self.webservice in ('wsfev1', ):
                 self.log("Conectando WSFEv1... " + wsfev1_url)
-                self.ws.Conectar("",wsfev1_url)
+                self.ws.Conectar("",wsfev1_url, proxy_dict)
                 self.ws.Cuit = cuit
                 service = "wsfe"
             elif self.webservice in ('wsfex', ):
@@ -335,7 +335,7 @@ class PyRece(model.Background):
             self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
             cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
             self.log("Llamando a WSAA... " + wsaa_url)
-            xml = wsaa.call_wsaa(str(cms),wsaa_url,trace=DEBUG)
+            xml = wsaa.call_wsaa(str(cms),wsaa_url,trace=DEBUG, proxy=proxy_dict)
             self.log("Procesando respuesta...")
             ta = SimpleXMLElement(xml)
             self.token = str(ta.credentials.token)
@@ -925,6 +925,12 @@ if __name__ == '__main__':
         wsfev1_url = config.get('WSFEv1','URL')
     else:
         wsfev1_url = wsfev1.WSDL
+
+    if config.has_section('PROXY'):
+        proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))
+        proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
+    else:
+        proxy_dict = {}
 
     app = model.Application(PyRece)
     app.MainLoop()

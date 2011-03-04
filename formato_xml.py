@@ -365,7 +365,7 @@ def desaplanar(filas):
                 'umed': dic['umed%s' % li],
                 'qty': dic['cantidad%s' % li],
                 'precio': dic['precio%s' % li],
-                'importe': dic['importe%s' % li],
+                'imp_total': dic['importe%s' % li],
                 'iva_id': dic['iva_id%s' % li],
                 'imp_iva': dic['imp_iva%s'% li],                                               
                 'numero_despacho': dic['numero_despacho%s'% li],
