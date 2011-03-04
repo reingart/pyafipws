@@ -16,9 +16,9 @@ Definir WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL
 Devuelve TA.xml (ticket de autorización de WSAA)
 """
 
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
-__copyright__ = "Copyright (C) 2008 Mariano Reingart"
-__license__ = "LGPL 3.0"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
+__copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
+__license__ = "GPL 3.0"
 __version__ = "2.0"
 
 import email,os,sys
