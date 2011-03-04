@@ -37,6 +37,7 @@ XML_FORMAT = {
             'receptor': str,
             'domicilioreceptor': str,
             'idimpositivoreceptor': str,
+            'emailgeneral': str,
             
             'numero_cliente': str,
             'numero_orden_compra': str,
@@ -158,6 +159,7 @@ MAP_ENC = {
     "nro_doc": 'nrodocreceptor',
     "nombre": 'receptor',
     "domicilio": 'domicilioreceptor',
+    "email": 'emailgeneral',
 
     'numero_cliente': 'numero_cliente',
     'numero_orden_compra': 'numero_orden_compra',
