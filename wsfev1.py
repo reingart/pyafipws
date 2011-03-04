@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07d"
+__version__ = "1.07e"
 
 import datetime
 import decimal
@@ -343,7 +343,7 @@ class WSFEv1:
             self.PuntoVenta = fecabresp['PtoVta'] # 4000
             self.CbtDesde =fedetresp['CbteDesde']
             self.CbtHasta = fedetresp['CbteHasta']
-            self.__analizar_errores(result)
+        self.__analizar_errores(result)
         return self.CAE
 
     @inicializar_y_capturar_execepciones
@@ -790,6 +790,14 @@ class WSFEv1:
         self.__analizar_errores(ret)
         res = ret['FEParamGetCotizacionResult']['ResultGet']
         return str(res.get('MonCotiz',""))
+
+    @property
+    def xml_request(self):
+        return self.XmlRequest
+
+    @property
+    def xml_response(self):
+        return self.XmlResponse
 
 
 def main():
