@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26b"
+__version__ = "1.26c"
 
 import datetime
 import os
@@ -60,7 +60,7 @@ ENCABEZADO = [
     ('tipo_doc', 2, N), # 80
     ('nro_doc', 11, N), # 50000000016    
     ('imp_total', 15, I, 3), 
-    ('imp_tot_conc', 15, I, 3), 
+    ('no_usar', 15, I, 3), 
     ('imp_tot_conc', 15, I, 3), 
     ('imp_neto', 15, I, 3), 
     ('imp_iva', 15, I, 3), 
@@ -317,7 +317,7 @@ if __name__ == "__main__":
     
     try:
         ws = wsfev1.WSFEv1()
-        ws.Conectar(".", wsfev1_url)
+        ws.Conectar("", wsfev1_url)
         ws.Cuit = cuit
         if wsfev1_reprocesar is not None:
             ws.Reprocesar = wsfev1_reprocesar
