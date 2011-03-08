@@ -131,7 +131,10 @@ class WSAA:
 
     def Conectar(self, cache=None, wsdl=None, proxy=""):
         # cliente soap del web service
-        proxy_dict = parse_proxy(proxy)
+        if not isinstance(proxy,dict):
+            proxy_dict = parse_proxy(proxy)
+        else:
+            proxy_dict = proxy
         if HOMO or not wsdl:
             wsdl = WSDL
         if not cache or HOMO:
