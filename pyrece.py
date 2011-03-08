@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20g"
+__version__ = "1.21a"
 
 import csv
 from decimal import Decimal
@@ -331,15 +331,18 @@ class PyRece(model.Background):
                 return
 
             self.log("Creando TRA %s ..." % service)
-            tra = wsaa.create_tra(service)
+            ws = wsaa.WSAA()
+            tra = ws.CreateTRA(service)
             self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
-            cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
+            cms = ws.SignTRA(str(tra),str(cert),str(privatekey))
             self.log("Llamando a WSAA... " + wsaa_url)
-            xml = wsaa.call_wsaa(str(cms),wsaa_url,trace=DEBUG, proxy=proxy_dict)
+            ws.Conectar("", wsdl=wsaa_url+"?wsdl", proxy=proxy_dict)
+            self.log("Proxy: %s" % proxy_dict)
+            xml = ws.LoginCMS(str(cms))
             self.log("Procesando respuesta...")
-            ta = SimpleXMLElement(xml)
-            self.token = str(ta.credentials.token)
-            self.sign = str(ta.credentials.sign)
+            if xml:
+                self.token = ws.Token
+                self.sign = ws.Sign
             if DEBUG:
                 self.log("Token: %s" % self.token)
                 self.log("Sign: %s" % self.sign)
@@ -350,7 +353,10 @@ class PyRece(model.Background):
                 self.ws.Token = self.token
                 self.ws.Sign = self.sign
 
-            dialog.alertDialog(self, 'Autenticado OK!', 'Advertencia')
+            if xml:
+                dialog.alertDialog(self, 'Autenticado OK!', 'Advertencia')
+            else:
+                dialog.alertDialog(self, u'Respuesta: %s' % ws.XmlResponse, u'No se pudo autenticar: %s' % ws.Excepcion)
         except SoapFault,e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
         except Exception, e:
