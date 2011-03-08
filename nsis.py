@@ -79,13 +79,13 @@ notistalled:
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "UninstallString" "$INSTDIR\Uninst.exe"
     WriteUninstaller "Uninst.exe"
     ;To Register a DLL
-    RegDLL "$INSTDIR\%(com_server)s"
+    %(register_com_servers)s
  
 SectionEnd
 
 Section "Uninstall"
     ;To Unregister a DLL
-    UnRegDLL "$INSTDIR\%(com_server)s"
+    %(unregister_com_servers)s
     ;Delete Files
 
     ;Delete Uninstaller And Unistall Registry Entries
@@ -118,6 +118,12 @@ FunctionEnd
 
 """
 
+register_com_server = """\
+    RegDLL "$INSTDIR\%s"
+"""
+unregister_com_server= """\
+    UnRegDLL "$INSTDIR\%s"
+"""
 
 class build_installer(py2exe):
     # This class first builds the exe file(s), then creates a Windows installer.
@@ -180,7 +186,8 @@ class NSISScript:
             'install_dir': self.name,
             'reg_key': self.name,
             'out_file': "instalador-%s-%s.exe" % (self.name, self.version),
-            'com_server': self.comserver_files[0],
+            'register_com_servers': ''.join([register_com_server % comserver for comserver in self.comserver_files]),
+            'unregister_com_servers': ''.join([unregister_com_server % comserver for comserver in self.comserver_files]),
         })
 
     def compile(self, pathname="base.nsi"):
