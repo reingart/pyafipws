@@ -184,14 +184,25 @@ class WSAA:
         if not ta_xml:
             raise RuntimeError(self.excepcion)
 
-if __name__=="__main__":
+if hasattr(sys, 'frozen'):
+    # we are running as py2exe-packed executable
+    import pythoncom
+    pythoncom.frozen = 1
+    sys.argv[0] = sys.executable
 
-    if '--register' in sys.argv:
+if __name__=="__main__":
+    
+    if '--register' in sys.argv or '--unregister' in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSAA)
-
+    elif "/Automate" in sys.argv:
+        # MS seems to like /automate to run the class factories.
+        import win32com.server.localserver
+        #win32com.server.localserver.main()
+        # start the server.
+        win32com.server.localserver.serve([WSAA._reg_clsid_])
     else:
-    
+        
         # Leer argumentos desde la linea de comando (si no viene tomar default)
         cert = len(sys.argv)>1 and sys.argv[1] or CERT
         privatekey = len(sys.argv)>2 and sys.argv[2] or PRIVATEKEY
