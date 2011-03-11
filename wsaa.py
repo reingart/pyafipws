@@ -19,7 +19,7 @@ Devuelve TA.xml (ticket de autorización de WSAA)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.02b"
+__version__ = "2.02c"
 
 import email,os,sys
 from php import date
@@ -176,6 +176,7 @@ class WSAA:
         ta_xml = self.LoginCMS(cms)
         if not ta_xml:
             raise RuntimeError(self.Excepcion)
+        return ta_xml
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
