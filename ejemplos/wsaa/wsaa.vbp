@@ -1,10 +1,12 @@
 Type=Exe
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#..\..\..\..\WINDOWS\system32\stdole2.tlb#OLE Automation
 Object={831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0; mscomctl.ocx
-Module=Module1; WSAA.bas
-Startup="Sub Main"
+Form=Form1.frm
+IconForm="Form1"
+Startup="Form1"
 HelpFile=""
 Title="wsaa"
+ExeName32="wsaa.exe"
 Command32=""
 Name="WSAA"
 HelpContextID="0"
