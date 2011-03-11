@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07e"
+__version__ = "1.07f"
 
 import datetime
 import decimal
@@ -28,7 +28,7 @@ import traceback
 from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
 
-HOMO = True
+HOMO = False
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
@@ -128,14 +128,7 @@ class WSFEv1:
         self.FchVigDesde = self.FchVigHasta = ""
         self.FchTopeInf = self.FchProceso = ""
         self.Log = None
-        if not hasattr(sys, "frozen"): 
-            basepath = __file__
-        elif sys.frozen=='dll':
-            import win32api
-            basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-        else:
-            basepath = sys.executable
-        self.InstallDir = os.path.dirname(os.path.abspath(basepath))
+        self.InstallDir = INSTALL_DIR
         self.Reprocesar = True # recuperar automaticamente CAE emitidos
         
     def __analizar_errores(self, ret):
@@ -180,7 +173,10 @@ class WSFEv1:
     @inicializar_y_capturar_execepciones
     def Conectar(self, cache=None, wsdl=None, proxy=""):
         # cliente soap del web service
-        proxy_dict = parse_proxy(proxy)
+        if isinstance(proxy, dict):
+            proxy_dict = proxy
+        else:
+            proxy_dict = parse_proxy(proxy)
         if HOMO or not wsdl:
             wsdl = WSDL
         if not cache or HOMO:
@@ -952,6 +948,16 @@ def main():
             print "fch_vig_hasta:", wsfev1.FchVigHasta 
             print "fch_tope_inf:", wsfev1.FchTopeInf 
             print "fch_proceso:", wsfev1.FchProceso
+
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
+if not hasattr(sys, "frozen"): 
+    basepath = __file__
+elif sys.frozen=='dll':
+    import win32api
+    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
+else:
+    basepath = sys.executable
+INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 if __name__ == '__main__':
 
