@@ -11,6 +11,8 @@ Sub Main()
     
     ' Crear objeto interface Web Service Autenticación y Autorización
     Set WSAA = CreateObject("WSAA")
+    Debug.Print WSAA.Version
+    'Debug.Print WSAA.InstallDir
     
     ' Generar un Ticket de Requerimiento de Acceso (TRA) para WSFEv1
     tra = WSAA.CreateTRA("wsfe")
@@ -28,7 +30,8 @@ Sub Main()
     Debug.Print cms
     
     ' Llamar al web service para autenticar:
-    ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") ' Homologación
+    proxy = "" '"usuario:clave@localhost:8000"
+    ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms", proxy) ' Homologación
 
     ' Imprimir el ticket de acceso, ToKen y Sign de autorización
     Debug.Print ta
@@ -41,7 +44,7 @@ Sub Main()
     ' Crear objeto interface Web Service de Factura Electrónica de Mercado Interno
     Set WSFEv1 = CreateObject("WSFEv1")
     Debug.Print WSFEv1.Version
-    Debug.Print WSFEv1.InstallDir
+    'Debug.Print WSFEv1.InstallDir
     
     ' Setear tocken y sing de autorización (pasos previos)
     WSFEv1.Token = WSAA.Token
@@ -51,8 +54,8 @@ Sub Main()
     WSFEv1.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    'proxy = "usuario:clave@localhost:8010"
-    wsdl = "" '"file:///C:/archivos de programa/wsfev1/wsfev1_wsdl_homo.xml"
+    proxy = "" ' "usuario:clave@localhost:8000"
+    wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
     cache = "" 'Path
         
     ok = WSFEv1.Conectar(cache, wsdl, proxy) ' homologación
