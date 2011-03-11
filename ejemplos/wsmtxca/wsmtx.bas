@@ -29,7 +29,7 @@ Sub Main()
     Debug.Print cms
     
     ' Llamar al web service para autenticar:
-    ta = WSAA.CallWSAA(cms) ' Homologación (cambiar para producción)
+    ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") ' Homologación (cambiar para producción)
 
     ' Imprimir el ticket de acceso, ToKen y Sign de autorización
     Debug.Print ta
@@ -119,7 +119,11 @@ Sub Main()
     imp_subtotal = "121.00"
     ok = WSMTXCA.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, _
                 umed, precio, bonif, cod_iva, imp_iva, imp_subtotal)
-    
+    ok = WSMTXCA.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, _
+                umed, precio, bonif, cod_iva, imp_iva, imp_subtotal)
+    ok = WSMTXCA.AgregarItem(u_mtx, cod_mtx, "DESC", "Descuento", 0, _
+                "99", 0#, 0, cod_iva, "-21.00", "-121.00")
+
     ' Solicito CAE:
     cae = WSMTXCA.AutorizarComprobante()
     
