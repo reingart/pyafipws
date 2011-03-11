@@ -1,63 +1,63 @@
 VERSION 5.00
 Begin VB.Form Form1 
-   Caption         =   "Interfaz PyAfipWs para WSAA"
-   ClientHeight    =   6525
+   Caption         =   "Ejemplo interactivo Interfaz PyAfipWs para WSAA"
+   ClientHeight    =   6570
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   9645
+   ClientWidth     =   9465
    LinkTopic       =   "Form1"
-   ScaleHeight     =   6525
-   ScaleWidth      =   9645
+   ScaleHeight     =   6570
+   ScaleWidth      =   9465
    StartUpPosition =   3  'Windows Default
    Begin VB.TextBox txtTraceback 
       Height          =   615
-      Left            =   2040
+      Left            =   1560
       MultiLine       =   -1  'True
       TabIndex        =   35
       Top             =   5880
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.TextBox txtInstallDir 
-      BackColor       =   &H80000000&
+      BackColor       =   &H00E0E0E0&
       Height          =   285
-      Left            =   7080
+      Left            =   6720
       Locked          =   -1  'True
       TabIndex        =   34
       Top             =   120
-      Width           =   2175
+      Width           =   2535
    End
    Begin VB.TextBox txtVersion 
-      BackColor       =   &H80000000&
+      BackColor       =   &H00E0E0E0&
       Height          =   285
-      Left            =   2160
+      Left            =   1560
       Locked          =   -1  'True
       TabIndex        =   32
       Top             =   120
-      Width           =   2175
+      Width           =   2775
    End
    Begin VB.TextBox txtCache 
       Height          =   285
-      Left            =   2160
+      Left            =   1560
       TabIndex        =   29
       ToolTipText     =   "directorio para archivos temporales"
       Top             =   4320
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.TextBox txtProxy 
       Height          =   285
-      Left            =   2160
+      Left            =   1560
       TabIndex        =   27
       ToolTipText     =   "usuario:clave@servidor:puerto"
       Top             =   3960
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.TextBox txtXmlRequest 
       Height          =   1335
-      Left            =   6720
+      Left            =   6120
       MultiLine       =   -1  'True
       TabIndex        =   25
       Top             =   3720
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.TextBox txtCMS 
       Height          =   975
@@ -77,76 +77,81 @@ Begin VB.Form Form1
    End
    Begin VB.TextBox txtXmlResponse 
       Height          =   1335
-      Left            =   6720
+      Left            =   6120
       MultiLine       =   -1  'True
       TabIndex        =   17
       Top             =   5160
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.TextBox txtSign 
       Height          =   285
-      Left            =   2040
+      Left            =   1560
       MultiLine       =   -1  'True
       TabIndex        =   15
       Top             =   5520
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.TextBox txtToken 
       Height          =   285
-      Left            =   2040
+      Left            =   1560
       MultiLine       =   -1  'True
       TabIndex        =   13
       Top             =   5160
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.ComboBox cboURL 
       Height          =   315
       ItemData        =   "Form1.frx":0000
-      Left            =   2160
+      Left            =   1560
       List            =   "Form1.frx":000A
       TabIndex        =   11
       Text            =   "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
+      ToolTipText     =   "Dirección del WSDL (dehabilitado en homologación/testing)"
       Top             =   3600
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.TextBox txtTTL 
       Height          =   285
-      Left            =   2160
+      Left            =   1560
       TabIndex        =   8
       Text            =   "2400"
+      ToolTipText     =   "Tiempo de vida (expiración)"
       Top             =   1200
       Width           =   1095
    End
    Begin VB.ComboBox cboService 
       Height          =   315
       ItemData        =   "Form1.frx":007A
-      Left            =   2160
+      Left            =   1560
       List            =   "Form1.frx":0090
       TabIndex        =   7
       Text            =   "wsfe"
+      ToolTipText     =   "webservice a utilizar"
       Top             =   840
       Width           =   2655
    End
    Begin VB.TextBox txtClave 
       Height          =   285
-      Left            =   2160
+      Left            =   1560
       TabIndex        =   6
       Text            =   "reingart.key"
+      ToolTipText     =   "Ruta completa a la clave privada PEM (.KEY)"
       Top             =   2760
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.TextBox txtCert 
       Height          =   285
-      Left            =   2160
+      Left            =   1560
       TabIndex        =   5
       Text            =   "reingart.crt"
+      ToolTipText     =   "Ruta completa al Certificado X509 (.CRT)"
       Top             =   2400
-      Width           =   2655
+      Width           =   3255
    End
    Begin VB.CommandButton btnAutenticar 
       Caption         =   "Autenticar"
       Height          =   375
-      Left            =   2520
+      Left            =   2160
       TabIndex        =   0
       Top             =   4680
       Width           =   1695
@@ -194,7 +199,7 @@ Begin VB.Form Form1
    Begin VB.Label Label10 
       Caption         =   "XmlRequest:"
       Height          =   255
-      Left            =   5520
+      Left            =   5040
       TabIndex        =   26
       Top             =   3720
       Width           =   1695
@@ -242,7 +247,7 @@ Begin VB.Form Form1
    Begin VB.Label Label5 
       Caption         =   "XmlResponse:"
       Height          =   255
-      Left            =   5520
+      Left            =   5040
       TabIndex        =   16
       Top             =   5160
       Width           =   1695
@@ -274,13 +279,13 @@ Begin VB.Form Form1
    Begin VB.Label lbls 
       Caption         =   "segundos"
       Height          =   255
-      Left            =   3480
+      Left            =   2880
       TabIndex        =   9
       Top             =   1200
       Width           =   735
    End
    Begin VB.Label Label3 
-      Caption         =   "Tiempo de vida:"
+      Caption         =   "TTL:"
       Height          =   255
       Left            =   360
       TabIndex        =   4
@@ -317,19 +322,12 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+Dim WSAA As Object
+
 Private Sub btnAutenticar_Click()
 
     On Error GoTo ManejoError
-    
-    Dim WSAA As Object
-    
-    ' Crear objeto interface Web Service Autenticación y Autorización
-    Debug.Print Err.Description
-    Set WSAA = CreateObject("WSAA")
-    txtVersion.Text = WSAA.Version
-    txtInstallDir.Text = WSAA.InstallDir
-    DoEvents
-    
+            
     ' Generar un Ticket de Requerimiento de Acceso (TRA)
     tra = WSAA.CreateTRA(cboService.Text, CInt(txtTTL.Text))
     txtTRA.Text = tra
@@ -410,4 +408,34 @@ Private Sub Form_Load()
     Path = CurDir() + "\"
     txtCert.Text = Path + "reingart.crt"
     txtClave.Text = Path + "reingart.key"
+    
+    On Error GoTo ManejoError
+    Set WSAA = CreateObject("WSAA")
+
+    ' Crear objeto interface Web Service Autenticación y Autorización
+    txtVersion.Text = WSAA.Version
+    txtInstallDir.Text = WSAA.InstallDir
+    
+    ' Deshabilito URL para homologación
+    If InStr(WSAA.Version, "Homo") > 0 Then
+        cboURL.Locked = True
+        cboURL.BackColor = &HE0E0E0
+        txtProxy.Locked = True
+        txtProxy.BackColor = &HE0E0E0
+        txtCache.Locked = True
+        txtCache.BackColor = &HE0E0E0
+    End If
+    DoEvents
+    Exit Sub
+ManejoError:
+    Select Case MsgBox(Err.Description, vbCritical + vbRetryCancel, "Error:" & Err.Number - vbObjectError & " en " & Err.Source)
+        Case vbRetry
+            Debug.Assert False
+            Resume
+        Case vbCancel
+            Debug.Print Err.Description
+    End Select
+    MsgBox "No está correctamente instalada la interfaz WSAA de PyAfipWs version 2.02 o superior." & vbCrLf & _
+           "Esta aplicación puede no funcionar correctamente." & vbCrLf & _
+           "Para más información: http://www.sistemasagiles.com.ar/", vbExclamation, "Advertencia:"
 End Sub
