@@ -64,7 +64,7 @@ Sub Main()
     'End
     fecha_cbte = Format(Date, "yyyymmdd")
     tipo_expo = 1 ' tipo de exportación (ver tabla de parámetros)
-    permiso_existente = ""
+    permiso_existente = "N"
     dst_cmp = 235 ' país destino
     cliente = "Joao Da Silva"
     cuit_pais_cliente = "50000000016"
@@ -96,6 +96,9 @@ Sub Main()
     imp_total = "250.00" ' importe total final del artículo
     ' lo agrego a la factura (internamente, no se llama al WebService):
     ok = WSFEX.AgregarItem(codigo, ds, qty, umed, precio, imp_total)
+    ok = WSFEX.AgregarItem(codigo, ds, qty, umed, precio, imp_total)
+    ok = WSFEX.AgregarItem(codigo, "Descuento", 2, "99", "125.00", "250.00")
+    ok = WSFEX.AgregarItem("", "texto adicional", 0, "0", "0", "0")
     
     ' Agrego un permiso (ver manual para el desarrollador)
     If permiso_existente = "S" Then
@@ -130,7 +133,7 @@ Sub Main()
     
     ' Imprimo pedido y respuesta XML para depuración (errores de formato)
     Debug.Print WSFEX.xmlrequest
-    Debug.Print WSFEX.XmlResponse
+    Debug.Print WSFEX.xmlresponse
     Debug.Assert False
     
     MsgBox "Resultado:" & WSFEX.Resultado & " CAE: " & cae & " Venc: " & WSFEX.Vencimiento & " Reproceso: " & WSFEX.Reproceso & " Obs: " & WSFEX.obs, vbInformation + vbOKOnly
@@ -170,6 +173,7 @@ ManejoError:
             Debug.Print Err.Description
     End Select
     Debug.Print WSFEX.xmlrequest
-    Debug.Assert False
+    Debug.Print WSFEX.xmlresponse
+    'Debug.Assert False
 
 End Sub
