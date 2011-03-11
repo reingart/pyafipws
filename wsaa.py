@@ -19,7 +19,7 @@ Devuelve TA.xml (ticket de autorización de WSAA)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.0"
+__version__ = "2.02b"
 
 import email,os,sys
 from php import date
@@ -119,14 +119,7 @@ class WSAA:
     def __init__(self):
         self.Token = self.Sign = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
-        if not hasattr(sys, "frozen"): 
-            basepath = __file__
-        elif sys.frozen=='dll':
-            import win32api
-            basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-        else:
-            basepath = sys.executable
-        self.InstallDir = os.path.dirname(os.path.abspath(basepath))
+        self.InstallDir = INSTALL_DIR
         self.Excepcion = self.Traceback = ""
 
     def Conectar(self, cache=None, wsdl=None, proxy=""):
@@ -182,7 +175,17 @@ class WSAA:
         self.Conectar("", url+"?wsdl", proxy)
         ta_xml = self.LoginCMS(cms)
         if not ta_xml:
-            raise RuntimeError(self.excepcion)
+            raise RuntimeError(self.Excepcion)
+
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
+if not hasattr(sys, "frozen"): 
+    basepath = __file__
+elif sys.frozen=='dll':
+    import win32api
+    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
+else:
+    basepath = sys.executable
+INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 if hasattr(sys, 'frozen'):
     # we are running as py2exe-packed executable
