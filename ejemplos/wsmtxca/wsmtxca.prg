@@ -1,5 +1,6 @@
 *-- Ejemplo de Uso de Interface COM con Web Services AFIP (PyAfipWs)
-*-- Factura Electronica MATRIX - para Visual FoxPro 5.0 o superior (vfp5, vfp9.0)
+*-- Factura Electronica mercado interno (programa MATRIX)
+*-- para Visual FoxPro 5.0 o superior (vfp5, vfp9.0)
 *-- Según RG2904/2010 Artículo 4 Opción A (con detalle, CAE tradicional)
 *-- 2011 (C) Mariano Reingart <reingart@gmail.com>
 
@@ -28,6 +29,8 @@ cms = WSAA.SignTRA(tra, ruta + "reingart.crt", ruta + "reingart.key") && Cert. D
 *-- Producción usar: ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") && Producción
 ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") && Homologación
 
+ON ERROR DO errhand2;
+
 *-- Crear objeto interface Web Service de Factura Electrónica
 WSMTXCA = CREATEOBJECT("WSMTXCA") 
 
@@ -39,7 +42,8 @@ WSMTXCA.Sign = WSAA.Sign
 WSMTXCA.Cuit = "20267565393"
 
 *-- Conectar al Servicio Web de Facturación
-*-- Producción usar: ok = WSMTXCA.Conectar("https://wsw.afip.gov.ar/WSMTXCA/service.asmx") && Producción
+*-- Producción usar: 
+*--ok = WSMTXCA.Conectar("", "https://serviciosjava.afip.gob.ar/wsmtxca/services/MTXCAService?wsdl") && Producción
 ok = WSMTXCA.Conectar("")      && Homologación
 
 *-- Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
@@ -149,9 +153,7 @@ cae = WSMTXCA.AutorizarComprobante()
 ? "Motivo de rechazo o advertencia", WSMTXCA.Obs
 ? WSMTXCA.XmlResponse
 
-MESSAGEBOX("Resultado: " + WSMTXCA.Resultado + " CAE " + cae + ". Observaciones: " + WSMTXCA.Obs, 0)
-
-MESSAGEBOX("CAE obtenido: " + cae, 0)
+MESSAGEBOX("Resultado: " + WSMTXCA.Resultado + " CAE " + cae + ". Observaciones: " + WSMTXCA.Obs + " Errores: " + WSMTXCA.ErrMsg, 0)
 
 
 *-- Depuración (grabar a un archivo los datos de prueba)
@@ -165,13 +167,15 @@ MESSAGEBOX("CAE obtenido: " + cae, 0)
 * =FCLOSE(gnErrFile)  
 
 
-*-- Procedimiento para manejar errores
+*-- Procedimiento para manejar errores WSAA
 PROCEDURE errhand1
 	*--PARAMETER merror, mess, mess1, mprog, mlineno
 	
 	? WSAA.Excepcion
 	? WSAA.Traceback
-	
+	*--? WSAA.XmlRequest
+	*--? WSAA.XmlResponse
+
 	*-- trato de extraer el código de error de afip (1000)
 	afiperr = ERROR() -2147221504 
 	if afiperr>1000 and afiperr<2000 then
@@ -197,11 +201,14 @@ PROCEDURE errhand1
 	ENDIF	
 ENDPROC
 
+*-- Procedimiento para manejar errores WSMTX
 PROCEDURE errhand2
 	*--PARAMETER merror, mess, mess1, mprog, mlineno
 	
 	? WSMTXCA.Excepcion
 	? WSMTXCA.Traceback
+	*--? WSMTXCA.XmlRequest
+	? WSMTXCA.XmlResponse
 	
 	? 'Error number: ' + LTRIM(STR(ERROR()))
 	? 'Error message: ' + MESSAGE()

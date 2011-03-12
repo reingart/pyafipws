@@ -1,8 +1,10 @@
 *-- Ejemplo de Uso de Interface COM con Web Services AFIP (PyAfipWs)
-*-- Factura Electronica Version 1 - para Visual FoxPro 5.0 o superior (vfp5, vfp9.0)
+*-- Factura Electronica mercado interno RG2485 Version 1 
+*-- para Visual FoxPro 5.0 o superior (vfp5, vfp9.0)
+*-- Según RG2904/2010 Artículo 4 Opción B (sin detalle, CAE tradicional)
 *-- 2010 (C) Mariano Reingart <reingart@gmail.com>
 
-ON ERROR DO errhand;
+ON ERROR DO errhand1;
 
 CLEAR
 
@@ -27,6 +29,8 @@ cms = WSAA.SignTRA(tra, ruta + "reingart.crt", ruta + "reingart.key") && Cert. D
 *-- Producción usar: ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") && Producción
 ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") && Homologación
 
+ON ERROR DO errhand2;
+
 *-- Crear objeto interface Web Service de Factura Electrónica
 WSFE = CREATEOBJECT("WSFEv1") 
 
@@ -38,7 +42,8 @@ WSFE.Sign = WSAA.Sign
 WSFE.Cuit = "20267565393"
 
 *-- Conectar al Servicio Web de Facturación
-*-- Producción usar: ok = WSFE.Conectar("https://wsw.afip.gov.ar/wsfe/service.asmx") && Producción
+*-- Producción usar: 
+*-- ok = WSFE.Conectar("", "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL") && Producción
 ok = WSFE.Conectar("")      && Homologación
 
 *-- Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
@@ -60,8 +65,8 @@ Fecha = STRTRAN(STR(YEAR(DATE()),4) + STR(MONTH(DATE()),2) + STR(DAY(DATE()),2),
 presta_serv = 1
 tipo_doc = 80
 nro_doc = "27269434894"
-cbt_desde = LastCBTE + 1
-cbt_hasta = LastCBTE + 1
+cbt_desde = INT(VAL(LastCBTE)) - 1
+cbt_hasta = INT(VAL(LastCBTE)) - 1
 imp_total = "122.00"
 imp_tot_conc = "0.00"
 imp_neto = "100.00"
@@ -111,20 +116,8 @@ cae = WSFE.CAESolicitar()
 ? "Motivo de rechazo o advertencia", WSFE.Obs
 ? WSFE.XmlResponse
 
-*-- Verifico que no haya rechazo o advertencia al generar el CAE
-IF LEN(cae)=0 THEN
-    MESSAGEBOX("La página esta caida o la respuesta es inválida", 0)
-ELSE 
-	IF cae = "NULL" OR WSFE.Resultado <> "A" THEN
-    	MESSAGEBOX("No se asignó CAE (Rechazado). Motivos: " + WSFE.Motivo, 0)
-	ELSE
-		IF WSFE.Obs<> "NULL" AND WSFE.Obs<> "00" THEN
-		    MESSAGEBOX("Se asignó CAE pero con advertencias. Motivos: " + WSFE.Obs, 0)
-		ENDIF
-	ENDIF
-ENDIF
+MESSAGEBOX("Resultado: " + WSFE.Resultado + " CAE " + cae + " Reproceso " + WSFE.Reproceso + " EmisionTipo " + WSFE.EmisionTipo + " Observaciones: " + WSFE.Obs + " Errores: " + WSFE.ErrMsg, 0)
 
-MESSAGEBOX("CAE obtenido: " + cae, 0)
 
 
 *-- Depuración (grabar a un archivo los datos de prueba)
@@ -133,12 +126,19 @@ MESSAGEBOX("CAE obtenido: " + cae, 0)
 * =FWRITE(gnErrFile, WSFE.Sign + CHR(13))	
 * =FWRITE(gnErrFile, WSFE.XmlRequest + CHR(13))
 * =FWRITE(gnErrFile, WSFE.XmlResponse + CHR(13))
+* =FWRITE(gnErrFile, WSFE.Excepcion + CHR(13))
+* =FWRITE(gnErrFile, WSFE.Traceback + CHR(13))
 * =FCLOSE(gnErrFile)  
 
 
-*-- Procedimiento para manejar errores
-PROCEDURE errhand
+*-- Procedimiento para manejar errores WSAA
+PROCEDURE errhand1
 	*--PARAMETER merror, mess, mess1, mprog, mlineno
+	
+	? WSAA.Excepcion
+	? WSAA.Traceback
+	*--? WSAA.XmlRequest
+	*--? WSAA.XmlResponse
 
 	*-- trato de extraer el código de error de afip (1000)
 	afiperr = ERROR() -2147221504 
@@ -154,7 +154,34 @@ PROCEDURE errhand
 	? 'Program with error: ' + PROGRAM()
 
 	*-- Preguntar: Aceptar o cancelar?
-	ch = MESSAGEBOX(MESSAGE(), 5 + 48, "Error:")
+	ch = MESSAGEBOX(WSAA.Excepcion, 5 + 48, "Error:")
+	IF ch = 2 && Cancelar
+		ON ERROR 
+		CLEAR EVENTS
+		CLOSE ALL
+		RELEASE ALL
+		CLEAR ALL
+		CANCEL
+	ENDIF	
+ENDPROC
+
+*-- Procedimiento para manejar errores WSFE
+PROCEDURE errhand2
+	*--PARAMETER merror, mess, mess1, mprog, mlineno
+	
+	? WSFE.Excepcion
+	? WSFE.Traceback
+	*--? WSFE.XmlRequest
+	*--? WSFE.XmlResponse
+		
+	? 'Error number: ' + LTRIM(STR(ERROR()))
+	? 'Error message: ' + MESSAGE()
+	? 'Line of code with error: ' + MESSAGE(1)
+	? 'Line number of error: ' + LTRIM(STR(LINENO()))
+	? 'Program with error: ' + PROGRAM()
+
+	*-- Preguntar: Aceptar o cancelar?
+	ch = MESSAGEBOX(WSFE.Excepcion, 5 + 48, "Error")
 	IF ch = 2 && Cancelar
 		ON ERROR 
 		CLEAR EVENTS

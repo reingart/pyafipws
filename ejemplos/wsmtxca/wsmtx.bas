@@ -172,6 +172,7 @@ Sub Main()
     Exit Sub
 ManejoError:
     ' Si hubo error:
+    Debug.Print WSMTXCA.Excepcion
     Debug.Print Err.Description            ' descripción error afip
     Debug.Print Err.Number - vbObjectError ' codigo error afip
     Select Case MsgBox(Err.Description, vbCritical + vbRetryCancel, "Error:" & Err.Number - vbObjectError & " en " & Err.Source)
