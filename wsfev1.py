@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07f"
+__version__ = "1.08a"
 
 import datetime
 import decimal
@@ -48,7 +48,7 @@ def inicializar_y_capturar_execepciones(func):
             self.Errores = []
             self.Observaciones = []
             self.Eventos = []
-            self.Traceback = ""
+            self.Traceback = self.Excepcion = ""
             self.ErrCode = ""
             self.ErrMsg = ""
             self.CAEA = ""
@@ -69,10 +69,12 @@ def inicializar_y_capturar_execepciones(func):
             # guardo destalle de la excepción SOAP
             self.ErrCode = unicode(e.faultcode)
             self.ErrMsg = unicode(e.faultstring)
+            self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
             raise
         except Exception, e:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
+            self.Excepcion = u"%s" % (e)
             raise
         finally:
             # guardo datos de depuración
@@ -99,7 +101,7 @@ class WSFEv1:
                         'Dummy', 'Conectar', 'DebugLog', 'Eval']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version', 
+        'XmlRequest', 'XmlResponse', 'Version', 'Excepcion',
         'Resultado', 'Obs', 'Observaciones', 'Traceback', 'InstallDir',
         'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
         'Reprocesar', 'Reproceso', 'EmisionTipo', 'CAEA',
