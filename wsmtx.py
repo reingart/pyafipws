@@ -17,11 +17,12 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.03b"
 
 import datetime
 import decimal
 import os
+import socket
 import sys
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
@@ -41,16 +42,32 @@ def inicializar_y_capturar_execepciones(func):
             self.FechaCbte = self.CbteNro = self.PuntoVenta = self.ImpTotal = None
             self.Errores = []
             self.Observaciones = []
-            # llamo a la función
-            return func(self, *args, **kwargs)
+            self.Traceback = self.Excepcion = ""
+            self.ErrCode = ""
+            self.ErrMsg = ""
+
+            # llamo a la función (con reintentos)
+            retry = 5
+            while retry:
+                try:
+                    retry -= 1
+                    return func(self, *args, **kwargs)
+                except socket.error, e:
+                    if e[0] != 10054:
+                        # solo reintentar si el error es de conexión
+                        # (10054, 'Connection reset by peer')
+                        raise
+        
         except SoapFault, e:
             # guardo destalle de la excepción SOAP
             self.ErrCode = unicode(e.faultcode)
             self.ErrMsg = unicode(e.faultstring)
+            self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
             raise
         except Exception, e:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
+            self.Excepcion = u"%s" % (e)
             raise
         finally:
             # guardo datos de depuración
@@ -77,9 +94,9 @@ class WSMTXCA:
                         'Dummy', 'Conectar', 'Eval', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir',
+        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir',  
         'Resultado', 'Obs', 'Observaciones', 'ErrCode', 'ErrMsg',
-        'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback',
+        'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback', 'Excepcion',
         'CbteNro', 'FechaCbte', 'PuntoVenta', 'ImpTotal']
         
     _reg_progid_ = "WSMTXCA"
@@ -96,16 +113,9 @@ class WSMTXCA:
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
-        self.ErrCode = self.ErrMsg = self.Traceback = ""
+        self.ErrCode = self.ErrMsg = self.Traceback = self.Excepcion = ""
         self.Log = None
-        if not hasattr(sys, "frozen"): 
-            basepath = __file__
-        elif sys.frozen=='dll':
-            import win32api
-            basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-        else:
-            basepath = sys.executable
-        self.InstallDir = os.path.dirname(os.path.abspath(basepath))
+        self.InstallDir = INSTALL_DIR
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -116,6 +126,7 @@ class WSMTXCA:
                     error['codigoDescripcion']['codigo'],
                     error['codigoDescripcion']['descripcion'],
                     ))
+            self.ErrMsg = '\n'.join(self.Errores)
                    
     def __log(self, msg):
         if not isinstance(msg, unicode):
@@ -508,6 +519,17 @@ def main():
         print wsmtxca.ConsultarCotizacionMoneda('DOL')
         
         
+
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
+if not hasattr(sys, "frozen"): 
+    basepath = __file__
+elif sys.frozen=='dll':
+    import win32api
+    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
+else:
+    basepath = sys.executable
+INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+
 if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
