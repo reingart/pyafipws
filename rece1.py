@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26c"
+__version__ = "1.27a"
 
 import datetime
 import os
@@ -29,7 +29,7 @@ import wsaa, wsfev1
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
-HOMO = True
+HOMO = wsfev1.HOMO
 DEBUG = False
 XML = False
 CONFIG_FILE = "rece.ini"
@@ -191,21 +191,41 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     tributos = []
     ivas = []
     cbtasocs = []
-    encabezado = {}
-    for linea in entrada:
-        if str(linea[0])=='0':
-            encabezado = leer(linea, ENCABEZADO)
-        elif str(linea[0])=='1':
-            tributo = leer(linea, TRIBUTO)
-            tributos.append(tributo)
-        elif str(linea[0])=='2':
-            iva = leer(linea, IVA)
-            ivas.append(iva)
-        elif str(linea[0])=='3':
-            cbtasoc = leer(linea, CMP_ASOC)
-            cbtasocs.append(cbtasoc)
-        else:
-            print "Tipo de registro incorrecto:", linea[0]
+    encabezado = []
+    if '/dbf' in sys.argv:
+        import dbf
+        print "Leyendo DBF..."
+
+        formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs)]
+        for nombre, formato, ld in formatos:
+            print "leyendo tabla", nombre
+            tabla = dbf.Table("%s.dbf" % nombre[:8])
+            for reg in tabla:
+                r = {}
+                d = reg.scatter_fields() 
+                for fmt in formato:
+                    clave, longitud, tipo = fmt[0:3]
+                    #import pdb; pdb.set_trace()
+                    v = d[clave[:10]]
+                    r[clave] = v
+                ld.append(r)    
+        encabezado = encabezado[0]
+    else:
+        assert False
+        for linea in entrada:
+            if str(linea[0])=='0':
+                encabezado = leer(linea, ENCABEZADO)
+            elif str(linea[0])=='1':
+                tributo = leer(linea, TRIBUTO)
+                tributos.append(tributo)
+            elif str(linea[0])=='2':
+                iva = leer(linea, IVA)
+                ivas.append(iva)
+            elif str(linea[0])=='3':
+                cbtasoc = leer(linea, CMP_ASOC)
+                cbtasocs.append(cbtasoc)
+            else:
+                print "Tipo de registro incorrecto:", linea[0]
 
     if informar_caea:
         if '/testing' in sys.argv:
@@ -254,7 +274,49 @@ def escribir_factura(dic, archivo):
     for it in dic['cbtes_asoc']:
         it['tipo_reg'] = 3
         archivo.write(escribir(it, CMP_ASOC))
-            
+
+    if '/dbf' in sys.argv:
+        import dbf
+        print "Creando DBF..."
+
+        tablas = {}
+        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic['tributos']), ('Iva', IVA, dic['iva']), ('Comprobante Asociado', CMP_ASOC, dic['cbtes_asoc'])]
+        for nombre, formato, l in formatos:
+            campos = []
+            claves = []
+            for fmt in formato:
+                clave, longitud, tipo = fmt[0:3]
+                dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                if longitud>250:
+                    tipo = "M" # memo!
+                elif tipo == A:
+                    tipo = "C(%s)" % longitud 
+                elif tipo == N:
+                    tipo = "N(%s,0)" % longitud 
+                elif tipo == I:
+                    tipo = "N(%s,%s)" % (longitud, dec)
+                campo = "%s %s" % (clave[:10], tipo)
+                print "tabla %s campo %s" %  (nombre, campo)
+                campos.append(campo)
+                claves.append(clave[:10])
+            tabla = dbf.Table("%s.dbf" % nombre[:8], campos)
+
+            for d in l:
+                r = {}
+                for fmt in formato:
+                    clave, longitud, tipo = fmt[0:3]
+                    v = d.get(clave, None)
+                    print clave,v, tipo
+                    if v is None and tipo == A:
+                        v = ''
+                    if v is None and tipo in (I, N):
+                        v = 0
+                    if tipo == A:
+                        v = unicode(v)
+                    r[clave[:10]] = v
+                registro = tabla.append(r)
+            tabla.close()
+
 def depurar_xml(client):
     fecha = time.strftime("%Y%m%d%H%M%S")
     f=open("request-%s.xml" % fecha,"w")
