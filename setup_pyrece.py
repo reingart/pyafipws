@@ -6,7 +6,7 @@
 __version__ = "$Revision: 1.3 $"
 __date__ = "$Date: 2005/04/05 18:44:54 $"
 """
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 
 from distutils.core import setup
@@ -44,11 +44,45 @@ opts = {
     'optimize':2}
     }
 
+import pyrece
+from nsis import build_installer
+
+class Target():
+    def __init__(self, **kw):
+        self.__dict__.update(kw)
+        # for the version info resources (Properties -- Version)
+        # convertir 1.21a en 1.21.1
+        self.version = pyrece.__version__[:-1]+"."+str(ord(pyrece.__version__[-1])-96)
+        self.description = pyrece.__doc__
+        self.company_name = "Sistemas Agiles"
+        self.copyright = pyrece.__copyright__
+        self.name = pyrece.__doc__
+
+import glob
+data_files = [
+    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt",
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
+            "logo.png", 
+            "homo/rece.ini", "factura.csv", "homo/facturas.csv"]),
+    ("cache", glob.glob("cache/*")),
+    ]
+
+
 setup( name = "PyRece",
+       version=pyrece.__version__ + (pyrece.HOMO and '-homo' or '-full'),
+       description="PyRece %s" % pyrece.__version__,
+       long_description=pyrece.__doc__,
+       author="Mariano Reingart",
+       author_email="reingart@gmail.com",
+       url="http://www.sistemasagiles.com.ar",
+       license="GNU GPL v3",
        data_files = [ (".", pycard_resources),
-                      (".",["logo.png",]) ],
+                      (".",["logo.png",]) ] + data_files,
        options=opts,
-       **{buildstyle: ["pyrece.py"],
-          'console': [{"script": "pyrece.py", "dest_base": "pyrece_consola"}]
+       cmdclass = {"py2exe": build_installer},
+       **{buildstyle: [Target(script='pyrece.py')],
+          'console': [Target(script="pyrece.py", dest_base="pyrece_consola")]
         }
        )
+
