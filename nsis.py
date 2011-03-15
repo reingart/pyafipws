@@ -61,6 +61,14 @@ InstallDir $PROGRAMFILES\%(install_dir)s
 
 InstallDirRegKey HKLM "Software\%(reg_key)s" "Install_Dir"
 
+VIProductVersion "%(product_version)s"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "%(name)s"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "%(description)s"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "%(company_name)s"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "%(product_version)s"
+VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "%(copyright)s"
+;VIAddVersionKey /LANG=${LANG_ENGLISH} "InternalName" "FileSetup.exe"
+
 Section %(name)s
     ; uninstall old version
 
@@ -168,6 +176,8 @@ class NSISScript:
         self.name = metadata.get_name()
         self.description = metadata.get_name()
         self.version = metadata.get_version()
+        self.copyright = metadata.get_author()
+        self.url = metadata.get_url()
         self.windows_exe_files = [self.chop(p) for p in windows_exe_files]
         self.lib_files = [self.chop(p) for p in lib_files]
         self.comserver_files = [self.chop(p) for p in comserver_files if p.lower().endswith(".dll")]
@@ -179,10 +189,17 @@ class NSISScript:
     def create(self, pathname="base.nsi"):
         self.pathname = pathname
         ofi = self.file = open(pathname, "w")
+        ver = self.version
+        if "-" in ver:
+            ver = ver[:ver.index("-")]  
+        rev = self.version.endswith("-full") and ".1" or ".0"
+        ver= [c in '0123456789.' and c or ".%s" % (ord(c)-96) for c in ver]+[rev]
         ofi.write(nsi_base_script % {
             'name': self.name,
             'description': "%s version %s" % (self.description, self.version),
-            'version': self.version,
+            'product_version': ''.join(ver),
+            'company_name': self.url,
+            'copyright': self.copyright,
             'install_dir': self.name,
             'reg_key': self.name,
             'out_file': "instalador-%s-%s.exe" % (self.name, self.version),
