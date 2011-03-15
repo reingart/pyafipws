@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21b"
+__version__ = "1.21c"
 
 import csv
 from decimal import Decimal
@@ -702,6 +702,7 @@ class PyRece(model.Background):
             self.error(u'Excepción',unicode(e))
             
     def generar_factura(self, item):
+        
         def fmtdate(d):
             if d is not None and str(d):
                 d = str(d)
@@ -710,7 +711,13 @@ class PyRece(model.Background):
                 return ''
         def fmtimp (i):
             if i is not None and str(i):
-                return ("%0.2f" % Decimal(str(i).replace(",","."))).replace(".",",")
+                loc = conf_fact.get('locale','')
+                if loc:
+                    import locale
+                    locale.setlocale(locale.LC_ALL, loc)
+                    return locale.format("%0.2f", Decimal(str(i).replace(",",".")), grouping=True, monetary=True)
+                else:
+                    return ("%0.2f" % Decimal(str(i).replace(",","."))).replace(".",",")
             else:
                 return ''
         def fmtcuit(c):
@@ -848,7 +855,10 @@ class PyRece(model.Background):
         f.set('CodigoBarras', barras)
         f.set('CodigoBarrasLegible', barras)
 
-        d = os.path.join(conf_fact.get('directorio', "."), item['fecha_cbte'])
+        d = conf_fact.get('directorio', ".")
+        clave_subdir = conf_fact.get('subdirectorio','fecha_cbte')
+        if clave_subdir:
+            d = os.path.join(d, item[clave_subdir])
         if not os.path.isdir(d):
             os.mkdir(d)
         fs = conf_fact.get('archivo','numero').split(",")
