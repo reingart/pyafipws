@@ -418,7 +418,7 @@ def escribir(regs, fn="salida.xml"):
                     'descripcion': reg['formas_pago'][0]['descripcion'],
                     }}]
                 })
-        comprobantes.append(dic)
+        comprobantes.append({'comprobante':dic})
 
     xml.marshall("comprobante", comprobantes)
     open(fn,"wb").write(xml.as_xml())
