@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27a"
+__version__ = "1.27b"
 
 import datetime
 import os
@@ -211,7 +211,6 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 ld.append(r)    
         encabezado = encabezado[0]
     else:
-        assert False
         for linea in entrada:
             if str(linea[0])=='0':
                 encabezado = leer(linea, ENCABEZADO)
