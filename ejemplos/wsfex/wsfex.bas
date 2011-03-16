@@ -96,8 +96,8 @@ Sub Main()
     imp_total = "250.00" ' importe total final del artículo
     ' lo agrego a la factura (internamente, no se llama al WebService):
     ok = WSFEX.AgregarItem(codigo, ds, qty, umed, precio, imp_total)
-    ok = WSFEX.AgregarItem(codigo, ds, qty, umed, precio, imp_total)
-    ok = WSFEX.AgregarItem(codigo, "Descuento", 2, "99", "125.00", "250.00")
+    'ok = WSFEX.AgregarItem(codigo, ds, qty, umed, precio, imp_total)
+    'ok = WSFEX.AgregarItem(codigo, "Descuento", 2, "99", "125.00", "250.00")
     ok = WSFEX.AgregarItem("", "texto adicional", 0, "0", "0", "0")
     
     ' Agrego un permiso (ver manual para el desarrollador)
