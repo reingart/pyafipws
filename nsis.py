@@ -108,6 +108,8 @@ SectionEnd
 
 Function .onInit
 
+    IfSilent nolangdialog
+
     ;Language selection dialog
 
     Push ""
@@ -122,6 +124,9 @@ Function .onInit
     Pop $LANGUAGE
     StrCmp $LANGUAGE "cancel" 0 +2
         Abort
+        
+nolangdialog:
+        
 FunctionEnd
 
 """
