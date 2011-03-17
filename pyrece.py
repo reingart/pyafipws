@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21c"
+__version__ = "1.21d"
 
 import csv
 from decimal import Decimal
@@ -572,7 +572,7 @@ class PyRece(model.Background):
 
     def on_btnAutorizarLote_mouseClick(self, event):
         self.verifica_ws()
-        if not self.items: return
+        if not self.items or self.webservice != 'wsfe': return
         try:
             ok = 0
             rechazadas = 0

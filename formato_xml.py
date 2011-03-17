@@ -418,9 +418,10 @@ def escribir(regs, fn="salida.xml"):
                     'descripcion': reg['formas_pago'][0]['descripcion'],
                     }}]
                 })
-        comprobantes.append({'comprobante':dic})
+        comprobantes.append(dic)
 
-    xml.marshall("comprobante", comprobantes)
+    for comprobante in comprobantes:
+        xml.marshall("comprobante", comprobante)
     open(fn,"wb").write(xml.as_xml())
 
 # pruebas básicas
