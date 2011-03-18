@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21d"
+__version__ = "1.21e"
 
 import csv
 from decimal import Decimal
@@ -383,7 +383,11 @@ class PyRece(model.Background):
                 if fn.endswith(".csv"):
                     csvfile = open(fn, "rb")
                     # deducir dialecto y delimitador
-                    dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
+                    try:
+                        dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
+                    except csv.Error:
+                        dialect = csv.excel
+                        dialect.delimiter=";"
                     csvfile.seek(0)
                     csv_reader = csv.reader(csvfile, dialect)
                     for row in csv_reader:
