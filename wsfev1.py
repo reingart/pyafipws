@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08a"
+__version__ = "1.08b"
 
 import datetime
 import decimal
@@ -364,7 +364,7 @@ class WSFEv1:
         result = ret['FECompUltimoAutorizadoResult']
         self.CbteNro = result['CbteNro']        
         self.__analizar_errores(result)
-        return self.CbteNro and str(self.CbteNro) or ''
+        return self.CbteNro is not None and str(self.CbteNro) or ''
 
     @inicializar_y_capturar_execepciones
     def CompConsultar(self, tipo_cbte, punto_vta, cbte_nro, reproceso=False):
@@ -441,6 +441,14 @@ class WSFEv1:
                                     verifica(vl, res_dict[k][i])
                         elif isinstance(v, dict):
                             verifica(v, res_dict.get(k, {}))
+                        elif res_dict.get(k) is None or v is None:
+                            if v=="":
+                                v = None
+                            r = res_dict.get(k)
+                            if r=="":
+                                r = None
+                            if not (r is None and v is None):
+                                difs.append("%s: nil %s!=%s" % (k, repr(v), repr(r)))
                         elif unicode(res_dict.get(k)) != unicode(v):
                             difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
                         else:
@@ -449,6 +457,7 @@ class WSFEv1:
                 verifica(verificaciones, resultget)
                 if difs:
                     print "Diferencias:", difs
+                    self.__log("Diferencias: %s" % difs)
             self.FechaCbte = resultget['CbteFch'] #.strftime("%Y/%m/%d")
             self.CbteNro = resultget['CbteHasta'] # 1L
             self.PuntoVenta = resultget['PtoVta'] # 4000
