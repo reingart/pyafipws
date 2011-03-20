@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27b"
+__version__ = "1.27c"
 
 import datetime
 import os
@@ -163,7 +163,7 @@ def escribir(dic, formato):
             elif tipo == I and valor:
                 valor = ("%%0%dd" % longitud) % int(float(valor)*(10**dec))
             else:
-                valor = ("%%0%ds" % longitud) % valor
+                valor = ("%%-0%ds" % longitud) % valor
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
         except Exception, e:
@@ -264,15 +264,18 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 def escribir_factura(dic, archivo):
     dic['tipo_reg'] = 0
     archivo.write(escribir(dic, ENCABEZADO))
-    for it in dic['tributos']:
-        it['tipo_reg'] = 1
-        archivo.write(escribir(it, TRIBUTO))
-    for it in dic['iva']:
-        it['tipo_reg'] = 2
-        archivo.write(escribir(it, IVA))
-    for it in dic['cbtes_asoc']:
-        it['tipo_reg'] = 3
-        archivo.write(escribir(it, CMP_ASOC))
+    if 'tributos' in dic:
+        for it in dic['tributos']:
+            it['tipo_reg'] = 1
+            archivo.write(escribir(it, TRIBUTO))
+    if 'iva' in dic:
+        for it in dic['iva']:
+            it['tipo_reg'] = 2
+            archivo.write(escribir(it, IVA))
+    if 'cbtes_asoc' in dic:
+        for it in dic['cbtes_asoc']:
+            it['tipo_reg'] = 3
+            archivo.write(escribir(it, CMP_ASOC))
 
     if '/dbf' in sys.argv:
         import dbf
@@ -338,12 +341,14 @@ if __name__ == "__main__":
         print " /formato: muestra el formato de los archivos de entrada/salida"
         print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
         print " /xml: almacena los requerimientos y respuestas XML (depuración)"
+        print " /dbf: lee y almacena la información en tablas DBF"
         print
         print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
         sys.exit(0)
 
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
+    #print CONFIG_FILE
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFEv1','CUIT')
@@ -366,6 +371,11 @@ if __name__ == "__main__":
         wsfev1_reprocesar = config.get('WSFEv1','REPROCESAR') == 'S'
     else:
         wsfev1_reprocesar = None
+
+    if config.has_option('WSFEv1', 'XML_DIR'):
+        wsfev1_xml_dir = config.get('WSFEv1', 'XML_DIR')
+    else:
+        wsfev1_xml_dir = "."
 
     if '/debug'in sys.argv:
         DEBUG = True
@@ -413,10 +423,12 @@ if __name__ == "__main__":
             # generar el archivo de prueba para la próxima factura
             tipo_cbte = 1
             punto_vta = 4002
-            cbte_nro = int(ws.CompUltimoAutorizado(tipo_cbte, punto_vta))
+            cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
+            if not cbte_nro: cbte_nro=0
+            cbte_nro=int(cbte_nro)              
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 1
-            tipo_doc = 80; nro_doc = "33693450239"
+            tipo_doc = 80; nro_doc = "30628789661"
             cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
@@ -460,18 +472,34 @@ if __name__ == "__main__":
       
         if '/ult' in sys.argv:
             print "Consultar ultimo numero:"
-            tipo_cbte = int(raw_input("Tipo de comprobante: "))
-            punto_vta = int(raw_input("Punto de venta: "))
+            i = sys.argv.index("/ult")
+            if i+2<len(sys.argv):
+               tipo_cbte = int(sys.argv[i+1])
+               punto_vta = int(sys.argv[i+2])
+            else:
+               tipo_cbte = int(raw_input("Tipo de comprobante: "))
+               punto_vta = int(raw_input("Punto de venta: "))
             ult_cbte = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             print "Ultimo numero: ", ult_cbte
             depurar_xml(ws.client)
+            escribir_factura({'tipo_cbte': tipo_cbte, 
+                              'punto_vta': punto_vta, 
+                              'cbt_desde': ult_cbte, 
+                              'fecha_cbte': ws.FechaCbte, 
+                              }, open(salida,"w"))
             sys.exit(0)
 
         if '/get' in sys.argv:
             print "Recuperar comprobante:"
-            tipo_cbte = int(raw_input("Tipo de comprobante: "))
-            punto_vta = int(raw_input("Punto de venta: "))
-            cbte_nro = int(raw_input("Numero de comprobante: "))
+            i = sys.argv.index("/get")
+            if i+3<len(sys.argv):
+               tipo_cbte = int(sys.argv[i+1])
+               punto_vta = int(sys.argv[i+2])
+               cbte_nro = int(sys.argv[i+3])
+            else:
+               tipo_cbte = int(raw_input("Tipo de comprobante: "))
+               punto_vta = int(raw_input("Punto de venta: "))
+               cbte_nro = int(raw_input("Numero de comprobante: "))
             ws.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
 
             print "FechaCbte = ", ws.FechaCbte
@@ -483,6 +511,16 @@ if __name__ == "__main__":
             print "EmisionTipo = ", ws.EmisionTipo
 
             depurar_xml(ws.client)
+            escribir_factura({'tipo_cbte': tipo_cbte, 
+                              'punto_vta': ws.PuntoVenta, 
+                              'cbt_desde': ws.CbteNro, 
+                              'fecha_cbte': ws.FechaCbte, 
+                              'imp_total': ws.ImpTotal, 
+                              'cae': ws.CAE, 
+                              'fch_venc_cae': ws.Vencimiento,  
+                              'emision_tipo': ws.EmisionTipo, 
+                              }, open(salida,"w"))
+
             sys.exit(0)
 
         if '/solicitarcaea' in sys.argv:
@@ -499,6 +537,14 @@ if __name__ == "__main__":
                 print "Errores:"
                 for error in ws.Errores:
                     print error
+
+            depurar_xml(ws.client)
+
+            if not caea:
+                if DEBUG: 
+                    print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
+                caea = ws.CAEAConsultar(periodo, orden)
+                print "CAEA:", caea
                 
             if DEBUG:
                 print "Periodo:", ws.Periodo 
@@ -507,6 +553,11 @@ if __name__ == "__main__":
                 print "FchVigHasta:", ws.FchVigHasta 
                 print "FchTopeInf:", ws.FchTopeInf 
                 print "FchProceso:", ws.FchProceso
+
+            escribir_factura({'cae': caea, 
+                              'emision_tipo': "CAEA", 
+                             }, open(salida,"w"))
+                              
             sys.exit(0)
 
         if '/consultarcaea' in sys.argv:
@@ -529,7 +580,7 @@ if __name__ == "__main__":
                 print "Orden:", ws.Orden 
                 print "FchVigDesde:", ws.FchVigDesde 
                 print "FchVigHasta:", ws.FchVigHasta 
-                print "FchTopeInf:", ws.FchTopeInf 
+                print "FchTopeInf:", ws.FchTopeInf
                 print "FchProceso:", ws.FchProceso
             sys.exit(0)
 
@@ -556,6 +607,8 @@ if __name__ == "__main__":
         sys.exit(3)
     except Exception, e:
         print unicode(e).encode("ascii","ignore")
+        escribir_factura({'err_msg': unicode(e).encode("ascii","ignore"),
+                         }, open(salida,"w"))
         if DEBUG:
             raise
         sys.exit(5)
