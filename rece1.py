@@ -157,7 +157,10 @@ def escribir(dic, formato):
             s = dic.get(clave,"")
             if isinstance(s, unicode):
                 s = s.encode("latin1")
-            valor = str(s)
+            if s is None:
+                valor = ""
+            else:
+                valor = str(s)
             if tipo == N and valor and valor!="NULL":
                 valor = ("%%0%dd" % longitud) % int(valor)
             elif tipo == I and valor:
@@ -425,7 +428,7 @@ if __name__ == "__main__":
             punto_vta = 4002
             cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             if not cbte_nro: cbte_nro=0
-            cbte_nro=int(cbte_nro)              
+            cbte_nro=int(cbte_nro)
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 1
             tipo_doc = 80; nro_doc = "30628789661"
