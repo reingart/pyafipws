@@ -348,7 +348,9 @@ def desaplanar(filas):
     def max_li(colname): 
         tmp = max([k for k in filas[0] if k.startswith(colname)])
         if max_li:
-            return int(tmp[len(colname):])+1
+            tmp = int(tmp[len(colname):])+1
+            print "max_li(%s)=%s" % (colname, tmp)
+            return tmp
         else:
             return 0
 
@@ -369,7 +371,7 @@ def desaplanar(filas):
                 'iva_id': dic['iva_id%s' % li],
                 'imp_iva': dic['imp_iva%s'% li],                                               
                 'numero_despacho': dic['numero_despacho%s'% li],
-                } for li in xrange(1, max_li("cantidad"))]
+                } for li in xrange(1, max_li("cantidad")) if dic['cantidad%s' % li] is not None]
                 
         reg['tributos'] = [{
                 'id': dic['tributo_id_%s'  % li],

@@ -4,10 +4,24 @@
     {'type':'Background',
           'name':'bgTemplate',
           'title':u'Aplicativo Factura Electr\xf3nica (PyRece)',
-          'size':(592, 487),
+          'size':(592, 265),
 
         'menubar': {'type':'MenuBar',
          'menus': [
+             {'type':'Menu',
+             'name':'menuArchivo',
+             'label':u'Archivo',
+             'items': [
+                  {'type':'MenuItem',
+                   'name':'menuArchivoAbrir',
+                   'label':u'Abrir',
+                  },
+                  {'type':'MenuItem',
+                   'name':'menuArchivoGuardar',
+                   'label':u'Guardar',
+                  },
+              ]
+             },
              {'type':'Menu',
              'name':'menuConsultas',
              'label':u'Consultas',
@@ -42,6 +56,18 @@
                    'name':'menuAyudaLimpiar',
                    'label':u'Limpiar estado',
                   },
+                  {'type':'MenuItem',
+                   'name':'menuAyudaMensajesXML',
+                   'label':u'Mensajes XML',
+                  },
+                  {'type':'MenuItem',
+                   'name':'menuAyudaVerEstado',
+                   'label':u'Ver/Ocultar Estado',
+                  },
+                  {'type':'MenuItem',
+                   'name':'menuAyudaVerConfiguracion',
+                   'label':u'Ver Configuración',
+                  },
               ]
              },
          ]
@@ -61,12 +87,6 @@
     'items':[u'wsfe', u'wsfev1', u'wsfex'], 
     },
 
-{'type':'Button', 
-    'name':'btnGrabar', 
-    'position':(504, 4), 
-    'size':(60, -1), 
-    'label':u'Grabar', 
-    },
 
 {'type':'Button', 
     'name':'btnMarcarTodo', 
@@ -124,18 +144,12 @@
     'toolTip':u'Generar y enviar mails', 
     },
 
-{'type':'Button', 
-    'name':'btnExaminar', 
-    'position':(370, 4), 
-    'size':(69, -1), 
-    'label':u'Examinar', 
-    },
-
 {'type':'TextField', 
     'name':'txtArchivo', 
-    'position':(197, 5), 
-    'size':(167, -1), 
+    'position':(200, 5), 
+    'size':(340, -1), 
     'text':u'facturas.csv', 
+    'editable': False,
     },
 
 {'type':'StaticText', 
@@ -144,12 +158,6 @@
     'text':u'Archivo:', 
     },
 
-{'type':'Button', 
-    'name':'btnCargar', 
-    'position':(443, 4), 
-    'size':(60, -1), 
-    'label':u'Cargar', 
-    },
 
 {'type':'Button', 
     'name':'btnAutorizar', 

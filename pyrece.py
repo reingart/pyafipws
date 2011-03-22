@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21e"
+__version__ = "1.21g"
 
 import csv
 from decimal import Decimal
@@ -293,7 +293,7 @@ class PyRece(model.Background):
 
     def on_menuAyudaAcercaDe_select(self, event):
         text = ACERCA_DE
-        dialog.alertDialog(self, text, u'Acerca de PyRece')
+        dialog.alertDialog(self, text, u'Acerca de PyRece Versión %s' % __version__)
 
     def on_menuAyudaInstructivo_select(self, event):
         text = INSTRUCTIVO
@@ -302,6 +302,22 @@ class PyRece(model.Background):
     def on_menuAyudaLimpiar_select(self, event):
         self.components.txtEstado.text = ""
 
+    def on_menuAyudaMensajesXML_select(self, event):
+        self.verifica_ws()
+        self.components.txtEstado.text = u"XmlRequest:\n%s\n\nXmlResponse:\n%s" % (
+            self.ws.xml_request, self.ws.xml_response)
+        self.size = (592, 517)
+
+    def on_menuAyudaVerEstado_select(self, event):
+        if self.size[1]<517:
+            self.size = (592, 517)
+        else:
+            self.size = (592, 265)
+    
+    def on_menuAyudaVerConfiguracion_select(self, event):
+        self.components.txtEstado.text = open(CONFIG_FILE).read()
+        self.size = (592, 517)
+        
     def on_cboWebservice_select(self, event):
         self.webservice = self.components.cboWebservice.stringSelection
         self.ws = None
@@ -362,7 +378,7 @@ class PyRece(model.Background):
         except Exception, e:
             self.error(u'Excepción',unicode(e))
     
-    def on_btnExaminar_mouseClick(self, event):
+    def examinar(self):
         filename = entrada
         wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml"]
         if entrada.endswith("xml"):
@@ -373,7 +389,8 @@ class PyRece(model.Background):
             return
         self.paths = result.paths
 
-    def on_btnCargar_mouseClick(self, event):
+    def on_menuArchivoAbrir_select(self, event):
+        self.examinar()
         self.cargar()
         
     def cargar(self):
@@ -412,7 +429,7 @@ class PyRece(model.Background):
         except Exception,e:
                 self.error(u'Excepción',unicode(e))
 
-    def on_btnGrabar_mouseClick(self, event):
+    def on_menuArchivoGuardar_select(self, event):
             filename = entrada
             wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml"]
             if entrada.endswith("xml"):
@@ -805,17 +822,17 @@ class PyRece(model.Background):
 
         li = 1
         for i in range(25):
-            if 'codigo%d' % i in item:
+            if 'codigo%d' % i in item and item['codigo%d' % i] is not None:
                 f.set('Item.Codigo%02d' % i, item['codigo%d' % i])
-            if 'cantidad%d' % i in item:
+            if 'cantidad%d' % i in item and item['cantidad%d' % i] is not None:
                 f.set('Item.Cantidad%02d' % i, item['cantidad%d' % i])
-            if 'numero_despacho%d' % i in item:
+            if 'numero_despacho%d' % i in item and item['numero_despacho%d' % i] is not None:
                 f.set('Item.Numero_Despacho%02d' % i, item['numero_despacho%d' % i])
-            if 'descripcion%d' % i in item:
+            if 'descripcion%d' % i in item and item['descripcion%d' % i] is not None:
                 f.set('Item.Descripcion%02d' % i, item['descripcion%d' % i])
-            if 'importe%d' % i in item:
+            if 'importe%d' % i in item and item['importe%d' % i] is not None:
                 f.set('Item.Importe%02d' % i, fmtimp(item['importe%d' % i]))
-            if 'precio%d' % i in item:
+            if 'precio%d' % i in item and item['precio%d' % i] is not None:
                 f.set('Item.Precio%02d' % i, fmtimp(item['precio%d' % i]))
 
         #if li and letra=='A':
