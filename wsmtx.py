@@ -96,6 +96,7 @@ class WSMTXCA:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 'InstallDir',  
         'Resultado', 'Obs', 'Observaciones', 'ErrCode', 'ErrMsg',
+        'EmisionTipo', 'Reproceso', 'Reprocesar',
         'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback', 'Excepcion',
         'CbteNro', 'FechaCbte', 'PuntoVenta', 'ImpTotal']
         
@@ -115,6 +116,8 @@ class WSMTXCA:
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
         self.ErrCode = self.ErrMsg = self.Traceback = self.Excepcion = ""
+        self.EmisionTipo = 'CAE' # CAEA no implementado
+        self.Reprocesar = self.Reproceso = '' # no implementado
         self.Log = None
         self.InstallDir = INSTALL_DIR
 
@@ -188,7 +191,7 @@ class WSMTXCA:
             cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
             imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
             fecha_serv_desde, fecha_serv_hasta, #--
-            moneda_id, moneda_ctz, observaciones,
+            moneda_id, moneda_ctz, observaciones, **kwargs
             ):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
@@ -214,7 +217,7 @@ class WSMTXCA:
         self.factura = fact
         return True
 
-    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0):
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwargs):
         "Agrego un comprobante asociado a una factura (interna)"
         cmp_asoc = {'comprobanteAsociado': {
             'codigoTipoComprobante': tipo, 
@@ -223,10 +226,10 @@ class WSMTXCA:
         self.factura['arrayComprobantesAsociados'].append(cmp_asoc)
         return True
 
-    def AgregarTributo(self, cod, desc, base_imp, alic, importe):
+    def AgregarTributo(self, tributo_id, desc, base_imp, alic, importe, **kwargs):
         "Agrego un tributo a una factura (interna)"
         tributo = {'otroTributo': {
-            'codigo': cod, 
+            'codigo': tributo_id, 
             'descripcion': desc, 
             'baseImponible': base_imp, 
             'importe': importe,
@@ -234,17 +237,17 @@ class WSMTXCA:
         self.factura['arrayOtrosTributos'].append(tributo)
         return True
 
-    def AgregarIva(self, cod, base_imp, importe):
+    def AgregarIva(self, iva_id, base_imp, importe, **kwargs):
         "Agrego un tributo a una factura (interna)"
         iva = {'subtotalIVA': { 
-                'codigo': cod, 
+                'codigo': iva_id, 
                 'importe': importe,
               }}
         self.factura['arraySubtotalesIVA'].append(iva)
         return True
 
     def AgregarItem(self, u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
-                    cod_iva, imp_iva, imp_subtotal, ):
+                    iva_id, imp_iva, imp_subtotal, **kwargs):
         "Agrego un item a una factura (interna)"
         ##ds = unicode(ds, "latin1") # convierto a latin1
         # Nota: no se calcula neto, iva, etc (deben venir calculados!)
@@ -257,7 +260,7 @@ class WSMTXCA:
                 'codigoUnidadMedida': umed,
                 'precioUnitario': precio,
                 'importeBonificacion': bonif,
-                'codigoCondicionIVA': cod_iva,
+                'codigoCondicionIVA': iva_id,
                 'importeIVA': imp_iva,
                 'importeItem': imp_subtotal
                 }
@@ -466,17 +469,17 @@ def main():
             #nro = 1234
             #wsmtxca.AgregarCmpAsoc(tipo, pto_vta, nro)
             
-            cod = 99
+            tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
             base_imp = "100.00"
             alic = "1.00"
             importe = "1.00"
-            wsmtxca.AgregarTributo(cod, desc, base_imp, alic, importe)
+            wsmtxca.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
-            cod = 5 # 21%
+            iva_id = 5 # 21%
             base_im = 100
             importe = 21
-            wsmtxca.AgregarIva(cod, base_imp, importe)
+            wsmtxca.AgregarIva(iva_id, base_imp, importe)
             
             u_mtx = 123456
             cod_mtx = 1234567890123
@@ -486,11 +489,11 @@ def main():
             umed = 7
             precio = 100.00
             bonif = 0.00
-            cod_iva = 5
+            iva_id = 5
             imp_iva = 21.00
             imp_subtotal = 121.00
             wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
-                        cod_iva, imp_iva, imp_subtotal)
+                        iva_id, imp_iva, imp_subtotal)
             
             wsmtxca.AutorizarComprobante()
 
