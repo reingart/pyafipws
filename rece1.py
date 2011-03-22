@@ -387,7 +387,7 @@ if __name__ == "__main__":
         XML = True
 
     if DEBUG:
-        print "wsaa_url %s\nwsfev1_url %s\ncuit %s" % (wsaa_url, "", cuit)
+        print "wsaa_url %s\nwsfev1_url %s\ncuit %s" % (wsaa_url, wsfev1_url, cuit)
     
     try:
         ws = wsfev1.WSFEv1()
