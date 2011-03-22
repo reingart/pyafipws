@@ -1,6 +1,12 @@
+# EJEMPLO de archivo de configuración de la interfaz PyAfipWs
+# DEBE CAMBIAR Certificado (CERT) y Clave Privada (PRIVATEKEY)
+# Para producción debe descomentar las URL (sacar ##)
+# Más información:
+# http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs#Configuración
+
 [WSAA]
-CERT=reingart.crt
-PRIVATEKEY=reingart.key
+CERT=homo.crt
+PRIVATEKEY=homo.key
 ##URL=https://wsaa.afip.gov.ar/ws/services/LoginCms
 
 [WSFE]
@@ -8,6 +14,12 @@ CUIT=20267565393
 ENTRADA=entrada.txt
 SALIDA=salida.txt
 ##URL=https://servicios1.afip.gov.ar/wsfe/service.asmx
+
+[WSFEv1]
+CUIT=20267565393
+ENTRADA=entrada.txt
+SALIDA=salida.txt
+##URL=https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL
 
 [WSBFE]
 CUIT=20267565393
@@ -25,14 +37,21 @@ SALIDA=salida.txt
 ARCHIVO=tipo,letra,numero
 FORMATO=factura.csv
 DIRECTORIO=.
+PAPEL=A4
+ORIENTACION=landscape
+DIRECTORIO=.
+SUBDIRECTORIO=
+LOCALE=Spanish_Argentina.1252
+FMT_CANTIDAD=0.6
+FMT_PRECIO=0.3
 
 [PDF]
 LOGO=serpiente.png
 EMPRESA=Empresa de Prueba
 MEMBRETE1=Direccion de Prueba
 MEMBRETE2=Capital Federal
-CUIT=CUIT 20-26756539-3
-IIBB=IIBB 20-26756539-3
+CUIT=CUIT 30-00000000-0
+IIBB=IIBB 30-00000000-0
 IVA=IVA Responsable Inscripto
 INICIO=Inicio de Actividad: 01/04/2006
 
@@ -50,3 +69,15 @@ SERVER=localhost
 DATABASE=pyafipws
 UID=pyafipws
 PWD=pyafipws
+
+[DBF]
+Encabezado = encabeza.dbf
+Tributo = tributo.dbf
+Iva = iva.dbf
+Comprobante Asociado = cbteasoc.dbf
+
+[PROXY]
+HOST=localhost
+PORT=8000
+#USER=mariano
+#PASS=reingart
