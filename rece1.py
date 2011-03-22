@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27c"
+__version__ = "1.27d"
 
 import datetime
 import os
@@ -605,12 +605,15 @@ if __name__ == "__main__":
                 depurar_xml(ws.client)
         sys.exit(0)
     
-    except SoapFault,e:
+    except SoapFault, e:
         print e.faultcode, e.faultstring.encode("ascii","ignore")
         sys.exit(3)
     except Exception, e:
-        print unicode(e).encode("ascii","ignore")
-        escribir_factura({'err_msg': unicode(e).encode("ascii","ignore"),
+        e_str = unicode(e).encode("ascii","ignore")
+        if not e_str:
+            e_str = repr(e)
+        print e_str
+        escribir_factura({'err_msg': e_str,
                          }, open(salida,"w"))
         if DEBUG:
             raise
