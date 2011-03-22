@@ -29,7 +29,7 @@ import wsmtx
 from nsis import build_installer
 
 data_files = [
-    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt"]),
+    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt", 'rece.ini.dist']),
     ("cache", glob.glob("cache/*")),
     ]
     
@@ -42,7 +42,7 @@ setup( name = "WSMTXCA",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
     com_server = ["wsmtx"],
-    console=['wsmtx.py', 'wsaa.py'],
+    console=['wsmtx.py', 'wsaa.py', 'recem.py'],
     options=opts,
     data_files = data_files,
     cmdclass = {"py2exe": build_installer}
