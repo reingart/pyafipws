@@ -210,7 +210,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
                     #import pdb; pdb.set_trace()
-                    v = d[clave[:10]]
+                    v = d[clave.replace("_","")[:10]]
                     r[clave] = v
                 ld.append(r)    
         encabezado = encabezado[0]
@@ -301,10 +301,10 @@ def escribir_factura(dic, archivo):
                     tipo = "N(%s,0)" % longitud 
                 elif tipo == I:
                     tipo = "N(%s,%s)" % (longitud, dec)
-                campo = "%s %s" % (clave[:10], tipo)
+                campo = "%s %s" % (clave.replace("_","")[:10], tipo)
                 if DEBUG: print "tabla %s campo %s" %  (nombre, campo)
                 campos.append(campo)
-                claves.append(clave[:10])
+                claves.append(clave.replace("_","")[:10])
             filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
             if DEBUG: print "leyendo tabla", nombre, filename
             tabla = dbf.Table(filename, campos)
@@ -321,7 +321,7 @@ def escribir_factura(dic, archivo):
                         v = 0
                     if tipo == A:
                         v = unicode(v)
-                    r[clave[:10]] = v
+                    r[clave.replace("_","")[:10]] = v
                 registro = tabla.append(r)
             tabla.close()
 
@@ -356,7 +356,7 @@ if __name__ == "__main__":
         DEBUG = True
         print "VERSION", __version__, "HOMO", HOMO
 
-    if len(sys.argv)>1 and not sys.argv[1].startswith("--"):
+    if len(sys.argv)>1 and sys.argv[1][0] not in "-/":
         CONFIG_FILE = sys.argv.pop(1)
     if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
 
@@ -431,7 +431,6 @@ if __name__ == "__main__":
                     comienzo += longitud
             sys.exit(0)
 
-        # TODO: esto habría que guardarlo en un archivo y no tener que autenticar cada vez
         token, sign = autenticar(cert, privatekey, wsaa_url)
         ws.Token = token
         ws.Sign = sign
@@ -474,7 +473,7 @@ if __name__ == "__main__":
             ws.AgregarTributo(id, desc, base_imp, alic, importe)
 
             id = 5 # 21%
-            base_im = 100
+            base_imp = 100
             importe = 21
             ws.AgregarIva(id, base_imp, importe) 
                         
