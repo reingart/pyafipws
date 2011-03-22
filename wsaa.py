@@ -19,7 +19,7 @@ Devuelve TA.xml (ticket de autorización de WSAA)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.03a"
+__version__ = "2.03b"
 
 import email,os,sys
 from php import date
@@ -99,7 +99,10 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
         wsdl = location + "?wsdl"
         wsaa.Conectar(proxy=proxy, wsdl=wsdl, cache="")
         ta = wsaa.LoginCMS(cms)
-        return ta or ''
+        if not ta:
+            raise RuntimeError(wsaa.Excepcion)
+        else:
+            return ta
     except:
         raise
 
