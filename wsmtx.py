@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.04b"
 
 import datetime
 import decimal
@@ -195,55 +195,55 @@ class WSMTXCA:
             ):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
-        fact = {'codigoTipoDocumento': tipo_doc, 'numeroDocumento':  nro_doc,
-                'codigoTipoComprobante': tipo_cbte, 'numeroPuntoVenta': punto_vta,
-                'numeroComprobante': cbt_desde, 'numeroComprobante': cbt_hasta,
-                'importeTotal': imp_total, 'importeNoGravado': imp_tot_conc,
-                'importeGravado': imp_neto,
-                'importeSubtotal': imp_subtotal, # 'imp_iva': imp_iva,
-                'importeOtrosTributos': imp_trib, 'importeExento': imp_op_ex,
-                'fechaEmision': fecha_cbte,
-                'fechaVencimientoPago': fecha_venc_pago,
-                'codigoMoneda': moneda_id, 'cotizacionMoneda': moneda_ctz,
-                'codigoConcepto': concepto,
+        fact = {'tipo_doc': tipo_doc, 'nro_doc':  nro_doc,
+                'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
+                'cbt_desde': cbt_desde, 'cbt_hasta': cbt_hasta,
+                'imp_total': imp_total, 'imp_tot_conc': imp_tot_conc,
+                'imp_neto': imp_neto,
+                'imp_subtotal': imp_subtotal, # 'imp_iva': imp_iva,
+                'imp_trib': imp_trib, 'imp_op_ex': imp_op_ex,
+                'fecha_cbte': fecha_cbte,
+                'fecha_venc_pago': fecha_venc_pago,
+                'moneda_id': moneda_id, 'moneda_ctz': moneda_ctz,
+                'concepto': concepto,
                 'observaciones': observaciones,
-                'arrayComprobantesAsociados': [],
-                'arrayOtrosTributos': [],
-                'arraySubtotalesIVA': [],
-                'arrayItems': [],
+                'cbtes_asoc': [],
+                'tributos': [],
+                'iva': [],
+                'detalles': [],
             }
-        if fecha_serv_desde: fact['fechaServicioDesde'] = fecha_serv_desde
-        if fecha_serv_hasta: fact['fechaServicioHasta'] = fecha_serv_hasta
+        if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
+        if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
         self.factura = fact
         return True
 
     def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwargs):
         "Agrego un comprobante asociado a una factura (interna)"
-        cmp_asoc = {'comprobanteAsociado': {
-            'codigoTipoComprobante': tipo, 
-            'numeroPuntoVenta': pto_vta, 
-            'numeroComprobante': nro}}
-        self.factura['arrayComprobantesAsociados'].append(cmp_asoc)
+        cmp_asoc = {
+            'tipo': tipo, 
+            'pto_vta': pto_vta, 
+            'nro': nro}
+        self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
     def AgregarTributo(self, tributo_id, desc, base_imp, alic, importe, **kwargs):
         "Agrego un tributo a una factura (interna)"
-        tributo = {'otroTributo': {
-            'codigo': tributo_id, 
-            'descripcion': desc, 
-            'baseImponible': base_imp, 
+        tributo = {
+            'tributo_id': tributo_id, 
+            'desc': desc, 
+            'base_imp': base_imp, 
             'importe': importe,
-            }}
-        self.factura['arrayOtrosTributos'].append(tributo)
+            }
+        self.factura['tributos'].append(tributo)
         return True
 
     def AgregarIva(self, iva_id, base_imp, importe, **kwargs):
         "Agrego un tributo a una factura (interna)"
-        iva = {'subtotalIVA': { 
-                'codigo': iva_id, 
+        iva = { 
+                'iva_id': iva_id, 
                 'importe': importe,
-              }}
-        self.factura['arraySubtotalesIVA'].append(iva)
+              }
+        self.factura['iva'].append(iva)
         return True
 
     def AgregarItem(self, u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
@@ -252,27 +252,73 @@ class WSMTXCA:
         ##ds = unicode(ds, "latin1") # convierto a latin1
         # Nota: no se calcula neto, iva, etc (deben venir calculados!)
         item = {
-                'unidadesMtx': u_mtx,
-                'codigoMtx': cod_mtx,
+                'u_mtx': u_mtx,
+                'cod_mtx': cod_mtx,
                 'codigo': codigo,                
-                'descripcion': ds,
-                'cantidad': qty,
-                'codigoUnidadMedida': umed,
-                'precioUnitario': precio,
-                'importeBonificacion': bonif,
-                'codigoCondicionIVA': iva_id,
-                'importeIVA': imp_iva,
-                'importeItem': imp_subtotal
+                'ds': ds,
+                'qty': qty,
+                'umed': umed,
+                'precio': precio,
+                'bonif': bonif,
+                'iva_id': iva_id,
+                'imp_iva': imp_iva,
+                'imp_subtotal': imp_subtotal
                 }
-        self.factura['arrayItems'].append({'item': item})
+        self.factura['detalles'].append(item)
         return True
     
     @inicializar_y_capturar_execepciones
     def AutorizarComprobante(self):
         f = self.factura
+        # contruyo la estructura a convertir en XML:
+        fact = {
+            'codigoTipoDocumento': f['tipo_doc'], 'numeroDocumento':f['nro_doc'],
+            'codigoTipoComprobante': f['tipo_cbte'], 'numeroPuntoVenta': f['punto_vta'],
+            'numeroComprobante': f['cbt_desde'], 'numeroComprobante': f['cbt_hasta'],
+            'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
+            'importeGravado': f['imp_neto'],
+            'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,
+            'importeOtrosTributos': f['imp_trib'], 'importeExento': f['imp_op_ex'],
+            'fechaEmision': f['fecha_cbte'],
+            'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f['moneda_ctz'],
+            'codigoConcepto': f['concepto'],
+            'observaciones': f['observaciones'],
+            'fechaVencimientoPago': f.get('fecha_venc_pago'),
+            'fechaServicioDesde': f.get('fecha_serv_desde'),
+            'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'arrayComprobantesAsociados': [{'comprobanteAsociado': {
+                'codigoTipoComprobante': cbte_asoc['tipo'], 
+                'numeroPuntoVenta': cbte_asoc['pto_vta'], 
+                'numeroComprobante': cbte_asoc['nro'],
+                }} for cbte_asoc in f['cbtes_asoc']],
+            'arrayOtrosTributos': [ {'otroTributo': {
+                'codigo': tributo['tributo_id'], 
+                'descripcion': tributo['desc'], 
+                'baseImponible': tributo['base_imp'], 
+                'importe': tributo['importe'],
+                }} for tributo in f['tributos']],
+            'arraySubtotalesIVA': [{'subtotalIVA': { 
+                'codigo': iva['iva_id'], 
+                'importe': iva['importe'],
+                }} for iva in f['iva']],
+            'arrayItems': [{'item':{
+                'unidadesMtx': it['u_mtx'],
+                'codigoMtx': it['cod_mtx'],
+                'codigo': it['codigo'],                
+                'descripcion': it['ds'],
+                'cantidad': it['qty'],
+                'codigoUnidadMedida': it['umed'],
+                'precioUnitario': it['precio'],
+                'importeBonificacion': it['bonif'],
+                'codigoCondicionIVA': it['iva_id'],
+                'importeIVA': it['imp_iva'],
+                'importeItem': it['imp_subtotal'],
+                }} for it in f['detalles']],
+            }
+                
         ret = self.client.autorizarComprobante(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-            comprobanteCAERequest = f,
+            comprobanteCAERequest = fact,
             )
         
         self.Resultado = ret['resultado'] # u'A'
@@ -308,7 +354,7 @@ class WSMTXCA:
         nro = ret.get('numeroComprobante')
         self.__analizar_errores(ret)
         self.CbteNro = nro
-        return str(nro)
+        return nro is not None and str(nro) or 0
 
     CompUltimoAutorizado = ConsultarUltimoComprobanteAutorizado
 
