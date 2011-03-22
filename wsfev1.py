@@ -342,11 +342,11 @@ class WSFEv1:
             self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
             self.EmisionTipo = 'CAE'
             self.Vencimiento = fedetresp['CAEFchVto']
-            self.FechaCbte = fedetresp['CbteFch'] #.strftime("%Y/%m/%d")
-            self.CbteNro = fedetresp['CbteHasta'] # 1L
-            self.PuntoVenta = fecabresp['PtoVta'] # 4000
-            self.CbtDesde =fedetresp['CbteDesde']
-            self.CbtHasta = fedetresp['CbteHasta']
+            self.FechaCbte = fedetresp.get('CbteFch', "") #.strftime("%Y/%m/%d")
+            self.CbteNro = fedetresp.get('CbteHasta', 0) # 1L
+            self.PuntoVenta = fecabresp.get('PtoVta', 0) # 4000
+            self.CbtDesde =fedetresp.get('CbteDesde', 0)
+            self.CbtHasta = fedetresp.get('CbteHasta', 0)
         self.__analizar_errores(result)
         return self.CAE
 
