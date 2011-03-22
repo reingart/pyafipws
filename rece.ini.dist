@@ -82,6 +82,7 @@ Encabezado = encabeza.dbf
 Tributo = tributo.dbf
 Iva = iva.dbf
 Comprobante Asociado = cbteasoc.dbf
+Detalles = detalles.dbf
 
 [PROXY]
 HOST=localhost
