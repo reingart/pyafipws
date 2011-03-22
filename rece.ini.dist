@@ -10,25 +10,32 @@ PRIVATEKEY=homo.key
 ##URL=https://wsaa.afip.gov.ar/ws/services/LoginCms
 
 [WSFE]
-CUIT=20267565393
+CUIT=30000000000
 ENTRADA=entrada.txt
 SALIDA=salida.txt
 ##URL=https://servicios1.afip.gov.ar/wsfe/service.asmx
 
 [WSFEv1]
-CUIT=20267565393
+CUIT=30000000000
 ENTRADA=entrada.txt
 SALIDA=salida.txt
 ##URL=https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL
 
+[WSMTXCA]
+CUIT=30000000000
+ENTRADA=entrada.txt
+SALIDA=salida.txt
+Reprocesar= S
+##URL=https://serviciosjava.afip.gob.ar/wsmtxca/services/MTXCAService
+
 [WSBFE]
-CUIT=20267565393
+CUIT=30000000000
 ENTRADA=entrada.txt
 SALIDA=salida.txt
 ##URL=https://servicios1.afip.gov.ar/wsfe/service.asmx
 
 [WSFEX]
-CUIT=20267565393
+CUIT=30000000000
 ENTRADA=entrada.txt
 SALIDA=salida.txt
 ##URL=https://servicios1.afip.gov.ar/wsfe/service.asmx
