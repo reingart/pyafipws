@@ -28,7 +28,7 @@ import traceback
 from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
-HOMO = True
+HOMO = False
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
