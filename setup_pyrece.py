@@ -64,7 +64,7 @@ data_files = [
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
             "logo.png", 
-            "homo/rece.ini", "factura.csv", "homo/facturas.csv"]),
+            "rece.ini.dist", "factura.csv", "homo/facturas.csv"]),
     ("cache", glob.glob("cache/*")),
     ]
 
