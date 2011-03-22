@@ -81,6 +81,9 @@ notistalled:
     SectionIn RO
     SetOutPath $INSTDIR
     File /r dist\*.*
+    IfFileExists $INSTDIR\\rece.ini.dist 0 +3
+        IfFileExists $INSTDIR\\rece.ini +2 0
+        CopyFiles $INSTDIR\\rece.ini.dist $INSTDIR\\rece.ini
     WriteRegStr HKLM SOFTWARE\%(reg_key)s "Install_Dir" "$INSTDIR"
     ; Write the uninstall keys for Windows
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "DisplayName" "%(description)s (solo eliminar)"
