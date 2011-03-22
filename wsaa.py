@@ -19,11 +19,11 @@ Devuelve TA.xml (ticket de autorización de WSAA)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.02c"
+__version__ = "2.03a"
 
 import email,os,sys
 from php import date
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
+from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from M2Crypto import BIO, Rand, SMIME, SSL
 
 # Constantes (si se usa el script de linea de comandos)
@@ -116,20 +116,26 @@ class WSAA:
     _reg_progid_ = "WSAA"
     _reg_clsid_ = "{6268820C-8900-4AE9-8A2D-F0A1EBD4CAC5}"
     
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    
     def __init__(self):
         self.Token = self.Sign = None
-        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.InstallDir = INSTALL_DIR
         self.Excepcion = self.Traceback = ""
 
-    def Conectar(self, cache=None, wsdl=None, proxy=""):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None):
         # cliente soap del web service
+        if wrapper:
+            Http = set_http_wrapper(wrapper)
+            self.Version = WSAA.Version + " " + Http._wrapper_version
         if not isinstance(proxy,dict):
             proxy_dict = parse_proxy(proxy)
         else:
             proxy_dict = proxy
         if HOMO or not wsdl:
             wsdl = WSDL
+        if not wsdl.endswith("?wsdl"):
+            wsdl += "?wsdl"
         if not cache or HOMO:
             # use 'cache' from installation base directory 
             cache = os.path.join(self.InstallDir, 'cache')
@@ -172,7 +178,7 @@ class WSAA:
             
     def CallWSAA(self, cms, url="", proxy=None):
         "Obtener ticket de autorización (TA) -version retrocompatible-"
-        self.Conectar("", url+"?wsdl", proxy)
+        self.Conectar("", url, proxy)
         ta_xml = self.LoginCMS(cms)
         if not ta_xml:
             raise RuntimeError(self.Excepcion)

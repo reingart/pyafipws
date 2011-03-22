@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03b"
+__version__ = "1.04a"
 
 import datetime
 import decimal
@@ -25,7 +25,7 @@ import os
 import socket
 import sys
 import traceback
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy
+from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from cStringIO import StringIO
 
 HOMO = True
@@ -102,6 +102,8 @@ class WSMTXCA:
     _reg_progid_ = "WSMTXCA"
     _reg_clsid_ = "{8128E6AB-FB22-4952-8EA6-BD41C29B17CA}"
 
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    
     def __init__(self):
         self.Token = self.Sign = self.Cuit = None
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
@@ -110,7 +112,6 @@ class WSMTXCA:
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
         self.client = None
-        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
         self.ErrCode = self.ErrMsg = self.Traceback = self.Excepcion = ""
@@ -153,11 +154,16 @@ class WSMTXCA:
         return msg    
 
     @inicializar_y_capturar_execepciones
-    def Conectar(self, cache=None, wsdl=None, proxy=""):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None):
         # cliente soap del web service
+        if wrapper:
+            Http = set_http_wrapper(wrapper)
+            self.Version = WSMTXCA.Version + " " + Http._wrapper_version
         proxy_dict = parse_proxy(proxy)
         if HOMO or not wsdl:
             wsdl = WSDL
+        if not wsdl.endswith("?WSDL"):
+            wsdl += "?WSDL"
         if not cache or HOMO:
             # use 'cache' from installation base directory 
             cache = os.path.join(self.InstallDir, 'cache')
