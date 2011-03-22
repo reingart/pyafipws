@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27d"
+__version__ = "1.28a"
 
 import datetime
 import os
@@ -197,12 +197,13 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     encabezado = []
     if '/dbf' in sys.argv:
         import dbf
-        print "Leyendo DBF..."
+        if DEBUG: print "Leyendo DBF..."
 
         formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs)]
         for nombre, formato, ld in formatos:
-            print "leyendo tabla", nombre
-            tabla = dbf.Table("%s.dbf" % nombre[:8])
+            filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
+            if DEBUG: print "leyendo tabla", nombre, filename
+            tabla = dbf.Table(filename)
             for reg in tabla:
                 r = {}
                 d = reg.scatter_fields() 
@@ -282,10 +283,10 @@ def escribir_factura(dic, archivo):
 
     if '/dbf' in sys.argv:
         import dbf
-        print "Creando DBF..."
+        if DEBUG: print "Creando DBF..."
 
         tablas = {}
-        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic['tributos']), ('Iva', IVA, dic['iva']), ('Comprobante Asociado', CMP_ASOC, dic['cbtes_asoc'])]
+        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic.get('tributos', [])), ('Iva', IVA, dic.get('iva', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', []))]
         for nombre, formato, l in formatos:
             campos = []
             claves = []
@@ -301,20 +302,22 @@ def escribir_factura(dic, archivo):
                 elif tipo == I:
                     tipo = "N(%s,%s)" % (longitud, dec)
                 campo = "%s %s" % (clave[:10], tipo)
-                print "tabla %s campo %s" %  (nombre, campo)
+                if DEBUG: print "tabla %s campo %s" %  (nombre, campo)
                 campos.append(campo)
                 claves.append(clave[:10])
-            tabla = dbf.Table("%s.dbf" % nombre[:8], campos)
+            filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
+            if DEBUG: print "leyendo tabla", nombre, filename
+            tabla = dbf.Table(filename, campos)
 
             for d in l:
                 r = {}
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
                     v = d.get(clave, None)
-                    print clave,v, tipo
+                    if DEBUG: print clave,v, tipo
                     if v is None and tipo == A:
                         v = ''
-                    if v is None and tipo in (I, N):
+                    if (v is None or v=='') and tipo in (I, N):
                         v = 0
                     if tipo == A:
                         v = unicode(v)
@@ -349,6 +352,14 @@ if __name__ == "__main__":
         print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
         sys.exit(0)
 
+    if '/debug'in sys.argv:
+        DEBUG = True
+        print "VERSION", __version__, "HOMO", HOMO
+
+    if len(sys.argv)>1 and not sys.argv[1].startswith("--"):
+        CONFIG_FILE = sys.argv.pop(1)
+    if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
+
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
     #print CONFIG_FILE
@@ -380,8 +391,11 @@ if __name__ == "__main__":
     else:
         wsfev1_xml_dir = "."
 
-    if '/debug'in sys.argv:
-        DEBUG = True
+    if config.has_section('DBF'):
+        conf_dbf = dict(config.items('DBF'))
+        if DEBUG: print "conf_dbf", conf_dbf
+    else:
+        conf_dbf = {}
 
     if '/xml'in sys.argv:
         XML = True
@@ -615,6 +629,9 @@ if __name__ == "__main__":
         print e_str
         escribir_factura({'err_msg': e_str,
                          }, open(salida,"w"))
+        ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+        open("traceback.txt", "wb").write('\n'.join(ex))
+
         if DEBUG:
             raise
         sys.exit(5)
