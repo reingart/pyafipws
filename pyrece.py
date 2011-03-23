@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21g"
+__version__ = "1.21h"
 
 import csv
 from decimal import Decimal
@@ -192,6 +192,24 @@ class PyRece(model.Background):
     def on_btnMarcarTodo_mouseClick(self, event):
         for i in range(len(self.__items)):
             self.components.lvwListado.SetSelection(i)
+
+    def on_menuConsultasDummy_select(self, event):
+        self.verifica_ws()
+        try:
+            if self.webservice=="wsfe":
+                results = self.client.FEDummy()
+                msg = "AppServ %s\nDbServer %s\nAuthServer %s" % (
+                    results.appserver, results.dbserver, results.authserver)
+                location = self.ws.client.location
+            elif  self.webservice=="wsfev1":
+                self.ws.Dummy()
+                msg = "AppServ %s\nDbServer %s\nAuthServer %s" % (
+                    self.ws.AppServerStatus, self.ws.DbServerStatus, self.ws.AuthServerStatus)
+                location = self.ws.client.location
+                    
+            dialog.alertDialog(self, msg, location)
+        except Exception, e:
+            self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
     def on_menuConsultasLastCBTE_select(self, event):
         self.verifica_ws()

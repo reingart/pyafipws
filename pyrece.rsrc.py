@@ -27,6 +27,10 @@
              'label':u'Consultas',
              'items': [
                   {'type':'MenuItem',
+                   'name':'menuConsultasDummy',
+                   'label':u'Estado Servidores (Dummy)',
+                  },
+                  {'type':'MenuItem',
                    'name':'menuConsultasLastCBTE',
                    'label':u'\xdalt. Cbte.',
                   },
