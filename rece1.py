@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28a"
+__version__ = "1.28b"
 
 import datetime
 import os
@@ -497,11 +497,13 @@ if __name__ == "__main__":
                punto_vta = int(raw_input("Punto de venta: "))
             ult_cbte = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             print "Ultimo numero: ", ult_cbte
+            print ws.ErrMsg
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
                               'punto_vta': punto_vta, 
                               'cbt_desde': ult_cbte, 
                               'fecha_cbte': ws.FechaCbte, 
+                              'err_msg': ws.ErrMsg,
                               }, open(salida,"w"))
             sys.exit(0)
 
@@ -525,6 +527,7 @@ if __name__ == "__main__":
             print "CAE = ", ws.CAE
             print "Vencimiento = ", ws.Vencimiento
             print "EmisionTipo = ", ws.EmisionTipo
+            print ws.ErrMsg 
 
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
@@ -535,7 +538,8 @@ if __name__ == "__main__":
                               'cae': ws.CAE, 
                               'fch_venc_cae': ws.Vencimiento,  
                               'emision_tipo': ws.EmisionTipo, 
-                              }, open(salida,"w"))
+                              'err_msg': ws.ErrMsg,
+                            }, open(salida,"w"))
 
             sys.exit(0)
 
