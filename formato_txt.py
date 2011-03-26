@@ -64,7 +64,7 @@ ENCABEZADO = [
     ('cae', 14, N), ('fecha_vto_cae', 8, A),
     ('resultado', 1, A), 
     ('reproceso', 1, A),
-    ('motivo', 40, A),
+    ('motivo', 1000, A),
     ('id', 15, N),
     ('telefono_cliente', 50, A),
     ('localidad_cliente', 50, A),
@@ -124,7 +124,7 @@ TRIBUTO = [
 
 DATO = [
     ('tipo_reg', 1, N), # 9: datos adicionales
-    ('campo', 32, A),
+    ('campo', 30, A),
     ('valor', 1000, A),
     ]
     
@@ -206,8 +206,9 @@ def leer(fn="entrada.txt"):
                 reg['tributos'].append(tributo)
             elif str(linea[0])=='9':
                 dato = leer_linea_txt(linea, DATO)
-                dato['id'] = dato['id']
+                dato['id'] = encabezado['id']
                 reg['datos'].append(dato)
+                print dato
             else:
                 print "Tipo de registro incorrecto:", linea[0]
     finally:
@@ -215,5 +216,28 @@ def leer(fn="entrada.txt"):
 
     return regs
 
+def ayuda():
+    print "Formato:"
+    tipos_registro =  [
+        ('Encabezado', ENCABEZADO),
+        ('Detalle Item', DETALLE),
+        ('Tributo', TRIBUTO), 
+        ('Iva', IVA), 
+        ('Comprobante Asociado', CMP_ASOC),
+        ('Datos Adicionales', DATO),
+        ]
+    for msg, formato in tipos_registro:
+        comienzo = 1
+        print "== %s ==" % msg
+        for fmt in formato:
+            clave, longitud, tipo = fmt[0:3]
+            if isinstance(longitud, tuple):
+                longitud, decimales = longitud
+            else:
+                decimales = 2
+            print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                clave, comienzo, longitud, tipo, decimales)
+            comienzo += longitud
 
-
+if __name__ == "__main__":
+    print ayuda()
