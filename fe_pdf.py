@@ -17,7 +17,7 @@ __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.01a"
 
-DEBUG = True
+DEBUG = False
 HOMO = True
 CONFIG_FILE = "rece.ini"
 
@@ -28,7 +28,7 @@ import sys
 import traceback
 from cStringIO import StringIO
 from decimal import Decimal
-from pyfpdf import Template
+from pyfpdf_hg import Template
 
 def inicializar_y_capturar_execepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -367,7 +367,8 @@ class FEPDF:
             # asigno el precio a la última línea del item 
             li_items[-1].update(importe = it['importe'],
                                 despacho = it.get('despacho'),
-                                precio = it['precio'])
+                                precio = it['precio'],
+                                bonif = it['bonif'])
 
         # divido las observaciones por linea:
         if fact['obs_generales'] and not 'obs' in f.elements.keys() and not 'ObservacionesGenerales1' in f.elements.keys():
@@ -499,9 +500,12 @@ class FEPDF:
                         if it['codigo'] is not None:
                             f.set('Item.Codigo%02d' % li, it['codigo'])
                         if it['umed'] is not None:
-                            f.set('Item.Umed%02d' % li, self.umeds_ds[it['umed']])
+                            f.set('Item.Umed%02d' % li, it['umed'])
+                            f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(it['umed']))
                         if it.get('despacho') is not None:
                             f.set('Item.Numero_Despacho%02d' % li, it['despacho'])
+                        if it.get('bonif') is not None:
+                            f.set('Item.Bonif%02d' % li, self.fmt_pre(it['bonif']))
                         f.set('Item.Descripcion%02d' % li, it['ds'])
                         if it['precio'] is not None:
                             f.set('Item.Precio%02d' % li, self.fmt_pre(it['precio']))
@@ -608,6 +612,8 @@ if __name__ == '__main__':
         win32com.server.register.UseCommandLine(FEPDF)
     else:
         from ConfigParser import SafeConfigParser
+
+        DEBUG = '--debug' in sys.argv
 
         # leeo configuración (primer argumento o rece.ini por defecto)
         if len(sys.argv)>1 and not sys.argv[1].startswith("--"):
@@ -716,6 +722,10 @@ if __name__ == '__main__':
                              orientacion=conf_fact.get("orientacion", "portrait"))
         fepdf.ProcesarPlantilla(num_copias=int(conf_fact.get("copias", 1)),
                                 lineas_max=conf_fact.get("lineas_max", 24))
-        fepdf.GenerarPDF(archivo="factura.pdf")
-        os.system("evince factura.pdf")
-            
+        salida = conf_fact.get("salida", "factura.pdf")
+        fepdf.GenerarPDF(archivo=salida)
+        if '--mostrar' in sys.argv:
+            if sys.platform=="posix":
+                os.system("evince ""%s""" % salida)
+            else:
+                os.startfile(salida)
