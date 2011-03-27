@@ -337,7 +337,7 @@ class FEPDF:
 
 
     @inicializar_y_capturar_execepciones
-    def ProcesarPlantilla(self, num_copias=1, lineas_max=24):
+    def ProcesarPlantilla(self, num_copias=1, lineas_max=24, qty_pos='izq'):
         "Generar el PDF según la factura creada y plantilla cargada"
 
         f = self.template
@@ -353,7 +353,7 @@ class FEPDF:
         lineas = 0
         li_items = []
         for it in fact['detalles']:
-            qty = it['qty']
+            qty = qty_pos=='izq' and it['qty'] or None
             codigo = it['codigo']
             umed = it['umed']
             if DEBUG: print "dividiendo", it['ds']
@@ -363,11 +363,12 @@ class FEPDF:
                 # agrego un item por linea (sin precio ni importe):
                 li_items.append(dict(codigo=codigo, ds=ds, qty=qty, umed=umed, precio=None, importe=None))
                 # limpio cantidad y código (solo en el primero)
-                umed = qty = codigo = None
+                umed = codigo = None
             # asigno el precio a la última línea del item 
             li_items[-1].update(importe = it['importe'],
                                 despacho = it.get('despacho'),
                                 precio = it['precio'],
+                                qty = qty_pos=='der' and it['qty'] or None,
                                 bonif = it['bonif'])
 
         # divido las observaciones por linea:
@@ -516,6 +517,7 @@ class FEPDF:
                     # última hoja, imprimo los totales
                     li += 1
                     
+                    f.set('subtotal', self.fmt_imp(subtotal))
                     f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
                     f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
                     f.set('imp_total', self.fmt_imp(fact['imp_total']))
@@ -721,7 +723,8 @@ if __name__ == '__main__':
         fepdf.CrearPlantilla(papel=conf_fact.get("papel", "legal"), 
                              orientacion=conf_fact.get("orientacion", "portrait"))
         fepdf.ProcesarPlantilla(num_copias=int(conf_fact.get("copias", 1)),
-                                lineas_max=conf_fact.get("lineas_max", 24))
+                                lineas_max=conf_fact.get("lineas_max", 24),
+                                qty_pos=conf_fact.get("cant_pos") or 'izq')
         salida = conf_fact.get("salida", "factura.pdf")
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
