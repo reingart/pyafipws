@@ -128,6 +128,7 @@ DATO = [
     ('valor', 1000, A),
     ]
     
+    
 def leer_linea_txt(linea, formato):
     dic = {}
     comienzo = 1
@@ -163,6 +164,40 @@ def leer_linea_txt(linea, formato):
             raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return dic
+
+
+def escribir_linea_txt(dic, formato):
+    linea = " " * 335
+    comienzo = 1
+    for (clave, longitud, tipo) in formato:
+        if isinstance(longitud, tuple):
+            longitud, decimales = longitud
+        else:
+            decimales = 2
+        try:
+            if clave.capitalize() in dic:
+                clave = clave.capitalize()
+            valor = dic.get(clave,"")
+            if not isinstance(valor, basestring):
+                valor = str(valor)
+            if isinstance(valor, unicode):
+                valor = valor.encode(CHARSET)
+            if valor == 'None':
+                valor = ''
+            if tipo == N and valor and valor!="NULL":
+                valor = ("%%0%dd" % longitud) % int(valor)
+            elif tipo == I and valor:
+                valor = ("%%0%dd" % longitud) % (float(valor)*(10**decimales))
+            else:
+                valor = ("%%-%ds" % longitud) % valor.replace("\n","\v") # reemplazo salto de linea
+            linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
+            comienzo += longitud
+        except Exception, e:
+            raise
+            raise ValueError("Error al escribir campo %s val '%s': %s" % (
+                clave, valor, str(e)))
+    return linea + "\n"
+
 
 def leer(fn="entrada.txt"):
     "Analiza un archivo TXT y devuelve un diccionario"
@@ -216,6 +251,35 @@ def leer(fn="entrada.txt"):
 
     return regs
 
+
+def escribir(regs, archivo):
+    f_salida = open(archivo,"a")
+
+    for reg in regs:
+        reg['tipo_reg'] = 0
+        f_salida.write(escribir_linea_txt(reg, ENCABEZADO))
+        for it in reg['detalles']:
+            it['tipo_reg'] = 1
+            f_salida.write(escribir_linea_txt(it, DETALLE))
+        for it in reg['permisos']:
+            it['tipo_reg'] = 2
+            f_salida.write(escribir_linea_txt(it, PERMISO))
+        for it in reg.get('cbtasocs', []):
+            it['tipo_reg'] = 3
+            f_salida.write(escribir_linea_txt(it, CMP_ASOC))
+        for it in reg['ivas']:
+            it['tipo_reg'] = 4
+            f_salida.write(escribir_linea_txt(it, IVA))
+        for it in reg['tributos']:
+            it['tipo_reg'] = 5
+            f_salida.write(escribir_linea_txt(it, TRIBUTO))
+        for it in reg.get('datos', []):
+            it['tipo_reg'] = 9
+            f_salida.write(escribir_linea_txt(it, DATO))
+
+        f_salida.close()
+    
+    
 def ayuda():
     print "Formato:"
     tipos_registro =  [
