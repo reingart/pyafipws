@@ -142,7 +142,7 @@ def leer_linea_txt(linea, formato):
                 if valor:
                     valor = int(valor)
                 else:
-                    valor = 0
+                    valor = None
             elif tipo == I:
                 if valor:
                     try:
@@ -154,7 +154,7 @@ def leer_linea_txt(linea, formato):
                     except ValueError:
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
-                    valor = 0.00
+                    valor = None
             elif tipo == A:
                 valor = valor.replace("\v","\n") # reemplazo salto de linea
             dic[clave] = valor
@@ -240,4 +240,4 @@ def ayuda():
             comienzo += longitud
 
 if __name__ == "__main__":
-    print ayuda()
+    ayuda()
