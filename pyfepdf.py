@@ -17,7 +17,7 @@ __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.01a"
 
-DEBUG = True
+DEBUG = False
 HOMO = True
 CONFIG_FILE = "rece.ini"
 
