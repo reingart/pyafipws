@@ -88,7 +88,7 @@ Sub Main()
     u_mtx = 123456              ' unidades
     cod_mtx = 1234567890123#    ' código de barras
     codigo = "P0001"            ' codigo interno a imprimir (ej. "articulo")
-    ds = "Descripcion del producto P0001\n"
+    ds = "Descripcion del producto P0001"
     qty = 1                     ' cantidad
     umed = 7                    ' código de unidad de medida (ej. 7 para "unidades")
     precio = 100                ' precio neto (A) o iva incluido (B)
@@ -101,7 +101,7 @@ Sub Main()
             precio, bonif, iva_id, imp_iva, importe, despacho)
 
     ' Agrego datos adicionales fijos:
-    ok = PyFEPDF.AgregarDato("logo", PyFEPDF.InstallDir + "\logo.png")
+    ok = PyFEPDF.AgregarDato("logo", PyFEPDF.InstallDir + "\fpdf.png")
     ok = PyFEPDF.AgregarDato("EMPRESA", "Empresa de Prueba")
     ok = PyFEPDF.AgregarDato("MEMBRETE1", "Direccion de Prueba")
     ok = PyFEPDF.AgregarDato("MEMBRETE2", "Capital Federal")
