@@ -337,7 +337,7 @@ class FEPDF:
                  author="CUIT %s" % self.CUIT,
                  subject="CAE %s" % fact['cae'],
                  keywords="AFIP Factura Electrónica", 
-                 creator='fe.py %s (http://www.PyAfipWs.com.ar)' % __version__,)
+                 creator='PyFEPDF %s (http://www.PyAfipWs.com.ar)' % __version__,)
         self.template = t
 
 
@@ -368,7 +368,7 @@ class FEPDF:
                 # agrego un item por linea (sin precio ni importe):
                 li_items.append(dict(codigo=codigo, ds=ds, qty=qty, umed=umed, precio=None, importe=None))
                 # limpio cantidad y código (solo en el primero)
-                umed = codigo = None
+                umed = qty = codigo = None
             # asigno el precio a la última línea del item 
             li_items[-1].update(importe = it['importe'],
                                 despacho = it.get('despacho'),
@@ -646,8 +646,14 @@ if __name__ == '__main__':
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
 
         if '--cargar' in sys.argv:
-            import formato_txt
-            regs = formato_txt.leer(conf_fact.get("entrada", "entrada.txt"))
+            if '--dbf' in sys.argv:
+                import formato_dbf
+                conf_dbf = dict(config.items('DBF'))
+                if DEBUG: print "conf_dbf", conf_dbf
+                regs = formato_dbf.leer(conf_dbf)
+            else:
+                import formato_txt
+                regs = formato_txt.leer(conf_fact.get("entrada", "entrada.txt"))
             fepdf.factura = regs[0]
             for d in regs[0]['datos']:
                 fepdf.AgregarDato(d['campo'], d['valor'])
@@ -657,7 +663,7 @@ if __name__ == '__main__':
             # creo una factura de ejemplo
             tipo_cbte = 1
             punto_vta = 4000
-            fecha = datetime.datetime.now().strftime("%Y-%m-%d")
+            fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
             cbte_nro = 12345678
@@ -725,6 +731,17 @@ if __name__ == '__main__':
             despacho = 'Nº 123456'
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, despacho)
+
+        # grabar muestra en dbf:
+        if '--grabar' in sys.argv:
+            if '--dbf' in sys.argv:
+                import formato_dbf
+                conf_dbf = dict(config.items('DBF'))
+                if DEBUG: print "conf_dbf", conf_dbf
+                reg = fepdf.factura.copy()
+                reg['id'] = 0
+                regs = formato_dbf.escribir([reg], conf_dbf)
+
 
         # datos fijos:
         fepdf.CUIT = "33693450239"  # CUIT del emisor para código de barras
