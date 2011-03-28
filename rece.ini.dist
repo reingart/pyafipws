@@ -51,9 +51,12 @@ SUBDIRECTORIO=
 LOCALE=Spanish_Argentina.1252
 FMT_CANTIDAD=0.6
 FMT_PRECIO=0.3
+CANT_POS=izq
+ENTRADA=factura.txt
+SALIDA=factura.pdf
 
 [PDF]
-LOGO=serpiente.png
+LOGO=fpdf.png
 EMPRESA=Empresa de Prueba
 MEMBRETE1=Direccion de Prueba
 MEMBRETE2=Capital Federal
@@ -82,7 +85,9 @@ Encabezado = encabeza.dbf
 Tributo = tributo.dbf
 Iva = iva.dbf
 Comprobante Asociado = cbteasoc.dbf
-Detalles = detalles.dbf
+Detalle = detalles.dbf
+Permiso = permiso.dbf
+Dato = dato.dbf
 
 [PROXY]
 HOST=localhost
