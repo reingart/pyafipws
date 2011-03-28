@@ -17,7 +17,7 @@ __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.01a"
 
-DEBUG = False
+DEBUG = True
 HOMO = True
 CONFIG_FILE = "rece.ini"
 
@@ -734,13 +734,18 @@ if __name__ == '__main__':
 
         # grabar muestra en dbf:
         if '--grabar' in sys.argv:
+            reg = fepdf.factura.copy()
+            reg['id'] = 0
             if '--dbf' in sys.argv:
                 import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
                 if DEBUG: print "conf_dbf", conf_dbf
-                reg = fepdf.factura.copy()
-                reg['id'] = 0
                 regs = formato_dbf.escribir([reg], conf_dbf)
+            else:
+                import formato_txt
+                archivo =  conf_fact.get("entrada", "entrada.txt")
+                if DEBUG: print "Escribiendo", archivo
+                regs = formato_txt.escribir([reg], archivo)
 
 
         # datos fijos:
