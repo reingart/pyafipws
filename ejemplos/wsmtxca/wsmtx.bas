@@ -41,7 +41,8 @@ Sub Main()
     
     ' Crear objeto interface Web Service de Factura Electrónica de Mercado Interno
     Set WSMTXCA = CreateObject("WSMTXCA")
-    Debug.Print WSMTXCA.version
+    Debug.Print WSMTXCA.Version
+    Debug.Print WSMTXCA.InstallDir
     
     ' Setear tocken y sing de autorización (pasos previos)
     WSMTXCA.Token = WSAA.Token
@@ -52,7 +53,9 @@ Sub Main()
     
     ' Conectar al Servicio Web de Facturación
     WSDL = "" '"https://serviciosjava.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
-    ok = WSMTXCA.Conectar("", WSDL)   ' producción
+    proxy = "localhost:8000"
+    ok = WSMTXCA.Conectar("", WSDL, proxy, "pycurl")   ' producción
+    Debug.Print WSMTXCA.Version
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSMTXCA.Dummy

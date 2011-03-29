@@ -57,6 +57,7 @@ Sub Main()
 
     Debug.Print "excepcion", WSAA.Excepcion
     If WSAA.Excepcion <> "" Then
+        Debug.Print WSAA.Traceback
         MsgBox WSAA.Excepcion, vbCritical, "Excepción"
     End If
     

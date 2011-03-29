@@ -58,7 +58,8 @@ Sub Main()
     wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
     cache = "" 'Path
         
-    ok = WSFEv1.Conectar(cache, wsdl, proxy) ' homologación
+    ok = WSFEv1.Conectar(cache, wsdl, proxy, "pycurl") ' homologación
+    Debug.Print WSFEv1.Version
     
     ' mostrar bitácora de depuración:
     Debug.Print WSFEv1.DebugLog
