@@ -52,9 +52,9 @@ Sub Main()
     WSMTXCA.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    WSDL = "" '"https://serviciosjava.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
-    proxy = "localhost:8000"
-    ok = WSMTXCA.Conectar("", WSDL, proxy, "pycurl")   ' producción
+    WSDL = "" ' "https://serviciosjava.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
+    proxy = "" ''"localhost:8000"
+    ok = WSMTXCA.Conectar("", WSDL, proxy, "")   ' producción
     Debug.Print WSMTXCA.Version
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)

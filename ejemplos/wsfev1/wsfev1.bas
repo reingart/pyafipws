@@ -55,10 +55,10 @@ Sub Main()
     
     ' Conectar al Servicio Web de Facturación
     proxy = "" ' "usuario:clave@localhost:8000"
-    wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
+    wsdl = "" ' "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL"
     cache = "" 'Path
         
-    ok = WSFEv1.Conectar(cache, wsdl, proxy, "pycurl") ' homologación
+    ok = WSFEv1.Conectar(cache, wsdl, proxy, "") ' homologación
     Debug.Print WSFEv1.Version
     
     ' mostrar bitácora de depuración:
