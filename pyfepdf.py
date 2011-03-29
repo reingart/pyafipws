@@ -15,12 +15,39 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 DEBUG = False
 HOMO = True
 CONFIG_FILE = "rece.ini"
 
+LICENCIA = u"""
+pyfepdf.py: Interfaz para generar Facturas Electrónica en formato PDF
+Copyright (C) 2011 Mariano Reingart reingart@gmail.com
+
+Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
+y es bienvenido a redistribuirlo bajo la licencia GPLv3.
+
+Para información adicional sobre garantía, soporte técnico comercial
+e incorporación/distribución en programas propietarios ver PyAfipWs:
+http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
+"""
+
+AYUDA=u"""
+Opciones: 
+  --ayuda: este mensaje
+  --licencia: muestra la licencia del programa
+
+  --debug: modo depuración (detalla y confirma las operaciones)
+  --formato: muestra el formato de los archivos de entrada/salida
+  --prueba: genera y autoriza una factura de prueba (no usar en producción!)
+  --cargar: carga un archivo de entrada (txt) a la base de datos
+  --grabar: graba un archivo de salida (txt) con los datos de los comprobantes procesados
+  --pdf: genera la imágen de factura en PDF
+  --dbf: utiliza tablas DBF en lugar del archivo de entrada TXT
+
+Ver rece.ini para parámetros de configuración "
+"""
 import datetime
 import decimal
 import os
@@ -629,7 +656,7 @@ if __name__ == '__main__':
         from ConfigParser import SafeConfigParser
 
         DEBUG = '--debug' in sys.argv
-
+                
         # leeo configuración (primer argumento o rece.ini por defecto)
         if len(sys.argv)>1 and not sys.argv[1].startswith("--"):
             CONFIG_FILE = sys.argv.pop(1)
@@ -639,6 +666,24 @@ if __name__ == '__main__':
         config.read(CONFIG_FILE)
         conf_fact = dict(config.items('FACTURA'))
         conf_pdf = dict(config.items('PDF'))
+
+        if '--ayuda' in sys.argv:
+            print AYUDA
+            sys.exit(0)
+
+        if '--licencia' in sys.argv:
+            print LICENCIA
+            sys.exit(0)
+            
+        if '--formato' in sys.argv:
+            if '--dbf' in sys.argv:
+                import formato_dbf
+                formato_dbf.ayuda()
+            else:
+                import formato_txt
+                formato_txt.ayuda()
+            sys.exit(0)
+
 
         fepdf = FEPDF()
         
@@ -653,7 +698,12 @@ if __name__ == '__main__':
                 regs = formato_dbf.leer(conf_dbf)
             else:
                 import formato_txt
-                regs = formato_txt.leer(conf_fact.get("entrada", "entrada.txt"))
+                entrada = conf_fact.get("entrada", "entrada.txt")
+                if DEBUG: print "entrada", entrada
+                regs = formato_txt.leer(entrada)
+            if DEBUG: 
+                print regs
+                raw_input("continuar...")
             fepdf.factura = regs[0]
             for d in regs[0]['datos']:
                 fepdf.AgregarDato(d['campo'], d['valor'])
