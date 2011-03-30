@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21h"
+__version__ = "1.21i"
 
 import csv
 from decimal import Decimal
@@ -415,7 +415,7 @@ class PyRece(model.Background):
         try:
             items = []
             for fn in self.paths:
-                if fn.endswith(".csv"):
+                if fn.lower().endswith(".csv"):
                     csvfile = open(fn, "rb")
                     # deducir dialecto y delimitador
                     try:
@@ -432,7 +432,7 @@ class PyRece(model.Background):
                                 c=c.strip()
                             r.append(c)
                         items.append(r)
-                elif fn.endswith(".xml"):
+                elif fn.lower().endswith(".xml"):
                     import formato_xml
                     regs = formato_xml.leer(fn)
                     items.extend(formato_xml.aplanar(regs))
@@ -716,7 +716,7 @@ class PyRece(model.Background):
                 os.system(archivo)
         except Exception, e:
             print e
-            self.error(u'Excepción', unicode(e))
+            self.error(u'Excepción', unicode(str(e), 'latin1', 'ignore'))
 
     def on_btnGenerar_mouseClick(self, event):
         for item in self.items:
