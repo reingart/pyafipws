@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04b"
+__version__ = "1.04c"
 
 import datetime
 import decimal
@@ -165,8 +165,8 @@ class WSMTXCA:
         proxy_dict = parse_proxy(proxy)
         if HOMO or not wsdl:
             wsdl = WSDL
-        if not wsdl.endswith("?WSDL"):
-            wsdl += "?WSDL"
+        if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
+            wsdl += "?wsdl"
         if not cache or HOMO:
             # use 'cache' from installation base directory 
             cache = os.path.join(self.InstallDir, 'cache')

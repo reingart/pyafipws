@@ -19,7 +19,7 @@ Devuelve TA.xml (ticket de autorización de WSAA)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.03b"
+__version__ = "2.03d"
 
 import email,os,sys
 from php import date
@@ -137,7 +137,7 @@ class WSAA:
             proxy_dict = proxy
         if HOMO or not wsdl:
             wsdl = WSDL
-        if not wsdl.endswith("?wsdl"):
+        if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
             wsdl += "?wsdl"
         if not cache or HOMO:
             # use 'cache' from installation base directory 
