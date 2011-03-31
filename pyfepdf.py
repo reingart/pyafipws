@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 DEBUG = False
 HOMO = True
@@ -135,7 +135,7 @@ class FEPDF:
         self.FmtCantidad = self.FmtPrecio = "0.2"
         self.CUIT = ''
         self.factura = {}
-        self.datos = {} 
+        self.datos = [] 
         self.elements = []
         self.pdf = {}
         self.log = StringIO()
@@ -190,9 +190,9 @@ class FEPDF:
         self.factura = fact
         return True
 
-    def AgregarDato(self, campo, valor):
+    def AgregarDato(self, campo, valor, pagina='T'):
         "Agrego un dato a la factura (internamente)"
-        self.datos[campo] = valor
+        self.datos.append({'campo': campo, 'valor': valor, 'pagina': pagina})
         return True
 
     def AgregarDetalleItem(self, u_mtx, cod_mtx, codigo, ds, qty, umed, precio, 
@@ -376,6 +376,7 @@ class FEPDF:
         fact = self.factura
 
         tipo_fact, letra_fact, numero_fact = self.fmt_fact(fact['tipo_cbte'], fact['punto_vta'], fact['cbte_nro'])
+        fact['_fmt_fact'] = tipo_fact, letra_fact, numero_fact
         if fact['tipo_cbte'] in (19,20,21):
             tipo_fact_ex = tipo_fact + " de Exportación"
         else:
@@ -471,8 +472,13 @@ class FEPDF:
                 if DEBUG: print u"generando pagina %s de %s" % (hoja, hojas)
                 
                 # establezco datos según configuración:
-                for k,v in self.datos.items():
-                    f.set(k,v)
+                for d in self.datos:
+                    if d['pagina'] == 'P' and hoja != 1:
+                        continue
+                    if d['pagina'] == 'U' and hojas != hoja:
+                        # no es la última hoja
+                        continue
+                    f.set(d['campo'], d['valor'])
 
                 # establezco campos según tabla encabezado:
                 for k,v in fact.items():
@@ -549,7 +555,7 @@ class FEPDF:
                     # última hoja, imprimo los totales
                     li += 1
                     
-                    f.set('subtotal', self.fmt_imp(subtotal))
+                    #f.set('subtotal', self.fmt_imp(subtotal))
                     f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
                     f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
                     f.set('imp_total', self.fmt_imp(fact['imp_total']))
@@ -706,7 +712,7 @@ if __name__ == '__main__':
                 raw_input("continuar...")
             fepdf.factura = regs[0]
             for d in regs[0]['datos']:
-                fepdf.AgregarDato(d['campo'], d['valor'])
+                fepdf.AgregarDato(d['campo'], d['valor'], d['pagina'])
 
 
         if '--prueba' in sys.argv:
@@ -806,9 +812,30 @@ if __name__ == '__main__':
         fepdf.CrearPlantilla(papel=conf_fact.get("papel", "legal"), 
                              orientacion=conf_fact.get("orientacion", "portrait"))
         fepdf.ProcesarPlantilla(num_copias=int(conf_fact.get("copias", 1)),
-                                lineas_max=conf_fact.get("lineas_max", 24),
+                                lineas_max=int(conf_fact.get("lineas_max", 24)),
                                 qty_pos=conf_fact.get("cant_pos") or 'izq')
-        salida = conf_fact.get("salida", "factura.pdf")
+        salida = conf_fact.get("salida", "")
+        fact = fepdf.factura
+        if salida:
+            pass
+        elif 'pdf' in fact and fact['pdf']:
+            salida = fact['pdf']
+        else:
+            # genero el nombre de archivo según datos de factura
+            d = os.path.join(conf_fact.get('directorio', "."), fact['fecha_cbte'])
+            if not os.path.isdir(d):
+                os.mkdir(d)
+            fs = conf_fact.get('archivo','numero').split(",")
+            it = fact.copy()
+            tipo_fact, letra_fact, numero_fact = fact['_fmt_fact']
+            it['tipo'] = tipo_fact.replace(" ", "_")
+            it['letra'] = letra_fact
+            it['numero'] = numero_fact
+            it['mes'] = fact['fecha_cbte'][4:6]
+            it['año'] = fact['fecha_cbte'][0:4]
+            fn = ''.join([str(it.get(ff,ff)) for ff in fs])
+            fn = fn.decode('latin1').encode('ascii', 'replace').replace('?','_')
+            salida = os.path.join(d, "%s.pdf" % fn)
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
             fepdf.MostrarPDF(archivo=salida,imprimir='--imprimir' in sys.argv)

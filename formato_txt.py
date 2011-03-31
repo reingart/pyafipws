@@ -126,6 +126,7 @@ DATO = [
     ('tipo_reg', 1, N), # 9: datos adicionales
     ('campo', 30, A),
     ('valor', 1000, A),
+    ('pagina', 3, A), # P: primera, U: ultima, T: todas
     ]
     
     
