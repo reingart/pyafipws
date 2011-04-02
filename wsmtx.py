@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04c"
+__version__ = "1.04d"
 
 import datetime
 import decimal
@@ -91,6 +91,8 @@ class WSMTXCA:
                         'ConsultarUnidadesMedida',
                         'ConsultarTiposTributo',
                         'ConsultarCotizacionMoneda',
+                        'ConsultarPuntosVentaCAE',
+                        'ConsultarPuntosVentaCAEA',
                         'Dummy', 'Conectar', 'Eval', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -452,6 +454,24 @@ class WSMTXCA:
         self.__analizar_errores(ret)
         if 'cotizacionMoneda' in ret:
             return str(ret['cotizacionMoneda'])
+
+    @inicializar_y_capturar_execepciones
+    def ConsultarPuntosVentaCAE(self):
+        "Este método permite consultar los puntos de venta habilitados para CAE en este WS"
+        ret = self.client.consultarPuntosVentaCAE(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        return ["%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % p
+                 for p in ret['arrayPuntosVenta']]
+
+    @inicializar_y_capturar_execepciones
+    def ConsultarPuntosVentaCAEA(self):
+        "Este método permite consultar los puntos de venta habilitados para CAEA en este WS"
+        ret = self.client.consultarPuntosVentaCAEA(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        return ["%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % p
+                 for p in ret['arrayPuntosVenta']]
 
 
 

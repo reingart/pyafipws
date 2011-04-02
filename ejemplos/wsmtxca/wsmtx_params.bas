@@ -28,7 +28,7 @@ Sub Main()
     Debug.Print cms
     
     ' Llamar al web service para autenticar:
-    ta = WSAA.CallWSAA(cms) ' Homologación
+    ta = WSAA.CallWSAA(cms, "") ' Homologación
 
     ' Imprimir el ticket de acceso, ToKen y Sign de autorización
     Debug.Print ta
@@ -50,6 +50,15 @@ Sub Main()
     ' Conectar al Servicio Web de Facturación
     ok = WSMTXCA.Conectar("") ' homologación
         
+    Debug.Print WSMTXCA.Version
+    Debug.Print WSMTXCA.InstallDir
+    ' recupero lista de puntos de venta CAE ("id: descripción")
+    For Each x In WSMTXCA.ConsultarPuntosVentaCAE()
+        Debug.Print x
+    Next
+    
+    Debug.Print WSMTXCA.XmlResponse
+    
     ' Prueba de tablas referenciales de parámetros
 
     ' recupero tabla de parámetros de moneda ("id: descripción")
@@ -91,6 +100,7 @@ Sub Main()
     ' busco la cotización del dolar (ver Param Mon)
     ctz = WSMTXCA.ConsultarCotizacionMoneda("DOL")
     MsgBox "Cotización Dólar: " & ctz
+    
     
     Exit Sub
 ManejoError:
