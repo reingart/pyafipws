@@ -96,7 +96,7 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
     # creo la nueva clase
     wsaa = WSAA()
     try:
-        wsaa.Conectar(proxy=proxy, wsdl=wsdl, cache="")
+        wsaa.Conectar(proxy=proxy, wsdl=location, cache="")
         ta = wsaa.LoginCMS(cms)
         if not ta:
             raise RuntimeError(wsaa.Excepcion)
