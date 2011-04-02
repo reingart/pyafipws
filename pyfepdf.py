@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.01d"
 
 DEBUG = False
 HOMO = True
@@ -391,17 +391,19 @@ class FEPDF:
             umed = it['umed']
             if DEBUG: print "dividiendo", it['ds']
             # divido la descripción (simil célda múltiple de PDF) 
+            n_li = 0
             for ds in f.split_multicell(it['ds'], 'Item.Descripcion01'):
                 if DEBUG: print "multicell", ds
                 # agrego un item por linea (sin precio ni importe):
                 li_items.append(dict(codigo=codigo, ds=ds, qty=qty, umed=umed, precio=None, importe=None))
                 # limpio cantidad y código (solo en el primero)
                 umed = qty = codigo = None
+                n_li += 1
             # asigno el precio a la última línea del item 
             li_items[-1].update(importe = it['importe'],
                                 despacho = it.get('despacho'),
                                 precio = it['precio'],
-                                qty = qty_pos=='der' and it['qty'] or None,
+                                qty = (n_li==1 or qty_pos=='der') and it['qty'] or None,
                                 bonif = it['bonif'])
 
         # divido las observaciones por linea:
