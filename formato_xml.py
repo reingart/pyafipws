@@ -346,9 +346,8 @@ def desaplanar(filas):
     "Dado una planilla, conviertir en estructura python"
 
     def max_li(colname): 
-        tmp = max([k for k in filas[0] if k.startswith(colname)])
+        tmp = max([int(k[len(colname):])+1 for k in filas[0] if k.startswith(colname)])
         if max_li:
-            tmp = int(tmp[len(colname):])+1
             print "max_li(%s)=%s" % (colname, tmp)
             return tmp
         else:
