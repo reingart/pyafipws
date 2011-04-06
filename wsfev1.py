@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10d"
+__version__ = "1.11a"
 
 import datetime
 import decimal
@@ -70,12 +70,14 @@ def inicializar_y_capturar_execepciones(func):
             self.ErrCode = unicode(e.faultcode)
             self.ErrMsg = unicode(e.faultstring)
             self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
-            raise
+            if self.LanzarExcepciones:
+                raise
         except Exception, e:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
             self.Excepcion = u"%s" % (e)
-            raise
+            if self.LanzarExcepciones:
+                raise
         finally:
             # guardo datos de depuración
             if self.client:
@@ -101,7 +103,7 @@ class WSFEv1:
                         'Dummy', 'Conectar', 'DebugLog', 'Eval']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version', 'Excepcion',
+        'XmlRequest', 'XmlResponse', 'Version', 'Excepcion', 'LanzarExcepciones',
         'Resultado', 'Obs', 'Observaciones', 'Traceback', 'InstallDir',
         'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
         'Reprocesar', 'Reproceso', 'EmisionTipo', 'CAEA',
@@ -133,6 +135,7 @@ class WSFEv1:
         self.Log = None
         self.InstallDir = INSTALL_DIR
         self.Reprocesar = True # recuperar automaticamente CAE emitidos
+        self.LanzarExcepciones = True
         
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
