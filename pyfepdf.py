@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01e"
+__version__ = "1.01f"
 
 DEBUG = False
 HOMO = True
@@ -85,7 +85,7 @@ class FEPDF:
                         'MostrarPDF',
                         ]
     _public_attrs_ = ['Version', 'Excepcion', 'Traceback', 'InstallDir',
-                      'Locale', 'FmtCantidad', 'self.fmt_precio', 'CUIT',
+                      'Locale', 'FmtCantidad', 'FmtPrecio', 'CUIT',
                     ]
         
     _reg_progid_ = "PyFEPDF"
