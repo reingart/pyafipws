@@ -15,7 +15,7 @@ Sub Main()
     Debug.Print WSAA.Version
 
     ' Generar un Ticket de Requerimiento de Acceso (TRA)
-    tra = WSAA.CreateTRA("wsfe", 2400)
+    tra = WSAA.CreateTRA("wsfe", 43200) ' 3600*12
     Debug.Print tra
     
     ' Especificar la ubicacion de los archivos certificado y clave privada
