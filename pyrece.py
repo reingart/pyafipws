@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21j"
+__version__ = "1.21q"
 
 import csv
 from decimal import Decimal
@@ -370,7 +370,7 @@ class PyRece(model.Background):
             self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
             cms = ws.SignTRA(str(tra),str(cert),str(privatekey))
             self.log("Llamando a WSAA... " + wsaa_url)
-            ws.Conectar("", wsdl=wsaa_url+"?wsdl", proxy=proxy_dict)
+            ws.Conectar("", wsdl=wsaa_url, proxy=proxy_dict)
             self.log("Proxy: %s" % proxy_dict)
             xml = ws.LoginCMS(str(cms))
             self.log("Procesando respuesta...")
@@ -727,12 +727,12 @@ class PyRece(model.Background):
             ok = no = 0
             self.progreso(0)
             for i, item in self.get_selected_items():
-                if not item['cae'] in ("", "NULL"):
+                if not item['cae'] in ("", "NULL") and item.get('email'):
                     archivo = self.generar_factura(item)
                     self.enviar_mail(item,archivo)
                     ok += 1
                 else:
-                    self.log("No se envia factura %s por no tener CAE" % item['cbt_numero'])
+                    self.log("No se envia factura %s por no tener CAE o EMAIL" % item['cbt_numero'])
                     no += 1
                 self.progreso(i)
             self.progreso(len(self.items))
@@ -868,7 +868,7 @@ class PyRece(model.Background):
             
             for n in range(1,5):
                 if 'iva_id_%s' % n in item:
-                    a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[item['iva_id_%s' % n]]
+                    a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[int(item['iva_id_%s' % n])]
                     f.set('IVA%s' % a, fmtimp(item.get('iva_importe_%s' % n, 0)))
         else:
             f.set('NETO.L',"")
@@ -916,7 +916,7 @@ class PyRece(model.Background):
         archivo = self.generar_factura(item)
         if item['email']:
             msg = MIMEMultipart()
-            msg['Subject'] = conf_mail['motivo'].replace("NUMERO",item['cbt_numero'])
+            msg['Subject'] = conf_mail['motivo'].replace("NUMERO",str(item['cbt_numero']))
             msg['From'] = conf_mail['remitente']
             msg['Reply-to'] = msg['From']
             msg['To'] = item['email']
