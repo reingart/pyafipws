@@ -34,6 +34,9 @@ ON ERROR DO errhand2;
 *-- Crear objeto interface Web Service de Factura Electrónica
 WSFE = CREATEOBJECT("WSFEv1") 
 
+? WSFE.Version
+? WSFE.InstallDir
+
 *-- Setear tocken y sing de autorización (pasos previos)
 WSFE.Token = WSAA.Token 
 WSFE.Sign = WSAA.Sign    
@@ -45,6 +48,8 @@ WSFE.Cuit = "20267565393"
 *-- Producción usar: 
 *-- ok = WSFE.Conectar("", "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL") && Producción
 ok = WSFE.Conectar("")      && Homologación
+
+? WSFE.DebugLog()
 
 *-- Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
 WSFE.Dummy()
@@ -114,9 +119,9 @@ cae = WSFE.CAESolicitar()
 ? "Vencimiento ", WSFE.Vencimiento && Fecha de vencimiento o vencimiento de la autorización
 ? "Resultado: ", WSFE.Resultado && A=Aceptado, R=Rechazado
 ? "Motivo de rechazo o advertencia", WSFE.Obs
-? WSFE.XmlResponse
+*--? WSFE.XmlResponse
 
-MESSAGEBOX("Resultado: " + WSFE.Resultado + " CAE " + cae + " Reproceso " + WSFE.Reproceso + " EmisionTipo " + WSFE.EmisionTipo + " Observaciones: " + WSFE.Obs + " Errores: " + WSFE.ErrMsg, 0)
+MESSAGEBOX("Resultado: " + WSFE.Resultado + " CAE " + cae + " Vencimiento: " + WSFE.Vencimiento + " Reproceso " + WSFE.Reproceso + " EmisionTipo " + WSFE.EmisionTipo + " Observaciones: " + WSFE.Obs + " Errores: " + WSFE.ErrMsg, 0)
 
 
 
