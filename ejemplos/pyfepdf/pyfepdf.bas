@@ -35,6 +35,7 @@ Sub Main()
     imp_total = "122.00": imp_tot_conc = "0.00"
     imp_neto = "100.00": imp_iva = "21.00"
     imp_trib = "1.00": imp_op_ex = "0.00": imp_subtotal = "100.00"
+    descuento = "10.00"
     fecha_cbte = fecha: fecha_venc_pago = fecha
     ' Fechas del período del servicio facturado
     fecha_serv_desde = fecha: fecha_serv_hasta = fecha
@@ -62,7 +63,7 @@ Sub Main()
         moneda_id, moneda_ctz, cae, fecha_vto_cae, id_impositivo, _
         nombre_cliente, domicilio_cliente, pais_dst_cmp, _
         obs_comerciales, obs_generales, forma_pago, incoterms, _
-        idioma_cbte, motivo_obs)
+        idioma_cbte, motivo_obs, descuento)
     
     ' Agregar comprobantes asociados (si es una NC/ND):
     'tipo = 19
@@ -97,8 +98,14 @@ Sub Main()
     imp_iva = 21                ' importe liquidado de iva
     importe = 121               ' importe total del item
     despacho = "Nº 123456"      ' numero de despacho de importación
+    dato_a = "DATO A"           ' primer dato adicional del item
+    dato_b = "DATO B"
+    dato_c = "DATO C"
+    dato_d = "DATO D"
+    dato_e = "DATO E"           ' ultimo dato adicional del item
     ok = PyFEPDF.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, _
-            precio, bonif, iva_id, imp_iva, importe, despacho)
+            precio, bonif, iva_id, imp_iva, importe, despacho, _
+            dato_a, dato_b, dato_c, dato_d, dato_e)
 
     ' Agrego datos adicionales fijos:
     ok = PyFEPDF.AgregarDato("logo", PyFEPDF.InstallDir + "\fpdf.png")
