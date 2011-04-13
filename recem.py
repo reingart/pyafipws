@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28a"
+__version__ = "1.28b"
 
 import datetime
 import os
@@ -453,6 +453,13 @@ if __name__ == "__main__":
         ws.Token = token
         ws.Sign = sign
         
+        if '/puntosventa' in sys.argv:
+            print "Consultando puntos de venta CAE..."
+            print '\n'.join(ws.ConsultarPuntosVentaCAE())
+            print "Consultando puntos de venta CAEA..."
+            print '\n'.join(ws.ConsultarPuntosVentaCAEA())
+            sys.exit(0)
+            
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             tipo_cbte = 1
