@@ -78,6 +78,7 @@ ENCABEZADO = [
     ('Dato_adicional2', 30, A),
     ('Dato_adicional3', 30, A),
     ('Dato_adicional4', 30, A),
+    ('descuento', (15,3), I),
     ]
 
 DETALLE = [
@@ -92,6 +93,15 @@ DETALLE = [
     ('ncm', 15, A),
     ('sec', 15, A),
     ('bonif', 15, I),
+    ('imp_iva', 15, I),
+    ('despacho', 20, A),
+    ('u_mtx', 10, N),
+    ('cod_mtx', 30, A),
+    ('dato_a', 15, I),
+    ('dato_b', 15, I),
+    ('dato_c', 15, I),
+    ('dato_d', 15, I),
+    ('dato_e', 15, I),
     ]
 
 PERMISO = [
