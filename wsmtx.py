@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04d"
+__version__ = "1.05a"
 
 import datetime
 import decimal
@@ -45,6 +45,10 @@ def inicializar_y_capturar_execepciones(func):
             self.Traceback = self.Excepcion = ""
             self.ErrCode = ""
             self.ErrMsg = ""
+            self.CAEA = ""
+            self.Periodo = self.Orden = ""
+            self.FchVigDesde = self.FchVigHasta = ""
+            self.FchTopeInf = self.FchProceso = ""
 
             # llamo a la función (con reintentos)
             retry = 5
@@ -81,6 +85,8 @@ class WSMTXCA:
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc',
                         'AutorizarComprobante', 
+                        'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
+                        'InformarComprobanteCAEA', 
                         'ConsultarUltimoComprobanteAutorizado', 'CompUltimoAutorizado', 
                         'ConsultarComprobante',
                         'ConsultarTiposComprobante', 
@@ -100,6 +106,7 @@ class WSMTXCA:
         'Resultado', 'Obs', 'Observaciones', 'ErrCode', 'ErrMsg',
         'EmisionTipo', 'Reproceso', 'Reprocesar',
         'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback', 'Excepcion',
+        'CAEA', 'Periodo', 'Orden', 'FchVigDesde', 'FchVigHasta', 'FchTopeInf', 'FchProceso',
         'CbteNro', 'FechaCbte', 'PuntoVenta', 'ImpTotal']
         
     _reg_progid_ = "WSMTXCA"
@@ -114,11 +121,15 @@ class WSMTXCA:
         self.XmlResponse = ''
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
+        self.CAEA = None
+        self.Periodo = self.Orden = ""
+        self.FchVigDesde = self.FchVigHasta = ""
+        self.FchTopeInf = self.FchProceso = ""
         self.client = None
         self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
         self.ErrCode = self.ErrMsg = self.Traceback = self.Excepcion = ""
-        self.EmisionTipo = 'CAE' # CAEA no implementado
+        self.EmisionTipo = '' 
         self.Reprocesar = self.Reproceso = '' # no implementado
         self.Log = None
         self.InstallDir = INSTALL_DIR
@@ -193,7 +204,8 @@ class WSMTXCA:
             cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
             imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
             fecha_serv_desde, fecha_serv_hasta, #--
-            moneda_id, moneda_ctz, observaciones, **kwargs
+            moneda_id, moneda_ctz, observaciones, caea=None, vencimiento=None,
+            **kwargs
             ):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
@@ -216,6 +228,9 @@ class WSMTXCA:
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
+        if caea: fact['caea'] = caea
+        if vencimiento: fact['vencimiento'] = vencimiento
+        
         self.factura = fact
         return True
 
@@ -346,6 +361,173 @@ class WSMTXCA:
         return self.CAE
 
     @inicializar_y_capturar_execepciones
+    def SolicitarCAEA(self, periodo, orden):
+        
+        ret = self.client.solicitarCAEA(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            solicitudCAEA = {
+                'periodo': periodo,
+                'orden': orden},
+        )
+        
+        self.__analizar_errores(ret)
+    
+        if 'CAEAResponse' in ret:
+            res = ret['CAEAResponse']
+            self.CAEA = res['CAEA']
+            self.Periodo = res['periodo']
+            self.Orden = res['orden']
+            self.FchVigDesde = res['fechaDesde']
+            self.FchVigHasta = res['fechaHasta']
+            self.FchTopeInf = res['fechaTopeInforme']
+            self.FchProceso = res['fechaProceso']
+        return self.CAEA and str(self.CAEA) or ''
+
+
+    @inicializar_y_capturar_execepciones
+    def ConsultarCAEA(self, periodo=None, orden=None, caea=None):
+        "Método de consulta de CAEA"
+
+        if periodo and orden:
+            anio, mes = int(periodo[0:4]), int(periodo[4:6])
+            if periodo==1:
+                dias = 1, 14
+            else:
+                if mes in (1,3,5,7,8,10,12):
+                    dias = 15, 31
+                elif mes in (4,6,9,11):
+                    dias = 15, 31
+                else:
+                    import calendar
+                    if calendar.isleap(year):
+                        dias = 15, 29 # biciesto
+                    else:
+                        dias = 15, 28
+
+            fecha_desde = "%04d-%02d-%02d" % (anio, mes, dias[0])
+            fecha_hasta = "%04d-%02d-%02d" % (anio, mes, dias[1])
+
+            caeas = self.ConsultarCAEAEntreFechas(fecha_desde, fecha_hasta)
+            if caeas:
+                caea = caeas[0]
+        
+        if caea:
+            ret = self.client.consultarCAEA(
+                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+                CAEA = caea,
+            )
+
+            self.__analizar_errores(ret)
+
+            if 'CAEAResponse' in ret:
+                res = ret['CAEAResponse']
+                self.CAEA = res['CAEA']
+                self.Periodo = res['periodo']
+                self.Orden = res['orden']
+                self.FchVigDesde = res['fechaDesde']
+                self.FchVigHasta = res['fechaHasta']
+                self.FchTopeInf = res['fechaTopeInforme']
+                self.FchProceso = res['fechaProceso']
+        return self.CAEA and str(self.CAEA) or ''
+
+
+    @inicializar_y_capturar_execepciones
+    def ConsultarCAEAEntreFechas(self, fecha_desde, fecha_hasta):
+        "Método de consulta de CAEA"
+
+        ret = self.client.consultarCAEAEntreFechas(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            fechaDesde = fecha_desde,
+            fechaHasta = fecha_hasta,
+        )
+                
+        self.__analizar_errores(ret)
+
+        caeas = []
+        if 'arrayCAEAResponse' in ret:
+            return [res['CAEAResponse']['CAEA'] for res in ret['arrayCAEAResponse']]
+        return []
+
+    @inicializar_y_capturar_execepciones
+    def InformarComprobanteCAEA(self):
+        f = self.factura
+        # contruyo la estructura a convertir en XML:
+        fact = {
+            'codigoTipoDocumento': f['tipo_doc'], 'numeroDocumento':f['nro_doc'],
+            'codigoTipoComprobante': f['tipo_cbte'], 'numeroPuntoVenta': f['punto_vta'],
+            'numeroComprobante': f['cbt_desde'], 'numeroComprobante': f['cbt_hasta'],
+            'codigoTipoAutorizacion': 'A',
+            'codigoAutorizacion': f['caea'],
+            'fechaVencimiento': f['vencimiento'],
+            'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
+            'importeGravado': f['imp_neto'],
+            'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,
+            'importeOtrosTributos': f['imp_trib'], 'importeExento': f['imp_op_ex'],
+            'fechaEmision': f['fecha_cbte'],
+            'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f['moneda_ctz'],
+            'codigoConcepto': f['concepto'],
+            'observaciones': f['observaciones'],
+            'fechaVencimientoPago': f.get('fecha_venc_pago'),
+            'fechaServicioDesde': f.get('fecha_serv_desde'),
+            'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'arrayComprobantesAsociados': [{'comprobanteAsociado': {
+                'codigoTipoComprobante': cbte_asoc['tipo'], 
+                'numeroPuntoVenta': cbte_asoc['pto_vta'], 
+                'numeroComprobante': cbte_asoc['nro'],
+                }} for cbte_asoc in f['cbtes_asoc']],
+            'arrayOtrosTributos': [ {'otroTributo': {
+                'codigo': tributo['tributo_id'], 
+                'descripcion': tributo['desc'], 
+                'baseImponible': tributo['base_imp'], 
+                'importe': tributo['importe'],
+                }} for tributo in f['tributos']],
+            'arraySubtotalesIVA': [{'subtotalIVA': { 
+                'codigo': iva['iva_id'], 
+                'importe': iva['importe'],
+                }} for iva in f['iva']],
+            'arrayItems': [{'item':{
+                'unidadesMtx': it['u_mtx'],
+                'codigoMtx': it['cod_mtx'],
+                'codigo': it['codigo'],                
+                'descripcion': it['ds'],
+                'cantidad': it['qty'],
+                'codigoUnidadMedida': it['umed'],
+                'precioUnitario': it['precio'],
+                'importeBonificacion': it['bonif'],
+                'codigoCondicionIVA': it['iva_id'],
+                'importeIVA': it['imp_iva'],
+                'importeItem': it['imp_subtotal'],
+                }} for it in f['detalles']],
+            }
+                
+        ret = self.client.informarComprobanteCAEA(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            comprobanteCAEARequest = fact,
+            )
+        
+        self.Resultado = ret['resultado'] # u'A'
+        self.Errores = []
+        if ret['resultado'] in ("A", "O"):
+            cbteresp = ret['comprobanteCAEAResponse']
+            self.FchProceso = res['fechaProceso'].strftime("%Y-%m-%d")
+            self.CbteNro = cbteresp['numeroComprobante'] # 1L
+            self.PuntoVenta = cbteresp['numeroPuntoVenta'] # 4000
+            self.Vencimiento = cbteresp['fechaVencimientoCAE'].strftime("%Y/%m/%d")
+            self.CAEA = str(cbteresp['CAEA']) # 60423794871430L
+            self.EmisionTipo = 'CAEA'
+        self.__analizar_errores(ret)
+        
+        for error in ret.get('arrayObservaciones', []):
+            self.Observaciones.append("%(codigo)s: %(descripcion)s" % (
+                error['codigoDescripcion']))
+        self.Obs = '\n'.join(self.Observaciones)
+
+        if 'evento' in ret:
+            self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
+        return self.CAEA
+
+
+    @inicializar_y_capturar_execepciones
     def ConsultarUltimoComprobanteAutorizado(self, tipo_cbte, punto_vta):
         ret = self.client.consultarUltimoComprobanteAutorizado(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
@@ -379,6 +561,7 @@ class WSMTXCA:
                 self.Vencimiento = cbteresp['fechaVencimiento'].strftime("%Y/%m/%d")
                 self.ImpTotal = str(cbteresp['importeTotal'])
                 self.CAE = str(cbteresp['codigoAutorizacion']) # 60423794871430L
+                self.EmisionTipo =  cbteresp['codigoTipoAutorizacion']=='A' and 'CAEA' or 'CAE'
         self.__analizar_errores(ret)
         return self.CAE
 
@@ -478,6 +661,8 @@ class WSMTXCA:
 def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
+
+    DEBUG = '--debug' in sys.argv
 
     # obteniendo el TA
     TA = "TA-wsmtxca.xml"
@@ -593,6 +778,32 @@ def main():
     if "--cotizacion" in sys.argv:
         print wsmtxca.ConsultarCotizacionMoneda('DOL')
         
+    if "--solicitar-caea" in sys.argv:
+        periodo = sys.argv[sys.argv.index("--solicitar-caea")+1]
+        orden = sys.argv[sys.argv.index("--solicitar-caea")+2]
+
+        if DEBUG: 
+            print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
+        
+        caea = wsmtxca.ConsultarCAEA(periodo, orden)
+        if not caea:
+            print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
+            caea = wsmtxca.SolicitarCAEA(periodo, orden)
+
+        print "CAEA:", caea
+
+        if wsmtxca.Errores:
+            print "Errores:"
+            for error in wsmtxca.Errores:
+                print error
+            
+        if DEBUG:
+            print "periodo:", wsmtxca.Periodo 
+            print "orden:", wsmtxca.Orden 
+            print "fch_vig_desde:", wsmtxca.FchVigDesde 
+            print "fch_vig_hasta:", wsmtxca.FchVigHasta 
+            print "fch_tope_inf:", wsmtxca.FchTopeInf 
+            print "fch_proceso:", wsmtxca.FchProceso
         
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
