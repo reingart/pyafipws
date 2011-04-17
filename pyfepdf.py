@@ -512,7 +512,7 @@ class FEPDF:
                 f.set('Comprobante.L', tipo_fact)
                 f.set('ComprobanteEx.L', tipo_fact_ex)
 
-                if fact['fecha_serv_desde']:
+                if fact.get('fecha_serv_desde'):
                     f.set('Periodo.Desde', self.fmt_date(fact['fecha_serv_desde']))
                     f.set('Periodo.Hasta', self.fmt_date(fact['fecha_serv_hasta']))
                 else:
