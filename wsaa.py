@@ -113,9 +113,9 @@ class WSAA:
     _public_attrs_ = ['Token', 'Sign', 'Version', 
                       'XmlRequest', 'XmlResponse', 
                       'InstallDir', 'Traceback', 'Excepcion',
-                      'SoapFault',
+                      'SoapFault', 'LanzarExcepciones',
                     ]
-    _readonly_attrs_ = _public_attrs_
+    _readonly_attrs_ = _public_attrs_[:-1]
     _reg_progid_ = "WSAA"
     _reg_clsid_ = "{6268820C-8900-4AE9-8A2D-F0A1EBD4CAC5}"
     
@@ -125,6 +125,7 @@ class WSAA:
         self.Token = self.Sign = None
         self.InstallDir = INSTALL_DIR
         self.Excepcion = self.Traceback = ""
+        self.LanzarExcepciones = True
         self.XmlRequest = self.XmlResponse = ""
         self.xml = None
 
@@ -157,6 +158,8 @@ class WSAA:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
             self.Excepcion = u"%s" % (e)
+            if self.LanzarExcepciones:
+                raise
         return False
 
     def CreateTRA(self, service="wsfe", ttl=2400):
@@ -168,6 +171,8 @@ class WSAA:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
             self.Excepcion = u"%s" % (e)
+            if self.LanzarExcepciones:
+                raise
         return ""
         
     def SignTRA(self, tra, cert, privatekey):
@@ -179,6 +184,8 @@ class WSAA:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
             self.Excepcion = u"%s" % (e)
+            if self.LanzarExcepciones:
+                raise
         return ""
 
     def LoginCMS(self, cms):
@@ -200,6 +207,8 @@ class WSAA:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
             self.Excepcion = u"%s" % (e)
+            if self.LanzarExcepciones:
+                raise
         finally:
             self.XmlRequest = self.client.xml_request
             self.XmlResponse = self.client.xml_response
