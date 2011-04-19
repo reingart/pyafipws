@@ -388,6 +388,12 @@ Private Sub btnAutenticar_Click()
     txtCMS.Text = cms
     DoEvents
     
+    Debug.Print "excepcion", WSAA.Excepcion
+    If WSAA.Excepcion <> "" Then
+        MsgBox WSAA.Excepcion, vbCritical, "Excepción"
+        End
+    End If
+    
     ' Llamar al web service para autenticar:
     'ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") ' Hologación
     Debug.Print Err.Description
@@ -399,6 +405,12 @@ Private Sub btnAutenticar_Click()
     
     ok = WSAA.Conectar(cache, wsdl, proxy, wrapper, cacert)
     Me.txtVersion = WSAA.Version
+    Debug.Print "excepcion", WSAA.Excepcion
+    If WSAA.Excepcion <> "" Then
+        MsgBox WSAA.Excepcion, vbCritical, "Excepción"
+        End
+    End If
+
     ta = WSAA.LoginCMS(cms) ' Producción
 
     txtXmlRequest.Text = WSAA.XmlRequest

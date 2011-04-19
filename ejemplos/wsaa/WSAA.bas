@@ -46,6 +46,12 @@ Sub Main()
     cms = WSAA.SignTRA(tra, cert, clave)
     Debug.Print cms
     
+    ' reviso que no haya habido excepción:
+    If WSAA.Excepcion <> "" Then
+        MsgBox WSAA.Excepcion, vbCritical, "Excepción"
+        End
+    End If
+    
     ' Llamar al web service para autenticar:
     'ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") ' Hologación
     Debug.Print Err.Description
