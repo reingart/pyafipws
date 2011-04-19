@@ -28,8 +28,8 @@ from M2Crypto import BIO, Rand, SMIME, SSL
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"  # El WSDL correspondiente al WSAA 
-CERT = "homo.crt"        # El certificado X.509 obtenido de Seg. Inf.
-PRIVATEKEY = "homo.key"  # La clave privada del certificado CERT
+CERT = "reingart.crt"        # El certificado X.509 obtenido de Seg. Inf.
+PRIVATEKEY = "reingart.key"  # La clave privada del certificado CERT
 PASSPHRASE = "xxxxxxx"  # La contraseña para firmar (si hay)
 SERVICE = "wsfe"        # El nombre del web service al que se le pide el TA
 
@@ -108,7 +108,9 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
 
 class WSAA:
     "Interfase para el WebService de Autenticación y Autorización"
-    _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar']
+    _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
+                        'AnalizarXml', 'ObtenerTagXml',
+                        ]
     _public_attrs_ = ['Token', 'Sign', 'Version', 
                       'XmlRequest', 'XmlResponse', 
                       'InstallDir', 'Traceback', 'Excepcion',
@@ -163,7 +165,7 @@ class WSAA:
             self.Token = self.Sign = ""
             results = self.client.loginCms(in0=str(cms))
             ta_xml = results['loginCmsReturn']
-            ta = SimpleXMLElement(ta_xml)
+            self.xml = ta = SimpleXMLElement(ta_xml)
             self.Token = str(ta.credentials.token)
             self.Sign = str(ta.credentials.sign)
             return ta_xml
@@ -185,6 +187,28 @@ class WSAA:
         if not ta_xml:
             raise RuntimeError(self.Excepcion)
         return ta_xml
+
+    def AnalizarXml(self, xml=""):
+        "Analiza un mensaje XML (por defecto el ticket de acceso)"
+        if not xml or xml=='XmlResponse':
+            xml = self.XmlResponse 
+        elif xml=='XmlRequest':
+            xml = self.XmlResponse 
+        self.xml = SimpleXMLElement(xml)
+
+    def ObtenerTagXml(self, *tags):
+        "Busca en el Xml analizado y devuelve el tag solicitado"
+        # convierto el xml a un objeto
+        try:
+            if self.xml:
+                xml = self.xml
+                # por cada tag, lo busco segun su nombre o posición
+                for tag in tags:
+                    xml = xml(tag) # atajo a getitem y getattr
+                # vuelvo a convertir a string el objeto xml encontrado
+                return str(xml)
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
@@ -216,15 +240,20 @@ if __name__=="__main__":
     else:
         
         # Leer argumentos desde la linea de comando (si no viene tomar default)
-        cert = len(sys.argv)>1 and sys.argv[1] or CERT
-        privatekey = len(sys.argv)>2 and sys.argv[2] or PRIVATEKEY
-        service = len(sys.argv)>3 and sys.argv[3] or "wsfe"
-        ttl = len(sys.argv)>4 and not sys.argv[4].startswith("--") and int(sys.argv[4]) or 2400
-        url = len(sys.argv)>5 and sys.argv[5].startswith("http") and sys.argv[5] or WSAAURL
+        args = [arg for arg in sys.argv if arg.startswith("--")]
+        argv = [arg for arg in sys.argv if not arg.startswith("--")]
+        cert = len(argv)>1 and argv[1] or CERT
+        privatekey = len(argv)>2 and argv[2] or PRIVATEKEY
+        service = len(argv)>3 and argv[3] or "wsfe"
+        ttl = len(argv)>4 and int(argv[4]) or 2400
+        url = len(argv)>5 and argv[5] or WSAAURL
 
         print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s TTL=%s" % (cert,privatekey,url,service, ttl)
 
-        if '--proxy' in sys.argv:
+        # creo el objeto para comunicarme con el ws
+        wsaa = WSAA()
+        
+        if '--proxy' in args:
             proxy = parse_proxy(sys.argv[sys.argv.index("--proxy")+1])
             print "Usando PROXY:", proxy
         else:
@@ -235,7 +264,7 @@ if __name__=="__main__":
                 sys.exit("Imposible abrir %s\n" % filename)
         print "Creando TRA..."
         tra = create_tra(service,ttl)
-        if '--trace' in sys.argv:
+        if '--trace' in args:
             print "-" * 78
             print tra
             print "-" * 78
@@ -244,9 +273,11 @@ if __name__=="__main__":
         cms = sign_tra(tra,cert,privatekey)
         #open("TRA.tmp","w").write(cms)
         #cms = open("TRA.tmp").read()
+        print "Conectando a WSAA"
+        wsaa.Conectar("", url, proxy)
         print "Llamando WSAA..."
         try:
-            ta = call_wsaa(cms,url, trace='--trace' in sys.argv, proxy=proxy)
+            ta = wsaa.LoginCMS(cms)
         except SoapFault,e:
             sys.exit("Falla SOAP: %s\n%s\n" % (e.faultcode,e.faultstring))
         if ta=='':
@@ -254,5 +285,14 @@ if __name__=="__main__":
         try:
             open("TA.xml","w").write(ta)
             print "El archivo TA.xml se ha generado correctamente."
-        except:
-            sys.exit("Error escribiendo TA.xml\n")
+        except Exception, e:
+            if "--debug" in args:
+                raise
+            else:
+                sys.exit("Error escribiendo TA.xml: %s\n")
+
+        if "--debug" in args:
+            print wsaa.ObtenerTagXml('source')
+            print wsaa.ObtenerTagXml('uniqueId')
+            print wsaa.ObtenerTagXml('generationTime')
+            print wsaa.ObtenerTagXml('expirationTime')
