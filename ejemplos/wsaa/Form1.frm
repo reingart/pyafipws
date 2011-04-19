@@ -150,6 +150,7 @@ Begin VB.Form Form1
    End
    Begin VB.CommandButton btnAutenticar 
       Caption         =   "Autenticar"
+      Default         =   -1  'True
       Height          =   375
       Left            =   2160
       TabIndex        =   0
@@ -386,6 +387,21 @@ Private Sub btnAutenticar_Click()
 
     txtToken.Text = WSAA.Token
     txtSign.Text = WSAA.Sign
+    
+    If WSAA.Version >= "2.04a" Then
+        If WSAA.Excepcion = "" Then
+            ' Analizo el ticket de acceso (por defecto)
+            MsgBox "Origen (Source): " & WSAA.ObtenerTagXml("source") & vbCrLf & _
+               "Destino (Destination): " & WSAA.ObtenerTagXml("destination") & vbCrLf & _
+               "ID Único: " & WSAA.ObtenerTagXml("uniqueId") & vbCrLf & _
+               "Fecha de Generación: " & WSAA.ObtenerTagXml("generationTime") & vbCrLf & _
+               "Fecha de Expiración: " & WSAA.ObtenerTagXml("expirationTime"), vbInformation, "Ticket de Acceso Gestionado OK!"
+        Else
+            ' No hay ticket de acceso, analizo la respuesta
+            WSAA.AnalizarXml "XmlResponse"
+            MsgBox "Servidor: " & WSAA.ObtenerTagXml("ns3:hostname")
+        End If
+    End If
     
     Exit Sub
 ManejoError:

@@ -69,4 +69,12 @@ Sub Main()
     Debug.Assert False
     MsgBox "Token: " + WSAA.Token
     MsgBox "Sign: " + WSAA.Sign
+    
+    MsgBox "Source: " & WSAA.ObtenerTagXml("source") & vbCrLf & _
+           "Unique ID: " & WSAA.ObtenerTagXml("uniqueId") & vbCrLf & _
+           "Generation Time: " & WSAA.ObtenerTagXml("generationTime") & vbCrLf & _
+           "Expiration Time: " & WSAA.ObtenerTagXml("expirationTime")
+
+    MsgBox "Expiró?" & WSAA.Expirado()
+    
 End Sub
