@@ -19,9 +19,9 @@ Devuelve TA.xml (ticket de autorización de WSAA)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.03e"
+__version__ = "2.04a"
 
-import email,os,sys
+import datetime,email,os,sys
 from php import date
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from M2Crypto import BIO, Rand, SMIME, SSL
@@ -109,7 +109,7 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
 class WSAA:
     "Interfase para el WebService de Autenticación y Autorización"
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
-                        'AnalizarXml', 'ObtenerTagXml',
+                        'AnalizarXml', 'ObtenerTagXml', 'Expirado',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Version', 
                       'XmlRequest', 'XmlResponse', 
@@ -210,6 +210,18 @@ class WSAA:
         except Exception, e:
             self.Excepcion = u"%s" % (e)
 
+    def Expirado(self, fecha=None):
+        "Comprueba la fecha de expiración, devuelve si ha expirado"
+        try:
+            if not fecha:
+                fecha = self.ObtenerTagXml('expirationTime')
+            now = datetime.datetime.now()
+            d = datetime.datetime.strptime(fecha[:19], '%Y-%m-%dT%H:%M:%S')
+            return now > d
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+        
+        
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
@@ -245,7 +257,7 @@ if __name__=="__main__":
         cert = len(argv)>1 and argv[1] or CERT
         privatekey = len(argv)>2 and argv[2] or PRIVATEKEY
         service = len(argv)>3 and argv[3] or "wsfe"
-        ttl = len(argv)>4 and int(argv[4]) or 2400
+        ttl = len(argv)>4 and int(argv[4]) or 36000
         url = len(argv)>5 and argv[5] or WSAAURL
 
         print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s TTL=%s" % (cert,privatekey,url,service, ttl)
@@ -292,7 +304,10 @@ if __name__=="__main__":
                 sys.exit("Error escribiendo TA.xml: %s\n")
 
         if "--debug" in args:
-            print wsaa.ObtenerTagXml('source')
-            print wsaa.ObtenerTagXml('uniqueId')
-            print wsaa.ObtenerTagXml('generationTime')
-            print wsaa.ObtenerTagXml('expirationTime')
+            print "Source:", wsaa.ObtenerTagXml('source')
+            print "UniqueID Time:", wsaa.ObtenerTagXml('uniqueId')
+            print "Generation Time:", wsaa.ObtenerTagXml('generationTime')
+            print "Expiration Time:", wsaa.ObtenerTagXml('expirationTime')
+            print "Expiro?", wsaa.Expirado()
+            ##import time; time.sleep(10)
+            ##print "Expiro?", wsaa.Expirado()
