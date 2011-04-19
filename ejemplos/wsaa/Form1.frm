@@ -9,6 +9,27 @@ Begin VB.Form Form1
    ScaleHeight     =   6570
    ScaleWidth      =   9465
    StartUpPosition =   3  'Windows Default
+   Begin VB.ComboBox cboWrapper 
+      Height          =   315
+      ItemData        =   "Form1.frx":0000
+      Left            =   3840
+      List            =   "Form1.frx":000D
+      TabIndex        =   39
+      Text            =   "httplib2"
+      ToolTipText     =   "librería HTTP"
+      Top             =   4320
+      Width           =   975
+   End
+   Begin VB.TextBox txtCACert 
+      BackColor       =   &H8000000F&
+      Enabled         =   0   'False
+      Height          =   285
+      Left            =   1560
+      TabIndex        =   37
+      ToolTipText     =   "autoridad certificante (solo pycurl)"
+      Top             =   4320
+      Width           =   2295
+   End
    Begin VB.TextBox txtTraceback 
       Height          =   615
       Left            =   1560
@@ -33,14 +54,14 @@ Begin VB.Form Form1
       Locked          =   -1  'True
       TabIndex        =   32
       Top             =   120
-      Width           =   2775
+      Width           =   3375
    End
    Begin VB.TextBox txtCache 
       Height          =   285
       Left            =   1560
       TabIndex        =   29
       ToolTipText     =   "directorio para archivos temporales"
-      Top             =   4320
+      Top             =   3960
       Width           =   3255
    End
    Begin VB.TextBox txtProxy 
@@ -48,7 +69,7 @@ Begin VB.Form Form1
       Left            =   1560
       TabIndex        =   27
       ToolTipText     =   "usuario:clave@servidor:puerto"
-      Top             =   3960
+      Top             =   3600
       Width           =   3255
    End
    Begin VB.TextBox txtXmlRequest 
@@ -101,13 +122,13 @@ Begin VB.Form Form1
    End
    Begin VB.ComboBox cboURL 
       Height          =   315
-      ItemData        =   "Form1.frx":0000
+      ItemData        =   "Form1.frx":002C
       Left            =   1560
-      List            =   "Form1.frx":000A
+      List            =   "Form1.frx":0036
       TabIndex        =   11
       Text            =   "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
       ToolTipText     =   "Dirección del WSDL (dehabilitado en homologación/testing)"
-      Top             =   3600
+      Top             =   3240
       Width           =   3255
    End
    Begin VB.TextBox txtTTL 
@@ -121,9 +142,9 @@ Begin VB.Form Form1
    End
    Begin VB.ComboBox cboService 
       Height          =   315
-      ItemData        =   "Form1.frx":007A
+      ItemData        =   "Form1.frx":00A6
       Left            =   1560
-      List            =   "Form1.frx":0090
+      List            =   "Form1.frx":00BC
       TabIndex        =   7
       Text            =   "wsfe"
       ToolTipText     =   "webservice a utilizar"
@@ -136,7 +157,7 @@ Begin VB.Form Form1
       TabIndex        =   6
       Text            =   "reingart.key"
       ToolTipText     =   "Ruta completa a la clave privada PEM (.KEY)"
-      Top             =   2760
+      Top             =   2400
       Width           =   3255
    End
    Begin VB.TextBox txtCert 
@@ -145,7 +166,7 @@ Begin VB.Form Form1
       TabIndex        =   5
       Text            =   "reingart.crt"
       ToolTipText     =   "Ruta completa al Certificado X509 (.CRT)"
-      Top             =   2400
+      Top             =   2040
       Width           =   3255
    End
    Begin VB.CommandButton btnAutenticar 
@@ -156,6 +177,14 @@ Begin VB.Form Form1
       TabIndex        =   0
       Top             =   4680
       Width           =   1695
+   End
+   Begin VB.Label Label15 
+      Caption         =   "CA Cert:"
+      Height          =   255
+      Left            =   360
+      TabIndex        =   38
+      Top             =   4320
+      Width           =   1095
    End
    Begin VB.Label Label14 
       Caption         =   "Traza:"
@@ -186,7 +215,7 @@ Begin VB.Form Form1
       Height          =   255
       Left            =   360
       TabIndex        =   30
-      Top             =   4320
+      Top             =   3960
       Width           =   1575
    End
    Begin VB.Label Label11 
@@ -194,7 +223,7 @@ Begin VB.Form Form1
       Height          =   255
       Left            =   360
       TabIndex        =   28
-      Top             =   3960
+      Top             =   3600
       Width           =   1575
    End
    Begin VB.Label Label10 
@@ -226,7 +255,7 @@ Begin VB.Form Form1
       Height          =   255
       Left            =   120
       TabIndex        =   20
-      Top             =   3240
+      Top             =   2880
       Width           =   2895
    End
    Begin VB.Label Label6 
@@ -234,7 +263,7 @@ Begin VB.Form Form1
       Height          =   255
       Left            =   120
       TabIndex        =   19
-      Top             =   2040
+      Top             =   1680
       Width           =   2895
    End
    Begin VB.Label lblTRA 
@@ -274,7 +303,7 @@ Begin VB.Form Form1
       Height          =   255
       Left            =   360
       TabIndex        =   10
-      Top             =   3600
+      Top             =   3240
       Width           =   1695
    End
    Begin VB.Label lbls 
@@ -306,7 +335,7 @@ Begin VB.Form Form1
       Height          =   255
       Left            =   360
       TabIndex        =   2
-      Top             =   2400
+      Top             =   2040
       Width           =   1575
    End
    Begin VB.Label lblClavePrivada 
@@ -314,7 +343,7 @@ Begin VB.Form Form1
       Height          =   255
       Left            =   360
       TabIndex        =   1
-      Top             =   2760
+      Top             =   2400
       Width           =   1575
    End
 End
@@ -365,7 +394,11 @@ Private Sub btnAutenticar_Click()
     cache = txtCache.Text ' Directorio para archivos temporales (dejar en blanco para usar predeterminado)
     wsdl = cboURL.Text ' homologación
     proxy = txtProxy.Text ' usar "usuario:clave@servidor:puerto"
-    ok = WSAA.Conectar(cache, wsdl, proxy)
+    wrapper = cboWrapper.Text ' libreria http (httplib2, urllib2, pycurl)
+    cacert = txtCACert.Text ' certificado de la autoridad de certificante
+    
+    ok = WSAA.Conectar(cache, wsdl, proxy, wrapper, cacert)
+    Me.txtVersion = WSAA.Version
     ta = WSAA.LoginCMS(cms) ' Producción
 
     txtXmlRequest.Text = WSAA.XmlRequest
@@ -419,6 +452,18 @@ ManejoError:
     Debug.Assert False
 End Sub
 
+Private Sub cboWrapper_Click()
+    If cboWrapper.Text = "pycurl" Then
+        txtCACert.Text = WSAA.installdir & "\geotrust.crt"
+        txtCACert.Enabled = True
+        txtCACert.BackColor = &H80000014
+    Else
+        txtCACert.Text = WSAA.installdir & "\geotrust.crt"
+        txtCACert.Enabled = False
+        txtCACert.BackColor = &H8000000F
+    End If
+End Sub
+
 Private Sub Form_Load()
     ' Especificar la ubicacion de los archivos certificado y clave privada
     Path = CurDir() + "\"
@@ -430,7 +475,7 @@ Private Sub Form_Load()
 
     ' Crear objeto interface Web Service Autenticación y Autorización
     txtVersion.Text = WSAA.Version
-    txtInstallDir.Text = WSAA.InstallDir
+    txtInstallDir.Text = WSAA.installdir
     
     ' Deshabilito URL para homologación
     If InStr(WSAA.Version, "Homo") > 0 Then
@@ -455,3 +500,4 @@ ManejoError:
            "Esta aplicación puede no funcionar correctamente." & vbCrLf & _
            "Para más información: http://www.sistemasagiles.com.ar/", vbExclamation, "Advertencia:"
 End Sub
+

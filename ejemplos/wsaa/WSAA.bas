@@ -52,7 +52,7 @@ Sub Main()
     cache = "" ' Directorio para archivos temporales (dejar en blanco para usar predeterminado)
     wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl" ' homologación
     proxy = "" ' usar "usuario:clave@servidor:puerto"
-    ok = WSAA.Conectar(cache, wsdl, proxy)
+    ok = WSAA.Conectar(cache, wsdl, proxy, "pycurl")
     ta = WSAA.LoginCMS(cms) ' Producción
 
     Debug.Print "excepcion", WSAA.Excepcion
