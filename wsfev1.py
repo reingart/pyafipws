@@ -99,7 +99,8 @@ class WSFEv1:
                         'ParamGetTiposMonedas',
                         'ParamGetTiposOpcional',
                         'ParamGetTiposTributos',
-                        'ParamGetCotizacion',
+                        'ParamGetCotizacion', 
+                        'AnalizarXml', 'ObtenerTagXml',
                         'Dummy', 'Conectar', 'DebugLog', 'Eval']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -815,6 +816,31 @@ class WSFEv1:
     def xml_response(self):
         return self.XmlResponse
 
+    def AnalizarXml(self, xml=""):
+        "Analiza un mensaje XML (por defecto la respuesta)"
+        if not xml or xml=='XmlResponse':
+            xml = self.XmlResponse 
+        elif xml=='XmlRequest':
+            xml = self.XmlResponse 
+        self.xml = SimpleXMLElement(xml)
+
+    def ObtenerTagXml(self, *tags):
+        "Busca en el Xml analizado y devuelve el tag solicitado"
+        # convierto el xml a un objeto
+        try:
+            if self.xml:
+                xml = self.xml
+                # por cada tag, lo busco segun su nombre o posición
+                for tag in tags:
+                    xml = xml(tag) # atajo a getitem y getattr
+                # vuelvo a convertir a string el objeto xml encontrado
+                return str(xml)
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+
+
+def p_assert_eq(a,b):
+    print a, a==b and '==' or '!=', b
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -919,6 +945,35 @@ def main():
             open("xmlrequest.xml","wb").write(wsfev1.XmlRequest)
             open("xmlresponse.xml","wb").write(wsfev1.XmlResponse)
 
+        wsfev1.AnalizarXml("XmlResponse")
+        p_assert_eq(wsfev1.ObtenerTagXml('CAE'), str(wsfev1.CAE))
+        p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '2')
+        p_assert_eq(wsfev1.ObtenerTagXml('Obs',0,'Code'), "10063")
+        print wsfev1.ObtenerTagXml('Obs',0,'Msg')
+    
+    if "--get" in sys.argv:
+        tipo_cbte = 2
+        punto_vta = 4001
+        cbte_nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
+
+        wsfev1.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
+
+        print "FechaCbte = ", wsfev1.FechaCbte
+        print "CbteNro = ", wsfev1.CbteNro
+        print "PuntoVenta = ", wsfev1.PuntoVenta
+        print "ImpTotal =", wsfev1.ImpTotal
+        print "CAE = ", wsfev1.CAE
+        print "Vencimiento = ", wsfev1.Vencimiento
+        print "EmisionTipo = ", wsfev1.EmisionTipo
+        
+        wsfev1.AnalizarXml("XmlResponse")
+        p_assert_eq(wsfev1.ObtenerTagXml('CodAutorizacion'), str(wsfev1.CAE))
+        p_assert_eq(wsfev1.ObtenerTagXml('CbteFch'), wsfev1.FechaCbte)
+        p_assert_eq(wsfev1.ObtenerTagXml('MonId'), "PES")
+        p_assert_eq(wsfev1.ObtenerTagXml('MonCotiz'), "1")
+        p_assert_eq(wsfev1.ObtenerTagXml('DocTipo'), "80")
+        p_assert_eq(wsfev1.ObtenerTagXml('DocNro'), "33693450239")
+            
     if "--parametros" in sys.argv:
         import codecs, locale, traceback
         if sys.stdout.encoding is None:
