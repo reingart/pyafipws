@@ -84,8 +84,8 @@ Sub Main()
     tipo_doc = 80: nro_doc = "33693450239"
     cbte_nro = cbte_nro + 1
     cbt_desde = cbte_nro: cbt_hasta = cbte_nro
-    imp_total = "122.00": imp_tot_conc = "0.00": imp_neto = "100.00"
-    imp_iva = "21.00": imp_trib = "1.00": imp_op_ex = "0.00"
+    imp_total = "179.25": imp_tot_conc = "2.00": imp_neto = "150.00"
+    imp_iva = "26.25": imp_trib = "1.00": imp_op_ex = "0.00"
     fecha_cbte = fecha: fecha_venc_pago = ""
     ' Fechas del período del servicio facturado (solo si concepto = 1?)
     fecha_serv_desde = "": fecha_serv_hasta = ""
@@ -109,14 +109,36 @@ Sub Main()
     id = 99
     Desc = "Impuesto Municipal Matanza'"
     base_imp = "100.00"
+    alic = "0.10"
+    importe = "0.10"
+    ok = WSFEv1.AgregarTributo(id, Desc, base_imp, alic, importe)
+
+    ' Agrego impuestos varios
+    id = 4
+    Desc = "Impuestos internos"
+    base_imp = "100.00"
+    alic = "0.40"
+    importe = "0.40"
+    ok = WSFEv1.AgregarTributo(id, Desc, base_imp, alic, importe)
+
+    ' Agrego impuestos varios
+    id = 1
+    Desc = "Impuesto nacional"
+    base_imp = "50.00"
     alic = "1.00"
-    importe = "1.00"
+    importe = "0.50"
     ok = WSFEv1.AgregarTributo(id, Desc, base_imp, alic, importe)
 
     ' Agrego tasas de IVA
     id = 5 ' 21%
-    base_im = "100.00"
+    base_imp = "100.00"
     importe = "21.00"
+    ok = WSFEv1.AgregarIva(id, base_imp, importe)
+    
+    ' Agrego tasas de IVA al 0% (imp_tot_conc, solo para pruebas)
+    id = 4 ' 10.5%
+    base_imp = "50.00"
+    importe = "5.25"
     ok = WSFEv1.AgregarIva(id, base_imp, importe)
     
     ' Habilito reprocesamiento automático (predeterminado):
@@ -159,7 +181,36 @@ Sub Main()
     Debug.Print "Importe Total:", WSFEv1.ImpTotal
     Debug.Print "Resultado:", WSFEv1.Resultado
     
-    If CAE <> cae2 Then
+    If WSFEv1.Version >= "1.12a" Then
+        ok = WSFEv1.AnalizarXml("XmlResponse")
+        If ok Then
+            Debug.Print "CAE:", WSFEv1.ObtenerTagXml("CodAutorizacion"), WSFEv1.CAE
+            Debug.Print "CbteFch:", WSFEv1.ObtenerTagXml("CbteFch"), WSFEv1.FechaCbte
+            Debug.Print "Moneda:", WSFEv1.ObtenerTagXml("MonId")
+            Debug.Print "Cotizacion:", WSFEv1.ObtenerTagXml("MonCotiz")
+            Debug.Print "DocTIpo:", WSFEv1.ObtenerTagXml("DocTipo")
+            Debug.Print "DocNro:", WSFEv1.ObtenerTagXml("DocNro")
+            
+            ' ejemplos con arreglos (primer elemento = 0):
+            Debug.Print "Primer IVA (alci id):", WSFEv1.ObtenerTagXml("Iva", "AlicIva", 0, "Id")
+            Debug.Print "Primer IVA (importe):", WSFEv1.ObtenerTagXml("Iva", "AlicIva", 0, "Importe")
+            Debug.Print "Segundo IVA (alic id):", WSFEv1.ObtenerTagXml("Iva", "AlicIva", 1, "Id")
+            Debug.Print "Segundo IVA (importe):", WSFEv1.ObtenerTagXml("Iva", "AlicIva", 1, "Importe")
+            Debug.Print "Primer Tributo (ds):", WSFEv1.ObtenerTagXml("Tributos", "Tributo", 0, "Desc")
+            Debug.Print "Primer Tributo (importe):", WSFEv1.ObtenerTagXml("Tributos", "Tributo", 0, "Importe")
+            Debug.Print "Segundo Tributo (ds):", WSFEv1.ObtenerTagXml("Tributos", "Tributo", 1, "Desc")
+            Debug.Print "Segundo Tributo (importe):", WSFEv1.ObtenerTagXml("Tributos", "Tributo", 1, "Importe")
+            Debug.Print "Tercer Tributo (ds):", WSFEv1.ObtenerTagXml("Tributos", "Tributo", 2, "Desc")
+            Debug.Print "Tercer Tributo (importe):", WSFEv1.ObtenerTagXml("Tributos", "Tributo", 2, "Importe")
+        Else
+            ' hubo error, muestro mensaje
+            Debug.Print WSFEv1.Excepcion
+        End If
+    End If
+    
+    If CAE = "" Then
+        ' hubo error, no comparo
+    ElseIf CAE <> cae2 Then
         MsgBox "El CAE de la factura no concuerdan con el recuperado en la AFIP!: " & CAE & " vs " & cae2
     Else
         MsgBox "El CAE de la factura concuerdan con el recuperado de la AFIP"
@@ -169,20 +220,45 @@ Sub Main()
     Exit Sub
 ManejoError:
     ' Si hubo error:
-    Debug.Print WSFEv1.Excepcion
+    
+    ' Depuración (grabar a un archivo los detalles del error)
+    fd = FreeFile
+    Open "c:\error.txt" For Append As fd
+    If Not WSAA Is Nothing Then
+        If WSAA.Version >= "1.02a" Then
+            Print #fd, WSAA.Excepcion
+            Print #fd, WSAA.Traceback
+            Print #fd, WSAA.XmlRequest
+            Print #fd, WSAA.XmlResponse
+            ' guardo mensaje de error para mostrarlo:
+            Excepcion = WSAA.Excepcion
+        End If
+    End If
+    If Not WSFEv1 Is Nothing Then
+        If WSFEv1.Version >= "1.10a" Then
+            Print #fd, WSFEv1.Excepcion
+            Print #fd, WSFEv1.Traceback
+            Print #fd, WSFEv1.XmlRequest
+            Print #fd, WSFEv1.XmlResponse
+            Print #fd, WSFEv1.DebugLog()
+            ' guardo mensaje de error para mostrarlo:
+            Excepcion = WSFEv1.Excepcion
+        End If
+    End If
+    Close fd
+    
     Debug.Print Err.Description            ' descripción error afip
     Debug.Print Err.Number - vbObjectError ' codigo error afip
-    Select Case MsgBox(Err.Description, vbCritical + vbRetryCancel, "Error:" & Err.Number - vbObjectError & " en " & Err.Source)
+    If Excepcion = "" Then                 ' si no tengo mensaje de excepcion
+        Excepcion = Err.Description        ' uso el error de VB
+    End If
+    
+    ' Mostrar el mensaje de error
+    Select Case MsgBox(Excepcion, vbCritical + vbRetryCancel, "Error:" & Err.Number - vbObjectError & " en " & Err.Source)
         Case vbRetry
-            Debug.Print WSFEv1.XmlRequest
-            Debug.Print WSFEv1.XmlResponse
-            Debug.Print WSFEv1.traceback
             Debug.Assert False
             Resume
         Case vbCancel
             Debug.Print Err.Description
     End Select
-    Debug.Print WSFEv1.XmlRequest
-    Debug.Assert False
-    Debug.Print WSFEv1.traceback
 End Sub
