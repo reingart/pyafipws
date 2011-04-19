@@ -125,39 +125,61 @@ class WSAA:
         self.Token = self.Sign = None
         self.InstallDir = INSTALL_DIR
         self.Excepcion = self.Traceback = ""
+        self.XmlRequest = self.XmlResponse = ""
         self.xml = None
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
         # cliente soap del web service
-        if wrapper:
-            Http = set_http_wrapper(wrapper)
-            self.Version = WSAA.Version + " " + Http._wrapper_version
-        if not isinstance(proxy,dict):
-            proxy_dict = parse_proxy(proxy)
-        else:
-            proxy_dict = proxy
-        if HOMO or not wsdl:
-            wsdl = WSDL
-        if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
-            wsdl += "?wsdl"
-        if not cache or HOMO:
-            # use 'cache' from installation base directory 
-            cache = os.path.join(self.InstallDir, 'cache')
-        self.client = SoapClient(
-            wsdl = wsdl,        
-            cache = cache,
-            proxy = proxy_dict,
-            cacert = cacert,
-            trace = "--trace" in sys.argv)
-        return True
+        try:
+            if wrapper:
+                Http = set_http_wrapper(wrapper)
+                self.Version = WSAA.Version + " " + Http._wrapper_version
+            if not isinstance(proxy,dict):
+                proxy_dict = parse_proxy(proxy)
+            else:
+                proxy_dict = proxy
+            if HOMO or not wsdl:
+                wsdl = WSDL
+            if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
+                wsdl += "?wsdl"
+            if not cache or HOMO:
+                # use 'cache' from installation base directory 
+                cache = os.path.join(self.InstallDir, 'cache')
+            self.client = SoapClient(
+                wsdl = wsdl,        
+                cache = cache,
+                proxy = proxy_dict,
+                cacert = cacert,
+                trace = "--trace" in sys.argv)
+            return True
+        except Exception, e:
+            import traceback
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            self.Excepcion = u"%s" % (e)
+        return False
 
     def CreateTRA(self, service="wsfe", ttl=2400):
         "Crear un Ticket de Requerimiento de Acceso (TRA)"
-        return create_tra(service,ttl)
-
+        try:
+            return create_tra(service,ttl)
+        except Exception, e:
+            import traceback
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            self.Excepcion = u"%s" % (e)
+        return ""
+        
     def SignTRA(self, tra, cert, privatekey):
         "Firmar el TRA y devolver CMS"
-        return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'))
+        try:
+            return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'))
+        except Exception, e:
+            import traceback
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            self.Excepcion = u"%s" % (e)
+        return ""
 
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
@@ -181,6 +203,7 @@ class WSAA:
         finally:
             self.XmlRequest = self.client.xml_request
             self.XmlResponse = self.client.xml_response
+        return ""
             
     def CallWSAA(self, cms, url="", proxy=None):
         "Obtener ticket de autorización (TA) -version retrocompatible-"
