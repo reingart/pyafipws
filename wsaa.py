@@ -39,9 +39,8 @@ WSAAURL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms" # homologacion (pr
 SOAP_ACTION = 'http://ar.gov.afip.dif.facturaelectronica/' # Revisar WSDL
 SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL 
 
-# Verificación del web server remoto (opcional?) igual no se usa
-REMCN = "wsaahomo.afip.gov.ar" # WSAA homologacion CN (CommonName)
-REMCACERT = "AFIPcerthomo.crt" # WSAA homologacion CA Cert
+# Verificación del web server remoto
+CACERT = "geotrust.crt" # WSAA CA Cert
 
 HOMO = True
 
@@ -126,8 +125,9 @@ class WSAA:
         self.Token = self.Sign = None
         self.InstallDir = INSTALL_DIR
         self.Excepcion = self.Traceback = ""
+        self.xml = None
 
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
         # cliente soap del web service
         if wrapper:
             Http = set_http_wrapper(wrapper)
@@ -147,6 +147,7 @@ class WSAA:
             wsdl = wsdl,        
             cache = cache,
             proxy = proxy_dict,
+            cacert = cacert,
             trace = "--trace" in sys.argv)
         return True
 
@@ -160,6 +161,7 @@ class WSAA:
 
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
+        self.xml = None # limpio xml anterior
         try:
             self.Excepcion = self.Traceback = ""
             self.Token = self.Sign = ""
@@ -190,11 +192,16 @@ class WSAA:
 
     def AnalizarXml(self, xml=""):
         "Analiza un mensaje XML (por defecto el ticket de acceso)"
-        if not xml or xml=='XmlResponse':
-            xml = self.XmlResponse 
-        elif xml=='XmlRequest':
-            xml = self.XmlResponse 
-        self.xml = SimpleXMLElement(xml)
+        try:
+            if not xml or xml=='XmlResponse':
+                xml = self.XmlResponse 
+            elif xml=='XmlRequest':
+                xml = self.XmlRequest 
+            self.xml = SimpleXMLElement(xml)
+            return True
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+            return False
 
     def ObtenerTagXml(self, *tags):
         "Busca en el Xml analizado y devuelve el tag solicitado"
@@ -259,6 +266,8 @@ if __name__=="__main__":
         service = len(argv)>3 and argv[3] or "wsfe"
         ttl = len(argv)>4 and int(argv[4]) or 36000
         url = len(argv)>5 and argv[5] or WSAAURL
+        wrapper = len(argv)>6 and argv[6] or None
+        cacert = len(argv)>7 and argv[7] or CACERT
 
         print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s TTL=%s" % (cert,privatekey,url,service, ttl)
 
@@ -286,17 +295,24 @@ if __name__=="__main__":
         #open("TRA.tmp","w").write(cms)
         #cms = open("TRA.tmp").read()
         print "Conectando a WSAA"
-        wsaa.Conectar("", url, proxy)
+        wrapper = wrapper # "pycurl" o "httplib2" o "urrlib2"
+        cacert = cacert # "geotrust.crt" o "thawte.crt"
+        wsaa.Conectar("", url, proxy, wrapper, cacert)
+        print wsaa.Version
+        if wrapper!='pycurl' or not cacert: 
+            print "NO SE VERIFICA CERTIFICADO CA!"
+        else:
+            print "Verificando CA: ", cacert
         print "Llamando WSAA..."
-        try:
-            ta = wsaa.LoginCMS(cms)
-        except SoapFault,e:
-            sys.exit("Falla SOAP: %s\n%s\n" % (e.faultcode,e.faultstring))
+        ta = wsaa.LoginCMS(cms)
+        if wsaa.Excepcion:
+            sys.exit("Falla SOAP: %s\n" % wsaa.Excepcion)
         if ta=='':
             sys.exit("No se generó TA.xml\n")
         try:
-            open("TA.xml","w").write(ta)
-            print "El archivo TA.xml se ha generado correctamente."
+            if ta is not None:
+                open("TA.xml","w").write(ta)
+                print "El archivo TA.xml se ha generado correctamente."
         except Exception, e:
             if "--debug" in args:
                 raise
