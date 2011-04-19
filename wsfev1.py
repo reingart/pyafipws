@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11a"
+__version__ = "1.12a"
 
 import datetime
 import decimal
@@ -137,6 +137,9 @@ class WSFEv1:
         self.InstallDir = INSTALL_DIR
         self.Reprocesar = True # recuperar automaticamente CAE emitidos
         self.LanzarExcepciones = True
+        self.Traceback = self.Excepcion = ""
+        self.XmlRequest = self.XmlResponse = ""
+        self.xml = None
         
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -178,7 +181,7 @@ class WSFEv1:
         return msg    
 
     @inicializar_y_capturar_execepciones
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
         # cliente soap del web service
         if wrapper:
             Http = set_http_wrapper(wrapper)
@@ -199,6 +202,7 @@ class WSFEv1:
             wsdl = wsdl,        
             cache = cache,
             proxy = proxy_dict,
+            cacert = cacert,
             trace = "--trace" in sys.argv)
         return True
 
@@ -818,11 +822,16 @@ class WSFEv1:
 
     def AnalizarXml(self, xml=""):
         "Analiza un mensaje XML (por defecto la respuesta)"
-        if not xml or xml=='XmlResponse':
-            xml = self.XmlResponse 
-        elif xml=='XmlRequest':
-            xml = self.XmlResponse 
-        self.xml = SimpleXMLElement(xml)
+        try:
+            if not xml or xml=='XmlResponse':
+                xml = self.XmlResponse 
+            elif xml=='XmlRequest':
+                xml = self.XmlRequest 
+            self.xml = SimpleXMLElement(xml)
+            return True
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+            return False
 
     def ObtenerTagXml(self, *tags):
         "Busca en el Xml analizado y devuelve el tag solicitado"
