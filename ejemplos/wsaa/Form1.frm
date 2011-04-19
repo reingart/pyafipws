@@ -466,11 +466,11 @@ End Sub
 
 Private Sub cboWrapper_Click()
     If cboWrapper.Text = "pycurl" Then
-        txtCACert.Text = WSAA.installdir & "\geotrust.crt"
+        txtCACert.Text = WSAA.InstallDir & "\geotrust.crt"
         txtCACert.Enabled = True
         txtCACert.BackColor = &H80000014
     Else
-        txtCACert.Text = WSAA.installdir & "\geotrust.crt"
+        txtCACert.Text = WSAA.InstallDir & "\geotrust.crt"
         txtCACert.Enabled = False
         txtCACert.BackColor = &H8000000F
     End If
@@ -485,9 +485,12 @@ Private Sub Form_Load()
     On Error GoTo ManejoError
     Set WSAA = CreateObject("WSAA")
 
+    ' deshabilito errores no manejados
+    WSAA.LanzarExcepciones = False
+
     ' Crear objeto interface Web Service Autenticación y Autorización
     txtVersion.Text = WSAA.Version
-    txtInstallDir.Text = WSAA.installdir
+    txtInstallDir.Text = WSAA.InstallDir
     
     ' Deshabilito URL para homologación
     If InStr(WSAA.Version, "Homo") > 0 Then
@@ -508,7 +511,7 @@ ManejoError:
         Case vbCancel
             Debug.Print Err.Description
     End Select
-    MsgBox "No está correctamente instalada la interfaz WSAA de PyAfipWs version 2.02 o superior." & vbCrLf & _
+    MsgBox "No está correctamente instalada la interfaz WSAA de PyAfipWs version 2.04 o superior." & vbCrLf & _
            "Esta aplicación puede no funcionar correctamente." & vbCrLf & _
            "Para más información: http://www.sistemasagiles.com.ar/", vbExclamation, "Advertencia:"
 End Sub

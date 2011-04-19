@@ -13,6 +13,9 @@ Sub Main()
     Debug.Print Err.Description
     Set WSAA = CreateObject("WSAA")
     Debug.Print WSAA.Version
+    
+    ' deshabilito errores no manejados (version 2.04 o superior)
+    WSAA.LanzarExcepciones = False
 
     ' Generar un Ticket de Requerimiento de Acceso (TRA)
     tra = WSAA.CreateTRA("wsfe", 43200) ' 3600*12
@@ -26,6 +29,7 @@ Sub Main()
     ClavePrivada = "..\..\reingart.key" ' clave privada de prueba
     
     ' Leo el contenido del certificado y clave privada
+    ' (no obligatorio, puede pasarse el nombre de archivo como en versiones anteriors)
     Open Path + Certificado For Input As #1
     cert = ""
     Do Until EOF(1)
