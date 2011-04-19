@@ -12,13 +12,14 @@ Sub Main()
     ' Crear objeto interface Web Service Autenticación y Autorización
     Set WSAA = CreateObject("WSAA")
     Debug.Print WSAA.Version
-    If WSAA.Version < "2.02" Then
+    If WSAA.Version < "2.04" Then
         MsgBox "Debe instalar una versión más actualizada de PyAfipWs WSAA!"
         End
     End If
 
-    'Debug.Print WSAA.InstallDir
-    
+    ' deshabilito errores no manejados (version 2.04 o superior)
+    WSAA.LanzarExcepciones = False
+        
     ' Generar un Ticket de Requerimiento de Acceso (TRA) para WSFEv1
     ttl = 36000 ' tiempo de vida = 10hs hasta expiración
     tra = WSAA.CreateTRA("wsfe", ttl)
@@ -62,7 +63,7 @@ Sub Main()
     ' Crear objeto interface Web Service de Factura Electrónica de Mercado Interno
     Set WSFEv1 = CreateObject("WSFEv1")
     Debug.Print WSFEv1.Version
-    If WSAA.Version < "1.10" Then
+    If WSAA.Version < "1.12" Then
         MsgBox "Debe instalar una versión mas actualizada de PyAfipWs WSFEv1!"
         End
     End If
