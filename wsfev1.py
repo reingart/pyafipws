@@ -100,6 +100,7 @@ class WSFEv1:
                         'ParamGetTiposOpcional',
                         'ParamGetTiposTributos',
                         'ParamGetCotizacion', 
+                        'ParamGetPtosVenta',
                         'AnalizarXml', 'ObtenerTagXml',
                         'Dummy', 'Conectar', 'DebugLog', 'Eval']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
@@ -811,6 +812,16 @@ class WSFEv1:
         self.__analizar_errores(ret)
         res = ret['FEParamGetCotizacionResult']['ResultGet']
         return str(res.get('MonCotiz',""))
+        
+    @inicializar_y_capturar_execepciones
+    def ParamGetPtosVenta(self):
+        "Recuperador de valores referenciales Puntos de Venta registrados"
+        ret = self.client.FEParamGetPtosVenta(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetPtosVentaResult']
+        return [u"%(Nro)s: EmisionTipo:%(EmisionTipo)s Bloqueado:%(Bloqueado)s FchBaja:%(FchBaja)s" % p['PtoVenta']
+                 for p in res['ResultGet']]
 
     @property
     def xml_request(self):
@@ -906,7 +917,7 @@ def main():
         cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
         concepto = 2
-        tipo_doc = 80; nro_doc = "33693450239" # CUIT AFIP
+        tipo_doc = 80; nro_doc = "30500010912" # CUIT BNA
         cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
         imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
         imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
@@ -981,7 +992,7 @@ def main():
         p_assert_eq(wsfev1.ObtenerTagXml('MonId'), "PES")
         p_assert_eq(wsfev1.ObtenerTagXml('MonCotiz'), "1")
         p_assert_eq(wsfev1.ObtenerTagXml('DocTipo'), "80")
-        p_assert_eq(wsfev1.ObtenerTagXml('DocNro'), "33693450239")
+        p_assert_eq(wsfev1.ObtenerTagXml('DocNro'), "30500010912")
             
     if "--parametros" in sys.argv:
         import codecs, locale, traceback
@@ -1003,6 +1014,8 @@ def main():
         print u'\n'.join(wsfev1.ParamGetTiposOpcional())
         print "=== Tipos de Tributo ==="
         print u'\n'.join(wsfev1.ParamGetTiposTributos())
+        print "=== Puntos de Venta ==="
+        print u'\n'.join(wsfev1.ParamGetPtosVenta())
 
     if "--cotizacion" in sys.argv:
         print wsfev1.ParamGetCotizacion('DOL')
