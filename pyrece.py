@@ -711,7 +711,7 @@ class PyRece(model.Background):
             if j != 1:
                 pass # no abrir más de 1 factura
             elif sys.platform.startswith("linux"):
-                os.system("evince %s" % archivo)
+                os.system("evince '%s'" % archivo)
             else:
                 os.system(archivo)
         except Exception, e:
