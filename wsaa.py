@@ -146,11 +146,6 @@ class WSAA:
             if not cache or HOMO:
                 # use 'cache' from installation base directory 
                 cache = os.path.join(self.InstallDir, 'cache')
-            # Si no existe el directorio cache, lo crea
-            try:
-                os.makedirs(cache)
-            except OSError:
-                pass
             self.client = SoapClient(
                 wsdl = wsdl,        
                 cache = cache,
