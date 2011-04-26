@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12a"
+__version__ = "1.12b"
 
 import datetime
 import decimal
@@ -789,7 +789,7 @@ class WSFEv1:
             )
         res = ret['FEParamGetTiposOpcionalResult']
         return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['OpcionalTipo']
-                 for p in res['ResultGet']]
+                 for p in res.get('ResultGet', [])]
 
     @inicializar_y_capturar_execepciones
     def ParamGetTiposTributos(self):
@@ -819,9 +819,9 @@ class WSFEv1:
         ret = self.client.FEParamGetPtosVenta(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
-        res = ret['FEParamGetPtosVentaResult']
+        res = ret.get('FEParamGetPtosVentaResult', {})
         return [u"%(Nro)s: EmisionTipo:%(EmisionTipo)s Bloqueado:%(Bloqueado)s FchBaja:%(FchBaja)s" % p['PtoVenta']
-                 for p in res['ResultGet']]
+                 for p in res.get('ResultGet', [])]
 
     @property
     def xml_request(self):
