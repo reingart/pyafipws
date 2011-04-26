@@ -23,15 +23,20 @@ opts = {
     'includes':includes,
     'optimize':2,
     'excludes': excludes,
+    'dll_excludes': ["mswsock.dll", "powrprof.dll", "KERNELBASE.dll", 
+                     "API-MS-Win-Core-LocalRegistry-L1-1-0.dll",
+                     "API-MS-Win-Core-ProcessThreads-L1-1-0.dll",
+                     "API-MS-Win-Security-Base-L1-1-0.dll"
+                     ],
     }}
 
 data_files = [
-    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt", "rece.ini.dist"]),
+    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt", "rece.ini.dist", "geotrust.crt"]),
     ("cache", glob.glob("cache/*")),
     ]
 
-import wsfev1
-from nsis import build_installer
+import wsfev1, rece1, wsaa
+from nsis import build_installer, Target
 
 setup( 
     name="WSFEV1",
@@ -42,8 +47,11 @@ setup(
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = ["wsfev1"],
-    console=['wsfev1.py', 'rece1.py', 'wsaa.py'],
+    com_server = [Target(module=wsfev1,modules="wsfev1")],
+    console=[Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
+             Target(module=rece1, script='rece1.py'), 
+             Target(module=wsaa, script='wsaa.py'),
+             ],
     options=opts,
     data_files = data_files,
     cmdclass = {"py2exe": build_installer}

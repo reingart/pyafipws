@@ -23,15 +23,20 @@ opts = {
     'includes':includes,
     'optimize':2,
     'excludes': excludes,
+    'dll_excludes': ["mswsock.dll", "powrprof.dll", "KERNELBASE.dll", 
+                 "API-MS-Win-Core-LocalRegistry-L1-1-0.dll",
+                 "API-MS-Win-Core-ProcessThreads-L1-1-0.dll",
+                 "API-MS-Win-Security-Base-L1-1-0.dll"
+                 ],
     }}
 
 data_files = [
-    (".", ["licencia.txt"]),
+    (".", ["licencia.txt", "geotrust.crt"]),
     ("cache", glob.glob("cache/*")),
     ]
 
 import wsaa
-from nsis import build_installer
+from nsis import build_installer, Target
 
 setup( 
     name="WSAA",
@@ -42,8 +47,8 @@ setup(
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = ["wsaa"],
-    console=['wsaa.py'],
+    com_server = [Target(module=wsaa, modules='wsaa', create_exe=False, create_dll=True)],
+    console=[Target(module=wsaa, script="wsaa.py", dest_base="wsaa")],
     options=opts,
     data_files = data_files,
     cmdclass = {"py2exe": build_installer}

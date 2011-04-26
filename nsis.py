@@ -217,3 +217,15 @@ class NSISScript:
 
     def compile(self, pathname="base.nsi"):
         os.startfile(pathname, 'compile')
+        
+        
+class Target():
+    def __init__(self, module, **kw):
+        self.__dict__.update(kw)
+        # for the version info resources (Properties -- Version)
+        # convertir 1.21a en 1.21.1
+        self.version = module.__version__[:-1]+"."+str(ord(module.__version__[-1])-96)
+        self.description = module.__doc__
+        self.company_name = "Sistemas Agiles"
+        self.copyright = module.__copyright__
+        self.name = "Interfaz PyAfipWs - %s" % os.path.basename(module.__file__).replace(".pyc", ".py")
