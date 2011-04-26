@@ -28,7 +28,8 @@ Sub Main()
     Debug.Print cms
     
     ' Llamar al web service para autenticar:
-    ta = WSAA.CallWSAA(cms) ' Homologación
+    url = "" ' "https://wsaa.afip.gov.ar/ws/services/LoginCms"
+    ta = WSAA.CallWSAA(cms, url) ' Homologación
 
     ' Imprimir el ticket de acceso, ToKen y Sign de autorización
     Debug.Print ta
@@ -48,7 +49,8 @@ Sub Main()
     WSFEv1.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    ok = WSFEv1.Conectar("") ' homologación
+    wsdl = "" ' "file:///C:/pyafipws/wsfev1_wsdl.xml"
+    ok = WSFEv1.Conectar("", wsdl) ' produccion
         
     ' Prueba de tablas referenciales de parámetros
 
@@ -82,7 +84,11 @@ Sub Main()
         Debug.Print x
     Next
         
-        
+    ' recupero lista de puntos de venta habilitados
+    For Each x In WSFEv1.ParamGetPtosVenta()
+        Debug.Print x
+    Next
+    
     ' busco la cotización del dolar (ver Param Mon)
     ctz = WSFEv1.ParamGetCotizacion("DOL")
     MsgBox "Cotización Dólar: " & ctz
@@ -94,6 +100,7 @@ ManejoError:
     Debug.Print Err.Number - vbObjectError ' codigo error afip
     Select Case MsgBox(Err.Description, vbCritical + vbRetryCancel, "Error:" & Err.Number - vbObjectError & " en " & Err.Source)
         Case vbRetry
+            Debug.Print WSFEv1.Excepcion
             Debug.Print WSFEv1.Traceback
             Debug.Print WSFEv1.XmlRequest
             Debug.Print WSFEv1.XmlResponse
