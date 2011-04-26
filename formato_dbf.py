@@ -156,7 +156,10 @@ def escribir(regs, archivos=None):
                     if (v is None or v=='') and tipo in (I, N):
                         v = 0
                     if tipo == A:
-                        v = unicode(v)
+                        if isinstance(v, str):
+                            v = unicode(v,'latin1', 'ignore')
+                        else:
+                            v = str(v)
                     r[dar_nombre_campo(clave)] = v
                 registro = tabla.append(r)
             tabla.close()
