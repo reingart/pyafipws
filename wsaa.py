@@ -19,7 +19,7 @@ Devuelve TA.xml (ticket de autorización de WSAA)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.04a"
+__version__ = "2.04b"
 
 import datetime,email,os,sys
 from php import date
@@ -305,6 +305,7 @@ if __name__=="__main__":
 
         # creo el objeto para comunicarme con el ws
         wsaa = WSAA()
+        wsaa.LanzarExcepciones = True
         
         if '--proxy' in args:
             proxy = parse_proxy(sys.argv[sys.argv.index("--proxy")+1])
