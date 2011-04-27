@@ -28,6 +28,7 @@ opts = {
                  "API-MS-Win-Core-ProcessThreads-L1-1-0.dll",
                  "API-MS-Win-Security-Base-L1-1-0.dll"
                  ],
+    'skip_archive': True,
     }}
 
 data_files = [

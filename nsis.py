@@ -191,7 +191,8 @@ class NSISScript:
         self.comserver_files = [self.chop(p) for p in comserver_files if p.lower().endswith(".dll")]
 
     def chop(self, pathname):
-        assert pathname.startswith(self.dist_dir)
+        #print pathname, self.dist_dir
+        #assert pathname.startswith(self.dist_dir)
         return pathname[len(self.dist_dir):]
     
     def create(self, pathname="base.nsi"):
