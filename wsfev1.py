@@ -874,7 +874,13 @@ def main():
 
     wsfev1 = WSFEv1()
 
-    wsfev1.Conectar()
+    cache = None
+    wsdl = "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL"
+    proxy = ""
+    wrapper = "pycurl"
+    cacert = "geotrust.crt"
+
+    wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
 
     if DEBUG:
         print "LOG: ", wsfev1.DebugLog()
