@@ -92,7 +92,7 @@ ENCABEZADO = [
 
 TRIBUTO = [
     ('tipo_reg', 1, N), # 1: tributo
-    ('id', 16, A),
+    ('tributo_id', 16, A),
     ('desc', 100, A),
     ('base_imp', 15, I, 3), 
     ('alic', 15, I, 3), 
@@ -101,7 +101,7 @@ TRIBUTO = [
 
 IVA = [
     ('tipo_reg', 1, N), # 2: tributo
-    ('id', 16, A),
+    ('iva_id', 16, A),
     ('base_imp', 15, I, 3), 
     ('importe', 15, I, 3), 
     ]
@@ -255,11 +255,11 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             cae = ws.CAEARegInformativo()
             dic = ws.factura
         dic.update({
-            'cae':cae,
-            'fch_venc_cae': ws.Vencimiento,
+            'cae': str(cae),
+            'fch_venc_cae': str(ws.Vencimiento),
             'resultado': ws.Resultado,
             'motivos_obs': ws.Obs,
-            'err_code': ws.ErrCode,
+            'err_code': str(ws.ErrCode),
             'err_msg': ws.ErrMsg,
             'reproceso': ws.Reproceso,
             'emision_tipo': ws.EmisionTipo,
@@ -267,7 +267,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         escribir_factura(dic, salida)
         print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
 
-def escribir_factura(dic, archivo):
+def escribir_factura(dic, archivo, agrega=False):
     dic['tipo_reg'] = 0
     archivo.write(escribir(dic, ENCABEZADO))
     if 'tributos' in dic:
@@ -309,22 +309,36 @@ def escribir_factura(dic, archivo):
                 claves.append(clave.replace("_","")[:10])
             filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
             if DEBUG: print "leyendo tabla", nombre, filename
-            tabla = dbf.Table(filename, campos)
+            if agrega:
+                tabla = dbf.Table(filename, campos)
+            else:
+                tabla = dbf.Table(filename)
 
             for d in l:
                 r = {}
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
-                    v = d.get(clave, None)
-                    if DEBUG: print clave,v, tipo
-                    if v is None and tipo == A:
-                        v = ''
-                    if (v is None or v=='') and tipo in (I, N):
-                        v = 0
-                    if tipo == A:
-                        v = unicode(v)
-                    r[clave.replace("_","")[:10]] = v
-                registro = tabla.append(r)
+                    if agrega or clave in d:
+                        v = d.get(clave, None)
+                        if DEBUG: print clave,v, tipo
+                        if v is None and tipo == A:
+                            v = ''
+                        if (v is None or v=='') and tipo in (I, N):
+                            v = 0
+                        if tipo == A:
+                            v = unicode(v)
+                        r[clave.replace("_","")[:10]] = v
+                if agrega:
+                    print "Agregando ", r
+                    registro = tabla.append(r)
+                else:
+                    print "Actualizando ", r
+                    reg = tabla.current()
+                    for k, v in reg.scatter_fields().items():
+                        if k not in r:
+                            r[k] = v
+                    print "Actualizando ", r
+                    reg.write_record(**r)
             tabla.close()
 
 def depurar_xml(client):
@@ -405,6 +419,10 @@ if __name__ == "__main__":
     if DEBUG:
         print "wsaa_url %s\nwsfev1_url %s\ncuit %s" % (wsaa_url, wsfev1_url, cuit)
     
+    if '/x' in sys.argv:
+        escribir_factura({'err_msg': "Prueba",
+                     }, open("x.txt","w"))
+
     try:
         ws = wsfev1.WSFEv1()
         ws.Conectar("", wsfev1_url)
@@ -467,17 +485,17 @@ if __name__ == "__main__":
                 nro = 1234
                 ws.AgregarCmpAsoc(tipo, pto_vta, nro)
             
-            id = 99
+            tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
             base_imp = 100
             alic = 1
             importe = 1
-            ws.AgregarTributo(id, desc, base_imp, alic, importe)
+            ws.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
-            id = 5 # 21%
+            iva_id = 5 # 21%
             base_imp = 100
             importe = 21
-            ws.AgregarIva(id, base_imp, importe) 
+            ws.AgregarIva(iva_id, base_imp, importe) 
                         
             f_entrada = open(entrada,"w")
                 
@@ -537,7 +555,7 @@ if __name__ == "__main__":
                               'cbt_desde': ws.CbteNro, 
                               'fecha_cbte': ws.FechaCbte, 
                               'imp_total': ws.ImpTotal, 
-                              'cae': ws.CAE, 
+                              'cae': str(ws.CAE), 
                               'fch_venc_cae': ws.Vencimiento,  
                               'emision_tipo': ws.EmisionTipo, 
                               'err_msg': ws.ErrMsg,
@@ -576,7 +594,7 @@ if __name__ == "__main__":
                 print "FchTopeInf:", ws.FchTopeInf 
                 print "FchProceso:", ws.FchProceso
 
-            escribir_factura({'cae': caea, 
+            escribir_factura({'cae': str(caea), 
                               'emision_tipo': "CAEA", 
                              }, open(salida,"w"))
                               
