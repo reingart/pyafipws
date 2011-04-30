@@ -210,6 +210,7 @@ class WSBFE:
         self.XmlResponse = ''
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
+        self.Obs = None
         self.client = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
