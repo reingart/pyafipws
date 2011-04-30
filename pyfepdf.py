@@ -156,7 +156,7 @@ class FEPDF:
             cbte_nro=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago="", 
             fecha_serv_desde=None, fecha_serv_hasta=None, 
-            moneda_id="PES", moneda_ctz="1.0000", cae="", fecha_vto_cae="", id_impositivo='',
+            moneda_id="PES", moneda_ctz="1.0000", cae="", fch_venc_cae="", id_impositivo='',
             nombre_cliente="", domicilio_cliente="", pais_dst_cmp=None,
             obs_comerciales="", obs_generales="", forma_pago="", incoterms="", 
             idioma_cbte=7, motivo="", descuento=0.0,
@@ -180,8 +180,8 @@ class FEPDF:
                 'obs_generales': obs_generales,
                 'id_impositivo': id_impositivo,
                 'forma_pago': forma_pago, 'incoterms': incoterms,
-                'cae': cae, 'fecha_vto_cae': fecha_vto_cae,
-                'motivo': motivo,
+                'cae': cae, 'fch_venc_cae': fch_venc_cae,
+                'motivos_obs': motivo,
                 'descuento': descuento,
                 'cbtes_asoc': [],
                 'tributos': [],
@@ -462,8 +462,8 @@ class FEPDF:
         if HOMO:
             self.AgregarDato("homo", "HOMOLOGACIÓN")
 
-        if fact['motivo'] and fact['motivo']<>'00':
-            motivos_ds = u"Irregularidades observadas por AFIP (F136): código %s" % fact['motivo']
+        if fact['motivos_obs'] and fact['motivos_obs']<>'00':
+            motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
         elif HOMO:
             motivos_ds = u"Ejemplo Sin validez fiscal - Homologación - Testing"
         else:
@@ -646,10 +646,10 @@ class FEPDF:
 
                 f.set('motivos_ds', motivos_ds)
                 f.set('CAE', fact['cae'])
-                f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto_cae']))
+                f.set('CAE.Vencimiento', self.fmt_date(fact['fch_venc_cae']))
                 if fact['cae']!="NULL" and self.CUIT:
                     barras = ''.join([self.CUIT, "%02d" % fact['tipo_cbte'], "%04d" % fact['punto_vta'], 
-                        str(fact['cae']), fact['fecha_vto_cae']])
+                        str(fact['cae']), fact['fch_venc_cae']])
                     barras = barras + self.digito_verificador_modulo10(barras)
                 else:
                     barras = ""
@@ -790,13 +790,13 @@ if __name__ == '__main__':
             motivo = "11"
 
             cae = "61123022925855"
-            fecha_vto_cae = "20110320"
+            fch_venc_cae = "20110320"
             
             fepdf.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
                 cbte_nro, imp_total, imp_tot_conc, imp_neto,
                 imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
                 fecha_serv_desde, fecha_serv_hasta, 
-                moneda_id, moneda_ctz, cae, fecha_vto_cae, id_impositivo,
+                moneda_id, moneda_ctz, cae, fch_venc_cae, id_impositivo,
                 nombre_cliente, domicilio_cliente, pais_dst_cmp, 
                 obs_comerciales, obs_generales, forma_pago, incoterms, 
                 idioma_cbte, motivo)
