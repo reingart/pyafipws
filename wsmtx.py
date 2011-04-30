@@ -32,7 +32,7 @@ HOMO = True
 
 WSDL="https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
-def inicializar_y_capturar_execepciones(func):
+def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
@@ -81,7 +81,7 @@ def inicializar_y_capturar_execepciones(func):
     return capturar_errores_wrapper
     
 class WSMTXCA:
-    "Interfase para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
+    "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc',
                         'AutorizarComprobante', 
@@ -169,7 +169,7 @@ class WSMTXCA:
             msg = u''
         return msg    
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None):
         # cliente soap del web service
         if wrapper:
@@ -284,7 +284,7 @@ class WSMTXCA:
         self.factura['detalles'].append(item)
         return True
     
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def AutorizarComprobante(self):
         f = self.factura
         # contruyo la estructura a convertir en XML:
@@ -360,7 +360,7 @@ class WSMTXCA:
             self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
         return self.CAE
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def SolicitarCAEA(self, periodo, orden):
         
         ret = self.client.solicitarCAEA(
@@ -384,7 +384,7 @@ class WSMTXCA:
         return self.CAEA and str(self.CAEA) or ''
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarCAEA(self, periodo=None, orden=None, caea=None):
         "Método de consulta de CAEA"
 
@@ -431,7 +431,7 @@ class WSMTXCA:
         return self.CAEA and str(self.CAEA) or ''
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarCAEAEntreFechas(self, fecha_desde, fecha_hasta):
         "Método de consulta de CAEA"
 
@@ -448,7 +448,7 @@ class WSMTXCA:
             return [res['CAEAResponse']['CAEA'] for res in ret['arrayCAEAResponse']]
         return []
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def InformarComprobanteCAEA(self):
         f = self.factura
         # contruyo la estructura a convertir en XML:
@@ -527,7 +527,7 @@ class WSMTXCA:
         return self.CAEA
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarUltimoComprobanteAutorizado(self, tipo_cbte, punto_vta):
         ret = self.client.consultarUltimoComprobanteAutorizado(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
@@ -542,7 +542,7 @@ class WSMTXCA:
 
     CompUltimoAutorizado = ConsultarUltimoComprobanteAutorizado
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarComprobante(self, tipo_cbte, punto_vta, cbte_nro):
         "Recuperar los datos completos de un comprobante ya autorizado"
         ret = self.client.consultarComprobante(
@@ -566,7 +566,7 @@ class WSMTXCA:
         return self.CAE
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarTiposComprobante(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarTiposComprobante(
@@ -575,7 +575,7 @@ class WSMTXCA:
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
                  for p in ret['arrayTiposComprobante']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarTiposDocumento(self):
         ret = self.client.consultarTiposDocumento(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
@@ -583,7 +583,7 @@ class WSMTXCA:
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
                  for p in ret['arrayTiposDocumento']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarAlicuotasIVA(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarAlicuotasIVA(
@@ -592,7 +592,7 @@ class WSMTXCA:
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
                  for p in ret['arrayAlicuotasIVA']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarCondicionesIVA(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarCondicionesIVA(
@@ -600,7 +600,7 @@ class WSMTXCA:
             )
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
                  for p in ret['arrayCondicionesIVA']]
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarMonedas(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarMonedas(
@@ -609,7 +609,7 @@ class WSMTXCA:
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
                  for p in ret['arrayMonedas']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarUnidadesMedida(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarUnidadesMedida(
@@ -618,7 +618,7 @@ class WSMTXCA:
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
                  for p in ret['arrayUnidadesMedida']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarTiposTributo(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarTiposTributo(
@@ -627,7 +627,7 @@ class WSMTXCA:
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
                  for p in ret['arrayTiposTributo']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarCotizacionMoneda(self, moneda_id):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarCotizacionMoneda(
@@ -638,7 +638,7 @@ class WSMTXCA:
         if 'cotizacionMoneda' in ret:
             return str(ret['cotizacionMoneda'])
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarPuntosVentaCAE(self):
         "Este método permite consultar los puntos de venta habilitados para CAE en este WS"
         ret = self.client.consultarPuntosVentaCAE(
@@ -647,7 +647,7 @@ class WSMTXCA:
         return ["%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % p
                  for p in ret['arrayPuntosVenta']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ConsultarPuntosVentaCAEA(self):
         "Este método permite consultar los puntos de venta habilitados para CAEA en este WS"
         ret = self.client.consultarPuntosVentaCAEA(

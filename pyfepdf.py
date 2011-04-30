@@ -57,7 +57,7 @@ from cStringIO import StringIO
 from decimal import Decimal
 from pyfpdf_hg import Template
 
-def inicializar_y_capturar_execepciones(func):
+def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
@@ -75,7 +75,7 @@ def inicializar_y_capturar_execepciones(func):
 
 
 class FEPDF:
-    "Interfase para generar PDF de Factura Electrónica"
+    "Interfaz para generar PDF de Factura Electrónica"
     _public_methods_ = ['CrearFactura', 
                         'AgregarDetalleItem', 'AgregarIva', 'AgregarTributo', 
                         'AgregarCmpAsoc', 'AgregarPermiso',
@@ -151,7 +151,7 @@ class FEPDF:
         msg = self.log.getvalue()
         return msg    
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
             cbte_nro=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago="", 
@@ -309,7 +309,7 @@ class FEPDF:
     # Funciones públicas:
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CargarFormato(self, archivo=""):
         "Cargo el formato de campos a generar desde una planilla CSV"
         if not archivo:
@@ -334,7 +334,7 @@ class FEPDF:
         return True        
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def AgregarCampo(self, nombre, tipo, x1, y1, x2, y2, 
                            font="Arial", size=12,
                            bold=False, italic=False, underline=False, 
@@ -357,7 +357,7 @@ class FEPDF:
         self.elements.append(field)
         
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CrearPlantilla(self, papel="A4", orientacion="portrait"):
         "Iniciar la creación del archivo PDF"
         
@@ -379,7 +379,7 @@ class FEPDF:
         self.template = t
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ProcesarPlantilla(self, num_copias=1, lineas_max=24, qty_pos='izq'):
         "Generar el PDF según la factura creada y plantilla cargada"
 

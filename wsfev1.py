@@ -34,7 +34,7 @@ HOMO = True
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 
 
-def inicializar_y_capturar_execepciones(func):
+def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
@@ -87,7 +87,7 @@ def inicializar_y_capturar_execepciones(func):
 
 
 class WSFEv1:
-    "Interfase para el WebService de Factura Electrónica Version 1"
+    "Interfaz para el WebService de Factura Electrónica Version 1"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc',
                         'CompUltimoAutorizado', 'CompConsultar',
@@ -182,7 +182,7 @@ class WSFEv1:
             msg = u''
         return msg    
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
         # cliente soap del web service
         if wrapper:
@@ -208,7 +208,7 @@ class WSFEv1:
             trace = "--trace" in sys.argv)
         return True
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.FEDummy()['FEDummyResult']
@@ -265,7 +265,7 @@ class WSFEv1:
         self.factura['iva'].append(iva)
         return True
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CAESolicitar(self):
         f = self.factura
         ret = self.client.FECAESolicitar(
@@ -360,7 +360,7 @@ class WSFEv1:
         self.__analizar_errores(result)
         return self.CAE
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CompTotXRequest(self):
         ret = self.client.FECompTotXRequest (
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
@@ -369,7 +369,7 @@ class WSFEv1:
         result = ret['FECompTotXRequestResult']
         return result['RegXReq']
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CompUltimoAutorizado(self, tipo_cbte, punto_vta):
         ret = self.client.FECompUltimoAutorizado(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
@@ -382,7 +382,7 @@ class WSFEv1:
         self.__analizar_errores(result)
         return self.CbteNro is not None and str(self.CbteNro) or ''
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CompConsultar(self, tipo_cbte, punto_vta, cbte_nro, reproceso=False):
         difs = [] # si hay reproceso, verifico las diferencias con AFIP
 
@@ -501,7 +501,7 @@ class WSFEv1:
             return ''
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CAESolicitarLote(self):
         f = self.factura
         ret = self.client.FECAESolicitar(
@@ -591,7 +591,7 @@ class WSFEv1:
         return self.CAE
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CAEASolicitar(self, periodo, orden):
         ret = self.client.FECAEASolicitar(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
@@ -616,7 +616,7 @@ class WSFEv1:
         return self.CAEA and str(self.CAEA) or ''
 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CAEAConsultar(self, periodo, orden):
         "Método de consulta de CAEA"
         ret = self.client.FECAEAConsultar(
@@ -641,7 +641,7 @@ class WSFEv1:
 
         return self.CAEA and str(self.CAEA) or ''
     
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def CAEARegInformativo(self):
         "Método para informar comprobantes emitidos con CAEA"
         f = self.factura
@@ -731,7 +731,7 @@ class WSFEv1:
             self.__analizar_errores(result)
         return self.CAEA
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetTiposCbte(self):
         "Recuperador de valores referenciales de códigos de Tipos de Comprobantes"
         ret = self.client.FEParamGetTiposCbte(
@@ -741,7 +741,7 @@ class WSFEv1:
         return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['CbteTipo']
                  for p in res['ResultGet']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetTiposConcepto(self):
         "Recuperador de valores referenciales de códigos de Tipos de Conceptos"
         ret = self.client.FEParamGetTiposConcepto(
@@ -752,7 +752,7 @@ class WSFEv1:
                  for p in res['ResultGet']]
                 
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetTiposDoc(self):
         "Recuperador de valores referenciales de códigos de Tipos de Documentos"
         ret = self.client.FEParamGetTiposDoc(
@@ -762,7 +762,7 @@ class WSFEv1:
         return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['DocTipo']
                  for p in res['ResultGet']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetTiposIva(self):
         "Recuperador de valores referenciales de códigos de Tipos de Alícuotas"
         ret = self.client.FEParamGetTiposIva(
@@ -772,7 +772,7 @@ class WSFEv1:
         return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['IvaTipo']
                  for p in res['ResultGet']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetTiposMonedas(self):
         "Recuperador de valores referenciales de códigos de Monedas"
         ret = self.client.FEParamGetTiposMonedas(
@@ -782,7 +782,7 @@ class WSFEv1:
         return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['Moneda']
                  for p in res['ResultGet']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetTiposOpcional(self):
         "Recuperador de valores referenciales de códigos de Tipos de datos opcionales"
         ret = self.client.FEParamGetTiposOpcional(
@@ -792,7 +792,7 @@ class WSFEv1:
         return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['OpcionalTipo']
                  for p in res.get('ResultGet', [])]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetTiposTributos(self):
         "Recuperador de valores referenciales de códigos de Tipos de Tributos"
         "Este método permite consultar los tipos de tributos habilitados en este WS"
@@ -803,7 +803,7 @@ class WSFEv1:
         return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['TributoTipo']
                  for p in res['ResultGet']]
 
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetCotizacion(self, moneda_id):
         "Recuperador de cotización de moneda"
         ret = self.client.FEParamGetCotizacion(
@@ -814,7 +814,7 @@ class WSFEv1:
         res = ret['FEParamGetCotizacionResult']['ResultGet']
         return str(res.get('MonCotiz',""))
         
-    @inicializar_y_capturar_execepciones
+    @inicializar_y_capturar_excepciones
     def ParamGetPtosVenta(self):
         "Recuperador de valores referenciales Puntos de Venta registrados"
         ret = self.client.FEParamGetPtosVenta(

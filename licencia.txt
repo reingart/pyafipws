@@ -1,4 +1,4 @@
-PyAfipWS: Interfases y herramientas para Servicios Web AFIP Copyright (C) 2008/2009/2010/2011 Mariano Reingart <reingart@gmail.com>
+PyAfipWS: Interfaces y herramientas para Servicios Web AFIP Copyright (C) 2008/2009/2010/2011 Mariano Reingart <reingart@gmail.com>
 
 Este programa se entrega ABSOLUTAMENTE SIN GARANTIA bajo la licencia GPLv3 de software libre (ver abajo), y no puede ser incorporado o distribuido con software propietario (no libre) sin la previa autorizacion del autor.
 Adicionalmente se debe conservar y mostrar las atribuciones de autoría y avisos legales, estando prohibida la tergiversación del origen de este material.

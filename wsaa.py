@@ -106,7 +106,7 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
 
 
 class WSAA:
-    "Interfase para el WebService de Autenticación y Autorización"
+    "Interfaz para el WebService de Autenticación y Autorización"
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
                         'AnalizarXml', 'ObtenerTagXml', 'Expirado',
                         ]

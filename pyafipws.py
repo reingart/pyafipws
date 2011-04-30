@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo de Servidor COM para interface con Windows"
+"Módulo de Servidor COM para interfaz con Windows"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
@@ -49,7 +49,7 @@ def raisePythonException(e):
 
 
 class WSFE:
-    "Interfase para el WebService de Factura Electrónica"
+    "Interfaz para el WebService de Factura Electrónica"
     _public_methods_ = ['RecuperarQty', 'UltNro', 'RecuperaLastCMP', 'Aut', 'Dummy', 'Conectar' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -189,7 +189,7 @@ class WSFE:
         
 
 class WSBFE:
-    "Interfase para el WebService de Bono Fiscal Electrónico (FE Bs. Capital)"
+    "Interfaz para el WebService de Bono Fiscal Electrónico (FE Bs. Capital)"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamUMed', 'GetParamTipoIVA', 'GetParamNCM',
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
@@ -408,7 +408,7 @@ class WSBFE:
 
 
 class WSFEX:
-    "Interfase para el WebService de Factura Electrónica Exportación"
+    "Interfaz para el WebService de Factura Electrónica Exportación"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
                         'AgregarPermiso', 'AgregarCmpAsoc',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
@@ -737,7 +737,7 @@ class WSFEX:
 
 
 class WSCTG:
-    "Interfase para el WebService de Código de Trazabilidad de Granos"    
+    "Interfaz para el WebService de Código de Trazabilidad de Granos"    
     _public_methods_ = ['Conectar','Dummy','SolicitarCTG','ConfirmarCTG']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -844,7 +844,7 @@ class WSCTG:
             
             
 class wDigDepFiel:
-    "Interfase para el WebService de Depositario Fiel"
+    "Interfaz para el WebService de Depositario Fiel"
     _public_methods_ = ['Conectar', 'Dummy', 'AvisoDigit', 'AvisoRecepAcept', 'IniciarAviso', 'AgregarFamilia']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
