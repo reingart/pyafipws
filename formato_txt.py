@@ -61,10 +61,10 @@ ENCABEZADO = [
     ('presta_serv', 1, N),
     ('fecha_serv_desde', 8, A),
     ('fecha_serv_hasta', 8, A),
-    ('cae', 14, N), ('fecha_vto_cae', 8, A),
+    ('cae', 14, A), ('fch_venc_cae', 8, A),
     ('resultado', 1, A), 
     ('reproceso', 1, A),
-    ('motivo', 1000, A),
+    ('motivos_obs', 1000, A),
     ('id', 15, N),
     ('telefono_cliente', 50, A),
     ('localidad_cliente', 50, A),
@@ -79,6 +79,12 @@ ENCABEZADO = [
     ('Dato_adicional3', 30, A),
     ('Dato_adicional4', 30, A),
     ('descuento', (15,3), I),
+    ('cbt_desde', 8, N), 
+    ('cbt_hasta', 8, N), 
+    ('concepto', 1, N), # 1:bienes, 2:servicios,... 
+    ('no_usar', 15, I, 3), 
+    ('imp_iva', 15, I, 3), 
+    ('emision_tipo', 4, A),
     ]
 
 DETALLE = [
