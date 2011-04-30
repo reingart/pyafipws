@@ -10,11 +10,11 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para obtener un ticket de autorización del web service WSAA de AFIP
-Basado en wsaa-client.php de Gerardo Fisanotti - DvSHyS/DiOPIN/AFIP - 13-apr-07
-Definir WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL
-Devuelve TA.xml (ticket de autorización de WSAA)
-"""
+"Módulo para obtener un ticket de autorización del web service WSAA de AFIP"
+
+# Basado en wsaa-client.php de Gerardo Fisanotti - DvSHyS/DiOPIN/AFIP - 13-apr-07
+# Definir WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL
+# Devuelve TA.xml (ticket de autorización de WSAA)
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
