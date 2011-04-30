@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12b"
+__version__ = "1.12c"
 
 import datetime
 import decimal
@@ -107,7 +107,7 @@ class WSFEv1:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 'Excepcion', 'LanzarExcepciones',
         'Resultado', 'Obs', 'Observaciones', 'Traceback', 'InstallDir',
-        'CAE','Vencimiento', 'Eventos', 'Errors', 'ErrCode', 'ErrMsg',
+        'CAE','Vencimiento', 'Eventos', 'Errores', 'ErrCode', 'ErrMsg',
         'Reprocesar', 'Reproceso', 'EmisionTipo', 'CAEA',
         'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte', 
         'ImpTotal', 'ImpNeto', 'ImptoLiq', 'ImpOpEx'
@@ -152,6 +152,7 @@ class WSFEv1:
                     error['Err']['Code'],
                     error['Err']['Msg'],
                     ))
+            self.ErrCode = ' '.join([str(error['Err']['Code']) for error in errores])
             self.ErrMsg = '\n'.join(self.Errores)
         if 'Events' in ret:
             events = ret['Events']
