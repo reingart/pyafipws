@@ -932,7 +932,7 @@ class PyRece(model.Background):
             try:
                 self.log("Enviando email: %s a %s" % (msg['Subject'], msg['To']))
                 if not self.smtp:
-                    self.smtp = SMTP(conf_mail['servidor'])
+                    self.smtp = SMTP(conf_mail['servidor'], conf_mail.get('puerto', 25))
                     if conf_mail['usuario'] and conf_mail['clave']:
                         self.smtp.ehlo()
                         self.smtp.login(conf_mail['usuario'], conf_mail['clave'])
@@ -947,6 +947,12 @@ if __name__ == '__main__':
         CONFIG_FILE = sys.argv[1]
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
+    if not len(config.sections()):
+		if os.path.exists(CONFIG_FILE):
+			print "Error al cargar datos desde el archivo: ",CONFIG_FILE
+		else:
+			print "No se encuentra el archivo: ",CONFIG_FILE
+		exit(1)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFE','CUIT')

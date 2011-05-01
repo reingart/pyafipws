@@ -67,6 +67,7 @@ INICIO=Inicio de Actividad: 01/04/2006
 
 [MAIL]
 SERVIDOR=adan.nsis.com.ar
+PUERTO=25
 USUARIO=no.responder@nsis.com.ar
 CLAVE=noreplyauto123
 MOTIVO=Factura Electronica Nro. NUMERO
