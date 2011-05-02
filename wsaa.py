@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.04b"
+__version__ = "2.04c"
 
 import datetime,email,os,sys
 from php import date
@@ -195,7 +195,7 @@ class WSAA:
             self.Excepcion = self.Traceback = ""
             self.Token = self.Sign = ""
             results = self.client.loginCms(in0=str(cms))
-            ta_xml = results['loginCmsReturn']
+            ta_xml = results['loginCmsReturn'].encode("utf-8")
             self.xml = ta = SimpleXMLElement(ta_xml)
             self.Token = str(ta.credentials.token)
             self.Sign = str(ta.credentials.sign)
