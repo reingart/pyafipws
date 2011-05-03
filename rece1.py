@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29b"
+__version__ = "1.29c"
 
 import datetime
 import os
@@ -69,7 +69,7 @@ ENCABEZADO = [
     ('moneda_id', 3, A),
     ('moneda_ctz', 10, I, 6), #10,6
     ('fecha_venc_pago', 8, A),   # opcional solo conceptos 2 y 3
-    ('cae', 14, N), ('fch_venc_cae', 8, A),
+    ('cae', 14, A), ('fch_venc_cae', 8, A),
     ('resultado', 1, A), 
     ('motivos_obs', 1000, A),
     ('err_code', 6, A),
@@ -255,8 +255,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             cae = ws.CAEARegInformativo()
             dic = ws.factura
         dic.update({
-            'cae': str(cae),
-            'fch_venc_cae': str(ws.Vencimiento),
+            'cae': cae and str(cae) or '',
+            'fch_venc_cae': ws.Vencimiento and str(ws.Vencimiento) or '',
             'resultado': ws.Resultado,
             'motivos_obs': ws.Obs,
             'err_code': str(ws.ErrCode),
