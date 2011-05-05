@@ -71,10 +71,10 @@ Sub Main()
     domicilio_cliente = "Rua 76 km 34.5 Alagoas"
     id_impositivo = "PJ54482221-l"
     moneda_id = "012" ' para reales, "DOL" o "PES" (ver tabla de parámetros)
-    moneda_ctz = 0.5
+    moneda_ctz = "0.5"
     obs_comerciales = "Observaciones comerciales"
     obs = "Sin observaciones"
-    forma_pago = "30 dias"
+    forma_pago = "takataka"
     incoterms = "FOB" ' (ver tabla de parámetros)
     idioma_cbte = 1 ' (ver tabla de parámetros)
     imp_total = "250.00"
@@ -119,8 +119,18 @@ Sub Main()
     ' obtengo el último ID y le adiciono 1 (advertencia: evitar overflow!)
     id = CStr(CCur(WSFEX.GetLastID()) + 1)
     
+    ' Deshabilito errores no capturados:
+    WSFEX.LanzarExcepciones = False
+    
     ' Llamo al WebService de Autorización para obtener el CAE
     cae = WSFEX.Authorize(CCur(id))
+        
+    If WSFEX.Excepcion <> "" Then
+        MsgBox WSFEX.Traceback, vbExclamation, WSFEX.Excepcion
+    End If
+    If WSFEX.ErrMsg <> "" Then
+        MsgBox WSFEX.ErrMsg, vbExclamation, "Error de AFIP"
+    End If
         
     ' Verifico que no haya rechazo o advertencia al generar el CAE
     If cae = "" Or WSFEX.Resultado <> "A" Then
