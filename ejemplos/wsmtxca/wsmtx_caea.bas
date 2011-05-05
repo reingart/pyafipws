@@ -162,6 +162,7 @@ Sub Main()
     Debug.Print "Resultado", WSMTXCA.Resultado
     Debug.Print "CAEA", WSMTXCA.CAEA
     Debug.Print "Vencimiento CAEA", WSMTXCA.vencimiento
+    Debug.Print WSMTXCA.ErrMsg
     
     ' verifico que no haya errores
     For Each er In WSMTXCA.Errores
