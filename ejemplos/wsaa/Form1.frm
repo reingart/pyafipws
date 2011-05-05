@@ -408,7 +408,13 @@ Private Sub btnAutenticar_Click()
     Debug.Print "excepcion", WSAA.Excepcion
     If WSAA.Excepcion <> "" Then
         MsgBox WSAA.Excepcion, vbCritical, "Excepción"
-        End
+        Exit Sub
+    ElseIf IsNull(ok) Then
+        MsgBox "Ha ocurrido un error irrecuperable en WSAA!"
+        Exit Sub
+    ElseIf Not ok Then
+        MsgBox "WSAA no pudo conectarse!"
+        Exit Sub
     End If
 
     ta = WSAA.LoginCMS(cms) ' Producción
