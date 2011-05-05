@@ -81,7 +81,7 @@ Sub Main()
     
     ' Conectar al Servicio Web de Facturación
     proxy = "" ' "usuario:clave@localhost:8000"
-    wsdl = "" ' "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL"
+    wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
     cache = "" 'Path
     wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
     cacert = WSAA.InstallDir & "\geotrust.crt" ' certificado de la autoridad de certificante (solo pycurl)
@@ -105,6 +105,11 @@ Sub Main()
     punto_vta = 4002
     cbte_nro = WSFEv1.CompUltimoAutorizado(tipo_cbte, punto_vta)
     ControlarExcepcion WSFEv1
+    For Each v In WSFEv1.errores
+        Debug.Print v
+    Next
+    Debug.Print WSFEv1.errmsg
+    Debug.Print WSFEv1.errcode
     If cbte_nro = "" Then
         cbte_nro = 0                ' no hay comprobantes emitidos
     Else
@@ -196,8 +201,8 @@ Sub Main()
     MsgBox "Resultado:" & WSFEv1.Resultado & " CAE: " & CAE & " Venc: " & WSFEv1.Vencimiento & " Obs: " & WSFEv1.obs & " Reproceso: " & WSFEv1.Reproceso, vbInformation + vbOKOnly
     
     ' Muestro los errores
-    If WSFEv1.ErrMsg <> "" Then
-        MsgBox WSFEv1.ErrMsg, vbExclamation, "Error"
+    If WSFEv1.errmsg <> "" Then
+        MsgBox WSFEv1.errmsg, vbExclamation, "Error"
     End If
     
     ' Muestro los eventos (mantenimiento programados y otros mensajes de la AFIP)
