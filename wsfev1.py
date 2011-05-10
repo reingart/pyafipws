@@ -878,7 +878,7 @@ def main():
     cache = None
     wsdl = "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL"
     proxy = ""
-    wrapper = "pycurl"
+    wrapper = "" #"pycurl"
     cacert = "geotrust.crt"
 
     wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
@@ -901,7 +901,8 @@ def main():
         import wsaa
         tra = wsaa.create_tra(service="wsfe")
         cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
-        ta_string = wsaa.call_wsaa(cms)
+        url = "" # "https://wsaa.afip.gov.ar/ws/services/LoginCms"
+        ta_string = wsaa.call_wsaa(cms, url)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
     ta = SimpleXMLElement(ta_string)
@@ -1029,6 +1030,9 @@ def main():
 
     if "--comptox" in sys.argv:
         print wsfev1.CompTotXRequest()
+        
+    if "--ptosventa" in sys.argv:
+        print wsfev1.ParamGetPtosVenta()
 
     if "--solicitar-caea" in sys.argv:
         periodo = sys.argv[sys.argv.index("--solicitar-caea")+1]
