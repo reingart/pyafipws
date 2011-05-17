@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21q"
+__version__ = "1.21r"
 
 import csv
 from decimal import Decimal
@@ -121,6 +121,9 @@ class PyRece(model.Background):
             64:u"Liquidación B"}
 
         
+        # deshabilito ordenar
+        self.components.lvwListado.GetColumnSorter = lambda: lambda x,y: 0
+
     def set_cols(self, cols):
         self.__cols = cols
         self.components.lvwListado.columnHeadings = [col.replace("_"," ").title() for col in cols]
@@ -494,7 +497,8 @@ class PyRece(model.Background):
             items = []
             self.progreso(0)
             selected = []
-            for i, kargs in self.get_selected_items():
+            for i, item in self.get_selected_items():
+                kargs = item.copy()
                 selected.append(i)
                 kargs['cbt_desde'] = kargs['cbt_hasta'] = kargs ['cbt_numero']
                 for key in kargs:
@@ -579,7 +583,11 @@ class PyRece(model.Background):
                         dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
                     if self.ws.Obs and self.ws.Obs!='00':
                         dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
-                self.items[i] = kargs
+                # actuaizo la factura
+                for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
+                    if kargs.get(k):
+                        item[k] = kargs[k]
+                self.items[i] = item
                 self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 procesadas += 1
                 if kargs['resultado'] == "R":
@@ -824,7 +832,7 @@ class PyRece(model.Background):
         if 'cliente.observaciones' in item:
             f.set('Cliente.Observaciones', item['cliente.observaciones'])
 
-        if item['moneda_id']:
+        if item.get('moneda_id'):
             f.set('moneda_id', '')
             f.set('moneda_ds', monedas_ds.get(item['moneda_id'],''))
             if item['moneda_id']=='PES':
