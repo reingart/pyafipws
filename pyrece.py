@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21r"
+__version__ = "1.21s"
 
 import csv
 from decimal import Decimal
@@ -770,7 +770,7 @@ class PyRece(model.Background):
         def fmtcuit(c):
             if c is not None and str(c):
                 c=str(c)
-                return len(str(c))==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:]) or ''
+                return len(str(c))==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:]) or c
             return ''
 
         monedas_ds = {'DOL': u'USD: Dólar', 'PES': u'ARS: Pesos', '010': u'MXN: Pesos Mejicanos', '011': u'UYU: Pesos Uruguayos', '012': u'BRL: Real', '014': u'Coronas Danesas', '015': u'Coronas Noruegas', '016': u'Coronas Suecas', '019': u'JPY: Yens', '018': u'CAD: D\xf3lar Canadiense', '033': u'CLP: Peso Chileno', '056': u'Forint (Hungr\xeda)', '031': u'BOV: Peso Boliviano', '036': u'Sucre Ecuatoriano', '051': u'D\xf3lar de Hong Kong', '034': u'Rand Sudafricano', '053': u'D\xf3lar de Jamaica', '057': u'Baht (Tailandia)', '043': u'Balboas Paname\xf1as', '042': u'Peso Dominicano', '052': u'D\xf3lar de Singapur', '032': u'Peso Colombiano', '035': u'Nuevo Sol Peruano', '061': u'Zloty Polaco', '060': u'EUR: Euro', '063': u'Lempira Hondure\xf1a', '062': u'Rupia Hind\xfa', '064': u'Yuan (Rep. Pop. China)', '009': u'Franco Suizo', '025': u'Dinar Yugoslavo', '002': u'USD: D\xf3lar Libre EEUU', '027': u'Dracma Griego', '026': u'D\xf3lar Australiano', '007': u'Florines Holandeses', '023': u'VEB: Bol\xedvar Venezolano', '047': u'Riyal Saudita', '046': u'Libra Egipcia', '045': u'Dirham Marroqu\xed', '044': u'C\xf3rdoba Nicarag\xfcense', '029': u'G\xfcaran\xed', '028': u'Flor\xedn (Antillas Holandesas)', '054': u'D\xf3lar de Taiwan', '040': u'Lei Rumano', '024': u'Corona Checa', '030': u'Shekel (Israel)', '021': u'Libra Esterlina', '055': u'Quetzal Guatemalteco', '059': u'Dinar Kuwaiti'}
@@ -956,11 +956,11 @@ if __name__ == '__main__':
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
     if not len(config.sections()):
-		if os.path.exists(CONFIG_FILE):
-			print "Error al cargar datos desde el archivo: ",CONFIG_FILE
-		else:
-			print "No se encuentra el archivo: ",CONFIG_FILE
-		exit(1)
+        if os.path.exists(CONFIG_FILE):
+            print "Error al cargar datos desde el archivo: ",CONFIG_FILE
+        else:
+            print "No se encuentra el archivo: ",CONFIG_FILE
+        exit(1)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFE','CUIT')
