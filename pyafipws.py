@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26a"
+__version__ = "1.26b"
 
 import sys
 import wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -507,6 +507,9 @@ class WSFEX:
     def Authorize(self, id):
         "Autoriza la factura cargada en memoria"
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
             # llamo al web service
             auth, events = wsfex.authorize(self.client, 
                                      self.Token, self.Sign, self.Cuit, 
@@ -562,6 +565,10 @@ class WSFEX:
     def GetCMP(self, tipo_cbte, punto_vta, cbte_nro):
         "Recuperar los datos completos de un comprobante ya autorizado"
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
+            # llamo al web service
             cbt, events = wsfex.get_cmp(self.client, 
                                     self.Token, self.Sign, self.Cuit, 
                                     tipo_cbte, punto_vta, cbte_nro)
@@ -610,6 +617,10 @@ class WSFEX:
     def GetLastCMP(self, tipo_cbte, punto_vta):
         "Recuperar último número de comprobante emitido"
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
+            # llamo al web service
             cbte_nro, cbte_fecha, events = wsfex.get_last_cmp(self.client, 
                                     self.Token, self.Sign, self.Cuit, 
                                     tipo_cbte, punto_vta)
@@ -643,6 +654,10 @@ class WSFEX:
     def GetLastID(self):
         "Recuperar último número de transacción (ID)"
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
+            # llamo al web service
             id, events = wsfex.get_last_id(self.client, 
                                     self.Token, self.Sign, self.Cuit)
             return id
