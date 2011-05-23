@@ -26,7 +26,7 @@ import Image, ImageFont, ImageDraw
 class PyI25:
     "Interfaz para generar PDF de Factura Electrónica"
     _public_methods_ = ['GenerarImagen', 
-                        'CalcularDigitoVerificadorBase10'
+                        'DigitoVerificadorModulo10'
                         ]
     _public_attrs_ = ['Version', 'Excepcion', 'Traceback']
         
@@ -123,9 +123,10 @@ if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
-        win32com.server.register.UseCommandLine(FEPDF)
+        win32com.server.register.UseCommandLine(PyI25)
     elif "py2exe" in sys.argv:
         from distutils.core import setup
+        from nsis import build_installer, Target
         import py2exe
         setup( 
             name="PyI25",
@@ -142,10 +143,11 @@ if __name__ == '__main__':
                 'py2exe': {
                 'includes': [],
                 'optimize': 2,
-                'excludes': ["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui","distutils.core","py2exe"],
+                'excludes': ["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui","distutils.core","py2exe","nsis"],
                 #'skip_archive': True,
             }},
-            data_files = [],
+            data_files = [(".", ["licencia.txt"]),],
+            cmdclass = {"py2exe": build_installer}
         )
     else:
         
