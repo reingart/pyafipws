@@ -103,11 +103,11 @@ DETALLE = [
     ('despacho', 20, A),
     ('u_mtx', 10, N),
     ('cod_mtx', 30, A),
-    ('dato_a', 15, I),
-    ('dato_b', 15, I),
-    ('dato_c', 15, I),
-    ('dato_d', 15, I),
-    ('dato_e', 15, I),
+    ('dato_a', 15, A),
+    ('dato_b', 15, A),
+    ('dato_c', 15, A),
+    ('dato_d', 15, A),
+    ('dato_e', 15, A),
     ]
 
 PERMISO = [

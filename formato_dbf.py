@@ -19,7 +19,7 @@ __license__ = "GPL 3.0"
 from decimal import Decimal
 
 CHARSET = 'latin1'
-DEBUG = False
+DEBUG = True
 
 # Formato de entrada/salida similar a SIAP RECE, con agregados
 
