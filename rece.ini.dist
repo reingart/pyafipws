@@ -74,12 +74,12 @@ MOTIVO=Factura Electronica Nro. NUMERO
 CUERPO=Se adjunta Factura en formato PDF
 REMITENTE=Facturador PyAfipWs <pyafipws@nsis.com.ar>
 
-[BASE_DATOS]
-DRIVER=PGSQL
-SERVER=localhost
-DATABASE=pyafipws
-UID=pyafipws
-PWD=pyafipws
+#[BASE_DATOS]
+#DRIVER=PGSQL
+#SERVER=localhost
+#DATABASE=pyafipws
+#UID=pyafipws
+#PWD=pyafipws
 
 [DBF]
 Encabezado = encabeza.dbf
@@ -90,8 +90,8 @@ Detalle = detalles.dbf
 Permiso = permiso.dbf
 Dato = dato.dbf
 
-[PROXY]
-HOST=localhost
-PORT=8000
+#[PROXY]
+#HOST=localhost
+#PORT=8000
 #USER=mariano
 #PASS=reingart
