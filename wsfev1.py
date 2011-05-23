@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12d"
+__version__ = "1.12e"
 
 import datetime
 import decimal
@@ -92,6 +92,7 @@ class WSFEv1:
                         'AgregarTributo', 'AgregarCmpAsoc',
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
+                        'CAEASinMovimientoInformar',
                         'ParamGetTiposCbte',
                         'ParamGetTiposConcepto',
                         'ParamGetTiposDoc',
@@ -732,6 +733,28 @@ class WSFEv1:
         return self.CAEA
 
     @inicializar_y_capturar_excepciones
+    def CAEASinMovimientoInformar(self, punto_vta, caea):
+        "Método  para informar CAEA sin movimiento"
+        ret = self.client.FECAEASinMovimientoInformar(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            PtoVta=punto_vta, 
+            CAEA=caea,
+            )
+        
+        result = ret['FECAEASinMovimientoInformarResult']
+        self.__analizar_errores(result)
+
+        if 'CAEA' in result:
+            self.CAEA = result['CAEA']
+        if 'FchProceso' in result:
+            self.FchProceso = result['FchProceso']
+        if 'Resultado' in result:
+            self.Resultado = result['Resultado']
+            self.PuntoVenta = result['PtoVta'] # 4000
+
+        return self.Resultado or ''
+    
+    @inicializar_y_capturar_excepciones
     def ParamGetTiposCbte(self):
         "Recuperador de valores referenciales de códigos de Tipos de Comprobantes"
         ret = self.client.FEParamGetTiposCbte(
@@ -876,7 +899,7 @@ def main():
     wsfev1 = WSFEv1()
 
     cache = None
-    wsdl = "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL"
+    wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
     proxy = ""
     wrapper = "" #"pycurl"
     cacert = "geotrust.crt"
@@ -1057,6 +1080,32 @@ def main():
             print "fch_tope_inf:", wsfev1.FchTopeInf 
             print "fch_proceso:", wsfev1.FchProceso
 
+        if not caea:
+            print 'Consultando CAEA'
+            caea = wsfev1.CAEAConsultar(periodo, orden)
+            print "CAEA:", caea
+            if wsfev1.Errores:
+                print "Errores:"
+                for error in wsfev1.Errores:
+                    print error
+
+    if "--sinmovimiento-caea" in sys.argv:
+        punto_vta = sys.argv[sys.argv.index("--sinmovimiento-caea")+1]
+        caea = sys.argv[sys.argv.index("--sinmovimiento-caea")+2]
+
+        if DEBUG: 
+            print "Informando Punto Venta %s CAEA %s SIN MOVIMIENTO" % (punto_vta, caea)
+        
+        resultado = wsfev1.CAEASinMovimientoInformar(punto_vta, caea)
+        print "Resultado:", resultado
+        print "fch_proceso:", wsfev1.FchProceso
+
+        if wsfev1.Errores:
+            print "Errores:"
+            for error in wsfev1.Errores:
+                print error
+
+                
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
