@@ -45,18 +45,7 @@ opts = {
     }
 
 import pyrece
-from nsis import build_installer
-
-class Target():
-    def __init__(self, **kw):
-        self.__dict__.update(kw)
-        # for the version info resources (Properties -- Version)
-        # convertir 1.21a en 1.21.1
-        self.version = pyrece.__version__[:-1]+"."+str(ord(pyrece.__version__[-1])-96)
-        self.description = pyrece.__doc__
-        self.company_name = "Sistemas Agiles"
-        self.copyright = pyrece.__copyright__
-        self.name = pyrece.__doc__
+from nsis import build_installer, Target
 
 import glob
 data_files = [
@@ -81,8 +70,8 @@ setup( name = "PyRece",
                       (".",["logo.png",]) ] + data_files,
        options=opts,
        cmdclass = {"py2exe": build_installer},
-       **{buildstyle: [Target(script='pyrece.py')],
-          'console': [Target(script="pyrece.py", dest_base="pyrece_consola")]
+       **{buildstyle: [Target(module=pyrece, script='pyrece.py')],
+          'console': [Target(module=pyrece, script="pyrece.py", dest_base="pyrece_consola")]
         }
        )
 
