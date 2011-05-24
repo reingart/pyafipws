@@ -82,8 +82,8 @@ ENCABEZADO = [
     ('cbt_desde', 8, N), 
     ('cbt_hasta', 8, N), 
     ('concepto', 1, N), # 1:bienes, 2:servicios,... 
-    ('no_usar', 15, I, 3), 
-    ('imp_iva', 15, I, 3), 
+    ('no_usar', (15, 3), I), 
+    ('imp_iva', (15,3), I), 
     ('emision_tipo', 4, A),
     ]
 
@@ -247,7 +247,7 @@ def leer(fn="entrada.txt"):
             elif str(linea[0])=='3':
                 cbtasoc = leer_linea_txt(linea, CMP_ASOC)
                 cbtasoc['id'] = encabezado['id']
-                reg['cbtasocs'].append(cbtasoc)
+                reg['cbtes_asoc'].append(cbtasoc)
             elif str(linea[0])=='4':
                 iva = leer_linea_txt(linea, IVA)
                 iva['id'] = encabezado['id']
