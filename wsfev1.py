@@ -255,14 +255,14 @@ class WSFEv1:
 
     def AgregarTributo(self, tributo_id=0, desc="", base_imp=0.00, alic=0, importe=0.00, **kwarg):
         "Agrego un tributo a una factura (interna)"
-        tributo = { 'id': tributo_id, 'desc': desc, 'base_imp': base_imp, 
+        tributo = { 'tributo_id': tributo_id, 'desc': desc, 'base_imp': base_imp, 
                     'alic': alic, 'importe': importe}
         self.factura['tributos'].append(tributo)
         return True
 
     def AgregarIva(self, iva_id=0, base_imp=0.0, importe=0.0, **kwarg):
         "Agrego un tributo a una factura (interna)"
-        iva = { 'id': iva_id, 'base_imp': base_imp, 'importe': importe }
+        iva = { 'iva_id': iva_id, 'base_imp': base_imp, 'importe': importe }
         self.factura['iva'].append(iva)
         return True
 
@@ -305,7 +305,7 @@ class WSFEv1:
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
                         {'Tributo': {
-                            'Id': tributo['id'], 
+                            'Id': tributo['tributo_id'], 
                             'Desc': tributo['desc'],
                             'BaseImp': tributo['base_imp'],
                             'Alic': tributo['alic'],
@@ -314,7 +314,7 @@ class WSFEv1:
                         for tributo in f['tributos']],
                     'Iva': [ 
                         {'AlicIva': {
-                            'Id': iva['id'],
+                            'Id': iva['iva_id'],
                             'BaseImp': iva['base_imp'],
                             'Importe': iva['importe'],
                             }}
@@ -431,7 +431,7 @@ class WSFEv1:
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
                         {'Tributo': {
-                            'Id': tributo['id'], 
+                            'Id': tributo['tributo_id'], 
                             'Desc': tributo['desc'],
                             'BaseImp': float(tributo['base_imp']),
                             'Alic': float(tributo['alic']),
@@ -440,7 +440,7 @@ class WSFEv1:
                         for tributo in f['tributos']],
                     'Iva': [ 
                         {'AlicIva': {
-                            'Id': iva['id'],
+                            'Id': iva['iva_id'],
                             'BaseImp': float(iva['base_imp']),
                             'Importe': float(iva['importe']),
                             }}
@@ -541,7 +541,7 @@ class WSFEv1:
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
                         {'Tributo': {
-                            'Id': tributo['id'], 
+                            'Id': tributo['tributo_id'], 
                             'Desc': tributo['desc'],
                             'BaseImp': tributo['base_imp'],
                             'Alic': tributo['alic'],
@@ -550,7 +550,7 @@ class WSFEv1:
                         for tributo in f['tributos']],
                     'Iva': [ 
                         {'AlicIva': {
-                            'Id': iva['id'],
+                            'Id': iva['iva_id'],
                             'BaseImp': iva['base_imp'],
                             'Importe': iva['importe'],
                             }}
@@ -682,7 +682,7 @@ class WSFEv1:
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
                         {'Tributo': {
-                            'Id': tributo['id'], 
+                            'Id': tributo['tributo_id'], 
                             'Desc': tributo['desc'],
                             'BaseImp': tributo['base_imp'],
                             'Alic': tributo['alic'],
@@ -691,7 +691,7 @@ class WSFEv1:
                         for tributo in f['tributos']],
                     'Iva': [ 
                         {'AlicIva': {
-                            'Id': iva['id'],
+                            'Id': iva['iva_id'],
                             'BaseImp': iva['base_imp'],
                             'Importe': iva['importe'],
                             }}
