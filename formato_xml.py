@@ -193,7 +193,7 @@ MAP_DET = {
     'umed': 'unimed',
     'qty': 'cant',
     'precio': 'preciounit',
-    'imp_total': 'importe',
+    'importe': 'importe',
     'iva_id':'tasaiva',
     'imp_iva': 'importeiva',
     'ncm': 'ncm',
@@ -206,14 +206,14 @@ MAP_DET = {
 
 # Mapeo de nombres internos ws vs facturador-plus (ivas)
 MAP_IVA = {
-    'id': 'id',
+    'iva_id': 'id',
     'base_imp': 'baseimp',
     'importe': 'importe',
     }
 
 # Mapeo de nombres ws vs facturador-plus (ivas)
 MAP_TRIB = {
-    'id': 'id',
+    'tributo_id': 'id',
     'base_imp': 'baseimp',
     'desc': 'desc',
     'alic': 'alic',
@@ -286,7 +286,6 @@ def aplanar(regs):
 
         fila['forma_pago']=reg['formas_pago'][0]['descripcion']
 
-
         for i, det in enumerate(reg['detalles']):
             li = i+1
             fila.update({
@@ -295,7 +294,7 @@ def aplanar(regs):
                     'umed%s' % li: det.get('umed'),
                     'cantidad%s' % li: det['qty'],
                     'precio%s' % li: det.get('precio'),
-                    'importe%s' % li: det['imp_total'],
+                    'importe%s' % li: det['importe'],
                     'iva_id%s' % li: det.get('iva_id'),
                     'imp_iva%s' % li: det.get('imp_iva'),
                     'numero_despacho%s' % li: det.get('numero_despacho'),
@@ -303,14 +302,14 @@ def aplanar(regs):
         for i, iva in enumerate(reg['ivas']):
             li = i+1
             fila.update({
-                    'iva_id_%s' % li: iva['id'],
+                    'iva_id_%s' % li: iva['iva_id'],
                     'iva_base_imp_%s' % li: iva['base_imp'],
-                        'iva_importe_%s' % li: iva['importe'],
+                    'iva_importe_%s' % li: iva['importe'],
                     })
         for i, tributo in enumerate(reg['tributos']):
             li = i+1
             fila.update({
-                    'tributo_id_%s' % li: tributo['id'],
+                    'tributo_id_%s' % li: tributo['tributo_id'],
                     'tributo_base_imp_%s' % li: tributo['base_imp'],
                     'tributo_desc_%s' % li: tributo['desc'],
                     'tributo_alic_%s' % li: tributo['alic'],
@@ -358,35 +357,47 @@ def desaplanar(filas):
         dic = dict([(filas[0][i], v) for i, v in enumerate(fila)])
         reg = {}
         for k in MAP_ENC:
-            reg[k] = dic[k]
+            reg[k] = dic.pop(k)
 
         reg['detalles'] = [{
-                'codigo': dic['codigo%s' % li],
-                'ds': dic['descripcion%s' % li],
-                'umed': dic['umed%s' % li],
-                'qty': dic['cantidad%s' % li],
-                'precio': dic['precio%s' % li],
-                'imp_total': dic['importe%s' % li],
-                'iva_id': dic['iva_id%s' % li],
-                'imp_iva': dic['imp_iva%s'% li],                                               
-                'numero_despacho': dic['numero_despacho%s'% li],
-                } for li in xrange(1, max_li("cantidad")) if dic['cantidad%s' % li] is not None]
+                'codigo': dic.pop('codigo%s' % li),
+                'ds': dic.pop('descripcion%s' % li),
+                'umed': dic.pop('umed%s' % li),
+                'qty': dic.pop('cantidad%s' % li),
+                'precio': dic.pop('precio%s' % li),
+                'importe': dic.pop('importe%s' % li),
+                'iva_id': dic.pop('iva_id%s' % li),
+                'imp_iva': dic.pop('imp_iva%s'% li),                                               
+                'numero_despacho': dic.pop('numero_despacho%s'% li),
+                } for li in xrange(1, max_li("cantidad")) 
+                  if dic['cantidad%s' % li] is not None]
                 
         reg['tributos'] = [{
-                'id': dic['tributo_id_%s'  % li],
-                'desc': dic['tributo_desc_%s'  % li],
-                'base_imp': dic['tributo_base_imp_%s'  % li],
-                'alic': dic['tributo_alic_%s'  % li],
-                'importe': dic['tributo_importe_%s'  % li],
-                } for li in xrange(1, max_li("tributo_id_"))]
+                'tributo_id': dic.pop('tributo_id_%s'  % li),
+                'desc': dic.pop('tributo_desc_%s'  % li),
+                'base_imp': dic.pop('tributo_base_imp_%s'  % li),
+                'alic': dic.pop('tributo_alic_%s'  % li),
+                'importe': dic.pop('tributo_importe_%s'  % li),
+                } for li in xrange(1, max_li("tributo_id_"))
+                  if dic['tributo_id_%s'  % li]]
 
         reg['ivas'] = [{
-                'id': dic['iva_id_%s'  % li],
-                'baseimp': dic['iva_base_imp_%s'  % li],
-                'importe': dic['iva_importe_%s'  % li],
-                } for li in xrange(1, max_li("iva_id_"))]
+                'iva_id': dic.pop('iva_id_%s'  % li),
+                'baseimp': dic.pop('iva_base_imp_%s'  % li),
+                'importe': dic.pop('iva_importe_%s'  % li),
+                } for li in xrange(1, max_li("iva_id_"))
+                  if dic['iva_id_%s'  % li]]
                 
-        reg['formas_pago']=[{'descripcion': dic['forma_pago']}]
+        reg['formas_pago']=[{'descripcion': dic.pop('forma_pago')}]
+
+        # agrego campos adicionales:
+        reg['datos'] = [{
+                'campo': campo, 
+                'valor': valor, 
+                'pagina': '',
+                } for campo, valor in dic.items()
+                ]
+        print "datos", reg['datos']
         regs.append(reg)
 
     return regs
