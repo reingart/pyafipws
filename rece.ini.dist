@@ -56,7 +56,7 @@ ENTRADA=factura.txt
 SALIDA=factura.pdf
 
 [PDF]
-LOGO=fpdf.png
+LOGO=logo.png
 EMPRESA=Empresa de Prueba
 MEMBRETE1=Direccion de Prueba
 MEMBRETE2=Capital Federal
@@ -72,6 +72,7 @@ USUARIO=no.responder@nsis.com.ar
 CLAVE=noreplyauto123
 MOTIVO=Factura Electronica Nro. NUMERO
 CUERPO=Se adjunta Factura en formato PDF
+HTML=<b>Se adjunta <i>factura electronica</i> en formato PDF</b>
 REMITENTE=Facturador PyAfipWs <pyafipws@nsis.com.ar>
 
 #[BASE_DATOS]
