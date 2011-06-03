@@ -272,7 +272,12 @@ class FEPDF:
     fmt_imp = lambda self, i: self.fmt_num(i, "%0.2f")
     fmt_qty = lambda self, i: self.fmt_num(i, "%" + self.FmtCantidad + "f", False)
     fmt_pre = lambda self, i: self.fmt_num(i, "%" + self.FmtPrecio + "f")
-    fmt_cuit = lambda self, c: len(c)==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:]) or c
+
+    def fmt_cuit(self, c):
+        if c is not None and str(c):
+            c=str(c)
+            return len(str(c))==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:]) or c
+        return ''
 
     def fmt_fact(self, tipo_cbte, punto_vta, cbte_nro):
         "Formatear tipo, letra y punto de venta y número de factura"
