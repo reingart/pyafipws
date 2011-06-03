@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.04a"
 
 DEBUG = False
 HOMO = True
@@ -180,7 +180,7 @@ class FEPDF:
                 'obs_generales': obs_generales,
                 'id_impositivo': id_impositivo,
                 'forma_pago': forma_pago, 'incoterms': incoterms,
-                'cae': cae, 'fch_venc_cae': fch_venc_cae,
+                'cae': cae, 'fecha_vto': fch_venc_cae,
                 'motivos_obs': motivo,
                 'descuento': descuento,
                 'cbtes_asoc': [],
@@ -415,19 +415,19 @@ class FEPDF:
                                 despacho = it.get('despacho'),
                                 precio = it['precio'],
                                 qty = (n_li==1 or qty_pos=='der') and it['qty'] or None,
-                                bonif = it['bonif'],
-                                iva_id = it['iva_id'], imp_iva = it['imp_iva'],
-                                dato_a = it['dato_a'], dato_b = it['dato_b'],
-                                dato_c = it['dato_c'], dato_d= it['dato_d'],
-                                dato_e = it['dato_d'],
+                                bonif = it.get('bonif'),
+                                iva_id = it.get('iva_id'), imp_iva = it.get('imp_iva'),
+                                dato_a = it.get('dato_a'), dato_b = it.get('dato_b'),
+                                dato_c = it.get('dato_c'), dato_d= it.get('dato_d'),
+                                dato_e = it.get('dato_d'),
                                 )
 
         # divido las observaciones por linea:
-        if fact['obs_generales'] and not 'obs' in f.elements.keys() and not 'ObservacionesGenerales1' in f.elements.keys():
+        if fact.get('obs_generales') and not f.has_key('obs') and f.has_key('ObservacionesGenerales1'):
             obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
             for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                 li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-        if fact['obs_comerciales'] and not 'obs_comerciales' in f.elements.keys():
+        if fact.get('obs_comerciales') and not f.has_key('obs_comerciales'):
             obs="\n<U>Observaciones Comerciales:</U>\n\n" + fact['obs_comerciales']
             for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                 li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -436,7 +436,7 @@ class FEPDF:
         permisos =  [u'Codigo de Despacho %s - Destino de la mercadería: %s' % (
                      p['Permiso']['id_permiso'], self.paises.get(p['Permiso']['dst_merc'], p['Permiso']['dst_merc'])) 
                      for p in fact.get('Permisos',[])]
-        if not 'permisos' in f.elements.keys() and permisos:
+        if not f.has_key('permisos') and permisos:
             obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
             for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                 li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -445,7 +445,7 @@ class FEPDF:
         # agrego comprobantes asociados
         cmps_asoc = [u'%s %s %s' % self.fmt_fact(c['Cmp_asoc']['cbte_tipo'], c['Cmp_asoc']['cbte_punto_vta'], c['Cmp_asoc']['cbte_nro']) 
                       for c in fact.get('Cmps_asoc',[])]
-        if not 'cmps_asoc' in f.elements.keys() and cmps_asoc:
+        if not f.has_key('cmps_asoc') and cmps_asoc:
             obs="\n<U>Comprobantes Asociados:</U>\n\n" + '\n'.join(cmps_asoc)
             for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                 li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -462,7 +462,7 @@ class FEPDF:
         if HOMO:
             self.AgregarDato("homo", "HOMOLOGACIÓN")
 
-        if fact['motivos_obs'] and fact['motivos_obs']<>'00':
+        if fact.get('motivos_obs') and fact['motivos_obs']<>'00':
             motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
         elif HOMO:
             motivos_ds = u"Ejemplo Sin validez fiscal - Homologación - Testing"
@@ -521,14 +521,14 @@ class FEPDF:
 
                 f.set('Cliente.Nombre', fact.get('nombre', fact.get('nombre_cliente')))
                 f.set('Cliente.Domicilio', fact.get('domicilio', fact.get('domicilio_cliente')))
-                f.set('Cliente.Localidad', fact.get('localidad_cliente'))
-                f.set('Cliente.Provincia', fact.get('provincia_cliente'))
-                f.set('Cliente.Telefono', fact.get('telefono_cliente'))
+                f.set('Cliente.Localidad', fact.get('localidad', fact.get('localidad_cliente')))
+                f.set('Cliente.Provincia', fact.get('provincia', fact.get('provincia_cliente')))
+                f.set('Cliente.Telefono', fact.get('telefono', fact.get('telefono_cliente')))
                 f.set('Cliente.IVA', fact.get('categoria', fact.get('id_impositivo')))
                 f.set('Cliente.CUIT', self.fmt_cuit(str(fact['nro_doc'])))
                 f.set('Cliente.TipoDoc', {'80':'CUIT','86':'CUIL','96':'DNI', '99': ''}[str(fact['tipo_doc'])])
-                f.set('Cliente.Observaciones', fact['obs_comerciales'])
-                f.set('Cliente.PaisDestino', self.paises.get(fact['pais_dst_cmp'], fact['pais_dst_cmp']) or '')
+                f.set('Cliente.Observaciones', fact.get('obs_comerciales'))
+                f.set('Cliente.PaisDestino', self.paises.get(fact.get('pais_dst_cmp'), fact.get('pais_dst_cmp')) or '')
 
                 if fact['moneda_id']:
                     f.set('moneda_ds', self.monedas_ds.get(fact['moneda_id'],''))
@@ -536,7 +536,7 @@ class FEPDF:
                     for k in 'moneda.L', 'moneda_id', 'moneda_ds', 'moneda_ctz.L', 'moneda_ctz':
                         f.set(k, '')
 
-                if not fact['incoterms']:
+                if not fact.get('incoterms'):
                     for k in 'incoterms.L', 'incoterms', 'incoterms_ds':
                         f.set(k, '')
 
@@ -548,7 +548,7 @@ class FEPDF:
                     if k > hoja * (lineas_max - 1):
                         break
                     if it['importe']:
-                        subtotal += Decimal("%.6f" % it['importe'])
+                        subtotal += Decimal("%.6f" % float(it['importe']))
                     if k > (hoja - 1) * (lineas_max - 1):
                         if DEBUG: print "it", it
                         li += 1
@@ -558,10 +558,12 @@ class FEPDF:
                             f.set('Item.Codigo%02d' % li, it['codigo'])
                         if it['umed'] is not None:
                             f.set('Item.Umed%02d' % li, it['umed'])
-                            f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(int(it['umed'])))
+                            if it['umed']:
+                                f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(int(it['umed'])))
                         if it.get('iva_id') is not None:
                             f.set('Item.IvaId%02d' % li, it['iva_id'])
-                            f.set('Item.AlicuotaIva%02d' % li, self.ivas_ds.get(int(it['iva_id'])))
+                            if it['iva_id']:
+                                f.set('Item.AlicuotaIva%02d' % li, self.ivas_ds.get(int(it['iva_id'])))
                         if it.get('imp_iva') is not None:
                             f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
                         if it.get('despacho') is not None:
@@ -646,10 +648,10 @@ class FEPDF:
 
                 f.set('motivos_ds', motivos_ds)
                 f.set('CAE', fact['cae'])
-                f.set('CAE.Vencimiento', self.fmt_date(fact['fch_venc_cae']))
-                if fact['cae']!="NULL" and self.CUIT:
-                    barras = ''.join([self.CUIT, "%02d" % fact['tipo_cbte'], "%04d" % fact['punto_vta'], 
-                        str(fact['cae']), fact['fch_venc_cae']])
+                f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
+                if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
+                    barras = ''.join([self.CUIT, "%02d" % int(fact['tipo_cbte']), "%04d" % int(fact['punto_vta']), 
+                        str(fact['cae']), fact['fecha_vto']])
                     barras = barras + self.digito_verificador_modulo10(barras)
                 else:
                     barras = ""
@@ -657,12 +659,12 @@ class FEPDF:
                 f.set('CodigoBarras', barras)
                 f.set('CodigoBarrasLegible', barras)
 
-                if 'observacionesgenerales1' in f.elements.keys():
+                if f.has_key('observacionesgenerales1'):
                     for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
                         f.set('ObservacionesGenerales%d' % (i+1), txt)
                         
                 # evaluo fórmulas (expresiones python)
-                for field in f.elements:
+                for field in f.keys:
                     if field.startswith("="):
                         formula = f.elements[field]['text']
                         if DEBUG: print "**** formula: %s %s" % (field, formula)
