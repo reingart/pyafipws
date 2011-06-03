@@ -44,7 +44,7 @@ opts = {
     'optimize':2}
     }
 
-import pyrece
+import pyrece, pyfpdf_hg.designer
 from nsis import build_installer, Target
 
 import glob
@@ -70,7 +70,8 @@ setup( name = "PyRece",
                       (".",["logo.png",]) ] + data_files,
        options=opts,
        cmdclass = {"py2exe": build_installer},
-       **{buildstyle: [Target(module=pyrece, script='pyrece.py')],
+       **{buildstyle: [Target(module=pyrece, script='pyrece.py'),
+                       Target(module=pyfpdf_hg.designer, script='pyfpdf_hg/designer.py')],
           'console': [Target(module=pyrece, script="pyrece.py", dest_base="pyrece_consola")]
         }
        )
