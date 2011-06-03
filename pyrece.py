@@ -15,8 +15,9 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22d"
+__version__ = "1.22e"
 
+from datetime import datetime
 from decimal import Decimal
 import os
 import sys
@@ -178,6 +179,7 @@ class PyRece(model.Background):
         f = None
         try:
             f = open("pyrece.log","a")
+            f.write("%s: " % (datetime.now(), ))
             f.write(msg.encode("ascii", "ignore"))
             f.write("\n\r")
         except Exception, e:
