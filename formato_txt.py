@@ -61,7 +61,7 @@ ENCABEZADO = [
     ('presta_serv', 1, N),
     ('fecha_serv_desde', 8, A),
     ('fecha_serv_hasta', 8, A),
-    ('cae', 14, A), ('fch_venc_cae', 8, A),
+    ('cae', 14, A), ('fecha_vto', 8, A),
     ('resultado', 1, A), 
     ('reproceso', 1, A),
     ('motivos_obs', 1000, A),
