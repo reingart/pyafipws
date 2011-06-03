@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22b"
+__version__ = "1.22c"
 
 from decimal import Decimal
 import os
@@ -732,12 +732,16 @@ class PyRece(model.Background):
             ok = no = 0
             self.progreso(0)
             for i, item in self.get_selected_items():
-                if not item['cae'] in ("", "NULL") and item.get('email'):
+                if not item['cae'] in ("", "NULL"):
                     archivo = self.generar_factura(item)
-                    self.enviar_mail(item,archivo)
-                    ok += 1
+                    if item.get('email'):
+                        self.enviar_mail(item,archivo)
+                        ok += 1
+                    else:
+                        no += 1
+                        self.log("No se envia factura %s por no tener EMAIL" % item['cbt_numero'])
                 else:
-                    self.log("No se envia factura %s por no tener CAE o EMAIL" % item['cbt_numero'])
+                    self.log("No se envia factura %s por no tener CAE" % item['cbt_numero'])
                     no += 1
                 self.progreso(i)
             self.progreso(len(self.items))
@@ -748,113 +752,16 @@ class PyRece(model.Background):
     def generar_factura(self, fila, mostrar=False):
         
         fepdf = FEPDF()
-
-
         fact = formato_csv.desaplanar([self.cols] + [[item[k] for k in self.cols] for item in [fila]])[0]
-
         fact['cbte_nro'] = fact['cbt_numero']
         fact['items'] = fact['detalles']
         for d in fact['datos']:
             fepdf.AgregarDato(d['campo'], d['valor'], d['pagina'])
-
                 
         fepdf.factura = fact
         
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
-
-        # creo una factura a partir de la fila seleccionada en la planilla CSV
-        # tipo_cbte = 1
-        # punto_vta = 4000
-        # fecha = datetime.datetime.now().strftime("%Y%m%d")
-        # concepto = 3
-        # tipo_doc = 80; nro_doc = "30000000007"
-        # cbte_nro = 12345678
-        # imp_total = "122.00"; imp_tot_conc = "0.00"
-        # imp_neto = "100.00"; imp_iva = "21.00"
-        # imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
-        # fecha_cbte = fecha; fecha_venc_pago = fecha
-        # # Fechas del período del servicio facturado (solo si concepto = 1?)
-        # fecha_serv_desde = fecha; fecha_serv_hasta = fecha
-        # moneda_id = 'PES'; moneda_ctz = '1.000'
-        # obs_generales = "Observaciones Generales, texto libre"
-        # obs_comerciales = "Observaciones Comerciales, texto libre"
-
-        # nombre_cliente = 'Joao Da Silva'
-        # domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
-        # pais_dst_cmp = 16
-        # id_impositivo = 'PJ54482221-l'
-        # moneda_id = '012'
-        # moneda_ctz = 0.5
-        # forma_pago = '30 dias'
-        # incoterms = 'FOB'
-        # idioma_cbte = 1
-        # motivo = "11"
-
-        # cae = "61123022925855"
-        # fch_venc_cae = "20110320"
-        
-        # fepdf.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-            # cbte_nro, imp_total, imp_tot_conc, imp_neto,
-            # imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
-            # fecha_serv_desde, fecha_serv_hasta, 
-            # moneda_id, moneda_ctz, cae, fch_venc_cae, id_impositivo,
-            # nombre_cliente, domicilio_cliente, pais_dst_cmp, 
-            # obs_comerciales, obs_generales, forma_pago, incoterms, 
-            # idioma_cbte, motivo)
-        
-        # for i in range(1, 1000):
-            # if not 'descripcion%d' % i in item:
-                # break
-            # qty = item.get('cantidad%d' % i, None)
-            # codigo = item.get('codigo%d' % i, None)
-            # umed = item.get('umed%s' %i, None)
-            # ds = item['descripcion%d' % i]
-            # importe = item.get('importe%d' % i, None)
-            # precio = item.get('precio%d' % i, None)
-            # u_mtx = item.get('u_mtx%d' % i, None)
-            # cod_mtx = item.get('cod_mtx%d' % i, None)
-            # umed = item.get('umed%d' % i, None)
-            # bonif = item.get('bonif%d' % i, None)
-            # iva_id = item.get('iva_id%d' % i, None)
-            # imp_iva = item.get('imp_iva%d' % i, None)
-            # despacho = item.get('despacho%d' % i, None)
-            # fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
-                    # precio, bonif, iva_id, imp_iva, importe, despacho)
-
-        
-        # #tipo = 19
-        # #pto_vta = 2
-        # #nro = 1234
-        # #wsmtxca.AgregarCmpAsoc(tipo, pto_vta, nro)
-        
-        # tributo_id = 99
-        # desc = 'Impuesto Municipal Matanza'
-        # base_imp = "100.00"
-        # alic = "1.00"
-        # importe = "1.00"
-        # fepdf.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
-
-        # iva_id = 5 # 21%
-        # base_imp = 100
-        # importe = 21
-        # fepdf.AgregarIva(iva_id, base_imp, importe)
-        
-
-        # # grabar muestra en dbf:
-        # if '--grabar' in sys.argv:
-            # reg = fepdf.factura.copy()
-            # reg['id'] = 0
-            # if '--dbf' in sys.argv:
-                # import formato_dbf
-                # conf_dbf = dict(config.items('DBF'))
-                # if DEBUG: print "conf_dbf", conf_dbf
-                # regs = formato_dbf.escribir([reg], conf_dbf)
-            # else:
-                # import formato_txt
-                # archivo =  conf_fact.get("entrada", "entrada.txt")
-                # if DEBUG: print "Escribiendo", archivo
-                # regs = formato_txt.escribir([reg], archivo)
 
         # datos fijos:
         fepdf.CUIT = cuit  # CUIT del emisor para código de barras
@@ -875,17 +782,19 @@ class PyRece(model.Background):
             salida = fact['pdf']
         else:
             # genero el nombre de archivo según datos de factura
-            d = os.path.join(conf_fact.get('directorio', "."), fact['fecha_cbte'])
+            d = conf_fact.get('directorio', ".")
+            clave_subdir = conf_fact.get('subdirectorio','fecha_cbte')
+            if clave_subdir:
+                d = os.path.join(d, item[clave_subdir])
             if not os.path.isdir(d):
                 os.mkdir(d)
             fs = conf_fact.get('archivo','numero').split(",")
-            it = fact.copy()
-            tipo_fact, letra_fact, numero_fact = fact['_fmt_fact']
-            it['tipo'] = tipo_fact.replace(" ", "_")
-            it['letra'] = letra_fact
-            it['numero'] = numero_fact
-            it['mes'] = fact['fecha_cbte'][4:6]
-            it['año'] = fact['fecha_cbte'][0:4]
+            it = item.copy()
+            it['tipo'] = tipo
+            it['letra'] = letra
+            it['numero'] = numero
+            it['mes'] = item['fecha_cbte'][4:6]
+            it['año'] = item['fecha_cbte'][0:4]
             fn = ''.join([str(it.get(ff,ff)) for ff in fs])
             fn = fn.decode('latin1').encode('ascii', 'replace').replace('?','_')
             salida = os.path.join(d, "%s.pdf" % fn)
