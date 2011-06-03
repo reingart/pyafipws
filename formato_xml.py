@@ -178,6 +178,9 @@ MAP_ENC = {
     "fecha_serv_hasta": 'fechaservhasta',
     "fecha_venc_pago": 'fechavencpago',
 
+    "obs_generales": "otrosdatosgenerales",
+    "obs_comerciales": "otrosdatoscomerciales",
+    
     "resultado": 'resultado',
     "cae": 'cae',
     "fecha_vto": 'fecha_vto', 
