@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22a"
+__version__ = "1.22b"
 
 from decimal import Decimal
 import os
@@ -426,6 +426,9 @@ class PyRece(model.Background):
     def on_menuArchivoAbrir_select(self, event):
         self.examinar()
         self.cargar()
+
+    def on_menuArchivoCargar_select(self, event):
+        self.cargar()
         
     def cargar(self):
         try:
@@ -464,6 +467,7 @@ class PyRece(model.Background):
             fn = result.paths[0]
             self.grabar(fn)
             
+
     def grabar(self, fn=None):
         try:
             if fn is None and salida:
@@ -481,6 +485,12 @@ class PyRece(model.Background):
             dialog.alertDialog(self, u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
         except Exception, e:
             self.error(u'Excepción',unicode(e))
+
+    def on_menuArchivoDiseniador_select(self, event):
+        # TODO: no funciona porque PythonCard aparentemente no importa el mismo namespace de wx
+        from pyfpdf_hg.designer import AppFrame
+        frame = AppFrame()
+        frame.Show(1)
 
     def on_btnAutorizar_mouseClick(self, event):
         self.verifica_ws()
