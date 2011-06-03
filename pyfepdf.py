@@ -15,10 +15,10 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.04b"
 
 DEBUG = False
-HOMO = True
+HOMO = False
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = u"""
@@ -659,7 +659,7 @@ class FEPDF:
                 f.set('CodigoBarras', barras)
                 f.set('CodigoBarrasLegible', barras)
 
-                if f.has_key('observacionesgenerales1'):
+                if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
                     for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
                         f.set('ObservacionesGenerales%d' % (i+1), txt)
                         
