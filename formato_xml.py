@@ -259,7 +259,7 @@ def leer(fn="entrada.xml"):
             }
         comp = dic_comprobante['comprobante']
         mapear(reg, comp, MAP_ENC)
-        reg['formas_pago']= [d['formapago'] for d in comp['formaspago']]
+        reg['forma_pago']= ''.join([d['formapago']['descripcion'] for d in comp['formaspago']])
 
 
         for detalles in comp['detalles']:
@@ -302,7 +302,7 @@ def escribir(regs, fn="salida.xml"):
                 'formaspago': [{
                 'formapago': {
                     'codigo': '',
-                    'descripcion': reg['formas_pago'][0]['descripcion'],
+                    'descripcion': reg['forma_pago'],
                     }}]
                 })
         comprobantes.append(dic)
