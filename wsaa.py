@@ -19,9 +19,9 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.04c"
+__version__ = "2.04e"
 
-import datetime,email,os,sys
+import datetime,email,os,sys,traceback
 from php import date
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from M2Crypto import BIO, Rand, SMIME, SSL
@@ -42,7 +42,7 @@ SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL
 # Verificación del web server remoto
 CACERT = "geotrust.crt" # WSAA CA Cert
 
-HOMO = True
+HOMO = False
 
 # No debería ser necesario modificar nada despues de esta linea
 
@@ -154,10 +154,9 @@ class WSAA:
                 trace = "--trace" in sys.argv)
             return True
         except Exception, e:
-            import traceback
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             if self.LanzarExcepciones:
                 raise
         return False
@@ -167,10 +166,9 @@ class WSAA:
         try:
             return create_tra(service,ttl)
         except Exception, e:
-            import traceback
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             if self.LanzarExcepciones:
                 raise
         return ""
@@ -180,10 +178,9 @@ class WSAA:
         try:
             return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'))
         except Exception, e:
-            import traceback
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             if self.LanzarExcepciones:
                 raise
         return ""
@@ -203,10 +200,9 @@ class WSAA:
         except SoapFault,e:
             self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
         except Exception, e:
-            import traceback
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             if self.LanzarExcepciones:
                 raise
         finally:
@@ -232,7 +228,7 @@ class WSAA:
             self.xml = SimpleXMLElement(xml)
             return True
         except Exception, e:
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             return False
 
     def ObtenerTagXml(self, *tags):
@@ -247,7 +243,7 @@ class WSAA:
                 # vuelvo a convertir a string el objeto xml encontrado
                 return str(xml)
         except Exception, e:
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
 
     def Expirado(self, fecha=None):
         "Comprueba la fecha de expiración, devuelve si ha expirado"
@@ -258,7 +254,7 @@ class WSAA:
             d = datetime.datetime.strptime(fecha[:19], '%Y-%m-%dT%H:%M:%S')
             return now > d
         except Exception, e:
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
         
         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
