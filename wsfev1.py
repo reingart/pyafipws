@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12e"
+__version__ = "1.12f"
 
 import datetime
 import decimal
@@ -28,7 +28,7 @@ import traceback
 from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
-HOMO = True
+HOMO = False
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
@@ -75,7 +75,10 @@ def inicializar_y_capturar_excepciones(func):
         except Exception, e:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
-            self.Excepcion = u"%s" % (e)
+            try:
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+            except:
+                self.Excepcion = u"<no disponible>"
             if self.LanzarExcepciones:
                 raise
         finally:
