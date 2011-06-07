@@ -227,6 +227,9 @@ def leer(fn="entrada.txt"):
             if str(linea[0])=='0':
                 encabezado = leer_linea_txt(linea, ENCABEZADO)
                 reg = encabezado
+                if not reg.get('cbt_numero'):
+                    # por compatibilidad con pyrece:
+                    reg['cbt_numero'] = reg['cbte_nro']
                 reg.update({
                     'cbtes_asoc': [],
                     'tributos': [],
@@ -274,20 +277,23 @@ def escribir(regs, archivo):
 
     for reg in regs:
         reg['tipo_reg'] = 0
+        if not reg.get('cbte_nro'):
+            # por compatibilidad con pyrece:
+            reg['cbte_nro'] = reg['cbt_numero']
         f_salida.write(escribir_linea_txt(reg, ENCABEZADO))
         for it in reg['detalles']:
             it['tipo_reg'] = 1
             f_salida.write(escribir_linea_txt(it, DETALLE))
-        for it in reg['permisos']:
+        for it in reg.get('permisos', []):
             it['tipo_reg'] = 2
             f_salida.write(escribir_linea_txt(it, PERMISO))
         for it in reg.get('cbtasocs', []):
             it['tipo_reg'] = 3
             f_salida.write(escribir_linea_txt(it, CMP_ASOC))
-        for it in reg['ivas']:
+        for it in reg.get('ivas', []):
             it['tipo_reg'] = 4
             f_salida.write(escribir_linea_txt(it, IVA))
-        for it in reg['tributos']:
+        for it in reg.get('tributos', []):
             it['tipo_reg'] = 5
             f_salida.write(escribir_linea_txt(it, TRIBUTO))
         for it in reg.get('datos', []):

@@ -52,7 +52,7 @@ def aplanar(regs):
     for reg in regs:
         fila = {}
         for k in MAP_ENC:
-            fila[k] = reg[k]
+            fila[k] = reg.get(k)
 
         fila['forma_pago']=reg['forma_pago']
 
@@ -118,8 +118,10 @@ def desaplanar(filas):
     from formato_xml import MAP_ENC
 
     def max_li(colname): 
-        tmp = max([int(k[len(colname):])+1 for k in filas[0] if k.startswith(colname)])
-        if max_li:
+        l = [int(k[len(colname):])+1 for k in filas[0] if k.startswith(colname)]
+        if l:
+            tmp = max(l)
+        if l and tmp:
             ##print "max_li(%s)=%s" % (colname, tmp)
             return tmp
         else:
@@ -171,6 +173,7 @@ def desaplanar(filas):
                 'pagina': '',
                 } for campo, valor in dic.items()
                 ]
+
 
         regs.append(reg)
 

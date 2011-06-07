@@ -139,6 +139,8 @@ XML_FORMAT = {
             'reproceso': str,
             'motivo': str,
             'errores': str,
+            
+            'id': str,
 
             },
         }],
@@ -187,6 +189,7 @@ MAP_ENC = {
     "reproceso": 'reproceso',
     "motivo": 'motivo',
     #'errores',
+    "id": 'id',
     }
 
 # Mapeo de nombres internos ws vs facturador-plus (detalle)

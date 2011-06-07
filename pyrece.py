@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22e"
+__version__ = "1.23a"
 
 from datetime import datetime
 from decimal import Decimal
@@ -38,6 +38,9 @@ from pyfepdf import FEPDF
 # Formatos de archivos:
 import formato_xml
 import formato_csv
+import formato_dbf
+import formato_txt
+import formato_json
 
 HOMO = False
 DEBUG = '--debug' in sys.argv
@@ -416,7 +419,10 @@ class PyRece(model.Background):
     
     def examinar(self):
         filename = entrada
-        wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml"]
+        wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
+                        "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
+                        "Archivos JSON (*.json)|*.json",
+                        ]
         if entrada.endswith("xml"):
             wildcard.sort(reverse=True)
 
@@ -442,6 +448,17 @@ class PyRece(model.Background):
                 elif fn.lower().endswith(".xml"):
                     regs = formato_xml.leer(fn)
                     items.extend(formato_csv.aplanar(regs))
+                elif fn.lower().endswith(".txt"):
+                    regs = formato_txt.leer(fn)
+                    items.extend(formato_csv.aplanar(regs))
+                elif fn.lower().endswith(".dbf"):
+                    reg = formato_dbf.leer({'Encabezado': fn})
+                    items.extend(formato_csv.aplanar([reg]))
+                elif fn.lower().endswith(".json"):
+                    regs = formato_json.leer(fn)
+                    items.extend(formato_csv.aplanar(regs))
+                else:
+                    self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
             if len(items) < 2:
                 dialog.alertDialog(self, u'El archivo no tiene datos válidos', 'Advertencia')
             cols = items and [str(it).strip() for it in items[0]] or []
@@ -455,7 +472,10 @@ class PyRece(model.Background):
 
     def on_menuArchivoGuardar_select(self, event):
             filename = entrada
-            wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml"]
+            wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
+                        "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
+                        "Archivos JSON (*.json)|*.json",
+                        ]
             if entrada.endswith("xml"):
                 wildcard.sort(reverse=True)
             if self.paths:
@@ -483,7 +503,16 @@ class PyRece(model.Background):
                 formato_csv.escribir([self.cols] + [[item[k] for k in self.cols] for item in self.items], fn)
             else:
                 regs = formato_csv.desaplanar([self.cols] + [[item[k] for k in self.cols] for item in self.items])
-                formato_xml.escribir(regs, fn)                
+                if fn.endswith(".xml"):
+                    formato_xml.escribir(regs, fn)
+                elif fn.endswith(".txt"):
+                    formato_txt.escribir(regs, fn)
+                elif fn.endswith(".dbf"):
+                    formato_dbf.escribir(regs, {'Encabezado': fn})
+                elif fn.endswith(".json"):
+                    formato_json.escribir(regs, fn)
+                else:
+                    self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
             dialog.alertDialog(self, u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
         except Exception, e:
             self.error(u'Excepción',unicode(e))
