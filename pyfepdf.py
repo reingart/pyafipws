@@ -534,7 +534,7 @@ class FEPDF:
                 f.set('Cliente.Telefono', fact.get('telefono', fact.get('telefono_cliente')))
                 f.set('Cliente.IVA', fact.get('categoria', fact.get('id_impositivo')))
                 f.set('Cliente.CUIT', self.fmt_cuit(str(fact['nro_doc'])))
-                f.set('Cliente.TipoDoc', {'80':'CUIT','86':'CUIL','96':'DNI', '99': ''}[str(fact['tipo_doc'])])
+                f.set('Cliente.TipoDoc', {80:'CUIT',86:'CUIL',96:'DNI',99: ''}[int(str(fact['tipo_doc']))])
                 f.set('Cliente.Observaciones', fact.get('obs_comerciales'))
                 f.set('Cliente.PaisDestino', self.paises.get(fact.get('pais_dst_cmp'), fact.get('pais_dst_cmp')) or '')
 
