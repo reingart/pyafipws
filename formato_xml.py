@@ -36,6 +36,9 @@ XML_FORMAT = {
             'nrodocreceptor': long,
             'receptor': str,
             'domicilioreceptor': str,
+            'localidadreceptor': str,
+            'provinciareceptor': str,
+            'telefonoreceptor': str,
             'idimpositivoreceptor': str,
             'emailgeneral': str,
             
@@ -159,8 +162,13 @@ MAP_ENC = {
     "moneda_ctz": 'tipocambio',
     "tipo_doc": 'tipodocreceptor',
     "nro_doc": 'nrodocreceptor',
-    "nombre": 'receptor',
-    "domicilio": 'domicilioreceptor',
+    "nombre_cliente": 'receptor',
+    "domicilio_cliente": 'domicilioreceptor',
+    "telefono_cliente": 'telefonoreceptor',
+    "localidad_cliente": 'localidadreceptor',
+    "provincia_cliente": 'provinciareceptor',
+    "id_impositivo": 'idimpositivoreceptor',
+
     "email": 'emailgeneral',
 
     'numero_cliente': 'numero_cliente',

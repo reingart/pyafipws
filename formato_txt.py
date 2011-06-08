@@ -207,6 +207,8 @@ def escribir_linea_txt(dic, formato):
                 valor = ("%%0%dd" % longitud) % (float(valor)*(10**decimales))
             else:
                 valor = ("%%-%ds" % longitud) % valor.replace("\n","\v") # reemplazo salto de linea
+            # reemplazo saltos de linea por tabulaci{on vertical
+            valor = valor.replace("\n\r", "\v").replace("\n", "\v").replace("\r", "\v")
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
         except Exception, e:

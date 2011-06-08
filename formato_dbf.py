@@ -18,6 +18,13 @@ __license__ = "GPL 3.0"
 
 from decimal import Decimal
 
+try:
+    import dbf
+    dbf.encoding('cp850')
+except:
+    print "para soporte de DBF debe instalar dbf"
+    print "     http://pypi.python.org/pypi/dbf/"
+    
 CHARSET = 'latin1'
 DEBUG = True
 
@@ -80,8 +87,6 @@ def dar_nombre_campo(clave):
 
 def leer(archivos=None):
     "Leer las tablas dbf y devolver una lista de diccionarios con las facturas"
-    import dbf
-    dbf.encoding('cp850')
     if DEBUG: print "Leyendo DBF..."
     if archivos is None: archivos = {}
     regs = {}
@@ -124,8 +129,6 @@ def leer(archivos=None):
 
 def escribir(regs, archivos=None):
     "Grabar en talbas dbf la lista de diccionarios con la factura"
-    import dbf
-    dbf.encoding('cp850')
     if DEBUG: print "Creando DBF..."
     if not archivos: filenames = {}
     
