@@ -48,8 +48,8 @@ setup(
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = [Target(module=wsaa, modules='wsaa', create_exe=False, create_dll=True)],
-    console=[Target(module=wsaa, script="wsaa.py", dest_base="wsaa")],
+    com_server = [Target(module=wsaa, modules='wsaa', create_exe=True, create_dll=True)],
+    console=[Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")],
     options=opts,
     data_files = data_files,
     cmdclass = {"py2exe": build_installer}
