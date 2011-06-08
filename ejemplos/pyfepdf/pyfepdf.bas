@@ -47,7 +47,9 @@ Sub Main()
     forma_pago = "30 dias"
     incoterms = "FOB" ' termino de comercio exterior para exportación
     idioma_cbte = 1   ' idioma para exportación (no usado por el momento)
-    motivo_obs = "11" ' motivo de observación (F136 y otros)
+    ' motivo de observación (F136 y otros - RG2485/08 Art. 30 inc. c):
+    motivo_obs = "10063: Factura individual, DocTipo: 80, " & _
+        "DocNro 30000000007 no se encuentra inscripto en condicion ACTIVA en el impuesto."
 
     ' Código de Autorización Electrónica y fecha de vencimiento:
     ' (para facturas tradicionales, no imprimir el CAE ni código de barras)

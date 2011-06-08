@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04b"
+__version__ = "1.05a"
 
 DEBUG = False
 HOMO = False
@@ -159,7 +159,7 @@ class FEPDF:
             moneda_id="PES", moneda_ctz="1.0000", cae="", fch_venc_cae="", id_impositivo='',
             nombre_cliente="", domicilio_cliente="", pais_dst_cmp=None,
             obs_comerciales="", obs_generales="", forma_pago="", incoterms="", 
-            idioma_cbte=7, motivo="", descuento=0.0,
+            idioma_cbte=7, motivos_obs="", descuento=0.0,
             **kwargs
             ):
         "Creo un objeto factura (internamente)"
@@ -181,7 +181,7 @@ class FEPDF:
                 'id_impositivo': id_impositivo,
                 'forma_pago': forma_pago, 'incoterms': incoterms,
                 'cae': cae, 'fecha_vto': fch_venc_cae,
-                'motivos_obs': motivo,
+                'motivos_obs': motivos_obs,
                 'descuento': descuento,
                 'cbtes_asoc': [],
                 'tributos': [],
@@ -276,7 +276,7 @@ class FEPDF:
     def fmt_cuit(self, c):
         if c is not None and str(c):
             c=str(c)
-            return len(str(c))==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:]) or c
+            return len(c)==11 and "%s-%s-%s" % (c[0:2], c[2:10], c[10:]) or c
         return ''
 
     def fmt_fact(self, tipo_cbte, punto_vta, cbte_nro):
@@ -468,7 +468,10 @@ class FEPDF:
             self.AgregarDato("homo", "HOMOLOGACIÓN")
 
         if fact.get('motivos_obs') and fact['motivos_obs']<>'00':
-            motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
+            if not f.has_key('motivos_ds.L'):
+                motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
+            else:
+                motivos_ds = u"%s" % fact['motivos_obs']
         elif HOMO:
             motivos_ds = u"Ejemplo Sin validez fiscal - Homologación - Testing"
         else:
@@ -652,6 +655,16 @@ class FEPDF:
                 f.set('permisos_ds', permisos_ds)
 
                 f.set('motivos_ds', motivos_ds)
+                if f.has_key('motivos_ds1') and motivos_ds:
+                    if letra_fact=='A':
+                        msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
+                        if not f.has_key('leyenda_credito_fiscal'):
+                            motivos_ds += msg_no_iva
+                        else:
+                            f.set('leyenda_credito_fiscal', msg_no_iva)
+                    for i, txt in enumerate(f.split_multicell(motivos_ds, 'motivos_ds1')):
+                        f.set('motivos_ds%d' % (i+1), txt)
+                    
                 f.set('CAE', fact['cae'])
                 f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
                 if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
