@@ -55,6 +55,10 @@ def aplanar(regs):
             fila[k] = reg.get(k)
 
         fila['forma_pago']=reg['forma_pago']
+        
+        # por compatibilidad con pyrece:
+        if reg.get('cbte_nro'):
+            fila['cbt_numero']=reg['cbte_nro']
 
         for i, det in enumerate(reg['detalles']):
             li = i+1
@@ -131,20 +135,24 @@ def desaplanar(filas):
     for fila in filas[1:]:
         dic = dict([(filas[0][i], v) for i, v in enumerate(fila)])
         reg = {}
+
+        # por compatibilidad con pyrece:
+        reg['cbte_nro'] = dic['cbt_numero']
+
         for k in MAP_ENC:
             if k in dic:
                 reg[k] = dic.pop(k)
-
+            
         reg['detalles'] = [{
-                'codigo': dic.pop('codigo%s' % li),
-                'ds': dic.pop('descripcion%s' % li),
-                'umed': dic.pop('umed%s' % li),
-                'qty': dic.pop('cantidad%s' % li),
-                'precio': dic.pop('precio%s' % li),
-                'importe': dic.pop('importe%s' % li),
-                'iva_id': dic.pop('iva_id%s' % li),
-                'imp_iva': dic.pop('imp_iva%s'% li),                                               
-                'numero_despacho': dic.pop('numero_despacho%s'% li),
+                'codigo': ('codigo%s' % li) in dic and dic.pop('codigo%s' % li),
+                'ds': ('descripcion%s' % li) in dic and dic.pop('descripcion%s' % li),
+                'umed': ('umed%s' % li) in dic and dic.pop('umed%s' % li),
+                'qty': ('cantidad%s' % li) in dic and dic.pop('cantidad%s' % li),
+                'precio': ('precio%s' % li) in dic and dic.pop('precio%s' % li),
+                'importe': ('importe%s' % li) in dic and dic.pop('importe%s' % li),
+                'iva_id': ('iva_id%s' % li) in dic and dic.pop('iva_id%s' % li),
+                'imp_iva': ('imp_iva%s' % li) in dic and dic.pop('imp_iva%s'% li),                                               
+                'numero_despacho': ('numero_despacho%s' % li) in dic and dic.pop('numero_despacho%s'% li),
                 } for li in xrange(1, max_li("cantidad")) 
                   if dic['cantidad%s' % li] is not None]
                 

@@ -627,7 +627,7 @@ class FEPDF:
                         f.set('LeyendaIVA',"")
                         
                         for iva in fact['ivas']:
-                            a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[iva['iva_id']]
+                            a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[int(iva['iva_id'])]
                             f.set('IVA%s' % a, self.fmt_imp(iva['importe']))
 
                     else:

@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23a"
+__version__ = "1.23b"
 
 from datetime import datetime
 from decimal import Decimal
@@ -453,7 +453,7 @@ class PyRece(model.Background):
                     items.extend(formato_csv.aplanar(regs))
                 elif fn.lower().endswith(".dbf"):
                     reg = formato_dbf.leer({'Encabezado': fn})
-                    items.extend(formato_csv.aplanar([reg]))
+                    items.extend(formato_csv.aplanar(reg.values()))
                 elif fn.lower().endswith(".json"):
                     regs = formato_json.leer(fn)
                     items.extend(formato_csv.aplanar(regs))
