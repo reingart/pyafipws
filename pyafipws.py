@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26b"
+__version__ = "1.26c"
 
 import sys
 import wsfe, wsbfe, wsfex, wsctg, wdigdepfiel

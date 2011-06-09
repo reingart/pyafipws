@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03"
+__version__ = "1.04"
 
 LICENCIA = """
 wsctg.py: Interfaz para generar Código de Trazabilidad de Granos AFIP
@@ -154,7 +154,7 @@ def solicitar_ctg(client, token, sign, cuit, **kwargs):
         ("solicitarCTGRequest", tuple(args)))
     
     result = response.solicitarCTGResponse
-    return result.numeroCTG
+    return str(result.numeroCTG)
 
 
 ARG_CONFIRMAR_CTG = ("numeroCartaDePorte", "numeroCTG",
@@ -172,7 +172,7 @@ def confirmar_ctg(client, token, sign, cuit, **kwargs):
         ("confirmarCTGRequest", tuple(args)))
     
     result = response.confirmarCTGResponse
-    return result.codigoTransaccion, result.observaciones
+    return str(result.codigoTransaccion), str(result.observaciones)
 
 
 if __name__ == '__main__':
@@ -265,8 +265,8 @@ if __name__ == '__main__':
             print "\n".join(["||%s||%s||" % (it['codigo'], it['descripcion']) for it in items])
 
         if '--prueba' in sys.argv or '--formato' in sys.argv:
-            prueba = dict(numeroCartaDePorte=512345678, codigoEspecie=23,
-                cuitRemitenteComercial=30640872566, cuitDestino=20267565393, cuitDestinatario=20267565393, 
+            prueba = dict(numeroCartaDePorte=512345679, codigoEspecie=23,
+                cuitRemitenteComercial=30640872566, cuitDestino=20061341677, cuitDestinatario=30500959629, 
                 codigoLocalidadOrigen=3058, codigoLocalidadDestino=3059, 
                 codigoCosecha='0910', pesoNetoCarga=1000, cantHoras=1, 
                 patenteVehiculo='CZO985', cuitTransportista=20234455967,
