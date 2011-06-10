@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<comprobantes>
+    <comprobante>
+        <concepto>1</concepto>
+        <condicion_frente_iva>Exento</condicion_frente_iva>
+        <domicilioreceptor>Patricia 1 - Cdad de Buenos Aires - 1405 - Capital Federal - Argentina</domicilioreceptor>
+        <importetotal>1085.57</importetotal>
+        <idimpositivoreceptor/>
+        <localidadreceptor/>
+        <fechaservdesde/>
+        <receptor>Cliente XXX</receptor>
+        <reproceso>S</reproceso>
+        <nrodocreceptor>30500010912</nrodocreceptor>
+        <motivo/>
+        <id>1</id>
+        <tributos>
+            <tributo>
+                <desc>Impuesto municipal matanza</desc>
+                <alic>1.00</alic>
+                <baseimp>889.82</baseimp>
+                <id>99</id>
+                <importe>8.89</importe>
+            </tributo>
+        </tributos>
+        <otrosdatoscomerciales/>
+        <tipocambio>1.000000</tipocambio>
+        <tipo>6</tipo>
+        <numero_cotizacion>82016336</numero_cotizacion>
+        <detalles>
+            <detalle>
+                <importe>1076.68</importe>
+                <unimed>07</unimed>
+                <numero_despacho>110170P</numero_despacho>
+                <cant>1.0</cant>
+                <preciounit>1076.68</preciounit>
+                <tasaiva>0</tasaiva>
+                <importeiva>0.00</importeiva>
+                <ncm/>
+                <sec/>
+                <bonificacion/>
+                <desc>PRUEBA ART</desc>
+                <cod>P1675G</cod>
+            </detalle>
+        </detalles>
+        <numero_cliente>21601192</numero_cliente>
+        <ptovta>5</ptovta>
+        <fechaemision>20110609</fechaemision>
+        <numero_remito>00008001</numero_remito>
+        <tipodocreceptor>80</tipodocreceptor>
+        <importeopex>0.00</importeopex>
+        <numero>7</numero>
+        <telefonoreceptor/>
+        <importeiva>186.86</importeiva>
+        <fechaservhasta/>
+        <otrosdatosgenerales/>
+        <cuitemisor>20205766</cuitemisor>
+        <importetotalconcepto>0.00</importetotalconcepto>
+        <emailgeneral>mariano@sistemasagiles.com.ar</emailgeneral>
+        <importetributos>8.89</importetributos>
+        <resultado>A</resultado>
+        <provinciareceptor/>
+        <ivas>
+            <iva>
+                <baseimp>889.82</baseimp>
+                <id>5</id>
+                <importe>186.86</importe>
+            </iva>
+        </ivas>
+        <fechavencpago/>
+        <formaspago>
+            <formapago>
+                <descripcion>30 Dias</descripcion>
+                <codigo/>
+            </formapago>
+        </formaspago>
+        <importeneto>889.82</importeneto>
+        <moneda>PES</moneda>
+        <fecha_vto>20110619</fecha_vto>
+        <idioma>1</idioma>
+        <cae>61233038185853</cae>
+        <numero_orden_compra>6443</numero_orden_compra>
+    </comprobante>
+</comprobantes>
