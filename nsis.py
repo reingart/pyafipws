@@ -26,7 +26,7 @@ import sys
 from py2exe.build_exe import py2exe
 
 
-nsi_base_script = """\
+nsi_base_script = r"""\
 ; base.nsi
 
 ; WARNING: This script has been created by py2exe. Changes to this script
@@ -91,7 +91,13 @@ notistalled:
     WriteUninstaller "Uninst.exe"
     ;To Register a DLL
     %(register_com_servers)s
- 
+    IfFileExists $INSTDIR\\pyrece.exe 0 +3
+        ;create start-menu items
+        CreateDirectory "$SMPROGRAMS\%(name)s"
+        CreateShortCut "$SMPROGRAMS\%(name)s\PyRece.lnk" "$INSTDIR\pyrece.exe" "" "$INSTDIR\pyrece.exe" 0
+        CreateShortCut "$SMPROGRAMS\%(name)s\Designer.lnk" "$INSTDIR\designer.exe" "" "$INSTDIR\designer.exe" 0
+        ;CreateShortCut "$SMPROGRAMS\%(name)s\Uninstall.lnk" "$INSTDIR\Uninst.exe" "" "$INSTDIR\Uninst.exe" 0
+  
 SectionEnd
 
 Section "Uninstall"
