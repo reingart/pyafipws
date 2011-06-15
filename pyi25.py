@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.02a"
 
 import os
 import sys
@@ -153,22 +153,33 @@ if __name__ == '__main__':
         
         pyi25 = PyI25()
 
-        cuit = 20267565393
-        tipo_cbte = 2
-        punto_vta = 4001
-        cae = 61203034739042
-        fch_venc_cae = 20110529
+        if '--barras' in sys.argv:
+            barras = sys.argv[sys.argv.index("--barras")+1]
+        else:
+            cuit = 20267565393
+            tipo_cbte = 2
+            punto_vta = 4001
+            cae = 61203034739042
+            fch_venc_cae = 20110529
         
-        # codigo de barras de ejemplo:
-        barras = '%11s%02d%04d%s%8s' % (cuit, tipo_cbte, punto_vta, cae, fch_venc_cae)
-        barras = barras + pyi25.DigitoVerificadorModulo10(barras)
+            # codigo de barras de ejemplo:
+            barras = '%11s%02d%04d%s%8s' % (cuit, tipo_cbte, punto_vta, cae, fch_venc_cae)
 
-        archivo="prueba-cae-i25.png"
+        if not '--noverificador' in sys.argv:
+            barras = barras + pyi25.DigitoVerificadorModulo10(barras)
+
+        if '--archivo' in sys.argv:
+            archivo = sys.argv[sys.argv.index("--archivo")+1]
+        else:
+            archivo="prueba-cae-i25.png"
         
         print "barras", barras
+        print "archivo", archivo
         pyi25.GenerarImagen(barras, archivo)
 
-        if sys.platform=="linux2":
+        if not '--mostrar' in sys.argv:
+            pass
+        elif sys.platform=="linux2":
             os.system("eog ""%s""" % archivo)
         else:
             os.startfile(archivo)
