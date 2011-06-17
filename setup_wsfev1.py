@@ -2,7 +2,7 @@
 #       python setup.py py2exe 
 #
 
-"Creador de instalador para PyAfipWs (WSMTXCA)"
+"Creador de instalador para PyAfipWs (WSFEv1)"
 
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
