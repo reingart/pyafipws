@@ -54,18 +54,18 @@ Sub Main()
     Debug.Print "dbserver status", WSCTG.DbServerStatus
     Debug.Print "authserver status", WSCTG.AuthServerStatus
        
-    numero_carta_de_porte = "512345678"
+    numero_carta_de_porte = "512345679"
     codigo_especie = 23
-    cuit_remitente_comercial = "20267565393"
-    cuit_destino = "20267565393"
-    cuit_destinatario = "20267565393"
+    cuit_remitente_comercial = "20061341677"
+    cuit_destino = "20076641707"
+    cuit_destinatario = "30500959629"
     codigo_localidad_origen = 3058
     codigo_localidad_destino = 3059
     codigo_cosecha = "0910"
     peso_neto_carga = 1000
     cant_horas = 1
     patente_vehiculo = "AAA000"
-    cuit_transportista = "2026756539"
+    cuit_transportista = "20076641707"
        
     numero_CTG = WSCTG.SolicitarCTG(numero_carta_de_porte, codigo_especie, _
         cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen, _

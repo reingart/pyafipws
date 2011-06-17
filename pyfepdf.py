@@ -643,7 +643,7 @@ class FEPDF:
                 else:
                     for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc', 
                               'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
-                              'NETO', 'IVA21'):
+                              'NETO', 'IVA21', 'IVA10.5', 'IVA27'):
                         f.set(k,"")
                     f.set('NETO.L',"")
                     f.set('IVA.L',"")
