@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "0.01a"
+__version__ = "1.00a"
 
 import datetime
 import decimal
@@ -52,7 +52,7 @@ class WSFEXv1:
         'PuntoVenta', 'CbteNro', 'FechaCbte', 'ImpTotal']
         
     _reg_progid_ = "WSFEXv1"
-    _reg_clsid_ = "{CE73DA43-86F4-413E-99CD-6468CBFF20B4}"
+    _reg_clsid_ = "{8106F039-D132-4F87-8AFE-ADE47B5503D4}"
 
     def __init__(self):
         self.Token = self.Sign = self.Cuit = None
@@ -118,8 +118,8 @@ class WSFEXv1:
             imp_total=0.0, tipo_expo=1, permiso_existente="N", pais_dst_cmp=None,
             nombre_cliente="", cuit_pais_cliente="", domicilio_cliente="",
             id_impositivo="", moneda_id="PES", moneda_ctz=1.0,
-            obs_comerciales="", obs_generales="", forma_pago="", incoterms="", incoterms_ds="",
-            idioma_cbte=7):
+            obs_comerciales="", obs_generales="", forma_pago="", incoterms="", 
+            idioma_cbte=7, incoterms_ds=None):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
 
@@ -128,7 +128,7 @@ class WSFEXv1:
                 'tipo_doc': 80, 'nro_doc':  cuit_pais_cliente,
                 'imp_total': imp_total, 
                 'permiso_existente': permiso_existente, 
-                'pais_dst_cmp': dst_cmp,
+                'pais_dst_cmp': pais_dst_cmp,
                 'nombre_cliente': nombre_cliente,
                 'domicilio_cliente': domicilio_cliente,
                 'id_impositivo': id_impositivo,
@@ -148,7 +148,7 @@ class WSFEXv1:
 
         return True
     
-    def AgregarItem(self, codigo, ds, qty, umed, precio, bonif, importe):
+    def AgregarItem(self, codigo, ds, qty, umed, precio, importe, bonif=None):
         "Agrego un item a una factura (interna)"
         # Nota: no se calcula total (debe venir calculado!)
         self.factura['detalles'].append({
@@ -249,9 +249,9 @@ class WSFEXv1:
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.FEXDummy()['FEXDummyResult']
         self.__analizar_errores(result)
-        self.AppServerStatus = str(results['AppServer'])
-        self.DbServerStatus = str(results['DbServer'])
-        self.AuthServerStatus = str(results['AuthServer'])
+        self.AppServerStatus = str(result['AppServer'])
+        self.DbServerStatus = str(result['DbServer'])
+        self.AuthServerStatus = str(result['AuthServer'])
         return True
 
     @inicializar_y_capturar_excepciones
@@ -280,6 +280,8 @@ class WSFEXv1:
             self.CbteNro =resultget['Cbte_nro']
             self.ImpTotal = resultget['Imp_total']
             return self.CAE
+        else:
+            return 0
     
     @inicializar_y_capturar_excepciones
     def GetLastCMP(self, tipo_cbte, punto_vta):
@@ -293,8 +295,8 @@ class WSFEXv1:
         self.__analizar_errores(result)
         if 'FEXResult_LastCMP' in result:
             resultget = result['FEXResult_LastCMP']
-            self.CbteNro =resultget['Cbte_nro']
-            self.FechaCbte = resultget['Cbte_fecha'] #.strftime("%Y/%m/%d")
+            self.CbteNro =resultget.get('Cbte_nro')
+            self.FechaCbte = resultget.get('Cbte_fecha') #.strftime("%Y/%m/%d")
             return self.CbteNro
             
     @inicializar_y_capturar_excepciones
@@ -306,7 +308,7 @@ class WSFEXv1:
         self.__analizar_errores(result)
         if 'FEXResultGet' in result:
             resultget = result['FEXResultGet']
-            return resultget['Id']
+            return resultget.get('Id')
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -321,112 +323,124 @@ INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
 if __name__ == "__main__":
-    # Crear objeto interface Web Service de Factura Electrónica de Exportación
-    wsfexv1 = WSFEXv1()
-    # Setear token y sing de autorización (pasos previos)
 
-    # obteniendo el TA
-    from wsaa import WSAA
-    wsaa = WSAA()
-    tra = wsaa.CreateTRA(service="wsfex")
-    cms = wsaa.SignTRA(tra,"reingart.crt","reingart.key")
-    url = "" # "https://wsaa.afip.gov.ar/ws/services/LoginCms"
-    wsaa.Conectar("", url)
-    ta = wsaa.LoginCMS(cms)
-    # fin TA
+    if "--register" in sys.argv or "--unregister" in sys.argv:
+        import win32com.server.register
+        win32com.server.register.UseCommandLine(WSFEXv1)
+    else:
 
-    wsfexv1.Token = wsaa.Token
-    wsfexv1.Sign = wsaa.Sign
+        # Crear objeto interface Web Service de Factura Electrónica de Exportación
+        wsfexv1 = WSFEXv1()
+        # Setear token y sing de autorización (pasos previos)
 
-    # CUIT del emisor (debe estar registrado en la AFIP)
-    wsfexv1.Cuit = "20267565393"
+        # obteniendo el TA
+        from wsaa import WSAA
+        wsaa = WSAA()
+        tra = wsaa.CreateTRA(service="wsfex")
+        cms = wsaa.SignTRA(tra,"reingart.crt","reingart.key")
+        url = "" # "https://wsaa.afip.gov.ar/ws/services/LoginCms"
+        wsaa.Conectar("", url)
+        ta = wsaa.LoginCMS(cms)
+        # fin TA
 
-    # Conectar al Servicio Web de Facturación (homologación)
-    ok = wsfexv1.Conectar("","http://wswhomo.afip.gov.ar/WSFEXv1/service.asmx")
+        wsfexv1.Token = wsaa.Token
+        wsfexv1.Sign = wsaa.Sign
 
-    if "--prueba" in sys.argv:
-        try:
-            # Establezco los valores de la factura a autorizar:
-            tipo_cbte = 19 # FC Expo (ver tabla de parámetros)
-            punto_vta = 7
-            # Obtengo el último número de comprobante y le agrego 1
-            cbte_nro = int(wsfexv1.GetLastCMP(tipo_cbte, punto_vta)) + 1
-            fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
-            tipo_expo = 1 # tipo de exportación (ver tabla de parámetros)
-            permiso_existente = "S"
-            dst_cmp = 203 # país destino
-            cliente = "Joao Da Silva"
-            cuit_pais_cliente = "50000000016"
-            domicilio_cliente = "Rua 76 km 34.5 Alagoas"
-            id_impositivo = "PJ54482221-l"
-            moneda_id = "012" # para reales, "DOL" o "PES" (ver tabla de parámetros)
-            moneda_ctz = 0.5
-            obs_comerciales = "Observaciones comerciales"
-            obs = "Sin observaciones"
-            forma_pago = "30 dias"
-            incoterms = "FOB" # (ver tabla de parámetros)
-            incoterms_ds = "Flete a Bordo" 
-            idioma_cbte = 1 # (ver tabla de parámetros)
-            imp_total = "250.00"
-            
-            # Creo una factura (internamente, no se llama al WebService):
-            ok = wsfexv1.CrearFactura(tipo_cbte, punto_vta, cbte_nro, fecha_cbte, 
-                    imp_total, tipo_expo, permiso_existente, dst_cmp, 
-                    cliente, cuit_pais_cliente, domicilio_cliente, 
-                    id_impositivo, moneda_id, moneda_ctz, 
-                    obs_comerciales, obs, forma_pago, incoterms, incoterms_ds,
-                    idioma_cbte)
-            
-            # Agrego un item:
-            codigo = "PRO1"
-            ds = "Producto Tipo 1 Exportacion MERCOSUR ISO 9001"
-            qty = 2
-            precio = "150.00"
-            umed = 1 # Ver tabla de parámetros (unidades de medida)
-            bonif = "50.00"
-            imp_total = "250.00" # importe total final del artículo
-            # lo agrego a la factura (internamente, no se llama al WebService):
-            ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, bonif, imp_total)
+        # CUIT del emisor (debe estar registrado en la AFIP)
+        wsfexv1.Cuit = "20267565393"
 
-            # Agrego un permiso (ver manual para el desarrollador)
-            id = "99999AAXX999999A"
-            dst = 225 # país destino de la mercaderia
-            ok = wsfexv1.AgregarPermiso(id, dst)
+        # Conectar al Servicio Web de Facturación (homologación)
+        ok = wsfexv1.Conectar("","http://wswhomo.afip.gov.ar/WSFEXv1/service.asmx")
 
-            # Agrego un comprobante asociado (solo para N/C o N/D)
-            if tipo_cbte in (20,21): 
-                cbteasoc_tipo = 19
-                cbteasoc_pto_vta = 2
-                cbteasoc_nro = 1234
-                cbteasoc_cuit = 20111111111
-                wsfexv1.AgregarCmpAsoc(cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit)
+        if '--dummy' in sys.argv:
+            #wsfexv1.LanzarExcepciones = False
+            print wsfexv1.Dummy()
+            print wsfexv1.XmlRequest
+            print wsfexv1.XmlResponse
+        
+        if "--prueba" in sys.argv:
+            try:
+                # Establezco los valores de la factura a autorizar:
+                tipo_cbte = 19 # FC Expo (ver tabla de parámetros)
+                punto_vta = 7
+                # Obtengo el último número de comprobante y le agrego 1
+                cbte_nro = int(wsfexv1.GetLastCMP(tipo_cbte, punto_vta)) + 1
+                fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
+                tipo_expo = 1 # tipo de exportación (ver tabla de parámetros)
+                permiso_existente = "S"
+                dst_cmp = 203 # país destino
+                cliente = "Joao Da Silva"
+                cuit_pais_cliente = "50000000016"
+                domicilio_cliente = "Rua 76 km 34.5 Alagoas"
+                id_impositivo = "PJ54482221-l"
+                moneda_id = "012" # para reales, "DOL" o "PES" (ver tabla de parámetros)
+                moneda_ctz = 0.5
+                obs_comerciales = "Observaciones comerciales"
+                obs = "Sin observaciones"
+                forma_pago = "30 dias"
+                incoterms = "FOB" # (ver tabla de parámetros)
+                incoterms_ds = "Flete a Bordo" 
+                idioma_cbte = 1 # (ver tabla de parámetros)
+                imp_total = "250.00"
                 
-            ##id = "99000000000100" # número propio de transacción
-            # obtengo el último ID y le adiciono 1 
-            # (advertencia: evitar overflow y almacenar!)
-            id = long(wsfexv1.GetLastID()) + 1
+                # Creo una factura (internamente, no se llama al WebService):
+                ok = wsfexv1.CrearFactura(tipo_cbte, punto_vta, cbte_nro, fecha_cbte, 
+                        imp_total, tipo_expo, permiso_existente, dst_cmp, 
+                        cliente, cuit_pais_cliente, domicilio_cliente, 
+                        id_impositivo, moneda_id, moneda_ctz, 
+                        obs_comerciales, obs, forma_pago, incoterms, 
+                        idioma_cbte, incoterms_ds)
+                
+                # Agrego un item:
+                codigo = "PRO1"
+                ds = "Producto Tipo 1 Exportacion MERCOSUR ISO 9001"
+                qty = 2
+                precio = "150.00"
+                umed = 1 # Ver tabla de parámetros (unidades de medida)
+                bonif = "50.00"
+                imp_total = "250.00" # importe total final del artículo
+                # lo agrego a la factura (internamente, no se llama al WebService):
+                ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
 
-            # Llamo al WebService de Autorización para obtener el CAE
-            cae = wsfexv1.Authorize(id)
+                # Agrego un permiso (ver manual para el desarrollador)
+                id = "99999AAXX999999A"
+                dst = 225 # país destino de la mercaderia
+                ok = wsfexv1.AgregarPermiso(id, dst)
 
-            print "Resultado", wsfexv1.Resultado
-            print "CAE", wsfexv1.CAE
-            print "Vencimiento", wsfexv1.Vencimiento
-                        
-            print wsfexv1.client.help("FEXGetCMP").encode("latin1")
-            import pdb; pdb.set_trace()
-            wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
-            print "CAE consulta", wsfexv1.CAE, wsfexv1.CAE==cae 
-            print "NRO consulta", wsfexv1.CbteNro, wsfexv1.CbteNro==cbte_nro 
-            print "TOTAL consulta", wsfexv1.ImpTotal, wsfexv1.ImpTotal==imp_total
+                # Agrego un comprobante asociado (solo para N/C o N/D)
+                if tipo_cbte in (20,21): 
+                    cbteasoc_tipo = 19
+                    cbteasoc_pto_vta = 2
+                    cbteasoc_nro = 1234
+                    cbteasoc_cuit = 20111111111
+                    wsfexv1.AgregarCmpAsoc(cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit)
+                    
+                ##id = "99000000000100" # número propio de transacción
+                # obtengo el último ID y le adiciono 1 
+                # (advertencia: evitar overflow y almacenar!)
+                id = long(wsfexv1.GetLastID()) + 1
 
-        except:
-            print wsfexv1.XmlRequest        
-            print wsfexv1.XmlResponse        
-            print wsfexv1.ErrCode
-            print wsfexv1.ErrMsg
-            print wsfexv1.Excepcion
-            print wsfexv1.Traceback
-            raise
+                # Llamo al WebService de Autorización para obtener el CAE
+                cae = wsfexv1.Authorize(id)
+
+                print "Resultado", wsfexv1.Resultado
+                print "CAE", wsfexv1.CAE
+                print "Vencimiento", wsfexv1.Vencimiento
+                            
+                print wsfexv1.client.help("FEXGetCMP").encode("latin1")
+                wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
+                print "CAE consulta", wsfexv1.CAE, wsfexv1.CAE==cae 
+                print "NRO consulta", wsfexv1.CbteNro, wsfexv1.CbteNro==cbte_nro 
+                print "TOTAL consulta", wsfexv1.ImpTotal, wsfexv1.ImpTotal==imp_total
+
+            except:
+                print wsfexv1.XmlRequest        
+                print wsfexv1.XmlResponse        
+                print wsfexv1.ErrCode
+                print wsfexv1.ErrMsg
+                print wsfexv1.Excepcion
+                print wsfexv1.Traceback
+                import pdb; pdb.set_trace()
+                raise
 
             
