@@ -128,7 +128,7 @@ Sub Main()
         punto_vta_asoc = 2
         cbte_nro_asoc = 1
         cuit_asoc = "20111111111" ' CUIT Asociado Nuevo!
-        ok = WSFEXv1.AgregarCmpAsoc(tipo_cbte_asoc, punto_vta_asoc, cbte_nro_asoc)
+        ok = WSFEXv1.AgregarCmpAsoc(tipo_cbte_asoc, punto_vta_asoc, cbte_nro_asoc, cuit_asoc)
     End If
     
     'id = "99000000000100" ' número propio de transacción
