@@ -92,7 +92,7 @@ ENCABEZADO = [
 
 TRIBUTO = [
     ('tipo_reg', 1, N), # 1: tributo
-    ('tributo_id', 16, A),
+    ('tributo_id', 16, N),
     ('desc', 100, A),
     ('base_imp', 15, I, 3), 
     ('alic', 15, I, 3), 
@@ -101,7 +101,7 @@ TRIBUTO = [
 
 IVA = [
     ('tipo_reg', 1, N), # 2: tributo
-    ('iva_id', 16, A),
+    ('iva_id', 16, N),
     ('base_imp', 15, I, 3), 
     ('importe', 15, I, 3), 
     ]
