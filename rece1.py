@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29c"
+__version__ = "1.29d"
 
 import datetime
 import os
@@ -326,7 +326,10 @@ def escribir_factura(dic, archivo, agrega=False):
                         if (v is None or v=='') and tipo in (I, N):
                             v = 0
                         if tipo == A:
-                            v = unicode(v)
+                            if isinstance(v, unicode):
+                                v = v.encode("ascii", "replace")
+                            if isinstance(v, str):
+                                v = v.decode("ascii", "replace").encode("ascii", "replace")
                         r[clave.replace("_","")[:10]] = v
                 if agrega:
                     print "Agregando ", r
@@ -465,7 +468,7 @@ if __name__ == "__main__":
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 1
             tipo_doc = 80; nro_doc = "30628789661"
-            cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
+            cbt_desde = cbte_nro + 2; cbt_hasta = cbte_nro + 2
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
             fecha_cbte = fecha; fecha_venc_pago = None # fecha
@@ -503,7 +506,7 @@ if __name__ == "__main__":
                 print ws.factura
 
             dic = ws.factura
-            escribir_factura(dic, f_entrada)            
+            escribir_factura(dic, f_entrada, agrega=True)            
             f_entrada.close()
       
         if '/ult' in sys.argv:
