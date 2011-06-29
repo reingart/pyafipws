@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26c"
+__version__ = "1.27a"
 
 import sys
 import wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -197,6 +197,7 @@ class WSBFE:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version',
         'Resultado', 'Obs', 'Reproceso',
+        'Excepcion', 'LanzarExcepciones', 'Traceback', 'ErrCode', 'ErrMsg',
         'CAE','Vencimiento', 'Eventos', 
         'FechaCbte', 'ImpNeto', 'ImptoLiq','ImpTotal']
         
@@ -215,12 +216,18 @@ class WSBFE:
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.factura = None
         self.FechaCbte = ImpNeto = ImptoLiq = ImpTotal = None
+        self.LanzarExcepciones = True
+        self.Traceback = self.Excepcion = ""
+        self.ErrCode = self.ErrMsg = ""
 
     def Conectar(self, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = wsbfe.WSBFEURL
         proxy_dict = parse_proxy(proxy)
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
             self.client = SoapClient(url, 
                 action = wsbfe.SOAP_ACTION, 
                 namespace = wsbfe.SOAP_NS,
@@ -229,7 +236,12 @@ class WSBFE:
             return True
         except Exception, e:
             ##raise
-            raisePythonException(e)
+            if self.LanzarExcepciones:
+                raisePythonException(e)
+            else:
+                ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+                self.Traceback = ''.join(ex)
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
 
     def CrearFactura(self, tipo_doc=80, nro_doc=23111111113,
             zona=0, tipo_cbte=1, punto_vta=1, cbte_nro=0, fecha_cbte=None,
@@ -272,6 +284,9 @@ class WSBFE:
     def Authorize(self, id):
         "Autoriza la factura en memoria (interna)"
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
             # llamo al web service
             auth, events = wsbfe.authorize(self.client, 
                                      self.Token, self.Sign, self.Cuit, 
@@ -288,18 +303,26 @@ class WSBFE:
             self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
             return self.CAE
         except wsbfe.BFEError, e:
-            raise COMException(scode = vbObjectError + int(e.code),
-                               desc=unicode(e.msg), source="WebService")
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
+            if self.LanzarExcepciones:
+                raise COMException(scode = vbObjectError + int(e.code),
+                                   desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
-            raiseSoapError(e)
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
+            if self.LanzarExcepciones:
+                raiseSoapError(e)
         except COMException:
-            raise
+            if self.LanzarExcepciones:
+                raise
         except Exception, e:
-            raisePythonException(e)
-        finally:
-            # guardo datos de depuración
-            self.XmlRequest = self.client.xml_request
-            self.XmlResponse = self.client.xml_response
+            if self.LanzarExcepciones:
+                raisePythonException(e)
+            else:
+                ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+                self.Traceback = ''.join(ex)
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
         
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
@@ -310,6 +333,9 @@ class WSBFE:
 
     def GetCMP(self, tipo_cbte, punto_vta, cbte_nro):
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
             cbt, events = wsbfe.get_cmp(self.client, 
                                     self.Token, self.Sign, self.Cuit, 
                                     tipo_cbte, punto_vta, cbte_nro)
@@ -328,18 +354,26 @@ class WSBFE:
             return self.CAE
 
         except wsbfe.BFEError, e:
-            raise COMException(scode = vbObjectError + int(e.code),
-                               desc=unicode(e.msg), source="WebService")
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
+            if self.LanzarExcepciones:
+                raise COMException(scode = vbObjectError + int(e.code),
+                                   desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
-            raiseSoapError(e)
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
+            if self.LanzarExcepciones:
+                raiseSoapError(e)
         except COMException:
-            raise
+            if self.LanzarExcepciones:
+                raise
         except Exception, e:
-            raisePythonException(e)
-        finally:
-            # guardo datos de depuración
-            self.XmlRequest = self.client.xml_request
-            self.XmlResponse = self.client.xml_response
+            if self.LanzarExcepciones:
+                raisePythonException(e)
+            else:
+                ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+                self.Traceback = ''.join(ex)
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
 
     def Factura(self):
         return self.factura
@@ -347,39 +381,65 @@ class WSBFE:
     def GetLastCMP(self, tipo_cbte, punto_vta):
         "Recuperar último número de comprobante emitido"
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
             cbte_nro, cbte_fecha, events = wsbfe.get_last_cmp(self.client, 
                                     self.Token, self.Sign, self.Cuit, 
                                     tipo_cbte, punto_vta)
             return cbte_nro
         except wsbfe.BFEError, e:
-            raise COMException(scode = vbObjectError + int(e.code),
-                               desc=unicode(e.msg), source="WebService")
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
+            if self.LanzarExcepciones:
+                raise COMException(scode = vbObjectError + int(e.code),
+                                   desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
-            raiseSoapError(e)
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
+            if self.LanzarExcepciones:
+                raiseSoapError(e)
+        except COMException:
+            if self.LanzarExcepciones:
+                raise
         except Exception, e:
-            raisePythonException(e)
-        finally:
-            # guardo datos de depuración
-            self.XmlRequest = self.client.xml_request
-            self.XmlResponse = self.client.xml_response
+            if self.LanzarExcepciones:
+                raisePythonException(e)
+            else:
+                ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+                self.Traceback = ''.join(ex)
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
 
     def GetLastID(self):
         "Recuperar último número de transacción (ID)"
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
             id, events = wsbfe.get_last_id(self.client, 
                                     self.Token, self.Sign, self.Cuit)
             return id
         except wsbfe.BFEError, e:
-            raise COMException(scode = vbObjectError + int(e.code),
-                               desc=unicode(e.msg), source="WebService")
+            self.ErrCode = unicode(e.code)
+            self.ErrMsg = unicode(e.msg)
+            if self.LanzarExcepciones:
+                raise COMException(scode = vbObjectError + int(e.code),
+                                   desc=unicode(e.msg), source="WebService")
         except SoapFault,e:
-            raiseSoapError(e)
+            self.ErrCode = unicode(e.faultcode)
+            self.ErrMsg = unicode(e.faultstring)
+            if self.LanzarExcepciones:
+                raiseSoapError(e)
+        except COMException:
+            if self.LanzarExcepciones:
+                raise
         except Exception, e:
-            raisePythonException(e)
-        finally:
-            # guardo datos de depuración
-            self.XmlRequest = self.client.xml_request
-            self.XmlResponse = self.client.xml_response
+            if self.LanzarExcepciones:
+                raisePythonException(e)
+            else:
+                ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+                self.Traceback = ''.join(ex)
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
 
     def GetParamMon(self):
         "Recuperar lista de valores referenciales de codigos de Moneda"
@@ -447,6 +507,9 @@ class WSFEX:
         if HOMO or not url: url = wsfex.WSFEXURL
         proxy_dict = parse_proxy(proxy)
         try:
+            # limpio errores
+            self.Exception = self.Traceback = ""
+            self.ErrCode = self.ErrMsg = ""
             self.client = SoapClient(url, 
                 action = wsfex.SOAP_ACTION, 
                 namespace = wsfex.SOAP_NS,
@@ -546,10 +609,7 @@ class WSFEX:
             else:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
                 self.Traceback = ''.join(ex)
-                try:
-                    self.Excepcion = u"%s" % (e)
-                except:
-                    pass
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
         finally:
             # guardo datos de depuración
             self.XmlRequest = self.client.xml_request
