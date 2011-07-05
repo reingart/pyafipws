@@ -29,7 +29,7 @@ from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from wsfev1 import inicializar_y_capturar_excepciones
 
-HOMO = True
+HOMO = False
 
 WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 
@@ -47,7 +47,7 @@ class WSFEXv1:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 'DebugLog', 
         'Resultado', 'Obs', 'Reproceso',
-        'CAE','Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg',
+        'CAE','Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg', 'FchVencCAE',
         'Excepcion', 'LanzarExcepciones', 'Traceback', "InstallDir",
         'PuntoVenta', 'CbteNro', 'FechaCbte', 'ImpTotal']
         
@@ -70,6 +70,7 @@ class WSFEXv1:
         self.Traceback = self.Excepcion = ""
         self.InstallDir = INSTALL_DIR
         self.DebugLog = ""
+        self.FchVencCAE = ""              # retrocompatibilidad
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -119,7 +120,7 @@ class WSFEXv1:
             nombre_cliente="", cuit_pais_cliente="", domicilio_cliente="",
             id_impositivo="", moneda_id="PES", moneda_ctz=1.0,
             obs_comerciales="", obs_generales="", forma_pago="", incoterms="", 
-            idioma_cbte=7, incoterms_ds=None):
+            idioma_cbte=7, incoterms_ds=None, **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
 
@@ -148,7 +149,7 @@ class WSFEXv1:
 
         return True
     
-    def AgregarItem(self, codigo, ds, qty, umed, precio, importe, bonif=None):
+    def AgregarItem(self, codigo, ds, qty, umed, precio, importe, bonif=None, **kwargs):
         "Agrego un item a una factura (interna)"
         # Nota: no se calcula total (debe venir calculado!)
         self.factura['detalles'].append({
@@ -162,7 +163,7 @@ class WSFEXv1:
                 })
         return True
        
-    def AgregarPermiso(self, id_permiso, dst_merc):
+    def AgregarPermiso(self, id_permiso, dst_merc, **kwargs):
         "Agrego un permiso a una factura (interna)"
         self.factura['permisos'].append({
                 'id_permiso': id_permiso,
@@ -170,7 +171,7 @@ class WSFEXv1:
                 })        
         return True
         
-    def AgregarCmpAsoc(self, cbte_tipo=19, cbte_punto_vta=0, cbte_nro=0, cbte_cuit=None):
+    def AgregarCmpAsoc(self, cbte_tipo=19, cbte_punto_vta=0, cbte_nro=0, cbte_cuit=None, **kwargs):
         "Agrego un comprobante asociado a una factura (interna)"
         self.factura['cbtes_asoc'].append({
             'cbte_tipo': cbte_tipo, 'cbte_punto_vta': cbte_punto_vta, 
@@ -241,6 +242,7 @@ class WSFEXv1:
             self.CAE = auth['Cae']
             self.CbteNro  = auth['Cbte_nro']
             vto = str(auth['Fch_venc_Cae'])
+            self.FchVencCAE = vto
             self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
             return self.CAE
 
