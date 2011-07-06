@@ -27,7 +27,7 @@ import wsaa,wsbfe
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
-HOMO = True
+HOMO = False
 DEBUG = False
 XML = False
 CONFIG_FILE = "rece.ini"
