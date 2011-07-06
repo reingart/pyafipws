@@ -202,7 +202,7 @@ def autorizar(ws, entrada, salida):
         # Por el momento, el id se calcula con el tipo, pv y nº de comprobant
         i = long(encabezado['cbte_nro'])
         i += (int(encabezado['cbte_nro'])*10**4 + int(encabezado['punto_vta']))*10**8
-        encabezado['id'] = wsfex.get_last_id(client, token, sign, cuit)[0] + 1
+        encabezado['id'] = ws.GetLastID() + 1
     
     ws.CrearFactura(**encabezado)
     for detalle in detalles:
@@ -279,8 +279,8 @@ if __name__ == "__main__":
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFEX','CUIT')
-    entrada = config.get('WSFEX','ENTRADA')
-    salida = config.get('WSFEX','SALIDA')
+    entrada = config.get('WSFEXv1','ENTRADA')
+    salida = config.get('WSFEXv1','SALIDA')
     
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')
