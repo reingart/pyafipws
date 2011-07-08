@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25a"
+__version__ = "1.25b"
 
 import datetime
 import os
@@ -146,7 +146,11 @@ def escribir(dic, formato):
         dec = len(fmt)>3 and fmt[3] or 2
         if clave.capitalize() in dic:
             clave = clave.capitalize()
-        valor = str(dic.get(clave,""))
+        valor = dic.get(clave,"")
+        if isinstance(valor, unicode):
+            valor = valor.encode("latin1", "replace")
+        else:
+            valor = str(valor)
         if tipo == N and valor and valor!="NULL":
             valor = ("%%0%dd" % longitud) % int(valor)
         elif tipo == I and valor:
@@ -214,9 +218,9 @@ def autorizar(ws, entrada, salida):
 
     if DEBUG:
         #print f.to_dict()
-        print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in factura.to_dict().items()])
+        print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in encabezado.items()])
         print 'id:', encabezado['id']
-    if not DEBUG or raw_input("Facturar?")=="S":
+    if not DEBUG or not sys.stdout.isatty() or raw_input("Facturar?")=="S":
         ws.LanzarExcepcion = False
         cae = ws.Authorize(id=encabezado['id'])
         dic = ws.factura
