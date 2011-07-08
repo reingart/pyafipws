@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23e"
+__version__ = "1.24a"
 
 from datetime import datetime
 from decimal import Decimal
@@ -653,7 +653,7 @@ class PyRece(model.Background):
 
     def on_btnAutorizarLote_mouseClick(self, event):
         self.verifica_ws()
-        if not self.items or self.webservice != 'wsfe': return
+        if not self.items: return
         try:
             ok = 0
             rechazadas = 0
@@ -670,15 +670,20 @@ class PyRece(model.Background):
                 'fecha_venc_pago': None,
                 'fecha_serv_desde': None,
                 'fecha_serv_hasta': None,
+                'moneda_id': None,
+                'moneda_ctz': None,
+                'iva_id_1': None,
                 'id': None,
             }
             importes = {
                 'imp_total': Decimal(0),
                 'imp_tot_conc': Decimal(0),
                 'imp_neto': Decimal(0),
-                'impto_liq':Decimal(0),
-                'impto_liq_rni': Decimal(0),
+                'imp_iva':Decimal(0),
                 'imp_op_ex': Decimal(0),
+                'imp_trib': Decimal(0),
+                'iva_base_imp_1': Decimal(0),
+                'iva_importe_1': Decimal(0),
             }
             for i, item in self.get_selected_items():
                 if cbt_desde is None or int(item['cbt_numero']) < cbt_desde:
@@ -700,8 +705,10 @@ class PyRece(model.Background):
             kargs.update(importes)
             if kargs['fecha_serv_desde'] and kargs['fecha_serv_hasta']:
                 kargs['presta_serv'] = 1
+                kargs['concepto'] = 2
             else:
                 kargs['presta_serv'] = 0
+                kargs['concepto'] = 1
                 del kargs['fecha_serv_desde'] 
                 del kargs['fecha_serv_hasta']
             
@@ -715,15 +722,55 @@ class PyRece(model.Background):
             
             if dialog.messageDialog(self, "Confirma Lote:\n"
                 "Tipo: %(tipo_cbte)s Desde: %(cbt_desde)s Hasta %(cbt_hasta)s\n"
-                "Neto: %(imp_neto)s IVA: %(impto_liq)s Total: %(imp_total)s" 
+                "Neto: %(imp_neto)s IVA: %(imp_iva)s Trib.: %(imp_trib)s Total: %(imp_total)s" 
                 % kargs, "Autorizar lote:").accepted:
-                ret = wsfe.aut(self.client, self.token, self.sign, cuit, **kargs)
-                kargs.update(ret)
+
+                if self.webservice == 'wsfev1':
+                    encabezado = {}
+                    for k in ('concepto', 'tipo_doc', 'nro_doc', 'tipo_cbte', 'punto_vta',
+                              'cbt_desde', 'cbt_hasta', 'imp_total', 'imp_tot_conc', 'imp_neto',
+                              'imp_iva', 'imp_trib', 'imp_op_ex', 'fecha_cbte', 
+                              'moneda_id', 'moneda_ctz'):
+                        encabezado[k] = kargs[k]
+                            
+                    for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta'):
+                        if k in kargs:
+                            encabezado[k] = kargs.get(k)
+                    
+                    self.ws.CrearFactura(**encabezado)
+                    for l in range(1,1000):
+                        k = 'iva_%%s_%s' % l
+                        if (k % 'id') in kargs:
+                            id = kargs[k % 'id']
+                            base_imp = kargs[k % 'base_imp']
+                            importe = kargs[k % 'importe']
+                            if id:
+                                self.ws.AgregarIva(id, base_imp, importe)
+                        else:
+                            break
+                            
+                    if DEBUG:
+                        self.log('\n'.join(["%s='%s'" % (k,v) for k,v in self.ws.factura.items()]))
+
+                    cae = self.ws.CAESolicitar()
+                    kargs.update({
+                        'cae': self.ws.CAE,
+                        'fecha_vto': self.ws.Vencimiento,
+                        'resultado': self.ws.Resultado,
+                        'motivo': self.ws.Obs,
+                        'reproceso': self.ws.Reproceso,
+                        'err_code': self.ws.ErrCode.encode("latin1"),
+                        'err_msg': self.ws.ErrMsg.encode("latin1"),
+                        })
+                    if self.ws.ErrMsg:
+                        dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
+                    if self.ws.Obs and self.ws.Obs!='00':
+                        dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
+
             
                 for i, item in self.get_selected_items():
-                    for key in ret:
-                        item[key] = ret[key]
-                    item['id'] = kargs['id']
+                    for key in ('id', 'cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
+                        item[key] = kargs[key]
                     
                 self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 if kargs['resultado'] == "R":
