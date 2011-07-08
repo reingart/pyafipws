@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01c"
 
 import datetime
 import decimal
@@ -263,7 +263,7 @@ class WSFEXv1:
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             Cmp={
                 'Cbte_tipo': tipo_cbte,
-                'Pto_vta': punto_vta,
+                'Punto_vta': punto_vta,
                 'Cbte_nro': cbte_nro,
             })
         result = ret['FEXGetCMPResult']
