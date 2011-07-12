@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24c"
+__version__ = "1.24d"
 
 from datetime import datetime
 from decimal import Decimal
@@ -117,15 +117,20 @@ class PyRece(model.Background):
             5:u"Notas de Venta al contado A",
             6:u"Facturas B",
             7:u"Notas de Débito B",
-            8:u"uNotas de Crédito B",
-            9:u"uRecibos B",
+            8:u"Notas de Crédito B",
+            9:u"Recibos B",
             10:u"Notas de Venta al contado B",
             39:u"Otros comprobantes A que cumplan con la R.G. N° 3419",
             40:u"Otros comprobantes B que cumplan con la R.G. N° 3419",
             60:u"Cuenta de Venta y Líquido producto A",
             61:u"Cuenta de Venta y Líquido producto B",
             63:u"Liquidación A",
-            64:u"Liquidación B"}
+            64:u"Liquidación B",
+            11:u"Factura C",
+            12:u"Nota de Débito C",
+            13:u"Nota de Crédito C",
+            15:u"Recibo C",
+            }
 
         
         # deshabilito ordenar
