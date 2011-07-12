@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24a"
+__version__ = "1.24c"
 
 from datetime import datetime
 from decimal import Decimal
@@ -672,7 +672,6 @@ class PyRece(model.Background):
                 'fecha_serv_hasta': None,
                 'moneda_id': None,
                 'moneda_ctz': None,
-                'iva_id_1': None,
                 'id': None,
             }
             importes = {
@@ -682,9 +681,21 @@ class PyRece(model.Background):
                 'imp_iva':Decimal(0),
                 'imp_op_ex': Decimal(0),
                 'imp_trib': Decimal(0),
-                'iva_base_imp_1': Decimal(0),
-                'iva_importe_1': Decimal(0),
             }
+            for l in range(1,5):
+                k = 'iva_%%s_%s' % l
+                datos[k % 'id'] = None
+                importes[k % 'base_imp'] = Decimal(0)
+                importes[k % 'importe'] = Decimal(0)
+
+            for l in range(1,10):
+                k = 'tributo_%%s_%s' % l
+                datos[k % 'id'] = None
+                datos[k % 'desc'] = None
+                importes[k % 'base_imp'] = Decimal(0)
+                importes[k % 'alic'] = Decimal(0)
+                importes[k % 'importe'] = Decimal(0)
+
             for i, item in self.get_selected_items():
                 if cbt_desde is None or int(item['cbt_numero']) < cbt_desde:
                     cbt_desde = int(item['cbt_numero'])
@@ -696,8 +707,8 @@ class PyRece(model.Background):
                             datos[key] = item[key]
                         elif datos[key] != item[key]:
                             raise RuntimeError(u"%s tiene valores distintos en el lote!" % key)
-                    if key in importes:
-                        importes[key] = importes[key] + Decimal(str(item[key]).replace(",","."))
+                    if key in importes and item[key]:
+                        importes[key] = importes[key] + Decimal("%.2f" % float(str(item[key].replace(",","."))))
                 
             kargs = {'cbt_desde': cbt_desde, 'cbt_hasta': cbt_hasta}
             kargs.update({'tipo_doc': 99, 'nro_doc':  '0'})
@@ -748,7 +759,20 @@ class PyRece(model.Background):
                                 self.ws.AgregarIva(id, base_imp, importe)
                         else:
                             break
-                            
+
+                    for l in range(1,1000):
+                        k = 'tributo_%%s_%s' % l
+                        if (k % 'id') in kargs:
+                            id = kargs[k % 'id']
+                            desc = kargs[k % 'desc']
+                            base_imp = kargs[k % 'base_imp']
+                            alic = kargs[k % 'alic']
+                            importe = kargs[k % 'importe']
+                            if id:
+                                self.ws.AgregarTributo(id, desc, base_imp, alic, importe)
+                        else:
+                            break
+
                     if DEBUG:
                         self.log('\n'.join(["%s='%s'" % (k,v) for k,v in self.ws.factura.items()]))
 
@@ -766,7 +790,6 @@ class PyRece(model.Background):
                         dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
                     if self.ws.Obs and self.ws.Obs!='00':
                         dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
-
             
                 for i, item in self.get_selected_items():
                     for key in ('id', 'cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
