@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24d"
+__version__ = "1.24e"
 
 from datetime import datetime
 from decimal import Decimal
@@ -965,13 +965,15 @@ if __name__ == '__main__':
         sys.exit(1)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
-    cuit = config.get('WSFE','CUIT')
-    if config.has_option('WSFE','ENTRADA'):
-        entrada = config.get('WSFE','ENTRADA')
+    cuit = config.get('WSFEv1','CUIT')
+    if config.has_option('WSFEv1','ENTRADA'):
+        entrada = config.get('WSFEv1','ENTRADA')
     else:
-        entrada = "" #"facturas-wsfev1.csv"
-    if config.has_option('WSFE','SALIDA'):
-        salida = config.get('WSFE','SALIDA')
+        entrada = ""
+    if not os.path.exists(entrada):
+        entrada = "facturas.csv"
+    if config.has_option('WSFEv1','SALIDA'):
+        salida = config.get('WSFEv1','SALIDA')
     else:
         salida = "resultado.csv"
     

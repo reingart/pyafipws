@@ -54,7 +54,7 @@ data_files = [
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
             "logo.png", 
             "rece.ini.dist", "factura.csv", 
-            "facturas.csv", "facturas.json", "facturas.txt", "entrada.txt"]),
+            "facturas.csv", "facturas.json", "facturas.txt"]),
     ("cache", glob.glob("cache/*")),
     ]
 
