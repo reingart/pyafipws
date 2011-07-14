@@ -36,7 +36,7 @@ data_files = [
     ("cache", glob.glob("cache/*")),
     ]
 
-import wsfexv1, wsaa
+import wsfexv1, wsaa, recex1
 from nsis import build_installer, Target
 
 setup( 
@@ -49,7 +49,8 @@ setup(
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
     com_server = [Target(module=wsfexv1,modules="wsfexv1")],
-    console=[Target(module=wsfexv1, script='wsfexv1.py', dest_base="wsfexv1_cli"), 
+    console=[Target(module=wsfexv1, script='wsfexv1.py', dest_base="wsfexv1_cli"),
+             Target(module=recex1, script='recex1.py', dest_base="recex1"),  
              Target(module=wsaa, script='wsaa.py'),
              ],
     options=opts,
