@@ -15,10 +15,10 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24e"
+__version__ = "1.24f"
 
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, getcontext, ROUND_DOWN
 import os
 import sys
 import wx
@@ -660,6 +660,7 @@ class PyRece(model.Background):
         self.verifica_ws()
         if not self.items: return
         try:
+            #getcontext().prec = 2
             ok = 0
             rechazadas = 0
             cols = self.cols
@@ -698,7 +699,7 @@ class PyRece(model.Background):
                 datos[k % 'id'] = None
                 datos[k % 'desc'] = None
                 importes[k % 'base_imp'] = Decimal(0)
-                importes[k % 'alic'] = Decimal(0)
+                datos[k % 'alic'] = None
                 importes[k % 'importe'] = Decimal(0)
 
             for i, item in self.get_selected_items():
@@ -728,6 +729,9 @@ class PyRece(model.Background):
                 del kargs['fecha_serv_desde'] 
                 del kargs['fecha_serv_hasta']
             
+            for key, val in importes.items():
+                importes[key] = val.quantize(Decimal('.01'), rounding=ROUND_DOWN)
+                
             if 'id' not in kargs or kargs['id'] == "":
                 id = long(kargs['cbt_desde'])
                 id += (int(kargs['tipo_cbte'])*10**4 + int(kargs['punto_vta']))*10**8
@@ -735,7 +739,11 @@ class PyRece(model.Background):
             
             if DEBUG:
                 self.log('\n'.join(["%s='%s'" % (k,v) for k,v in kargs.items()]))
-            
+            if '--test' in sys.argv:
+                kargs['cbt_desde'] = 777
+                kargs['fecha_cbte'] = '20110802'
+                kargs['fecha_venc_pago'] = '20110831'
+
             if dialog.messageDialog(self, "Confirma Lote:\n"
                 "Tipo: %(tipo_cbte)s Desde: %(cbt_desde)s Hasta %(cbt_hasta)s\n"
                 "Neto: %(imp_neto)s IVA: %(imp_iva)s Trib.: %(imp_trib)s Total: %(imp_total)s" 
