@@ -17,7 +17,7 @@ electrónico del web service WSFEX de AFIP (Factura Electrónica Exportación)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.23e"
+__version__ = "1.23f"
 
 import sys
 from php import date, SimpleXMLElement, SoapClient
