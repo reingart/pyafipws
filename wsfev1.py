@@ -300,13 +300,13 @@ class WSFEv1:
                     'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],                
-                    'CbtesAsoc': [
+                    'CbtesAsoc': f['cbtes_asoc'] and [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
                             'Nro': cbte_asoc['nro']}}
-                        for cbte_asoc in f['cbtes_asoc']],
-                    'Tributos': [
+                        for cbte_asoc in f['cbtes_asoc']] or None,
+                    'Tributos': f['tributos'] and [
                         {'Tributo': {
                             'Id': tributo['tributo_id'], 
                             'Desc': tributo['desc'],
@@ -314,14 +314,14 @@ class WSFEv1:
                             'Alic': tributo['alic'],
                             'Importe': tributo['importe'],
                             }}
-                        for tributo in f['tributos']],
-                    'Iva': [ 
+                        for tributo in f['tributos']] or None,
+                    'Iva': f['iva'] and [ 
                         {'AlicIva': {
                             'Id': iva['iva_id'],
                             'BaseImp': iva['base_imp'],
                             'Importe': iva['importe'],
                             }}
-                        for iva in f['iva']],
+                        for iva in f['iva']] or None,
                     }
                 }]
             })
@@ -992,6 +992,7 @@ def main():
         print "Resultado", wsfev1.Resultado
         print "Reproceso", wsfev1.Reproceso
         print "CAE", wsfev1.CAE
+        print "Vencimiento", wsfev1.Vencimiento
         if DEBUG:
             print "t0", t0
             print "t1", t1
