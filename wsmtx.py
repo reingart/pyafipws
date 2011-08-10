@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.06a"
 
 import datetime
 import decimal
@@ -82,8 +82,8 @@ def inicializar_y_capturar_excepciones(func):
     
 class WSMTXCA:
     "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
-    _public_methods_ = ['CrearFactura', 'AgregarIva', 'AgregarItem', 
-                        'AgregarTributo', 'AgregarCmpAsoc',
+    _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
+                        'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 
                         'AutorizarComprobante', 
                         'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
                         'InformarComprobanteCAEA', 
@@ -200,11 +200,11 @@ class WSMTXCA:
         self.AuthServerStatus = result['authserver']
         return True
 
-    def CrearFactura(self, concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-            cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-            imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
-            fecha_serv_desde, fecha_serv_hasta, #--
-            moneda_id, moneda_ctz, observaciones, caea=None, vencimiento=None,
+    def CrearFactura(self, concepto=None, tipo_doc=None, nro_doc=None, tipo_cbte=None, punto_vta=None,
+            cbt_desde=None, cbt_hasta=None, imp_total=None, imp_tot_conc=None, imp_neto=None,
+            imp_subtotal=None, imp_trib=None, imp_op_ex=None, fecha_cbte=None, fecha_venc_pago=None, 
+            fecha_serv_desde=None, fecha_serv_hasta=None, #--
+            moneda_id=None, moneda_ctz=None, observaciones=None, caea=None, vencimiento=None,
             **kwargs
             ):
         "Creo un objeto factura (interna)"
@@ -233,6 +233,13 @@ class WSMTXCA:
         
         self.factura = fact
         return True
+
+    def EstablecerCampoFactura(self, campo, valor):
+        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'vencimiento'):
+            self.factura[campo] = valor
+            return True
+        else:
+            return False
 
     def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwargs):
         "Agrego un comprobante asociado a una factura (interna)"
@@ -263,8 +270,8 @@ class WSMTXCA:
         self.factura['iva'].append(iva)
         return True
 
-    def AgregarItem(self, u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
-                    iva_id, imp_iva, imp_subtotal, **kwargs):
+    def AgregarItem(self, u_mtx=None, cod_mtx=None, codigo=None, ds=None, qty=None, umed=None, precio=None, bonif=None, 
+                    iva_id=None, imp_iva=None, imp_subtotal=None, **kwargs):
         "Agrego un item a una factura (interna)"
         ##ds = unicode(ds, "latin1") # convierto a latin1
         # Nota: no se calcula neto, iva, etc (deben venir calculados!)
@@ -283,6 +290,14 @@ class WSMTXCA:
                 }
         self.factura['detalles'].append(item)
         return True
+
+    def EstablecerCampoItem(self, campo, valor):
+        if self.factura['detalles'] and campo in self.factura['detalles'][-1]:
+            self.factura['detalles'][-1][campo] = valor
+            return True
+        else:
+            return False
+
     
     @inicializar_y_capturar_excepciones
     def AutorizarComprobante(self):
