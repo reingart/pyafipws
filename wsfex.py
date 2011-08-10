@@ -125,9 +125,16 @@ def get_param_umed(client, token, sign, cuit):
 
     umeds = [] # unidades de medida
     for u in response.FEXGetPARAM_UMedResult.FEXResultGet.ClsFEXResponse_UMed:
-        umed = {'id': int(u.Umed_Id), 'ds': str(u.Umed_Ds).decode('utf8'), 
-                'vig_desde': str(u.Umed_vig_desde), 
-                'vig_hasta': str(u.Umed_vig_hasta)}
+        try:
+            umed = {'id': int(u.Umed_Id), 'ds': str(u.Umed_Ds).decode('utf8'), 
+                    'vig_desde': str(u.Umed_vig_desde), 
+                    'vig_hasta': str(u.Umed_vig_hasta)}
+        except:
+            # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
+            #import pdb; pdb.set_trace()
+            #print u
+            pass 
+            
         umeds.append(umed)
     return umeds
 
