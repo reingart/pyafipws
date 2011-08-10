@@ -1,5 +1,5 @@
 #!usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8-*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Aplicativo AdHoc Para generación de Facturas Electrónicas"
+"Aplicativo AdHoc Para generaciÃ³n de Facturas ElectrÃ³nicas"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
@@ -47,13 +47,13 @@ DEBUG = '--debug' in sys.argv
 CONFIG_FILE = "rece.ini"
 
 ACERCA_DE = u"""
-PyRece: Aplicativo AdHoc para generar Facturas Electrónicas
+PyRece: Aplicativo AdHoc para generar Facturas ElectrÃ³nicas
 Copyright (C) 2008/2009/2010/2011 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para información adicional y descargas ver:
+Para informaciÃ³n adicional y descargas ver:
 http://www.sistemasagiles.com.ar/
 """
 
@@ -62,32 +62,32 @@ Forma de uso:
 
  * Examinar: para buscar el archivo a procesar (opcional)
  * Cargar: para leer los datos del archivo de facturas a procesar 
- * Autenticar: para iniciar la sesión en los servidores de AFIP (obligatorio antes de autorizar)
+ * Autenticar: para iniciar la sesiÃ³n en los servidores de AFIP (obligatorio antes de autorizar)
  * Marcar Todo: para seleccionar todas las facturas
- * Autorizar: para autorizar las facturas seleccionadas, completando el CAE y demás datos
+ * Autorizar: para autorizar las facturas seleccionadas, completando el CAE y demÃ¡s datos
  * Autorizar Lote: para autorizar en un solo lote las facturas seleccionadas
  * Grabar: para almacenar los datos procesados en el archivo de facturas 
  * Previsualizar: para ver por pantalla la factura seleccionadas
- * Enviar: para envia por correo electrónico las facturas seleccionadas
+ * Enviar: para envia por correo electrÃ³nico las facturas seleccionadas
 
 Para solicitar soporte comercial, escriba a pyrece@sistemasagiles.com.ar
 """
 
 def digito_verificador_modulo10(codigo):
-    "Rutina para el cálculo del dígito verificador 'módulo 10'"
+    "Rutina para el cÃ¡lculo del dÃ­gito verificador 'mÃ³dulo 10'"
     # http://www.consejo.org.ar/Bib_elect/diciembre04_CT/documentos/rafip1702.htm
     # Etapa 1: comenzar desde la izquierda, sumar todos los caracteres ubicados en las posiciones impares.
     codigo = codigo.strip()
     if not codigo or not codigo.isdigit():
         return ''
     etapa1 = sum([int(c) for i,c in enumerate(codigo) if not i%2])
-    # Etapa 2: multiplicar la suma obtenida en la etapa 1 por el número 3
+    # Etapa 2: multiplicar la suma obtenida en la etapa 1 por el nÃºmero 3
     etapa2 = etapa1 * 3
-    # Etapa 3: comenzar desde la izquierda, sumar todos los caracteres que están ubicados en las posiciones pares.
+    # Etapa 3: comenzar desde la izquierda, sumar todos los caracteres que estÃ¡n ubicados en las posiciones pares.
     etapa3 = sum([int(c) for i,c in enumerate(codigo) if i%2])
     # Etapa 4: sumar los resultados obtenidos en las etapas 2 y 3.
     etapa4 = etapa2 + etapa3
-    # Etapa 5: buscar el menor número que sumado al resultado obtenido en la etapa 4 dé un número múltiplo de 10. Este será el valor del dígito verificador del módulo 10.
+    # Etapa 5: buscar el menor nÃºmero que sumado al resultado obtenido en la etapa 4 dÃ© un nÃºmero mÃºltiplo de 10. Este serÃ¡ el valor del dÃ­gito verificador del mÃ³dulo 10.
     digito = 10 - (etapa4 - (int(etapa4 / 10) * 10))
     if digito == 10:
         digito = 0
@@ -111,24 +111,24 @@ class PyRece(model.Background):
         
         self.tipos = {
             1:u"Factura A",
-            2:u"Notas de Débito A",
-            3:u"Notas de Crédito A",
+            2:u"Notas de DÃ©bito A",
+            3:u"Notas de CrÃ©dito A",
             4:u"Recibos A",
             5:u"Notas de Venta al contado A",
             6:u"Facturas B",
-            7:u"Notas de Débito B",
-            8:u"Notas de Crédito B",
+            7:u"Notas de DÃ©bito B",
+            8:u"Notas de CrÃ©dito B",
             9:u"Recibos B",
             10:u"Notas de Venta al contado B",
-            39:u"Otros comprobantes A que cumplan con la R.G. N° 3419",
-            40:u"Otros comprobantes B que cumplan con la R.G. N° 3419",
-            60:u"Cuenta de Venta y Líquido producto A",
-            61:u"Cuenta de Venta y Líquido producto B",
-            63:u"Liquidación A",
-            64:u"Liquidación B",
+            39:u"Otros comprobantes A que cumplan con la R.G. NÂ° 3419",
+            40:u"Otros comprobantes B que cumplan con la R.G. NÂ° 3419",
+            60:u"Cuenta de Venta y LÃ­quido producto A",
+            61:u"Cuenta de Venta y LÃ­quido producto B",
+            63:u"LiquidaciÃ³n A",
+            64:u"LiquidaciÃ³n B",
             11:u"Factura C",
-            12:u"Nota de Débito C",
-            13:u"Nota de Crédito C",
+            12:u"Nota de DÃ©bito C",
+            13:u"Nota de CrÃ©dito C",
             15:u"Recibo C",
             }
 
@@ -235,18 +235,18 @@ class PyRece(model.Background):
                     
             dialog.alertDialog(self, msg, location)
         except Exception, e:
-            self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
+            self.error(u'ExcepciÃ³n',unicode(str(e),"latin1","ignore"))
 
     def on_menuConsultasLastCBTE_select(self, event):
         self.verifica_ws()
         result = dialog.singleChoiceDialog(self, "Tipo de comprobante",
-            u"Consulta Último Nro. Comprobante", 
+            u"Consulta Ãšltimo Nro. Comprobante", 
                 [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])])
         if not result.accepted:
             return
         tipocbte = [k for k,v in self.tipos.items() if v==result.selection][0]
         result = dialog.textEntryDialog(self, u"Punto de venta",
-            u"Consulta Último Nro. Comprobante", '2')
+            u"Consulta Ãšltimo Nro. Comprobante", '2')
         if not result.accepted:
             return
         ptovta = result.text
@@ -258,9 +258,9 @@ class PyRece(model.Background):
             elif  self.webservice=="wsfev1":
                 ultcmp = "%s (wsfev1)" % self.ws.CompUltimoAutorizado(tipocbte, ptovta) 
                     
-            dialog.alertDialog(self, u"Último comprobante: %s\n" 
+            dialog.alertDialog(self, u"Ãšltimo comprobante: %s\n" 
                 u"Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, self.tipos[tipocbte], 
-                    tipocbte, ptovta), u'Consulta Último Nro. Comprobante')
+                    tipocbte, ptovta), u'Consulta Ãšltimo Nro. Comprobante')
         except SoapFault,e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
@@ -268,7 +268,7 @@ class PyRece(model.Background):
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
-            self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
+            self.error(u'ExcepciÃ³n',unicode(str(e),"latin1","ignore"))
 
     def on_menuConsultasGetCAE_select(self, event):
         self.verifica_ws()
@@ -283,7 +283,7 @@ class PyRece(model.Background):
         if not result.accepted:
             return
         ptovta = result.text
-        result = dialog.textEntryDialog(self, u"Nº de comprobante",
+        result = dialog.textEntryDialog(self, u"NÂº de comprobante",
             u"Consulta Comprobante", '2')
         if not result.accepted:
             return
@@ -316,15 +316,15 @@ class PyRece(model.Background):
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
-            self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
+            self.error(u'ExcepciÃ³n',unicode(str(e),"latin1","ignore"))
 
 
     def on_menuConsultasLastID_select(self, event):
         self.verifica_ws()
         try:
             ultnro = wsfe.ultnro(self.client, self.token, self.sign, cuit)
-            dialog.alertDialog(self, u"Último ID (máximo): %s" % (ultnro), 
-                u'Consulta Último ID')
+            dialog.alertDialog(self, u"Ãšltimo ID (mÃ¡ximo): %s" % (ultnro), 
+                u'Consulta Ãšltimo ID')
         except SoapFault,e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
@@ -332,12 +332,12 @@ class PyRece(model.Background):
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
-            self.error(u'Excepción',unicode(e))
+            self.error(u'ExcepciÃ³n',unicode(e))
 
 
     def on_menuAyudaAcercaDe_select(self, event):
         text = ACERCA_DE
-        dialog.alertDialog(self, text, u'Acerca de PyRece Versión %s' % __version__)
+        dialog.alertDialog(self, text, u'Acerca de PyRece VersiÃ³n %s' % __version__)
 
     def on_menuAyudaInstructivo_select(self, event):
         text = INSTRUCTIVO
@@ -420,7 +420,7 @@ class PyRece(model.Background):
         except SoapFault,e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
         except Exception, e:
-            self.error(u'Excepción',unicode(e))
+            self.error(u'ExcepciÃ³n',unicode(e))
     
     def examinar(self):
         filename = entrada
@@ -465,7 +465,7 @@ class PyRece(model.Background):
                 else:
                     self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
             if len(items) < 2:
-                dialog.alertDialog(self, u'El archivo no tiene datos válidos', 'Advertencia')
+                dialog.alertDialog(self, u'El archivo no tiene datos vÃ¡lidos', 'Advertencia')
             cols = items and [str(it).strip() for it in items[0]] or []
             if DEBUG: print "Cols",cols
             # armar diccionario por cada linea
@@ -473,7 +473,7 @@ class PyRece(model.Background):
             self.cols = cols
             self.items = items
         except Exception,e:
-                self.error(u'Excepción',unicode(e))
+                self.error(u'ExcepciÃ³n',unicode(e))
 
     def on_menuArchivoGuardar_select(self, event):
             filename = entrada
@@ -518,9 +518,9 @@ class PyRece(model.Background):
                     formato_json.escribir(regs, fn)
                 else:
                     self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
-            dialog.alertDialog(self, u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
+            dialog.alertDialog(self, u'Se guardÃ³ con Ã©xito el archivo:\n%s' % (unicode(fn),), 'Guardar')
         except Exception, e:
-            self.error(u'Excepción',unicode(e))
+            self.error(u'ExcepciÃ³n',unicode(e))
 
     def on_menuArchivoDiseniador_select(self, event):
         # TODO: no funciona porque PythonCard aparentemente no importa el mismo namespace de wx
@@ -621,7 +621,7 @@ class PyRece(model.Background):
                     if self.ws.ErrMsg:
                         dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
                     if self.ws.Obs and self.ws.Obs!='00':
-                        dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
+                        dialog.alertDialog(self, self.ws.Obs, u"ObservaciÃ³n AFIP")
                 # actuaizo la factura
                 for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
                     if kargs.get(k):
@@ -640,7 +640,7 @@ class PyRece(model.Background):
             dialog.alertDialog(self, u'Proceso finalizado, procesadas %d\n\n'
                     'Aceptadas: %d\n'
                     'Rechazadas: %d' % (procesadas, ok, rechazadas), 
-                    u'Autorización')
+                    u'AutorizaciÃ³n')
             self.grabar()
         except (SoapFault, wsfev1.SoapFault),e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
@@ -649,7 +649,7 @@ class PyRece(model.Background):
         except KeyError, e:
             self.error("Error",u'Campo obligatorio no encontrado: %s' % e)
         except Exception, e:
-            self.error(u'Excepción',unicode(e))
+            self.error(u'ExcepciÃ³n',unicode(e))
         finally:
             if DEBUG:
                 if self.webservice == 'wsfev1' and DEBUG:
@@ -794,7 +794,7 @@ class PyRece(model.Background):
                     if self.ws.ErrMsg:
                         dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
                     if self.ws.Obs and self.ws.Obs!='00':
-                        dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
+                        dialog.alertDialog(self, self.ws.Obs, u"ObservaciÃ³n AFIP")
             
                 for i, item in self.get_selected_items():
                     for key in ('id', 'cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
@@ -808,7 +808,7 @@ class PyRece(model.Background):
 
                 self.items = self.items # refrescar, ver de corregir
                 self.progreso(len(self.items))
-                dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
+                dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'AutorizaciÃ³n')
                 self.grabar()
         except SoapFault,e:
             self.log(self.client.xml_request)
@@ -817,7 +817,7 @@ class PyRece(model.Background):
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
-            self.error(u'Excepción',unicode(e))
+            self.error(u'ExcepciÃ³n',unicode(e))
 
     def on_btnPrevisualizar_mouseClick(self, event):
         try:
@@ -827,7 +827,7 @@ class PyRece(model.Background):
                 archivo = self.generar_factura(item,  mostrar=(j==1))
         except Exception, e:
             print e
-            self.error(u'Excepción', unicode(str(e), 'latin1', 'ignore'))
+            self.error(u'ExcepciÃ³n', unicode(str(e), 'latin1', 'ignore'))
 
     def on_btnGenerar_mouseClick(self, event):
         for item in self.items:
@@ -853,7 +853,7 @@ class PyRece(model.Background):
             self.progreso(len(self.items))
             dialog.alertDialog(self, 'Proceso finalizado OK!\n\nEnviados: %d\nNo enviados: %d' % (ok, no), 'Envio de Email')
         except Exception, e:
-            self.error(u'Excepción',unicode(e))
+            self.error(u'ExcepciÃ³n',unicode(e))
             
     def generar_factura(self, fila, mostrar=False):
         
@@ -870,11 +870,13 @@ class PyRece(model.Background):
                 
         fepdf.factura = fact
         
+        print fact['tributos']
+        
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
 
         # datos fijos:
-        fepdf.CUIT = cuit  # CUIT del emisor para código de barras
+        fepdf.CUIT = cuit  # CUIT del emisor para cÃ³digo de barras
         for k, v in conf_pdf.items():
             fepdf.AgregarDato(k, v)
 
@@ -891,7 +893,7 @@ class PyRece(model.Background):
         elif 'pdf' in fact and fact['pdf']:
             salida = fact['pdf']
         else:
-            # genero el nombre de archivo según datos de factura
+            # genero el nombre de archivo segÃºn datos de factura
             d = conf_fact.get('directorio', ".")
             clave_subdir = conf_fact.get('subdirectorio','fecha_cbte')
             if clave_subdir:
@@ -905,7 +907,7 @@ class PyRece(model.Background):
             it['letra'] = letra_fact
             it['numero'] = numero_fact
             it['mes'] = item['fecha_cbte'][4:6]
-            it['año'] = item['fecha_cbte'][0:4]
+            it['aÃ±o'] = item['fecha_cbte'][0:4]
             fn = ''.join([str(it.get(ff,ff)) for ff in fs])
             fn = fn.decode('latin1').encode('ascii', 'replace').replace('?','_')
             salida = os.path.join(d, "%s.pdf" % fn)
@@ -948,7 +950,7 @@ class PyRece(model.Background):
                         self.smtp.login(conf_mail['usuario'], conf_mail['clave'])
                 self.smtp.sendmail(msg['From'], msg['To'], msg.as_string())
             except Exception,e:
-                self.error(u'Excepción',unicode(e))
+                self.error(u'ExcepciÃ³n',unicode(e))
             
         
 if __name__ == '__main__':
