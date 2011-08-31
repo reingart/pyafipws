@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 import datetime
 import decimal
@@ -473,7 +473,6 @@ class WSMTXCA:
             'numeroComprobante': f['cbt_desde'], 'numeroComprobante': f['cbt_hasta'],
             'codigoTipoAutorizacion': 'A',
             'codigoAutorizacion': f['caea'],
-            'fechaVencimiento': f['fch_venc_cae'],
             'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
             'importeGravado': f['imp_neto'],
             'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,
@@ -515,6 +514,10 @@ class WSMTXCA:
                 }} for it in f['detalles']] or None,
             }
                 
+        # fecha de vencimiento opcional (igual al último día de vigencia del CAEA)
+        if 'fch_venc_cae' in f:
+            fact['fechaVencimiento'] =  f['fch_venc_cae']
+
         ret = self.client.informarComprobanteCAEA(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             comprobanteCAEARequest = fact,
@@ -527,7 +530,10 @@ class WSMTXCA:
             self.FchProceso = res['fechaProceso'].strftime("%Y-%m-%d")
             self.CbteNro = cbteresp['numeroComprobante'] # 1L
             self.PuntoVenta = cbteresp['numeroPuntoVenta'] # 4000
-            self.Vencimiento = cbteresp['fechaVencimientoCAE'].strftime("%Y/%m/%d")
+            if 'fechaVencimientoCAE' in cbteresp:
+                self.Vencimiento = cbteresp['fechaVencimientoCAE'].strftime("%Y-%m-%d")
+            else:
+                self.Vencimiento = ""
             self.CAEA = str(cbteresp['CAEA']) # 60423794871430L
             self.EmisionTipo = 'CAEA'
         self.__analizar_errores(ret)
