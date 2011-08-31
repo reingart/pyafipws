@@ -28,7 +28,7 @@ import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from cStringIO import StringIO
 
-HOMO = True
+HOMO = False
 
 WSDL="https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
@@ -204,7 +204,7 @@ class WSMTXCA:
             cbt_desde=None, cbt_hasta=None, imp_total=None, imp_tot_conc=None, imp_neto=None,
             imp_subtotal=None, imp_trib=None, imp_op_ex=None, fecha_cbte=None, fecha_venc_pago=None, 
             fecha_serv_desde=None, fecha_serv_hasta=None, #--
-            moneda_id=None, moneda_ctz=None, observaciones=None, caea=None, vencimiento=None,
+            moneda_id=None, moneda_ctz=None, observaciones=None, caea=None, fch_venc_cae=None,
             **kwargs
             ):
         "Creo un objeto factura (interna)"
@@ -229,13 +229,13 @@ class WSMTXCA:
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
         if caea: fact['caea'] = caea
-        if vencimiento: fact['vencimiento'] = vencimiento
+        if fch_venc_cae: fact['fch_venc_cae'] = fch_venc_cae
         
         self.factura = fact
         return True
 
     def EstablecerCampoFactura(self, campo, valor):
-        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'vencimiento'):
+        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae'):
             self.factura[campo] = valor
             return True
         else:
@@ -473,7 +473,7 @@ class WSMTXCA:
             'numeroComprobante': f['cbt_desde'], 'numeroComprobante': f['cbt_hasta'],
             'codigoTipoAutorizacion': 'A',
             'codigoAutorizacion': f['caea'],
-            'fechaVencimiento': f['vencimiento'],
+            'fechaVencimiento': f['fch_venc_cae'],
             'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
             'importeGravado': f['imp_neto'],
             'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,

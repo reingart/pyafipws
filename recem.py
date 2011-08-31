@@ -244,7 +244,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
     if informar_caea:
         if '/testing' in sys.argv:
-            encabezado['cae'] = '21073372218437'
+            encabezado['cae'] = '21073372218437' # '21353598240916'
+            encabezado['fch_venc_cae'] = '2011-01-01'
         encabezado['caea'] = encabezado['cae']
 
     ws.CrearFactura(**encabezado)
