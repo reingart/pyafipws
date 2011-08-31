@@ -323,17 +323,17 @@ class WSMTXCA:
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
                 'numeroComprobante': cbte_asoc['nro'],
                 }} for cbte_asoc in f['cbtes_asoc']],
-            'arrayOtrosTributos': [ {'otroTributo': {
+            'arrayOtrosTributos': f['tributos'] and [ {'otroTributo': {
                 'codigo': tributo['tributo_id'], 
                 'descripcion': tributo['desc'], 
                 'baseImponible': tributo['base_imp'], 
                 'importe': tributo['importe'],
-                }} for tributo in f['tributos']],
-            'arraySubtotalesIVA': [{'subtotalIVA': { 
+                }} for tributo in f['tributos']] or None,
+            'arraySubtotalesIVA': f['iva'] and [{'subtotalIVA': { 
                 'codigo': iva['iva_id'], 
                 'importe': iva['importe'],
-                }} for iva in f['iva']],
-            'arrayItems': [{'item':{
+                }} for iva in f['iva']] or None,
+            'arrayItems': f['detalles'] and [{'item':{
                 'unidadesMtx': it['u_mtx'],
                 'codigoMtx': it['cod_mtx'],
                 'codigo': it['codigo'],                
@@ -345,7 +345,7 @@ class WSMTXCA:
                 'codigoCondicionIVA': it['iva_id'],
                 'importeIVA': it['imp_iva'],
                 'importeItem': it['imp_subtotal'],
-                }} for it in f['detalles']],
+                }} for it in f['detalles']] or None,
             }
                 
         ret = self.client.autorizarComprobante(
@@ -485,22 +485,22 @@ class WSMTXCA:
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
-            'arrayComprobantesAsociados': [{'comprobanteAsociado': {
+            'arrayComprobantesAsociados': f['cbtes_asoc'] or [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
                 'numeroComprobante': cbte_asoc['nro'],
-                }} for cbte_asoc in f['cbtes_asoc']],
-            'arrayOtrosTributos': [ {'otroTributo': {
+                }} for cbte_asoc in f['cbtes_asoc']] or None,
+            'arrayOtrosTributos': f['tributos'] and [{'otroTributo': {
                 'codigo': tributo['tributo_id'], 
                 'descripcion': tributo['desc'], 
                 'baseImponible': tributo['base_imp'], 
                 'importe': tributo['importe'],
-                }} for tributo in f['tributos']],
-            'arraySubtotalesIVA': [{'subtotalIVA': { 
+                }} for tributo in f['tributos']] or None,
+            'arraySubtotalesIVA': f['iva'] and [{'subtotalIVA': { 
                 'codigo': iva['iva_id'], 
                 'importe': iva['importe'],
-                }} for iva in f['iva']],
-            'arrayItems': [{'item':{
+                }} for iva in f['iva']] or None,
+            'arrayItems': f['detalles'] and [{'item':{
                 'unidadesMtx': it['u_mtx'],
                 'codigoMtx': it['cod_mtx'],
                 'codigo': it['codigo'],                
@@ -512,7 +512,7 @@ class WSMTXCA:
                 'codigoCondicionIVA': it['iva_id'],
                 'importeIVA': it['imp_iva'],
                 'importeItem': it['imp_subtotal'],
-                }} for it in f['detalles']],
+                }} for it in f['detalles']] or None,
             }
                 
         ret = self.client.informarComprobanteCAEA(
