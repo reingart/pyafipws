@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28b"
+__version__ = "1.28c"
 
 import datetime
 import os
@@ -244,8 +244,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
     if informar_caea:
         if '/testing' in sys.argv:
-            encabezado['cae'] = '21073372218437' # '21353598240916'
-            encabezado['fch_venc_cae'] = '2011-01-01'
+            encabezado['cae'] = '21353598240916'
+            encabezado['fch_venc_cae'] = '2011-09-15'
         encabezado['caea'] = encabezado['cae']
 
     ws.CrearFactura(**encabezado)
