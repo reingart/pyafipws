@@ -579,13 +579,17 @@ if __name__ == "__main__":
             sys.exit(0)
 
         if '/solicitarcaea' in sys.argv:
-            periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
-            orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
-
+            if len(sys.argv) > sys.argv.index("/solicitarcaea")+1:
+                periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
+                orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
+            else:
+                periodo = raw_input("Periodo (año-mes, ej 201108): ")
+                orden = raw_input("Orden (quincena, 1 u 2): ")
+                
             if DEBUG: 
                 print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
             
-            caea = ws.CAEASolicitar(periodo, orden)
+            caea = ws.SolicitarCAEA(periodo, orden)
             print "CAEA:", caea
 
             if ws.Errores:
@@ -598,7 +602,7 @@ if __name__ == "__main__":
             if not caea:
                 if DEBUG: 
                     print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
-                caea = ws.CAEAConsultar(periodo, orden)
+                caea = ws.ConsultarCAEA(periodo, orden)
                 print "CAEA:", caea
                 
             if DEBUG:
