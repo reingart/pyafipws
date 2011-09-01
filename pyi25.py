@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.02c"
 
 import os
 import sys
@@ -137,8 +137,10 @@ if __name__ == '__main__':
             author_email="reingart@gmail.com",
             url="http://www.sistemasagiles.com.ar",
             license="GNU GPL v3",
-            com_server = ['pyi25'],
-            console=[],
+            com_server = [
+                {'modules': 'pyi25', 'create_exe': False, 'create_dll': True},
+                ],
+            console=['pyi25.py'],
             options={ 
                 'py2exe': {
                 'includes': [],
