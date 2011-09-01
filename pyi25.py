@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 import os
 import sys
@@ -170,12 +170,17 @@ if __name__ == '__main__':
 
         if '--archivo' in sys.argv:
             archivo = sys.argv[sys.argv.index("--archivo")+1]
+            extension = os.path.splitext(archivo)[1]
+            extension = extension.upper()[1:]
+            if extension == 'JPG':
+                extension = 'JPEG'
         else:
             archivo="prueba-cae-i25.png"
+            extension = 'PNG'
         
         print "barras", barras
         print "archivo", archivo
-        pyi25.GenerarImagen(barras, archivo)
+        pyi25.GenerarImagen(barras, archivo, extension=extension)
 
         if not '--mostrar' in sys.argv:
             pass
