@@ -318,11 +318,11 @@ class WSMTXCA:
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
-            'arrayComprobantesAsociados': [{'comprobanteAsociado': {
+            'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
                 'numeroComprobante': cbte_asoc['nro'],
-                }} for cbte_asoc in f['cbtes_asoc']],
+                }} for cbte_asoc in f['cbtes_asoc']] or None,
             'arrayOtrosTributos': f['tributos'] and [ {'otroTributo': {
                 'codigo': tributo['tributo_id'], 
                 'descripcion': tributo['desc'], 
@@ -484,7 +484,7 @@ class WSMTXCA:
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
-            'arrayComprobantesAsociados': f['cbtes_asoc'] or [{'comprobanteAsociado': {
+            'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
                 'numeroComprobante': cbte_asoc['nro'],
