@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.01d"
 
 import datetime
 import decimal
@@ -192,11 +192,11 @@ class WSFEXv1:
                 'Cbte_nro': f['cbte_nro'],
                 'Tipo_expo': f['tipo_expo'],
                 'Permiso_existente': f['permiso_existente'],
-                'Permisos': [
+                'Permisos': f['permisos'] and [
                     {'Permiso': {
                         'Id_permiso': p['id_permiso'],
                         'Dst_merc': p['dst_merc'],
-                    }} for p in f['permisos']],
+                    }} for p in f['permisos']] or None,
                 'Dst_cmp': f['pais_dst_cmp'],
                 'Cliente': f['nombre_cliente'],
                 'Cuit_pais_cliente': f['nro_doc'],
@@ -207,13 +207,13 @@ class WSFEXv1:
                 'Obs_comerciales': f['obs_comerciales'],
                 'Imp_total': f['imp_total'],
                 'Obs': f['obs_generales'],
-                'Cmps_asoc': [
+                'Cmps_asoc': f['cbtes_asoc'] and [
                     {'Cmp_asoc': {
                         'Cbte_tipo': c['cbte_tipo'],
                         'Cbte_punto_vta': c['cbte_punto_vta'],
                         'Cbte_nro': c['cbte_nro'],
                         'Cbte_cuit': c['cbte_cuit'],
-                    }} for c in f['cbtes_asoc']],
+                    }} for c in f['cbtes_asoc']] or None,
                 'Forma_pago': f['forma_pago'],
                 'Incoterms': f['incoterms'],
                 'Incoterms_Ds': f['incoterms_ds'],
@@ -363,13 +363,14 @@ if __name__ == "__main__":
         if "--prueba" in sys.argv:
             try:
                 # Establezco los valores de la factura a autorizar:
-                tipo_cbte = 19 # FC Expo (ver tabla de parámetros)
+                tipo_cbte = '--nc' in sys.argv and 21 or 19 # FC/NC Expo (ver tabla de parámetros)
                 punto_vta = 7
                 # Obtengo el último número de comprobante y le agrego 1
                 cbte_nro = int(wsfexv1.GetLastCMP(tipo_cbte, punto_vta)) + 1
                 fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
                 tipo_expo = 1 # tipo de exportación (ver tabla de parámetros)
-                permiso_existente = "S"
+                permiso_existente = (tipo_cbte not in (20, 21) or tipo_expo!=1) and "S" or ""
+                print "permiso_existente", permiso_existente
                 dst_cmp = 203 # país destino
                 cliente = "Joao Da Silva"
                 cuit_pais_cliente = "50000000016"
@@ -405,9 +406,10 @@ if __name__ == "__main__":
                 ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
 
                 # Agrego un permiso (ver manual para el desarrollador)
-                id = "99999AAXX999999A"
-                dst = 225 # país destino de la mercaderia
-                ok = wsfexv1.AgregarPermiso(id, dst)
+                if permiso_existente:
+                    id = "99999AAXX999999A"
+                    dst = 225 # país destino de la mercaderia
+                    ok = wsfexv1.AgregarPermiso(id, dst)
 
                 # Agrego un comprobante asociado (solo para N/C o N/D)
                 if tipo_cbte in (20,21): 
@@ -425,15 +427,17 @@ if __name__ == "__main__":
                 # Llamo al WebService de Autorización para obtener el CAE
                 cae = wsfexv1.Authorize(id)
 
+                print "Comprobante", tipo_cbte, wsfexv1.CbteNro
                 print "Resultado", wsfexv1.Resultado
                 print "CAE", wsfexv1.CAE
                 print "Vencimiento", wsfexv1.Vencimiento
-                            
-                print wsfexv1.client.help("FEXGetCMP").encode("latin1")
-                wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
-                print "CAE consulta", wsfexv1.CAE, wsfexv1.CAE==cae 
-                print "NRO consulta", wsfexv1.CbteNro, wsfexv1.CbteNro==cbte_nro 
-                print "TOTAL consulta", wsfexv1.ImpTotal, wsfexv1.ImpTotal==imp_total
+
+                if wsfexv1.Resultado and False:
+                    print wsfexv1.client.help("FEXGetCMP").encode("latin1")
+                    wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
+                    print "CAE consulta", wsfexv1.CAE, wsfexv1.CAE==cae 
+                    print "NRO consulta", wsfexv1.CbteNro, wsfexv1.CbteNro==cbte_nro 
+                    print "TOTAL consulta", wsfexv1.ImpTotal, wsfexv1.ImpTotal==imp_total
 
             except:
                 print wsfexv1.XmlRequest        

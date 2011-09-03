@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12h"
+__version__ = "1.12j"
 
 import datetime
 import decimal
@@ -300,13 +300,13 @@ class WSFEv1:
                     'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],                
-                    'CbtesAsoc': [
+                    'CbtesAsoc': f['cbtes_asoc'] and [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
                             'Nro': cbte_asoc['nro']}}
-                        for cbte_asoc in f['cbtes_asoc']],
-                    'Tributos': [
+                        for cbte_asoc in f['cbtes_asoc']] or None,
+                    'Tributos': f['tributos'] and [
                         {'Tributo': {
                             'Id': tributo['tributo_id'], 
                             'Desc': tributo['desc'],
@@ -314,14 +314,14 @@ class WSFEv1:
                             'Alic': tributo['alic'],
                             'Importe': tributo['importe'],
                             }}
-                        for tributo in f['tributos']],
-                    'Iva': [ 
+                        for tributo in f['tributos']] or None,
+                    'Iva': f['iva'] and [ 
                         {'AlicIva': {
                             'Id': iva['iva_id'],
                             'BaseImp': iva['base_imp'],
                             'Importe': iva['importe'],
                             }}
-                        for iva in f['iva']],
+                        for iva in f['iva']] or None,
                     }
                 }]
             })
@@ -758,75 +758,75 @@ class WSFEv1:
         return self.Resultado or ''
     
     @inicializar_y_capturar_excepciones
-    def ParamGetTiposCbte(self):
+    def ParamGetTiposCbte(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de Comprobantes"
         ret = self.client.FEParamGetTiposCbte(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposCbteResult']
-        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['CbteTipo']
+        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['CbteTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
-    def ParamGetTiposConcepto(self):
+    def ParamGetTiposConcepto(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de Conceptos"
         ret = self.client.FEParamGetTiposConcepto(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposConceptoResult']
-        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['ConceptoTipo']
+        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['ConceptoTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
                 
 
     @inicializar_y_capturar_excepciones
-    def ParamGetTiposDoc(self):
+    def ParamGetTiposDoc(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de Documentos"
         ret = self.client.FEParamGetTiposDoc(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposDocResult']
-        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['DocTipo']
+        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['DocTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
-    def ParamGetTiposIva(self):
+    def ParamGetTiposIva(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de Alícuotas"
         ret = self.client.FEParamGetTiposIva(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposIvaResult']
-        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['IvaTipo']
+        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['IvaTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
-    def ParamGetTiposMonedas(self):
+    def ParamGetTiposMonedas(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Monedas"
         ret = self.client.FEParamGetTiposMonedas(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposMonedasResult']
-        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['Moneda']
+        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['Moneda']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
-    def ParamGetTiposOpcional(self):
+    def ParamGetTiposOpcional(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de datos opcionales"
         ret = self.client.FEParamGetTiposOpcional(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposOpcionalResult']
-        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['OpcionalTipo']
+        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['OpcionalTipo']).replace("\t", sep)
                  for p in res.get('ResultGet', [])]
 
     @inicializar_y_capturar_excepciones
-    def ParamGetTiposTributos(self):
+    def ParamGetTiposTributos(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de Tributos"
         "Este método permite consultar los tipos de tributos habilitados en este WS"
         ret = self.client.FEParamGetTiposTributos(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposTributosResult']
-        return [u"%(Id)s: %(Desc)s (%(FchDesde)s-%(FchHasta)s)" % p['TributoTipo']
+        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['TributoTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
@@ -841,13 +841,13 @@ class WSFEv1:
         return str(res.get('MonCotiz',""))
         
     @inicializar_y_capturar_excepciones
-    def ParamGetPtosVenta(self):
+    def ParamGetPtosVenta(self, sep="|"):
         "Recuperador de valores referenciales Puntos de Venta registrados"
         ret = self.client.FEParamGetPtosVenta(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret.get('FEParamGetPtosVentaResult', {})
-        return [u"%(Nro)s: EmisionTipo:%(EmisionTipo)s Bloqueado:%(Bloqueado)s FchBaja:%(FchBaja)s" % p['PtoVenta']
+        return [(u"%(Nro)s\tEmisionTipo:%(EmisionTipo)s\tBloqueado:%(Bloqueado)s\tFchBaja:%(FchBaja)s" % p['PtoVenta']).replace("\t", sep)
                  for p in res.get('ResultGet', [])]
 
     @property
@@ -992,6 +992,7 @@ def main():
         print "Resultado", wsfev1.Resultado
         print "Reproceso", wsfev1.Reproceso
         print "CAE", wsfev1.CAE
+        print "Vencimiento", wsfev1.Vencimiento
         if DEBUG:
             print "t0", t0
             print "t1", t1

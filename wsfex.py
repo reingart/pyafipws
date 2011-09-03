@@ -17,7 +17,7 @@ electrónico del web service WSFEX de AFIP (Factura Electrónica Exportación)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.23e"
+__version__ = "1.23f"
 
 import sys
 from php import date, SimpleXMLElement, SoapClient
@@ -125,9 +125,16 @@ def get_param_umed(client, token, sign, cuit):
 
     umeds = [] # unidades de medida
     for u in response.FEXGetPARAM_UMedResult.FEXResultGet.ClsFEXResponse_UMed:
-        umed = {'id': int(u.Umed_Id), 'ds': str(u.Umed_Ds).decode('utf8'), 
-                'vig_desde': str(u.Umed_vig_desde), 
-                'vig_hasta': str(u.Umed_vig_hasta)}
+        try:
+            umed = {'id': int(u.Umed_Id), 'ds': str(u.Umed_Ds).decode('utf8'), 
+                    'vig_desde': str(u.Umed_vig_desde), 
+                    'vig_hasta': str(u.Umed_vig_hasta)}
+        except:
+            # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
+            #import pdb; pdb.set_trace()
+            #print u
+            pass 
+            
         umeds.append(umed)
     return umeds
 
