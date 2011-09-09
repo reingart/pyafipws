@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28c"
+__version__ = "1.28d"
 
 import datetime
 import os
@@ -516,6 +516,11 @@ if __name__ == "__main__":
             imp_subtotal = 121.00
             ws.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                         iva_id, imp_iva, imp_subtotal)
+
+            ws.AgregarItem(u_mtx, cod_mtx, codigo, "PRUEBA", 1, 7, 1.00, 0, 
+                        iva_id, 0.21, 1.21)
+            ws.AgregarItem(1, "DESC", "DESC", "Descuento", 0, 99, 0, 0, 
+                        iva_id, 0.21, 1.21)
             
             f_entrada = open(entrada,"w")
                 
