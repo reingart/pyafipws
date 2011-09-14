@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28d"
+__version__ = "1.28e"
 
 import datetime
 import os
@@ -463,7 +463,7 @@ if __name__ == "__main__":
             
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
-            tipo_cbte = 1
+            tipo_cbte = 6
             punto_vta = 4000
             cbte_nro = ws.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -472,7 +472,7 @@ if __name__ == "__main__":
             cbte_nro = long(cbte_nro) + 1
             cbt_desde = cbte_nro; cbt_hasta = cbt_desde
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
-            imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
+            imp_trib = "0.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
             # Fechas del período del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
@@ -496,7 +496,7 @@ if __name__ == "__main__":
             base_imp = 100
             alic = 1
             importe = 1
-            ws.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+            #ws.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
             iva_id = 5 # 21%
             base_imp = 100
@@ -509,7 +509,10 @@ if __name__ == "__main__":
             ds = "Descripcion del producto P0001"
             qty = 1.00
             umed = 7
-            precio = 100.00
+            if tipo_cbte in (6, 7, 8):
+                precio = 121.00
+            else:
+                precio = 100.00
             bonif = 0.00
             iva_id = 5
             imp_iva = 21.00
@@ -517,10 +520,16 @@ if __name__ == "__main__":
             ws.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                         iva_id, imp_iva, imp_subtotal)
 
-            ws.AgregarItem(u_mtx, cod_mtx, codigo, "PRUEBA", 1, 7, 1.00, 0, 
-                        iva_id, 0.21, 1.21)
-            ws.AgregarItem(1, "DESC", "DESC", "Descuento", 0, 99, 0, 0, 
-                        iva_id, 0.21, 1.21)
+            if tipo_cbte not in (6, 7, 8):
+                ws.AgregarItem(u_mtx, cod_mtx, codigo, "PRUEBA", 1, 7, 1.00, 0, 
+                            iva_id, 0.21, 1.21)
+                ws.AgregarItem(1, "DESC", "DESC", "Descuento", 0, 99, 0, 0, 
+                            iva_id, 0.21, 1.21)
+            else:
+                ws.AgregarItem(u_mtx, cod_mtx, codigo, "PRUEBA", 1, 7, 1.21, 0, 
+                            iva_id, 0.0, 1.21)
+                ws.AgregarItem(1, "DESC", "DESC", "Descuento", 0, 99, 0, 0, 
+                            iva_id, 0.0, 1.21)
             
             f_entrada = open(entrada,"w")
                 

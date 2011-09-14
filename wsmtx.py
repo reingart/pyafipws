@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06d"
+__version__ = "1.06e"
 
 import datetime
 import decimal
@@ -311,7 +311,8 @@ class WSMTXCA:
             'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
             'importeGravado': f['imp_neto'],
             'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,
-            'importeOtrosTributos': f['imp_trib'], 'importeExento': f['imp_op_ex'],
+            'importeOtrosTributos': f['tributos']  and f['imp_trib'] or None, 
+			'importeExento': f['imp_op_ex'],
             'fechaEmision': f['fecha_cbte'],
             'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f['moneda_ctz'],
             'codigoConcepto': f['concepto'],
@@ -344,7 +345,7 @@ class WSMTXCA:
                 'precioUnitario': it['precio'],
                 'importeBonificacion': it['bonif'],
                 'codigoCondicionIVA': it['iva_id'],
-                'importeIVA': it['imp_iva'],
+                'importeIVA': int(f['tipo_doc']) in (6, 7, 8) and it['imp_iva'] or None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
             }
@@ -477,7 +478,8 @@ class WSMTXCA:
             'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
             'importeGravado': f['imp_neto'],
             'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,
-            'importeOtrosTributos': f['imp_trib'], 'importeExento': f['imp_op_ex'],
+            'importeOtrosTributos': f['tributos']  and f['imp_trib'] or None, 
+			'importeExento': f['imp_op_ex'],
             'fechaEmision': f['fecha_cbte'],
             'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f['moneda_ctz'],
             'codigoConcepto': f['concepto'],
@@ -510,7 +512,7 @@ class WSMTXCA:
                 'precioUnitario': it['precio'],
                 'importeBonificacion': it['bonif'],
                 'codigoCondicionIVA': it['iva_id'],
-                'importeIVA': it['imp_iva'],
+                'importeIVA': int(f['tipo_doc']) in (6, 7, 8) and it['imp_iva'] or None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
             }
