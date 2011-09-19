@@ -123,10 +123,10 @@ class COT:
         self.NombreArchivo = self.CodigoIntegridad  = ""
         self.NumeroUnico = self.Procesado = ""
 
-    def Conectar(self, url=None, proxy="", wrapper=None, cacert=None):
+    def Conectar(self, url=None, proxy="", wrapper=None, cacert=None, trace=False):
         if HOMO or not url:
             url = URL
-        self.client = WebClient(location=URL, trace=True)
+        self.client = WebClient(location=URL, trace=trace)
 
     def PresentarRemito(self, filename):
         self.limpiar()
@@ -141,17 +141,19 @@ class COT:
             if 'tipoError' in self.xml:
                 self.TipoError = str(self.xml.tipoError)
                 self.CodigoError = str(self.xml.codigoError)
-                self.MensajeError = str(self.xml.mensajeError)
+                self.MensajeError = str(self.xml.mensajeError).decode('latin1').encode("ascii", "replace")
             if 'cuitEmpresa' in self.xml:
-                self.CuitEmpresa = self.xml.cuitEmpresa
-                self.NumeroComprobante = self.xml.numeroComprobante
-                self.NombreArchivo = self.xml.nombreArchivo
-                self.CodigoIntegridad  = self.xml.codigoIntegridad
+                self.CuitEmpresa = str(self.xml.cuitEmpresa)
+                self.NumeroComprobante = str(self.xml.numeroComprobante)
+                self.NombreArchivo = str(self.xml.nombreArchivo)
+                self.CodigoIntegridad  = str(self.xml.codigoIntegridad)
                 if 'validacionesRemitos' in self.xml:
-                    self.NumeroUnico = self.xml.validacionesRemitos.remito.numeroUnico
-                    self.Procesado = self.xml.validacionesRemitos.remito.procesado
+                    self.NumeroUnico = str(self.xml.validacionesRemitos.remito.numeroUnico)
+                    self.Procesado = str(self.xml.validacionesRemitos.remito.procesado)
                     for error in self.xml.validacionesRemitos.remito.errores.error:
-                        self.errores.append((error.codigo, error.descripcion))
+                        self.errores.append((
+                            str(error.codigo), 
+                            str(error.descripcion).decode('latin1').encode("ascii", "replace")))
                 return True      
         except Exception, e:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
@@ -189,23 +191,25 @@ INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 if __name__=="__main__":
 
-    if len(sys.argv)<2:
-        print "Se debe especificar el nombre de archivo como primer argumento!"
+    if len(sys.argv)<4:
+        print "Se debe especificar el nombre de archivo, usuario y clave como argumentos!"
         sys.exit(1)
         
     cot = COT()
-    cot.Usuario = "20267565393"
-    cot.Password = '720228'
+    filename = sys.argv[1]      # TB_20111111112_000000_20080124_000001.txt
+    cot.Usuario = sys.argv[2]   # 20267565393
+    cot.Password = sys.argv[3]  # 23456
 
-    cot.Conectar(URL)
-    filename = sys.argv[1]
+    cot.Conectar(URL, trace='--trace' in sys.argv)
     cot.PresentarRemito(filename)
-    print cot.Excepcion, cot.Traceback
-    print "Error General:", cot.TipoError, "*", cot.CodigoError, "*", cot.MensajeError
-    cot.LeerErrorValidacion()
-    print "Error Validacion:", cot.TipoError, "*", cot.CodigoError, "*", cot.MensajeError
-    cot.LeerErrorValidacion()
-    print "Error Validacion:", cot.TipoError, "*", cot.CodigoError, "*", cot.MensajeError
+    
+    if cot.Excepcion:
+        print "Excepcion:", cot.Excepcion
+        print "Traceback:", cot.Traceback
+        
+    print "Error General:", cot.TipoError, "|", cot.CodigoError, "|", cot.MensajeError
+    while cot.LeerErrorValidacion():
+        print "Error Validacion:", cot.TipoError, "|", cot.CodigoError, "|", cot.MensajeError
     
     print "CUIT Empresa:", cot.CuitEmpresa
     print "Numero Comprobante:", cot.NumeroComprobante
