@@ -92,7 +92,7 @@ class WebClient:
 
 class COT:
     "Interfaz para el servicio de Remito Electronico ARBA"
-    _public_methods_ = ['PresentarRemito', 'LeerErrores']
+    _public_methods_ = ['Conectar', 'PresentarRemito', 'LeerErrorValidacion']
     _public_attrs_ = ['Usuario', 'Password', 'XmlResponse', 
         'Version', 'Excepcion', 'Traceback',
         'CuitEmpresa', 'NumeroComprobante', 'CodigoIntegridad', 'NombreArchivo',
@@ -128,14 +128,14 @@ class COT:
             url = URL
         self.client = WebClient(location=URL, trace=trace)
 
-    def PresentarRemito(self, filename, testing=False):
+    def PresentarRemito(self, filename, testing=""):
         self.limpiar()
         try:
             archivo = open(filename,"rb")
             response = self.client(user=self.Usuario, password=self.Password, 
                                    file=archivo)
             if testing:
-                response = open("cot_response_2_errores.xml").read()
+                response = open(testing).read()
             self.XmlResponse = response
             self.xml = SimpleXMLElement(response)  
             if 'tipoError' in self.xml:
@@ -191,7 +191,11 @@ INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 if __name__=="__main__":
 
-    if len(sys.argv)<4:
+    if "--register" in sys.argv or "--unregister" in sys.argv:
+        import win32com.server.register
+        win32com.server.register.UseCommandLine(COT)
+        sys.exit(0)
+    elif len(sys.argv)<4:
         print "Se debe especificar el nombre de archivo, usuario y clave como argumentos!"
         sys.exit(1)
         
@@ -200,8 +204,13 @@ if __name__=="__main__":
     cot.Usuario = sys.argv[2]   # 20267565393
     cot.Password = sys.argv[3]  # 23456
 
+    if '--testing' in sys.argv:
+        test_response = "cot_response_2_errores.xml"
+    else:
+        test_response = ""
+        
     cot.Conectar(URL, trace='--trace' in sys.argv)
-    cot.PresentarRemito(filename, testing='--testing' in sys.argv)
+    cot.PresentarRemito(filename, testing=test_response)
     
     if cot.Excepcion:
         print "Excepcion:", cot.Excepcion
