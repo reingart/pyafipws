@@ -128,13 +128,13 @@ class COT:
             url = URL
         self.client = WebClient(location=URL, trace=trace)
 
-    def PresentarRemito(self, filename):
+    def PresentarRemito(self, filename, testing=False):
         self.limpiar()
         try:
             archivo = open(filename,"rb")
             response = self.client(user=self.Usuario, password=self.Password, 
                                    file=archivo)
-            if '--testing' in sys.argv:
+            if testing:
                 response = open("cot_response_2_errores.xml").read()
             self.XmlResponse = response
             self.xml = SimpleXMLElement(response)  
@@ -201,7 +201,7 @@ if __name__=="__main__":
     cot.Password = sys.argv[3]  # 23456
 
     cot.Conectar(URL, trace='--trace' in sys.argv)
-    cot.PresentarRemito(filename)
+    cot.PresentarRemito(filename, testing='--testing' in sys.argv)
     
     if cot.Excepcion:
         print "Excepcion:", cot.Excepcion
