@@ -131,6 +131,10 @@ class COT:
     def PresentarRemito(self, filename, testing=""):
         self.limpiar()
         try:
+            if not os.path.exists(filename):
+                self.Excepcion = "Archivo no encontrado: %s" % filename
+                return False
+
             archivo = open(filename,"rb")
             response = self.client(user=self.Usuario, password=self.Password, 
                                    file=archivo)
