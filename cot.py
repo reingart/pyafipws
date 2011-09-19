@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import os,sys
 from simplexml import SimpleXMLElement
@@ -94,7 +94,7 @@ class COT:
     "Interfaz para el servicio de Remito Electronico ARBA"
     _public_methods_ = ['Conectar', 'PresentarRemito', 'LeerErrorValidacion']
     _public_attrs_ = ['Usuario', 'Password', 'XmlResponse', 
-        'Version', 'Excepcion', 'Traceback',
+        'Version', 'Excepcion', 'Traceback', 'InstallDir',
         'CuitEmpresa', 'NumeroComprobante', 'CodigoIntegridad', 'NombreArchivo',
         'TipoError', 'CodigoError', 'MensajeError',
         'NumeroUnico', 'Procesado',

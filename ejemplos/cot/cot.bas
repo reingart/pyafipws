@@ -11,6 +11,7 @@ Sub Main()
     Set COT = CreateObject("COT")
     
     Debug.Print COT.Version
+    Debug.Print COT.InstallDir
     
     ' Establecer Datos de acceso (ARBA)
     COT.Usuario = "20267565393"
