@@ -15,7 +15,7 @@
 
 "Módulo para obtener remito electrónico automático (COT)"
 
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
 __version__ = "1.01b"
