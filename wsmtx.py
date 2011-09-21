@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06e"
+__version__ = "1.06f"
 
 import datetime
 import decimal
@@ -345,7 +345,7 @@ class WSMTXCA:
                 'precioUnitario': it['precio'],
                 'importeBonificacion': it['bonif'],
                 'codigoCondicionIVA': it['iva_id'],
-                'importeIVA': int(f['tipo_doc']) in (6, 7, 8) and it['imp_iva'] or None,
+                'importeIVA': int(f['tipo_doc']) not in (6, 7, 8) and it['imp_iva'] or None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
             }
