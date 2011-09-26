@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 DEBUG = False
 HOMO = False
@@ -426,7 +426,7 @@ class FEPDF:
                                 dato_c = it.get('dato_c'), dato_d= it.get('dato_d'),
                                 dato_e = it.get('dato_d'),
                                 )
-
+        
         # divido las observaciones por linea:
         if fact.get('obs_generales') and not f.has_key('obs') and f.has_key('ObservacionesGenerales1'):
             obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']

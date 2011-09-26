@@ -214,7 +214,7 @@ MAP_DET = {
     'sec': 'sec',
     'bonif': 'bonificacion',
     
-    'numero_despacho': 'numero_despacho',
+    'despacho': 'numero_despacho',
     }
 
 

@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24f"
+__version__ = "1.24g"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -869,7 +869,7 @@ class PyRece(model.Background):
         fact = formato_csv.desaplanar([self.cols] + [[item[k] for k in self.cols] for item in [fila]])[0]
         fact['cbte_nro'] = fact['cbt_numero']
         fact['items'] = fact['detalles']
-
+        
         for d in fact['datos']:
             fepdf.AgregarDato(d['campo'], d['valor'], d['pagina'])
             # por compatiblidad, completo campos anteriores
@@ -877,9 +877,7 @@ class PyRece(model.Background):
                 fact[d['campo']] = d['valor']
                 
         fepdf.factura = fact
-        
-        print fact['tributos']
-        
+              
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
 
