@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 import os,sys
 from simplexml import SimpleXMLElement
@@ -28,7 +28,7 @@ import mimetools, mimetypes
 import os, stat, traceback
 from cStringIO import StringIO
 
-HOMO = True
+HOMO = False
 
 #URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
 URL = "https://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do" # testing
@@ -126,7 +126,7 @@ class COT:
     def Conectar(self, url=None, proxy="", wrapper=None, cacert=None, trace=False):
         if HOMO or not url:
             url = URL
-        self.client = WebClient(location=URL, trace=trace)
+        self.client = WebClient(location=url, trace=trace)
 
     def PresentarRemito(self, filename, testing=""):
         self.limpiar()
