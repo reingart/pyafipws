@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01d"
+__version__ = "1.01e"
 
 import datetime
 import decimal
@@ -53,6 +53,8 @@ class WSFEXv1:
         
     _reg_progid_ = "WSFEXv1"
     _reg_clsid_ = "{8106F039-D132-4F87-8AFE-ADE47B5503D4}"
+
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
     def __init__(self):
         self.Token = self.Sign = self.Cuit = None
@@ -93,7 +95,7 @@ class WSFEXv1:
         # cliente soap del web service
         if wrapper:
             Http = set_http_wrapper(wrapper)
-            self.Version = WSFEv1.Version + " " + Http._wrapper_version
+            self.Version = WSFEXv1.Version + " " + Http._wrapper_version
         if isinstance(proxy, dict):
             proxy_dict = proxy
         else:
