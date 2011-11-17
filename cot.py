@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.01d"
 
 import os,sys
 from simplexml import SimpleXMLElement
@@ -31,7 +31,7 @@ from cStringIO import StringIO
 HOMO = False
 
 #URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
-URL = "https://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do" # testing
+URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do" # testing
 
 class WebClient:
     "Minimal webservice client to do POST request with multipart encoded FORM data"
@@ -154,10 +154,11 @@ class COT:
                 if 'validacionesRemitos' in self.xml:
                     self.NumeroUnico = str(self.xml.validacionesRemitos.remito.numeroUnico)
                     self.Procesado = str(self.xml.validacionesRemitos.remito.procesado)
-                    for error in self.xml.validacionesRemitos.remito.errores.error:
-                        self.errores.append((
-                            str(error.codigo), 
-                            str(error.descripcion).decode('latin1').encode("ascii", "replace")))
+                    if 'errores' in self.xml.validacionesRemitos.remito:
+                        for error in self.xml.validacionesRemitos.remito.errores.error:
+                            self.errores.append((
+                                str(error.codigo), 
+                                str(error.descripcion).decode('latin1').encode("ascii", "replace")))
                 return True      
         except Exception, e:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
@@ -210,6 +211,7 @@ if __name__=="__main__":
 
     if '--testing' in sys.argv:
         test_response = "cot_response_2_errores.xml"
+        #test_response = "cot_response_3_sinerrores.xml"
     else:
         test_response = ""
         
