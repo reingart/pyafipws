@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.05c"
 
 DEBUG = False
 HOMO = False
@@ -282,8 +282,10 @@ class FEPDF:
     def fmt_fact(self, tipo_cbte, punto_vta, cbte_nro):
         "Formatear tipo, letra y punto de venta y número de factura"
         n = "%04d-%08d" % (int(punto_vta), int(cbte_nro))
+        t, l = tipo_cbte, ''
+        print tipo_cbte
         for k,v in self.tipos_fact.items():
-            if int(int(tipo_cbte)) in k:
+            if int(tipo_cbte) in k:
                 t = v
         for k,v in self.letras_fact.items():
             if int(int(tipo_cbte)) in k:
@@ -428,7 +430,7 @@ class FEPDF:
                                 )
         
         # divido las observaciones por linea:
-        if fact.get('obs_generales') and not f.has_key('obs') and f.has_key('ObservacionesGenerales1'):
+        if fact.get('obs_generales') and not f.has_key('obs') and not f.has_key('ObservacionesGenerales1'):
             obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
             for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                 li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -439,8 +441,8 @@ class FEPDF:
 
         # agrego permisos a descripciones (si corresponde)
         permisos =  [u'Codigo de Despacho %s - Destino de la mercadería: %s' % (
-                     p['Permiso']['id_permiso'], self.paises.get(p['Permiso']['dst_merc'], p['Permiso']['dst_merc'])) 
-                     for p in fact.get('Permisos',[])]
+                     p['Permiso']['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
+                     for p in fact.get('permisos',[])]
         if not f.has_key('permisos') and permisos:
             obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
             for ds in f.split_multicell(obs, 'Item.Descripcion01'):
@@ -448,8 +450,8 @@ class FEPDF:
         permisos_ds = ', '.join(permisos)
 
         # agrego comprobantes asociados
-        cmps_asoc = [u'%s %s %s' % self.fmt_fact(c['Cmp_asoc']['cbte_tipo'], c['Cmp_asoc']['cbte_punto_vta'], c['Cmp_asoc']['cbte_nro']) 
-                      for c in fact.get('Cmps_asoc',[])]
+        cmps_asoc = [u'%s %s %s' % self.fmt_fact(c['cbte_tipo'], c['cbte_punto_vta'], c['cbte_nro']) 
+                      for c in fact.get('cbtes_asoc',[])]
         if not f.has_key('cmps_asoc') and cmps_asoc:
             obs="\n<U>Comprobantes Asociados:</U>\n\n" + '\n'.join(cmps_asoc)
             for ds in f.split_multicell(obs, 'Item.Descripcion01'):
@@ -489,12 +491,19 @@ class FEPDF:
                 f.set('hojas', str(hojas))
                 f.set('pagina', 'Pagina %s de %s' % (hoja, hojas))
                 if hojas>1 and hoja<hojas:
-                    s = 'Continua en hoja %s' % (hoja+1)
+                    s = 'Continúa en hoja %s' % (hoja+1)
                 else:
                     s = ''
                 f.set('continua', s)
                 f.set('Item.Descripcion%02d' % (lineas_max+1), s)
-                    
+
+                if hoja>1:
+                    s = 'Continúa de hoja %s' % (hoja-1)
+                else:
+                    s = ''
+                f.set('continua_de', s)
+                f.set('Item.Descripcion%02d' % (0), s)
+
                 if DEBUG: print u"generando pagina %s de %s" % (hoja, hojas)
                 
                 # establezco datos según configuración:
@@ -852,6 +861,9 @@ if __name__ == '__main__':
             despacho = 'Nº 123456'
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, despacho)
+
+            fepdf.AgregarDato("prueba", "1234")
+            print "Prueba!"
 
         # grabar muestra en dbf:
         if '--grabar' in sys.argv:
