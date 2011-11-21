@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01e"
+__version__ = "1.01f"
 
 import datetime
 import decimal
@@ -272,9 +272,8 @@ class WSFEXv1:
         self.__analizar_errores(result)
         if 'FEXResultGet' in result:
             resultget = result['FEXResultGet']
-                
             # Obs, cae y fecha cae
-            self.Obs = resultget['Motivos_Obs'].strip(" ")
+            self.Obs = resultget['Obs'].strip(" ")
             self.CAE = resultget['Cae']
             vto = str(resultget['Fch_venc_Cae'])
             self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
@@ -450,5 +449,20 @@ if __name__ == "__main__":
                 print wsfexv1.Traceback
                 import pdb; pdb.set_trace()
                 raise
+
+        if "--get" in sys.argv:
+            wsfexv1.client.help("FEXGetCMP")
+            tipo_cbte = 19
+            punto_vta = 7
+            cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
+
+            wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
+
+            print "FechaCbte = ", wsfexv1.FechaCbte
+            print "CbteNro = ", wsfexv1.CbteNro
+            print "PuntoVenta = ", wsfexv1.PuntoVenta
+            print "ImpTotal =", wsfexv1.ImpTotal
+            print "CAE = ", wsfexv1.CAE
+            print "Vencimiento = ", wsfexv1.Vencimiento
 
             
