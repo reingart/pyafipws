@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05c"
+__version__ = "1.05d"
 
 DEBUG = False
 HOMO = False
@@ -116,15 +116,17 @@ class FEPDF:
         (2, 7, 12, 20): 'Nota de Débito', 
         (3, 8, 13, 21): 'Nota de Crédito',
         (4, 9): 'Recibo', 
-        (10,): 'Notas de Venta al contado', 
+        (10, 5): 'Nota de Venta al contado', 
         (60, 61): 'Cuenta de Venta y Líquido producto',
         (63, 64): 'Liquidación',
+        (91, ): 'Remito',
         (39, 40): '???? (R.G. N° 3419)'}
 
     letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63): 'A',
                    (6, 7, 8, 9, 10, 40, 61, 64): 'B',
                    (11, 12, 13): 'C',
                    (19, 20, 21): 'E',
+                   (91, ): 'R',
                 }
 
     def __init__(self):
@@ -230,7 +232,7 @@ class FEPDF:
 
     def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwarg):
         "Agrego un comprobante asociado a una factura (interna)"
-        cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
+        cmp_asoc = {'cbte_tipo': tipo, 'cbte_punto_vta': pto_vta, 'cbte_nro': nro}
         self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
@@ -830,10 +832,14 @@ if __name__ == '__main__':
                 obs_comerciales, obs_generales, forma_pago, incoterms, 
                 idioma_cbte, motivo)
             
-            #tipo = 19
-            #pto_vta = 2
-            #nro = 1234
-            #wsmtxca.AgregarCmpAsoc(tipo, pto_vta, nro)
+            tipo = 91
+            pto_vta = 2
+            nro = 1234
+            fepdf.AgregarCmpAsoc(tipo, pto_vta, nro)
+            tipo = 5
+            pto_vta = 2
+            nro = 1234
+            fepdf.AgregarCmpAsoc(tipo, pto_vta, nro)
             
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
