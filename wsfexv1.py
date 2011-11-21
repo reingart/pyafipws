@@ -353,8 +353,12 @@ if __name__ == "__main__":
         wsfexv1.Cuit = "20267565393"
 
         # Conectar al Servicio Web de Facturación (homologación)
-        ok = wsfexv1.Conectar("","http://wswhomo.afip.gov.ar/WSFEXv1/service.asmx")
-
+        wsdl = "http://wswhomo.afip.gov.ar/WSFEXv1/service.asmx"
+        cache = proxy = ""
+        wrapper = "httplib2"
+        cacert = open("geotrust.crt").read()
+        ok = wsfexv1.Conectar(cache, wsdl, proxy, wrapper, cacert)
+    
         if '--dummy' in sys.argv:
             #wsfexv1.LanzarExcepciones = False
             print wsfexv1.Dummy()
