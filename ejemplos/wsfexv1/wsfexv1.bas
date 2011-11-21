@@ -133,13 +133,13 @@ Sub Main()
     
     'id = "99000000000100" ' número propio de transacción
     ' obtengo el último ID y le adiciono 1 (advertencia: evitar overflow!)
-    id = CStr(CCur(WSFEXv1.GetLastID()) + 1)
+    id = CStr(CDec(WSFEXv1.GetLastID()) + CDec(1))
     
     ' Deshabilito errores no capturados:
     WSFEXv1.LanzarExcepciones = False
     
     ' Llamo al WebService de Autorización para obtener el CAE
-    cae = WSFEXv1.Authorize(CCur(id))
+    cae = WSFEXv1.Authorize(CDec(id))
         
     If WSFEXv1.Excepcion <> "" Then
         MsgBox WSFEXv1.Traceback, vbExclamation, WSFEXv1.Excepcion
