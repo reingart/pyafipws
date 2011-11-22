@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01f"
+__version__ = "1.01g"
 
 import datetime
 import decimal
@@ -273,7 +273,7 @@ class WSFEXv1:
         if 'FEXResultGet' in result:
             resultget = result['FEXResultGet']
             # Obs, cae y fecha cae
-            self.Obs = resultget['Obs'].strip(" ")
+            self.Obs = resultget['Obs'] and resultget['Obs'].strip(" ") or ''
             self.CAE = resultget['Cae']
             vto = str(resultget['Fch_venc_Cae'])
             self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
