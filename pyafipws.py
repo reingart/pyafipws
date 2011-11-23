@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27b"
+__version__ = "1.27d"
 
 import sys
 import wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
@@ -26,7 +26,7 @@ import winerror
 import socks
 import pythoncom
 
-HOMO = False
+HOMO = True
 
 debugging = 1
 if debugging:
@@ -323,6 +323,10 @@ class WSBFE:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
                 self.Traceback = ''.join(ex)
                 self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+        finally:
+            # guardo los mensajes para depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
         
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
@@ -374,6 +378,10 @@ class WSBFE:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
                 self.Traceback = ''.join(ex)
                 self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+        finally:
+            # guardo los mensajes para depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
 
     def Factura(self):
         return self.factura
@@ -409,6 +417,10 @@ class WSBFE:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
                 self.Traceback = ''.join(ex)
                 self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+        finally:
+            # guardo los mensajes para depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
 
     def GetLastID(self):
         "Recuperar último número de transacción (ID)"
@@ -440,6 +452,10 @@ class WSBFE:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
                 self.Traceback = ''.join(ex)
                 self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+        finally:
+            # guardo los mensajes para depuración
+            self.XmlRequest = self.client.xml_request
+            self.XmlResponse = self.client.xml_response
 
     def GetParamMon(self):
         "Recuperar lista de valores referenciales de codigos de Moneda"
