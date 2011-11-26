@@ -18,10 +18,10 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01d"
+__version__ = "1.02a"
 
 import os,sys
-from simplexml import SimpleXMLElement
+from pysimplesoap.simplexml import SimpleXMLElement
 import httplib2
 from urllib import urlencode
 import mimetools, mimetypes
@@ -92,7 +92,9 @@ class WebClient:
 
 class COT:
     "Interfaz para el servicio de Remito Electronico ARBA"
-    _public_methods_ = ['Conectar', 'PresentarRemito', 'LeerErrorValidacion']
+    _public_methods_ = ['Conectar', 'PresentarRemito', 'LeerErrorValidacion', 
+                        'LeerValidacionRemito',
+                        'AnalizarXml', 'ObtenerTagXml']
     _public_attrs_ = ['Usuario', 'Password', 'XmlResponse', 
         'Version', 'Excepcion', 'Traceback', 'InstallDir',
         'CuitEmpresa', 'NumeroComprobante', 'CodigoIntegridad', 'NombreArchivo',
@@ -115,6 +117,7 @@ class COT:
         self.limpiar()
 
     def limpiar(self):
+        self.remitos = []
         self.errores = []
         self.XmlResponse = ""
         self.Excepcion = self.Traceback = ""
@@ -152,14 +155,21 @@ class COT:
                 self.NombreArchivo = str(self.xml.nombreArchivo)
                 self.CodigoIntegridad  = str(self.xml.codigoIntegridad)
                 if 'validacionesRemitos' in self.xml:
-                    self.NumeroUnico = str(self.xml.validacionesRemitos.remito.numeroUnico)
-                    self.Procesado = str(self.xml.validacionesRemitos.remito.procesado)
-                    if 'errores' in self.xml.validacionesRemitos.remito:
-                        for error in self.xml.validacionesRemitos.remito.errores.error:
-                            self.errores.append((
-                                str(error.codigo), 
-                                str(error.descripcion).decode('latin1').encode("ascii", "replace")))
-                return True      
+                    for remito in self.xml.validacionesRemitos.remito:
+                        d = {
+                            'NumeroUnico': str(remito.numeroUnico),
+                            'Procesado': str(remito.procesado),
+                            'Errores': [],
+                            }
+                        if 'errores' in remito:
+                            for error in remito.errores.error:
+                                d['Errores'].append((
+                                    str(error.codigo), 
+                                    str(error.descripcion).decode('latin1').encode("ascii", "replace")))
+                        self.remitos.append(d)
+                    # establecer valores del primer remito (sin eliminarlo)
+                    self.LeerValidacionRemito(pop=false)
+            return True      
         except Exception, e:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
                 self.Traceback = ''.join(ex)
@@ -168,6 +178,24 @@ class COT:
                 except:
                     self.Excepcion = u"<no disponible>"
                 return False
+
+    def LeerValidacionRemito(self, pop=True):
+        "Leeo el próximo remito"
+        # por compatibilidad hacia atras, la primera vez no remueve de la lista
+        # (llamado de PresentarRemito con pop=False)
+        if self.remitos:
+            remito = self.remitos[0]
+            if pop:
+                del self.remitos[0]
+            self.NumeroUnico = remito['NumeroUnico']
+            self.Procesado = remito['Procesado']
+            self.errores = remito['Errores']
+            return True
+        else:
+            self.NumeroUnico = ""
+            self.Procesado = ""
+            self.errores = []
+            return False
 
     def LeerErrorValidacion(self):
         if self.errores:
@@ -181,7 +209,32 @@ class COT:
             self.CodigoError = ""
             self.MensajeError = ""
             return False
-            
+
+    def AnalizarXml(self, xml=""):
+        "Analiza un mensaje XML (por defecto la respuesta)"
+        try:
+            if not xml:
+                xml = self.XmlResponse 
+            self.xml = SimpleXMLElement(xml)
+            return True
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+            return False
+
+    def ObtenerTagXml(self, *tags):
+        "Busca en el Xml analizado y devuelve el tag solicitado"
+        # convierto el xml a un objeto
+        try:
+            if self.xml:
+                xml = self.xml
+                # por cada tag, lo busco segun su nombre o posición
+                for tag in tags:
+                    xml = xml(tag) # atajo a getitem y getattr
+                # vuelvo a convertir a string el objeto xml encontrado
+                return str(xml)
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
@@ -210,7 +263,8 @@ if __name__=="__main__":
     cot.Password = sys.argv[3]  # 23456
 
     if '--testing' in sys.argv:
-        test_response = "cot_response_2_errores.xml"
+        test_response = "cot_response_multiple_errores.xml"
+        #test_response = "cot_response_2_errores.xml"
         #test_response = "cot_response_3_sinerrores.xml"
     else:
         test_response = ""
@@ -221,14 +275,24 @@ if __name__=="__main__":
     if cot.Excepcion:
         print "Excepcion:", cot.Excepcion
         print "Traceback:", cot.Traceback
-        
-    print "Error General:", cot.TipoError, "|", cot.CodigoError, "|", cot.MensajeError
-    while cot.LeerErrorValidacion():
-        print "Error Validacion:", cot.TipoError, "|", cot.CodigoError, "|", cot.MensajeError
-    
+
+    # datos generales:
     print "CUIT Empresa:", cot.CuitEmpresa
     print "Numero Comprobante:", cot.NumeroComprobante
     print "Nombre Archivo:", cot.NombreArchivo
     print "Codigo Integridad:", cot.CodigoIntegridad
-    print "Numero Unico:", cot.NumeroUnico
-    print "Procesado:", cot.Procesado
+
+    print "Error General:", cot.TipoError, "|", cot.CodigoError, "|", cot.MensajeError
+    
+    # recorro los remitos devueltos e imprimo sus datos por cada uno:
+    while cot.LeerValidacionRemito():
+        print "Numero Unico:", cot.NumeroUnico
+        print "Procesado:", cot.Procesado
+        while cot.LeerErrorValidacion():
+            print "Error Validacion:", "|", cot.CodigoError, "|", cot.MensajeError
+
+    # Ejemplos de uso ObtenerTagXml
+    if False:
+        print "cuit", cot.ObtenerTagXml('cuitEmpresa')
+        print "p0", cot.ObtenerTagXml('validacionesRemitos', 'remito', 0, 'procesado')
+        print "p1", cot.ObtenerTagXml('validacionesRemitos', 'remito', 1, 'procesado')
