@@ -41,7 +41,7 @@ class WSFEXv1:
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT',
-                        'GetParamCtz',
+                        'GetParamCtz', 'LoadTestXML',
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -116,6 +116,13 @@ class WSFEXv1:
             trace = "--trace" in sys.argv)
         return True
 
+    def LoadTestXML(self, xml):
+        class DummyHTTP:
+            def __init__(self, xml_response):
+                self.xml_response = xml_response
+            def request(self, location, method, body, headers):
+                return {}, self.xml_response
+        self.client.http = DummyHTTP(xml)
         
     def CrearFactura(self, tipo_cbte=19, punto_vta=1, cbte_nro=0, fecha_cbte=None,
             imp_total=0.0, tipo_expo=1, permiso_existente="N", pais_dst_cmp=None,
