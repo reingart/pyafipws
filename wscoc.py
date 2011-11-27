@@ -98,6 +98,7 @@ class WSCOC:
                         'ConsultarTiposDocumento',
                         'ConsultarTiposEstadoSolicitud',
                         'LeerSolicitudConsultada', 'LeerCUITConsultado',
+                        'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
                         'Dummy', 'Conectar', 'Eval', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit',
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
@@ -160,19 +161,19 @@ class WSCOC:
         "Analiza y extrae los datos de una solicitud"
         self.CodigoSolicitud = det.get("codigoSolicitud")
         self.FechaSolicitud = det.get("fechaSolicitud")
-        self.COC = det.get("coc")
+        self.COC = str(det.get("coc"))
         self.FechaEmisionCOC = det.get("fechaEmisionCOC")
         self.EstadoSolicitud = det.get("estadoSolicitud")
         self.FechaEstado = det.get("fechaEstado")
-        self.CUITComprador = det.get("detalleCUITComprador", 
-                                     {}).get("cuit")
+        self.CUITComprador = str(det.get("detalleCUITComprador", 
+                                     {}).get("cuit", ""))
         self.DenominacionComprador = det.get("detalleCUITComprador", 
                                              {}).get("denominacion")
         self.CodigoMoneda = det.get("codigoMoneda")
         self.CotizacionMoneda = det.get("cotizacionMoneda")
         self.MontoPesos = det.get("montoPesos")
-        self.CUITRepresentante = det.get("DetalleCUITRepresentante", 
-                                         {}).get("cuit")
+        self.CUITRepresentante = str(det.get("DetalleCUITRepresentante", 
+                                         {}).get("cuit", ""))
         self.DenominacionRepresentante = det.get("DetalleCUITRepresentante", 
                                                  {}).get("denominacion")
         self.CodigoDestino = det.get("codigoDestino")
@@ -327,8 +328,8 @@ class WSCOC:
         if self.__detalles_cuit:
             # extraigo el primer item
             det = self.__detalles_cuit.pop(0)
-            self.CUITConsultada = det['cuit']
-            self.DenominacionConsultada = det['denominacion']
+            self.CUITConsultada = str(det['cuit'])
+            self.DenominacionConsultada = str(det['denominacion'])
             return True
         else:
             return False
@@ -341,9 +342,6 @@ class WSCOC:
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             coc=coc,
         )
-
-        
-
         ret = res.get('consultarCOCReturn', {})
         det = ret.get('detalleSolicitud', {})
         self.__analizar_solicitud(det)
@@ -488,6 +486,36 @@ class WSCOC:
                     % p['codigoDescripcionString']).replace("\t", sep)
                  for p in ret['arrayTiposEstadoSolicitud']]
 
+
+    def LeerError(self):
+        "Recorro los errores devueltos y devuelvo el primero si existe"
+        
+        if self.Errores:
+            # extraigo el primer item
+            er = self.Errores.pop(0)
+            return er
+        else:
+            return ""
+
+    def LeerErrorFormato(self):
+        "Recorro los errores de formatos devueltos y devuelvo el primero si existe"
+        
+        if self.ErroresFormato:
+            # extraigo el primer item
+            er = self.ErroresFormato.pop(0)
+            return er
+        else:
+            return ""
+
+    def LeerInconsistencia(self):
+        "Recorro las inconsistencias devueltas y devuelvo la primera si existe"
+        
+        if self.Inconsistencias:
+            # extraigo el primer item
+            er = self.Inconsistencias.pop(0)
+            return er
+        else:
+            return ""
 
 
 def main():
