@@ -52,17 +52,8 @@ def inicializar_y_capturar_excepciones(func):
             self.__detalles_solicitudes = []
             self.__detalles_cuit = []
 
-            # llamo a la función (con reintentos)
-            retry = 5
-            while retry:
-                try:
-                    retry -= 1
-                    return func(self, *args, **kwargs)
-                except socket.error, e:
-                    if e[0] != 10054:
-                        # solo reintentar si el error es de conexión
-                        # (10054, 'Connection reset by peer')
-                        raise
+            # llamo a la función (sin reintentos)
+            return func(self, *args, **kwargs)
 
         except SoapFault, e:
             # guardo destalle de la excepción SOAP
