@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import os
 import socket
@@ -69,13 +69,15 @@ def inicializar_y_capturar_excepciones(func):
             self.ErrCode = unicode(e.faultcode)
             self.ErrMsg = unicode(e.faultstring)
             self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
-            raise
+            if self.LanzarExcepciones:
+                raise
         except Exception, e:
             ex = traceback.format_exception(sys.exc_type, sys.exc_value,
                                             sys.exc_traceback)
             self.Traceback = ''.join(ex)
             self.Excepcion = u"%s" % (e)
-            raise
+            if self.LanzarExcepciones:
+                raise
         finally:
             # guardo datos de depuración
             if self.client:
@@ -110,13 +112,14 @@ class WSCOC:
         'CodigoMoneda', 'CotizacionMoneda', 'MontoPesos',
         'CUITRepresentante', 'DenominacionRepresentante',
         'TipoDoc', 'NumeroDoc', 'CUITConsultada', 'DenominacionConsultada',
-        'ErroresFormato', 'Errores', 'Traceback', 'Excepcion',
+        'ErroresFormato', 'Errores', 'Traceback', 'Excepcion', 'LanzarExcepciones',
         ]
 
     _reg_progid_ = "WSCOC"
     _reg_clsid_ = "{B30406CE-326A-46D9-B807-B7916E3F1B96}"
 
     Version = "%s %s %s" % (__version__, HOMO and 'Homologación' or '', pysimplesoap.client.__file__)
+    LanzarExcepciones = False
 
     def __init__(self):
         self.Token = self.Sign = self.Cuit = None
