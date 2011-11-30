@@ -30,9 +30,27 @@ Sub Main()
     cache = ""
     proxy = "" '"usuario:clave@localhost:8000"
     wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
-    cacert = WSAA.InstallDir & "\geotrust.crt" ' certificado de la autoridad de certificante
+    
+    ' Ejemplo para pasar el contenido del certificado CA
+    cacert_fn = WSAA.InstallDir & "\geotrust.crt" ' certificado de la autoridad de certificante
+    cacert = ""
+    Open cacert_fn For Input As #1
+    While Not EOF(1)
+        Line Input #1, s
+        cacert = cacert + s + vbCrLf
+    Wend
+    Close #1
+    
+    ' Conectar al webservice (Homologación)
     wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
-    ok = WSAA.Conectar(cache, wsdl, proxy, wrapper, cacert) ' Homologación
+    ok = WSAA.Conectar(cache, wsdl, proxy, wrapper, cacert)
+    
+    If WSAA.Excepcion <> "" Then
+        MsgBox WSAA.Excepcion, vbCritical, "Excepcion"
+        End
+    End If
+    
+    ' Llamar al webservice para solicitar acceso:
     ok = WSAA.LoginCMS(cms)
     
     If WSAA.Excepcion <> "" Then
