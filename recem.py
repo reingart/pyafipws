@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28e"
+__version__ = "1.29a"
 
 import datetime
 import os
@@ -30,7 +30,7 @@ from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
 HOMO = wsmtx.HOMO
-DEBUG = False
+DEBUG = True
 XML = False
 CONFIG_FILE = "rece.ini"
 
@@ -50,83 +50,95 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 N = 'Numerico'
 A = 'Alfanumerico'
 I = 'Importe'
-ENCABEZADO = [
-    ('tipo_reg', 1, N), # 0: encabezado
-    ('fecha_cbte', 10, A),
-    ('tipo_cbte', 2, N),
-    ('punto_vta', 4, N),
-    ('cbt_desde', 8, N), 
-    ('cbt_hasta', 8, N), 
-    ('concepto', 1, N), # 1:bienes, 2:servicios,... 
-    ('tipo_doc', 2, N), # 80
-    ('nro_doc', 11, N), # 50000000016    
-    ('imp_total', 15, I, 2), 
-    ('imp_tot_conc', 15, I, 2), 
-    ('imp_neto', 15, I, 2), 
-    ('imp_subtotal', 15, I, 2), 
-    ('imp_trib', 15, I, 2), 
-    ('imp_op_ex', 15, I, 2), 
-    ('moneda_id', 3, A),
-    ('moneda_ctz', 10, I, 6), #10,6
-    ('fecha_venc_pago', 10, A),   # opcional solo conceptos 2 y 3
-    ('fecha_serv_desde', 10, A), # opcional solo conceptos 2 y 3
-    ('fecha_serv_hasta', 10, A), # opcional solo conceptos 2 y 3
-    ('cae', 14, N),
-    ('fch_venc_cae', 10, A),
-    ('resultado', 1, A), 
-    ('motivos_obs', 1000, A),
-    ('err_code', 6, A),
-    ('err_msg', 1000, A),
-    ('reproceso', 1, A),
-    ('emision_tipo', 4, A),
-    ('observaciones', 1000, A),  # observaciones (opcional)
-    ]
 
-DETALLE = [
-    ('tipo_reg', 1, N),     # 4: detalle item
-    ('u_mtx', 10, N),
-    ('cod_mtx', 30, A),
-    ('codigo', 30, A),
-    ('qty', 15, I, 3),      # debería ser 18,6 pero el DBF no lo soporta
-    ('umed', 3, N),
-    ('precio', 15, I, 3),   # debería ser 18,6 pero el DBF no lo soporta
-    ('bonif', 15, I, 3),
-    ('iva_id', 3, N),
-    ('imp_iva', 15, I, 2),
-    ('imp_subtotal', 15, I, 2),
-    ('ds', 4000, A),
-    ]
+if not '--pyfepdf' in sys.argv:
+    TIPOS_REG = '0', '1', '2', '3', '4', '5'
+    ENCABEZADO = [
+        ('tipo_reg', 1, N), # 0: encabezado
+        ('fecha_cbte', 10, A),
+        ('tipo_cbte', 2, N),
+        ('punto_vta', 4, N),
+        ('cbt_desde', 8, N), 
+        ('cbt_hasta', 8, N), 
+        ('concepto', 1, N), # 1:bienes, 2:servicios,... 
+        ('tipo_doc', 2, N), # 80
+        ('nro_doc', 11, N), # 50000000016    
+        ('imp_total', 15, I, 2), 
+        ('imp_tot_conc', 15, I, 2), 
+        ('imp_neto', 15, I, 2), 
+        ('imp_subtotal', 15, I, 2), 
+        ('imp_trib', 15, I, 2), 
+        ('imp_op_ex', 15, I, 2), 
+        ('moneda_id', 3, A),
+        ('moneda_ctz', 10, I, 6), #10,6
+        ('fecha_venc_pago', 10, A),   # opcional solo conceptos 2 y 3
+        ('fecha_serv_desde', 10, A), # opcional solo conceptos 2 y 3
+        ('fecha_serv_hasta', 10, A), # opcional solo conceptos 2 y 3
+        ('cae', 14, N),
+        ('fch_venc_cae', 10, A),
+        ('resultado', 1, A), 
+        ('motivos_obs', 1000, A),
+        ('err_code', 6, A),
+        ('err_msg', 1000, A),
+        ('reproceso', 1, A),
+        ('emision_tipo', 4, A),
+        ('observaciones', 1000, A),  # observaciones (opcional)
+        ]
 
-TRIBUTO = [
-    ('tipo_reg', 1, N),     # 1: tributo
-    ('tributo_id', 3, A),   # código de otro tributo
-    ('desc', 100, A),       # descripción
-    ('base_imp', 15, I, 2), 
-    ('alic', 15, I, 2),     # no se usa...
-    ('importe', 15, I, 2),  
-    ]
+    DETALLE = [
+        ('tipo_reg', 1, N),     # 4: detalle item
+        ('u_mtx', 10, N),
+        ('cod_mtx', 30, A),
+        ('codigo', 30, A),
+        ('qty', 15, I, 3),      # debería ser 18,6 pero el DBF no lo soporta
+        ('umed', 3, N),
+        ('precio', 15, I, 3),   # debería ser 18,6 pero el DBF no lo soporta
+        ('bonif', 15, I, 3),
+        ('iva_id', 3, N),
+        ('imp_iva', 15, I, 2),
+        ('imp_subtotal', 15, I, 2),
+        ('ds', 4000, A),
+        ]
 
-IVA = [
-    ('tipo_reg', 1, N),     # 2: IVA
-    ('iva_id', 3, A),       # código de alícuota
-    ('base_imp', 15, I, 2), # no se usa... 
-    ('importe', 15, I, 2),  
-    ]
+    TRIBUTO = [
+        ('tipo_reg', 1, N),     # 1: tributo
+        ('tributo_id', 3, A),   # código de otro tributo
+        ('desc', 100, A),       # descripción
+        ('base_imp', 15, I, 2), 
+        ('alic', 15, I, 2),     # no se usa...
+        ('importe', 15, I, 2),  
+        ]
 
-CMP_ASOC = [
-    ('tipo_reg', 1, N),     # 3: comprobante asociado
-    ('tipo', 3, N),         
-    ('pto_vta', 4, N),
-    ('nro', 8, N), 
-    ]
+    IVA = [
+        ('tipo_reg', 1, N),     # 2: IVA
+        ('iva_id', 3, A),       # código de alícuota
+        ('base_imp', 15, I, 2), # no se usa... 
+        ('importe', 15, I, 2),  
+        ]
 
+    CMP_ASOC = [
+        ('tipo_reg', 1, N),     # 3: comprobante asociado
+        ('tipo', 3, N),         
+        ('pto_vta', 4, N),
+        ('nro', 8, N), 
+        ]
+
+else:
+    print "!" * 78
+    print "importando formato segun pyfepdf"
+    from formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
+    TIPOS_REG = '0', '5', '4', '3', '1'
 
 def leer(linea, formato):
     dic = {}
     comienzo = 1
     for fmt in formato:    
         clave, longitud, tipo = fmt[0:3]
-        dec = len(fmt)>3 and fmt[3] or 2
+        if isinstance(longitud, tuple):
+            longitud, dec = longitud
+        else:
+            dec = len(fmt)>3 and fmt[3] or 2
+            
         valor = linea[comienzo-1:comienzo-1+longitud].strip()
         try:
             if tipo == N:
@@ -158,8 +170,11 @@ def escribir(dic, formato):
     comienzo = 1
     for fmt in formato:
         clave, longitud, tipo = fmt[0:3]
-        try:
+        if isinstance(longitud, tuple):
+            longitud, dec = longitud
+        else:
             dec = len(fmt)>3 and fmt[3] or 2
+        try:
             if clave.capitalize() in dic:
                 clave = clave.capitalize()
             s = dic.get(clave,"")
@@ -225,28 +240,33 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         encabezado = encabezado[0]
     else:
         for linea in entrada:
-            if str(linea[0])=='0':
+            if str(linea[0])==TIPOS_REG[0]:
                 encabezado = leer(linea, ENCABEZADO)
-            elif str(linea[0])=='1':
+            elif str(linea[0])==TIPOS_REG[1]:
                 tributo = leer(linea, TRIBUTO)
                 tributos.append(tributo)
-            elif str(linea[0])=='2':
+            elif str(linea[0])==TIPOS_REG[2]:
                 iva = leer(linea, IVA)
                 ivas.append(iva)
-            elif str(linea[0])=='3':
+            elif str(linea[0])==TIPOS_REG[3]:
                 cbtasoc = leer(linea, CMP_ASOC)
                 cbtasocs.append(cbtasoc)
-            elif str(linea[0])=='4':
+            elif str(linea[0])==TIPOS_REG[4]:
                 detalle = leer(linea, DETALLE)
                 detalles.append(detalle)
+                if 'imp_subtotal' not in detalle:
+                    detalle['imp_subtotal'] = detalle['importe']
             else:
                 print "Tipo de registro incorrecto:", linea[0]
-
+       
     if informar_caea:
         if '/testing' in sys.argv:
             encabezado['cae'] = '21353598240916'
             encabezado['fch_venc_cae'] = '2011-09-15'
         encabezado['caea'] = encabezado['cae']
+
+    if 'imp_subtotal' not in encabezado:
+        encabezado['imp_subtotal'] = encabezado['imp_neto'] + encabezado['imp_tot_conc']
 
     ws.CrearFactura(**encabezado)
     for detalle in detalles:
@@ -281,23 +301,23 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
 
 def escribir_factura(dic, archivo):
-    dic['tipo_reg'] = 0
+    dic['tipo_reg'] = TIPOS_REG[0]
     archivo.write(escribir(dic, ENCABEZADO))
     if 'tributos' in dic:
         for it in dic['tributos']:
-            it['tipo_reg'] = 1
+            it['tipo_reg'] = TIPOS_REG[1]
             archivo.write(escribir(it, TRIBUTO))
     if 'iva' in dic:
         for it in dic['iva']:
-            it['tipo_reg'] = 2
+            it['tipo_reg'] = TIPOS_REG[2]
             archivo.write(escribir(it, IVA))
     if 'cbtes_asoc' in dic:
         for it in dic['cbtes_asoc']:
-            it['tipo_reg'] = 3
+            it['tipo_reg'] = TIPOS_REG[3]
             archivo.write(escribir(it, CMP_ASOC))
     if 'detalles' in dic:
         for it in dic['detalles']:
-            it['tipo_reg'] = 4
+            it['tipo_reg'] = TIPOS_REG[4]
             archivo.write(escribir(it, DETALLE))
             
     if '/dbf' in sys.argv:
@@ -471,7 +491,7 @@ if __name__ == "__main__":
             tipo_doc = 80; nro_doc = "30000000007"
             cbte_nro = long(cbte_nro) + 1
             cbt_desde = cbte_nro; cbt_hasta = cbt_desde
-            imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
+            imp_total = "121.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "0.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
             # Fechas del período del servicio facturado (solo si concepto = 1?)
