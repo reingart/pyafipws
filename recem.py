@@ -31,6 +31,7 @@ from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 HOMO = wsmtx.HOMO
 DEBUG = True
+PDB = False
 XML = False
 CONFIG_FILE = "rece.ini"
 
@@ -155,12 +156,18 @@ def leer(linea, formato):
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
                     valor = 0.00
+            elif clave.lower().startswith("fec") and longitud <= 8:            
+                valor = "%s-%s-%s" % (valor[0:4], valor[4:6], valor[6:8])
             else:
                 valor = valor.decode("ascii","ignore")
+            if clave=='concepto':
+                if PDB: import pdb;pdb.set_trace()
             dic[clave] = valor
 
             comienzo += longitud
         except Exception, e:
+            if PDB: import pdb; pdb.set_trace()
+
             raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return dic
@@ -188,11 +195,19 @@ def escribir(dic, formato):
                 valor = ("%%0%dd" % longitud) % int(valor)
             elif tipo == I and valor:
                 valor = ("%%0%dd" % longitud) % int(float(valor)*(10**dec))
+            elif clave.lower().startswith("fec") and longitud <= 8 and valor:
+                ##import pdb; pdb.set_trace()
+                valor = valor.replace("-", "")
             else:
                 valor = ("%%-0%ds" % longitud) % valor
+            if len(valor) != longitud:
+                print "Longitud incorrecta!", clave, valor
+                if PDB: import pdb;pdb.set_trace()
+                valor = " "* (longitud-len(valor)) + valor
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
         except Exception, e:
+            import pdb; pdb.set_trace()
             raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return linea + "\n"
@@ -318,6 +333,7 @@ def escribir_factura(dic, archivo):
     if 'detalles' in dic:
         for it in dic['detalles']:
             it['tipo_reg'] = TIPOS_REG[4]
+            it['importe'] = it['imp_subtotal']
             archivo.write(escribir(it, DETALLE))
             
     if '/dbf' in sys.argv:
