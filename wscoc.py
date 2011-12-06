@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 import os
 import socket
@@ -27,7 +27,7 @@ from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
 from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
-HOMO = True
+HOMO = False
 
 WSDL = "https://fwshomo.afip.gov.ar/wscoc/COCService?wsdl"
 
@@ -301,16 +301,19 @@ class WSCOC:
         if 'consultarCUITReturn' in res:
             ret = res['consultarCUITReturn']
             self.__analizar_errores(ret)
-            self.TipoDoc = ret['tipoNumeroDoc']['tipoDoc']
-            self.NumeroDoc = ret['tipoNumeroDoc']['numeroDoc']
-            for detalle in ret.get('arrayDetallesCUIT', []):
-                # agrego el detalle para consultarlo luego (LeerCUITConsultado)
-                det = detalle['detalleCUIT']
-                self.__detalles_cuit.append(det)
-            # devuelvo una lista de cuit/denominación
-            return [(u"%(cuit)s\t%(denominacion)s" % 
-                        d['detalleCUIT']).replace("\t", sep)
-                    for d in ret.get('arrayDetallesCUIT', [])]
+            if 'tipoNumeroDoc' in ret:
+                self.TipoDoc = ret['tipoNumeroDoc']['tipoDoc']
+                self.NumeroDoc = ret['tipoNumeroDoc']['numeroDoc']
+                for detalle in ret.get('arrayDetallesCUIT', []):
+                    # agrego el detalle para consultarlo luego (LeerCUITConsultado)
+                    det = detalle['detalleCUIT']
+                    self.__detalles_cuit.append(det)
+                # devuelvo una lista de cuit/denominación
+                return [(u"%(cuit)s\t%(denominacion)s" % 
+                            d['detalleCUIT']).replace("\t", sep)
+                        for d in ret.get('arrayDetallesCUIT', [])]
+            else:
+                return []
         else:
             self.TipoDoc = None
             self.NumeroDoc = None
