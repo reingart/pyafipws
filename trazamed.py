@@ -173,6 +173,61 @@ class TrazaMed:
 
         return True
 
+        
+    def SendMedicamentosDHSerie(self, usuario, password, 
+                         f_evento, h_evento, gln_origen, gln_destino, 
+                         n_remito, n_factura, vencimiento, gtin, lote,
+                         desde_numero_serial, hasta_numero_serial,
+                         id_obra_social, id_evento,
+                         cuit_origen, cuit_destino, apellido, nombres,
+                         tipo_docmento, n_documento, sexo,
+                         direccion, numero, piso, depto, localidad, provincia,
+                         n_postal, fecha_nacimiento, telefono,
+                         ):
+        "Realiza el registro de una transacción de medicamentos. "
+        res = self.client.sendMedicamentosDHSerie(
+            arg0={  'f_evento': f_evento, 
+                    'h_evento': h_evento, 
+                    'gln_origen': gln_origen, 
+                    'gln_destino': gln_destino, 
+                    'n_remito': n_remito, 
+                    'n_factura': n_factura, 
+                    'vencimiento': vencimiento, 
+                    'gtin': gtin, 
+                    'lote': lote, 
+                    'desde_numero_serial': desde_numero_serial, 
+                    'hasta_numero_serial': hasta_numero_serial, 
+                    'id_obra_social': id_obra_social, 
+                    'id_evento': id_evento, 
+                    'cuit_origen': cuit_origen, 
+                    'cuit_destino': cuit_destino, 
+                    'apellido': apellido, 
+                    'nombres': nombres, 
+                    'tipo_docmento': tipo_docmento, 
+                    'n_documento': n_documento, 
+                    'sexo': sexo, 
+                    'direccion': direccion, 
+                    'numero': numero, 
+                    'piso': piso, 
+                    'depto': depto, 
+                    'localidad': localidad, 
+                    'provincia': provincia, 
+                    'n_postal': n_postal,
+                    'fecha_nacimiento': fecha_nacimiento, 
+                    'telefono': telefono,
+                    }, 
+            arg1=usuario, 
+            arg2=password,
+        )
+
+        ret = res['return']
+        
+        self.CodigoTransaccion = ret[0]['codigoTransaccion']
+        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
+                        for it in ret if 'errores' in it]
+        self.Resultado = ret[-1]['resultado']
+
+        return True
 
 
 def main():
@@ -209,6 +264,26 @@ def main():
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Erroes", ws.Errores
+    elif '--testdh' in sys.argv:
+        ws.SendMedicamentosDHSerie(
+            usuario='pruebasws', password='pruebasws',
+            f_evento="25/11/2011", h_evento="04:24", 
+            gln_origen="glnws", gln_destino="glnws", 
+            n_remito="1234", n_factura="1234", 
+            vencimiento="30/11/2011", gtin="GTIN1", lote="1111",
+            desde_numero_serial="2224", hasta_numero_serial="2225", 
+            id_obra_social=None, id_evento=133,
+            cuit_origen="20267565393", cuit_destino="20267565393", 
+            apellido="Reingart", nombres="Mariano",
+            tipo_docmento="96", n_documento="26756539", sexo="M",
+            direccion="Saraza", numero="1234", piso="", depto="", 
+            localidad="Hurlingham", provincia="Buenos Aires",
+            n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
+            telefono="5555-5555",)
+        print "Resultado", ws.Resultado
+        print "CodigoTransaccion", ws.CodigoTransaccion
+        print "Erroes", ws.Errores
+
     else:
         ws.SendMedicamentos(*sys.argv[1:])
         print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
