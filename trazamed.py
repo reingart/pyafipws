@@ -184,7 +184,7 @@ class TrazaMed:
                          direccion, numero, piso, depto, localidad, provincia,
                          n_postal, fecha_nacimiento, telefono,
                          ):
-        "Realiza el registro de una transacción de medicamentos. "
+        "Envía un lote de medicamentos informando el desde-hasta número de serie"
         res = self.client.sendMedicamentosDHSerie(
             arg0={  'f_evento': f_evento, 
                     'h_evento': h_evento, 
@@ -229,6 +229,22 @@ class TrazaMed:
 
         return True
 
+    def SendCancelacTransacc(self, usuario, password, codigo_transaccion):
+        " Realiza la cancelación de una transacción"
+        res = self.client.sendCancelacTransacc(
+            arg0=codigo_transaccion, 
+            arg1=usuario, 
+            arg2=password,
+        )
+
+        ret = res['return']
+        
+        self.CodigoTransaccion = ret[0]['codigoTransaccion']
+        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
+                        for it in ret if 'errores' in it]
+        self.Resultado = ret[-1]['resultado']
+
+        return True
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -265,6 +281,7 @@ def main():
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Erroes", ws.Errores
     elif '--testdh' in sys.argv:
+        print "Informando medicamentos..."
         ws.SendMedicamentosDHSerie(
             usuario='pruebasws', password='pruebasws',
             f_evento="25/11/2011", h_evento="04:24", 
@@ -283,7 +300,14 @@ def main():
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Erroes", ws.Errores
-
+        codigo_transaccion = ws.CodigoTransaccion
+        print "Cancelando..."
+        ws.SendCancelacTransacc(
+            usuario='pruebasws', password='pruebasws',
+            codigo_transaccion=codigo_transaccion)
+        print "Resultado", ws.Resultado
+        print "CodigoTransaccion", ws.CodigoTransaccion
+        print "Erroes", ws.Errores
     else:
         ws.SendMedicamentos(*sys.argv[1:])
         print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
