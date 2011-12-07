@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import os
 import socket
@@ -78,38 +78,47 @@ class TrazaMed:
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
         # cliente soap del web service
-        if wrapper:
-            Http = set_http_wrapper(wrapper)
-            self.Version = TrazaMed.Version + " " + Http._wrapper_version
-        proxy_dict = parse_proxy(proxy)
-        if HOMO or not wsdl:
-            wsdl = WSDL
-        if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
-            wsdl += "?wsdl"
-        if not cache or HOMO:
-            # use 'cache' from installation base directory 
-            cache = os.path.join(self.InstallDir, 'cache')
-        #self.__log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
-        self.client = SoapClient(
-            wsdl = wsdl,        
-            cache = cache,
-            proxy = proxy_dict,
-            ns="tzmed",
-            cacert=cacert,
-            soap_ns="soapenv",
-            #soap_server="jbossas6",
-            trace = "--trace" in sys.argv)
-            
-        self.client.services['IWebServiceService']['ports']['IWebServicePort']['location'] = LOCATION
-        
-        # Establecer credenciales de seguridad:
-        self.client['wsse:Security'] = {
-            'wsse:UsernameToken': {
-                'wsse:Username': self.Username,
-                'wsse:Password': self.Password,
-                }
-            }
-        return True
+		try:
+			if wrapper:
+				Http = set_http_wrapper(wrapper)
+				self.Version = TrazaMed.Version + " " + Http._wrapper_version
+			proxy_dict = parse_proxy(proxy)
+			if HOMO or not wsdl:
+				wsdl = WSDL
+			if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
+				wsdl += "?wsdl"
+			if not cache or HOMO:
+				# use 'cache' from installation base directory 
+				cache = os.path.join(self.InstallDir, 'cache')
+			#self.__log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
+			self.client = SoapClient(
+				wsdl = wsdl,        
+				cache = cache,
+				proxy = proxy_dict,
+				ns="tzmed",
+				cacert=cacert,
+				soap_ns="soapenv",
+				#soap_server="jbossas6",
+				trace = "--trace" in sys.argv)
+				
+			self.client.services['IWebServiceService']['ports']['IWebServicePort']['location'] = LOCATION
+			
+			# Establecer credenciales de seguridad:
+			self.client['wsse:Security'] = {
+				'wsse:UsernameToken': {
+					'wsse:Username': self.Username,
+					'wsse:Password': self.Password,
+					}
+				}
+			return True
+		except:
+			ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+			self.Traceback = ''.join(ex)
+			try:
+				self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+			except:
+				self.Excepcion = u"<no disponible>"
+			return False
 
     def SendMedicamentos(self, usuario, password, 
                          f_evento, h_evento, gln_origen, gln_destino, 
