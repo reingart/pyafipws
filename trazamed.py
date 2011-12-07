@@ -78,47 +78,51 @@ class TrazaMed:
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
         # cliente soap del web service
-		try:
-			if wrapper:
-				Http = set_http_wrapper(wrapper)
-				self.Version = TrazaMed.Version + " " + Http._wrapper_version
-			proxy_dict = parse_proxy(proxy)
-			if HOMO or not wsdl:
-				wsdl = WSDL
-			if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
-				wsdl += "?wsdl"
-			if not cache or HOMO:
-				# use 'cache' from installation base directory 
-				cache = os.path.join(self.InstallDir, 'cache')
-			#self.__log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
-			self.client = SoapClient(
-				wsdl = wsdl,        
-				cache = cache,
-				proxy = proxy_dict,
-				ns="tzmed",
-				cacert=cacert,
-				soap_ns="soapenv",
-				#soap_server="jbossas6",
-				trace = "--trace" in sys.argv)
-				
-			self.client.services['IWebServiceService']['ports']['IWebServicePort']['location'] = LOCATION
-			
-			# Establecer credenciales de seguridad:
-			self.client['wsse:Security'] = {
-				'wsse:UsernameToken': {
-					'wsse:Username': self.Username,
-					'wsse:Password': self.Password,
-					}
-				}
-			return True
-		except:
-			ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-			self.Traceback = ''.join(ex)
-			try:
-				self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-			except:
-				self.Excepcion = u"<no disponible>"
-			return False
+        try:
+            if wrapper:
+                Http = set_http_wrapper(wrapper)
+                self.Version = TrazaMed.Version + " " + Http._wrapper_version
+            proxy_dict = parse_proxy(proxy)
+            if HOMO or not wsdl:
+                wsdl = WSDL
+                location = LOCATION
+            if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
+                location = wsdl
+                wsdl += "?wsdl"
+            if not cache or HOMO:
+                # use 'cache' from installation base directory 
+                cache = os.path.join(self.InstallDir, 'cache')
+            if "--trace" in sys.argv:
+                print "Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict)
+            self.client = SoapClient(
+                wsdl = wsdl,        
+                cache = cache,
+                proxy = proxy_dict,
+                ns="tzmed",
+                cacert=cacert,
+                soap_ns="soapenv",
+                #soap_server="jbossas6",
+                trace = "--trace" in sys.argv)
+                
+            # corrijo ubicación del servidor (localhost:9050 en el WSDL)
+            self.client.services['IWebServiceService']['ports']['IWebServicePort']['location'] = location
+            
+            # Establecer credenciales de seguridad:
+            self.client['wsse:Security'] = {
+                'wsse:UsernameToken': {
+                    'wsse:Username': self.Username,
+                    'wsse:Password': self.Password,
+                    }
+                }
+            return True
+        except:
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            try:
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+            except:
+                self.Excepcion = u"<no disponible>"
+            return False
 
     def SendMedicamentos(self, usuario, password, 
                          f_evento, h_evento, gln_origen, gln_destino, 
@@ -248,7 +252,7 @@ class TrazaMed:
 
 def main():
     "Función principal de pruebas (obtener CAE)"
-    import os, time
+    import os, time, sys
 
     DEBUG = '--debug' in sys.argv
 
@@ -258,6 +262,11 @@ def main():
     ws.Password = 'testwservicepsw'
     
     ws.Conectar()
+    
+    if ws.Excepcion:
+        print ws.Excepcion
+        print ws.Traceback
+        sys.exit(-1)
     
     #print ws.client.services
     #op = ws.client.get_operation("sendMedicamentos")
