@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01g"
+__version__ = "1.01h"
 
 import datetime
 import decimal
@@ -319,6 +319,14 @@ class WSFEXv1:
         if 'FEXResultGet' in result:
             resultget = result['FEXResultGet']
             return resultget.get('Id')
+
+    @property
+    def xml_request(self):
+        return self.XmlRequest
+
+    @property
+    def xml_response(self):
+        return self.XmlResponse
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
