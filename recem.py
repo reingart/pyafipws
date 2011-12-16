@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29a"
+__version__ = "1.29b"
 
 import datetime
 import os
@@ -257,6 +257,12 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         for linea in entrada:
             if str(linea[0])==TIPOS_REG[0]:
                 encabezado = leer(linea, ENCABEZADO)
+                if 'cbte_nro' in encabezado:
+                    print "*" * 80
+                    print "cbte_nro", encabezado['cbte_nro']
+                    encabezado['cbt_desde'] = encabezado['cbte_nro']
+                    encabezado['cbt_hasta'] = encabezado['cbte_nro']
+                    del encabezado['cbte_nro']
             elif str(linea[0])==TIPOS_REG[1]:
                 tributo = leer(linea, TRIBUTO)
                 tributos.append(tributo)
@@ -317,6 +323,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
 def escribir_factura(dic, archivo):
     dic['tipo_reg'] = TIPOS_REG[0]
+    dic['cbte_nro'] = dic['cbt_desde']
     archivo.write(escribir(dic, ENCABEZADO))
     if 'tributos' in dic:
         for it in dic['tributos']:
