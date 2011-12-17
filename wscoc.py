@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.01d"
 
 import os
 import socket
@@ -30,7 +30,7 @@ from cStringIO import StringIO
 HOMO = False
 
 WSDL = "https://fwshomo.afip.gov.ar/wscoc/COCService?wsdl"
-
+##WSDL = "http://www.sistemasagiles.com.ar/soft/COCService.xml"
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -92,6 +92,7 @@ class WSCOC:
                         'ConsultarTiposEstadoSolicitud',
                         'LeerSolicitudConsultada', 'LeerCUITConsultado',
                         'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
+                        'LoadTestXML',
                         'Dummy', 'Conectar', 'Eval', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit',
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
@@ -514,6 +515,14 @@ class WSCOC:
         else:
             return ""
 
+    def LoadTestXML(self, xml_file):
+        class DummyHTTP:
+            def __init__(self, xml_response):
+                self.xml_response = xml_response
+            def request(self, location, method, body, headers):
+                return {}, self.xml_response
+        self.client.http = DummyHTTP(open(xml_file).read())
+
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -543,7 +552,7 @@ def main():
     ws.Conectar()
     
     if "--dummy" in sys.argv:
-        print ws.client.help("dummy")
+        ##print ws.client.help("dummy")
         try:
             ws.Dummy()
             print "AppServerStatus", ws.AppServerStatus
@@ -592,10 +601,20 @@ def main():
             monto_pesos = 100
             cuit_representante = None
             codigo_destino = 625
+
+            if "--loadxml" in sys.argv:
+                ws.LoadTestXML("wscoc_response.xml")
+
             ok = ws.GenerarSolicitudCompraDivisa(cuit_comprador, codigo_moneda,
                                     cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
                                     )
+            while True:
+                i = ws.LeerInconsistencia()
+                if not i:
+                    break
+                print "Inconsistencia...", i
+                
             assert ok
             print 'Resultado', ws.Resultado
             assert ws.Resultado == 'A'
@@ -694,6 +713,7 @@ def main():
         print "=== Tipos de Documento ==="
         print u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposDocumento(sep="||")])
 
+        
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
