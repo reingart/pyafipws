@@ -22,9 +22,13 @@ nLenOfPath = RAT("\", cCurrentProcedure) - (nPathStart)
 ruta = (SUBSTR(cCurrentProcedure, nPathStart, nLenofPath)) + "\"
 ? "ruta",ruta
 
-*-- Generar el mensaje firmado (CMS) 
-cms = WSAA.SignTRA(tra, ruta + "reingart.crt", ruta + "reingart.key") && Cert. Demo
+*-- Generar el mensaje firmado (CMS)
+cert = "olano.crt"
+priv = "olanoycia.key" 
+cms = WSAA.SignTRA(tra, ruta + cert, ruta + priv) && Cert. Demo
 *-- cms = WSAA.SignTRA(tra, ruta + "homo.crt", ruta + "homo.key") 
+? "CMS", cms
+? WSAA.Traceback
 
 *-- Me conecto al servicio web
 url_wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms" && Homologación
@@ -62,7 +66,7 @@ WSCOC.Token = WSAA.Token
 WSCOC.Sign = WSAA.Sign    
 
 * CUIT del emisor (debe estar registrado en la AFIP)
-WSCOC.Cuit = "20267565393"
+WSCOC.Cuit = "30587808990"
 
 *-- Conectar al Servicio Web
 ok = WSCOC.Conectar("", "https://fwshomo.afip.gov.ar/wscoc/COCService?wsdl")      && Homologación
@@ -98,6 +102,8 @@ cotizacion_moneda = "4.26"
 monto_pesos = "100"
 cuit_representante = NULL
 codigo_destino = 625
+
+*-- ok = WSCOC.LoadTestXML("f:\ws\wscoc_response.xml")
 
 ok = WSCOC.GenerarSolicitudCompraDivisa( ;
 		cuit_comprador, codigo_moneda, ;
@@ -209,7 +215,7 @@ PROCEDURE HuboErrores
     cancelar = .F.
 	DO WHILE .T.
 		er = WSCOC.LeerError()
-		IF er = "" THEN 
+		IF LEN(er) = 0 THEN 
 			EXIT
 		ENDIF
         ? "Error:", er
@@ -218,7 +224,7 @@ PROCEDURE HuboErrores
 	ENDDO
 	DO WHILE .T.
 		er = WSCOC.LeerErrorFormato()
-		IF er = "" THEN 
+		IF LEN(er) = 0 THEN 
 			EXIT
 		ENDIF
         ? "Error Formato:", er
@@ -227,7 +233,7 @@ PROCEDURE HuboErrores
 	ENDDO
 	DO WHILE .T.
 		er = WSCOC.LeerInconsistencia()
-		IF er = "" THEN 
+		IF LEN(er) = 0 THEN 
 			EXIT
 		ENDIF
         ? "Inconsistencia:", er

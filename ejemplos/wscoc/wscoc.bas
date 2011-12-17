@@ -43,8 +43,11 @@ Sub Main()
     WSCOC.token = WSAA.token
     WSCOC.sign = WSAA.sign
     
+    Debug.Print WSCOC.Version
+    Debug.Assert False
+    
     ' CUIT (debe estar registrado en la AFIP y habilitado como Casa de Cambio / Entidad Financiera)
-    WSCOC.cuit = "20267565393"
+    WSCOC.cuit = "30587808990"
     
     ' Conectar al Servicio Web
     ok = WSCOC.Conectar("", "https://fwshomo.afip.gov.ar/wscoc/COCService?wsdl") ' homologación
