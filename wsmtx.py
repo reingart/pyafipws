@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06g"
+__version__ = "1.06h"
 
 import datetime
 import decimal
@@ -407,7 +407,7 @@ class WSMTXCA:
 
         if periodo and orden:
             anio, mes = int(periodo[0:4]), int(periodo[4:6])
-            if periodo==1:
+            if int(orden)==1:
                 dias = 1, 14
             else:
                 if mes in (1,3,5,7,8,10,12):
