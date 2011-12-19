@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01h"
+__version__ = "1.02a"
 
 import datetime
 import decimal
@@ -329,6 +329,27 @@ class WSFEXv1:
         return self.XmlResponse
 
 
+class WSFEX(WSFEXv1):
+    "Wrapper para retrocompatibilidad con WSFEX"
+    
+    _reg_progid_ = "WSFEX"
+    _reg_clsid_ = "{B3C8D3D3-D5DA-44C9-B003-11845803B2BD}"
+
+    def __init__(self):
+        WSFEXv1.__init__(self)
+        self.Version = "%s %s WSFEXv1" % (__version__, HOMO and 'Homologación' or '')
+
+    def Conectar(self, url="", proxy=""):
+        # Ajustar URL de V0 a V1:
+        if url in ("https://wswhomo.afip.gov.ar/wsfex/service.asmx",
+                   "http://wswhomo.afip.gov.ar/WSFEX/service.asmx"):
+            url = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx"
+        elif url in ("https://servicios1.afip.gov.ar/wsfex/service.asmx",
+                     "http://servicios1.afip.gov.ar/WSFEX/service.asmx"):
+            url = "https://servicios1.afip.gov.ar/wsfexv1/service.asmx"
+        return WSFEXv1.Conectar(self, cache=None, wsdl=url, proxy=proxy)
+
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
@@ -345,6 +366,14 @@ if __name__ == "__main__":
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSFEXv1)
+        if '--wsfex' in sys.argv:
+            win32com.server.register.UseCommandLine(WSFEX)
+    #elif "/Automate" in sys.argv:
+    #    # MS seems to like /automate to run the class factories.
+    #    import win32com.server.localserver
+    #    #win32com.server.localserver.main()
+    #    # start the server.
+    #    win32com.server.localserver.serve([WSFEXv1._reg_clsid_])
     else:
 
         # Crear objeto interface Web Service de Factura Electrónica de Exportación
