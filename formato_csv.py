@@ -71,6 +71,7 @@ def aplanar(regs):
                     'importe%s' % li: det['importe'],
                     'iva_id%s' % li: det.get('iva_id'),
                     'imp_iva%s' % li: det.get('imp_iva'),
+                    'bonif%s' % li: det.get('bonif'),
                     'numero_despacho%s' % li: det.get('despacho'),
                     })
         for i, iva in enumerate(reg['ivas']):
@@ -151,7 +152,8 @@ def desaplanar(filas):
                 'precio': ('precio%s' % li) in dic and dic.pop('precio%s' % li),
                 'importe': ('importe%s' % li) in dic and dic.pop('importe%s' % li),
                 'iva_id': ('iva_id%s' % li) in dic and dic.pop('iva_id%s' % li),
-                'imp_iva': ('imp_iva%s' % li) in dic and dic.pop('imp_iva%s'% li),                                               
+                'imp_iva': ('imp_iva%s' % li) in dic and dic.pop('imp_iva%s'% li),
+                'bonif': ('bonif%s' % li) in dic and dic.pop('bonif%s'% li),
                 'despacho': ('numero_despacho%s' % li) in dic and dic.pop('numero_despacho%s'% li),
                 } for li in xrange(1, max_li("cantidad")) 
                   if dic['cantidad%s' % li] is not None]
