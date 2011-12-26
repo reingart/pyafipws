@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05e"
+__version__ = "1.05f"
 
 DEBUG = False
 HOMO = False
@@ -771,6 +771,10 @@ if __name__ == '__main__':
         
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
+        
+        # establezco formatos (cantidad de decimales) según configuración:
+        fepdf.FmtCantidad = conf_fact.get("fmt_cantidad", "0.2")
+        fepdf.FmtPrecio = conf_fact.get("fmt_precio", "0.2")
 
         if '--cargar' in sys.argv:
             if '--dbf' in sys.argv:
