@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.03a"
 
 import os
 import socket
@@ -27,11 +27,39 @@ from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
 from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
-HOMO = True
+HOMO = False
 
 WSDL = "https://186.153.145.2:9050/trazamed.WebService?wsdl"
 LOCATION = "https://186.153.145.2:9050/trazamed.WebService"
 #WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
+
+
+def inicializar_y_capturar_excepciones(func):
+    "Decorador para inicializar y capturar errores"
+    def capturar_errores_wrapper(self, *args, **kwargs):
+        try:
+            # inicializo (limpio variables)
+            self.Resultado = self.CodigoTransaccion = ""
+            self.Errores = []
+            self.Traceback = self.Excepcion = ""
+
+            # llamo a la función (sin reintentos)
+            return func(self, *args, **kwargs)
+
+        except Exception, e:
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            try:
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+            except:
+                self.Excepcion = u"<no disponible>"
+            return False
+        finally:
+            # guardo datos de depuración
+            if self.client:
+                self.XmlRequest = self.client.xml_request
+                self.XmlResponse = self.client.xml_response
+    return capturar_errores_wrapper
 
 
 class TrazaMed:
@@ -124,6 +152,7 @@ class TrazaMed:
                 self.Excepcion = u"<no disponible>"
             return False
 
+    @inicializar_y_capturar_excepciones
     def SendMedicamentos(self, usuario, password, 
                          f_evento, h_evento, gln_origen, gln_destino, 
                          n_remito, n_factura, vencimiento, gtin, lote,
@@ -177,7 +206,7 @@ class TrazaMed:
 
         return True
 
-        
+    @inicializar_y_capturar_excepciones
     def SendMedicamentosDHSerie(self, usuario, password, 
                          f_evento, h_evento, gln_origen, gln_destino, 
                          n_remito, n_factura, vencimiento, gtin, lote,
@@ -233,6 +262,7 @@ class TrazaMed:
 
         return True
 
+    @inicializar_y_capturar_excepciones
     def SendCancelacTransacc(self, usuario, password, codigo_transaccion):
         " Realiza la cancelación de una transacción"
         res = self.client.sendCancelacTransacc(
