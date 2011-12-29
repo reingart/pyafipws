@@ -102,6 +102,8 @@ class WSFEXv1:
             proxy_dict = parse_proxy(proxy)
         if HOMO or not wsdl:
             wsdl = WSDL
+        elif wsdl and wsdl.endswith("?wsdl"):
+            wsdl = "https://servicios1.afip.gov.ar/wsfexv1/service.asmx"
         if not wsdl.endswith("?WSDL") and wsdl.startswith("http"):
             wsdl += "?WSDL"
         if not cache or HOMO:
