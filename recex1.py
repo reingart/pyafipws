@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25b"
+__version__ = "1.25c"
 
 import datetime
 import os
@@ -104,6 +104,15 @@ CMP_ASOC = [
     ('cbte_tipo', 3, N), ('cbte_punto_vta', 4, N),
     ('cbte_nro', 8, N), ('cbte_cuit', 11, N), 
     ]
+
+
+if '/recex' in sys.argv:
+    from recex import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC
+    ENCABEZADO[8] = ('nombre_cliente', 200, A) # 'Joao Da Silva'
+    ENCABEZADO[7] = ('pais_dst_cmp', 3, N)
+    ENCABEZADO[16] = ('obs_generales', 1000, A)
+    DETALLE[5] = ('importe', 13, I, 2)
+    DETALLE.append(('bonif', 12, I, 6))
 
 
 def leer(linea, formato):
@@ -282,7 +291,7 @@ if __name__ == "__main__":
     config.read(CONFIG_FILE)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
-    cuit = config.get('WSFEX','CUIT')
+    cuit = config.get('WSFEXv1','CUIT')
     entrada = config.get('WSFEXv1','ENTRADA')
     salida = config.get('WSFEXv1','SALIDA')
     
