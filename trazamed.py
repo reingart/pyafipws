@@ -40,11 +40,13 @@ def inicializar_y_capturar_excepciones(func):
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
             # inicializo (limpio variables)
-            self.CodigoTransaccion = ""
+            self.Resultado = self.CodigoTransaccion = ""
             self.Errores = []
-            self.Resultado = None
+            self.Traceback = self.Excepcion = ""
+
             # llamo a la función (sin reintentos)
             return func(self, *args, **kwargs)
+
         except Exception, e:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)

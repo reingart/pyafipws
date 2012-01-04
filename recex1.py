@@ -106,6 +106,15 @@ CMP_ASOC = [
     ]
 
 
+if '/recex' in sys.argv:
+    from recex import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC
+    ENCABEZADO[8] = ('nombre_cliente', 200, A) # 'Joao Da Silva'
+    ENCABEZADO[7] = ('pais_dst_cmp', 3, N)
+    ENCABEZADO[16] = ('obs_generales', 1000, A)
+    DETALLE[5] = ('importe', 13, I, 2)
+    DETALLE.append(('bonif', 12, I, 6))
+
+
 def leer(linea, formato):
     dic = {}
     comienzo = 1
@@ -286,7 +295,7 @@ if __name__ == "__main__":
     config.read(CONFIG_FILE)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
-    cuit = config.get('WSFEX','CUIT')
+    cuit = config.get('WSFEXv1','CUIT')
     entrada = config.get('WSFEXv1','ENTRADA')
     salida = config.get('WSFEXv1','SALIDA')
     
