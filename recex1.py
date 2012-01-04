@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25b"
+__version__ = "1.25c"
 
 import datetime
 import os
@@ -147,18 +147,22 @@ def escribir(dic, formato):
         if clave.capitalize() in dic:
             clave = clave.capitalize()
         valor = dic.get(clave,"")
-        if isinstance(valor, unicode):
-            valor = valor.encode("latin1", "replace")
-        else:
-            valor = str(valor)
-        if tipo == N and valor and valor!="NULL":
-            valor = ("%%0%dd" % longitud) % int(valor)
-        elif tipo == I and valor:
-            valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
-        else:
-            valor = ("%%0%ds" % longitud) % valor
-        linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
-        comienzo += longitud
+        try:
+            if isinstance(valor, unicode):
+                valor = valor.encode("latin1", "replace")
+            else:
+                valor = str(valor)
+            if tipo == N and valor and valor!="NULL":
+                valor = ("%%0%dd" % longitud) % int(valor)
+            elif tipo == I and valor:
+                valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
+            else:
+                valor = ("%%0%ds" % longitud) % valor
+            linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
+            comienzo += longitud
+        except Exception, e:
+            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
+                clave, comienzo, valor, str(e)))
     return linea + "\n"
 
 def autenticar(cert, privatekey, url):
@@ -303,6 +307,9 @@ if __name__ == "__main__":
 
     if DEBUG:
         print "wsaa_url %s\nwsfexv1_url %s" % (wsaa_url, wsfexv1_url)
+        print "Config_file:", CONFIG_FILE
+        print "Entrada: ", entrada
+        print "Salida:", salida
     
     try:
         ws = wsfexv1.WSFEXv1()
