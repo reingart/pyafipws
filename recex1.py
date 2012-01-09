@@ -50,61 +50,67 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 N = 'Numerico'
 A = 'Alfanumerico'
 I = 'Importe'
-ENCABEZADO = [
-    ('tipo_reg', 1, N), # 0: encabezado
-    ('fecha_cbte', 8, A),
-    ('tipo_cbte', 2, N), ('punto_vta', 4, N),
-    ('cbte_nro', 8, N), 
-    ('tipo_expo', 1, N), # 1:bienes, 2:servicios,... 
-    ('permiso_existente', 1, A), # S/N/
-    ('pais_dst_cmp', 3, N), # 203
-    ('nombre_cliente', 200, A), # 'Joao Da Silva'
-    ('cuit_pais_cliente', 11, N), # 50000000016
-    ('domicilio_cliente', 300, A), # 'Rua 76 km 34.5 Alagoas'
-    ('id_impositivo', 50, A), # 'PJ54482221-l'    
-    ('imp_total', 15, I, 2), 
-    ('moneda_id', 3, A),
-    ('moneda_ctz', 10, I, 6), #10,6
-    ('obs_comerciales', 4000, A),
-    ('obs_generales', 1000, A),
-    ('forma_pago', 50, A),
-    ('incoterms', 3, A),
-    ('incoterms_ds', 20, A),
-    ('idioma_cbte', 1, A),
-    ('cae', 14, N), ('fecha_vto', 8, A),
-    ('resultado', 1, A), 
-    ('reproceso', 1, A),
-    ('motivos_obs', 1000, A),
-    ('id', 15, N),
-    ('fch_venc_cae', 8, A),
-    ('excepcion', 100, A),
-    ('err_code', 100, A),
-    ('err_msg', 1000, A),
-    ]
+if not '--pyfepdf' in sys.argv:
+    TIPOS_REG = '0', '1', '2', '3'
+    ENCABEZADO = [
+        ('tipo_reg', 1, N), # 0: encabezado
+        ('fecha_cbte', 8, A),
+        ('tipo_cbte', 2, N), ('punto_vta', 4, N),
+        ('cbte_nro', 8, N), 
+        ('tipo_expo', 1, N), # 1:bienes, 2:servicios,... 
+        ('permiso_existente', 1, A), # S/N/
+        ('pais_dst_cmp', 3, N), # 203
+        ('nombre_cliente', 200, A), # 'Joao Da Silva'
+        ('cuit_pais_cliente', 11, N), # 50000000016
+        ('domicilio_cliente', 300, A), # 'Rua 76 km 34.5 Alagoas'
+        ('id_impositivo', 50, A), # 'PJ54482221-l'    
+        ('imp_total', 15, I, 2), 
+        ('moneda_id', 3, A),
+        ('moneda_ctz', 10, I, 6), #10,6
+        ('obs_comerciales', 4000, A),
+        ('obs_generales', 1000, A),
+        ('forma_pago', 50, A),
+        ('incoterms', 3, A),
+        ('incoterms_ds', 20, A),
+        ('idioma_cbte', 1, A),
+        ('cae', 14, N), ('fecha_vto', 8, A),
+        ('resultado', 1, A), 
+        ('reproceso', 1, A),
+        ('motivos_obs', 1000, A),
+        ('id', 15, N),
+        ('fch_venc_cae', 8, A),
+        ('excepcion', 100, A),
+        ('err_code', 100, A),
+        ('err_msg', 1000, A),
+        ]
 
-DETALLE = [
-    ('tipo_reg', 1, N), # 1: detalle item
-    ('codigo', 50, A),
-    ('qty', 12, I, 6),
-    ('umed', 2, N),
-    ('precio', 12, I, 6),
-    ('importe', 13, I, 2),
-    ('bonif', 12, I, 6),
-    ('ds', 4000, A),
-    ]
+    DETALLE = [
+        ('tipo_reg', 1, N), # 1: detalle item
+        ('codigo', 50, A),
+        ('qty', 12, I, 6),
+        ('umed', 2, N),
+        ('precio', 12, I, 6),
+        ('importe', 13, I, 2),
+        ('bonif', 12, I, 6),
+        ('ds', 4000, A),
+        ]
 
-PERMISO = [
-    ('tipo_reg', 1, N), # 2: permiso
-    ('id_permiso', 16, A),
-    ('dst_merc', 3, N),
-    ]
+    PERMISO = [
+        ('tipo_reg', 1, N), # 2: permiso
+        ('id_permiso', 16, A),
+        ('dst_merc', 3, N),
+        ]
 
-CMP_ASOC = [
-    ('tipo_reg', 1, N), # 3: comprobante asociado
-    ('cbte_tipo', 3, N), ('cbte_punto_vta', 4, N),
-    ('cbte_nro', 8, N), ('cbte_cuit', 11, N), 
-    ]
-
+    CMP_ASOC = [
+        ('tipo_reg', 1, N), # 3: comprobante asociado
+        ('cbte_tipo', 3, N), ('cbte_punto_vta', 4, N),
+        ('cbte_nro', 8, N), ('cbte_cuit', 11, N), 
+        ]
+else:
+    print "!" * 78
+    print "importando formato segun pyfepdf"
+    from formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
+    TIPOS_REG = '0', '1', '2', '3'
 
 if '/recex' in sys.argv:
     from recex import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC
@@ -120,7 +126,10 @@ def leer(linea, formato):
     comienzo = 1
     for fmt in formato:    
         clave, longitud, tipo = fmt[0:3]
-        dec = len(fmt)>3 and fmt[3] or 2
+        if isinstance(longitud, tuple):
+            longitud, dec = longitud
+        else:
+            dec = len(fmt)>3 and fmt[3] or 2
         valor = linea[comienzo-1:comienzo-1+longitud].strip()
         try:
             if tipo == N:
@@ -152,22 +161,29 @@ def escribir(dic, formato):
     comienzo = 1
     for fmt in formato:
         clave, longitud, tipo = fmt[0:3]
-        dec = len(fmt)>3 and fmt[3] or 2
+        if isinstance(longitud, tuple):
+            longitud, dec = longitud
+        else:
+            dec = len(fmt)>3 and fmt[3] or 2
         if clave.capitalize() in dic:
             clave = clave.capitalize()
         valor = dic.get(clave,"")
-        if isinstance(valor, unicode):
-            valor = valor.encode("latin1", "replace")
-        else:
-            valor = str(valor)
-        if tipo == N and valor and valor!="NULL":
-            valor = ("%%0%dd" % longitud) % int(valor)
-        elif tipo == I and valor:
-            valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
-        else:
-            valor = ("%%0%ds" % longitud) % valor
-        linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
-        comienzo += longitud
+        try:
+            if isinstance(valor, unicode):
+                valor = valor.encode("latin1", "replace")
+            else:
+                valor = str(valor)
+            if tipo == N and valor and valor!="NULL":
+                valor = ("%%0%dd" % longitud) % int(valor)
+            elif tipo == I and valor:
+                valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
+            else:
+                valor = ("%%0%ds" % longitud) % valor
+            linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
+            comienzo += longitud
+        except (TypeError, ValueError), e:
+            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
+                clave, comienzo, valor, str(e)))
     return linea + "\n"
 
 def autenticar(cert, privatekey, url):
@@ -195,15 +211,17 @@ def autorizar(ws, entrada, salida):
     cbtasocs = []
     encabezado = {}
     for linea in entrada:
-        if str(linea[0])=='0':
+        if str(linea[0])==TIPOS_REG[0]:
             encabezado = leer(linea, ENCABEZADO)
-        elif str(linea[0])=='1':
+            if 'nro_doc' in encabezado:
+                encabezado['cuit_pais_cliente'] = encabezado['nro_doc']
+        elif str(linea[0])==TIPOS_REG[1]:
             detalle = leer(linea, DETALLE)
             detalles.append(detalle)
-        elif str(linea[0])=='2':
+        elif str(linea[0])==TIPOS_REG[2]:
             permiso = leer(linea, PERMISO)
             permisos.append(permiso)
-        elif str(linea[0])=='3':
+        elif str(linea[0])==TIPOS_REG[3]:
             cbtasoc = leer(linea, CMP_ASOC)
             cbtasocs.append(cbtasoc)
         else:
@@ -251,14 +269,14 @@ def autorizar(ws, entrada, salida):
             print "Traceback:", ws.Traceback.encode("ascii", "ignore")
 
 def escribir_factura(dic, archivo):
-    dic['tipo_reg'] = 0
+    dic['tipo_reg'] = TIPOS_REG[0]
     archivo.write(escribir(dic, ENCABEZADO))
     for it in dic.get('detalles', []):
-        it['tipo_reg'] = 1
+        it['tipo_reg'] = TIPOS_REG[1]
         archivo.write(escribir(it, DETALLE))
     if 'permisos' in dic:    
         for it in dic['permisos']:
-            it['tipo_reg'] = 2
+            it['tipo_reg'] = TIPOS_REG[2]
             archivo.write(escribir(it, PERMISO))
             
 def depurar_xml(client):
