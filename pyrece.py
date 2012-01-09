@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24i"
+__version__ = "1.25a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -25,7 +25,7 @@ import wx
 from PythonCard import dialog, model
 import traceback
 from ConfigParser import SafeConfigParser
-import wsaa, wsfe, wsfev1
+import wsaa, wsfe, wsfev1, wsfexv1
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
@@ -48,7 +48,7 @@ CONFIG_FILE = "rece.ini"
 
 ACERCA_DE = u"""
 PyRece: Aplicativo AdHoc para generar Facturas Electrónicas
-Copyright (C) 2008/2009/2010/2011 Mariano Reingart reingart@gmail.com
+Copyright (C) 2008/2009/2010/2011/2012 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -227,12 +227,11 @@ class PyRece(model.Background):
                 msg = "AppServ %s\nDbServer %s\nAuthServer %s" % (
                     results.appserver, results.dbserver, results.authserver)
                 location = self.ws.client.location
-            elif  self.webservice=="wsfev1":
+            elif  self.webservice in ("wsfev1" or "wsfexv1"):
                 self.ws.Dummy()
                 msg = "AppServ %s\nDbServer %s\nAuthServer %s" % (
                     self.ws.AppServerStatus, self.ws.DbServerStatus, self.ws.AuthServerStatus)
                 location = self.ws.client.location
-                    
             dialog.alertDialog(self, msg, location)
         except Exception, e:
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
@@ -257,7 +256,9 @@ class PyRece(model.Background):
                     cuit, ptovta, tipocbte)
             elif  self.webservice=="wsfev1":
                 ultcmp = "%s (wsfev1)" % self.ws.CompUltimoAutorizado(tipocbte, ptovta) 
-                    
+            elif  self.webservice=="wsfexv1":
+                ultcmp = "%s (wsfev1)" % self.ws.GetLastCMP(tipocbte, ptovta) 
+            
             dialog.alertDialog(self, u"Último comprobante: %s\n" 
                 u"Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, self.tipos[tipocbte], 
                     tipocbte, ptovta), u'Consulta Último Nro. Comprobante')
@@ -302,6 +303,13 @@ class PyRece(model.Background):
                 self.log('ImpNeto: %s' % self.ws.ImpNeto)
                 self.log('ImptoLiq: %s' % self.ws.ImptoLiq)
                 self.log('EmisionTipo: %s' % self.ws.EmisionTipo)
+            elif  self.webservice=="wsfexv1":
+                cae = "%s (wsfev1)" % self.ws.GetCMP(tipocbte, ptovta, nrocbte)
+                self.log('CAE: %s' % self.ws.CAE)
+                self.log('FechaCbte: %s' % self.ws.FechaCbte)
+                self.log('PuntoVenta: %s' % self.ws.PuntoVenta)
+                self.log('CbteNro: %s' % self.ws.CbteNro)
+                self.log('ImpTotal: %s' % self.ws.ImpTotal)
                     
             dialog.alertDialog(self, u"CAE: %s\n" 
                 u"Tipo: %s (%s)\nPunto de Venta: %s\nNumero: %s\nFecha: %s" % (
@@ -373,6 +381,8 @@ class PyRece(model.Background):
                         trace=False, exceptions=True)
         elif self.webservice == "wsfev1":
             self.ws = wsfev1.WSFEv1()
+        elif self.webservice == "wsfexv1":
+            self.ws = wsfexv1.WSFEXv1()
 
     def on_btnAutenticar_mouseClick(self, event):
         try:
@@ -384,7 +394,10 @@ class PyRece(model.Background):
                 self.ws.Conectar("",wsfev1_url, proxy_dict)
                 self.ws.Cuit = cuit
                 service = "wsfe"
-            elif self.webservice in ('wsfex', ):
+            elif self.webservice in ('wsfex', 'wsfexv1'):
+                self.log("Conectando WSFEXv1... " + wsfexv1_url)
+                self.ws.Conectar("",wsfexv1_url, proxy_dict)
+                self.ws.Cuit = cuit
                 service = "wsfex"
             else:
                 dialog.alertDialog(self, 'Debe seleccionar servicio web!', 'Advertencia')
@@ -409,7 +422,7 @@ class PyRece(model.Background):
             elif self.token and self.sign:
                 self.log("Token: %s... OK" % self.token[:10])
                 self.log("Sign: %s... OK" % self.sign[:10])
-            if self.webservice == "wsfev1":
+            if self.webservice in ("wsfev1", "wsfexv1"):
                 self.ws.Token = self.token
                 self.ws.Sign = self.sign
 
@@ -622,6 +635,62 @@ class PyRece(model.Background):
                         dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
                     if self.ws.Obs and self.ws.Obs!='00':
                         dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
+
+                elif self.webservice == 'wsfexv1':
+                    encabezado = {}
+                    for k in ('tipo_cbte', 'punto_vta', 'cbte_nro', 'fecha_cbte',
+                              'imp_total', 'tipo_expo', 'permiso_existente', 'pais_dst_cmp',
+                              'nombre_cliente', 'cuit_pais_cliente', 'domicilio_cliente',
+                              'id_impositivo', 'moneda_id', 'moneda_ctz',
+                              'obs_comerciales', 'obs_generales', 'forma_pago', 'incoterms', 
+                              'idioma_cbte', 'incoterms_ds'):
+                        encabezado[k] = kargs.get(k)
+                    
+                    self.ws.CrearFactura(**encabezado)
+                    
+                    for l in range(1,1000):
+                        k = 'codigo%s' % l
+                        if k in kargs:
+                            codigo = kargs['codigo%s' % l]
+                            ds = kargs['descripcion%s' % l]
+                            qty = kargs['cantidad%s' % l]
+                            umed = kargs['umed%s' % l]
+                            precio = kargs['precio%s' % l]
+                            importe = kargs['importe%s' % l]
+                            bonif = kargs.get('bonif%s' % l)
+                            self.ws.AgregarItem(codigo, ds, qty, umed, precio, importe, bonif)
+                        else:
+                            break
+                        
+                    for l in range(1,1000):
+                        k = 'cbte_asoc_%%s_%s' % l
+                        if (k % 'tipo') in kargs:
+                            tipo = kargs[k % 'tipo']
+                            pto_vta = kargs[k % 'pto_vta']
+                            nro = kargs[k % 'nro']
+                            if id:
+                                self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                        else:
+                            break
+                
+                    if DEBUG:
+                        self.log('\n'.join(["%s='%s'" % (k,v) for k,v in self.ws.factura.items()]))
+
+                    cae = self.ws.Authorize(kargs['id'])
+                    kargs.update({
+                        'cae': self.ws.CAE,
+                        'fecha_vto': self.ws.Vencimiento,
+                        'resultado': self.ws.Resultado,
+                        'motivo': self.ws.Obs,
+                        'reproceso': self.ws.Reproceso,
+                        'err_code': self.ws.ErrCode.encode("latin1"),
+                        'err_msg': self.ws.ErrMsg.encode("latin1"),
+                        })
+                    if self.ws.ErrMsg:
+                        dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
+                    if self.ws.Obs and self.ws.Obs!='00':
+                        dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
+                        
                 # actuaizo la factura
                 for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
                     if kargs.get(k):
@@ -1005,6 +1074,11 @@ if __name__ == '__main__':
         wsfev1_url = config.get('WSFEv1','URL')
     else:
         wsfev1_url = wsfev1.WSDL
+
+    if config.has_option('WSFEXv1','URL') and not HOMO:
+        wsfexv1_url = config.get('WSFEXv1','URL')
+    else:
+        wsfexv1_url = wsfexv1.WSDL
 
     if config.has_section('PROXY'):
         proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))

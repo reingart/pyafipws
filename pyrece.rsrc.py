@@ -96,7 +96,7 @@
     'name':'cboWebservice', 
     'position':(82, 5), 
     'size':(69, -1), 
-    'items':[u'wsfe', u'wsfev1', u'wsfex'], 
+    'items':[u'wsfe', u'wsfev1', u'wsfexv1'], 
     },
 
 
