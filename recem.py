@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29b"
+__version__ = "1.29c"
 
 import datetime
 import os
@@ -156,8 +156,11 @@ def leer(linea, formato):
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
                     valor = 0.00
-            elif clave.lower().startswith("fec") and longitud <= 8:            
-                valor = "%s-%s-%s" % (valor[0:4], valor[4:6], valor[6:8])
+            elif clave.lower().startswith("fec") and longitud <= 8:
+                if valor:
+                    valor = "%s-%s-%s" % (valor[0:4], valor[4:6], valor[6:8])
+                else:
+                    valor = None
             else:
                 valor = valor.decode("ascii","ignore")
             if clave=='concepto':
@@ -487,7 +490,10 @@ if __name__ == "__main__":
                 print "== %s ==" % msg
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
-                    dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                    if isinstance(longitud, tuple):
+                        longitud, dec = longitud
+                    else:
+                        dec = len(fmt)>3 and fmt[3] or 2
                     print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                         clave, comienzo, longitud, tipo, dec)
                     comienzo += longitud
