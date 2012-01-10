@@ -293,7 +293,7 @@ if __name__ == "__main__":
     
     try:
         client = SoapClient(wsfex_url, action=wsfex.SOAP_ACTION, namespace=wsfex.SOAP_NS,
-                            trace=False, exceptions=True)
+                            trace=DEBUG, exceptions=True)
 
         if '/dummy' in sys.argv:
             print "Consultando estado de servidores..."
