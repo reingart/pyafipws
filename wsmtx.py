@@ -345,7 +345,7 @@ class WSMTXCA:
                 'precioUnitario': it['precio'],
                 'importeBonificacion': it['bonif'],
                 'codigoCondicionIVA': it['iva_id'],
-                'importeIVA': int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] or None,
+                'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
             }
@@ -512,7 +512,7 @@ class WSMTXCA:
                 'precioUnitario': it['precio'],
                 'importeBonificacion': it['bonif'],
                 'codigoCondicionIVA': it['iva_id'],
-                'importeIVA': int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] or None,
+                'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
             }

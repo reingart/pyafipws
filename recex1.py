@@ -330,6 +330,9 @@ if __name__ == "__main__":
 
     if DEBUG:
         print "wsaa_url %s\nwsfexv1_url %s" % (wsaa_url, wsfexv1_url)
+        print "Config_file:", CONFIG_FILE
+        print "Entrada: ", entrada
+        print "Salida:", salida
     
     try:
         ws = wsfexv1.WSFEXv1()

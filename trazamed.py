@@ -30,6 +30,7 @@ from cStringIO import StringIO
 HOMO = False
 
 WSDL = "https://186.153.145.2:9050/trazamed.WebService?wsdl"
+       #https://186.153.145.2:9050/trazamed.WebService?wsdl
 LOCATION = "https://186.153.145.2:9050/trazamed.WebService"
 #WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
 
@@ -67,7 +68,7 @@ class TrazaMed:
     _public_methods_ = ['SendMedicamentos',
                         'SendCancelacTransacc',
                         'SendMedicamentosDHSerie',
-                        'Conectar']
+                        'Conectar', 'LeerError']
     _public_attrs_ = [
         'Username', 'Password', 
         'CodigoTransaccion', 'Errores', 'Resultado',
@@ -206,6 +207,7 @@ class TrazaMed:
 
         return True
 
+        
     @inicializar_y_capturar_excepciones
     def SendMedicamentosDHSerie(self, usuario, password, 
                          f_evento, h_evento, gln_origen, gln_destino, 
@@ -279,6 +281,17 @@ class TrazaMed:
         self.Resultado = ret[-1]['resultado']
 
         return True
+
+    def LeerError(self):
+        "Recorro los errores devueltos y devuelvo el primero si existe"
+        
+        if self.Errores:
+            # extraigo el primer item
+            er = self.Errores.pop(0)
+            return er
+        else:
+            return ""
+
 
 def main():
     "Función principal de pruebas (obtener CAE)"
