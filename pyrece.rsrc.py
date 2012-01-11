@@ -94,15 +94,15 @@
 
 {'type':'Choice', 
     'name':'cboWebservice', 
-    'position':(82, 5), 
-    'size':(69, -1), 
+    'position':(102, 5), 
+    'size':(89, -1), 
     'items':[u'wsfe', u'wsfev1', u'wsfexv1'], 
     },
 
 
 {'type':'Button', 
     'name':'btnMarcarTodo', 
-    'position':(292, 163), 
+    'position':(297, 163), 
     'label':u'Marcar Todo', 
     'toolTip':u'Seleccionar todas las facturas', 
     },
@@ -158,15 +158,15 @@
 
 {'type':'TextField', 
     'name':'txtArchivo', 
-    'position':(200, 5), 
-    'size':(340, -1), 
+    'position':(260, 5), 
+    'size':(300, -1), 
     'text':u'facturas.csv', 
     'editable': False,
     },
 
 {'type':'StaticText', 
     'name':'lblArchivo', 
-    'position':(155, 10), 
+    'position':(195, 10), 
     'text':u'Archivo:', 
     },
 

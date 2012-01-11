@@ -106,7 +106,7 @@ class PyRece(model.Background):
         if entrada and os.path.exists(entrada):
             self.cargar()
         
-        self.components.cboWebservice.stringSelection = "wsfev1"
+        self.components.cboWebservice.stringSelection = DEFAULT_WEBSERVICE
         self.on_cboWebservice_select(event)
         
         self.tipos = {
@@ -1080,11 +1080,15 @@ if __name__ == '__main__':
     else:
         wsfexv1_url = wsfexv1.WSDL
 
+    DEFAULT_WEBSERVICE = "wsfev1"
+    if config.has_section('PYRECE'):
+        DEFAULT_WEBSERVICE = config.get('PYRECE','WEBSERVICE')
+
     if config.has_section('PROXY'):
         proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))
         proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
     else:
         proxy_dict = {}
-
+       
     app = model.Application(PyRece)
     app.MainLoop()
