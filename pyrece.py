@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25a"
+__version__ = "1.25b"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -120,6 +120,9 @@ class PyRece(model.Background):
             8:u"Notas de Crédito B",
             9:u"Recibos B",
             10:u"Notas de Venta al contado B",
+            19:u"Facturas de Exportación",
+            20:u"Nota de Débito por Operaciones con el Exterior",
+            21:u"Nota de Crédito por Operaciones con el Exterior",
             39:u"Otros comprobantes A que cumplan con la R.G. N° 3419",
             40:u"Otros comprobantes B que cumplan con la R.G. N° 3419",
             60:u"Cuenta de Venta y Líquido producto A",
@@ -227,11 +230,14 @@ class PyRece(model.Background):
                 msg = "AppServ %s\nDbServer %s\nAuthServer %s" % (
                     results.appserver, results.dbserver, results.authserver)
                 location = self.ws.client.location
-            elif  self.webservice in ("wsfev1" or "wsfexv1"):
+            elif self.webservice in ("wsfev1", "wsfexv1"):
                 self.ws.Dummy()
                 msg = "AppServ %s\nDbServer %s\nAuthServer %s" % (
                     self.ws.AppServerStatus, self.ws.DbServerStatus, self.ws.AuthServerStatus)
                 location = self.ws.client.location
+            else:
+                msg = "%s no soportado" % self.webservice
+                location = ""
             dialog.alertDialog(self, msg, location)
         except Exception, e:
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
@@ -257,7 +263,7 @@ class PyRece(model.Background):
             elif  self.webservice=="wsfev1":
                 ultcmp = "%s (wsfev1)" % self.ws.CompUltimoAutorizado(tipocbte, ptovta) 
             elif  self.webservice=="wsfexv1":
-                ultcmp = "%s (wsfev1)" % self.ws.GetLastCMP(tipocbte, ptovta) 
+                ultcmp = "%s (wsfexv1)" % self.ws.GetLastCMP(tipocbte, ptovta) 
             
             dialog.alertDialog(self, u"Último comprobante: %s\n" 
                 u"Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, self.tipos[tipocbte], 
@@ -304,7 +310,7 @@ class PyRece(model.Background):
                 self.log('ImptoLiq: %s' % self.ws.ImptoLiq)
                 self.log('EmisionTipo: %s' % self.ws.EmisionTipo)
             elif  self.webservice=="wsfexv1":
-                cae = "%s (wsfev1)" % self.ws.GetCMP(tipocbte, ptovta, nrocbte)
+                cae = "%s (wsfexv1)" % self.ws.GetCMP(tipocbte, ptovta, nrocbte)
                 self.log('CAE: %s' % self.ws.CAE)
                 self.log('FechaCbte: %s' % self.ws.FechaCbte)
                 self.log('PuntoVenta: %s' % self.ws.PuntoVenta)
@@ -330,7 +336,12 @@ class PyRece(model.Background):
     def on_menuConsultasLastID_select(self, event):
         self.verifica_ws()
         try:
-            ultnro = wsfe.ultnro(self.client, self.token, self.sign, cuit)
+            if self.webservice=="wsfe":
+                ultnro = wsfe.ultnro(self.client, self.token, self.sign, cuit)
+            if self.webservice=="wsfexv1":
+                ultnro = self.ws.GetLastID()
+            else: 
+                ultnro = None
             dialog.alertDialog(self, u"Último ID (máximo): %s" % (ultnro), 
                 u'Consulta Último ID')
         except SoapFault,e:
