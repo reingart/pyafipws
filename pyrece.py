@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25b"
+__version__ = "1.25c"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -648,6 +648,8 @@ class PyRece(model.Background):
                         dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
 
                 elif self.webservice == 'wsfexv1':
+                    kargs['cbte_nro'] = kargs ['cbt_numero']
+                    kargs['permiso_existente'] = kargs['permiso_existente'] or ""
                     encabezado = {}
                     for k in ('tipo_cbte', 'punto_vta', 'cbte_nro', 'fecha_cbte',
                               'imp_total', 'tipo_expo', 'permiso_existente', 'pais_dst_cmp',
