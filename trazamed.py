@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.04a"
 
 import os
 import socket
@@ -158,10 +158,10 @@ class TrazaMed:
                          f_evento, h_evento, gln_origen, gln_destino, 
                          n_remito, n_factura, vencimiento, gtin, lote,
                          numero_serial, id_obra_social, id_evento,
-                         cuit_origen, cuit_destino, apellido, nombres,
-                         tipo_docmento, n_documento, sexo,
-                         direccion, numero, piso, depto, localidad, provincia,
-                         n_postal, fecha_nacimiento, telefono,
+                         cuit_origen='', cuit_destino='', apellido='', nombres='',
+                         tipo_docmento='', n_documento='', sexo='',
+                         direccion='', numero='', piso='', depto='', localidad='', provincia='',
+                         n_postal='', fecha_nacimiento='', telefono='',
                          ):
         "Realiza el registro de una transacción de medicamentos. "
         res = self.client.sendMedicamentos(
@@ -214,10 +214,10 @@ class TrazaMed:
                          n_remito, n_factura, vencimiento, gtin, lote,
                          desde_numero_serial, hasta_numero_serial,
                          id_obra_social, id_evento,
-                         cuit_origen, cuit_destino, apellido, nombres,
-                         tipo_docmento, n_documento, sexo,
-                         direccion, numero, piso, depto, localidad, provincia,
-                         n_postal, fecha_nacimiento, telefono,
+                         cuit_origen='', cuit_destino='', apellido='', nombres='',
+                         tipo_docmento='', n_documento='', sexo='',
+                         direccion='', numero='', piso='', depto='', localidad='', provincia='',
+                         n_postal='', fecha_nacimiento='', telefono='',
                          ):
         "Envía un lote de medicamentos informando el desde-hasta número de serie"
         res = self.client.sendMedicamentosDHSerie(
@@ -337,18 +337,19 @@ def main():
         ws.SendMedicamentosDHSerie(
             usuario='pruebasws', password='pruebasws',
             f_evento="25/11/2011", h_evento="04:24", 
-            gln_origen="glnws", gln_destino="glnws", 
+            gln_origen="glnws", gln_destino="9999999999918", 
             n_remito="1234", n_factura="1234", 
             vencimiento="30/11/2011", gtin="GTIN1", lote="1111",
             desde_numero_serial="2224", hasta_numero_serial="2225", 
             id_obra_social=None, id_evento=133,
-            cuit_origen="20267565393", cuit_destino="20267565393", 
-            apellido="Reingart", nombres="Mariano",
-            tipo_docmento="96", n_documento="26756539", sexo="M",
-            direccion="Saraza", numero="1234", piso="", depto="", 
-            localidad="Hurlingham", provincia="Buenos Aires",
-            n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
-            telefono="5555-5555",)
+            #cuit_origen="20267565393", cuit_destino="20267565393", 
+            #apellido="Reingart", nombres="Mariano",
+            #tipo_docmento="96", n_documento="26756539", sexo="M",
+            #direccion="Saraza", numero="1234", piso="", depto="", 
+            #localidad="Hurlingham", provincia="Buenos Aires",
+            #n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
+            #telefono="5555-5555",
+            )
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Erroes", ws.Errores
