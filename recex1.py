@@ -235,6 +235,11 @@ def autorizar(ws, entrada, salida):
         i += (int(encabezado['cbte_nro'])*10**4 + int(encabezado['punto_vta']))*10**8
         encabezado['id'] = ws.GetLastID() + 1
     
+    if '/testing' in sys.argv:
+        encabezado['id'] = long(ws.GetLastID()) + 1
+        encabezado['cbte_nro'] = int(ws.GetLastCMP(encabezado['tipo_cbte'], encabezado['punto_vta'])) + 1
+        encabezado['fecha_cbte'] = datetime.datetime.now().strftime("%Y%m%d")
+
     ws.CrearFactura(**encabezado)
     for detalle in detalles:
         ws.AgregarItem(**detalle)
