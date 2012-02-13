@@ -322,6 +322,33 @@ class WSFEXv1:
             resultget = result['FEXResultGet']
             return resultget.get('Id')
 
+    @inicializar_y_capturar_excepciones
+    def GetParamUMed(self):
+        ret = self.client.FEXGetPARAM_UMed(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_UMedResult']
+        self.__analizar_errores(result)
+     
+        umeds = [] # unidades de medida
+        print result
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_UMed']
+            try:
+                umed = {'id': u.get('Umed_Id'), 'ds': u.get('Umed_Ds'), 
+                        'vig_desde': u.get('Umed_vig_desde'), 
+                        'vig_hasta': u.get('Umed_vig_hasta')}
+            except Exception, e:
+                print e
+                if u is None:
+                    # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
+                    umed = {'id':'', 'ds':'','vig_desde':'','vig_hasta':''}
+                    #import pdb; pdb.set_trace()
+                    #print u
+                
+            
+            umeds.append(umed)
+        return umeds
+
     @property
     def xml_request(self):
         return self.XmlRequest
@@ -455,6 +482,8 @@ if __name__ == "__main__":
                 imp_total = "250.00" # importe total final del artículo
                 # lo agrego a la factura (internamente, no se llama al WebService):
                 ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
+                ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
+                ok = wsfexv1.AgregarItem(codigo, ds, 0, 99, 0, -float(imp_total), 0)
 
                 # Agrego un permiso (ver manual para el desarrollador)
                 if permiso_existente:
@@ -490,7 +519,7 @@ if __name__ == "__main__":
                     print "NRO consulta", wsfexv1.CbteNro, wsfexv1.CbteNro==cbte_nro 
                     print "TOTAL consulta", wsfexv1.ImpTotal, wsfexv1.ImpTotal==imp_total
 
-            except:
+            except Exception, e:
                 print wsfexv1.XmlRequest        
                 print wsfexv1.XmlResponse        
                 print wsfexv1.ErrCode
@@ -515,4 +544,13 @@ if __name__ == "__main__":
             print "CAE = ", wsfexv1.CAE
             print "Vencimiento = ", wsfexv1.Vencimiento
 
+        if "--params" in sys.argv:
+            import codecs, locale
+            sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
+                
+            print "=== Unidades de medida ==="
+            umedidas = wsfexv1.GetParamUMed()    
+            for u in umedidas:
+                print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u
+            umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
             
