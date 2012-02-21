@@ -176,7 +176,7 @@ def escribir(dic, formato):
             if tipo == N and valor and valor!="NULL":
                 valor = ("%%0%dd" % longitud) % int(valor)
             elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % (float(valor)*(10**dec))
+                valor = ("%%0%dd" % longitud) % int(float(valor)*(10**dec))
             else:
                 valor = ("%%0%ds" % longitud) % valor
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
@@ -251,6 +251,10 @@ def autorizar(ws, entrada, salida):
     if DEBUG:
         #print f.to_dict()
         print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in encabezado.items()])
+        for detalle in detalles:
+            print ', '.join(["%s='%s'" % (k,str(v)) for k,v in detalle.items()])
+            print "DIF:", detalle['qty'] * detalle['precio'] - detalle['importe']
+            
         print 'id:', encabezado['id']
     if not DEBUG or not sys.stdout.isatty() or raw_input("Facturar?")=="S":
         ws.LanzarExcepcion = False
