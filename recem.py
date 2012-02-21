@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29d"
+__version__ = "1.29e"
 
 import datetime
 import os
@@ -277,6 +277,10 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 ivas.append(iva)
             elif str(linea[0])==TIPOS_REG[3]:
                 cbtasoc = leer(linea, CMP_ASOC)
+                if 'cbte_punto_vta' in cbteasoc:
+                    cbtasoc['tipo'] = cbtasoc['cbte_tipo']
+                    cbtasoc['pto_vta'] = cbtasoc['cbte_punto_vta']
+                    cbtasoc['nro'] = cbtasoc['cbte_nro']
                 cbtasocs.append(cbtasoc)
             elif str(linea[0])==TIPOS_REG[4]:
                 detalle = leer(linea, DETALLE)
