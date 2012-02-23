@@ -26,7 +26,7 @@ import winerror
 import socks
 import pythoncom
 
-HOMO = True
+HOMO = False
 
 debugging = 1
 if debugging:

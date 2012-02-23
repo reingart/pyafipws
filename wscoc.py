@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01d"
+__version__ = "1.02a"
 
 import os
 import socket
@@ -268,6 +268,34 @@ class WSCOC:
         self.__analizar_inconsistencias(det)
         self.__analizar_errores(ret)
 
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def GenerarSolicitudCompraDivisaTurExt(self, tipo_doc, numero_doc, apellido_nombre,
+                                    codigo_moneda, cotizacion_moneda, monto_pesos,
+                                    cuit_representante, codigo_destino,
+                                    ):
+        "Generar una Solicitud de operación cambiaria"
+        res = self.client.generarSolicitudCompraDivisaTurExt(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            detalleTurExtComprador={
+                'tipoNumeroDoc': {'tipoDoc': tipo_doc, 'numeroDoc': numero_doc},
+                'apellidoNombre': apellido_nombre},
+            codigoMoneda=codigo_moneda,
+            cotizacionMoneda=cotizacion_moneda,
+            montoPesos=monto_pesos,
+            cuitRepresentante=cuit_representante,
+            codigoDestino=codigo_destino,
+            )
+
+        self.Resultado = ""
+        ret = res.get('generarSolicitudCompraDivisaTurExtReturn', {})
+        self.Resultado = ret.get('resultado')
+        det = ret.get('detalleSolicitud', {})
+        self.__analizar_solicitud(det)
+        self.__analizar_inconsistencias(det)
+        self.__analizar_errores(ret)
+        
         return True
 
     @inicializar_y_capturar_excepciones
@@ -605,10 +633,21 @@ def main():
             if "--loadxml" in sys.argv:
                 ws.LoadTestXML("wscoc_response.xml")
 
-            ok = ws.GenerarSolicitudCompraDivisa(cuit_comprador, codigo_moneda,
+            if not "--tur" in sys.argv:
+                ok = ws.GenerarSolicitudCompraDivisa(cuit_comprador, codigo_moneda,
                                     cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
                                     )
+            else:
+                print "Turista!"
+                tipo_doc=91
+                numero_doc=1234567
+                apellido_nombre="Nombre y Apellido del turista extranjero"
+                ok = ws.GenerarSolicitudCompraDivisaTurExt(
+                        tipo_doc, numero_doc, apellido_nombre,
+                        codigo_moneda, cotizacion_moneda, monto_pesos,
+                        cuit_representante, codigo_destino,
+                        )
             while True:
                 i = ws.LeerInconsistencia()
                 if not i:
