@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.03a"
 
 import os
 import socket
@@ -80,6 +80,7 @@ def inicializar_y_capturar_excepciones(func):
 class WSCOC:
     "Interfaz para el WebService de Consulta de Operaciones Cambiarias"
     _public_methods_ = ['GenerarSolicitudCompraDivisa',
+                        'GenerarSolicitudCompraDivisaTurExt',
                         'InformarSolicitudCompraDivisa',
                         'ConsultarCUIT',
                         'ConsultarCOC',
@@ -643,6 +644,7 @@ def main():
                 tipo_doc=91
                 numero_doc=1234567
                 apellido_nombre="Nombre y Apellido del turista extranjero"
+                codigo_destino = 985
                 ok = ws.GenerarSolicitudCompraDivisaTurExt(
                         tipo_doc, numero_doc, apellido_nombre,
                         codigo_moneda, cotizacion_moneda, monto_pesos,
