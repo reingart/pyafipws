@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.04a"
 
 import os
 import socket
@@ -105,6 +105,7 @@ class WSCOC:
         'CodigoMoneda', 'CotizacionMoneda', 'MontoPesos',
         'CUITRepresentante', 'DenominacionRepresentante',
         'TipoDoc', 'NumeroDoc', 'CUITConsultada', 'DenominacionConsultada',
+		'DJAI', 'CodigoExcepcionDJAI',
         'ErroresFormato', 'Errores', 'Traceback', 'Excepcion', 'LanzarExcepciones',
         ]
 
@@ -173,6 +174,8 @@ class WSCOC:
         self.DenominacionRepresentante = det.get("DetalleCUITRepresentante", 
                                                  {}).get("denominacion")
         self.CodigoDestino = det.get("codigoDestino")
+		self.DJAI  = det.get("djai")
+		self.CodigoExcepcionDJAI =  = det.get("codigoExcepcionDJAI")
 
     def __analizar_inconsistencias(self, ret):
         "Comprueba y extrae (formatea) las inconsistencias"
@@ -249,6 +252,7 @@ class WSCOC:
     def GenerarSolicitudCompraDivisa(self, cuit_comprador, codigo_moneda,
                                      cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
+									djai=None, codigo_excepcion_djai=None,
                                     ):
         "Generar una Solicitud de operación cambiaria"
         res = self.client.generarSolicitudCompraDivisa(
@@ -259,6 +263,7 @@ class WSCOC:
             montoPesos=monto_pesos,
             cuitRepresentante=cuit_representante,
             codigoDestino=codigo_destino,
+			djai=djai, codigoExcepcionDJAI=codigo_excepcion_djai,
             )
 
         self.Resultado = ""
@@ -635,9 +640,12 @@ def main():
                 ws.LoadTestXML("wscoc_response.xml")
 
             if not "--tur" in sys.argv:
+				djai = "--djai" in sys.argv and "12345DJAI000001N" or None
+				cod_ex_djai = "--no-djai" and 3 or None
                 ok = ws.GenerarSolicitudCompraDivisa(cuit_comprador, codigo_moneda,
                                     cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
+									djai=djai, codigo_excepcion_djai=cod_ex_djai, 
                                     )
             else:
                 print "Turista!"
