@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.04b"
 
 import os
 import socket
@@ -29,8 +29,8 @@ from cStringIO import StringIO
 
 HOMO = False
 
-WSDL = "https://fwshomo.afip.gov.ar/wscoc/COCService?wsdl"
-##WSDL = "http://www.sistemasagiles.com.ar/soft/COCService.xml"
+WSDL = "https://fwshomo.afip.gob.ar/wscoc/COCService"
+
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -91,6 +91,7 @@ class WSCOC:
                         'ConsultarMonedas',
                         'ConsultarTiposDocumento',
                         'ConsultarTiposEstadoSolicitud',
+                        'ConsultarMotivosExcepcionDJAI',
                         'LeerSolicitudConsultada', 'LeerCUITConsultado',
                         'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
                         'LoadTestXML',
@@ -174,8 +175,8 @@ class WSCOC:
         self.DenominacionRepresentante = det.get("DetalleCUITRepresentante", 
                                                  {}).get("denominacion")
         self.CodigoDestino = det.get("codigoDestino")
-		self.DJAI  = det.get("djai")
-		self.CodigoExcepcionDJAI =  = det.get("codigoExcepcionDJAI")
+        self.DJAI = det.get("djai")
+        self.CodigoExcepcionDJAI = det.get("codigoExcepcionDJAI")
 
     def __analizar_inconsistencias(self, ret):
         "Comprueba y extrae (formatea) las inconsistencias"
@@ -518,6 +519,16 @@ class WSCOC:
                     % p['codigoDescripcionString']).replace("\t", sep)
                  for p in ret['arrayTiposEstadoSolicitud']]
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarMotivosExcepcionDJAI(self, sep='|'):
+        "Este método retorna el universo de motivos de excepciones a la Declaración Jurada Anticipada de Importación"
+        res = self.client.consultarMotivosExcepcionDJAI(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        ret = res['consultarMotivosExcepcionDJAIReturn']
+        return [("%(codigo)s\t%(descripcion)s" 
+                    % p['codigoDescripcion']).replace("\t", sep)
+                 for p in ret['arrayMotivosExcepcion']]
 
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
@@ -609,6 +620,9 @@ def main():
             print ws.XmlRequest
             print ws.XmlResponse
 
+    if "--motivos_ex_djai" in sys.argv:
+        print ws.ConsultarMotivosExcepcionDJAI()
+        
     if "--consultar_cuit" in sys.argv:
         print ws.client.help("consultarCUIT")
         try:
@@ -639,13 +653,14 @@ def main():
             if "--loadxml" in sys.argv:
                 ws.LoadTestXML("wscoc_response.xml")
 
-            if not "--tur" in sys.argv:
-				djai = "--djai" in sys.argv and "12345DJAI000001N" or None
-				cod_ex_djai = "--no-djai" and 3 or None
+            if not "--tur" in sys.argv:   
+                djai = "--djai" in sys.argv and "12345DJAI000001N" or None
+                cod_ex_djai = "--no-djai" and 3 or None
+                print "djai", djai
                 ok = ws.GenerarSolicitudCompraDivisa(cuit_comprador, codigo_moneda,
                                     cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
-									djai=djai, codigo_excepcion_djai=cod_ex_djai, 
+                                    djai=djai, codigo_excepcion_djai=cod_ex_djai, 
                                     )
             else:
                 print "Turista!"
