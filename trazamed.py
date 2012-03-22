@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.04b"
 
 import os
 import socket
@@ -29,12 +29,11 @@ from cStringIO import StringIO
 
 HOMO = False
 
-WSDL = "https://186.153.145.2:9050/trazamed.WebService?wsdl"
+WSDL = "https://186.153.145.2:9050/trazamed.WebService"
        #https://186.153.145.2:9050/trazamed.WebService?wsdl
 LOCATION = "https://186.153.145.2:9050/trazamed.WebService"
-#WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
-
-
+#WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService"
+         
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
     def capturar_errores_wrapper(self, *args, **kwargs):
@@ -118,6 +117,8 @@ class TrazaMed:
             if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
                 location = wsdl
                 wsdl += "?wsdl"
+            elif wsdl.endswith("?wsdl"):
+                location = wsdl[:-5]
             if not cache or HOMO:
                 # use 'cache' from installation base directory 
                 cache = os.path.join(self.InstallDir, 'cache')
@@ -304,7 +305,7 @@ def main():
     ws.Username = 'testwservice'
     ws.Password = 'testwservicepsw'
     
-    ws.Conectar()
+    ws.Conectar("", WSDL)
     
     if ws.Excepcion:
         print ws.Excepcion
