@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17"
+__version__ = "1.18"
 
 import sys
 import time
@@ -131,6 +131,7 @@ def autorizar(client, token, sign, cuit, entrada, salida):
     # recupero el último número de transacción
     ##id = wsbfe.ultnro(client, token, sign, cuit)
 
+   
     detalles = []
     encabezado = {}
     for linea in entrada:
@@ -152,7 +153,13 @@ def autorizar(client, token, sign, cuit, entrada, salida):
 
     if not encabezado['zona'].strip():
         encabezado['zona'] = 0
-    
+
+    if 'testing' in sys.argv:
+        ult_cbte, fecha, events = wsbfe.get_last_cmp(client, token, sign, cuit, punto_vta, tipo_cbte)
+        encabezado['cbte_nro'] = ult_cbte + 1
+        ult_id, events = wsbfe.get_last_id(client, token, sign, cuit)
+        encabezado['id'] = ult_id + 1    
+   
     ##encabezado['imp_moneda_ctz'] = 1.00
     factura = wsbfe.FacturaBF(**encabezado)
     for detalle in detalles:
@@ -196,6 +203,7 @@ if __name__ == "__main__":
         print " /dummy: consulta estado de servidores"
         print " /prueba: genera y autoriza una factura de prueba (no usar en producción!)"
         print " /ult: consulta último número de comprobante"
+        print " /id: consulta último ID"
         print " /debug: modo depuración (detalla y confirma las operaciones)"
         print " /formato: muestra el formato de los archivos de entrada/salida"
         print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
@@ -288,7 +296,13 @@ if __name__ == "__main__":
             print "Fecha: ", fecha
             depurar_xml(client)
             sys.exit(0)
-
+            
+        if '/id' in sys.argv:
+            ult_id, events = wsbfe.get_last_id(client, token, sign, cuit)
+            print "ID: ", fecha
+            depurar_xml(client)
+            sys.exit(0)
+            
         if '/get' in sys.argv:
             print "Recuperar comprobante:"
             tipo_cbte = int(raw_input("Tipo de comprobante: "))

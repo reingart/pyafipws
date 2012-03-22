@@ -17,7 +17,7 @@ electrónico del web service WSBFE de AFIP (Bono Fiscal Electrónico)
 __author__ = "Mariano Reingart <mariano@nsis.com.ar>"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.13"
+__version__ = "1.14"
 
 import sys
 from php import date, SimpleXMLElement, SoapClient
