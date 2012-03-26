@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04b"
+__version__ = "1.04c"
 
 import os
 import socket
@@ -27,9 +27,9 @@ from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
 from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
-HOMO = False
+HOMO = True
 
-WSDL = "https://fwshomo.afip.gob.ar/wscoc/COCService"
+WSDL = "https://fwshomo.afip.gov.ar/wscoc/COCService"
 
 
 def inicializar_y_capturar_excepciones(func):
@@ -92,6 +92,7 @@ class WSCOC:
                         'ConsultarTiposDocumento',
                         'ConsultarTiposEstadoSolicitud',
                         'ConsultarMotivosExcepcionDJAI',
+                        'ConsultarDestinosCompraDJAI',
                         'LeerSolicitudConsultada', 'LeerCUITConsultado',
                         'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
                         'LoadTestXML',
@@ -530,6 +531,16 @@ class WSCOC:
                     % p['codigoDescripcion']).replace("\t", sep)
                  for p in ret['arrayMotivosExcepcion']]
 
+    def ConsultarDestinosCompraDJAI(self, sep='|'):
+        "Este método retorna el subconjunto de los destinos de compra de divisas alcanzados por las normativas de la Declaración Jurada Anticipada de Importación."
+        res = self.client.consultarDestinosCompraDJAI(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        ret = res['consultarDestinosCompraDJAIReturn']
+        return [("%(codigo)s\t%(descripcion)s" 
+                    % p['codigoDescripcion']).replace("\t", sep)
+                 for p in ret['arrayCodigosDescripciones']]
+        
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
         
@@ -594,6 +605,7 @@ def main():
     ws.Token = str(ta.credentials.token)
     ws.Sign = str(ta.credentials.sign)
 
+    ws.LanzarExcepciones = True
     ws.Conectar()
     
     if "--dummy" in sys.argv:
@@ -622,6 +634,8 @@ def main():
 
     if "--motivos_ex_djai" in sys.argv:
         print ws.ConsultarMotivosExcepcionDJAI()
+    if "--destinos_djai" in sys.argv:
+        print ws.ConsultarDestinosCompraDJAI()
         
     if "--consultar_cuit" in sys.argv:
         print ws.client.help("consultarCUIT")
