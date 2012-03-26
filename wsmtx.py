@@ -680,6 +680,13 @@ class WSMTXCA:
         return ["%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % p
                  for p in ret['arrayPuntosVenta']]
 
+    @property
+    def xml_request(self):
+        return self.XmlRequest
+
+    @property
+    def xml_response(self):
+        return self.XmlResponse
 
 
 def main():
