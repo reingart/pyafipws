@@ -277,14 +277,29 @@ class WSCTG11:
         return self.NumeroCTG
         
     @inicializar_y_capturar_excepciones
-    def ConfirmarArribo(self, numero_carta_de_porte, numero_CTG, cuit_transportista, peso_neto_carga):
+    def ConfirmarArribo(self, numero_carta_de_porte, numero_CTG, 
+                        cuit_transportista, cant_kilos_carta_porte, 
+                        establecimiento, **kwargs):
         "Confirma arribo CTG"
-        ret = wsctg.confirmar_ctg(self.client, self.Token, self.Sign, self.Cuit, 
-                    numeroCartaDePorte=numero_carta_de_porte, 
-                    numeroCTG=numero_CTG,
-                    cuitTransportista=cuit_transportista, 
-                    pesoNetoCarga=peso_neto_carga)
-        self.CodigoTransaccion, self.Observaciones = ret
+        ret = self.client.confirmarArribo(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        datosConfirmarArribo=dict(
+                            cartaPorte=numero_carta_de_porte, 
+                            ctg=numero_CTG,
+                            cuitTransportista=cuit_transportista,
+                            cantKilosCartaPorte=cant_kilos_carta_porte,
+                            establecimiento=establecimiento,
+                            )))['response']
+        self.__analizar_errores(ret)
+        datos = ret.get('datosResponse')
+        if datos:
+            self.CartaPorte = str(datos['cartaPorte'])
+            self.NumeroCTG = str(datos['ctg'])
+            self.FechaHora = str(datos['fechaHora'])
+            self.CodigoTransaccion = str(datos['codigoOperacion'])
+            self.Observaciones = ""
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
@@ -450,12 +465,13 @@ if __name__ == '__main__':
         if '--prueba' in sys.argv or '--formato' in sys.argv:
             prueba = dict(numero_carta_de_porte=512345679, codigo_especie=23,
                 cuit_canjeador=30640872566, 
-                cuit_destino=20061341677, cuit_destinatario=30500959629, 
+                cuit_destino=20061341677, cuit_destinatario=20267565393, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
                 codigo_cosecha='0910', peso_neto_carga=1000, 
                 km_recorridos=1234,
                 numero_ctg="43816783", transaccion='10000001681', 
-                observaciones='',                
+                observaciones='',      
+                cant_kilos_carta_porte=1000, establecimiento=1,
             )
             parcial = dict(
                     cant_horas=1, 
@@ -492,7 +508,7 @@ if __name__ == '__main__':
                 print "Vigencia Hasta", wsctg.VigenciaHasta
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
-                it['numeroCTG'] = ctg
+                it['numero_CTG'] = ctg
 
         if '--parcial' in sys.argv:
             wsctg.LanzarExcepciones = True
@@ -512,16 +528,14 @@ if __name__ == '__main__':
                 print "Controles:", wsctg.Controles
                 it['numeroCTG'] = ctg
 
-        if '--confirmar' in sys.argv:
+        if '--confirmar_arribo' in sys.argv:
             for it in items:
                 print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
-                if 'cuitRepresentado' in it:
-                    cuit = it['cuitRepresentado']
-                else:
-                    cuit = CUIT
-                transaccion, observaciones = confirmar_ctg(client, token, sign, cuit, **it)
-                print "transaccion: %s, observaciones: %s" % (transaccion, observaciones)
-                it['transaccion'], it['observaciones'] = transaccion, observaciones
+                transaccion = wsctg.ConfirmarArribo(**it)
+                print "transaccion: %s" % (transaccion, )
+                print "Fecha y Hora", wsctg.FechaHora
+                print "Errores:", wsctg.Errores
+                it['transaccion'] = transaccion
                 
         f = open(SALIDA,"wb")
         csv_writer = csv.writer(f, dialect='excel', delimiter=";")
