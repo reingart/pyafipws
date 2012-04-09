@@ -160,7 +160,7 @@ class WSCTG11:
         "Comprueba y extrae controles si existen en la respuesta XML"
         if 'arrayControles' in ret:
             controles = ret['arrayControles']
-            self.Controles = ["%(tipo)s: %(descripcion)s" % err['control'] 
+            self.Controles = ["%(tipo)s: %(descripcion)s" % ctl['control'] 
                                 for ctl in controles]
 
     @inicializar_y_capturar_excepciones
@@ -211,8 +211,9 @@ class WSCTG11:
     @inicializar_y_capturar_excepciones
     def SolicitarCTGInicial(self, numero_carta_de_porte, codigo_especie,
         cuit_canjeador, cuit_destino, cuit_destinatario, codigo_localidad_origen,
-        codigo_localidad_destino, codigo_cosecha, peso_neto_carga, cant_horas, 
-        patente_vehiculo, cuit_transportista, km_recorridos, **kwargs):
+        codigo_localidad_destino, codigo_cosecha, peso_neto_carga, 
+        cant_horas=None, patente_vehiculo=None, cuit_transportista=None, 
+        km_recorridos=None, **kwargs):
         "Solicitar CTG Desde el Inicio"
         ret = self.client.solicitarCTGInicial(request=dict(
                         auth={
@@ -248,22 +249,31 @@ class WSCTG11:
         return self.NumeroCTG
     
     @inicializar_y_capturar_excepciones
-    def SolicitarCTGDatoPendiente(self, numero_carta_de_porte, codigo_especie,
-        cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen,
-        codigo_localidad_destino, codigo_cosecha, peso_neto_carga, cant_horas, 
+    def SolicitarCTGDatoPendiente(self, numero_carta_de_porte, cant_horas, 
         patente_vehiculo, cuit_transportista):
-        "Obtener Número de CTG"
-        ret = wsctg.solicitar_ctg(self.client, self.Token, self.Sign, self.Cuit, 
-                numeroCartaDePorte=numero_carta_de_porte, codigoEspecie=codigo_especie,
-                cuitRemitenteComercial=cuit_remitente_comercial, 
-                cuitDestino=cuit_destino, 
-                cuitDestinatario=cuit_destinatario, 
-                codigoLocalidadOrigen=codigo_localidad_origen,
-                codigoLocalidadDestino=codigo_localidad_destino, 
-                codigoCosecha=codigo_cosecha, 
-                pesoNetoCarga=peso_neto_carga, cantHoras=cant_horas,
-                patenteVehiculo=patente_vehiculo, cuitTransportista=cuit_transportista)
-        self.NumeroCTG = ret
+        "Solicitud que permite completar los datos faltantes de un Pre-CTG "
+        "generado anteriormente a través de la operación solicitarCTGInicial"
+        ret = self.client.solicitarCTGDatoPendiente(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        datosSolicitarCTGDatoPendiente=dict(
+                            cartaPorte=numero_carta_de_porte, 
+                            cuitTransportista=cuit_transportista,
+                            cantHoras=cant_horas,
+                            )))['response']
+        self.__analizar_errores(ret)
+        self.Observaciones = ret['observacion']
+        datos = ret.get('datosSolicitarCTGResponse')
+        if datos:
+            self.CartaPorte = str(datos['cartaPorte'])
+            datos_ctg = datos.get('datosSolicitarCTG')
+            if datos_ctg:
+                self.NumeroCTG = str(datos_ctg['ctg'])
+                self.FechaHora = str(datos_ctg['fechaEmision'])
+                self.VigenciaDesde = str(datos_ctg['fechaVigenciaDesde'])
+                self.VigenciaHasta = str(datos_ctg['fechaVigenciaHasta'])
+            self.__analizar_controles(datos)
         return self.NumeroCTG
         
     @inicializar_y_capturar_excepciones
@@ -442,19 +452,23 @@ if __name__ == '__main__':
                 cuit_canjeador=30640872566, 
                 cuit_destino=20061341677, cuit_destinatario=30500959629, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
-                codigo_cosecha='0910', peso_neto_carga=1000, cant_horas=1, 
-                patente_vehiculo='CZO985', cuit_transportista=20234455967,
+                codigo_cosecha='0910', peso_neto_carga=1000, 
                 km_recorridos=1234,
                 numero_ctg="43816783", transaccion='10000001681', 
                 observaciones='',                
             )
-
-            if '--prueba' in sys.argv:
-                f = open(ENTRADA,"wb")
-                csv_writer = csv.writer(f, dialect='excel', delimiter=";")
-                csv_writer.writerows([prueba.keys()])
-                csv_writer.writerows([[prueba[k] for k in prueba.keys()]])
-                f.close()
+            parcial = dict(
+                    cant_horas=1, 
+                    patente_vehiculo='CZO985', cuit_transportista=20234455967,
+                    )
+            if not '--parcial' in sys.argv:
+                prueba.update(parcial)
+                
+            f = open(ENTRADA,"wb")
+            csv_writer = csv.writer(f, dialect='excel', delimiter=";")
+            csv_writer.writerows([prueba.keys()])
+            csv_writer.writerows([[prueba[k] for k in prueba.keys()]])
+            f.close()
             
         items = []
         csv_reader = csv.reader(open(ENTRADA), dialect='excel', delimiter=";")
@@ -469,6 +483,24 @@ if __name__ == '__main__':
             for it in items:
                 print "solicitando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
                 ctg = wsctg.SolicitarCTGInicial(**it)
+                print "numero CTG: ", ctg
+                print "Observiacion: ", wsctg.Observaciones
+                print "Carta Porte", wsctg.CartaPorte
+                print "Numero CTG", wsctg.NumeroCTG
+                print "Fecha y Hora", wsctg.FechaHora
+                print "Vigencia Desde", wsctg.VigenciaDesde
+                print "Vigencia Hasta", wsctg.VigenciaHasta
+                print "Errores:", wsctg.Errores
+                print "Controles:", wsctg.Controles
+                it['numeroCTG'] = ctg
+
+        if '--parcial' in sys.argv:
+            wsctg.LanzarExcepciones = True
+            for it in items:
+                print "solicitando dato pendiente...", ' '.join(['%s=%s' % (k,v) for k,v in parcial.items()])
+                ctg = wsctg.SolicitarCTGDatoPendiente(
+                    numero_carta_de_porte=wsctg.CartaPorte,
+                    **parcial)
                 print "numero CTG: ", ctg
                 print "Observiacion: ", wsctg.Observaciones
                 print "Carta Porte", wsctg.CartaPorte
