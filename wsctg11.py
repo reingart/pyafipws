@@ -181,6 +181,25 @@ class WSCTG11:
             self.CodigoOperacion = str(datos['codigoOperacion'])
 
     @inicializar_y_capturar_excepciones
+    def RechazarCTG(self, carta_porte, ctg, motivo):
+        "El Destino puede rechazar el CTG a través de la siguiente operatoria"
+        response = self.client.rechazarCTG(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        datosRechazarCTG={
+                            'cartaPorte': carta_porte,
+                            'ctg': ctg, 'motivoRechazo': motivo,
+                            }))['response']
+        datos = response.get('datosResponse')
+        self.__analizar_errores(response)
+        if datos:
+            self.CartaPorte = str(datos['cartaPorte'])
+            self.NumeroCTG = str(datos['CTG'])
+            self.FechaHora = str(datos['fechaHora'])
+            self.CodigoOperacion = str(datos['codigoOperacion'])
+
+    @inicializar_y_capturar_excepciones
     def SolicitarCTGInicial(self, numero_carta_de_porte, codigo_especie,
         cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen,
         codigo_localidad_destino, codigo_cosecha, peso_neto_carga, cant_horas, 
@@ -355,6 +374,20 @@ if __name__ == '__main__':
             print "Codigo Anulacion de CTG", wsctg.CodigoOperacion
             print "Errores:", wsctg.Errores
             sys.exit(0)
+
+        if '--rechazar' in sys.argv:
+            print wsctg.client.help("rechazarCTG")
+            carta_porte = 1234
+            ctg = 12345678
+            motivo = "saraza"
+            ret = wsctg.RechazarCTG(carta_porte, ctg, motivo)
+            print "Carta Porte", wsctg.CartaPorte
+            print "Numero CTG", wsctg.NumeroCTG
+            print "Fecha y Hora", wsctg.FechaHora
+            print "Codigo Anulacion de CTG", wsctg.CodigoOperacion
+            print "Errores:", wsctg.Errores
+            sys.exit(0)
+
 
         # Recuperar parámetros:
         
