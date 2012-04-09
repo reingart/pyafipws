@@ -112,7 +112,7 @@ class WSCTG11:
         'XmlRequest', 'XmlResponse', 'Version', 
         'NumeroCTG', 'CartaPorte', 'FechaHora', 'CodigoOperacion', 
         'CodigoTransaccion', 'Observaciones', 'Controles', 
-        'VigenciaHasta', 'VigenciaDesde',
+        'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
         ]
     _reg_progid_ = "WSCTG11"
     _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
@@ -324,15 +324,33 @@ class WSCTG11:
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCTG(self, numero_carta_de_porte, numero_CTG, cuit_transportista, peso_neto_carga):
-        "Confirma arribo CTG"
-        ret = wsctg.confirmar_ctg(self.client, self.Token, self.Sign, self.Cuit, 
-                    numeroCartaDePorte=numero_carta_de_porte, 
-                    numeroCTG=numero_CTG,
-                    cuitTransportista=cuit_transportista, 
-                    pesoNetoCarga=peso_neto_carga)
-        self.CodigoTransaccion, self.Observaciones = ret
-        return self.CodigoTransaccion
+    def ConsultarCTG(self, numero_carta_de_porte=None, numero_CTG=None, 
+                     patente=None, cuit_solicitante=None, cuit_destino=None,
+                     fecha_emision_desde=None, fecha_emision_hasta=None):
+        "Operación que realiza consulta de CTGs según el criterio ingresado."
+        ret = self.client.consultarCTG(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        consultarCTGDatos=dict(
+                            cartaPorte=numero_carta_de_porte, 
+                            ctg=numero_CTG,
+                            patente=patente,
+                            cuitSolicitante=cuit_solicitante,
+                            cuitDestino=cuit_destino,
+                            fechaEmisionDesde=fecha_emision_desde,
+                            fechaEmisionHasta=fecha_emision_hasta,
+                            )))['response']
+        self.__analizar_errores(ret)
+        datos = ret.get('arrayDatosConsultarCTG')
+        if datos:
+            for datos_ctg in datos:
+                datos_ctg = datos_ctg['datosConsultarCTG']
+                self.CartaPorte = str(datos_ctg['cartaPorte'])
+                self.NumeroCTG = str(datos_ctg['ctg'])
+                self.Estado = unicode(datos_ctg['estado'])
+                self.ImprimeConstancia = str(datos_ctg['imprimeConstancia'])
+        return self.NumeroCTG
 
     @property
     def xml_request(self):
@@ -561,6 +579,12 @@ if __name__ == '__main__':
         csv_writer.writerows([cols])
         csv_writer.writerows([[item[k] for k in cols] for item in items])
         f.close()
+        
+        if "--consultar" in sys.argv:
+            wsctg.LanzarExcepciones = True
+            wsctg.ConsultarCTG(fecha_emision_desde="01/04/2012")
+            print "numero CTG: ", wsctg.NumeroCTG
+            
         print "hecho."
         
     except SoapFault,e:
