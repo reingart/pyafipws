@@ -74,6 +74,7 @@ def inicializar_y_capturar_excepciones(func):
             self.VigenciaDesde = self.VigenciaHasta = ""
             self.ErrMsg = self.ErrCode = ""
             self.Errores = self.Controles = []
+            self.DatosCTG = None
             # llamo a la función (con reintentos)
             return func(self, *args, **kwargs)
         except SoapFault, e:
@@ -103,15 +104,17 @@ def inicializar_y_capturar_excepciones(func):
 class WSCTG11:
     "Interfaz para el WebService de Código de Trazabilidad de Granos"    
     _public_methods_ = ['Conectar', 'Dummy',
-                        'SolicitarCTGInicial',
-                        'ConfirmarCTG',
+                        'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
+                        'ConfirmarArribo', 'ConfirmarDefinitivo',
+                        'AnularCTG', 'RechazarCTG', 
+                        'ConsultarCTG', 'LeerConsulta',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
         'XmlRequest', 'XmlResponse', 'Version', 
         'NumeroCTG', 'CartaPorte', 'FechaHora', 'CodigoOperacion', 
-        'CodigoTransaccion', 'Observaciones', 'Controles', 
+        'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosCTG',
         'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
         ]
     _reg_progid_ = "WSCTG11"
@@ -344,13 +347,31 @@ class WSCTG11:
         self.__analizar_errores(ret)
         datos = ret.get('arrayDatosConsultarCTG')
         if datos:
-            for datos_ctg in datos:
-                datos_ctg = datos_ctg['datosConsultarCTG']
-                self.CartaPorte = str(datos_ctg['cartaPorte'])
-                self.NumeroCTG = str(datos_ctg['ctg'])
-                self.Estado = unicode(datos_ctg['estado'])
-                self.ImprimeConstancia = str(datos_ctg['imprimeConstancia'])
-        return self.NumeroCTG
+            self.DatosCTG = datos
+            self.LeerDatosCTG(pop=False)
+            return True
+        else:
+            self.datos_ctg = []
+        return ''
+
+    def LeerDatosCTG(self, pop=True):
+        "Recorro los datos devueltos y devuelvo el primero si existe"
+        
+        if self.DatosCTG:
+            # extraigo el primer item
+            if pop:
+                datos = self.DatosCTG.pop(0)
+            else:
+                datos = self.DatosCTG[0]
+            datos_ctg = datos['datosConsultarCTG']
+            self.CartaPorte = str(datos_ctg['cartaPorte'])
+            self.NumeroCTG = str(datos_ctg['ctg'])
+            self.Estado = unicode(datos_ctg['estado'])
+            self.ImprimeConstancia = str(datos_ctg['imprimeConstancia'])
+            return self.NumeroCTG
+        else:
+            return ""
+
 
     @property
     def xml_request(self):
@@ -583,7 +604,8 @@ if __name__ == '__main__':
         if "--consultar" in sys.argv:
             wsctg.LanzarExcepciones = True
             wsctg.ConsultarCTG(fecha_emision_desde="01/04/2012")
-            print "numero CTG: ", wsctg.NumeroCTG
+            while wsctg.LeerDatosCTG():
+                print "numero CTG: ", wsctg.NumeroCTG
             
         print "hecho."
         
