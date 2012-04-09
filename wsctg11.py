@@ -108,6 +108,11 @@ class WSCTG11:
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
                         'AnularCTG', 'RechazarCTG', 
                         'ConsultarCTG', 'LeerConsulta',
+                        'ConsultarProvincias', 
+                        'ConsultarLocalidadesPorProvincia', 
+                        'ConsultarEstablecimientos',
+                        'ConsultarCosechas',
+                        'ConsultarEspecies',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -372,6 +377,75 @@ class WSCTG11:
         else:
             return ""
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarProvincias(self, sep="||"):
+        ret = self.client.consultarProvincias(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                            ))['consultarProvinciasResponse']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayProvincias', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
+                    (it['provincia']['codigo'], 
+                     it['provincia']['descripcion']) 
+               for it in array]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarLocalidadesPorProvincia(self, codigo_provincia, sep="||"):
+        ret = self.client.consultarLocalidadesPorProvincia(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        codigoProvincia=codigo_provincia,
+                        ))['response']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayLocalidades', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
+                    (it['localidad']['codigo'], 
+                     it['localidad']['descripcion']) 
+               for it in array]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarEstablecimientos(self, sep="||"):
+        ret = self.client.consultarEstablecimientos(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        ))['response']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayEstablecimientos', [])
+        return [("%s" % 
+                    (it['establecimiento'],)) 
+               for it in array]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarEspecies(self, sep="||"):
+        ret = self.client.consultarEspecies(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                            ))['response']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayEspecies', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
+                    (it['especie']['codigo'], 
+                     it['especie']['descripcion']) 
+               for it in array]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarCosechas(self, sep="||"):
+        ret = self.client.consultarCosechas(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                            ))['response']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayCosechas', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
+                    (it['cosecha']['codigo'], 
+                     it['cosecha']['descripcion']) 
+               for it in array]
 
     @property
     def xml_request(self):
@@ -495,21 +569,25 @@ if __name__ == '__main__':
         # Recuperar parámetros:
         
         if '--provincias' in sys.argv:
-            items = obtener_provincias(client, token, sign, CUIT)
-            print "\n".join(["||%s||%s||" % (it['codigo'], it['descripcion']) for it in items])
-        
+            ret = wsctg.ConsultarProvincias()
+            print "\n".join(ret)
+                    
         if '--localidades' in sys.argv:    
-            provincia = int(raw_input("Código de provincia: "))
-            items = obtener_localidades_por_codigo_provincia(client, token, sign, CUIT, provincia)
-            print "\n".join(["||%s||%s||" % (it['codigo'], it['descripcion']) for it in items])
+            ret = wsctg.ConsultarLocalidadesPorProvincia(16)
+            print "\n".join(ret)
 
         if '--especies' in sys.argv:    
-            items = obtener_especies(client, token, sign, CUIT)    
-            print "\n".join(["||%s||%s||" % (it['codigo'], it['descripcion']) for it in items])
+            ret = wsctg.ConsultarEspecies()
+            print "\n".join(ret)
 
         if '--cosechas' in sys.argv:    
-            items = obtener_cosechas(client, token, sign, CUIT)    
-            print "\n".join(["||%s||%s||" % (it['codigo'], it['descripcion']) for it in items])
+            ret = wsctg.ConsultarCosechas()
+            print "\n".join(ret)
+
+        if '--establecimientos' in sys.argv:    
+            ret = wsctg.ConsultarEstablecimientos()
+            print "\n".join(ret)
+
 
         if '--prueba' in sys.argv or '--formato' in sys.argv:
             prueba = dict(numero_carta_de_porte=512345679, codigo_especie=23,
