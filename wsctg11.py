@@ -303,14 +303,24 @@ class WSCTG11:
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_CTG, cuit_transportista, peso_neto_carga):
-        "Confirma arribo CTG"
-        ret = wsctg.confirmar_ctg(self.client, self.Token, self.Sign, self.Cuit, 
-                    numeroCartaDePorte=numero_carta_de_porte, 
-                    numeroCTG=numero_CTG,
-                    cuitTransportista=cuit_transportista, 
-                    pesoNetoCarga=peso_neto_carga)
-        self.CodigoTransaccion, self.Observaciones = ret
+    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_CTG, **kwargs):
+        "Confirma arribo definitivo CTG"
+        ret = self.client.confirmarDefinitivo(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        datosConfirmarDefinitivo=dict(
+                            cartaPorte=numero_carta_de_porte, 
+                            ctg=numero_CTG,
+                            )))['response']
+        self.__analizar_errores(ret)
+        datos = ret.get('datosResponse')
+        if datos:
+            self.CartaPorte = str(datos['cartaPorte'])
+            self.NumeroCTG = str(datos['ctg'])
+            self.FechaHora = str(datos['fechaHora'])
+            self.CodigoTransaccion = str(datos['codigoOperacion'])
+            self.Observaciones = ""
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
@@ -532,6 +542,15 @@ if __name__ == '__main__':
             for it in items:
                 print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
                 transaccion = wsctg.ConfirmarArribo(**it)
+                print "transaccion: %s" % (transaccion, )
+                print "Fecha y Hora", wsctg.FechaHora
+                print "Errores:", wsctg.Errores
+                it['transaccion'] = transaccion
+
+        if '--confirmar_definitivo' in sys.argv:
+            for it in items:
+                print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
+                transaccion = wsctg.ConfirmarDefinitivo(**it)
                 print "transaccion: %s" % (transaccion, )
                 print "Fecha y Hora", wsctg.FechaHora
                 print "Errores:", wsctg.Errores
