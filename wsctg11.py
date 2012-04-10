@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.04"
+__version__ = "1.02a"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -75,6 +75,8 @@ def inicializar_y_capturar_excepciones(func):
             self.ErrMsg = self.ErrCode = ""
             self.Errores = self.Controles = []
             self.DatosCTG = None
+            self.CodigoTransaccion = self.Observaciones = ''
+            self.TarifaReferencia = None
             # llamo a la función (con reintentos)
             return func(self, *args, **kwargs)
         except SoapFault, e:
@@ -107,7 +109,7 @@ class WSCTG11:
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
                         'AnularCTG', 'RechazarCTG', 
-                        'ConsultarCTG', 'LeerConsulta',
+                        'ConsultarCTG', 'LeerConsulta', 'ConsultarDetalleCTG',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
                         'ConsultarEstablecimientos',
@@ -121,6 +123,7 @@ class WSCTG11:
         'NumeroCTG', 'CartaPorte', 'FechaHora', 'CodigoOperacion', 
         'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosCTG',
         'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
+        'TarifaReferencia',
         ]
     _reg_progid_ = "WSCTG11"
     _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
@@ -356,7 +359,7 @@ class WSCTG11:
             self.LeerDatosCTG(pop=False)
             return True
         else:
-            self.datos_ctg = []
+            self.DatosCTG = []
         return ''
 
     def LeerDatosCTG(self, pop=True):
@@ -378,6 +381,26 @@ class WSCTG11:
             return ""
 
     @inicializar_y_capturar_excepciones
+    def ConsultarDetalleCTG(self, numero_CTG=None):
+        "Operación mostrar este detalle de la  solicitud de CTG seleccionada."
+        ret = self.client.consultarDetalleCTG(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        ctg=numero_CTG, 
+                        ))['response']
+        self.__analizar_errores(ret)
+        datos = ret.get('consultarDetalleCTGDatos')
+        self.NumeroCTG = str(datos['ctg'])
+        self.CartaPorte = str(datos['cartaPorte'])
+        self.Estado = unicode(datos['estado'])
+        self.FechaHora = str(datos['fechaEmision'])
+        self.VigenciaDesde = str(datos['fechaVigenciaDesde'])
+        self.VigenciaHasta = str(datos['fechaVigenciaHasta'])
+        self.TarifaReferencia = str(datos['tarifaReferencia'])
+        return True
+
+    @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         ret = self.client.consultarProvincias(request=dict(
                         auth={
@@ -386,7 +409,7 @@ class WSCTG11:
                             ))['consultarProvinciasResponse']
         self.__analizar_errores(ret)
         array = ret.get('arrayProvincias', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % s
                     (it['provincia']['codigo'], 
                      it['provincia']['descripcion']) 
                for it in array]
@@ -673,6 +696,23 @@ if __name__ == '__main__':
                 print "Errores:", wsctg.Errores
                 it['transaccion'] = transaccion
                 
+        if '--consultar_detalle' in sys.argv:
+            wsctg.LanzarExcepciones = True
+            for it in items:
+                print "consultando detalle...", ctg
+                ctg = wsctg.ConsultarDetalleCTG(ctg)
+                print "Numero CTG: ", wsctg.NumeroCTG
+                print "Tarifa Referencia: ", wsctg.TarifaReferencia
+                print "Observiacion: ", wsctg.Observaciones
+                print "Carta Porte", wsctg.CartaPorte
+                print "Numero CTG", wsctg.NumeroCTG
+                print "Fecha y Hora", wsctg.FechaHora
+                print "Vigencia Desde", wsctg.VigenciaDesde
+                print "Vigencia Hasta", wsctg.VigenciaHasta
+                print "Errores:", wsctg.Errores
+                print "Controles:", wsctg.Controles
+                it['numero_CTG'] = ctg
+
         f = open(SALIDA,"wb")
         csv_writer = csv.writer(f, dialect='excel', delimiter=";")
         csv_writer.writerows([cols])
