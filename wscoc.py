@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 import os
 import socket
@@ -48,8 +48,9 @@ def inicializar_y_capturar_excepciones(func):
             self.CUITComprador = self.DenominacionComprador = None
             self.CodigoMoneda = self.CotizacionMoneda = self.MontoPesos = None
             self.CUITRepresentante = self.DenominacionRepresentante = None
-            self.DJAI = self.CodigoExcepcionDJAI = None
-            self.DJAS = self.CodigoExcepcionDJAS = None
+            self.DJAI = self.CodigoExcepcionDJAI = self.EstadoDJAI = None
+            self.DJAS = self.CodigoExcepcionDJAS = self.EstadoDJAS = None
+            self.MontoFOB = self.CodigoMoneda = None
             # iniciaalizo estructuras internas persistentes
             self.__detalles_solicitudes = []
             self.__detalles_cuit = []
@@ -112,6 +113,7 @@ class WSCOC:
         'CUITRepresentante', 'DenominacionRepresentante',
         'TipoDoc', 'NumeroDoc', 'CUITConsultada', 'DenominacionConsultada',
 		'DJAI', 'CodigoExcepcionDJAI', 'DJAS', 'CodigoExcepcionDJAS',
+        'MontoFOB', 'EstadoDJAI', 'EstadoDJAS',
         'ErroresFormato', 'Errores', 'Traceback', 'Excepcion', 'LanzarExcepciones',
         ]
 
@@ -464,6 +466,38 @@ class WSCOC:
         else:
             return False
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarDJAI(self, djai, cuit):
+        "Consultar Declaración Jurada Anticipada de Importación"
+        res = self.client.consultarDJAI(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            djai=djai, cuit=cuit,
+            )
+
+        ret = res.get('consultarDJAIReturn', {})
+        self.__analizar_errores(ret)
+        self.DJAI = ret.get('djai')
+        self.MontoFOB = ret.get('montoFOB')
+        self.CodigoMoneda = ret.get('codigoMoneda')
+        self.EstadoDJAI = ret.get('estadoDJAI')
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarDJAS(self, djas, cuit):
+        "Consultar Declaración Jurada Anticipada de Servicios"
+        res = self.client.consultarDJAS(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            djas=djas, cuit=cuit,
+            )
+
+        ret = res.get('consultarDJASReturn', {})
+        self.__analizar_errores(ret)
+        self.DJAS = ret.get('djas')
+        self.MontoFOB = ret.get('montoFOB')
+        self.CodigoMoneda = ret.get('codigoMoneda')
+        self.EstadoDJAS = ret.get('estadoDJAS')
+        return True
+        
     @inicializar_y_capturar_excepciones
     def ConsultarMonedas(self, sep="|"):
         "Este método retorna el universo de Monedas disponibles en el presente WS, indicando código y descripción de cada una"
@@ -834,6 +868,29 @@ def main():
         print u'\n'.join(["||%s||" % s for s in ws.ConsultarMotivosExcepcionDJAS(sep="||")])
         print "=== Destinos Compra DJAS ==="
         print u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompraDJAS(sep="||")])
+    
+    if "--consultar_djai" in sys.argv:
+        djai = "12345DJAI000001N"
+        cuit = 20267565393
+        ws.ConsultarDJAI(djai, cuit)
+        print "DJAI", ws.DJAI
+        print "Monto FOB", ws.MontoFOB
+        print "Codigo Moneda", ws.CodigoMoneda
+        print "Estado DJAI", ws.EstadoDJAI
+        print "Errores", ws.Errores
+        print "ErroresFormato", ws.ErroresFormato
+
+    if "--consultar_djas" in sys.argv:
+        djas = "12001DJAS000901N"
+        cuit = 20267565393
+        ws.ConsultarDJAS(djas, cuit)
+        print "DJAS", ws.DJAS
+        print "Monto FOB", ws.MontoFOB
+        print "Codigo Moneda", ws.CodigoMoneda
+        print "Estado DJAI", ws.EstadoDJAI
+        print "Errores", ws.Errores
+        print "ErroresFormato", ws.ErroresFormato
+        
         
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
