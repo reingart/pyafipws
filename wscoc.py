@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04c"
+__version__ = "1.05b"
 
 import os
 import socket
@@ -48,6 +48,9 @@ def inicializar_y_capturar_excepciones(func):
             self.CUITComprador = self.DenominacionComprador = None
             self.CodigoMoneda = self.CotizacionMoneda = self.MontoPesos = None
             self.CUITRepresentante = self.DenominacionRepresentante = None
+            self.DJAI = self.CodigoExcepcionDJAI = self.EstadoDJAI = None
+            self.DJAS = self.CodigoExcepcionDJAS = self.EstadoDJAS = None
+            self.MontoFOB = self.CodigoMoneda = None
             # iniciaalizo estructuras internas persistentes
             self.__detalles_solicitudes = []
             self.__detalles_cuit = []
@@ -93,6 +96,8 @@ class WSCOC:
                         'ConsultarTiposEstadoSolicitud',
                         'ConsultarMotivosExcepcionDJAI',
                         'ConsultarDestinosCompraDJAI',
+                        'ConsultarMotivosExcepcionDJAS',
+                        'ConsultarDestinosCompraDJAS',
                         'LeerSolicitudConsultada', 'LeerCUITConsultado',
                         'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
                         'LoadTestXML',
@@ -107,7 +112,8 @@ class WSCOC:
         'CodigoMoneda', 'CotizacionMoneda', 'MontoPesos',
         'CUITRepresentante', 'DenominacionRepresentante',
         'TipoDoc', 'NumeroDoc', 'CUITConsultada', 'DenominacionConsultada',
-		'DJAI', 'CodigoExcepcionDJAI',
+		'DJAI', 'CodigoExcepcionDJAI', 'DJAS', 'CodigoExcepcionDJAS',
+        'MontoFOB', 'EstadoDJAI', 'EstadoDJAS',
         'ErroresFormato', 'Errores', 'Traceback', 'Excepcion', 'LanzarExcepciones',
         ]
 
@@ -178,6 +184,8 @@ class WSCOC:
         self.CodigoDestino = det.get("codigoDestino")
         self.DJAI = det.get("djai")
         self.CodigoExcepcionDJAI = det.get("codigoExcepcionDJAI")
+        self.DJAS = det.get("djas")
+        self.CodigoExcepcionDJAS = det.get("codigoExcepcionDJAS")
 
     def __analizar_inconsistencias(self, ret):
         "Comprueba y extrae (formatea) las inconsistencias"
@@ -255,6 +263,7 @@ class WSCOC:
                                      cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
 									djai=None, codigo_excepcion_djai=None,
+                                    djas=None, codigo_excepcion_djas=None,
                                     ):
         "Generar una Solicitud de operación cambiaria"
         res = self.client.generarSolicitudCompraDivisa(
@@ -266,6 +275,7 @@ class WSCOC:
             cuitRepresentante=cuit_representante,
             codigoDestino=codigo_destino,
 			djai=djai, codigoExcepcionDJAI=codigo_excepcion_djai,
+            djas=djas, codigoExcepcionDJAS=codigo_excepcion_djas,
             )
 
         self.Resultado = ""
@@ -457,6 +467,38 @@ class WSCOC:
             return False
 
     @inicializar_y_capturar_excepciones
+    def ConsultarDJAI(self, djai, cuit):
+        "Consultar Declaración Jurada Anticipada de Importación"
+        res = self.client.consultarDJAI(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            djai=djai, cuit=cuit,
+            )
+
+        ret = res.get('consultarDJAIReturn', {})
+        self.__analizar_errores(ret)
+        self.DJAI = ret.get('djai')
+        self.MontoFOB = ret.get('montoFOB')
+        self.CodigoMoneda = ret.get('codigoMoneda')
+        self.EstadoDJAI = ret.get('estadoDJAI')
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarDJAS(self, djas, cuit):
+        "Consultar Declaración Jurada Anticipada de Servicios"
+        res = self.client.consultarDJAS(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            djas=djas, cuit=cuit,
+            )
+
+        ret = res.get('consultarDJASReturn', {})
+        self.__analizar_errores(ret)
+        self.DJAS = ret.get('djas')
+        self.MontoFOB = ret.get('montoFOB')
+        self.CodigoMoneda = ret.get('codigoMoneda')
+        self.EstadoDJAS = ret.get('estadoDJAS')
+        return True
+        
+    @inicializar_y_capturar_excepciones
     def ConsultarMonedas(self, sep="|"):
         "Este método retorna el universo de Monedas disponibles en el presente WS, indicando código y descripción de cada una"
         res = self.client.consultarMonedas(
@@ -531,6 +573,7 @@ class WSCOC:
                     % p['codigoDescripcion']).replace("\t", sep)
                  for p in ret['arrayMotivosExcepcion']]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarDestinosCompraDJAI(self, sep='|'):
         "Este método retorna el subconjunto de los destinos de compra de divisas alcanzados por las normativas de la Declaración Jurada Anticipada de Importación."
         res = self.client.consultarDestinosCompraDJAI(
@@ -540,7 +583,29 @@ class WSCOC:
         return [("%(codigo)s\t%(descripcion)s" 
                     % p['codigoDescripcion']).replace("\t", sep)
                  for p in ret['arrayCodigosDescripciones']]
-        
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarMotivosExcepcionDJAS(self, sep='|'):
+        "Este método retorna el universo de motivos de excepciones a la Declaración Jurada Anticipada de Servicios"
+        res = self.client.consultarMotivosExcepcionDJAS(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        ret = res['consultarMotivosExcepcionDJASReturn']
+        return [("%(codigo)s\t%(descripcion)s" 
+                    % p['codigoDescripcion']).replace("\t", sep)
+                 for p in ret['arrayMotivosExcepcion']]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarDestinosCompraDJAS(self, sep='|'):
+        "Este método retorna el subconjunto de los destinos de compra de divisas alcanzados por las normativas de la Declaración Jurada Anticipada de Servicios"
+        res = self.client.consultarDestinosCompraDJAS(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        ret = res['consultarDestinosCompraDJASReturn']
+        return [("%(codigo)s\t%(descripcion)s" 
+                    % p['codigoDescripcion']).replace("\t", sep)
+                 for p in ret['arrayCodigosDescripciones']]
+                 
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
         
@@ -669,12 +734,15 @@ def main():
 
             if not "--tur" in sys.argv:   
                 djai = "--djai" in sys.argv and "12345DJAI000001N" or None
+                djas = "--djas" in sys.argv and "12001DJAS000901N" or None
                 cod_ex_djai = "--no-djai" and 3 or None
+                cod_ex_djas = "--no-djas" and 1 or None
                 print "djai", djai
                 ok = ws.GenerarSolicitudCompraDivisa(cuit_comprador, codigo_moneda,
                                     cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
                                     djai=djai, codigo_excepcion_djai=cod_ex_djai, 
+                                    djas=djas, codigo_excepcion_djas=cod_ex_djas, 
                                     )
             else:
                 print "Turista!"
@@ -790,7 +858,39 @@ def main():
         print u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompra(sep="||")])
         print "=== Tipos de Documento ==="
         print u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposDocumento(sep="||")])
+        print "=== Tipos Estado Solicitud ==="
+        print u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposEstadoSolicitud(sep="||")])
+        print "=== Motivos Excepcion DJAI ==="
+        print u'\n'.join(["||%s||" % s for s in ws.ConsultarMotivosExcepcionDJAI(sep="||")])
+        print "=== Destinos Compra DJAI ==="
+        print u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompraDJAI(sep="||")])
+        print "=== Motivos Excepcion DJAS ==="
+        print u'\n'.join(["||%s||" % s for s in ws.ConsultarMotivosExcepcionDJAS(sep="||")])
+        print "=== Destinos Compra DJAS ==="
+        print u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompraDJAS(sep="||")])
+    
+    if "--consultar_djai" in sys.argv:
+        djai = "12345DJAI000001N"
+        cuit = 20267565393
+        ws.ConsultarDJAI(djai, cuit)
+        print "DJAI", ws.DJAI
+        print "Monto FOB", ws.MontoFOB
+        print "Codigo Moneda", ws.CodigoMoneda
+        print "Estado DJAI", ws.EstadoDJAI
+        print "Errores", ws.Errores
+        print "ErroresFormato", ws.ErroresFormato
 
+    if "--consultar_djas" in sys.argv:
+        djas = "12001DJAS000901N"
+        cuit = 20267565393
+        ws.ConsultarDJAS(djas, cuit)
+        print "DJAS", ws.DJAS
+        print "Monto FOB", ws.MontoFOB
+        print "Codigo Moneda", ws.CodigoMoneda
+        print "Estado DJAI", ws.EstadoDJAI
+        print "Errores", ws.Errores
+        print "ErroresFormato", ws.ErroresFormato
+        
         
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
