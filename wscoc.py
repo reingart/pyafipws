@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.05c"
 
 import os
 import socket
@@ -99,6 +99,7 @@ class WSCOC:
                         'ConsultarMotivosExcepcionDJAS',
                         'ConsultarDestinosCompraDJAS',
                         'LeerSolicitudConsultada', 'LeerCUITConsultado',
+                        'ConsultarDJAI', 'ConsultarDJAS',
                         'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
                         'LoadTestXML',
                         'Dummy', 'Conectar', 'Eval', 'DebugLog']
