@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05c"
+__version__ = "1.06a"
 
 import os
 import socket
@@ -102,6 +102,7 @@ class WSCOC:
                         'ConsultarDJAI', 'ConsultarDJAS',
                         'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
                         'LoadTestXML',
+                        'AnalizarXml', 'ObtenerTagXml',
                         'Dummy', 'Conectar', 'Eval', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit',
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
@@ -645,6 +646,37 @@ class WSCOC:
                 return {}, self.xml_response
         self.client.http = DummyHTTP(open(xml_file).read())
 
+    def AnalizarXml(self, xml=""):
+        "Analiza un mensaje XML (por defecto la respuesta)"
+        try:
+            if not xml or xml=='XmlResponse':
+                xml = self.XmlResponse 
+            elif xml=='XmlRequest':
+                xml = self.XmlRequest 
+            self.xml = SimpleXMLElement(xml)
+            return True
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+            return False
+
+    def ObtenerTagXml(self, *tags):
+        "Busca en el Xml analizado y devuelve el tag solicitado"
+        # convierto el xml a un objeto
+        try:
+            if self.xml:
+                xml = self.xml
+                # por cada tag, lo busco segun su nombre o posición
+                for tag in tags:
+                    xml = xml(tag) # atajo a getitem y getattr
+                # vuelvo a convertir a string el objeto xml encontrado
+                return str(xml)
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+
+
+def p_assert_eq(a,b):
+    print a, a==b and '==' or '!=', b
+
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -834,11 +866,17 @@ def main():
             print "Código de Solicitud:", sol
             # podría llamar a ws.ConsultarSolicitudCompraDivisa
         print "hecho."
-        
+
+        ws.AnalizarXml("XmlResponse")
+               
         # recorro las solicitudes devueltas
+        i = 0
         while ws.LeerSolicitudConsultada():
             print "-" * 80
-            print 'COC', ws.COC
+            coc = ws.ObtenerTagXml('arrayDetallesSolicitudes', 'detalleSolicitudes', i, 'coc')
+            cuit = ws.ObtenerTagXml('arrayDetallesSolicitudes', 'detalleSolicitudes', i, 'cuit')
+            p_assert_eq(coc, ws.COC)
+            print 'CUIT', cuit
             print "FechaEmisionCOC", ws.FechaEmisionCOC
             print 'CodigoSolicitud', ws.CodigoSolicitud
             print "EstadoSolicitud", ws.EstadoSolicitud
@@ -849,6 +887,9 @@ def main():
             print "MontoPesos", ws.MontoPesos
             print "CodigoDestino", ws.CodigoDestino
             print "=" * 80
+            i = i + 1
+
+
 
     if "--parametros" in sys.argv:
         print "=== Tipos de Estado Solicitud ==="
