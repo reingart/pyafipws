@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.06a"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -116,6 +116,7 @@ class WSCTG11:
                         'ConsultarEstablecimientos',
                         'ConsultarCosechas',
                         'ConsultarEspecies',
+                        'AnalizarXml', 'ObtenerTagXml',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -479,6 +480,33 @@ class WSCTG11:
     def xml_response(self):
         return self.XmlResponse
 
+    def AnalizarXml(self, xml=""):
+        "Analiza un mensaje XML (por defecto la respuesta)"
+        try:
+            if not xml or xml=='XmlResponse':
+                xml = self.XmlResponse 
+            elif xml=='XmlRequest':
+                xml = self.XmlRequest 
+            self.xml = SimpleXMLElement(xml)
+            return True
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+            return False
+
+    def ObtenerTagXml(self, *tags):
+        "Busca en el Xml analizado y devuelve el tag solicitado"
+        # convierto el xml a un objeto
+        try:
+            if self.xml:
+                xml = self.xml
+                # por cada tag, lo busco segun su nombre o posición
+                for tag in tags:
+                    xml = xml(tag) # atajo a getitem y getattr
+                # vuelvo a convertir a string el objeto xml encontrado
+                return str(xml)
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
@@ -644,6 +672,8 @@ if __name__ == '__main__':
         # armar diccionario por cada linea
         items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
 
+        ctg = None
+
         if '--solicitar' in sys.argv:
             wsctg.LanzarExcepciones = True
             for it in items:
@@ -697,8 +727,14 @@ if __name__ == '__main__':
                 it['transaccion'] = transaccion
                 
         if '--consultar_detalle' in sys.argv:
+            i = sys.argv.index("--consultar_detalle")
+            if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
+                ctg = int(sys.argv[i+1])
+            elif not ctg:
+                ctg = int(raw_input("Numero de CTG: ") or '0') or 73714620
+
             wsctg.LanzarExcepciones = True
-            for it in items:
+            for i, it in enumerate(items):
                 print "consultando detalle...", ctg
                 ctg = wsctg.ConsultarDetalleCTG(ctg)
                 print "Numero CTG: ", wsctg.NumeroCTG
@@ -712,6 +748,16 @@ if __name__ == '__main__':
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
                 it['numero_CTG'] = ctg
+                wsctg.AnalizarXml("XmlResponse")
+                for k in ['ctg', 'solicitante', 'estado', 'especie', 'cosecha', 
+                          'cuitCanjeador', 'cuitDestino', 'cuitDestinatario', 
+                          'cuitTransportista', 'establecimiento', 
+                          'localidadOrigen', 'localidadDestino', ''
+                          'cantidadHoras', 'patenteVehiculo', 'pesoNetoCarga',
+                          'kmRecorridos', 'tarifaReferencia']:
+                    print k, wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
+              
+
 
         f = open(SALIDA,"wb")
         csv_writer = csv.writer(f, dialect='excel', delimiter=";")
