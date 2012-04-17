@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -54,6 +54,7 @@ Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
 
 import os, sys, time
 from php import date
+import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 
@@ -497,7 +498,6 @@ if __name__ == '__main__':
         sys.exit(0)
 
     import csv
-    import traceback
     from ConfigParser import SafeConfigParser
 
     import wsaa
