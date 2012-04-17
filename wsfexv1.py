@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.03a"
 
 import datetime
 import decimal
@@ -42,6 +42,7 @@ class WSFEXv1:
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT',
                         'GetParamCtz', 'LoadTestXML',
+                        'AnalizarXml', 'ObtenerTagXml',
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -357,6 +358,33 @@ class WSFEXv1:
     def xml_response(self):
         return self.XmlResponse
 
+    def AnalizarXml(self, xml=""):
+        "Analiza un mensaje XML (por defecto la respuesta)"
+        try:
+            if not xml or xml=='XmlResponse':
+                xml = self.XmlResponse 
+            elif xml=='XmlRequest':
+                xml = self.XmlRequest 
+            self.xml = SimpleXMLElement(xml)
+            return True
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+            return False
+
+    def ObtenerTagXml(self, *tags):
+        "Busca en el Xml analizado y devuelve el tag solicitado"
+        # convierto el xml a un objeto
+        try:
+            if self.xml:
+                xml = self.xml
+                # por cada tag, lo busco segun su nombre o posición
+                for tag in tags:
+                    xml = xml(tag) # atajo a getitem y getattr
+                # vuelvo a convertir a string el objeto xml encontrado
+                return str(xml)
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+
 
 class WSFEX(WSFEXv1):
     "Wrapper para retrocompatibilidad con WSFEX"
@@ -388,6 +416,10 @@ elif sys.frozen=='dll':
 else:
     basepath = sys.executable
 INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+
+
+def p_assert_eq(a,b):
+    print a, a==b and '==' or '!=', b
 
 
 if __name__ == "__main__":
@@ -543,6 +575,13 @@ if __name__ == "__main__":
             print "ImpTotal =", wsfexv1.ImpTotal
             print "CAE = ", wsfexv1.CAE
             print "Vencimiento = ", wsfexv1.Vencimiento
+
+            wsfexv1.AnalizarXml("XmlResponse")
+            p_assert_eq(wsfexv1.ObtenerTagXml('Cae'), str(wsfexv1.CAE))
+            p_assert_eq(wsfexv1.ObtenerTagXml('Fecha_cbte'), wsfexv1.FechaCbte)
+            p_assert_eq(wsfexv1.ObtenerTagXml('Moneda_Id'), "012")
+            p_assert_eq(wsfexv1.ObtenerTagXml('Moneda_ctz'), "0.50")
+            p_assert_eq(wsfexv1.ObtenerTagXml('Id_impositivo'), "PJ54482221-l")
 
         if "--params" in sys.argv:
             import codecs, locale
