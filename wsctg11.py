@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -143,6 +143,7 @@ class WSCTG11:
         self.NumeroCTG = ''
         self.CodigoTransaccion = self.Observaciones = ''
 
+    @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = WSDL
@@ -150,16 +151,12 @@ class WSCTG11:
             # use 'cache' from installation base directory 
             cache = os.path.join(self.InstallDir, 'cache')
         proxy_dict = parse_proxy(proxy)
-        try:
-            self.client = SoapClient(url,
-                wsdl=url, cache=cache,
-                trace='--trace' in sys.argv, 
-                ns='ctg', soap_ns='soapenv',
-                exceptions=True, proxy=proxy_dict)
-            return True
-        except Exception, e:
-            ##raise
-            raisePythonException(e)
+        self.client = SoapClient(url,
+            wsdl=url, cache=cache,
+            trace='--trace' in sys.argv, 
+            ns='ctg', soap_ns='soapenv',
+            exceptions=True, proxy=proxy_dict)
+        return True
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
