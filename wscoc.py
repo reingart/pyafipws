@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.07a"
 
 import os
 import socket
@@ -27,7 +27,7 @@ from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
 from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
-HOMO = True
+HOMO = False
 
 WSDL = "https://fwshomo.afip.gov.ar/wscoc/COCService"
 
@@ -225,8 +225,11 @@ class WSCOC:
         return msg    
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=None):
         # cliente soap del web service
+        if timeout:
+            self.__log("Estableciendo timeout=%s" % (timeout, ))
+            socket.setdefaulttimeout(timeout)
         if wrapper:
             Http = set_http_wrapper(wrapper)
             self.Version = WSCOC.Version + " " + Http._wrapper_version
@@ -704,7 +707,8 @@ def main():
     ws.Sign = str(ta.credentials.sign)
 
     ws.LanzarExcepciones = True
-    ws.Conectar()
+    timeout=0.5
+    ws.Conectar(timeout=timeout)
     
     if "--dummy" in sys.argv:
         ##print ws.client.help("dummy")
