@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.08a"
 
 import os
 import socket
@@ -29,9 +29,13 @@ from cStringIO import StringIO
 
 HOMO = False
 
-WSDL = "https://fwshomo.afip.gov.ar/wscoc/COCService"
-
-
+if HOMO:
+    WSDL = "https://fwshomo.afip.gov.ar/wscoc/COCService"
+    LOCATION = "https://fwshomo.afip.gob.ar:443/wscoc2/COCService"
+else:
+    WSDL = "https://serviciosjava.afip.gob.ar/wscoc2/COCService"
+    LOCATION = "https://serviciosjava.afip.gob.ar:443/wscoc2/COCService"
+    
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
     def capturar_errores_wrapper(self, *args, **kwargs):
@@ -234,10 +238,14 @@ class WSCOC:
             Http = set_http_wrapper(wrapper)
             self.Version = WSCOC.Version + " " + Http._wrapper_version
         proxy_dict = parse_proxy(proxy)
+        location = LOCATION
         if HOMO or not wsdl:
             wsdl = WSDL
-        if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
+        elif not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
+            location = wsdl
             wsdl += "?wsdl"
+        elif wsdl.endswith("?wsdl"):
+            location = wsdl[:-5]
         if not cache or HOMO:
             # use 'cache' from installation base directory 
             cache = os.path.join(self.InstallDir, 'cache')
@@ -251,6 +259,9 @@ class WSCOC:
             soap_ns="soapenv",
             soap_server="jbossas6",
             trace = "--trace" in sys.argv)
+        # corrijo ubicación del servidor (http en el WSDL)
+        self.client.services['COCService']['ports']['COCServiceHttpSoap11Endpoint']['location'] = location
+        self.__log("Corrigiendo location=%s" % (location, ))
         return True
 
     @inicializar_y_capturar_excepciones
@@ -707,8 +718,7 @@ def main():
     ws.Sign = str(ta.credentials.sign)
 
     ws.LanzarExcepciones = True
-    timeout=0.5
-    ws.Conectar(timeout=timeout)
+    ws.Conectar(wsdl=WSDL)
     
     if "--dummy" in sys.argv:
         ##print ws.client.help("dummy")
