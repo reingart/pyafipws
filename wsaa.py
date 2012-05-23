@@ -42,7 +42,8 @@ SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL
 # Verificación del web server remoto
 CACERT = "geotrust.crt" # WSAA CA Cert
 
-HOMO = False
+HOMO = True
+TYPELIB = True
 
 # No debería ser necesario modificar nada despues de esta linea
 
@@ -118,7 +119,12 @@ class WSAA:
     _readonly_attrs_ = _public_attrs_[:-1]
     _reg_progid_ = "WSAA"
     _reg_clsid_ = "{6268820C-8900-4AE9-8A2D-F0A1EBD4CAC5}"
-    
+
+    if TYPELIB:
+        _typelib_guid_ = '{30E9C94B-7385-4534-9A80-DF50FD169253}'
+        _typelib_version_ = 2, 4
+        _com_interfaces_ = ['IWSAA']
+
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
     def __init__(self):
@@ -276,6 +282,21 @@ if hasattr(sys, 'frozen'):
 if __name__=="__main__":
     
     if '--register' in sys.argv or '--unregister' in sys.argv:
+        import pythoncom
+        if TYPELIB: 
+            if '--register' in sys.argv:
+                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "wsaa.tlb"))
+                print "Registering %s" % (tlb,)
+                tli=pythoncom.LoadTypeLib(tlb)
+                pythoncom.RegisterTypeLib(tli, tlb)
+            elif '--unregister' in sys.argv:
+                k = WSAA
+                pythoncom.UnRegisterTypeLib(k._typelib_guid_, 
+                                            k._typelib_version_[0], 
+                                            k._typelib_version_[1], 
+                                            0, 
+                                            pythoncom.SYS_WIN32)
+                print "Unregistered typelib"
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSAA)
     elif "/Automate" in sys.argv:
