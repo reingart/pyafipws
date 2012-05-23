@@ -1,8 +1,9 @@
 //
-// wsaa.idl: source PyAfipWs WSAA COM Type Library 
+// trazamed.idl: source PyAfipWs TrazaMed (ANMAT/PAMI) COM Type Library 
 // influenced by msdn example2.idl and pythoncom's pippo.idl
 //
-// Use "print pythoncom.CreateGuid()" to make a new one.
+// Use "print pythoncom.CreateGuid()" to make a new uuid
+// Use MIDL.EXE to compile this file to create TrazaMed.TLB
 
 import "unknwn.idl","oaidl.idl"; 
 
