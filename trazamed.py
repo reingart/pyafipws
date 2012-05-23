@@ -27,7 +27,8 @@ from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
 from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
-HOMO = False
+HOMO = True
+TYPELIB = True
 
 WSDL = "https://186.153.145.2:9050/trazamed.WebService"
        #https://186.153.145.2:9050/trazamed.WebService?wsdl
@@ -78,6 +79,11 @@ class TrazaMed:
 
     _reg_progid_ = "TrazaMed"
     _reg_clsid_ = "{8472867A-AE6F-487F-8554-C2C896CFFC3E}"
+
+    if TYPELIB:
+        _typelib_guid_ = '{F992EB7E-AFBD-41BB-B717-5693D3A2BADB}'
+        _typelib_version_ = 1, 4
+        _com_interfaces_ = ['ITrazaMed']
 
     Version = "%s %s %s" % (__version__, HOMO and 'Homologación' or '', 
                             pysimplesoap.client.__version__)
@@ -383,8 +389,29 @@ INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 if __name__ == '__main__':
 
-    if "--register" in sys.argv or "--unregister" in sys.argv:
+    if '--register' in sys.argv or '--unregister' in sys.argv:
+        import pythoncom
+        if TYPELIB: 
+            if '--register' in sys.argv:
+                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "trazamed.tlb"))
+                print "Registering %s" % (tlb,)
+                tli=pythoncom.LoadTypeLib(tlb)
+                pythoncom.RegisterTypeLib(tli, tlb)
+            elif '--unregister' in sys.argv:
+                k = TrazaMed
+                pythoncom.UnRegisterTypeLib(k._typelib_guid_, 
+                                            k._typelib_version_[0], 
+                                            k._typelib_version_[1], 
+                                            0, 
+                                            pythoncom.SYS_WIN32)
+                print "Unregistered typelib"
         import win32com.server.register
         win32com.server.register.UseCommandLine(TrazaMed)
+    elif "/Automate" in sys.argv:
+        # MS seems to like /automate to run the class factories.
+        import win32com.server.localserver
+        #win32com.server.localserver.main()
+        # start the server.
+        win32com.server.localserver.serve([TrazaMed._reg_clsid_])
     else:
         main()
