@@ -54,13 +54,18 @@ interface ITrazaMed : IDispatch
 	[propput, id(14)] HRESULT Password( [in] BSTR val); 
 	[propget, id(15)] HRESULT CodigoTransaccion( [out, retval] BSTR *  codigo); 
 	[propget, id(16)] HRESULT Resultado( [out, retval] BSTR *  resultado); 
-        
+    
+    [id(17)] HRESULT SetUsername([in] BSTR username);
+    [id(18)] HRESULT SetPassword([in] BSTR password);
+    [id(19)] HRESULT GetCodigoTransaccion([out, retval] BSTR * texto);
+    [id(20)] HRESULT GetResultado([out, retval] BSTR * texto);
+                        
 };  //end interface def
 
 [
 	uuid(F992EB7E-AFBD-41BB-B717-5693D3A2BADB),
-	version(1.4),
-	helpstring("PyAfipWs TrazaMed 1.04 Type Library"),
+	version(1.5),
+	helpstring("PyAfipWs TrazaMed 1.05 Type Library"),
 ] library PyAfipWsTrazaMedLib
 {
 	importlib("stdole32.tlb");

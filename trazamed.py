@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04b"
+__version__ = "1.05a"
 
 import os
 import socket
@@ -68,7 +68,10 @@ class TrazaMed:
     _public_methods_ = ['SendMedicamentos',
                         'SendCancelacTransacc',
                         'SendMedicamentosDHSerie',
-                        'Conectar', 'LeerError']
+                        'Conectar', 'LeerError',
+                        'SetUsername', 'SetPassword', 
+                        'GetCodigoTransaccion', 'GetResultado']
+                        
     _public_attrs_ = [
         'Username', 'Password', 
         'CodigoTransaccion', 'Errores', 'Resultado',
@@ -298,6 +301,22 @@ class TrazaMed:
             return er
         else:
             return ""
+
+    def SetUsername(self, username):
+        "Establezco el nombre de usuario"        
+        self.Username = username
+
+    def SetPassword(self, password):
+        "Establezco la contraseña"        
+        self.Password = password
+
+    def GetCodigoTransaccion(self):
+        "Devuelvo el código de transacción"        
+        return self.CodigoTransaccion
+
+    def GetResultado(self):
+        "Devuelvo el resultado"        
+        return self.Resultado
 
 
 def main():
