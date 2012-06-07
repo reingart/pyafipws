@@ -42,8 +42,8 @@ SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL
 # Verificación del web server remoto
 CACERT = "geotrust.crt" # WSAA CA Cert
 
-HOMO = True
-TYPELIB = True
+HOMO = False
+TYPELIB = False
 
 # No debería ser necesario modificar nada despues de esta linea
 
