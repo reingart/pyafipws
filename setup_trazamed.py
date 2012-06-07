@@ -38,16 +38,20 @@ data_files = [
 import trazamed
 from nsis import build_installer, Target
 
+if trazamed.TYPELIB:
+    data_files.append((".", ["trazamed.tlb"]))
+    
 setup( 
     name="TrazaMed",
-    version=trazamed.__version__ + (trazamed.HOMO and '-homo' or '-full'),
+    version=trazamed.__version__ + (trazamed.TYPELIB and '-tlb' or '') + (trazamed.HOMO and '-homo' or '-full'),
     description="Interfaz PyAfipWs TrazaMed",
     long_description=trazamed.__doc__,
     author="Mariano Reingart",
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = [Target(module=trazamed,modules="trazamed")],
+    com_server = [Target(module=trazamed, modules="trazamed", create_exe=False, create_dll=True)],
+    windows=[Target(module=trazamed, script="trazamed.py", dest_base="trazamed")],
     console=[Target(module=trazamed, script='trazamed.py', dest_base="trazamed_cli"), 
              ],
     options=opts,
