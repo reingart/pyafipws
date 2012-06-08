@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.03b"
 
 import datetime
 import decimal
@@ -104,7 +104,7 @@ class WSFEXv1:
         if HOMO or not wsdl:
             wsdl = WSDL
         elif wsdl and wsdl.endswith("?wsdl"):
-            wsdl = "https://servicios1.afip.gov.ar/wsfexv1/service.asmx"
+            wsdl = wsdl[:-5]
         if not wsdl.endswith("?WSDL") and wsdl.startswith("http"):
             wsdl += "?WSDL"
         if not cache or HOMO:
