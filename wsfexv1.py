@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03b"
+__version__ = "1.04a"
 
 import datetime
 import decimal
@@ -350,6 +350,48 @@ class WSFEXv1:
             umeds.append(umed)
         return umeds
 
+    @inicializar_y_capturar_excepciones
+    def GetParamMon(self):
+        ret = self.client.FEXGetPARAM_MON(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_MONResult']
+        self.__analizar_errores(result)
+     
+        umeds = [] # unidades de medida
+        print result
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_Mon']
+            try:
+                umed = {'id': u.get('Mon_Id'), 'ds': u.get('Mon_Ds'), 
+                        'vig_desde': u.get('Mon_vig_desde'), 
+                        'vig_hasta': u.get('Mon_vig_hasta')}
+            except Exception, e:
+                print e
+                if u is None:
+                    # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
+                    umed = {'id':'', 'ds':'','vig_desde':'','vig_hasta':''}
+                    #import pdb; pdb.set_trace()
+                    #print u
+                
+            
+            umeds.append(umed)
+        return umeds
+
+    @inicializar_y_capturar_excepciones
+    def GetParamCtz(self, moneda_id):
+        "Recuperador de cotización de moneda"
+        ret = self.client.FEXGetPARAM_Ctz(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            MonId=moneda_id,
+            )
+        self.__analizar_errores(ret['FEXGetPARAM_CtzResult'])
+        res = ret['FEXGetPARAM_CtzResult'].get('FEXResultGet')
+        if res:
+            ctz = str(res.get('Mon_ctz',""))
+        else:
+            ctz = ''
+        return ctz
+    
     @property
     def xml_request(self):
         return self.XmlRequest
@@ -587,9 +629,17 @@ if __name__ == "__main__":
             import codecs, locale
             sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
                 
+            print "=== Monedas ==="
+            mons = wsfexv1.GetParamMon()    
+            for m in mons:
+                print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % m
+            #umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
+
             print "=== Unidades de medida ==="
             umedidas = wsfexv1.GetParamUMed()    
             for u in umedidas:
                 print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u
             umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
             
+        if "--ctz" in sys.argv:
+            print wsfexv1.GetParamCtz('DOL')
