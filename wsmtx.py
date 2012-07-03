@@ -767,15 +767,18 @@ def main():
             cod_mtx = 1234567890123
             codigo = "P0001"
             ds = "Descripcion del producto P0001"
-            qty = 1.00
+            qty = 2.00
             umed = 7
             precio = 100.00
             bonif = 0.00
             iva_id = 5
-            imp_iva = 21.00
-            imp_subtotal = 121.00
+            imp_iva = 42.00
+            imp_subtotal = 242.00
             wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                         iva_id, imp_iva, imp_subtotal)
+            
+            wsmtxca.AgregarItem(None, None, None, 'bonificacion', 0, 99, 1, None, 
+                        5, -21, -121)
             
             wsmtxca.AutorizarComprobante()
 
