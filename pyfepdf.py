@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05f"
+__version__ = "1.06a"
 
 DEBUG = False
 HOMO = False
@@ -892,9 +892,10 @@ if __name__ == '__main__':
 
 
         # datos fijos:
-        fepdf.CUIT = "33693450239"  # CUIT del emisor para código de barras
         for k, v in conf_pdf.items():
             fepdf.AgregarDato(k, v)
+            if k.upper() == 'CUIT':
+                fepdf.CUIT = v  # CUIT del emisor para código de barras
 
         fepdf.CrearPlantilla(papel=conf_fact.get("papel", "legal"), 
                              orientacion=conf_fact.get("orientacion", "portrait"))
