@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 import os,sys
 from pysimplesoap.simplexml import SimpleXMLElement
@@ -168,7 +168,7 @@ class COT:
                                     str(error.descripcion).decode('latin1').encode("ascii", "replace")))
                         self.remitos.append(d)
                     # establecer valores del primer remito (sin eliminarlo)
-                    self.LeerValidacionRemito(pop=false)
+                    self.LeerValidacionRemito(pop=False)
             return True      
         except Exception, e:
                 ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
