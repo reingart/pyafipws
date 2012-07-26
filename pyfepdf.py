@@ -429,6 +429,8 @@ class FEPDF:
                                 dato_a = it.get('dato_a'), dato_b = it.get('dato_b'),
                                 dato_c = it.get('dato_c'), dato_d= it.get('dato_d'),
                                 dato_e = it.get('dato_e'),
+                                u_mtx = it.get('u_mtx'),
+                                cod_mtx = it.get('cod_mtx'),
                                 )
         
         # divido las observaciones por linea:
@@ -594,7 +596,13 @@ class FEPDF:
                             f.set('Item.Precio%02d' % li, self.fmt_pre(it['precio']))
                         if it['importe'] is not None:
                             f.set('Item.Importe%02d' % li, self.fmt_num(it['importe']))
-                            
+
+                        # Datos MTX
+                        if it.get('u_mtx') is not None:
+                            f.set('Item.U_MTX%02d' % li, it['u_mtx'])
+                        if it.get('cod_mtx') is not None:
+                            f.set('Item.COD_MTX%02d' % li, it['cod_mtx'])
+
                         # datos adicionales de items
                         for adic in ['dato_a', 'dato_b', 'dato_c', 'dato_d', 'dato_e']:
                             if adic in it:
