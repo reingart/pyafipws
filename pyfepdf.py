@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 DEBUG = False
 HOMO = False
@@ -428,7 +428,7 @@ class FEPDF:
                                 iva_id = it.get('iva_id'), imp_iva = it.get('imp_iva'),
                                 dato_a = it.get('dato_a'), dato_b = it.get('dato_b'),
                                 dato_c = it.get('dato_c'), dato_d= it.get('dato_d'),
-                                dato_e = it.get('dato_d'),
+                                dato_e = it.get('dato_e'),
                                 )
         
         # divido las observaciones por linea:
