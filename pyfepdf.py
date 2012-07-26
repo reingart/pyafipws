@@ -679,7 +679,8 @@ class FEPDF:
                 f.set('CAE', fact['cae'])
                 f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
                 if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
-                    barras = ''.join([self.CUIT, "%02d" % int(fact['tipo_cbte']), "%04d" % int(fact['punto_vta']), 
+                    cuit = ''.join([x for x in str(self.CUIT) if x.isdigit()])
+                    barras = ''.join([cuit, "%02d" % int(fact['tipo_cbte']), "%04d" % int(fact['punto_vta']), 
                         str(fact['cae']), fact['fecha_vto']])
                     barras = barras + self.digito_verificador_modulo10(barras)
                 else:
