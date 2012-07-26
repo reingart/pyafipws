@@ -95,7 +95,7 @@ def leer(archivos=None):
                 ('Iva', IVA, 'ivas'), 
                 ('Tributo', TRIBUTO, 'tributos'), 
                 ('Permiso', PERMISO, 'permisos'),
-                ('Comprobante Asociado', CMP_ASOC, 'cmps_asocs'),
+                ('Comprobante Asociado', CMP_ASOC, 'cbtes_asoc'),
                 ('Dato', DATO, 'datos'),
                 ]
     for nombre, formato, subclave in formatos:
@@ -117,7 +117,7 @@ def leer(archivos=None):
                     'ivas': [],
                     'tributos': [],
                     'permisos': [],
-                    'cmps_asocs': [],
+                    'cbtes_asoc': [],
                     'datos': [],
                     })
                 regs[r['id']] = r
