@@ -888,6 +888,7 @@ if __name__ == '__main__':
         if '--grabar' in sys.argv:
             reg = fepdf.factura.copy()
             reg['id'] = 0
+            reg['err_code'] = 'OK'
             if '--dbf' in sys.argv:
                 import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
