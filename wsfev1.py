@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12j"
+__version__ = "1.12k"
 
 import datetime
 import decimal
@@ -29,6 +29,7 @@ from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 HOMO = False
+TYPELIB = True
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
@@ -119,6 +120,11 @@ class WSFEv1:
         
     _reg_progid_ = "WSFEv1"
     _reg_clsid_ = "{CA0E604D-E3D7-493A-8880-F6CDD604185E}"
+
+    if TYPELIB:
+        _typelib_guid_ = '{8A7252C3-4088-4293-BF92-EC5956ADBC73}'
+        _typelib_version_ = 1, 12
+        _com_interfaces_ = ['IWSFEv1']
 
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
@@ -1123,6 +1129,21 @@ INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
+        import pythoncom
+        if TYPELIB: 
+            if '--register' in sys.argv:
+                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "wsfev1.tlb"))
+                print "Registering %s" % (tlb,)
+                tli=pythoncom.LoadTypeLib(tlb)
+                pythoncom.RegisterTypeLib(tli, tlb)
+            elif '--unregister' in sys.argv:
+                k = WSFEv1
+                pythoncom.UnRegisterTypeLib(k._typelib_guid_, 
+                                            k._typelib_version_[0], 
+                                            k._typelib_version_[1], 
+                                            0, 
+                                            pythoncom.SYS_WIN32)
+                print "Unregistered typelib"
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSFEv1)
     else:
