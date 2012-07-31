@@ -32,26 +32,34 @@ opts = {
     }}
 
 data_files = [
-    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt", "rece.ini.dist", "geotrust.crt"]),
+    (".", ["licencia.txt", "rece.ini.dist", "geotrust.crt"]),
     ("cache", glob.glob("cache/*")),
     ]
 
 import wsfev1, rece1, wsaa
 from nsis import build_installer, Target
 
+if wsfev1.TYPELIB:
+    data_files.append((".", ["wsaa.tlb"]))
+    data_files.append((".", ["wsfev1.tlb"]))
+
 setup( 
     name="WSFEV1",
-    version=wsfev1.__version__ + (wsfev1.HOMO and '-homo' or '-full'),
+    version=wsfev1.__version__ + (wsaa.TYPELIB and '-tlb' or '') + (wsfev1.HOMO and '-homo' or '-full'),
     description="Interfaz PyAfipWs WSFEv1 %s",
     long_description=wsfev1.__doc__,
     author="Mariano Reingart",
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = [Target(module=wsfev1,modules="wsfev1")],
+    com_server = [Target(module=wsfev1,modules="wsfev1", create_exe=wsfev1.TYPELIB, 
+	                                                     create_dll=not wsfev1.TYPELIB),
+				  Target(module=wsaa,modules="wsaa", create_exe=wsaa.TYPELIB, 
+	                                                 create_dll=not wsaa.TYPELIB),
+				 ],
     console=[Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
              Target(module=rece1, script='rece1.py'), 
-             Target(module=wsaa, script='wsaa.py'),
+             Target(module=wsaa, script='wsaa.py', dest_base="wsaa_cli"),
              ],
     options=opts,
     data_files = data_files,
