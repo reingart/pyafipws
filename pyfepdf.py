@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.06c"
 
 DEBUG = False
 HOMO = False
@@ -409,10 +409,14 @@ class FEPDF:
             qty = qty_pos=='izq' and it['qty'] or None
             codigo = it['codigo']
             umed = it['umed']
-            if DEBUG: print "dividiendo", it['ds']
+            ds = it['ds']
+            if '\x00' in ds:
+                # limpiar descripción (campos dbf):
+                ds = ds.replace('\x00', '')
+            if DEBUG: print "dividiendo", ds
             # divido la descripción (simil célda múltiple de PDF) 
             n_li = 0
-            for ds in f.split_multicell(it['ds'], 'Item.Descripcion01'):
+            for ds in f.split_multicell(ds, 'Item.Descripcion01'):
                 if DEBUG: print "multicell", ds
                 # agrego un item por linea (sin precio ni importe):
                 li_items.append(dict(codigo=codigo, ds=ds, qty=qty, umed=umed, precio=None, importe=None))
