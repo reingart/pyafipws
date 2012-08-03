@@ -18,15 +18,19 @@ __license__ = "GPL 3.0"
 
 from decimal import Decimal
 
+CODEPAGE = 'cp437'
+
 try:
     import dbf
-    dbf.encoding('cp850')
+    print "Encoding!"
 except:
     print "para soporte de DBF debe instalar dbf"
     print "     http://pypi.python.org/pypi/dbf/"
     
 CHARSET = 'latin1'
+CODEPAGE = 'cp437'
 DEBUG = True
+dbf.encoding(CODEPAGE)
 
 # Formato de entrada/salida similar a SIAP RECE, con agregados
 
@@ -101,7 +105,7 @@ def leer(archivos=None):
     for nombre, formato, subclave in formatos:
         filename = archivos.get(nombre.lower(), "%s.dbf" % nombre[:8])
         if DEBUG: print "leyendo tabla", nombre, filename
-        tabla = dbf.Table(filename)
+        tabla = dbf.Table(filename, codepage=CODEPAGE)
         for reg in tabla:
             r = {}
             d = reg.scatter_fields() 
