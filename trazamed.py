@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.07a"
 
 import os
 import socket
@@ -27,8 +27,8 @@ from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
 from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
-HOMO = True
-TYPELIB = True
+HOMO = False
+TYPELIB = False
 
 WSDL = "https://186.153.145.2:9050/trazamed.WebService"
        #https://186.153.145.2:9050/trazamed.WebService?wsdl
@@ -68,6 +68,7 @@ class TrazaMed:
     _public_methods_ = ['SendMedicamentos',
                         'SendCancelacTransacc',
                         'SendMedicamentosDHSerie',
+                        'SendMedicamentosFraccion',
                         'Conectar', 'LeerError',
                         'SetUsername', 'SetPassword', 
                         'GetCodigoTransaccion', 'GetResultado']
@@ -219,6 +220,62 @@ class TrazaMed:
 
         return True
 
+    @inicializar_y_capturar_excepciones
+    def SendMedicamentosFraccion(self, usuario, password, 
+                         f_evento, h_evento, gln_origen, gln_destino, 
+                         n_remito, n_factura, vencimiento, gtin, lote,
+                         numero_serial, id_obra_social, id_evento,
+                         cuit_origen='', cuit_destino='', apellido='', nombres='',
+                         tipo_docmento='', n_documento='', sexo='',
+                         direccion='', numero='', piso='', depto='', localidad='', provincia='',
+                         n_postal='', fecha_nacimiento='', telefono='',
+                         nro_asociado=None, cantidad=None,
+                         ):
+        "Realiza el registro de una transacción de medicamentos fraccionados"
+        res = self.client.sendMedicamentosFraccion(
+            arg0={  'f_evento': f_evento, 
+                    'h_evento': h_evento, 
+                    'gln_origen': gln_origen, 
+                    'gln_destino': gln_destino, 
+                    'n_remito': n_remito, 
+                    'n_factura': n_factura, 
+                    'vencimiento': vencimiento, 
+                    'gtin': gtin, 
+                    'lote': lote, 
+                    'numero_serial': numero_serial, 
+                    'id_obra_social': id_obra_social, 
+                    'id_evento': id_evento, 
+                    'cuit_origen': cuit_origen, 
+                    'cuit_destino': cuit_destino, 
+                    'apellido': apellido, 
+                    'nombres': nombres, 
+                    'tipo_docmento': tipo_docmento, 
+                    'n_documento': n_documento, 
+                    'sexo': sexo, 
+                    'direccion': direccion, 
+                    'numero': numero, 
+                    'piso': piso, 
+                    'depto': depto, 
+                    'localidad': localidad, 
+                    'provincia': provincia, 
+                    'n_postal': n_postal,
+                    'fecha_nacimiento': fecha_nacimiento, 
+                    'telefono': telefono,
+                    'nro_asociado': nro_asociado,
+                    'cantidad': cantidad,
+                    }, 
+            arg1=usuario, 
+            arg2=password,
+        )
+
+        ret = res['return']
+        
+        self.CodigoTransaccion = ret[0]['codigoTransaccion']
+        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
+                        for it in ret if 'errores' in it]
+        self.Resultado = ret[-1]['resultado']
+
+        return True
         
     @inicializar_y_capturar_excepciones
     def SendMedicamentosDHSerie(self, usuario, password, 
@@ -360,6 +417,25 @@ def main():
             n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
             telefono="5555-5555",
             nro_asociado="1234")
+        print "Resultado", ws.Resultado
+        print "CodigoTransaccion", ws.CodigoTransaccion
+        print "Erroes", ws.Errores
+    if '--testfraccion' in sys.argv:
+        ws.SendMedicamentosFraccion(
+            usuario='pruebasws', password='pruebasws',
+            f_evento="25/11/2011", h_evento="04:24", 
+            gln_origen="glnws", gln_destino="glnws", 
+            n_remito="1234", n_factura="1234", 
+            vencimiento="30/11/2011", gtin="GTIN1", lote="1111",
+            numero_serial="12345", id_obra_social=None, id_evento=133,
+            cuit_origen="20267565393", cuit_destino="20267565393", 
+            apellido="Reingart", nombres="Mariano",
+            tipo_docmento="96", n_documento="26756539", sexo="M",
+            direccion="Saraza", numero="1234", piso="", depto="", 
+            localidad="Hurlingham", provincia="Buenos Aires",
+            n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
+            telefono="5555-5555",
+            nro_asociado="1234", cantidad=5)
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Erroes", ws.Errores
