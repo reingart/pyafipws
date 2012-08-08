@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29e"
+__version__ = "1.29f"
 
 import datetime
 import os
@@ -258,6 +258,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     v = d[clave.replace("_","")[:10]]
                     r[clave] = v
                 ld.append(r)    
+            tabla.close()
         encabezado = encabezado[0]
     else:
         for linea in entrada:
@@ -378,7 +379,10 @@ def escribir_factura(dic, archivo):
                 campos.append(campo)
                 claves.append(clave.replace("_","")[:10])
             filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
-            if DEBUG: print "leyendo tabla", nombre, filename
+            if DEBUG: print "escribiendo tabla", nombre, filename
+            if '/delete' in sys.argv:
+                if DEBUG: print "eliminando", filename
+                os.unlink(filename)
             tabla = dbf.Table(filename, campos)
 
             for d in l:
