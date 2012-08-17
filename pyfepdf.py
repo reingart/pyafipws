@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.06e"
 
 DEBUG = False
 HOMO = False
@@ -413,6 +413,9 @@ class FEPDF:
             if '\x00' in ds:
                 # limpiar descripción (campos dbf):
                 ds = ds.replace('\x00', '')
+            if '<br/>' in ds:
+                # reemplazar saltos de linea:
+                ds = ds.replace('<br/>', '\n')
             if DEBUG: print "dividiendo", ds
             # divido la descripción (simil célda múltiple de PDF) 
             n_li = 0
