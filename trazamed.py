@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.08a"
 
 import os
 import socket
@@ -71,6 +71,7 @@ class TrazaMed:
                         'SendMedicamentosFraccion',
                         'Conectar', 'LeerError',
                         'SetUsername', 'SetPassword', 
+                        'SetParametro',
                         'GetCodigoTransaccion', 'GetResultado']
                         
     _public_attrs_ = [
@@ -102,6 +103,7 @@ class TrazaMed:
         self.Traceback = self.Excepcion = ""
         self.Log = None
         self.InstallDir = INSTALL_DIR
+        self.params = {}
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -164,6 +166,11 @@ class TrazaMed:
                 self.Excepcion = u"<no disponible>"
             return False
 
+    def SetParametro(self, clave, valor):
+        "Establece un parámetro general (para ser usado en las llamadas posteriores)"
+        self.params[clave] = valor
+        return True
+        
     @inicializar_y_capturar_excepciones
     def SendMedicamentos(self, usuario, password, 
                          f_evento, h_evento, gln_origen, gln_destino, 
@@ -176,8 +183,8 @@ class TrazaMed:
                          nro_asociado=None,
                          ):
         "Realiza el registro de una transacción de medicamentos. "
-        res = self.client.sendMedicamentos(
-            arg0={  'f_evento': f_evento, 
+        # creo los parámetros para esta llamada
+        params = {  'f_evento': f_evento, 
                     'h_evento': h_evento, 
                     'gln_origen': gln_origen, 
                     'gln_destino': gln_destino, 
@@ -206,7 +213,11 @@ class TrazaMed:
                     'fecha_nacimiento': fecha_nacimiento, 
                     'telefono': telefono,
                     'nro_asociado': nro_asociado,
-                    }, 
+                    }
+        # actualizo con parámetros generales:
+        params.update(self.params)
+        res = self.client.sendMedicamentos(
+            arg0=params,
             arg1=usuario, 
             arg2=password,
         )
@@ -232,8 +243,8 @@ class TrazaMed:
                          nro_asociado=None, cantidad=None,
                          ):
         "Realiza el registro de una transacción de medicamentos fraccionados"
-        res = self.client.sendMedicamentosFraccion(
-            arg0={  'f_evento': f_evento, 
+        # creo los parámetros para esta llamada
+        params = {  'f_evento': f_evento, 
                     'h_evento': h_evento, 
                     'gln_origen': gln_origen, 
                     'gln_destino': gln_destino, 
@@ -263,7 +274,11 @@ class TrazaMed:
                     'telefono': telefono,
                     'nro_asociado': nro_asociado,
                     'cantidad': cantidad,
-                    }, 
+                    }
+        # actualizo con parámetros generales:
+        params.update(self.params)
+        res = self.client.sendMedicamentosFraccion(
+            arg0=params,                    
             arg1=usuario, 
             arg2=password,
         )
@@ -290,8 +305,8 @@ class TrazaMed:
                          nro_asociado=None,
                          ):
         "Envía un lote de medicamentos informando el desde-hasta número de serie"
-        res = self.client.sendMedicamentosDHSerie(
-            arg0={  'f_evento': f_evento, 
+        # creo los parámetros para esta llamada
+        params = {  'f_evento': f_evento, 
                     'h_evento': h_evento, 
                     'gln_origen': gln_origen, 
                     'gln_destino': gln_destino, 
@@ -321,7 +336,11 @@ class TrazaMed:
                     'fecha_nacimiento': fecha_nacimiento, 
                     'telefono': telefono,
                     'nro_asociado': nro_asociado,
-                    }, 
+                    }
+        # actualizo con parámetros generales:
+        params.update(self.params)
+        res = self.client.sendMedicamentosDHSerie(
+            arg0=params,
             arg1=usuario, 
             arg2=password,
         )
@@ -402,6 +421,7 @@ def main():
     #op = ws.client.get_operation("sendMedicamentos")
     #import pdb;pdb.set_trace()
     if '--test' in sys.argv:
+        ws.SetParametro('nro_asociado', "9999999999999")
         ws.SendMedicamentos(
             usuario='pruebasws', password='pruebasws',
             f_evento="25/11/2011", h_evento="04:24", 
@@ -416,11 +436,13 @@ def main():
             localidad="Hurlingham", provincia="Buenos Aires",
             n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
             telefono="5555-5555",
-            nro_asociado="1234")
+            )
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Erroes", ws.Errores
     if '--testfraccion' in sys.argv:
+        ws.SetParametro('nro_asociado', "9999999999999")
+        ws.SetParametro('cantidad', 5)
         ws.SendMedicamentosFraccion(
             usuario='pruebasws', password='pruebasws',
             f_evento="25/11/2011", h_evento="04:24", 
@@ -434,13 +456,13 @@ def main():
             direccion="Saraza", numero="1234", piso="", depto="", 
             localidad="Hurlingham", provincia="Buenos Aires",
             n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
-            telefono="5555-5555",
-            nro_asociado="1234", cantidad=5)
+            telefono="5555-5555",)
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Erroes", ws.Errores
     elif '--testdh' in sys.argv:
         print "Informando medicamentos..."
+        ws.SetParametro('nro_asociado', "1234")
         ws.SendMedicamentosDHSerie(
             usuario='pruebasws', password='pruebasws',
             f_evento="25/11/2011", h_evento="04:24", 
