@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08a"
+__version__ = "1.08b"
 
 import os
 import socket
@@ -43,6 +43,9 @@ def inicializar_y_capturar_excepciones(func):
             self.Resultado = self.CodigoTransaccion = ""
             self.Errores = []
             self.Traceback = self.Excepcion = ""
+            
+            if self.client is None:
+                raise RuntimeError("Debe llamar a Conectar")
 
             # llamo a la función (sin reintentos)
             return func(self, *args, **kwargs)
@@ -439,6 +442,7 @@ def main():
             )
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
+        print "Excepciones", ws.Excepcion
         print "Erroes", ws.Errores
     if '--testfraccion' in sys.argv:
         ws.SetParametro('nro_asociado', "9999999999999")
