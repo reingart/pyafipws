@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06j"
+__version__ = "1.07a"
 
 import datetime
 import decimal
@@ -87,6 +87,7 @@ class WSMTXCA:
                         'AutorizarComprobante', 
                         'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
                         'InformarComprobanteCAEA', 
+                        'InformarCAEANoUtilizado', 'InformarCAEANoUtilizadoPtoVta',
                         'ConsultarUltimoComprobanteAutorizado', 'CompUltimoAutorizado', 
                         'ConsultarComprobante',
                         'ConsultarTiposComprobante', 
@@ -404,22 +405,21 @@ class WSMTXCA:
     @inicializar_y_capturar_excepciones
     def ConsultarCAEA(self, periodo=None, orden=None, caea=None):
         "Método de consulta de CAEA"
-
         if periodo and orden:
             anio, mes = int(periodo[0:4]), int(periodo[4:6])
             if int(orden)==1:
-                dias = 1, 14
+                dias = 1, 15
             else:
                 if mes in (1,3,5,7,8,10,12):
-                    dias = 15, 31
+                    dias = 16, 31
                 elif mes in (4,6,9,11):
-                    dias = 15, 31
+                    dias = 16, 30
                 else:
                     import calendar
                     if calendar.isleap(year):
-                        dias = 15, 29 # biciesto
+                        dias = 16, 29 # biciesto
                     else:
-                        dias = 15, 28
+                        dias = 16, 28
 
             fecha_desde = "%04d-%02d-%02d" % (anio, mes, dias[0])
             fecha_hasta = "%04d-%02d-%02d" % (anio, mes, dias[1])
@@ -550,6 +550,42 @@ class WSMTXCA:
             self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
         return self.CAEA
 
+
+    @inicializar_y_capturar_excepciones
+    def InformarCAEANoUtilizado(self, caea):
+        ret = self.client.informarCAEANoUtilizado(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            CAEA=caea,
+            )
+        self.Resultado = ret['resultado'] # u'A'
+        self.Errores = []
+        if ret['resultado'] in ("A", "O"):
+            self.FchProceso = ret['fechaProceso'].strftime("%Y-%m-%d")
+            self.CAEA = str(ret['CAEA']) # 60423794871430L
+            self.EmisionTipo = 'CAEA'
+        self.__analizar_errores(ret)
+        if 'evento' in ret:
+            self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
+        return self.Resultado
+
+    @inicializar_y_capturar_excepciones
+    def InformarCAEANoUtilizadoPtoVta(self, caea, punto_vta):
+        ret = self.client.informarCAEANoUtilizadoPtoVta(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            CAEA=caea,
+            numeroPuntoVenta=punto_vta,
+            )
+        self.Resultado = ret['resultado'] # u'A'
+        self.Errores = []
+        if ret['resultado'] in ("A", "O"):
+            self.FchProceso = ret['fechaProceso'].strftime("%Y-%m-%d")
+            self.CAEA = str(ret['CAEA']) # 60423794871430L
+            self.EmisionTipo = 'CAEA'
+            self.PuntoVenta = ret['numeroPuntoVenta'] # 4000
+        self.__analizar_errores(ret)
+        if 'evento' in ret:
+            self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
+        return self.Resultado
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltimoComprobanteAutorizado(self, tipo_cbte, punto_vta):
