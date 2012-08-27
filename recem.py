@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.30a"
+__version__ = "1.30b"
 
 import datetime
 import os
@@ -744,6 +744,18 @@ if __name__ == "__main__":
                     print error
             sys.exit(0)
 
+        if '/consultarptosvtacaeanoinformados' in sys.argv:
+            caea = raw_input("CAEA: ")
+            if DEBUG: 
+                print "Consultando PtosVta CAEA: %s" % (caea)
+            ptos_vta = ws.ConsultarPtosVtaCAEANoInformados(caea)
+            print "Resultado:", '\n'.join(ptos_vta)
+            if ws.Errores:
+                print "Errores:"
+                for error in ws.Errores:
+                    print error
+            sys.exit(0)
+            
         f_entrada = f_salida = None
         try:
             f_entrada = open(entrada,"r")
