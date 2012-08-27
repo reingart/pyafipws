@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29f"
+__version__ = "1.30a"
 
 import datetime
 import os
@@ -718,6 +718,31 @@ if __name__ == "__main__":
                 print "FchProceso:", ws.FchProceso
             sys.exit(0)
 
+            
+        if '/informarcaeanoutilizado' in sys.argv:
+            caea = raw_input("CAEA: ")
+            if DEBUG: 
+                print "Informando CAEA no utilizado: %s" % (caea, )
+            ok = ws.InformarCAEANoUtilizado(caea)
+            print "Resultado:", ok
+            if ws.Errores:
+                print "Errores:"
+                for error in ws.Errores:
+                    print error
+            sys.exit(0)
+
+        if '/informarcaeanoutilizadoptovta' in sys.argv:
+            caea = raw_input("CAEA: ")
+            pto_vta = raw_input("Punto de Venta: ")
+            if DEBUG: 
+                print "Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta)
+            ok = ws.InformarCAEANoUtilizadoPtoVta(caea, pto_vta)
+            print "Resultado:", ok
+            if ws.Errores:
+                print "Errores:"
+                for error in ws.Errores:
+                    print error
+            sys.exit(0)
 
         f_entrada = f_salida = None
         try:
