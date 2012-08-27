@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.07b"
 
 import datetime
 import decimal
@@ -89,6 +89,7 @@ class WSMTXCA:
                         'InformarComprobanteCAEA', 
                         'InformarCAEANoUtilizado', 'InformarCAEANoUtilizadoPtoVta',
                         'ConsultarUltimoComprobanteAutorizado', 'CompUltimoAutorizado', 
+                        'ConsultarPtosVtaCAEANoInformados',
                         'ConsultarComprobante',
                         'ConsultarTiposComprobante', 
                         'ConsultarTiposDocumento',
@@ -712,6 +713,16 @@ class WSMTXCA:
         "Este método permite consultar los puntos de venta habilitados para CAEA en este WS"
         ret = self.client.consultarPuntosVentaCAEA(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        return ["%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % p
+                 for p in ret['arrayPuntosVenta']]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarPtosVtaCAEANoInformados(self, caea):
+        "Este método permite  consultar que puntos de venta aún no fueron informados para  un  CAEA determinado."
+        ret = self.client.consultarPtosVtaCAEANoInformados(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            CAEA=caea,
             )
         return ["%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % p
                  for p in ret['arrayPuntosVenta']]
