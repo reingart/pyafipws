@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12k"
+__version__ = "1.12n"
 
 import datetime
 import decimal
@@ -29,7 +29,7 @@ from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 HOMO = False
-TYPELIB = True
+TYPELIB = False
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
@@ -125,7 +125,8 @@ class WSFEv1:
         _typelib_guid_ = '{8A7252C3-4088-4293-BF92-EC5956ADBC73}'
         _typelib_version_ = 1, 12
         _com_interfaces_ = ['IWSFEv1']
-
+        ##_reg_class_spec_ = "wsfev1.WSFEv1"
+        
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
     def __init__(self):
@@ -1145,6 +1146,13 @@ if __name__ == '__main__':
                                             pythoncom.SYS_WIN32)
                 print "Unregistered typelib"
         import win32com.server.register
+        print "_reg_class_spec_", WSFEv1._reg_class_spec_
         win32com.server.register.UseCommandLine(WSFEv1)
+    elif "/Automate" in sys.argv:
+        # MS seems to like /automate to run the class factories.
+        import win32com.server.localserver
+        #win32com.server.localserver.main()
+        # start the server.
+        win32com.server.localserver.serve([WSFEv1._reg_clsid_])
     else:
         main()
