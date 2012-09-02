@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06e"
+__version__ = "1.06f"
 
 DEBUG = False
 HOMO = False
@@ -112,15 +112,15 @@ class FEPDF:
     tributos_ds = {1: 'Impuestos nacionales', 2: 'Impuestos provinciales', 3: 'Impuestos municipales', 4: 'Impuestos Internos', 99: 'Otro'}
 
     tipos_fact = { 
-        (1, 6, 11, 19): 'Factura', 
-        (2, 7, 12, 20): 'Nota de Débito', 
-        (3, 8, 13, 21): 'Nota de Crédito',
-        (4, 9): 'Recibo', 
-        (10, 5): 'Nota de Venta al contado', 
-        (60, 61): 'Cuenta de Venta y Líquido producto',
-        (63, 64): 'Liquidación',
-        (91, ): 'Remito',
-        (39, 40): '???? (R.G. N° 3419)'}
+        (1, 6, 11, 19): u'Factura', 
+        (2, 7, 12, 20): u'Nota de Débito', 
+        (3, 8, 13, 21): u'Nota de Crédito',
+        (4, 9): u'Recibo', 
+        (10, 5): u'Nota de Venta al contado', 
+        (60, 61): u'Cuenta de Venta y Líquido producto',
+        (63, 64): u'Liquidación',
+        (91, ): u'Remito',
+        (39, 40): u'???? (R.G. N° 3419)'}
 
     letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63): 'A',
                    (6, 7, 8, 9, 10, 40, 61, 64): 'B',
