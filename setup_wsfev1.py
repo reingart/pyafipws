@@ -36,7 +36,7 @@ data_files = [
     ("cache", glob.glob("cache/*")),
     ]
 
-import wsfev1, rece1, wsaa
+import wsfev1, rece1, wsaa, rece
 from nsis import build_installer, Target
 
 if wsfev1.TYPELIB:
@@ -52,13 +52,17 @@ setup(
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = [Target(module=wsfev1,modules="wsfev1", create_exe=wsfev1.TYPELIB, 
+    com_server = [Target(module=wsfev1,modules="wsfev1", create_exe=False, 
 	                                                     create_dll=not wsfev1.TYPELIB),
-				  Target(module=wsaa,modules="wsaa", create_exe=wsaa.TYPELIB, 
+				  Target(module=wsaa,modules="wsaa", create_exe=False, 
 	                                                 create_dll=not wsaa.TYPELIB),
 				 ],
+    windows=[Target(module=wsaa, script="wsaa.py", dest_base="wsaa"),
+             Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1"),
+            ],
     console=[Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
              Target(module=rece1, script='rece1.py'), 
+             Target(module=rece, script='rece.py'), 
              Target(module=wsaa, script='wsaa.py', dest_base="wsaa_cli"),
              ],
     options=opts,
