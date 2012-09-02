@@ -1,0 +1,63 @@
+//
+// wsaa.idl: source PyAfipWs WSAA COM Type Library 
+// influenced by msdn example2.idl and pythoncom's pippo.idl
+//
+// Use "print pythoncom.CreateGuid()" to make a new one.
+
+import "unknwn.idl","oaidl.idl"; 
+
+[
+	uuid(95392BD9-54C3-4334-A045-A069BAF7FB97),
+	helpstring("PyAfipWs WSAA interface"),
+	pointer_default(unique),
+	dual,
+	object
+	//oleautomation
+] 
+interface IWSAA : IDispatch
+{
+	[id(1)] HRESULT CreateTRA([in] BSTR service, [in] int ttl,
+					[out, retval] BSTR * tra);
+	[id(2)] HRESULT SignTRA([in] BSTR tra, [in] BSTR cert, [in] BSTR privatekey,
+					[out, retval] BSTR * cms);
+	[id(3)] HRESULT CallWSAA([in] BSTR cms, [in] BSTR proxy, [in] BSTR url,
+					[out, retval] BSTR * ta);
+
+	[propget, id(4)] HRESULT Token( [out, retval] BSTR *  token); 
+	[propget, id(5)] HRESULT Sign( [out, retval] BSTR *  sign); 
+	[propget, id(6)] HRESULT Version( [out, retval] BSTR *  sign); 
+	[propget, id(7)] HRESULT XmlResponse( [out, retval] BSTR *  sign); 
+
+    [id(8)] HRESULT Conectar([in] BSTR cache, [in] BSTR wsdl, 
+                    [in] BSTR proxy, [in] BSTR wrapper, [in] BSTR cacert,
+                    [out, retval] BOOL * ok);
+    [id(9)] HRESULT LoginCMS([in] BSTR cms, [out, retval] BSTR * ta);
+    [id(10)] HRESULT AnalizarXml([in] BSTR xml, [out, retval] BOOL * ok);
+    [id(11)] HRESULT ObtenerTagXml([in] BSTR tags, [out, retval] BSTR * texto);
+    [id(12)] HRESULT Expirado([in] BSTR fecha, [out, retval] BOOL * ok);
+
+	[propget, id(13)] HRESULT InstallDir( [out, retval] BSTR *  val); 
+	[propget, id(14)] HRESULT Traceback( [out, retval] BSTR *  val); 
+	[propget, id(15)] HRESULT Excepcion( [out, retval] BSTR *  val); 
+	[propget, id(16)] HRESULT SoapFault( [out, retval] BSTR *  val); 
+	[propget, id(17)] HRESULT LanzarExcepciones( [out, retval] BOOL *  val); 
+	[propget, id(18)] HRESULT XmlRequest( [out, retval] BSTR *  val); 
+
+};  //end interface def
+
+[
+	uuid(30E9C94B-7385-4534-9A80-DF50FD169253),
+	version(2.4),
+	helpstring("PyAfipWs WSAA 2.04 Type Library"),
+] library PyAfipWsWSAALib
+{
+	importlib("stdole32.tlb");
+
+	[
+		uuid(FC5FDFC3-1F41-4E4D-A346-5459DE1CE973),
+		helpstring("WSAA Component Class")
+	] coclass WSAA
+	{
+		[default]interface IWSAA;
+	}
+}; //end library def
