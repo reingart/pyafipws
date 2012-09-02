@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29d"
+__version__ = "1.30a"
 
 import datetime
 import os
@@ -59,13 +59,13 @@ ENCABEZADO = [
     ('concepto', 1, N), # 1:bienes, 2:servicios,... 
     ('tipo_doc', 2, N), # 80
     ('nro_doc', 11, N), # 50000000016    
-    ('imp_total', 15, I, 3), 
-    ('no_usar', 15, I, 3), 
-    ('imp_tot_conc', 15, I, 3), 
-    ('imp_neto', 15, I, 3), 
-    ('imp_iva', 15, I, 3), 
-    ('imp_trib', 15, I, 3), 
-    ('imp_op_ex', 15, I, 3), 
+    ('imp_total', 15, I, 2), 
+    ('no_usar', 15, I, 2), 
+    ('imp_tot_conc', 15, I, 2), 
+    ('imp_neto', 15, I, 2), 
+    ('imp_iva', 15, I, 2), 
+    ('imp_trib', 15, I, 2), 
+    ('imp_op_ex', 15, I, 2), 
     ('moneda_id', 3, A),
     ('moneda_ctz', 10, I, 6), #10,6
     ('fecha_venc_pago', 8, A),   # opcional solo conceptos 2 y 3
@@ -94,16 +94,16 @@ TRIBUTO = [
     ('tipo_reg', 1, N), # 1: tributo
     ('tributo_id', 16, N),
     ('desc', 100, A),
-    ('base_imp', 15, I, 3), 
-    ('alic', 15, I, 3), 
-    ('importe', 15, I, 3), 
+    ('base_imp', 15, I, 2), 
+    ('alic', 15, I, 2), 
+    ('importe', 15, I, 2), 
     ]
 
 IVA = [
     ('tipo_reg', 1, N), # 2: tributo
     ('iva_id', 16, N),
-    ('base_imp', 15, I, 3), 
-    ('importe', 15, I, 3), 
+    ('base_imp', 15, I, 2), 
+    ('importe', 15, I, 2), 
     ]
 
 
