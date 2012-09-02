@@ -285,7 +285,6 @@ class FEPDF:
         "Formatear tipo, letra y punto de venta y número de factura"
         n = "%04d-%08d" % (int(punto_vta), int(cbte_nro))
         t, l = tipo_cbte, ''
-        print tipo_cbte
         for k,v in self.tipos_fact.items():
             if int(tipo_cbte) in k:
                 t = v
@@ -380,7 +379,7 @@ class FEPDF:
         # genero el renderizador con propiedades del PDF
         t = Template(elements=self.elements,
                  format=papel, orientation=orientacion,
-                 title="%s %s %s" % (tipo, letra, nro),
+                 title="%s %s %s" % (tipo.encode("latin1", "ignore"), letra, nro),
                  author="CUIT %s" % self.CUIT,
                  subject="CAE %s" % fact['cae'],
                  keywords="AFIP Factura Electrónica", 
@@ -813,7 +812,7 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv:
             # creo una factura de ejemplo
-            tipo_cbte = 1
+            tipo_cbte = 2
             punto_vta = 4000
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
@@ -938,8 +937,8 @@ if __name__ == '__main__':
             it['numero'] = numero_fact
             it['mes'] = fact['fecha_cbte'][4:6]
             it['año'] = fact['fecha_cbte'][0:4]
-            fn = ''.join([str(it.get(ff,ff)) for ff in fs])
-            fn = fn.decode('latin1').encode('ascii', 'replace').replace('?','_')
+            fn = u''.join([unicode(it.get(ff,ff)) for ff in fs])
+            fn = fn.encode('ascii', 'replace').replace('?','_')
             salida = os.path.join(d, "%s.pdf" % fn)
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
