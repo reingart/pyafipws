@@ -29,7 +29,7 @@ import wsmtx
 from nsis import build_installer
 
 data_files = [
-    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt", 'rece.ini.dist']),
+    (".", ["licencia.txt", 'rece.ini.dist']),
     ("cache", glob.glob("cache/*")),
     ]
     
