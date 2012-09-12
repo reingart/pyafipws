@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.30a"
+__version__ = "1.30b"
 
 import datetime
 import os
@@ -32,7 +32,11 @@ from php import SimpleXMLElement, SoapClient, SoapFault, date
 HOMO = wsfev1.HOMO
 DEBUG = False
 XML = False
-CONFIG_FILE = "rece.ini"
+if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
+    CONFIG_FILE = sys.argv[1]
+    print "USING", CONFIG_FILE
+else:
+    CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
 rece1.py: Interfaz de texto para generar Facturas Electrónica Mercado Interno V1
@@ -567,9 +571,14 @@ if __name__ == "__main__":
             sys.exit(0)
 
         if '/solicitarcaea' in sys.argv:
-            periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
-            orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
-
+            i = sys.argv.index("/solicitarcaea")
+            if i+2<len(sys.argv):
+                periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
+                orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
+            else:
+                periodo = raw_input("Periodo: ")
+                orden = raw_input("Orden: ")
+                
             if DEBUG: 
                 print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
             
@@ -604,8 +613,13 @@ if __name__ == "__main__":
             sys.exit(0)
 
         if '/consultarcaea' in sys.argv:
-            periodo = raw_input("Periodo: ")
-            orden = raw_input("Orden: ")
+            i = sys.argv.index("/consultarcaea")
+            if i+2<len(sys.argv):
+                periodo = sys.argv[sys.argv.index("/consultarcaea")+1]
+                orden = sys.argv[sys.argv.index("/consultarcaea")+2]
+            else:
+                periodo = raw_input("Periodo: ")
+                orden = raw_input("Orden: ")
 
             if DEBUG: 
                 print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
