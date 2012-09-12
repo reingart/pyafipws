@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06g"
+__version__ = "1.06i"
 
 DEBUG = False
 HOMO = False
@@ -260,7 +260,7 @@ class FEPDF:
 
     def fmt_num(self, i, fmt="%0.2f", monetary=True):
         "Formatear un número"
-        if i is not None and str(i):
+        if i is not None and str(i) and not isinstance(i, bool):
             loc = self.Locale
             if loc:
                 import locale
@@ -473,6 +473,8 @@ class FEPDF:
         if lineas_max>0:
             hojas = lineas / (lineas_max - 1)
             if lineas % (lineas_max - 1): hojas = hojas + 1
+            if not hojas:
+                hojas = 1
         else:
             hojas = 1
 
