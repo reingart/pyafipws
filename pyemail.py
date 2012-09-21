@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.03a"
 
 import os
 import sys
@@ -43,10 +43,10 @@ class PyEmail:
         self.Version = __version__
         self.Exception = self.Traceback = ""
 
-    def Conectar(self, servidor, usuario=None, clave=None):
+    def Conectar(self, servidor, usuario=None, clave=None, puerto=25):
         "Iniciar conexión al servidor de correo electronico"
         try:
-            self.smtp = SMTP(servidor)
+            self.smtp = SMTP(servidor, puerto)
             if usuario and clave:
                 self.smtp.ehlo()
                 self.smtp.login(usuario, clave)
