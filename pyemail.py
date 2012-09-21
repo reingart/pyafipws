@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.02a"
 
 import os
 import sys
@@ -117,8 +117,13 @@ if __name__ == '__main__':
             data_files = [(".", ["licencia.txt"]),],
             cmdclass = {"py2exe": build_installer}
         )
-    else:
-        
+    elif "/Automate" in sys.argv:
+        # MS seems to like /automate to run the class factories.
+        import win32com.server.localserver
+        #win32com.server.localserver.main()
+        # start the server.
+        win32com.server.localserver.serve([PyEmail._reg_clsid_])
+    else:        
         config = SafeConfigParser()
         config.read("rece.ini")
 
