@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.04c"
 
 import os
 import sys
@@ -25,7 +25,7 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 import sys, os
-from smtplib import SMTP
+import smtplib
 from ConfigParser import SafeConfigParser
 
 
@@ -46,7 +46,14 @@ class PyEmail:
     def Conectar(self, servidor, usuario=None, clave=None, puerto=25):
         "Iniciar conexión al servidor de correo electronico"
         try:
-            self.smtp = SMTP(servidor, puerto)
+            if int(puerto) != 465:
+                self.smtp = smtplib.SMTP(servidor, puerto)
+            else:
+                # creo una conexión segura (SSL, no disponible en Python<2.6):
+                self.smtp = smtplib.SMTP_SSL(servidor, puerto)
+            if int(puerto) == 587:
+                # inicio una sesión segura (TLS)
+                self.smtp.starttls()
             if usuario and clave:
                 self.smtp.ehlo()
                 self.smtp.login(usuario, clave)
@@ -86,7 +93,18 @@ class PyEmail:
             self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             return False
 
-    
+    def Salir(self):
+        "Termino la conexión al servidor de correo electronico"
+        try:
+            self.smtp.quit()
+            return True
+        except Exception, e:
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+            return False
+
+            
 if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -123,6 +141,14 @@ if __name__ == '__main__':
         #win32com.server.localserver.main()
         # start the server.
         win32com.server.localserver.serve([PyEmail._reg_clsid_])
+    elif "/prueba" in sys.argv:
+        pyemail = PyEmail()
+        import getpass
+        clave = getpass.getpass("clave:")
+        ok = pyemail.Conectar("smtp.gmail.com", "reingart", clave, 587)
+        print "login ok?", ok, pyemail.Excepcion
+        print pyemail.Traceback
+        ok = pyemail.Salir()
     else:        
         config = SafeConfigParser()
         config.read("rece.ini")
