@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04c"
+__version__ = "1.04d"
 
 import os
 import sys
@@ -41,7 +41,7 @@ class PyEmail:
 
     def __init__(self):
         self.Version = __version__
-        self.Exception = self.Traceback = ""
+        self.Excepcion = self.Traceback = ""
 
     def Conectar(self, servidor, usuario=None, clave=None, puerto=25):
         "Iniciar conexión al servidor de correo electronico"
@@ -51,11 +51,11 @@ class PyEmail:
             else:
                 # creo una conexión segura (SSL, no disponible en Python<2.6):
                 self.smtp = smtplib.SMTP_SSL(servidor, puerto)
+            self.smtp.ehlo()
             if int(puerto) == 587:
                 # inicio una sesión segura (TLS)
                 self.smtp.starttls()
             if usuario and clave:
-                self.smtp.ehlo()
                 self.smtp.login(usuario, clave)
             return True
         except Exception, e:
@@ -144,10 +144,13 @@ if __name__ == '__main__':
     elif "/prueba" in sys.argv:
         pyemail = PyEmail()
         import getpass
+        usuario = raw_input("usuario:")
         clave = getpass.getpass("clave:")
         ok = pyemail.Conectar("smtp.gmail.com", "reingart", clave, 587)
         print "login ok?", ok, pyemail.Excepcion
         print pyemail.Traceback
+        ok = pyemail.Enviar(usuario, "prueba", usuario, "prueba!", None)
+        print "mail enviado?", ok, pyemail.Excepcion
         ok = pyemail.Salir()
     else:        
         config = SafeConfigParser()
