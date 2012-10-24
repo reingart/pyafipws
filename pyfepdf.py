@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06i"
+__version__ = "1.07a"
 
 DEBUG = False
 HOMO = False
@@ -79,7 +79,7 @@ class FEPDF:
     _public_methods_ = ['CrearFactura', 
                         'AgregarDetalleItem', 'AgregarIva', 'AgregarTributo', 
                         'AgregarCmpAsoc', 'AgregarPermiso',
-                        'AgregarDato', 
+                        'AgregarDato', 'EstablecerParametro',
                         'CargarFormato', 'AgregarCampo',
                         'CrearPlantilla', 'ProcesarPlantilla', 'GenerarPDF',
                         'MostrarPDF',
@@ -196,6 +196,12 @@ class FEPDF:
 
         self.factura = fact
         return True
+
+    def EstablecerParametro(self, parametro, valor):
+        "Modifico un parametro general a la factura (internamente)"
+        self.factura[parametro] = valor
+        return True
+
 
     def AgregarDato(self, campo, valor, pagina='T'):
         "Agrego un dato a la factura (internamente)"
