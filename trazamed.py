@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08b"
+__version__ = "1.08c"
 
 import os
 import socket
@@ -412,6 +412,11 @@ def main():
     
     ws.Username = 'testwservice'
     ws.Password = 'testwservicepsw'
+    
+    if '--prod' in sys.argv and not HOMO:
+        WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService"
+        print "Usando WSDL:", WSDL
+        sys.argv.pop(0)
     
     ws.Conectar("", WSDL)
     
