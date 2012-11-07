@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08a"
+__version__ = "1.09a"
 
 import os
 import socket
@@ -95,6 +95,7 @@ class WSCOC:
                         'ConsultarSolicitudCompraDivisa',
                         'ConsultarSolicitudesCompraDivisas',
                         'ConsultarDestinosCompra',
+                        'ConsultarTiposReferencia',
                         'ConsultarMonedas',
                         'ConsultarTiposDocumento',
                         'ConsultarTiposEstadoSolicitud',
@@ -102,8 +103,9 @@ class WSCOC:
                         'ConsultarDestinosCompraDJAI',
                         'ConsultarMotivosExcepcionDJAS',
                         'ConsultarDestinosCompraDJAS',
+                        'ConsultarDestinosCompraTipoReferencia',
                         'LeerSolicitudConsultada', 'LeerCUITConsultado',
-                        'ConsultarDJAI', 'ConsultarDJAS',
+                        'ConsultarDJAI', 'ConsultarDJAS', 'ConsultarReferencia',
                         'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
                         'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml',
@@ -119,7 +121,7 @@ class WSCOC:
         'CUITRepresentante', 'DenominacionRepresentante',
         'TipoDoc', 'NumeroDoc', 'CUITConsultada', 'DenominacionConsultada',
 		'DJAI', 'CodigoExcepcionDJAI', 'DJAS', 'CodigoExcepcionDJAS',
-        'MontoFOB', 'EstadoDJAI', 'EstadoDJAS',
+        'MontoFOB', 'EstadoDJAI', 'EstadoDJAS', 'Estado', 'Tipo', 'Codigo',
         'ErroresFormato', 'Errores', 'Traceback', 'Excepcion', 'LanzarExcepciones',
         ]
 
@@ -192,6 +194,10 @@ class WSCOC:
         self.CodigoExcepcionDJAI = det.get("codigoExcepcionDJAI")
         self.DJAS = det.get("djas")
         self.CodigoExcepcionDJAS = det.get("codigoExcepcionDJAS")
+        ref = det.get("referencia")
+        if ref:
+            self.Tipo = ref['tipo']
+            self.Codigo = ref['codigo']
 
     def __analizar_inconsistencias(self, ret):
         "Comprueba y extrae (formatea) las inconsistencias"
@@ -280,8 +286,13 @@ class WSCOC:
                                     cuit_representante, codigo_destino,
 									djai=None, codigo_excepcion_djai=None,
                                     djas=None, codigo_excepcion_djas=None,
+                                    tipo=None, codigo=None,
                                     ):
         "Generar una Solicitud de operación cambiaria"
+        if tipo and codigo:
+            referencia = {'tipo': tipo, 'codigo': codigo}
+        else:
+            referencia = None
         res = self.client.generarSolicitudCompraDivisa(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             cuitComprador=cuit_comprador,
@@ -292,6 +303,7 @@ class WSCOC:
             codigoDestino=codigo_destino,
 			djai=djai, codigoExcepcionDJAI=codigo_excepcion_djai,
             djas=djas, codigoExcepcionDJAS=codigo_excepcion_djas,
+            referencia=referencia,
             )
 
         self.Resultado = ""
@@ -513,6 +525,22 @@ class WSCOC:
         self.CodigoMoneda = ret.get('codigoMoneda')
         self.EstadoDJAS = ret.get('estadoDJAS')
         return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarReferencia(self, tipo, codigo):
+        "Consultar una determinada referencia según su tipo (1: DJAI, 2: DJAS, 3: DJAT"
+        res = self.client.consultarReferencia(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            referencia={'tipo': tipo, 'codigo': codigo},
+            )
+
+        ret = res.get('consultarReferenciaReturn', {})
+        self.__analizar_errores(ret)
+        #self.Codigo = ret.get('codigo')
+        self.MontoFOB = ret.get('monto')
+        self.CodigoMoneda = ret.get('codigoMoneda')
+        self.Estado = ret.get('estado')
+        return True
         
     @inicializar_y_capturar_excepciones
     def ConsultarMonedas(self, sep="|"):
@@ -621,7 +649,30 @@ class WSCOC:
         return [("%(codigo)s\t%(descripcion)s" 
                     % p['codigoDescripcion']).replace("\t", sep)
                  for p in ret['arrayCodigosDescripciones']]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarTiposReferencia(self, sep='|'):
+        "Este método retorna el conjunto de los tipos de referencia que pueden ser utilizados en la generación de una solicitud de compra de divisas según corresponda."
+        res = self.client.consultarTiposReferencia(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        ret = res['consultarTiposReferenciaReturn']
+        return [("%(codigo)s\t%(descripcion)s" 
+                    % p['codigoDescripcion']).replace("\t", sep)
+                 for p in ret['arrayCodigosDescripciones']]
                  
+    @inicializar_y_capturar_excepciones
+    def ConsultarDestinosCompraTipoReferencia(self, tipo, sep='|'):
+        "Este método retorna el subconjunto de los destinos de compra de divisas alcanzados por algunas de las normativas vigentes según el tipo de referencia requerido"
+        res = self.client.consultarDestinosCompraTipoReferencia(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            tipo=tipo,
+            )
+        ret = res['consultarDestinosCompraTipoReferenciaReturn']
+        return [("%(codigo)s\t%(descripcion)s" 
+                    % p['codigoDescripcion']).replace("\t", sep)
+                 for p in ret['arrayCodigosDescripciones']]
+
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
         
@@ -710,7 +761,7 @@ def main():
     # fin TA
 
     ws = WSCOC()
-    ws.Cuit = "30587808990"
+    ws.Cuit = "20267565393"
 
     ta_string=open(TA).read()
     ta = SimpleXMLElement(ta_string)
@@ -784,13 +835,17 @@ def main():
                 djas = "--djas" in sys.argv and "12001DJAS000901N" or None
                 cod_ex_djai = "--no-djai" and 3 or None
                 cod_ex_djas = "--no-djas" and 1 or None
+                if '--ref' in sys.argv:
+                    tipo, codigo = 1, '12345DJAI000067C'
+                else:
+                    tipo, codigo = None, None
                 print "djai", djai
                 ok = ws.GenerarSolicitudCompraDivisa(cuit_comprador, codigo_moneda,
                                     cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
                                     djai=djai, codigo_excepcion_djai=cod_ex_djai, 
                                     djas=djas, codigo_excepcion_djas=cod_ex_djas, 
-                                    )
+                                    tipo=tipo, codigo=codigo,)
             else:
                 print "Turista!"
                 tipo_doc=91
@@ -947,8 +1002,22 @@ def main():
         print "Errores", ws.Errores
         print "ErroresFormato", ws.ErroresFormato
         
-        
+    if "--consultar_ref" in sys.argv:
+        codigo = "12345DJAI000067C"
+        cuit = 20267565393
+        ws.ConsultarReferencia(1, codigo)
+        print "Monto FOB", ws.MontoFOB
+        print "Codigo Moneda", ws.CodigoMoneda
+        print "Estado", ws.Estado
+        print "Errores", ws.Errores
+        print "ErroresFormato", ws.ErroresFormato
+      
+    if "--consultar_dest_ref" in sys.argv:
+        print ws.ConsultarDestinosCompraTipoReferencia(1)
 
+    if "--consultar_tipos_ref" in sys.argv:
+        print ws.ConsultarTiposReferencia()
+        
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
