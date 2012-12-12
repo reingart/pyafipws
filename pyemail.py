@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04d"
+__version__ = "1.05a"
 
 import os
 import sys
@@ -31,9 +31,14 @@ from ConfigParser import SafeConfigParser
 
 class PyEmail:
     "Interfaz para enviar correos de Factura Electrónica"
-    _public_methods_ = ['Conectar', 'Enviar',
+    _public_methods_ = ['Conectar', 'Crear', 'Enviar',
+                        'AgregarDestinatario', 'Adjuntar', 
                         ]
-    _public_attrs_ = ['Version', 'Excepcion', 'Traceback',]
+    _public_attrs_ = [
+                    'Motivo', 'Remitente', 'Destinatarios', 'ResponderA',
+                    'MensajeHTML', 'MensajeTexto',
+                    'Version', 'Excepcion', 'Traceback',
+                    ]
         
     _reg_progid_ = "PyEmail"
     _reg_clsid_ = "{2BEF3037-BF38-41AA-84A3-6F109D543FC9}"
@@ -42,6 +47,9 @@ class PyEmail:
     def __init__(self):
         self.Version = __version__
         self.Excepcion = self.Traceback = ""
+        self.Motivo = self.Destinatario = self.ResponderA = ""
+        self.MensajeHTML = MensajeTexto = None
+        self.adjuntos = []
 
     def Conectar(self, servidor, usuario=None, clave=None, puerto=25):
         "Iniciar conexión al servidor de correo electronico"
@@ -64,27 +72,66 @@ class PyEmail:
             self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             return False
 
-    def Enviar(self, remitente, motivo, destinatario, mensaje, archivo):
+    def Crear(self, remitente="", motivo=""):
+        "Inicializa un mensaje de correo"
+        self.Remitente = remitente
+        self.Motivo = motivo
+        self.Destinatarios = []
+        self.adjuntos = []
+        return True
+
+    def AgregarDestinatario(self, destinatario):
+        "Agrega una dirección de correo de destino"
+        self.Destinatarios.append(destinatario)
+        return True
+        
+    def Adjuntar(self, archivo):
+        "Agrega un archivo para ser enviado como adjunto"
+        self.adjuntos.append(archivo)
+        return True
+        
+    def Enviar(self, remitente="", motivo="", destinatario="", mensaje="", archivo=None):
         "Generar un correo multiparte y enviarlo"
         try:
-            msg = MIMEMultipart()
-            msg['Subject'] = motivo
-            msg['From'] = remitente
-            msg['Reply-to'] = remitente
-            msg['To'] = destinatario
+            to = ([destinatario] if destinatario 
+                  else self.Destinatarios)
+            
+            msg = MIMEMultipart('related')
+            msg['Subject'] = motivo or self.Motivo
+            msg['From'] = remitente or self.Remitente
+            msg['Reply-to'] = remitente or self.ResponderA
+            msg['To'] = ', '.join(to)
             msg.preamble = 'Mensaje de multiples partes.\n'
             
-            part = MIMEText(mensaje)
-            msg.attach(part)
+            if mensaje:
+                text = mensaje
+                html = None
+            else:
+                text = self.MensajeTexto
+                html = self.MensajeHTML
+            
+            if html:
+                alt = MIMEMultipart('alternative')
+                msg.attach(alt)
+                part = MIMEText(text, 'text')
+                alt.attach(part)
+                part = MIMEText(html, 'html')
+                alt.attach(part)
+            else:
+                part = MIMEText(text)
+                msg.attach(part)
             
             if archivo:
+                self.adjuntos.append(archivo)
+
+            for archivo in self.adjuntos:
                 part = MIMEApplication(open(archivo,"rb").read())
                 part.add_header('Content-Disposition', 'attachment', 
                                     filename=os.path.basename(archivo))
                 msg.attach(part)
 
             #print "Enviando email: %s a %s" % (msg['Subject'], msg['To'])
-            self.smtp.sendmail(msg['From'], msg['To'], msg.as_string())
+            self.smtp.sendmail(msg['From'], to, msg.as_string())
 
             return True
         except Exception, e:
