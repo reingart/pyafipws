@@ -111,7 +111,7 @@ class WSAA:
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
                         'AnalizarXml', 'ObtenerTagXml', 'Expirado',
                         ]
-    _public_attrs_ = ['Token', 'Sign', 'Version', 
+    _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 
                       'InstallDir', 'Traceback', 'Excepcion',
                       'SoapFault', 'LanzarExcepciones',
@@ -202,6 +202,7 @@ class WSAA:
             self.xml = ta = SimpleXMLElement(ta_xml)
             self.Token = str(ta.credentials.token)
             self.Sign = str(ta.credentials.sign)
+            self.ExpirationTime = str(ta.header.expirationTime)
             return ta_xml
         except SoapFault,e:
             self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
