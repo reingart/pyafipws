@@ -528,7 +528,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarReferencia(self, tipo, codigo):
-        "Consultar una determinada referencia según su tipo (1: DJAI, 2: DJAS, 3: DJAT"
+        "Consultar una determinada referencia según su tipo (1: DJAI, 2: DJAS, 3: DJAT)"
         res = self.client.consultarReferencia(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             referencia={'tipo': tipo, 'codigo': codigo},
