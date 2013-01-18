@@ -335,4 +335,6 @@ def serializar(regs):
 if __name__ == '__main__':
     regs = leer("prueba_entrada.xml")
     regs[0]['cae']='1'*15
+    import pprint
+    pprint.pprint(regs[0])
     escribir(regs, 'prueba_salida.xml')
