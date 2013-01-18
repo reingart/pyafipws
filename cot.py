@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.02c"
 
 import os,sys
 from pysimplesoap.simplexml import SimpleXMLElement
@@ -30,8 +30,10 @@ from cStringIO import StringIO
 
 HOMO = False
 
-#URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
-URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do" # testing
+##URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
+# Nuevo servidor para el "Remito Electrónico Automático"
+URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
+#URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do" # testing
 
 class WebClient:
     "Minimal webservice client to do POST request with multipart encoded FORM data"
