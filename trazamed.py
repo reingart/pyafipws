@@ -33,7 +33,7 @@ TYPELIB = False
 WSDL = "https://186.153.145.2:9050/trazamed.WebService"
        #https://186.153.145.2:9050/trazamed.WebService?wsdl
 LOCATION = "https://186.153.145.2:9050/trazamed.WebService"
-#WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService"
+#WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
          
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
