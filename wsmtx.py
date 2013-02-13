@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07f"
+__version__ = "1.07g"
 
 import datetime
 import decimal
@@ -420,7 +420,7 @@ class WSMTXCA:
                     dias = 16, 30
                 else:
                     import calendar
-                    if calendar.isleap(year):
+                    if calendar.isleap(anio):
                         dias = 16, 29 # biciesto
                     else:
                         dias = 16, 28
