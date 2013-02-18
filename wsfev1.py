@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12o"
+__version__ = "1.13b"
 
 import datetime
 import decimal
@@ -28,8 +28,9 @@ import traceback
 from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
-HOMO = False
-TYPELIB = False
+HOMO = False                    # solo homologación
+TYPELIB = False                 # usar librería de tipos (TLB)
+LANZAR_EXCEPCIONES = False      # valor por defecto: True
 
 #WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
@@ -82,6 +83,8 @@ def inicializar_y_capturar_excepciones(func):
                 self.Excepcion = u"<no disponible>"
             if self.LanzarExcepciones:
                 raise
+            else:
+                self.ErrMsg = self.Excepcion
         finally:
             # guardo datos de depuración
             if self.client:
@@ -107,6 +110,7 @@ class WSFEv1:
                         'ParamGetCotizacion', 
                         'ParamGetPtosVenta',
                         'AnalizarXml', 'ObtenerTagXml',
+                        'SetParametros',
                         'Dummy', 'Conectar', 'DebugLog', 'Eval']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -122,8 +126,8 @@ class WSFEv1:
     _reg_clsid_ = "{CA0E604D-E3D7-493A-8880-F6CDD604185E}"
 
     if TYPELIB:
-        _typelib_guid_ = '{8A7252C3-4088-4293-BF92-EC5956ADBC73}'
-        _typelib_version_ = 1, 12
+        _typelib_guid_ = '{B1D7283C-3EC2-463E-89B4-11F5228E2A15}'
+        _typelib_version_ = 1, 13
         _com_interfaces_ = ['IWSFEv1']
         ##_reg_class_spec_ = "wsfev1.WSFEv1"
         
@@ -148,7 +152,7 @@ class WSFEv1:
         self.Log = None
         self.InstallDir = INSTALL_DIR
         self.Reprocesar = True # recuperar automaticamente CAE emitidos
-        self.LanzarExcepciones = True
+        self.LanzarExcepciones = LANZAR_EXCEPCIONES
         self.Traceback = self.Excepcion = ""
         self.XmlRequest = self.XmlResponse = ""
         self.xml = None
@@ -892,7 +896,14 @@ class WSFEv1:
         except Exception, e:
             self.Excepcion = u"%s" % (e)
 
+    def SetParametros(self, cuit, token, sign):
+        "Establece un parámetro general"
+        self.Token = token
+        self.Sign = sign
+        self.Cuit = cuit
+        return True
 
+        
 def p_assert_eq(a,b):
     print a, a==b and '==' or '!=', b
 
@@ -946,9 +957,10 @@ def main():
     else:
         cuit = "20267565393"
 
-    wsfev1.Cuit = cuit
-    wsfev1.Token = str(ta.credentials.token)
-    wsfev1.Sign = str(ta.credentials.sign)
+    #wsfev1.Cuit = cuit
+    token = str(ta.credentials.token)
+    sign = str(ta.credentials.sign)
+    wsfev1.SetParametros(cuit, token, sign)
     
     if "--prueba" in sys.argv:
         print wsfev1.client.help("FECAESolicitar").encode("latin1")
@@ -1146,7 +1158,7 @@ if __name__ == '__main__':
                                             pythoncom.SYS_WIN32)
                 print "Unregistered typelib"
         import win32com.server.register
-        print "_reg_class_spec_", WSFEv1._reg_class_spec_
+        #print "_reg_class_spec_", WSFEv1._reg_class_spec_
         win32com.server.register.UseCommandLine(WSFEv1)
     elif "/Automate" in sys.argv:
         # MS seems to like /automate to run the class factories.

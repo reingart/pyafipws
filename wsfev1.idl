@@ -7,7 +7,7 @@
 import "unknwn.idl","oaidl.idl"; 
 
 [
-	uuid(F02E9A31-6532-421F-A78B-C5DC423DF842),
+	uuid(9588B307-67B7-4F27-8968-B78A37D342A2),
 	helpstring("PyAfipWs WSFEv1 interface"),
 	pointer_default(unique),
 	dual,
@@ -164,18 +164,25 @@ interface IWSFEv1 : IDispatch
     [propget, id(60)] HRESULT ImpOpExImptIVA( [out, retval] BSTR * val);
     [propget, id(61)] HRESULT ImpOpEx( [out, retval] BSTR * val);
     [propget, id(62)] HRESULT ImpTrib( [out, retval] BSTR * val);
+
+    [id(63)] HRESULT SetParametros(
+                          [in] BSTR cuit,
+                          [in] BSTR token,
+                          [in] BSTR sign, 
+                          [out, retval] BOOL * ok);
+
 };  //end interface def
 
 [
-	uuid(8A7252C3-4088-4293-BF92-EC5956ADBC73),
-	version(1.12),
-	helpstring("PyAfipWs WSFEv1 1.12 Type Library"),
+	uuid(B1D7283C-3EC2-463E-89B4-11F5228E2A15),
+	version(1.13),
+	helpstring("PyAfipWs WSFEv1 1.13 Type Library"),
 ] library PyAfipWsWSFEv1Lib
 {
 	importlib("stdole32.tlb");
 
 	[
-		uuid(F54AC88D-7A9E-47EC-8287-A6C3772DE499),
+		uuid(D50B5D14-621E-4473-AC63-8A7B5E9DD57F),
 		helpstring("WSFEv1 Component Class")
 	] coclass WSFEv1
 	{

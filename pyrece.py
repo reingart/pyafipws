@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25c"
+__version__ = "1.25f"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -223,7 +223,7 @@ class PyRece(model.Background):
             self.components.lvwListado.SetSelection(i)
 
     def on_menuConsultasDummy_select(self, event):
-        self.verifica_ws()
+        ##self.verifica_ws()
         try:
             if self.webservice=="wsfe":
                 results = self.client.FEDummy()
@@ -243,7 +243,7 @@ class PyRece(model.Background):
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
     def on_menuConsultasLastCBTE_select(self, event):
-        self.verifica_ws()
+        ##self.verifica_ws()
         result = dialog.singleChoiceDialog(self, "Tipo de comprobante",
             u"Consulta Último Nro. Comprobante", 
                 [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])])
@@ -334,11 +334,13 @@ class PyRece(model.Background):
 
 
     def on_menuConsultasLastID_select(self, event):
-        self.verifica_ws()
+        ##self.verifica_ws()
         try:
             if self.webservice=="wsfe":
                 ultnro = wsfe.ultnro(self.client, self.token, self.sign, cuit)
-            if self.webservice=="wsfexv1":
+                print "ultnro", ultnro
+                print self.client.xml_response
+            elif self.webservice=="wsfexv1":
                 ultnro = self.ws.GetLastID()
             else: 
                 ultnro = None

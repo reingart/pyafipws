@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.04b"
 
 import datetime
 import decimal
@@ -30,7 +30,7 @@ from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_p
 from wsfev1 import inicializar_y_capturar_excepciones
 
 HOMO = False
-
+LANZAR_EXCEPCIONES = True      # valor por defecto: True
 WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 
 
@@ -69,7 +69,7 @@ class WSFEXv1:
         self.factura = None
         self.CbteNro = self.FechaCbte = self.PuntoVenta = self.ImpTotal = None
         self.ErrCode = self.ErrMsg = None
-        self.LanzarExcepciones = True
+        self.LanzarExcepciones = LANZAR_EXCEPCIONES
         self.Traceback = self.Excepcion = ""
         self.InstallDir = INSTALL_DIR
         self.DebugLog = ""

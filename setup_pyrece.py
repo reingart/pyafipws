@@ -41,7 +41,8 @@ includes+=['email.generator', 'email.iterators', 'email.message', 'email.utils']
 opts = { 
     'py2exe': {
     'includes':includes,
-    'optimize':2}
+    'optimize':0,
+    'skip_archive':True, }
     }
 
 import pyrece, pyfpdf_hg.designer
@@ -49,7 +50,7 @@ from nsis import build_installer, Target
 
 import glob
 data_files = [
-    (".", ["wsfev1_wsdl.xml","wsfev1_wsdl_homo.xml", "licencia.txt",
+    (".", ["licencia.txt",
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
             "logo.png", 
@@ -60,7 +61,7 @@ data_files = [
 
 
 setup( name = "PyRece",
-       version=pyrece.__version__ + (pyrece.HOMO and '-homo' or '-full'),
+       version=pyrece.__version__ + (pyrece.HOMO and '-homo' or '-dbg'),
        description="PyRece %s" % pyrece.__version__,
        long_description=pyrece.__doc__,
        author="Mariano Reingart",

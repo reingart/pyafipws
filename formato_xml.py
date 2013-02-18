@@ -254,7 +254,12 @@ def mapear(new, old, MAP, swap=False):
 
 def leer(fn="entrada.xml"):
     "Analiza un archivo XML y devuelve un diccionario"
-    xml = SimpleXMLElement(open(fn,"rb").read())
+    xml = open(fn,"rb").read()
+    return desserializar(xml)
+
+def desserializar(xml):
+    "Analiza un XML y devuelve un diccionario"
+    xml = SimpleXMLElement(xml)
 
     dic = xml.unmarshall(XML_FORMAT, strict=True)
     
@@ -291,8 +296,12 @@ def leer(fn="entrada.xml"):
     
 def escribir(regs, fn="salida.xml"):
     "Dado una lista de comprobantes (diccionarios), convierte y escribe"
-    xml = SimpleXMLElement(XML_BASE)
+    xml = serializar(regs)
+    open(fn, "wb").write(xml)
 
+def serializar(regs):
+    "Dado una lista de comprobantes (diccionarios), convierte a xml"
+    xml = SimpleXMLElement(XML_BASE)
 
     comprobantes = []
     for reg in regs:
@@ -320,10 +329,12 @@ def escribir(regs, fn="salida.xml"):
 
     for comprobante in comprobantes:
         xml.marshall("comprobante", comprobante)
-    open(fn,"wb").write(xml.as_xml())
+    return xml.as_xml()
 
 # pruebas básicas
 if __name__ == '__main__':
-    regs = leer("")
+    regs = leer("prueba_entrada.xml")
     regs[0]['cae']='1'*15
-    escribir(regs[0])
+    import pprint
+    pprint.pprint(regs[0])
+    escribir(regs, 'prueba_salida.xml')

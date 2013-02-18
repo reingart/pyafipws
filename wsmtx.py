@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07d"
+__version__ = "1.07g"
 
 import datetime
 import decimal
@@ -278,6 +278,9 @@ class WSMTXCA:
         ##ds = unicode(ds, "latin1") # convierto a latin1
         # Nota: no se calcula neto, iva, etc (deben venir calculados!)
         umed = int(umed)
+        if umed == 99:
+            imp_subtotal = -abs(float(imp_subtotal))
+            imp_iva = -abs(float(imp_iva))
         item = {
                 'u_mtx': u_mtx,
                 'cod_mtx': cod_mtx,
@@ -288,8 +291,8 @@ class WSMTXCA:
                 'precio': umed!=99 and precio or None,
                 'bonif': umed!=99 and bonif or None,
                 'iva_id': iva_id,
-                'imp_iva': umed!=99 and imp_iva or -abs(imp_iva),
-                'imp_subtotal': umed!=99 and imp_subtotal or -abs(imp_subtotal),
+                'imp_iva': imp_iva,
+                'imp_subtotal': imp_subtotal,
                 }
         self.factura['detalles'].append(item)
         return True
@@ -417,7 +420,7 @@ class WSMTXCA:
                     dias = 16, 30
                 else:
                     import calendar
-                    if calendar.isleap(year):
+                    if calendar.isleap(anio):
                         dias = 16, 29 # biciesto
                     else:
                         dias = 16, 28

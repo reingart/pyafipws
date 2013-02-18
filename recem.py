@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.30b"
+__version__ = "1.30c"
 
 import datetime
 import os
@@ -402,11 +402,12 @@ def escribir_factura(dic, archivo):
             tabla.close()
 
 def depurar_xml(client):
+    global wsmtxca_xml_dir
     fecha = time.strftime("%Y%m%d%H%M%S")
-    f=open("request-%s.xml" % fecha,"w")
+    f=open(os.path.join(wsmtxca_xml_dir, "request-%s.xml" % fecha),"w")
     f.write(client.xml_request)
     f.close()
-    f=open("response-%s.xml" % fecha,"w")
+    f=open(os.path.join(wsmtxca_xml_dir, "response-%s.xml" % fecha),"w")
     f.write(client.xml_response)
     f.close()
 

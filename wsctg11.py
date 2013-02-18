@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.06c"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -232,7 +232,7 @@ class WSCTG11:
                          datosSolicitarCTGInicial=dict(
                             cartaPorte=numero_carta_de_porte, 
                             codigoEspecie=codigo_especie,
-                            cuitCanjeador=cuit_canjeador, 
+                            cuitCanjeador=cuit_canjeador or None, 
                             cuitDestino=cuit_destino, 
                             cuitDestinatario=cuit_destinatario, 
                             codigoLocalidadOrigen=codigo_localidad_origen,

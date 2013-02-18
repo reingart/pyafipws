@@ -13,6 +13,7 @@ import glob, sys
 
 # includes for py2exe
 includes=['email.generator', 'email.iterators', 'email.message', 'email.utils', 'pyfpdf_hg.template']
+includes+=['email.generator', 'email.iterators', 'email.message', 'email.utils', 'email.mime.text', 'email.mime.application', 'email.mime.multipart']
 
 # don't pull in all this MFC stuff used by the makepy UI.
 excludes=["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui"]
@@ -30,8 +31,8 @@ data_files = [
     #       "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll"]),
     ]
 
-import pyfepdf
-from nsis import build_installer
+import pyfepdf, pyemail, pyi25
+from nsis import build_installer, Target
 
 setup( 
     name="PyFEPDF",
@@ -42,11 +43,23 @@ setup(
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = [
-        {'modules': 'pyfepdf', 'create_exe': False, 'create_dll': True},
-        ],
-    console=['pyfepdf.py'],
-    windows=['pyfpdf_hg/designer.py'],
+    com_server = [Target(module=pyfepdf,modules="pyfepdf", create_exe=False, 
+	                                                     create_dll=True),
+				  Target(module=pyemail,modules="pyemail", create_exe=False, 
+	                                                 create_dll=True),
+                  Target(module=pyi25,modules="pyi25", create_exe=False, 
+	                                                 create_dll=True),
+				 ],
+    windows=[Target(module=pyfepdf, script="pyfepdf.py", dest_base="pyfepdf_com"),
+             Target(module=pyemail, script="pyemail.py", dest_base="pyemail_com"),
+             Target(module=pyi25, script="pyi25.py", dest_base="pyi25_com"),
+             'pyfpdf_hg/designer.py'
+            ],
+    console=[Target(module=pyfepdf, script='pyfepdf.py', dest_base="pyfepdf"), 
+             Target(module=pyemail, script='pyemail.py', dest_base="pyemail"),
+             Target(module=pyi25, script='pyi25.py', dest_base="pyi25"),
+             ],
+    
     options=opts,
     data_files = data_files,
     cmdclass = {"py2exe": build_installer}
