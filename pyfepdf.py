@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.07b"
 
 DEBUG = False
 HOMO = False
@@ -647,6 +647,8 @@ class FEPDF:
                     f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
                     f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
                     f.set('imp_total', self.fmt_imp(fact['imp_total']))
+                    f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
+                    f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
 
                     f.set('IMPTO_PERC', self.fmt_imp(fact.get('impto_perc')))
                     f.set('IMP_OP_EX', self.fmt_imp(fact.get('imp_op_ex')))
@@ -826,9 +828,9 @@ if __name__ == '__main__':
             concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
             cbte_nro = 12345678
-            imp_total = "122.00"; imp_tot_conc = "0.00"
+            imp_total = "122.00"; imp_tot_conc = "3.00"
             imp_neto = "100.00"; imp_iva = "21.00"
-            imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
+            imp_trib = "1.00"; imp_op_ex = "2.00"; imp_subtotal = "100.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
             # Fechas del período del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
