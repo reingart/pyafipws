@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08c"
+__version__ = "1.08d"
 
 import os
 import socket
@@ -30,9 +30,8 @@ from cStringIO import StringIO
 HOMO = False
 TYPELIB = False
 
-WSDL = "https://186.153.145.2:9050/trazamed.WebService"
-       #https://186.153.145.2:9050/trazamed.WebService?wsdl
-LOCATION = "https://186.153.145.2:9050/trazamed.WebService"
+WSDL = "https://servicios.pami.org.ar/trazamed.WebService?wsdl"
+LOCATION = "https://servicios.pami.org.ar/trazamed.WebService"
 #WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
          
 def inicializar_y_capturar_excepciones(func):
@@ -150,7 +149,11 @@ class TrazaMed:
                 trace = "--trace" in sys.argv)
                 
             # corrijo ubicación del servidor (localhost:9050 en el WSDL)
-            self.client.services['IWebServiceService']['ports']['IWebServicePort']['location'] = location
+            if 'IWebServiceService' in self.client.services:
+                ws = self.client.services['IWebServiceService']  # version 1
+            else:
+                ws = self.client.services['IWebService']         # version 2
+            ws['ports']['IWebServicePort']['location'] = location
             
             # Establecer credenciales de seguridad:
             self.client['wsse:Security'] = {
@@ -405,6 +408,7 @@ class TrazaMed:
 def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time, sys
+    global WSDL, LOCATION
 
     DEBUG = '--debug' in sys.argv
 
