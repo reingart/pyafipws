@@ -74,14 +74,17 @@ def inicializar_y_capturar_excepciones(func):
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
             # inicializo (limpio variables)
-            self.COE = self.CartaPorte = ""
-            self.FechaHora = self.CodigoOperacion = ""
-            self.VigenciaDesde = self.VigenciaHasta = ""
+            self.COE = self.COEAjustado = ""
             self.ErrMsg = self.ErrCode = ""
-            self.Errores = self.Controles = []
-            self.DatosLiquidacion = None
-            self.CodigoTransaccion = self.Observaciones = ''
-            self.TarifaReferencia = None
+            self.Errores = []
+            self.Estado = ''
+            self.TotalDeduccion = ""
+            self.TotalRetencion = ""
+            self.TotalRetencionAfip = ""
+            self.TotalOtrasRetenciones = ""
+            self.TotalNetoAPagar = ""
+            self.TotalIvaRg2300_07 = ""
+            self.TotalPagoSegunCondicion = ""
             # llamo a la función (con reintentos)
             return func(self, *args, **kwargs)
         except SoapFault, e:
@@ -113,7 +116,6 @@ class WSLPG:
     _public_methods_ = ['Conectar', 'Dummy',
                         'AutorizarLiquidacion', 'AjustarLiquidacion',
                         'AnularLiquidacion', 
-                        'ConsultarLiquidacion', 'LeerConsulta', 'ConsultarDetalleLiquidacion',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
                         'ConsultarEstablecimientos',
@@ -125,10 +127,9 @@ class WSLPG:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
         'XmlRequest', 'XmlResponse', 'Version', 
-        'COE', 'CartaPorte', 'FechaHora', 'CodigoOperacion', 
-        'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosLiquidacion',
-        'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
-        'TarifaReferencia',
+        'COE', 'COEAjustado',
+        'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
+        'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
         ]
     _reg_progid_ = "WSLPG"
     _reg_clsid_ = "{}"
@@ -140,11 +141,12 @@ class WSLPG:
         self.XmlResponse = ''
         self.LanzarExcepciones = False
         self.InstallDir = INSTALL_DIR
-        self.CodError = self.DescError = ''
+        self.ErrCode = self.ErrMsg = ''
+        self.Errores = []
         self.client = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.COE = ''
-        self.CodigoTransaccion = self.Observaciones = ''
+        self.Estado = ''
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy=""):
@@ -157,24 +159,21 @@ class WSLPG:
         self.client = SoapClient(url,
             wsdl=url, cache=cache,
             trace='--trace' in sys.argv, 
-            ns='Liquidacion', soap_ns='soapenv',
+            ns='wsdl', soap_ns='soapenv',
             exceptions=True, proxy=proxy_dict)
         return True
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        if 'arrayErrores' in ret:
-            errores = ret['arrayErrores']
+        errores = []
+        if 'errores' in ret:
+            errores.extend(ret['errores'])
+        if 'erroresFormato' in ret:
+            errores.extend(ret['erroresFormato'])
+        if errores:
             self.Errores = [err['error'] for err in errores]
             self.ErrCode = ' '.join(self.Errores)
             self.ErrMsg = '\n'.join(self.Errores)
-
-    def __analizar_controles(self, ret):
-        "Comprueba y extrae controles si existen en la respuesta XML"
-        if 'arrayControles' in ret:
-            controles = ret['arrayControles']
-            self.Controles = ["%(tipo)s: %(descripcion)s" % ctl['control'] 
-                                for ctl in controles]
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
@@ -229,9 +228,9 @@ class WSLPG:
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         liquidacion=dict(
-                            nroOrden=7,
+                            nroOrden=1,
                             cuitComprador=23000000000,
-                            nroActComprador=96,
+                            nroActComprador=99,
                             nroIngBrutoComprador=23000000000,
                             codTipoOperacion=1,
                             esLiquidacionPropia='N',
@@ -243,9 +242,9 @@ class WSLPG:
                             nroIngBrutoVendedor=30000000007,
                             actuaCorredor="S",
                             liquidaCorredor="S",
-                            cuitCorredor=99999999999,
+                            cuitCorredor=20267565393,
                             comisionCorredor=1,
-                            nroIngBrutoCorredor=99999999999,
+                            nroIngBrutoCorredor=20267565393,
                             fechaPrecioOperacion="2013-02-07",
                             precioRefTn=2000,
                             codGradoRef="G1",
@@ -283,121 +282,19 @@ class WSLPG:
                         )
         ret = ret['liqReturn']
         self.__analizar_errores(ret)
-        self.Observaciones = ret['observacion']
-        datos = ret.get('datosSolicitarLiquidacionResponse')
-        if datos:
-            self.CartaPorte = str(datos['cartaPorte'])
-            datos_Liquidacion = datos.get('datosSolicitarLiquidacion')
-            if datos_Liquidacion:
-                self.COE = str(datos_Liquidacion['Liquidacion'])
-                self.FechaHora = str(datos_Liquidacion['fechaEmision'])
-                self.VigenciaDesde = str(datos_Liquidacion['fechaVigenciaDesde'])
-                self.VigenciaHasta = str(datos_Liquidacion['fechaVigenciaHasta'])
-            self.__analizar_controles(datos)
-        return self.COE
-    
-    @inicializar_y_capturar_excepciones
-    def SolicitarLiquidacionDatoPendiente(self, numero_carta_de_porte, cant_horas, 
-        patente_vehiculo, cuit_transportista):
-        "Solicitud que permite completar los datos faltantes de un Pre-Liquidacion "
-        "generado anteriormente a través de la operación solicitarLiquidacionInicial"
-        ret = self.client.solicitarLiquidacionDatoPendiente(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosSolicitarLiquidacionDatoPendiente=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            cuitTransportista=cuit_transportista,
-                            cantHoras=cant_horas,
-                            )))['response']
-        self.__analizar_errores(ret)
-        self.Observaciones = ret['observacion']
-        datos = ret.get('datosSolicitarLiquidacionResponse')
-        if datos:
-            self.CartaPorte = str(datos['cartaPorte'])
-            datos_Liquidacion = datos.get('datosSolicitarLiquidacion')
-            if datos_Liquidacion:
-                self.COE = str(datos_Liquidacion['Liquidacion'])
-                self.FechaHora = str(datos_Liquidacion['fechaEmision'])
-                self.VigenciaDesde = str(datos_Liquidacion['fechaVigenciaDesde'])
-                self.VigenciaHasta = str(datos_Liquidacion['fechaVigenciaHasta'])
-            self.__analizar_controles(datos)
-        return self.COE
-        
-    @inicializar_y_capturar_excepciones
-    def ConfirmarArribo(self, numero_carta_de_porte, numero_Liquidacion, 
-                        cuit_transportista, cant_kilos_carta_porte, 
-                        establecimiento, **kwargs):
-        "Confirma arribo Liquidacion"
-        ret = self.client.confirmarArribo(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosConfirmarArribo=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            Liquidacion=numero_Liquidacion,
-                            cuitTransportista=cuit_transportista,
-                            cantKilosCartaPorte=cant_kilos_carta_porte,
-                            establecimiento=establecimiento,
-                            )))['response']
-        self.__analizar_errores(ret)
-        datos = ret.get('datosResponse')
-        if datos:
-            self.CartaPorte = str(datos['cartaPorte'])
-            self.COE = str(datos['Liquidacion'])
-            self.FechaHora = str(datos['fechaHora'])
-            self.CodigoTransaccion = str(datos['codigoOperacion'])
-            self.Observaciones = ""
-        return self.CodigoTransaccion
-
-    @inicializar_y_capturar_excepciones
-    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_Liquidacion, **kwargs):
-        "Confirma arribo definitivo Liquidacion"
-        ret = self.client.confirmarDefinitivo(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosConfirmarDefinitivo=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            Liquidacion=numero_Liquidacion,
-                            )))['response']
-        self.__analizar_errores(ret)
-        datos = ret.get('datosResponse')
-        if datos:
-            self.CartaPorte = str(datos['cartaPorte'])
-            self.COE = str(datos['Liquidacion'])
-            self.FechaHora = str(datos['fechaHora'])
-            self.CodigoTransaccion = str(datos['codigoOperacion'])
-            self.Observaciones = ""
-        return self.CodigoTransaccion
-
-    @inicializar_y_capturar_excepciones
-    def ConsultarLiquidacion(self, numero_carta_de_porte=None, numero_Liquidacion=None, 
-                     patente=None, cuit_solicitante=None, cuit_destino=None,
-                     fecha_emision_desde=None, fecha_emision_hasta=None):
-        "Operación que realiza consulta de Liquidacions según el criterio ingresado."
-        ret = self.client.consultarLiquidacion(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        consultarLiquidacionDatos=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            Liquidacion=numero_Liquidacion,
-                            patente=patente,
-                            cuitSolicitante=cuit_solicitante,
-                            cuitDestino=cuit_destino,
-                            fechaEmisionDesde=fecha_emision_desde,
-                            fechaEmisionHasta=fecha_emision_hasta,
-                            )))['response']
-        self.__analizar_errores(ret)
-        datos = ret.get('arrayDatosConsultarLiquidacion')
-        if datos:
-            self.DatosLiquidacion = datos
-            self.LeerDatosLiquidacion(pop=False)
-            return True
-        else:
-            self.DatosLiquidacion = []
-        return ''
+        if 'autorizacion' in ret:
+            aut = ret['autorizacion']
+            self.TotalDeduccion = aut['totalDeduccion']
+            self.TotalRetencion = aut['totalRetencion']
+            self.TotalRetencionAfip = aut['totalRetencionAfip']
+            self.TotalOtrasRetenciones = aut['totalOtrasRetenciones']
+            self.TotalNetoAPagar = aut['totalNetoAPagar']
+            self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
+            self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
+            self.COE = aut['coe']
+            self.COEAjustado = aut['coeAjustado']
+            self.Estado = aut['estado']
+        return self.COE   
 
     def LeerDatosLiquidacion(self, pop=True):
         "Recorro los datos devueltos y devuelvo el primero si existe"
@@ -409,33 +306,11 @@ class WSLPG:
             else:
                 datos = self.DatosLiquidacion[0]
             datos_Liquidacion = datos['datosConsultarLiquidacion']
-            self.CartaPorte = str(datos_Liquidacion['cartaPorte'])
             self.COE = str(datos_Liquidacion['Liquidacion'])
             self.Estado = unicode(datos_Liquidacion['estado'])
-            self.ImprimeConstancia = str(datos_Liquidacion['imprimeConstancia'])
             return self.COE
         else:
             return ""
-
-    @inicializar_y_capturar_excepciones
-    def ConsultarDetalleLiquidacion(self, numero_Liquidacion=None):
-        "Operación mostrar este detalle de la  solicitud de Liquidacion seleccionada."
-        ret = self.client.consultarDetalleLiquidacion(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        Liquidacion=numero_Liquidacion, 
-                        ))['response']
-        self.__analizar_errores(ret)
-        datos = ret.get('consultarDetalleLiquidacionDatos')
-        self.COE = str(datos['Liquidacion'])
-        self.CartaPorte = str(datos['cartaPorte'])
-        self.Estado = unicode(datos['estado'])
-        self.FechaHora = str(datos['fechaEmision'])
-        self.VigenciaDesde = str(datos['fechaVigenciaDesde'])
-        self.VigenciaHasta = str(datos['fechaVigenciaHasta'])
-        self.TarifaReferencia = str(datos['tarifaReferencia'])
-        return True
 
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
@@ -624,6 +499,7 @@ if __name__ == '__main__':
 
         # cliente soap del web service
         wslpg = WSLPG()
+        wslpg.LanzarExcepciones = True
         wslpg.Conectar(url=WSLPG_url)
         wslpg.Token = token
         wslpg.Sign = sign
@@ -636,10 +512,16 @@ if __name__ == '__main__':
             print "AuthServerStatus", wslpg.AuthServerStatus
             ##sys.exit(0)
 
-        wslpg.LanzarExcepciones = True
+
         #import pdb; pdb.set_trace()
-        print wslpg.client.help("liquidacionAutorizar")
-        print wslpg.AutorizarLiquidacion()
+        #print wslpg.client.help("liquidacionAutorizar")
+        try:
+            print wslpg.AutorizarLiquidacion()
+        except:
+            open("wslpg_request.xml", "w").write(wslpg.client.xml_request)
+            open("wslpg_response.xml", "w").write(wslpg.client.xml_response)
+            raise
+            
 
 
         if '--anular' in sys.argv:
