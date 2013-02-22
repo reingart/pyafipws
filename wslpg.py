@@ -322,6 +322,21 @@ class WSLPG:
 
 
     @inicializar_y_capturar_excepciones
+    def ConsultarTipoGrano(self, sep="||"):
+        ret = self.client.tipoGranoConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['tipoGranoReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('granos', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
+
+
+    @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         ret = self.client.consultarProvincias(request=dict(
                         auth={
@@ -627,6 +642,10 @@ if __name__ == '__main__':
             ret = wslpg.ConsultarCampanias()
             print "\n".join(ret)
         
+        if '--tipograno' in sys.argv:
+            ret = wslpg.ConsultarTipoGrano()
+            print "\n".join(ret)
+            
         if '--provincias' in sys.argv:
             ret = wslpg.ConsultarProvincias()
             print "\n".join(ret)
