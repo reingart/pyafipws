@@ -320,7 +320,6 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
-
     @inicializar_y_capturar_excepciones
     def ConsultarTipoGrano(self, sep="||"):
         ret = self.client.tipoGranoConsultar(
@@ -335,6 +334,20 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarCodigoGradoReferencia(self, sep="||"):
+        "Consulta de Grados según Grano."
+        ret = self.client.codigoGradoReferenciaConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['gradoRefReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('gradosRef', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
 
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
@@ -645,6 +658,11 @@ if __name__ == '__main__':
         if '--tipograno' in sys.argv:
             ret = wslpg.ConsultarTipoGrano()
             print "\n".join(ret)
+
+        if '--gradoref' in sys.argv:
+            ret = wslpg.ConsultarCodigoGradoReferencia()
+            print "\n".join(ret)
+            
             
         if '--provincias' in sys.argv:
             ret = wslpg.ConsultarProvincias()
