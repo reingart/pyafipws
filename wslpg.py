@@ -437,17 +437,17 @@ class WSLPG:
 
     @inicializar_y_capturar_excepciones
     def ConsultarLocalidadesPorProvincia(self, codigo_provincia, sep="||"):
-        ret = self.client.consultarLocalidadesPorProvincia(request=dict(
+        ret = self.client.localidadXProvinciaConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        codigoProvincia=codigo_provincia,
-                        ))['response']
+                            'cuit': self.Cuit, },
+                        codProvincia=codigo_provincia,
+                        )['localidadesReturn']
         self.__analizar_errores(ret)
-        array = ret.get('arrayLocalidades', [])
+        array = ret.get('localidades', [])
         return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
-                    (it['localidad']['codigo'], 
-                     it['localidad']['descripcion']) 
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
                for it in array]
 
     @inicializar_y_capturar_excepciones
@@ -760,7 +760,7 @@ if __name__ == '__main__':
             print "\n".join(ret)
                     
         if '--localidades' in sys.argv:    
-            ret = wslpg.ConsultarLocalidadesPorProvincia(16)
+            ret = wslpg.ConsultarLocalidadesPorProvincia(11)
             print "\n".join(ret)
 
         if '--especies' in sys.argv:    
