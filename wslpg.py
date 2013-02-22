@@ -392,6 +392,20 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
+    def ConsultarPuerto(self, sep="||"):
+        "Consulta de Puertos habilitados"
+        ret = self.client.puertoConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['puertoReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('puertos', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
+
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         ret = self.client.consultarProvincias(request=dict(
@@ -716,6 +730,10 @@ if __name__ == '__main__':
 
         if '--retenciones' in sys.argv:
             ret = wslpg.ConsultarTipoRetencion()
+            print "\n".join(ret)
+            
+        if '--puertos' in sys.argv:
+            ret = wslpg.ConsultarPuerto()
             print "\n".join(ret)
 
         if '--provincias' in sys.argv:
