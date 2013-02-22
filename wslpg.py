@@ -358,7 +358,21 @@ class WSLPG:
                             'cuit': self.Cuit, },
                             )['tipoCertDepReturn']
         self.__analizar_errores(ret)
-        array = ret.get('tiposCertDep', [])
+        array = ret.get('tiposCert', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
+
+    def ConsultarTipoDeduccion(self, sep="||"):
+        "Consulta de tipos de Deducciones"
+        ret = self.client.tipoDeduccionConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['tipoDeduccionReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('tiposDeduccion', [])
         return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
@@ -681,6 +695,11 @@ if __name__ == '__main__':
         if '--certdeposito' in sys.argv:
             ret = wslpg.ConsultarTipoCertificadoDeposito()
             print "\n".join(ret)
+
+        if '--deducciones' in sys.argv:
+            ret = wslpg.ConsultarTipoDeduccion()
+            print "\n".join(ret)
+
 
         if '--provincias' in sys.argv:
             ret = wslpg.ConsultarProvincias()
