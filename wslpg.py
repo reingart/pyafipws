@@ -307,6 +307,21 @@ class WSLPG:
             return ""
 
     @inicializar_y_capturar_excepciones
+    def ConsultarCampanias(self, sep="||"):
+        ret = self.client.campaniasConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['campaniaReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('campanias', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
+
+
+    @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         ret = self.client.consultarProvincias(request=dict(
                         auth={
@@ -607,6 +622,10 @@ if __name__ == '__main__':
 
 
         # Recuperar parámetros:
+        
+        if '--campanias' in sys.argv:
+            ret = wslpg.ConsultarCampanias()
+            print "\n".join(ret)
         
         if '--provincias' in sys.argv:
             ret = wslpg.ConsultarProvincias()
