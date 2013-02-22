@@ -184,102 +184,94 @@ class WSLPG:
         self.DbServerStatus = str(results['dbserver'])
         self.AuthServerStatus = str(results['authserver'])
 
-    @inicializar_y_capturar_excepciones
-    def AnularLiquidacion(self, carta_porte, Liquidacion):
-        "Anular el Liquidacion si se creó el mismo por error"
-        response = self.client.anularLiquidacion(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosAnularLiquidacion={
-                            'cartaPorte': carta_porte,
-                            'Liquidacion': Liquidacion, }))['response']
-        datos = response.get('datosResponse')
-        self.__analizar_errores(response)
-        if datos:
-            self.CartaPorte = str(datos['cartaPorte'])
-            self.COE = str(datos['Liquidacion'])
-            self.FechaHora = str(datos['fechaHora'])
-            self.CodigoOperacion = str(datos['codigoOperacion'])
+    def CrearLiquidacion(self, nro_orden, cuit_comprador, 
+                               nro_act_comprador, nro_ing_bruto_comprador,
+                               cod_tipo_operacion,
+                               es_liquidacion_propia, es_canje,
+                               cod_puerto, des_puerto_localidad, cod_grano,
+                               cuit_vendedor, nro_ing_bruto_vendedor,
+                               actua_corredor, liquida_corredor, cuit_corredor,
+                               comision_corredor, nro_ing_bruto_corredor,
+                               fecha_precio_operacion,
+                               precio_ref_tn, cod_grado_ref, cod_grado_ent,
+                               factor_ent, precio_flete_tn, cont_proteico,
+                               alic_iva_operacion, campania_ppal,
+                               cod_localidad_procedencia,
+                               datos_adicionales,
+                               ):
+        self.liquidacion = dict(
+                            nroOrden=nro_orden,
+                            cuitComprador=cuit_comprador,
+                            nroActComprador=nro_act_comprador,
+                            nroIngBrutoComprador=nro_ing_bruto_comprador,
+                            codTipoOperacion=cod_tipo_operacion,
+                            esLiquidacionPropia=es_liquidacion_propia,
+                            esCanje=es_canje,
+                            codPuerto=cod_puerto,
+                            desPuertoLocalidad=des_puerto_localidad,
+                            codGrano=cod_grano,
+                            cuitVendedor=cuit_vendedor,
+                            nroIngBrutoVendedor=nro_ing_bruto_vendedor,
+                            actuaCorredor=actua_corredor,
+                            liquidaCorredor=liquida_corredor,
+                            cuit_corredor=cuit_corredor,
+                            comisionCorredor=comision_corredor,
+                            nroIngBrutoCorredor=nro_ing_bruto_corredor,
+                            fechaPrecioOperacion=fecha_precio_operacion,
+                            precioRefTn=precio_ref_tn,
+                            codGradoRef=cod_grado_ref,
+                            codGradoEnt=cod_grado_ent,
+                            factorEnt=factor_ent,
+                            precioFleteTn=precio_flete_tn,
+                            contProteico=cont_proteico,
+                            alicIvaOperacion=alic_iva_operacion,
+                            campaniaPPal=campania_ppal,
+                            codLocalidadProcedencia=cod_localidad_procedencia,
+                            datosAdicionales=datos_adicionales,
+                            certificados=[],
+            )
+
+    def AgregarCertificado(self, tipo_certificado_dposito=5,
+                           nro_certificado_deposito=101200604,
+                           peso_neto=1000,
+                           cod_localidad_procedencia=3,
+                           cod_prov_procedencia=1,
+                           campania=1213,
+                           fecha_cierre="2013-01-13",):
+        "Agrego el certificado a la liquidación"
+        
+        self.liquidacion['certificados'].append(
+                    dict(certificado=dict(
+                        tipoCertificadoDeposito=tipo_certificado_dposito,
+                        nroCertificadoDeposito=nro_certificado_deposito,
+                        pesoNeto=cod_localidad_procedencia,
+                        codLocalidadProcedencia=cod_localidad_procedencia,
+                        codProvProcedencia=cod_prov_procedencia,
+                        campania=campania,
+                        fechaCierre=fecha_cierre,
+                      )))
+        self.retenciones = []
+
+    def AgregarRetencion(self, codigo_concepto, detalle_aclaratorio, 
+                               base_calculo, alicuota):
+        self.retenciones.append(dict(
+                                    retencion=dict(
+                                        codigoConcepto=codigo_concepto,
+                                        detalleAclaratorio=detalle_aclaratorio,
+                                        baseCalculo=base_calculo,
+                                        alicuota=alicuota,
+                                    ))
+                            )
 
     @inicializar_y_capturar_excepciones
-    def RechazarLiquidacion(self, carta_porte, Liquidacion, motivo):
-        "El Destino puede rechazar el Liquidacion a través de la siguiente operatoria"
-        response = self.client.rechazarLiquidacion(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosRechazarLiquidacion={
-                            'cartaPorte': carta_porte,
-                            'Liquidacion': Liquidacion, 'motivoRechazo': motivo,
-                            }))['response']
-        datos = response.get('datosResponse')
-        self.__analizar_errores(response)
-        if datos:
-            self.CartaPorte = str(datos['cartaPorte'])
-            self.COE = str(datos['Liquidacion'])
-            self.FechaHora = str(datos['fechaHora'])
-            self.CodigoOperacion = str(datos['codigoOperacion'])
-
-    @inicializar_y_capturar_excepciones
-    def AutorizarLiquidacion(self, **kwargs):
+    def AutorizarLiquidacion(self):
         "Solicitar Liquidacion Desde el Inicio"
         ret = self.client.liquidacionAutorizar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
-                        liquidacion=dict(
-                            nroOrden=1,
-                            cuitComprador=23000000000,
-                            nroActComprador=99,
-                            nroIngBrutoComprador=23000000000,
-                            codTipoOperacion=1,
-                            esLiquidacionPropia='N',
-                            esCanje='N',
-                            codPuerto=14,
-                            desPuertoLocalidad="DETALLE PUERTO",
-                            codGrano=31,
-                            cuitVendedor=30000000007,
-                            nroIngBrutoVendedor=30000000007,
-                            actuaCorredor="S",
-                            liquidaCorredor="S",
-                            cuitCorredor=20267565393,
-                            comisionCorredor=1,
-                            nroIngBrutoCorredor=20267565393,
-                            fechaPrecioOperacion="2013-02-07",
-                            precioRefTn=2000,
-                            codGradoRef="G1",
-                            codGradoEnt="G1",
-                            factorEnt=98,
-                            precioFleteTn=10,
-                            contProteico=20,
-                            alicIvaOperacion=10.5,
-                            campaniaPPal=1213,
-                            codLocalidadProcedencia=3,
-                            datosAdicionales="DATOS ADICIONALES",
-                            certificados=[dict(certificado=dict(
-                                tipoCertificadoDeposito=5,
-                                nroCertificadoDeposito=101200604,
-                                pesoNeto=1000,
-                                codLocalidadProcedencia=3,
-                                codProvProcedencia=1,
-                                campania=1213,
-                                fechaCierre="2013-01-13",
-                            ))]),
-                        retenciones=[dict(
-                            retencion=dict(
-                                codigoConcepto="RI",
-                                detalleAclaratorio="DETALLE DE IVA",
-                                baseCalculo=1970,
-                                alicuota=8,
-                            )), dict(
-                            retencion=dict(
-                                codigoConcepto="RG",
-                                detalleAclaratorio="DETALLE DE GANANCIAS",
-                                baseCalculo=100,
-                                alicuota=2,
-                            ),
-                            )],
+                        liquidacion=self.liquidacion,
+                        retenciones=self.retenciones,
                         )
         ret = ret['liqReturn']
         self.__analizar_errores(ret)
@@ -514,12 +506,61 @@ if __name__ == '__main__':
             print "AuthServerStatus", wslpg.AuthServerStatus
             ##sys.exit(0)
 
-        if TESTING:
+        if '--prueba' in sys.argv:
             # cargar respuesta de ejemplo (documentacion AFIP)
-            from pysimplesoap.transport import DummyTransport as DummyHTTP 
-            xml = open("wslpg_aut_test.xml").read()
-            wslpg.client.http = DummyHTTP(xml)
-            print wslpg.AutorizarLiquidacion()
+            
+            if TESTING:
+                from pysimplesoap.transport import DummyTransport as DummyHTTP 
+                xml = open("wslpg_aut_test.xml").read()
+                wslpg.client.http = DummyHTTP(xml)
+
+            wslpg.CrearLiquidacion(
+                nro_orden=1,
+                cuit_comprador=23000000000, 
+                nro_act_comprador=99, nro_ing_bruto_comprador=23000000000,
+                cod_tipo_operacion=1,
+                es_liquidacion_propia='N', es_canje='N',
+                cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
+                cod_grano=31, 
+                cuit_vendedor=30000000007, nro_ing_bruto_vendedor=30000000007,
+                actua_corredor="S", liquida_corredor="S", cuit_corredor=20267565393,
+                comision_corredor=1, nro_ing_bruto_corredor=20267565393,
+                fecha_precio_operacion="2013-02-07",
+                precio_ref_tn=2000,
+                cod_grado_ref="G1",
+                cod_grado_ent="G1",
+                factor_ent=98,
+                precio_flete_tn=10,
+                cont_proteico=20,
+                alic_iva_operacion=10.5,
+                campania_ppal=1213,
+                cod_localidad_procedencia=3,
+                datos_adicionales="DATOS ADICIONALES",
+                )
+            wslpg.AgregarCertificado(
+                tipo_certificado_dposito=5,
+                nro_certificado_deposito=101200604,
+                peso_neto=1000,
+                cod_localidad_procedencia=3,
+                cod_prov_procedencia=1,
+                campania=1213,
+                fecha_cierre="2013-01-13",
+                )
+            wslpg.AgregarRetencion(
+                codigo_concepto="RI",
+                detalle_aclaratorio="DETALLE DE IVA",
+                base_calculo=1970,
+                alicuota=8,
+                )
+            wslpg.AgregarRetencion(
+                codigo_concepto="RG",
+                detalle_aclaratorio="DETALLE DE GANANCIAS",
+                base_calculo=100,
+                alicuota=2,
+                )
+                
+            wslpg.AutorizarLiquidacion()
+            
             print "COE", wslpg.COE
             print "COEAjustado", wslpg.COEAjustado
             print "TootalDeduccion", wslpg.TotalDeduccion
@@ -529,10 +570,11 @@ if __name__ == '__main__':
             print "TotalNetoAPagar", wslpg.TotalNetoAPagar
             print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
             print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
-            assert wslpg.COE == 330100000357
-            assert wslpg.COEAjustado == None
-            assert wslpg.Estado == "AC"
-            assert wslpg.TotalPagoSegunCondicion == 1968.00           
+            if TESTING:
+                assert wslpg.COE == 330100000357
+                assert wslpg.COEAjustado == None
+                assert wslpg.Estado == "AC"
+                assert wslpg.TotalPagoSegunCondicion == 1968.00           
 
 
         if '--anular' in sys.argv:
