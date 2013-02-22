@@ -406,6 +406,20 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
+    def ConsultarTipoActividad(self, sep="||"):
+        "Consulta de Tipos de Actividad."
+        ret = self.client.tipoActividadConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['tipoActividadReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('tiposActividad', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
+
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         ret = self.client.consultarProvincias(request=dict(
@@ -734,6 +748,10 @@ if __name__ == '__main__':
             
         if '--puertos' in sys.argv:
             ret = wslpg.ConsultarPuerto()
+            print "\n".join(ret)
+
+        if '--actividades' in sys.argv:
+            ret = wslpg.ConsultarTipoActividad()
             print "\n".join(ret)
 
         if '--provincias' in sys.argv:
