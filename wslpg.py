@@ -358,7 +358,7 @@ class WSLPG:
                             'cuit': self.Cuit, },
                             )['tipoCertDepReturn']
         self.__analizar_errores(ret)
-        array = ret.get('tiposCert', [])
+        array = ret.get('tiposCertDep', [])
         return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
