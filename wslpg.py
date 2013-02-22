@@ -422,16 +422,17 @@ class WSLPG:
 
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
-        ret = self.client.consultarProvincias(request=dict(
+        "Consulta las provincias habilitadas"
+        ret = self.client.provinciasConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                            ))['consultarProvinciasResponse']
+                            'cuit': self.Cuit, },
+                            )['provinciasReturn']
         self.__analizar_errores(ret)
-        array = ret.get('arrayProvincias', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % s
-                    (it['provincia']['codigo'], 
-                     it['provincia']['descripcion']) 
+        array = ret.get('provincias', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
                for it in array]
 
     @inicializar_y_capturar_excepciones
