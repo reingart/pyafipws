@@ -61,9 +61,9 @@ import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 
-#WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
+WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 #WSDL = "https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl"
-WSDL = "file:wslpg.wsdl"
+#WSDL = "file:wslpg.wsdl"
 
 DEBUG = False
 XML = False
@@ -160,7 +160,7 @@ class WSLPG:
         self.client = SoapClient(url,
             wsdl=url, cache=cache,
             trace='--trace' in sys.argv, 
-            ns='wsdl', soap_ns='soapenv',
+            ns='wslpg', soap_ns='soapenv',
             exceptions=True, proxy=proxy_dict)
         return True
 
@@ -172,7 +172,8 @@ class WSLPG:
         if 'erroresFormato' in ret:
             errores.extend(ret['erroresFormato'])
         if errores:
-            self.Errores = [err['error'] for err in errores]
+            self.Errores = ["%(codigo)s: %(descripcion)s" % err['error'] 
+                            for err in errores]
             self.ErrCode = ' '.join(self.Errores)
             self.ErrMsg = '\n'.join(self.Errores)
 
@@ -214,7 +215,7 @@ class WSLPG:
                             nroIngBrutoVendedor=nro_ing_bruto_vendedor,
                             actuaCorredor=actua_corredor,
                             liquidaCorredor=liquida_corredor,
-                            cuit_corredor=cuit_corredor,
+                            cuitCorredor=cuit_corredor,
                             comisionCorredor=comision_corredor,
                             nroIngBrutoCorredor=nro_ing_bruto_corredor,
                             fechaPrecioOperacion=fecha_precio_operacion,
@@ -560,7 +561,9 @@ if __name__ == '__main__':
                 )
                 
             wslpg.AutorizarLiquidacion()
-            
+
+            print "Errores:", wslpg.Errores
+
             print "COE", wslpg.COE
             print "COEAjustado", wslpg.COEAjustado
             print "TootalDeduccion", wslpg.TotalDeduccion
