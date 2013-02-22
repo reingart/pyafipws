@@ -348,6 +348,21 @@ class WSLPG:
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
+    @inicializar_y_capturar_excepciones
+
+    def ConsultarTipoCertificadoDeposito(self, sep="||"):
+        "Consulta de tipos de Certificados de Depósito"
+        ret = self.client.tipoCertificadoDepositoConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['tipoCertDepReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('tiposCertDep', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
 
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
@@ -662,8 +677,11 @@ if __name__ == '__main__':
         if '--gradoref' in sys.argv:
             ret = wslpg.ConsultarCodigoGradoReferencia()
             print "\n".join(ret)
-            
-            
+
+        if '--certdeposito' in sys.argv:
+            ret = wslpg.ConsultarTipoCertificadoDeposito()
+            print "\n".join(ret)
+
         if '--provincias' in sys.argv:
             ret = wslpg.ConsultarProvincias()
             print "\n".join(ret)
