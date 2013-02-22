@@ -49,8 +49,7 @@ Opciones:
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
-  --especies: obtiene el listado de especies
-  --cosechas: obtiene el listado de cosechas
+
 
 Ver wslpg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
@@ -119,9 +118,6 @@ class WSLPG:
                         'AnularLiquidacion', 
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
-                        'ConsultarEstablecimientos',
-                        'ConsultarCosechas',
-                        'ConsultarEspecies',
                         'AnalizarXml', 'ObtenerTagXml',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
@@ -451,45 +447,31 @@ class WSLPG:
                for it in array]
 
     @inicializar_y_capturar_excepciones
-    def ConsultarEstablecimientos(self, sep="||"):
-        ret = self.client.consultarEstablecimientos(request=dict(
+    def ConsultarTiposOperacion(self, sep="||"):
+        "Consulta tipo de Operación por Actividad."
+        ops = []
+        ret = self.client.tipoActividadConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        ))['response']
+                            'cuit': self.Cuit, },
+                            )['tipoActividadReturn']
         self.__analizar_errores(ret)
-        array = ret.get('arrayEstablecimientos', [])
-        return [("%s" % 
-                    (it['establecimiento'],)) 
-               for it in array]
+        for it_act in ret.get('tiposActividad', []):
 
-    @inicializar_y_capturar_excepciones
-    def ConsultarEspecies(self, sep="||"):
-        ret = self.client.consultarEspecies(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                            ))['response']
-        self.__analizar_errores(ret)
-        array = ret.get('arrayEspecies', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
-                    (it['especie']['codigo'], 
-                     it['especie']['descripcion']) 
-               for it in array]
-
-    @inicializar_y_capturar_excepciones
-    def ConsultarCosechas(self, sep="||"):
-        ret = self.client.consultarCosechas(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                            ))['response']
-        self.__analizar_errores(ret)
-        array = ret.get('arrayCosechas', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
-                    (it['cosecha']['codigo'], 
-                     it['cosecha']['descripcion']) 
-               for it in array]
+            ret = self.client.tipoOperacionXActividadConsultar(
+                            auth={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuit': self.Cuit, },
+                            nroActLiquida=it_act['codigoDescripcion']['codigo'],
+                            )['tipoOperacionReturn']
+            self.__analizar_errores(ret)
+            array = ret.get('tiposOperacion', [])
+            ops.extend([("%s %%s %s %%s %s %%s %s" % (sep, sep, sep, sep)) % 
+                    (it_act['codigoDescripcion']['codigo'],
+                     it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+                   for it in array])
+        return ops
 
     @property
     def xml_request(self):
@@ -755,24 +737,16 @@ if __name__ == '__main__':
             ret = wslpg.ConsultarTipoActividad()
             print "\n".join(ret)
 
+        if '--operaciones' in sys.argv:
+            ret = wslpg.ConsultarTiposOperacion()
+            print "\n".join(ret)
+
         if '--provincias' in sys.argv:
             ret = wslpg.ConsultarProvincias()
             print "\n".join(ret)
                     
         if '--localidades' in sys.argv:    
             ret = wslpg.ConsultarLocalidadesPorProvincia(11)
-            print "\n".join(ret)
-
-        if '--especies' in sys.argv:    
-            ret = wslpg.ConsultarEspecies()
-            print "\n".join(ret)
-
-        if '--cosechas' in sys.argv:    
-            ret = wslpg.ConsultarCosechas()
-            print "\n".join(ret)
-
-        if '--establecimientos' in sys.argv:    
-            ret = wslpg.ConsultarEstablecimientos()
             print "\n".join(ret)
             
         print "hecho."
