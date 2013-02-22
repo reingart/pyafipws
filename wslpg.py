@@ -378,6 +378,20 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
+    def ConsultarTipoRetencion(self, sep="||"):
+        "Consulta de tipos de Retenciones."
+        ret = self.client.tipoRetencionConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['tipoRetencionReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('tiposRetencion', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
+
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         ret = self.client.consultarProvincias(request=dict(
@@ -700,6 +714,9 @@ if __name__ == '__main__':
             ret = wslpg.ConsultarTipoDeduccion()
             print "\n".join(ret)
 
+        if '--retenciones' in sys.argv:
+            ret = wslpg.ConsultarTipoRetencion()
+            print "\n".join(ret)
 
         if '--provincias' in sys.argv:
             ret = wslpg.ConsultarProvincias()
