@@ -61,8 +61,9 @@ import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 
-WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
-# https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl
+#WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
+#WSDL = "https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl"
+WSDL = "file:wslpg.wsdl"
 
 DEBUG = False
 XML = False
@@ -292,7 +293,7 @@ class WSLPG:
             self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
             self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
             self.COE = aut['coe']
-            self.COEAjustado = aut['coeAjustado']
+            self.COEAjustado = aut.get('coeAjustado')
             self.Estado = aut['estado']
         return self.COE   
 
@@ -469,6 +470,7 @@ if __name__ == '__main__':
 
         DEBUG = '--debug' in sys.argv
         XML = '--xml' in sys.argv
+        TESTING = '--testing' in sys.argv
 
         if DEBUG:
             print "Usando Configuración:"
@@ -512,16 +514,25 @@ if __name__ == '__main__':
             print "AuthServerStatus", wslpg.AuthServerStatus
             ##sys.exit(0)
 
-
-        #import pdb; pdb.set_trace()
-        #print wslpg.client.help("liquidacionAutorizar")
-        try:
+        if TESTING:
+            # cargar respuesta de ejemplo (documentacion AFIP)
+            from pysimplesoap.transport import DummyTransport as DummyHTTP 
+            xml = open("wslpg_aut_test.xml").read()
+            wslpg.client.http = DummyHTTP(xml)
             print wslpg.AutorizarLiquidacion()
-        except:
-            open("wslpg_request.xml", "w").write(wslpg.client.xml_request)
-            open("wslpg_response.xml", "w").write(wslpg.client.xml_response)
-            raise
-            
+            print "COE", wslpg.COE
+            print "COEAjustado", wslpg.COEAjustado
+            print "TootalDeduccion", wslpg.TotalDeduccion
+            print "TotalRetencion", wslpg.TotalRetencion
+            print "TotalRetencionAfip", wslpg.TotalRetencionAfip
+            print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
+            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
+            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+            assert wslpg.COE == 330100000357
+            assert wslpg.COEAjustado == None
+            assert wslpg.Estado == "AC"
+            assert wslpg.TotalPagoSegunCondicion == 1968.00           
 
 
         if '--anular' in sys.argv:
@@ -571,138 +582,6 @@ if __name__ == '__main__':
         if '--establecimientos' in sys.argv:    
             ret = wslpg.ConsultarEstablecimientos()
             print "\n".join(ret)
-
-
-        if '--prueba' in sys.argv or '--formato' in sys.argv:
-            prueba = dict(numero_carta_de_porte=512345679, codigo_especie=23,
-                cuit_canjeador=30640872566, 
-                cuit_destino=20061341677, cuit_destinatario=20267565393, 
-                codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
-                codigo_cosecha='0910', peso_neto_carga=1000, 
-                km_recorridos=1234,
-                numero_Liquidacion="43816783", transaccion='10000001681', 
-                observaciones='',      
-                cant_kilos_carta_porte=1000, establecimiento=1,
-            )
-            parcial = dict(
-                    cant_horas=1, 
-                    patente_vehiculo='CZO985', cuit_transportista=20234455967,
-                    )
-            if not '--parcial' in sys.argv:
-                prueba.update(parcial)
-                
-            f = open(ENTRADA,"wb")
-            csv_writer = csv.writer(f, dialect='excel', delimiter=";")
-            csv_writer.writerows([prueba.keys()])
-            csv_writer.writerows([[prueba[k] for k in prueba.keys()]])
-            f.close()
-            
-        items = []
-        csv_reader = csv.reader(open(ENTRADA), dialect='excel', delimiter=";")
-        for row in csv_reader:
-            items.append(row)
-        cols = [str(it).strip() for it in items[0]]
-        # armar diccionario por cada linea
-        items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
-
-        Liquidacion = None
-
-        if '--autorizar' in sys.argv:
-            wslpg.LanzarExcepciones = True
-            for it in items:
-                print "solicitando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
-                Liquidacion = wslpg.AutorizarLiquidacion(**it)
-                print "numero Liquidacion: ", Liquidacion
-                print "Observiacion: ", wslpg.Observaciones
-                print "Carta Porte", wslpg.CartaPorte
-                print "Numero Liquidacion", wslpg.COE
-                print "Fecha y Hora", wslpg.FechaHora
-                print "Vigencia Desde", wslpg.VigenciaDesde
-                print "Vigencia Hasta", wslpg.VigenciaHasta
-                print "Errores:", wslpg.Errores
-                print "Controles:", wslpg.Controles
-                it['numero_Liquidacion'] = Liquidacion
-
-        if '--parcial' in sys.argv:
-            wslpg.LanzarExcepciones = True
-            for it in items:
-                print "solicitando dato pendiente...", ' '.join(['%s=%s' % (k,v) for k,v in parcial.items()])
-                Liquidacion = wslpg.SolicitarLiquidacionDatoPendiente(
-                    numero_carta_de_porte=wslpg.CartaPorte,
-                    **parcial)
-                print "numero Liquidacion: ", Liquidacion
-                print "Observiacion: ", wslpg.Observaciones
-                print "Carta Porte", wslpg.CartaPorte
-                print "Numero Liquidacion", wslpg.COE
-                print "Fecha y Hora", wslpg.FechaHora
-                print "Vigencia Desde", wslpg.VigenciaDesde
-                print "Vigencia Hasta", wslpg.VigenciaHasta
-                print "Errores:", wslpg.Errores
-                print "Controles:", wslpg.Controles
-                it['COE'] = Liquidacion
-
-        if '--confirmar_arribo' in sys.argv:
-            for it in items:
-                print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
-                transaccion = wslpg.ConfirmarArribo(**it)
-                print "transaccion: %s" % (transaccion, )
-                print "Fecha y Hora", wslpg.FechaHora
-                print "Errores:", wslpg.Errores
-                it['transaccion'] = transaccion
-
-        if '--confirmar_definitivo' in sys.argv:
-            for it in items:
-                print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
-                transaccion = wslpg.ConfirmarDefinitivo(**it)
-                print "transaccion: %s" % (transaccion, )
-                print "Fecha y Hora", wslpg.FechaHora
-                print "Errores:", wslpg.Errores
-                it['transaccion'] = transaccion
-                
-        if '--consultar_detalle' in sys.argv:
-            i = sys.argv.index("--consultar_detalle")
-            if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
-                Liquidacion = int(sys.argv[i+1])
-            elif not Liquidacion:
-                Liquidacion = int(raw_input("Numero de Liquidacion: ") or '0') or 73714620
-
-            wslpg.LanzarExcepciones = True
-            for i, it in enumerate(items):
-                print "consultando detalle...", Liquidacion
-                Liquidacion = wslpg.ConsultarDetalleLiquidacion(Liquidacion)
-                print "Numero Liquidacion: ", wslpg.COE
-                print "Tarifa Referencia: ", wslpg.TarifaReferencia
-                print "Observiacion: ", wslpg.Observaciones
-                print "Carta Porte", wslpg.CartaPorte
-                print "Numero Liquidacion", wslpg.COE
-                print "Fecha y Hora", wslpg.FechaHora
-                print "Vigencia Desde", wslpg.VigenciaDesde
-                print "Vigencia Hasta", wslpg.VigenciaHasta
-                print "Errores:", wslpg.Errores
-                print "Controles:", wslpg.Controles
-                it['numero_Liquidacion'] = Liquidacion
-                wslpg.AnalizarXml("XmlResponse")
-                for k in ['Liquidacion', 'solicitante', 'estado', 'especie', 'cosecha', 
-                          'cuitCanjeador', 'cuitDestino', 'cuitDestinatario', 
-                          'cuitTransportista', 'establecimiento', 
-                          'localidadOrigen', 'localidadDestino', ''
-                          'cantidadHoras', 'patenteVehiculo', 'pesoNetoCarga',
-                          'kmRecorridos', 'tarifaReferencia']:
-                    print k, wslpg.ObtenerTagXml('consultarDetalleLiquidacionDatos', k)
-              
-
-
-        f = open(SALIDA,"wb")
-        csv_writer = csv.writer(f, dialect='excel', delimiter=";")
-        csv_writer.writerows([cols])
-        csv_writer.writerows([[item[k] for k in cols] for item in items])
-        f.close()
-        
-        if "--consultar" in sys.argv:
-            wslpg.LanzarExcepciones = True
-            wslpg.ConsultarLiquidacion(fecha_emision_desde="01/04/2012")
-            while wslpg.LeerDatosLiquidacion():
-                print "numero Liquidacion: ", wslpg.COE
             
         print "hecho."
         
@@ -714,3 +593,8 @@ if __name__ == '__main__':
         if DEBUG:
             raise
         sys.exit(5)
+    finally:
+        if XML:
+            open("wslpg_request.xml", "w").write(wslpg.client.xml_request)
+            open("wslpg_response.xml", "w").write(wslpg.client.xml_response)
+
