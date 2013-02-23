@@ -10,12 +10,13 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo para Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP Disp. 3683/2011"
+"""Módulo para Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP Disp. 3683/11
+según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08d"
+__version__ = "1.09a"
 
 import os
 import socket
@@ -71,9 +72,10 @@ class TrazaMed:
                         'SendCancelacTransacc',
                         'SendMedicamentosDHSerie',
                         'SendMedicamentosFraccion',
+                        'SendConfirmaTransacc', 
                         'Conectar', 'LeerError',
                         'SetUsername', 'SetPassword', 
-                        'SetParametro',
+                        'SetParametro', 
                         'GetCodigoTransaccion', 'GetResultado']
                         
     _public_attrs_ = [
@@ -378,6 +380,21 @@ class TrazaMed:
 
         return True
 
+    @inicializar_y_capturar_excepciones
+    def SendConfirmaTransacc(self, usuario, password, p_ids_transac, f_operacion):
+        "Confirma la recepción de un medicamento"
+        res = self.client.sendConfirmaTransacc(
+            arg0=usuario, 
+            arg1=password,
+            arg2={'p_ids_transac': p_ids_transac, 'f_operacion': f_operacion}, 
+        )
+        ret = res['return']
+        self.CodigoTransaccion = ret[0]['codigoTransaccion']
+        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
+                        for it in ret if 'errores' in it]
+        self.Resultado = ret[-1]['resultado']
+        return True
+
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
         
@@ -501,6 +518,12 @@ def main():
         ws.SendCancelacTransacc(
             usuario='pruebasws', password='pruebasws',
             codigo_transaccion=codigo_transaccion)
+        print "Resultado", ws.Resultado
+        print "CodigoTransaccion", ws.CodigoTransaccion
+        print "Erroes", ws.Errores
+    elif '--confirma' in sys.argv:
+        ws.SendConfirmaTransacc(usuario="pruebasws", password="pruebasws", 
+                                p_ids_transac="1234", f_operacion="22/12/2013")
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Erroes", ws.Errores
