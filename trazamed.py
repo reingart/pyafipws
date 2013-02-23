@@ -42,6 +42,8 @@ def inicializar_y_capturar_excepciones(func):
             # inicializo (limpio variables)
             self.Resultado = self.CodigoTransaccion = ""
             self.Errores = []
+            self.CantPaginas = self.HayError = None
+            self.TransaccionPlainWS = []
             self.Traceback = self.Excepcion = ""
             
             if self.client is None:
@@ -73,6 +75,7 @@ class TrazaMed:
                         'SendMedicamentosDHSerie',
                         'SendMedicamentosFraccion',
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
+                        'GetTransaccionesNoConfirmadas',
                         'Conectar', 'LeerError',
                         'SetUsername', 
                         'SetParametro', 'GetParametro',
@@ -84,6 +87,7 @@ class TrazaMed:
         'XmlRequest', 'XmlResponse', 
         'Version', 'InstallDir', 
         'Traceback', 'Excepcion',
+        'CantPaginas', 'HayError', 'TransaccionPlainWS',
         ]
 
     _reg_progid_ = "TrazaMed"
@@ -410,6 +414,32 @@ class TrazaMed:
         self.Resultado = ret[-1]['resultado']
         return True
 
+    @inicializar_y_capturar_excepciones
+    def GetTransaccionesNoConfirmadas(self, usuario, password, 
+                p_id_transaccion_global, id_agente_informador, 
+                id_agente_origen, id_agente_destino, id_medicamento, id_evento, 
+                fecha_desde_op, fecha_hasta_op, fecha_desde_t, fecha_hasta_t, 
+                estado):
+        "Trae un listado de las transacciones que no están confirmadas"
+        res = self.client.getTransaccionesNoConfirmadas(
+            arg0=usuario, 
+            arg1=password,
+            arg2=p_id_transaccion_global, 
+            arg4=id_agente_informador, arg5=id_agente_origen, 
+            arg6=id_agente_destino, arg7=id_medicamento, arg8=id_evento, 
+            arg9=fecha_desde_op, arg10=fecha_hasta_op, 
+            arg11=fecha_desde_t, arg12=fecha_hasta_t, 
+            arg13=estado,
+        )
+        ret = res['return']
+        if ret:
+            self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
+                            for it in ret if 'errores' in it]
+            self.CantPaginas = ret[0].get('cantPaginas')
+            self.HayError = ret[0].get('hay_error')
+            self.TransaccionPlainWS = ret[0].get('list')
+        return True
+        
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
         
@@ -548,6 +578,23 @@ def main():
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Errores", ws.Errores
+    elif '--consulta' in sys.argv:
+        ws.GetTransaccionesNoConfirmadas(usuario="pruebasws", password="pruebasws", 
+                                p_id_transaccion_global="1234", 
+                                id_agente_informador="1", 
+                                id_agente_origen="1", 
+                                id_agente_destino="1", 
+                                id_medicamento="1", 
+                                id_evento="1", 
+                                fecha_desde_op="01/01/2013", 
+                                fecha_hasta_op="31/12/2013", 
+                                fecha_desde_t="01/01/2013", 
+                                fecha_hasta_t="31/12/2013", 
+                                estado=1)
+        print ws.Traceback
+        print "CantPaginas", ws.CantPaginas
+        print "HayError", ws.HayError
+        print "TransaccionPlainWS", ws.TransaccionPlainWS
     else:
         ws.SendMedicamentos(*sys.argv[1:])
         print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
