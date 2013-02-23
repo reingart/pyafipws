@@ -72,10 +72,10 @@ class TrazaMed:
                         'SendCancelacTransacc',
                         'SendMedicamentosDHSerie',
                         'SendMedicamentosFraccion',
-                        'SendConfirmaTransacc', 
+                        'SendConfirmaTransacc', 'SendAlertaTransacc',
                         'Conectar', 'LeerError',
-                        'SetUsername', 'SetPassword', 
-                        'SetParametro', 
+                        'SetUsername', 
+                        'SetParametro', 'GetParametro',
                         'GetCodigoTransaccion', 'GetResultado']
                         
     _public_attrs_ = [
@@ -395,6 +395,21 @@ class TrazaMed:
         self.Resultado = ret[-1]['resultado']
         return True
 
+    @inicializar_y_capturar_excepciones
+    def SendAlertaTransacc(self, usuario, password, p_ids_transac_ws):
+        "Alerta un medicamento, acción contraria a “confirmar la transacción”."
+        res = self.client.sendAlertaTransacc(
+            arg0=usuario, 
+            arg1=password,
+            arg2=p_ids_transac_ws, 
+        )
+        ret = res['return']
+        self.CodigoTransaccion = ret[0]['codigoTransaccion']
+        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
+                        for it in ret if 'errores' in it]
+        self.Resultado = ret[-1]['resultado']
+        return True
+
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
         
@@ -520,13 +535,19 @@ def main():
             codigo_transaccion=codigo_transaccion)
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Erroes", ws.Errores
+        print "Errores", ws.Errores
     elif '--confirma' in sys.argv:
         ws.SendConfirmaTransacc(usuario="pruebasws", password="pruebasws", 
                                 p_ids_transac="1234", f_operacion="22/12/2013")
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Erroes", ws.Errores
+        print "Errores", ws.Errores
+    elif '--alerta' in sys.argv:
+        ws.SendAlertaTransacc(usuario="pruebasws", password="pruebasws", 
+                                p_ids_transac_ws="1234")
+        print "Resultado", ws.Resultado
+        print "CodigoTransaccion", ws.CodigoTransaccion
+        print "Errores", ws.Errores
     else:
         ws.SendMedicamentos(*sys.argv[1:])
         print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
