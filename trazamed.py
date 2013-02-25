@@ -76,7 +76,7 @@ class TrazaMed:
                         'SendMedicamentosFraccion',
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
                         'GetTransaccionesNoConfirmadas',
-                        'Conectar', 'LeerError',
+                        'Conectar', 'LeerError', 'LeerTransaccion',
                         'SetUsername', 
                         'SetParametro', 'GetParametro',
                         'GetCodigoTransaccion', 'GetResultado']
@@ -184,10 +184,10 @@ class TrazaMed:
         self.params[clave] = valor
         return True
 
-    def GetParametro(self, clave, valor):
+    def GetParametro(self, clave):
         "Devuelve un parámetro general (establecido por llamadas anteriores)"
         # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
-        return self.params[clave]
+        return self.params.get(clave)
         
     @inicializar_y_capturar_excepciones
     def SendMedicamentos(self, usuario, password, 
@@ -469,7 +469,20 @@ class TrazaMed:
             self.HayError = ret[0].get('hay_error')
             self.TransaccionPlainWS = [it['list'] for it in ret if 'list' in it]
         return True
+
+    def  LeerTransaccion(self):
+        "Recorro TransaccionPlainWS devuelto por GetTransaccionesNoConfirmadas"
+         # usar GetParametro para consultar el valor retornado por el webservice
         
+        if self.TransaccionPlainWS:
+            # extraigo el primer item
+            self.params = self.TransaccionPlainWS.pop(0)
+            return True
+        else:
+            # limpio los parámetros
+            self.params = {}
+            return False
+
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
         
@@ -622,10 +635,25 @@ def main():
                                 #fecha_hasta_t="31/12/2013", 
                                 #estado=1
                                 )
-        print ws.Traceback
         print "CantPaginas", ws.CantPaginas
         print "HayError", ws.HayError
         print "TransaccionPlainWS", ws.TransaccionPlainWS
+        # recorro los datos devueltos (TransaccionPlainWS):
+        while ws.LeerTransaccion():     
+            print "Datos Transacción:"                      # Ejemplo:
+            print ws.GetParametro('_f_evento')              #  '19/02/2013'
+            print ws.GetParametro('_f_transaccion')         #  '19/02/2013'
+            print ws.GetParametro('_estado')                #  'Informada'
+            print ws.GetParametro('_lote')                  #  '412568'
+            print ws.GetParametro('_numero_serial')         #  '1200'
+            print ws.GetParametro('_razon_social_destino')  #  'LABORATORIO'
+            print ws.GetParametro('_gln_destino')           #  'glnws', 
+            print ws.GetParametro('_d_evento')              #  'ENVIO ...', 
+            print ws.GetParametro('_razon_social_origen')   #  'HOSPITAL ...'
+            print ws.GetParametro('_gln_origen')            #  '9992105600005'
+            print ws.GetParametro('_nombre')                #  'AML... 10MG MM'
+            print ws.GetParametro('_gtin')                  #  '07795360005668'
+            print ws.GetParametro('_id_transaccion')        #  '5114786'
     else:
         ws.SendMedicamentos(*sys.argv[1:])
         print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
