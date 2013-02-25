@@ -461,7 +461,7 @@ class TrazaMed:
                             for it in ret if 'errores' in it]
             self.CantPaginas = ret[0].get('cantPaginas')
             self.HayError = ret[0].get('hay_error')
-            self.TransaccionPlainWS = ret[0].get('list')
+            self.TransaccionPlainWS = [it['list'] for it in ret if 'list' in it]
         return True
         
     def LeerError(self):
