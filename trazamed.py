@@ -416,20 +416,44 @@ class TrazaMed:
 
     @inicializar_y_capturar_excepciones
     def GetTransaccionesNoConfirmadas(self, usuario, password, 
-                p_id_transaccion_global, id_agente_informador, 
-                id_agente_origen, id_agente_destino, id_medicamento, id_evento, 
-                fecha_desde_op, fecha_hasta_op, fecha_desde_t, fecha_hasta_t, 
-                estado):
+                p_id_transaccion_global=None, id_agente_informador=None, 
+                id_agente_origen=None, id_agente_destino=None, 
+                id_medicamento=None, id_evento=None, 
+                fecha_desde_op=None, fecha_hasta_op=None, 
+                fecha_desde_t=None, fecha_hasta_t=None, 
+                estado=None):
         "Trae un listado de las transacciones que no están confirmadas"
+
+        # preparo los parametros de entrada opcionales:
+        kwargs = {}
+        if p_id_transaccion_global is not None:
+            kwargs['arg2'] = p_id_transaccion_global
+        if id_agente_informador is not None:
+            kwargs['arg4'] = id_agente_informador
+        if id_agente_origen is not None:
+            kwargs['arg5'] = id_agente_origen
+        if id_agente_destino is not None: 
+            kwargs['arg6'] = id_agente_destino
+        if id_medicamento is not None: 
+            kwargs['arg7'] = id_medicamento
+        if id_evento is not None: 
+            kwargs['arg8'] = id_evento
+        if fecha_desde_op is not None: 
+            kwargs['arg9'] = fecha_desde_op
+        if fecha_hasta_op is not None: 
+            kwargs['arg10'] = fecha_hasta_op
+        if fecha_desde_t is not None: 
+            kwargs['arg11'] = fecha_desde_t
+        if fecha_hasta_t is not None: 
+            kwargs['arg12'] = fecha_hasta_t
+        if estado is not None: 
+            kwargs['arg13'] = estado
+
+        # llamo al webservice
         res = self.client.getTransaccionesNoConfirmadas(
             arg0=usuario, 
             arg1=password,
-            arg2=p_id_transaccion_global, 
-            arg4=id_agente_informador, arg5=id_agente_origen, 
-            arg6=id_agente_destino, arg7=id_medicamento, arg8=id_evento, 
-            arg9=fecha_desde_op, arg10=fecha_hasta_op, 
-            arg11=fecha_desde_t, arg12=fecha_hasta_t, 
-            arg13=estado,
+            **kwargs
         )
         ret = res['return']
         if ret:
@@ -580,17 +604,18 @@ def main():
         print "Errores", ws.Errores
     elif '--consulta' in sys.argv:
         ws.GetTransaccionesNoConfirmadas(usuario="pruebasws", password="pruebasws", 
-                                p_id_transaccion_global="1234", 
-                                id_agente_informador="1", 
-                                id_agente_origen="1", 
-                                id_agente_destino="1", 
-                                id_medicamento="1", 
-                                id_evento="1", 
-                                fecha_desde_op="01/01/2013", 
-                                fecha_hasta_op="31/12/2013", 
-                                fecha_desde_t="01/01/2013", 
-                                fecha_hasta_t="31/12/2013", 
-                                estado=1)
+                                #p_id_transaccion_global="1234", 
+                                #id_agente_informador="1", 
+                                #id_agente_origen="1", 
+                                #id_agente_destino="1", 
+                                #id_medicamento="1", 
+                                #id_evento="1", 
+                                #fecha_desde_op="01/01/2013", 
+                                #fecha_hasta_op="31/12/2013", 
+                                #fecha_desde_t="01/01/2013", 
+                                #fecha_hasta_t="31/12/2013", 
+                                #estado=1
+                                )
         print ws.Traceback
         print "CantPaginas", ws.CantPaginas
         print "HayError", ws.HayError
