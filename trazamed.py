@@ -179,9 +179,15 @@ class TrazaMed:
             return False
 
     def SetParametro(self, clave, valor):
-        "Establece un parámetro general (para ser usado en las llamadas posteriores)"
+        "Establece un parámetro general (usarse en llamadas posteriores)"
+        # útil para parámetros de entrada (por ej. VFP9 no soporta más de 27)
         self.params[clave] = valor
         return True
+
+    def GetParametro(self, clave, valor):
+        "Devuelve un parámetro general (establecido por llamadas anteriores)"
+        # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
+        return self.params[clave]
         
     @inicializar_y_capturar_excepciones
     def SendMedicamentos(self, usuario, password, 
