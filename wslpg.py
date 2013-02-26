@@ -59,6 +59,7 @@ from php import date
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
+from rece1 import leer, escribir  # esto debería estar en un módulo separado
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 #WSDL = "https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl"
@@ -70,6 +71,87 @@ CONFIG_FILE = "wslpg.ini"
 HOMO = False
 # mensaje de prueba (no realiza llamada remota), usar solo si no está operativo
 TESTING = '--testing' in sys.argv   
+
+# definición del formato del archivo de intercambio:
+N = 'Numerico'
+A = 'Alfanumerico'
+I = 'Importe'
+
+ENCABEZADO = [
+    ('tipo_reg', 1, N), # 0: encabezado
+    ('nro_orden', 18, N), 
+    ('cuit_comprador', 11, N), 
+    ('nro_ing_bruto_comprador', 15, N), 
+    ('cod_tipo_operacion', 2, A), 
+    ('es_liquidacion_propia', 1, A),  # S o N
+    ('es_canje', 1, A),  # S o N
+    ('cod_puerto', 4, N), 
+    ('des_puerto_localidad', 240, A), 
+    ('cod_grano', 3, N), 
+    ('cuit_vendedor', 11, N), 
+    ('nro_ing_bruto_vendedor', 15, N), 
+    ('actua_corredor', 1, A),  # S o N
+    ('liquida_corredor', 1, A),  # S o N
+    ('cuit_corredor', 11, N), 
+    ('nro_ing_bruto_corredor', 15, N), 
+    ('comision_corredor', 5, I, 2), # 3.2
+    ('fecha_precio_operacion', 10, A), # 26/02/2013
+    ('precio_ref_tn', 8, N, 3), # 4.3
+    ('cod_grado_ref', 2, A),
+    ('cod_grado_ent', 2, A),
+    ('factor_ent', 6, I, 3), # 3.3
+    ('precio_flete_tn', 7, I, 2), # 5.2
+    ('cont_proteico', 6, I, 3), # 3.3
+    ('alic_iva_operacion', 5, I, 2), # 3.2
+    ('campania_ppal', 4, N),
+    ('cod_localidad_procedencia', 6, N), 
+    ('datos_adicionales', 200, A),
+    
+    ('coe', 12, N),
+    ('coe_ajustado', 12, N),
+    ('estado', 2, A),
+    
+    ('total_deduccion', 17, I, 2), # 17.2
+    ('total_retencion', 17, I, 2), # 17.2
+    ('total_retencion_afip', 17, I, 2), # 17.2
+    ('total_otras_retenciones', 17, I, 2), # 17.2
+    ('total_neto_a_pagar', 17, I, 2), # 17.2
+    ('total_iva_rg_2300_07', 17, I, 2), # 17.2
+    ('total_pago_segun_condicion', 17, I, 2), # 17.2
+        
+    ]
+
+CERTIFICADO = [
+    ('tipo_reg', 1, N), # 1: Certificado
+    ('tipo_certificado_dposito', 2, N), 
+    ('nro_certificado_deposito', 12, N), 
+    ('peso_neto', 8, N), 
+    ('cod_localidad_procedencia', 6, N), 
+    ('cod_prov_procedencia', 2, N),
+    ('cod_prov_procedencia', 2, N),
+    ('campania', 4, N),
+    ('fecha_cierre', 10, A),
+    ]
+    
+RETENCION = [
+    ('tipo_reg', 1, N), # 2: Retencion
+    ('codigo_concepto', 2, A), 
+    ('detalle_aclaratorio', 30, A),
+    ('base_calculo', 10, I, 2),  # 8.2
+    ('alicuota', 6, I, 2),  # 3.2
+    ]
+
+DEDUCCION = [
+    ('tipo_reg', 1, N), # 3: Deducción
+    ('codigo_concepto', 2, N), 
+    ('detalle_aclaratorio', 30, A),
+    ('dias_almacenaje', 4, N),
+    ('precio_pkg_diario', 6, I, 3), # 3.3
+    ('comision_gastos_adm', 5, I, 2), # 3.2
+    ('base_calculo', 10, I, 2),  # 8.2
+    ('alicuota', 6, I, 2),  # 3.2
+    ]
+
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -211,6 +293,7 @@ class WSLPG:
                                alic_iva_operacion, campania_ppal,
                                cod_localidad_procedencia,
                                datos_adicionales,
+                               **kwargs
                                ):
         self.liquidacion = dict(
                             nroOrden=nro_orden,
@@ -521,6 +604,25 @@ class WSLPG:
             self.Excepcion = u"%s" % (e)
 
 
+def escribir_archivo(dic, nombre_archivo, agrega=False):
+    archivo = open(nombre_archivo, agrega and "a" or "w")
+    dic['tipo_reg'] = 0
+    archivo.write(escribir(dic, ENCABEZADO))
+    if 'certificados' in dic:
+        for it in dic['certificados']:
+            it['tipo_reg'] = 1
+            archivo.write(escribir(it, CERTIFICADO))
+    if 'retenciones' in dic:
+        for it in dic['retenciones']:
+            it['tipo_reg'] = 2
+            archivo.write(escribir(it, RETENCION))
+    if 'deducciones' in dic:
+        for it in dic['deducciones']:
+            it['tipo_reg'] = 3
+            archivo.write(escribir(it, DEDUCCION))
+    archivo.close()
+
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
@@ -537,6 +639,22 @@ if __name__ == '__main__':
         print LICENCIA
         print AYUDA
         sys.exit(0)
+    if '--formato' in sys.argv:
+        print "Formato:"
+        for msg, formato in [('Encabezado', ENCABEZADO), 
+                             ('Certificado', CERTIFICADO), 
+                             ('Deduccion', DEDUCCION), 
+                             ('Retencion', RETENCION)]:
+            comienzo = 1
+            print "=== %s ===" % msg
+            for fmt in formato:
+                clave, longitud, tipo = fmt[0:3]
+                dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    clave, comienzo, longitud, tipo, dec)
+                comienzo += longitud
+        sys.exit(0)
+
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -621,9 +739,9 @@ if __name__ == '__main__':
             ##sys.exit(0)
 
         if '--prueba' in sys.argv:
-            # cargar respuesta de ejemplo (documentacion AFIP)
-            
-            wslpg.CrearLiquidacion(
+        
+            # genero una liquidación de ejemplo:
+            dic = dict(
                 nro_orden=1,
                 cuit_comprador=23000000000, 
                 nro_act_comprador=99, nro_ing_bruto_comprador=23000000000,
@@ -645,29 +763,38 @@ if __name__ == '__main__':
                 campania_ppal=1213,
                 cod_localidad_procedencia=3,
                 datos_adicionales="DATOS ADICIONALES",
+                certificados=[dict(   
+                    tipo_certificado_dposito=5,
+                    nro_certificado_deposito=101200604,
+                    peso_neto=1000,
+                    cod_localidad_procedencia=3,
+                    cod_prov_procedencia=1,
+                    campania=1213,
+                    fecha_cierre="2013-01-13",)],
+                retenciones=[dict(
+                        codigo_concepto="RI",
+                        detalle_aclaratorio="DETALLE DE IVA",
+                        base_calculo=1970,
+                        alicuota=8,
+                    ), dict(
+                        codigo_concepto="RG",
+                        detalle_aclaratorio="DETALLE DE GANANCIAS",
+                        base_calculo=100,
+                        alicuota=2,
+                    )]
                 )
-            wslpg.AgregarCertificado(
-                tipo_certificado_dposito=5,
-                nro_certificado_deposito=101200604,
-                peso_neto=1000,
-                cod_localidad_procedencia=3,
-                cod_prov_procedencia=1,
-                campania=1213,
-                fecha_cierre="2013-01-13",
-                )
-            wslpg.AgregarRetencion(
-                codigo_concepto="RI",
-                detalle_aclaratorio="DETALLE DE IVA",
-                base_calculo=1970,
-                alicuota=8,
-                )
-            wslpg.AgregarRetencion(
-                codigo_concepto="RG",
-                detalle_aclaratorio="DETALLE DE GANANCIAS",
-                base_calculo=100,
-                alicuota=2,
-                )
-                
+            # cargo la liquidación:
+
+            wslpg.CrearLiquidacion(**dic)
+
+            for cert in dic['certificados']:
+                wslpg.AgregarCertificado(**cert)
+
+            for ret in dic['retenciones']:
+                wslpg.AgregarRetencion(**ret)
+
+            escribir_archivo(dic, ENTRADA)
+        
             wslpg.AutorizarLiquidacion()
 
             print "Errores:", wslpg.Errores
@@ -687,6 +814,20 @@ if __name__ == '__main__':
                 assert wslpg.Estado == "AC"
                 assert wslpg.TotalPagoSegunCondicion == 1968.00           
 
+            # actualizo el archivo de salida con l
+            dic['coe'] = wslpg.COE
+            dic['coe_ajustado'] = wslpg.COE
+            dic['estado'] = wslpg.Estado
+            dic['total_deduccion'] = wslpg.TotalDeduccion
+            dic['total_retencion'] = wslpg.TotalRetencion
+            dic['total_retencion_afip'] = wslpg.TotalRetencionAfip
+            dic['total_otras_retenciones'] = wslpg.TotalOtrasRetenciones
+            dic['total_neto_a_pagar'] = wslpg.TotalNetoAPagar
+            dic['total_iva_rg_2300_07'] = wslpg.TotalIvaRg2300_07
+            dic['total_pago_segun_condicion'] = wslpg.TotalPagoSegunCondicion
+            
+            escribir_archivo(dic, SALIDA)
+            
 
         if '--anular' in sys.argv:
             print wslpg.client.help("anularLiquidacion")
