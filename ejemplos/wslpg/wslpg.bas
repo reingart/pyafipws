@@ -18,6 +18,7 @@ Sub Main()
     Sign = ""
     
     Set WSAA = CreateObject("WSAA")
+    Debug.Print WSAA.InstallDir
     tra = WSAA.CreateTRA("wslpg", ttl)
     Debug.Print tra
     ' Generar el mensaje firmado (CMS)
@@ -34,6 +35,7 @@ Sub Main()
     
     ' Crear objeto interface Web Service de Liquidación Primaria de Granos
     Set WSLPG = CreateObject("WSLPG")
+    Debug.Print WSLPG.InstallDir
     ' Setear tocken y sing de autorización (pasos previos)
     WSLPG.Token = WSAA.Token
     WSLPG.Sign = WSAA.Sign
