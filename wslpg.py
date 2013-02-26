@@ -827,7 +827,6 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA)
             else:
                 dic = leer_archivo(ENTRADA)
-                print dic.keys()
                 
             # cargo la liquidación:
 
