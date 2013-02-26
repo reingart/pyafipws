@@ -609,6 +609,8 @@ def main():
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Errores", ws.Errores
+    elif '--cancela' in sys.argv:
+        ws.SendCancelacTransacc(*sys.argv[sys.argv.index("--cancela")+1:])
     elif '--confirma' in sys.argv:
         ws.SendConfirmaTransacc(*sys.argv[sys.argv.index("--confirma")+1:])
     elif '--alerta' in sys.argv:
