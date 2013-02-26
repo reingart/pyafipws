@@ -108,7 +108,39 @@ ELSE
     ENDDO
 ENDIF
 
+*-- Consulto transacciones pendientes -v2-:
 
+id_transaccion_global = Null
+id_agente_informador = Null 
+id_agente_origen = Null
+id_agente_destino = Null 
+id_medicamento = Null 
+id_evento = Null 
+fecha_desde_op = Null
+fecha_hasta_op = Null 
+fecha_desde_t = Null 
+fecha_hasta_t = Null
+estado = Null
+            
+ok = TrazaMed.GetTransaccionesNoConfirmadas(usuario, password, ;
+            id_transaccion_global, id_agente_informador, id_agente_origen, ;
+            id_agente_destino, id_medicamento, id_evento, fecha_desde_op, ;
+            fecha_hasta_op, fecha_desde_t, fecha_hasta_t, estado)
+
+IF ok THEN
+    *-- Muestro transacciones
+    DO WHILE TrazaMed.LeerTransaccion()
+        ? TrazaMed.GetParametro("_gtin")
+        ? TrazaMed.GetParametro("_id_transaccion")
+        ? TrazaMed.GetParametro("_estado")
+    ENDDO
+ENDIF
+
+*-- Alerto la transacción (lo contrario a confirmar) -v2-
+p_ids_transac_ws = "5142770"
+ok = TrazaMed.SendAlertaTransacc(usuario, password, ;
+                            p_ids_transac_ws)
+? "Alerta Transacc resultado:", ok
 
 *-- Depuración (grabar a un archivo los datos de prueba)
 * gnErrFile = FCREATE('c;\error.txt')  
