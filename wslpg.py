@@ -62,7 +62,7 @@ from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_p
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 #WSDL = "https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl"
-#WSDL = "file:wslpg.wsdl"
+WSDL = "file:wslpg.wsdl"
 
 DEBUG = False
 XML = False
@@ -75,6 +75,7 @@ def inicializar_y_capturar_excepciones(func):
         try:
             # inicializo (limpio variables)
             self.COE = self.COEAjustado = ""
+            self.Excepcion = self.Traceback = ""
             self.ErrMsg = self.ErrCode = ""
             self.Errores = []
             self.Estado = ''
@@ -86,7 +87,8 @@ def inicializar_y_capturar_excepciones(func):
             self.TotalIvaRg2300_07 = ""
             self.TotalPagoSegunCondicion = ""
             # llamo a la función (con reintentos)
-            return func(self, *args, **kwargs)
+            func(self, *args, **kwargs)
+            return True
         except SoapFault, e:
             # guardo destalle de la excepción SOAP
             self.ErrCode = unicode(e.faultcode)
@@ -94,6 +96,8 @@ def inicializar_y_capturar_excepciones(func):
             self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
             if self.LanzarExcepciones:
                 raise
+            else:
+                return False
         except Exception, e:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
@@ -103,6 +107,8 @@ def inicializar_y_capturar_excepciones(func):
                 self.Excepcion = u"<no disponible>"
             if self.LanzarExcepciones:
                 raise
+            else:
+                return False
         finally:
             # guardo datos de depuración
             if self.client:
@@ -115,7 +121,9 @@ class WSLPG:
     "Interfaz para el WebService de Liquidación Primaria de Granos"    
     _public_methods_ = ['Conectar', 'Dummy',
                         'AutorizarLiquidacion', 'AjustarLiquidacion',
-                        'AnularLiquidacion', 
+                        'AnularLiquidacion',
+                        'CrearLiquidacion',  
+                        'AgregarCertificado', 'AgregarRetencion',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
                         'AnalizarXml', 'ObtenerTagXml',
@@ -124,9 +132,10 @@ class WSLPG:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
         'XmlRequest', 'XmlResponse', 'Version', 'Traceback',
-        'COE', 'COEAjustado',
+        'COE', 'COEAjustado', 
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
+        'TotalIvaRg2300_07'
         ]
     _reg_progid_ = "WSLPG"
     _reg_clsid_ = "{9D21C513-21A6-413C-8592-047357692608}"
@@ -146,7 +155,7 @@ class WSLPG:
         self.Estado = ''
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy=""):
+    def Conectar(self, cache=None, url="", proxy="", testing=TESTING):
         "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = WSDL
         if not cache or HOMO:
@@ -158,6 +167,10 @@ class WSLPG:
             trace='--trace' in sys.argv, 
             ns='wslpg', soap_ns='soapenv',
             exceptions=True, proxy=proxy_dict)
+        if testing:
+            from pysimplesoap.transport import DummyTransport as DummyHTTP 
+            xml = open(os.path.join(INSTALL_DIR, "wslpg_aut_test.xml")).read()
+            self.client.http = DummyHTTP(xml)
         return True
 
     def __analizar_errores(self, ret):
@@ -181,6 +194,7 @@ class WSLPG:
         self.DbServerStatus = str(results['dbserver'])
         self.AuthServerStatus = str(results['authserver'])
 
+    @inicializar_y_capturar_excepciones
     def CrearLiquidacion(self, nro_orden, cuit_comprador, 
                                nro_act_comprador, nro_ing_bruto_comprador,
                                cod_tipo_operacion,
@@ -228,6 +242,7 @@ class WSLPG:
                             certificados=[],
             )
 
+    @inicializar_y_capturar_excepciones
     def AgregarCertificado(self, tipo_certificado_dposito=5,
                            nro_certificado_deposito=101200604,
                            peso_neto=1000,
@@ -249,6 +264,7 @@ class WSLPG:
                       )))
         self.retenciones = []
 
+    @inicializar_y_capturar_excepciones
     def AgregarRetencion(self, codigo_concepto, detalle_aclaratorio, 
                                base_calculo, alicuota):
         self.retenciones.append(dict(
@@ -286,6 +302,7 @@ class WSLPG:
             self.Estado = aut['estado']
         return self.COE   
 
+    @inicializar_y_capturar_excepciones
     def LeerDatosLiquidacion(self, pop=True):
         "Recorro los datos devueltos y devuelvo el primero si existe"
         
@@ -302,7 +319,6 @@ class WSLPG:
         else:
             return ""
 
-    @inicializar_y_capturar_excepciones
     def ConsultarCampanias(self, sep="||"):
         ret = self.client.campaniasConsultar(
                         auth={
@@ -316,7 +332,6 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
-    @inicializar_y_capturar_excepciones
     def ConsultarTipoGrano(self, sep="||"):
         ret = self.client.tipoGranoConsultar(
                         auth={
@@ -330,7 +345,6 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
-    @inicializar_y_capturar_excepciones
     def ConsultarCodigoGradoReferencia(self, sep="||"):
         "Consulta de Grados según Grano."
         ret = self.client.codigoGradoReferenciaConsultar(
@@ -344,7 +358,6 @@ class WSLPG:
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
-    @inicializar_y_capturar_excepciones
 
     def ConsultarTipoCertificadoDeposito(self, sep="||"):
         "Consulta de tipos de Certificados de Depósito"
@@ -416,7 +429,6 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
-    @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         "Consulta las provincias habilitadas"
         ret = self.client.provinciasConsultar(
@@ -431,7 +443,6 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
-    @inicializar_y_capturar_excepciones
     def ConsultarLocalidadesPorProvincia(self, codigo_provincia, sep="||"):
         ret = self.client.localidadXProvinciaConsultar(
                         auth={
@@ -446,7 +457,6 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
-    @inicializar_y_capturar_excepciones
     def ConsultarTiposOperacion(self, sep="||"):
         "Consulta tipo de Operación por Actividad."
         ops = []
@@ -612,11 +622,6 @@ if __name__ == '__main__':
         if '--prueba' in sys.argv:
             # cargar respuesta de ejemplo (documentacion AFIP)
             
-            if TESTING:
-                from pysimplesoap.transport import DummyTransport as DummyHTTP 
-                xml = open("wslpg_aut_test.xml").read()
-                wslpg.client.http = DummyHTTP(xml)
-
             wslpg.CrearLiquidacion(
                 nro_orden=1,
                 cuit_comprador=23000000000, 
