@@ -69,8 +69,6 @@ DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
 HOMO = False
-# mensaje de prueba (no realiza llamada remota), usar solo si no está operativo
-TESTING = '--testing' in sys.argv   
 
 # definición del formato del archivo de intercambio:
 N = 'Numerico'
@@ -216,7 +214,7 @@ def inicializar_y_capturar_excepciones(func):
 
 class WSLPG:
     "Interfaz para el WebService de Liquidación Primaria de Granos"    
-    _public_methods_ = ['Conectar', 'Dummy',
+    _public_methods_ = ['Conectar', 'Dummy', 'LoadTestXML',
                         'AutorizarLiquidacion', 'AjustarLiquidacion',
                         'AnularLiquidacion',
                         'CrearLiquidacion',  
@@ -252,7 +250,7 @@ class WSLPG:
         self.Estado = ''
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy="", testing=TESTING):
+    def Conectar(self, cache=None, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = WSDL
         if not cache or HOMO:
@@ -264,11 +262,6 @@ class WSLPG:
             trace='--trace' in sys.argv, 
             ns='wslpg', soap_ns='soapenv',
             exceptions=True, proxy=proxy_dict)
-        if testing:
-            # cargo el ejemplo de AFIP (emulando respuesta del webservice)
-            from pysimplesoap.transport import DummyTransport as DummyHTTP 
-            xml = open(os.path.join(INSTALL_DIR, "wslpg_error.xml")).read()
-            self.client.http = DummyHTTP(xml)
         return True
 
     def __analizar_errores(self, ret):
@@ -621,6 +614,13 @@ class WSLPG:
         except Exception, e:
             self.Excepcion = u"%s" % (e)
 
+    def LoadTestXML(self, xml_file):
+        "Cargar una respuesta predeterminada de pruebas (emulación del ws)"
+        # cargo el ejemplo de AFIP (emulando respuesta del webservice)
+        from pysimplesoap.transport import DummyTransport as DummyHTTP 
+        xml = open(os.path.join(INSTALL_DIR, xml_file)).read()
+        self.client.http = DummyHTTP(xml)
+
 
 def escribir_archivo(dic, nombre_archivo, agrega=False):
     archivo = open(nombre_archivo, agrega and "a" or "w")
@@ -839,6 +839,13 @@ if __name__ == '__main__':
             for ret in dic['retenciones']:
                 wslpg.AgregarRetencion(**ret)
 
+            if '--testing' in sys.argv:
+                # mensaje de prueba (no realiza llamada remota), 
+                # usar solo si no está operativo
+                if '--error' in sys.argv:
+                    wslpg.LoadTestXML("wslpg_error.xml")     # cargo error
+                else:
+                    wslpg.LoadTestXML("wslpg_aut_test.xml")  # cargo respuesta
         
             wslpg.AutorizarLiquidacion()
 
@@ -853,7 +860,7 @@ if __name__ == '__main__':
             print "TotalNetoAPagar", wslpg.TotalNetoAPagar
             print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
             print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
-            if False and    TESTING:
+            if False and TESTING:
                 assert wslpg.COE == 330100000357
                 assert wslpg.COEAjustado == None
                 assert wslpg.Estado == "AC"
