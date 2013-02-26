@@ -610,17 +610,9 @@ def main():
         print "CodigoTransaccion", ws.CodigoTransaccion
         print "Errores", ws.Errores
     elif '--confirma' in sys.argv:
-        ws.SendConfirmaTransacc(usuario="pruebasws", password="pruebasws", 
-                                p_ids_transac="1234", f_operacion="22/12/2013")
-        print "Resultado", ws.Resultado
-        print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Errores", ws.Errores
+        ws.SendConfirmaTransacc(*sys.argv[sys.argv.index("--confirma")+1:])
     elif '--alerta' in sys.argv:
-        ws.SendAlertaTransacc(usuario="pruebasws", password="pruebasws", 
-                                p_ids_transac_ws="1234")
-        print "Resultado", ws.Resultado
-        print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Errores", ws.Errores
+        ws.SendAlertaTransacc(*sys.argv[sys.argv.index("--alerta")+1:])
     elif '--consulta' in sys.argv:
         ws.GetTransaccionesNoConfirmadas(usuario="pruebasws", password="pruebasws", 
                                 #p_id_transaccion_global="1234", 
@@ -655,11 +647,13 @@ def main():
             print "||"
     else:
         ws.SendMedicamentos(*sys.argv[1:])
-        print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
-                ws.Resultado,
-                ws.CodigoTransaccion,
-                '|'.join(ws.Errores),
-                )
+    print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+            ws.Resultado,
+            ws.CodigoTransaccion,
+            '|'.join(ws.Errores),
+            )
+    if ws.Excepcion:
+        print ws.Traceback
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
