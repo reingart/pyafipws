@@ -399,7 +399,7 @@ class TrazaMed:
             arg2={'p_ids_transac': p_ids_transac, 'f_operacion': f_operacion}, 
         )
         ret = res['return']
-        self.CodigoTransaccion = ret[0]['codigoTransaccion']
+        self.CodigoTransaccion = ret[0].get('codigoTransaccion')
         self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
                         for it in ret if 'errores' in it]
         self.Resultado = ret[-1]['resultado']
@@ -414,7 +414,7 @@ class TrazaMed:
             arg2=p_ids_transac_ws, 
         )
         ret = res['return']
-        self.CodigoTransaccion = ret[0]['codigoTransaccion']
+        self.CodigoTransaccion = ret[0].get('codigoTransaccion')
         self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
                         for it in ret if 'errores' in it]
         self.Resultado = ret[-1]['resultado']
