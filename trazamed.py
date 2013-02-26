@@ -637,23 +637,22 @@ def main():
                                 )
         print "CantPaginas", ws.CantPaginas
         print "HayError", ws.HayError
-        print "TransaccionPlainWS", ws.TransaccionPlainWS
+        #print "TransaccionPlainWS", ws.TransaccionPlainWS
+        # parametros comunes de salida (columnas de la tabla):
+        claves = ['_gtin', '_lote', '_numero_serial',
+                  '_nombre',
+                  '_id_transaccion', '_estado', '_f_transaccion', '_f_evento',
+                  '_d_evento',
+                  '_gln_origen', '_gln_destino',
+                  '_razon_social_origen', '_razon_social_destino',
+                  ]
+        # encabezado de la tabla:
+        print "||", "||".join(["%s" % clave for clave in claves]), "||"
         # recorro los datos devueltos (TransaccionPlainWS):
         while ws.LeerTransaccion():     
-            print "Datos Transacción:"                      # Ejemplo:
-            print ws.GetParametro('_f_evento')              #  '19/02/2013'
-            print ws.GetParametro('_f_transaccion')         #  '19/02/2013'
-            print ws.GetParametro('_estado')                #  'Informada'
-            print ws.GetParametro('_lote')                  #  '412568'
-            print ws.GetParametro('_numero_serial')         #  '1200'
-            print ws.GetParametro('_razon_social_destino')  #  'LABORATORIO'
-            print ws.GetParametro('_gln_destino')           #  'glnws', 
-            print ws.GetParametro('_d_evento')              #  'ENVIO ...', 
-            print ws.GetParametro('_razon_social_origen')   #  'HOSPITAL ...'
-            print ws.GetParametro('_gln_origen')            #  '9992105600005'
-            print ws.GetParametro('_nombre')                #  'AML... 10MG MM'
-            print ws.GetParametro('_gtin')                  #  '07795360005668'
-            print ws.GetParametro('_id_transaccion')        #  '5114786'
+            for clave in claves:
+                print "||", ws.GetParametro(clave),         # imprimo cada fila
+            print "||"
     else:
         ws.SendMedicamentos(*sys.argv[1:])
         print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
