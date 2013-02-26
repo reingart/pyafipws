@@ -4,6 +4,7 @@ Attribute VB_Name = "Module1"
 ' 2011 (C) Mariano Reingart <reingart@gmail.com>
 ' Licencia: GPLv3
 
+
 Sub Main()
     Dim TrazaMed As Object, ok As Variant
     
@@ -15,7 +16,7 @@ Sub Main()
     
     ' Establecer credenciales de seguridad
     TrazaMed.Username = "testwservice"
-    TrazaMed.Password = "testwservicepsw"
+    TrazaMed.password = "testwservicepsw"
     
     ' Conectar al servidor (pruebas)
     ok = TrazaMed.Conectar()
@@ -23,22 +24,30 @@ Sub Main()
     Debug.Print TrazaMed.Traceback
     
     ' datos de prueba
-    usuario = "pruebasws": Password = "pruebasws"
-    f_evento = "25/11/2011": h_evento = "04:24"
-    gln_origen = "glnws": gln_destino = "glnws"
-    n_remito = "1234": n_factura = "1234"
-    vencimiento = "30/11/2011": gtin = "GTIN1": lote = "1111"
-    numero_serial = "12349": id_obra_social = "": id_evento = 133
+    usuario = "pruebasws"
+    password = "pruebasws"
+    f_evento = CStr(Date)            ' ej: "25/11/2011"
+    h_evento = Left(CStr(Time()), 5) ' ej:  "04:24"
+    gln_origen = "9999999999918"     ' Laboratorio
+    gln_destino = "glnws"            ' LABORATORIO (asociado al medicamento)
+    n_remito = "1234"
+    n_factura = "1234"
+    vencimiento = CStr(Date + 30)    ' ej. "27/03/2013"
+    gtin = "GTIN1"                   ' código de medicamento de prueba
+    lote = Year(Date)                ' uso el año como número de lote
+    numero_serial = CDec(CDbl(Now()) * 86400)   ' número unico basado en la fecha
+    id_obra_social = ""
+    id_evento = 134  ' RECEPCION TRASLADO ENTRE DEPOSITOS PROPIOS
     cuit_origen = "20267565393": cuit_destino = "20267565393":
     apellido = "Reingart": nombres = "Mariano"
     tipo_docmento = "96": n_documento = "26756539": sexo = "M"
     direccion = "Saraza": numero = "1234": piso = "": depto = ""
     localidad = "Hurlingham": provincia = "Buenos Aires"
-    n_postal = "B1688FDD": fecha_nacimiento = "01/01/2000"
+    n_postal = "1688": fecha_nacimiento = "01/01/2000"
     telefono = "5555-5555"
     
     ' Enviar datos y procesar la respuesta:
-    ok = TrazaMed.SendMedicamentos(usuario, Password, _
+    ok = TrazaMed.SendMedicamentos(usuario, password, _
                          f_evento, h_evento, gln_origen, gln_destino, _
                          n_remito, n_factura, vencimiento, gtin, lote, _
                          numero_serial, id_obra_social, id_evento, _
@@ -56,12 +65,113 @@ Sub Main()
         Debug.Print "CodigoTransaccion:", TrazaMed.CodigoTransaccion
         
         For Each er In TrazaMed.Errores
-            MsgBox er, vbExclamation, "Error!"
+            Debug.Print er
+            MsgBox er, vbExclamation, "Error en SendMedicamentos"
         Next
         
         MsgBox "Resultado: " & TrazaMed.Resultado & vbCrLf & _
                 "CodigoTransaccion: " & TrazaMed.CodigoTransaccion, _
-                vbInformation, "Resultado"
+                vbInformation, "SendMedicamentos"
         
-        End If
+    End If
+    
+    ' Cancelo la transacción (anulación):
+    codigo_transaccion = TrazaMed.CodigoTransaccion
+    ok = TrazaMed.SendCancelacTransacc(usuario, password, codigo_transaccion)
+    If ok Then
+        Debug.Print "Resultado", TrazaMed.Resultado
+        Debug.Print "CodigoTransaccion", TrazaMed.CodigoTransaccion
+        MsgBox "Resultado: " & TrazaMed.Resultado & vbCrLf & _
+                "CodigoTransaccion: " & TrazaMed.CodigoTransaccion, _
+                vbInformation, "SendCancelacTransacc"
+        For Each er In TrazaMed.Errores
+            Debug.Print er
+            MsgBox er, vbExclamation, "Error en SendCancelacTransacc"
+        Next
+    Else
+        Debug.Print TrazaMed.XmlResponse
+        MsgBox TrazaMed.Traceback, vbExclamation + vbCritical, "Excepcion en SendCancelacTransacc"
+    End If
+    ' ----------------------------------------------------------------
+    
+    ' Especificación Técnica Versión 2:
+    
+    ' Confirmo la transacción
+    p_ids_transac = "5142760" ' TrazaMed.CodigoTransaccion
+    f_operacion = CStr(Date)  ' ej. 25/02/2013
+    ok = TrazaMed.SendConfirmaTransacc(usuario, password, _
+                                p_ids_transac, f_operacion)
+    If ok Then
+        Debug.Print "Resultado", TrazaMed.Resultado
+        Debug.Print "CodigoTransaccion", TrazaMed.CodigoTransaccion
+        MsgBox "Resultado: " & TrazaMed.Resultado & vbCrLf & _
+                "CodigoTransaccion: " & TrazaMed.CodigoTransaccion, _
+                vbInformation, "SendConfirmaTransacc"
+        For Each er In TrazaMed.Errores
+            Debug.Print er
+            MsgBox er, vbExclamation, "Error en SendConfirmaTransacc"
+        Next
+    End If
+    
+    ' Alerto la transacción (lo contrario a confirmar)
+    p_ids_transac_ws = "5142770" ' TrazaMed.CodigoTransaccion
+    ok = TrazaMed.SendAlertaTransacc(usuario, password, _
+                                p_ids_transac_ws)
+    If ok Then
+        Debug.Print "Resultado", TrazaMed.Resultado
+        Debug.Print "CodigoTransaccion", TrazaMed.CodigoTransaccion
+        MsgBox "Resultado: " & TrazaMed.Resultado & vbCrLf & _
+                "CodigoTransaccion: " & TrazaMed.CodigoTransaccion, _
+                vbInformation, "SendAlertaTransacc"
+        For Each er In TrazaMed.Errores
+            Debug.Print er
+            MsgBox er, vbExclamation, "Error en SendAlertaTransacc"
+        Next
+    End If
+    
+    
+    ' Consulto las transacciones no confirmada:
+    ' (usar valores Nulos para no usar un criterio de búqueda)
+    p_id_transaccion_global = Null
+    id_agente_informador = Null
+    id_agente_origen = Null
+    id_agente_destino = Null
+    id_medicamento = Null ' gtin
+    id_evento = Null
+    fecha_desde_op = Null
+    fecha_hasta_op = Null
+    fecha_desde_t = Null
+    fecha_hasta_t = Null
+    estado = Null ' Informada
+    ' llamo al webservice para realizar la consulta:
+    ok = TrazaMed.GetTransaccionesNoConfirmadas(usuario, password, _
+            p_id_transaccion_global, id_agente_informador, _
+            id_agente_origen, id_agente_destino, id_medicamento, _
+            id_evento, fecha_desde_op, fecha_hasta_op, _
+            fecha_desde_t, fecha_hasta_t, estado)
+    If ok Then
+        ' recorro las transacciones devueltas (TransaccionPlainWS)
+        Do While TrazaMed.LeerTransaccion:
+            If MsgBox("GTIN:" & TrazaMed.GetParametro("_gtin") & vbCrLf & _
+                    "Estado: " & TrazaMed.GetParametro("_estado") & vbCrLf & _
+                    "CodigoTransaccion: " & TrazaMed.GetParametro("_id_transaccion"), _
+                    vbInformation + vbOKCancel, "GetTransaccionesNoConfirmadas") = vbCancel Then
+                Exit Do
+            End If
+            Debug.Print TrazaMed.GetParametro("_f_evento")
+            Debug.Print TrazaMed.GetParametro("_f_transaccion")
+            Debug.Print TrazaMed.GetParametro("_estado")
+            Debug.Print TrazaMed.GetParametro("_lote")
+            Debug.Print TrazaMed.GetParametro("_numero_serial")
+            Debug.Print TrazaMed.GetParametro("_razon_social_destino")
+            Debug.Print TrazaMed.GetParametro("_gln_destino")
+            Debug.Print TrazaMed.GetParametro("_d_evento")
+            Debug.Print TrazaMed.GetParametro("_razon_social_origen")
+            Debug.Print TrazaMed.GetParametro("_gln_origen")
+            Debug.Print TrazaMed.GetParametro("_nombre")
+            Debug.Print TrazaMed.GetParametro("_gtin")
+            Debug.Print TrazaMed.GetParametro("_id_transaccion")
+        Loop
+    End If
+    
 End Sub
