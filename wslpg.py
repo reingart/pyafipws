@@ -129,7 +129,7 @@ class WSLPG:
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
         ]
     _reg_progid_ = "WSLPG"
-    _reg_clsid_ = "{}"
+    _reg_clsid_ = "{9D21C513-21A6-413C-8592-047357692608}"
 
     def __init__(self):
         self.Token = self.Sign = self.Cuit = None
