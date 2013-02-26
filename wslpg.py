@@ -123,7 +123,7 @@ class WSLPG:
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
-        'XmlRequest', 'XmlResponse', 'Version', 
+        'XmlRequest', 'XmlResponse', 'Version', 'Traceback',
         'COE', 'COEAjustado',
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
