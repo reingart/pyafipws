@@ -42,9 +42,7 @@ Sub Main()
     WSLPG.cuit = "20267565393"
     
     ' Conectar al Servicio Web
-    ' NOTA: el cuarto parámetro (testing) solo debe usarse para pruebas
-    '       mientras el ws no esté operativo (26-03-2013)
-    ok = WSLPG.Conectar("", "file:wslpg.wsdl", "", True) ' homologación
+    ok = WSLPG.Conectar("", "", "") ' homologación
     If Not ok Then
         Debug.Print WSLPG.Traceback
         MsgBox WSLPG.Traceback, vbCritical + vbExclamation, WSLPG.Excepcion
@@ -62,15 +60,15 @@ Sub Main()
     End If
     
     nro_orden = 1
-    cuit_comprador = 23000000000#
-    nro_act_comprador = 99: nro_ing_bruto_comprador = 23000000000#
+    cuit_comprador = "23000000000"
+    nro_act_comprador = 99: nro_ing_bruto_comprador = "23000000000"
     cod_tipo_operacion = 1
     es_liquidacion_propia = "N": es_canje = "N"
     cod_puerto = 14: des_puerto_localidad = "DETALLE PUERTO"
     cod_grano = 31
-    cuit_vendedor = 30000000007#: nro_ing_bruto_vendedor = 30000000007#
-    actua_corredor = "S": liquida_corredor = "S": cuit_corredor = 20267565393#
-    comision_corredor = 1: nro_ing_bruto_corredor = 20267565393#
+    cuit_vendedor = "30000000007": nro_ing_bruto_vendedor = "30000000007"
+    actua_corredor = "S": liquida_corredor = "S": cuit_corredor = "20267565393"
+    comision_corredor = 1: nro_ing_bruto_corredor = "20267565393"
     fecha_precio_operacion = "2013-02-07"
     precio_ref_tn = 2000
     cod_grado_ref = "G1"
@@ -131,6 +129,10 @@ Sub Main()
     alicuota = 2
     
     ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, alicuota)
+               
+    ' Cargo respuesta de prueba según documentación de AFIP (Ejemplo 1)
+    ' (descomentar para probar si el ws no esta operativo o no se dispone de datos válidos)
+    ''WSLPG.LoadTestXML ("wslpg_aut_test.xml")
                
     ' llamo al webservice con los datos cargados:
     
