@@ -68,6 +68,8 @@ DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
 HOMO = False
+# mensaje de prueba (no realiza llamada remota), usar solo si no está operativo
+TESTING = '--testing' in sys.argv   
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -575,7 +577,6 @@ if __name__ == '__main__':
 
         DEBUG = '--debug' in sys.argv
         XML = '--xml' in sys.argv
-        TESTING = '--testing' in sys.argv
 
         if DEBUG:
             print "Usando Configuración:"
