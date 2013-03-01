@@ -95,7 +95,7 @@ ENCABEZADO = [
     ('nro_ing_bruto_corredor', 15, N), 
     ('comision_corredor', 5, I, 2), # 3.2
     ('fecha_precio_operacion', 10, A), # 26/02/2013
-    ('precio_ref_tn', 8, N, 3), # 4.3
+    ('precio_ref_tn', 8, I, 3), # 4.3
     ('cod_grado_ref', 2, A),
     ('cod_grado_ent', 2, A),
     ('factor_ent', 6, I, 3), # 3.3
@@ -830,11 +830,11 @@ if __name__ == '__main__':
 
             if dic['actua_corredor'] == "N":
                 # borrando datos corredor si no corresponden
-                dic['liquida_corredor'] = None
+                ##dic['liquida_corredor'] = "N"
                 dic['cuit_corredor'] = None
                 dic['comision_corredor'] = None
                 dic['nro_ing_bruto_corredor'] = None
-                
+            
             # cargo la liquidación:
 
             wslpg.CrearLiquidacion(**dic)
