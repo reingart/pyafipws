@@ -406,6 +406,31 @@ class WSLPG:
             self.COE = aut['coe']
             self.COEAjustado = aut.get('coeAjustado')
             self.Estado = aut['estado']
+
+    @inicializar_y_capturar_excepciones
+    def AjustarLiquidacion(self):
+        "Ajustar Liquidación Primaria de Granos"
+        ret = self.client.liquidacionAjustar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        ajuste=self.liquidacion,
+                        retenciones=self.retenciones,
+                        )
+        ret = ret['liqReturn']
+        self.__analizar_errores(ret)
+        if 'autorizacion' in ret:
+            aut = ret['autorizacion']
+            self.TotalDeduccion = aut['totalDeduccion']
+            self.TotalRetencion = aut['totalRetencion']
+            self.TotalRetencionAfip = aut['totalRetencionAfip']
+            self.TotalOtrasRetenciones = aut['totalOtrasRetenciones']
+            self.TotalNetoAPagar = aut['totalNetoAPagar']
+            self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
+            self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
+            self.COE = aut['coe']
+            self.COEAjustado = aut.get('coeAjustado')
+            self.Estado = aut['estado']
         return self.COE   
 
     @inicializar_y_capturar_excepciones
@@ -846,7 +871,7 @@ if __name__ == '__main__':
             print "AuthServerStatus", wslpg.AuthServerStatus
             ##sys.exit(0)
 
-        if '--autorizar' in sys.argv:
+        if '--autorizar' in sys.argv or '--ajustar' in sys.argv:
         
             if '--prueba' in sys.argv:
                 # genero una liquidación de ejemplo:
@@ -921,7 +946,12 @@ if __name__ == '__main__':
                 else:
                     wslpg.LoadTestXML("wslpg_aut_test.xml")  # cargo respuesta
         
-            wslpg.AutorizarLiquidacion()
+            if '--ajustar' in sys.argv:
+                print "Ajustando..."
+                ret = wslpg.AjustarLiquidacion()
+            else:
+                print "Autorizando..."
+                ret = wslpg.AutorizarLiquidacion()
 
             print "Errores:", wslpg.Errores
 
@@ -953,7 +983,7 @@ if __name__ == '__main__':
             dic['total_pago_segun_condicion'] = wslpg.TotalPagoSegunCondicion
             dic['errores'] = wslpg.errores
             escribir_archivo(dic, SALIDA)
-            
+            sys.exit(0)            
 
         if '--anular' in sys.argv:
             ##print wslpg.client.help("anularLiquidacion")
