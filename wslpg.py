@@ -17,15 +17,16 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01g"
+__version__ = "1.02a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
 Liquidación Primaria de Granos (LpgService)
 Copyright (C) 2013 Mariano Reingart reingart@gmail.com
+http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
-y es bienvenido a redistribuirlo bajo la licencia GPLv3.
+y es bienvenido a redistribuirlo respetando la licencia GPLv3.
 
 Para información adicional sobre garantía, soporte técnico comercial
 e incorporación/distribución en programas propietarios ver PyAfipWs:
@@ -46,9 +47,21 @@ Opciones:
   --autorizar: Autorizar Liquidación Primaria de Granos (liquidacionAutorizar)
   --ajustar: Ajustar Liquidación Primaria de Granos (liquidacionAjustar)
   --anular: Anular una Liquidación Primaria de Granos (liquidacionAnular)
+  --consultar: Consulta una liquidación (parámetros: nro de orden y COE)
+  --ult: Consulta el último número de orden registrado en AFIP 
+         (liquidacionUltimoNroOrdenConsultar)
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
+  --tipograno: obtiene el listado de los tipos de granos disponibles
+  --campanias: obtiene el listado de las campañas 
+  --gradoref: obtiene el listado de los grados de referencias
+  --certdeposito: obtiene el listado de los tipos de certificados de depósito
+  --deducciones: obtiene el listado de los tipos de deducciones
+  --retenciones: obtiene el listado de los tipos de retenciones
+  --puertos: obtiene el listado de los puertos habilitados
+  --actividades: obtiene el listado de las actividades habilitados
+  --operaciones: obtiene el listado de las operaciones para el representado
 
 
 Ver wslpg.ini para parámetros de configuración (URL, certificados, etc.)"
@@ -384,7 +397,7 @@ class WSLPG:
 
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
-        "Solicitar Liquidacion Desde el Inicio"
+        "Autorizar Liquidación Primaria Electrónica de Granos"
         ret = self.client.liquidacionAutorizar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
