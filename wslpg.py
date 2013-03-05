@@ -409,9 +409,17 @@ class WSLPG:
         return self.COE   
 
     @inicializar_y_capturar_excepciones
-    def ConsultarLiquidacion(self, nro_orden):
+    def ConsultarLiquidacion(self, nro_orden=None, coe=None):
         "Consulta una liquidación por No de orden"
-        ret = self.client.liquidacionXNroOrdenConsultar(
+        if coe:
+            ret = self.client.liquidacionXCoeConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        )
+        else:
+            ret = self.client.liquidacionXNroOrdenConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
@@ -952,9 +960,11 @@ if __name__ == '__main__':
         if '--consultar' in sys.argv:
             try:
                 nro_orden = sys.argv[sys.argv.index("--consultar") + 1]
+                coe = sys.argv[sys.argv.index("--consultar") + 2]
             except IndexError:
                 nro_orden = 1
-            ret = wslpg.ConsultarLiquidacion(nro_orden=nro_orden)
+                coe = None
+            ret = wslpg.ConsultarLiquidacion(nro_orden=nro_orden, coe=coe)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
