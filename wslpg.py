@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -68,7 +68,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = False
+HOMO = True
 
 # definición del formato del archivo de intercambio:
 N = 'Numerico'
@@ -219,8 +219,17 @@ class WSLPG:
                         'AnularLiquidacion',
                         'CrearLiquidacion',  
                         'AgregarCertificado', 'AgregarRetencion',
-                        'ConsultarProvincias', 
-                        'ConsultarLocalidadesPorProvincia', 
+                        'ConsultarCampanias',
+                        'ConsultarTipoGrano',
+                        'ConsultarCodigoGradoReferencia',
+                        'ConsultarTipoCertificadoDeposito',
+                        'ConsultarTipoDeduccion',
+                        'ConsultarTipoRetencion',
+                        'ConsultarPuerto',
+                        'ConsultarTipoActividad',
+                        'ConsultarProvincias',
+                        'ConsultarLocalidadesPorProvincia',
+                        'ConsultarTiposOperacion',
                         'AnalizarXml', 'ObtenerTagXml',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 

@@ -61,6 +61,11 @@ Sub Main()
         Debug.Print "authserver status", WSLPG.AuthServerStatus
     End If
     
+    ' Consulto las campanias (usando dos puntos como separador)
+    For Each parametro In WSLPG.ConsultarCampanias(":")
+        Debug.Print parametro ' devuelve un string ": codigo : descripcion :"
+    Next
+    
     nro_orden = 1
     cuit_comprador = "23000000000"
     nro_act_comprador = 99: nro_ing_bruto_comprador = "23000000000"
