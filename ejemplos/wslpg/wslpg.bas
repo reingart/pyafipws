@@ -148,7 +148,7 @@ Sub Main()
     If ok Then
         ' muestro los resultados devueltos por el webservice:
         
-        Debug.Print "COE", WSLPG.coe
+        Debug.Print "COE", WSLPG.COE
         Debug.Print "COEAjustado", WSLPG.COEAjustado
         Debug.Print "TootalDeduccion", WSLPG.TotalDeduccion
         Debug.Print "TotalRetencion", WSLPG.TotalRetencion
@@ -158,7 +158,7 @@ Sub Main()
         Debug.Print "TotalIvaRg2300_07", WSLPG.TotalIvaRg2300_07
         Debug.Print "TotalPagoSegunCondicion", WSLPG.TotalPagoSegunCondicion
         
-        MsgBox "COE: " & WSLPG.coe & vbCrLf, vbInformation, "Autorizar Liquidación:"
+        MsgBox "COE: " & WSLPG.COE & vbCrLf, vbInformation, "Autorizar Liquidación:"
         If WSLPG.ErrMsg <> "" Then
             Debug.Print "Errores", WSLPG.ErrMsg
             ' recorro y muestro los errores
@@ -173,10 +173,21 @@ Sub Main()
         MsgBox WSLPG.Traceback, vbCritical + vbExclamation, WSLPG.Excepcion
     End If
     
+    ' consulto una liquidacion
+    
+    ok = WSLPG.ConsultarLiquidacion(nro_orden)
+    If ok Then
+        MsgBox "COE:" & WSLPG.COE & vbCrLf & "Estado: " & WSLPG.Estado & vbCrLf, vbInformation, "Consultar Liquidación:"
+        For Each er In WSLPG.Errores
+            MsgBox er, vbExclamation, "Error"
+        Next
+    End If
+    
+    
     ' anulo una liquidacion
     
-    coe = "330100000357"     ' nro ejemplo AFIP
-    ok = WSLPG.AnularLiquidacion(coe)
+    COE = "330100000357"     ' nro ejemplo AFIP
+    ok = WSLPG.AnularLiquidacion(COE)
     If ok Then
         MsgBox "Resultado: " & WSLPG.Resultado & vbCrLf, vbInformation, "AnularLiquidación:"
         For Each er In WSLPG.Errores

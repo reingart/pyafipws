@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01d"
+__version__ = "1.01e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -219,6 +219,7 @@ class WSLPG:
                         'AnularLiquidacion',
                         'CrearLiquidacion',  
                         'AgregarCertificado', 'AgregarRetencion',
+                        'ConsultarLiquidacion',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
                         'ConsultarCodigoGradoReferencia',
@@ -236,7 +237,7 @@ class WSLPG:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
         'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
-        'COE', 'COEAjustado', 'Resultado',
+        'COE', 'COEAjustado', 'Estado', 'Resultado',
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
         'TotalIvaRg2300_07'
@@ -407,6 +408,31 @@ class WSLPG:
             self.Estado = aut['estado']
         return self.COE   
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarLiquidacion(self, nro_orden):
+        "Consulta una liquidación por No de orden"
+        ret = self.client.liquidacionXNroOrdenConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        nroOrden=nro_orden,
+                        )
+        ret = ret['liqConsReturn']
+        self.__analizar_errores(ret)
+        if 'liquidacion' in ret:
+            aut = ret['liquidacion']
+            self.TotalDeduccion = aut['totalDeduccion']
+            self.TotalRetencion = aut['totalRetencion']
+            self.TotalRetencionAfip = aut['totalRetencionAfip']
+            self.TotalOtrasRetenciones = aut['totalOtrasRetenciones']
+            self.TotalNetoAPagar = aut['totalNetoAPagar']
+            self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
+            self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
+            self.COE = aut['coe']
+            self.COEAjustado = aut.get('coeAjustado')
+            self.Estado = aut['estado']
+        return self.COE
+        
     @inicializar_y_capturar_excepciones
     def LeerDatosLiquidacion(self, pop=True):
         "Recorro los datos devueltos y devuelvo el primero si existe"
@@ -923,16 +949,14 @@ if __name__ == '__main__':
             print "Errores:", wslpg.Errores
             sys.exit(0)
 
-        if '--rechazar' in sys.argv:
-            print wslpg.client.help("rechazarLiquidacion")
-            carta_porte = 1234
-            Liquidacion = 12345678
-            motivo = "saraza"
-            ret = wslpg.RechazarLiquidacion(carta_porte, Liquidacion, motivo)
-            print "Carta Porte", wslpg.CartaPorte
-            print "Numero Liquidacion", wslpg.COE
-            print "Fecha y Hora", wslpg.FechaHora
-            print "Codigo Anulacion de Liquidacion", wslpg.CodigoOperacion
+        if '--consultar' in sys.argv:
+            try:
+                nro_orden = sys.argv[sys.argv.index("--consultar") + 1]
+            except IndexError:
+                nro_orden = 1
+            ret = wslpg.ConsultarLiquidacion(nro_orden=nro_orden)
+            print "COE", wslpg.COE
+            print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
             sys.exit(0)
 
