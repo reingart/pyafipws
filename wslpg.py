@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01e"
+__version__ = "1.01g"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -173,7 +173,7 @@ def inicializar_y_capturar_excepciones(func):
             self.Excepcion = self.Traceback = ""
             self.ErrMsg = self.ErrCode = ""
             self.Errores = []
-            self.Estado = self.Resultado = ''
+            self.Estado = self.Resultado = self.NroOrden = ''
             self.TotalDeduccion = ""
             self.TotalRetencion = ""
             self.TotalRetencionAfip = ""
@@ -219,7 +219,7 @@ class WSLPG:
                         'AnularLiquidacion',
                         'CrearLiquidacion',  
                         'AgregarCertificado', 'AgregarRetencion',
-                        'ConsultarLiquidacion',
+                        'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
                         'ConsultarCodigoGradoReferencia',
@@ -237,7 +237,7 @@ class WSLPG:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
         'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
-        'COE', 'COEAjustado', 'Estado', 'Resultado',
+        'COE', 'COEAjustado', 'Estado', 'Resultado', 'NroOrden',
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
         'TotalIvaRg2300_07'
@@ -257,7 +257,7 @@ class WSLPG:
         self.client = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.COE = ''
-        self.Estado = self.Resultado = ''
+        self.Estado = self.Resultado = self.NroOrden = ''
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy=""):
@@ -440,7 +440,19 @@ class WSLPG:
             self.COEAjustado = aut.get('coeAjustado')
             self.Estado = aut['estado']
         return self.COE
-        
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarUltNroOrden(self, nro_orden=None, coe=None):
+        "Consulta el último No de orden registrado"
+        ret = self.client.liquidacionUltimoNroOrdenConsultar(
+                    auth={
+                        'token': self.Token, 'sign': self.Sign,
+                        'cuit': self.Cuit, },
+                    )
+        ret = ret['liqUltNroOrdenReturn']
+        self.__analizar_errores(ret)
+        self.NroOrden = ret['nroOrden']
+
     @inicializar_y_capturar_excepciones
     def LeerDatosLiquidacion(self, pop=True):
         "Recorro los datos devueltos y devuelvo el primero si existe"
@@ -967,6 +979,12 @@ if __name__ == '__main__':
             ret = wslpg.ConsultarLiquidacion(nro_orden=nro_orden, coe=coe)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
+            print "Errores:", wslpg.Errores
+            sys.exit(0)
+
+        if '--ult' in sys.argv:
+            ret = wslpg.ConsultarUltNroOrden()
+            print "Ultimo Nro de Orden", wslpg.NroOrden
             print "Errores:", wslpg.Errores
             sys.exit(0)
 

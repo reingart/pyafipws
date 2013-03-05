@@ -66,7 +66,18 @@ Sub Main()
         Debug.Print parametro ' devuelve un string ": codigo : descripcion :"
     Next
     
-    nro_orden = 1
+    ' obtengo el último número de orden registrado
+    ok = WSLPG.ConsultarUltNroOrden()
+    If ok Then
+        nro_orden = WSLPG.NroOrden + 1   ' uso el siguiente
+    Else
+        ' revisar el error, posiblemente no se pueda continuar
+        Debug.Print WSLPG.Traceback
+        Debug.Print WSLPG.ErrMsg
+        MsgBox "No se pudo obtener el último número de orden!"
+        nro_orden = 1                    ' uso el primero
+    End If
+    
     cuit_comprador = "23000000000"
     nro_act_comprador = 99: nro_ing_bruto_comprador = "23000000000"
     cod_tipo_operacion = 1
