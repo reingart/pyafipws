@@ -70,6 +70,9 @@ Sub Main()
     ok = WSLPG.ConsultarUltNroOrden()
     If ok Then
         nro_orden = WSLPG.NroOrden + 1   ' uso el siguiente
+        ' NOTA: es recomendable llevar internamente el control del numero de orden
+        '       (ya que sirve para recuperar datos de una liquidación ante AFIP)
+        '       ver documentación oficial de AFIP, sección "Tratamiento Nro Orden"
     Else
         ' revisar el error, posiblemente no se pueda continuar
         Debug.Print WSLPG.Traceback
