@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.01d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -173,7 +173,7 @@ def inicializar_y_capturar_excepciones(func):
             self.Excepcion = self.Traceback = ""
             self.ErrMsg = self.ErrCode = ""
             self.Errores = []
-            self.Estado = ''
+            self.Estado = self.Resultado = ''
             self.TotalDeduccion = ""
             self.TotalRetencion = ""
             self.TotalRetencionAfip = ""
@@ -236,7 +236,7 @@ class WSLPG:
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
         'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
-        'COE', 'COEAjustado', 
+        'COE', 'COEAjustado', 'Resultado',
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
         'TotalIvaRg2300_07'
@@ -256,7 +256,7 @@ class WSLPG:
         self.client = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.COE = ''
-        self.Estado = ''
+        self.Estado = self.Resultado = ''
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy=""):
@@ -424,6 +424,20 @@ class WSLPG:
         else:
             return ""
 
+    @inicializar_y_capturar_excepciones
+    def AnularLiquidacion(self, coe):
+        "Anular liquidación activa"
+        ret = self.client.liquidacionAnular(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        )
+        ret = ret['anulacionReturn']
+        self.__analizar_errores(ret)
+        self.Resultado = ret['resultado']
+        return self.COE
+        
     def ConsultarCampanias(self, sep="||"):
         ret = self.client.campaniasConsultar(
                         auth={
@@ -720,10 +734,9 @@ if __name__ == '__main__':
         if "--version" in sys.argv:
             print "Versión: ", __version__
 
-        for arg in sys.argv[1:]:
-            if not arg.startswith("--"):
-                print "Usando configuración:", arg
-                CONFIG_FILE = arg
+        if sys.argv[1:] and not sys.argv[1].startswith("--"):
+            print "Usando configuración:", sys.argv[1]
+            CONFIG_FILE = sys.argv[1]
 
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
@@ -897,14 +910,16 @@ if __name__ == '__main__':
             
 
         if '--anular' in sys.argv:
-            print wslpg.client.help("anularLiquidacion")
-            carta_porte = 1234
-            Liquidacion = 12345678
-            ret = wslpg.AnularLiquidacion(carta_porte, Liquidacion)
-            print "Carta Porte", wslpg.CartaPorte
-            print "Numero Liquidacion", wslpg.COE
-            print "Fecha y Hora", wslpg.FechaHora
-            print "Codigo Anulacion de Liquidacion", wslpg.CodigoOperacion
+            ##print wslpg.client.help("anularLiquidacion")
+            try:
+                coe = sys.argv[sys.argv.index("--anular") + 1]
+            except IndexError:
+                coe = 330100000357
+
+            print "Anulando COE", coe
+            ret = wslpg.AnularLiquidacion(coe)
+            print "COE", wslpg.COE
+            print "Resultado", wslpg.Resultado
             print "Errores:", wslpg.Errores
             sys.exit(0)
 
