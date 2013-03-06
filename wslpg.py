@@ -135,7 +135,7 @@ ENCABEZADO = [
 
 CERTIFICADO = [
     ('tipo_reg', 1, A), # 1: Certificado
-    ('tipo_certificado_dposito', 2, N), 
+    ('tipo_certificado_deposito', 2, N), 
     ('nro_certificado_deposito', 12, N), 
     ('peso_neto', 8, N), 
     ('cod_localidad_procedencia', 6, N), 
@@ -362,7 +362,7 @@ class WSLPG:
             )
 
     @inicializar_y_capturar_excepciones
-    def AgregarCertificado(self, tipo_certificado_dposito=5,
+    def AgregarCertificado(self, tipo_certificado_deposito=5,
                            nro_certificado_deposito=101200604,
                            peso_neto=1000,
                            cod_localidad_procedencia=3,
@@ -373,7 +373,7 @@ class WSLPG:
         
         self.liquidacion['certificados'].append(
                     dict(certificado=dict(
-                        tipoCertificadoDeposito=tipo_certificado_dposito,
+                        tipoCertificadoDeposito=tipo_certificado_deposito,
                         nroCertificadoDeposito=nro_certificado_deposito,
                         pesoNeto=cod_localidad_procedencia,
                         codLocalidadProcedencia=cod_localidad_procedencia,
@@ -911,7 +911,7 @@ if __name__ == '__main__':
                     cod_localidad_procedencia=3,
                     datos_adicionales="DATOS ADICIONALES",
                     certificados=[dict(   
-                        tipo_certificado_dposito=5,
+                        tipo_certificado_deposito=5,
                         nro_certificado_deposito=101200604,
                         peso_neto=1000,
                         cod_localidad_procedencia=3,
