@@ -117,6 +117,14 @@ ENCABEZADO = [
     ('total_neto_a_pagar', 17, I, 2), # 17.2
     ('total_iva_rg_2300_07', 17, I, 2), # 17.2
     ('total_pago_segun_condicion', 17, I, 2), # 17.2
+    
+    ('fecha_liquidacion', 10, A), 
+    ('nro_op_comercial', 10, N), 
+    ('precio_operacion', 17, I, 3), # 17.3
+    ('subtotal', 17, I, 2), # 17.2
+    ('importe_iva', 17, I, 2), # 17.2
+    ('operacion_con_iva', 17, I, 2), # 17.2
+    ('total_peso_neto', 8, N), # 17.2
         
     ]
 
@@ -127,7 +135,7 @@ CERTIFICADO = [
     ('peso_neto', 8, N), 
     ('cod_localidad_procedencia', 6, N), 
     ('cod_prov_procedencia', 2, N),
-    ('cod_prov_procedencia', 2, N),
+    ('reservado', 2, N),
     ('campania', 4, N),
     ('fecha_cierre', 10, A),
     ]
@@ -138,6 +146,10 @@ RETENCION = [
     ('detalle_aclaratorio', 30, A),
     ('base_calculo', 10, I, 2),  # 8.2
     ('alicuota', 6, I, 2),  # 3.2
+    ('nro_certificado_retencion', 14, N), 
+    ('fecha_certificado_retencion', 10, A),
+    ('importe_certificado_retencion', 17, I, 2), # 17.2
+    ('importe_retencion', 17, I, 2), # 17.2
     ]
 
 DEDUCCION = [
@@ -149,6 +161,8 @@ DEDUCCION = [
     ('comision_gastos_adm', 5, I, 2), # 3.2
     ('base_calculo', 10, I, 2),  # 8.2
     ('alicuota', 6, I, 2),  # 3.2
+    ('importe_iva', 17, I, 2), # 17.2
+    ('importe_deduccion', 17, I, 2), # 17.2
     ]
 
 EVENTO = [
