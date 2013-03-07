@@ -1047,12 +1047,13 @@ if __name__ == '__main__':
             sys.exit(0)
 
         if '--consultar' in sys.argv:
+            nro_orden = 0
+            coe = None
             try:
                 nro_orden = sys.argv[sys.argv.index("--consultar") + 1]
                 coe = sys.argv[sys.argv.index("--consultar") + 2]
             except IndexError:
-                nro_orden = 1
-                coe = None
+                pass
             ret = wslpg.ConsultarLiquidacion(nro_orden=nro_orden, coe=coe)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
