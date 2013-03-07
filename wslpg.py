@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -208,8 +208,12 @@ def inicializar_y_capturar_excepciones(func):
             self.TotalNetoAPagar = ""
             self.TotalIvaRg2300_07 = ""
             self.TotalPagoSegunCondicion = ""
-            # llamo a la función (con reintentos)
+            # actualizo los parámetros
+            kwargs.update(self.params)
+            # llamo a la función
             func(self, *args, **kwargs)
+            # limpio los parámetros
+            self.params = {}
             return True
         except SoapFault, e:
             # guardo destalle de la excepción SOAP
@@ -259,6 +263,7 @@ class WSLPG:
                         'ConsultarLocalidadesPorProvincia',
                         'ConsultarTiposOperacion',
                         'AnalizarXml', 'ObtenerTagXml',
+                        'SetParametro', 'GetParametro',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -285,6 +290,7 @@ class WSLPG:
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.COE = ''
         self.Estado = self.Resultado = self.NroOrden = ''
+        self.params = {}
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy=""):
@@ -327,22 +333,22 @@ class WSLPG:
         self.AuthServerStatus = str(results['authserver'])
 
     @inicializar_y_capturar_excepciones
-    def CrearLiquidacion(self, nro_orden, cuit_comprador, 
-                               nro_act_comprador, nro_ing_bruto_comprador,
-                               cod_tipo_operacion,
-                               es_liquidacion_propia, es_canje,
-                               cod_puerto, des_puerto_localidad, cod_grano,
-                               cuit_vendedor, nro_ing_bruto_vendedor,
-                               actua_corredor, liquida_corredor, cuit_corredor,
-                               comision_corredor, nro_ing_bruto_corredor,
-                               fecha_precio_operacion,
-                               precio_ref_tn, cod_grado_ref, cod_grado_ent,
-                               factor_ent, precio_flete_tn, cont_proteico,
-                               alic_iva_operacion, campania_ppal,
-                               cod_localidad_procedencia,
-                               datos_adicionales,
-                               **kwargs
-                               ):
+    def CrearLiquidacion(self, nro_orden=None, cuit_comprador=None, 
+               nro_act_comprador=None, nro_ing_bruto_comprador=None,
+               cod_tipo_operacion=None,
+               es_liquidacion_propia=None, es_canje=None,
+               cod_puerto=None, des_puerto_localidad=None, cod_grano=None,
+               cuit_vendedor=None, nro_ing_bruto_vendedor=None,
+               actua_corredor=None, liquida_corredor=None, cuit_corredor=None,
+               comision_corredor=None, nro_ing_bruto_corredor=None,
+               fecha_precio_operacion=None,
+               precio_ref_tn=None, cod_grado_ref=None, cod_grado_ent=None,
+               factor_ent=None, precio_flete_tn=None, cont_proteico=None,
+               alic_iva_operacion=None, campania_ppal=None,
+               cod_localidad_procedencia=None,
+               datos_adicionales=None,
+               **kwargs
+               ):
         self.liquidacion = dict(
                             nroOrden=nro_orden,
                             cuitComprador=cuit_comprador,
@@ -742,6 +748,17 @@ class WSLPG:
         xml = open(os.path.join(INSTALL_DIR, xml_file)).read()
         self.client.http = DummyHTTP(xml)
 
+    def SetParametro(self, clave, valor):
+        "Establece un parámetro general (usarse en llamadas posteriores)"
+        # útil para parámetros de entrada (por ej. VFP9 no soporta más de 27)
+        self.params[str(clave)] = valor
+        return True
+
+    def GetParametro(self, clave):
+        "Devuelve un parámetro general (establecido por llamadas anteriores)"
+        # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
+        return self.params.get(clave)
+
 
 def escribir_archivo(dic, nombre_archivo, agrega=False):
     archivo = open(nombre_archivo, agrega and "a" or "w")
@@ -955,9 +972,12 @@ if __name__ == '__main__':
                 dic['comision_corredor'] = None
                 dic['nro_ing_bruto_corredor'] = None
             
+            # establezco los parametros (se pueden pasar directamente al metodo)
+            for k, v in dic.items():
+                wslpg.SetParametro(k, v)
+                
             # cargo la liquidación:
-
-            wslpg.CrearLiquidacion(**dic)
+            wslpg.CrearLiquidacion()
 
             for cert in dic['certificados']:
                 wslpg.AgregarCertificado(**cert)
