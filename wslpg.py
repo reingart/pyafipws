@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.02d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -582,6 +582,23 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
+    def ConsultarGradoEntregadoXTipoGrano(self, cod_grano, sep="||"):
+        "Consulta de Grado y Valor según Grano Entregado."
+        ret = self.client.codigoGradoEntregadoXTipoGranoConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        codGrano=cod_grano,
+                            )['gradoEntReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('gradoEnt', [])
+        return [("%s %%s %s %%s %s %%s %s" % (sep, sep, sep, sep)) %
+                    (it['gradoEnt']['codigoDescripcion']['codigo'], 
+                     it['gradoEnt']['codigoDescripcion']['descripcion'],
+                     it['gradoEnt']['valor'],
+                     ) 
+               for it in array]
+
     def ConsultarTipoCertificadoDeposito(self, sep="||"):
         "Consulta de tipos de Certificados de Depósito"
         ret = self.client.tipoCertificadoDepositoConsultar(
@@ -1079,6 +1096,12 @@ if __name__ == '__main__':
 
         if '--gradoref' in sys.argv:
             ret = wslpg.ConsultarCodigoGradoReferencia()
+            print "\n".join(ret)
+
+        if '--gradoentregado' in sys.argv:
+            ##wslpg.LoadTestXML("wslpg_cod.xml")     # cargo respuesta de ej
+            cod_grano = raw_input("Ingrese el código de grano: ")
+            ret = wslpg.ConsultarGradoEntregadoXTipoGrano(cod_grano=cod_grano)
             print "\n".join(ret)
 
         if '--certdeposito' in sys.argv:
