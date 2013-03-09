@@ -1023,12 +1023,16 @@ if __name__ == '__main__':
                     wslpg.LoadTestXML("wslpg_error.xml")     # cargo error
                 else:
                     wslpg.LoadTestXML("wslpg_aut_test.xml")  # cargo respuesta
+
+            print "Liquidacion: pto_emision=%s nro_orden=%s" % (
+                    wslpg.liquidacion['ptoEmision'], 
+                    wslpg.liquidacion['nroOrden'], )
         
             if '--ajustar' in sys.argv:
                 print "Ajustando..."
                 ret = wslpg.AjustarLiquidacion()
             else:
-                print "Autorizando..."
+                print "Autorizando..." 
                 ret = wslpg.AutorizarLiquidacion()
 
             print "Errores:", wslpg.Errores
