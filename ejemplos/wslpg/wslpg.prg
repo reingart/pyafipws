@@ -68,8 +68,9 @@ WSLPG.Dummy()
 ? "authserver status", WSLPG.AuthServerStatus
 
 
-*-- obtengo el último número de orden registrado (opcional)
-ok = WSLPG.ConsultarUltNroOrden()
+*-- obtengo el último número ddie orden registrado (opcional)
+pto_emision = 1 && agregado en v1.1
+ok = WSLPG.ConsultarUltNroOrden(pto_emision)
 IF ok
     nro_orden = WSLPG.NroOrden + 1   && uso el siguiente
     *-- NOTA: es recomendable llevar internamente el control del numero de orden
@@ -84,6 +85,7 @@ ELSE
 ENDIF
        
 *-- Establezco los valores de la liquidacion a autorizar:
+ok = WSLPG.SetParametro("pto_emision", pto_emision)  && agregado v1.1
 ok = WSLPG.SetParametro("nro_orden", nro_orden)
 ok = WSLPG.SetParametro("cuit_comprador", "23000000000")
 ok = WSLPG.SetParametro("nro_act_comprador", 99)
@@ -111,6 +113,7 @@ ok = WSLPG.SetParametro("cont_proteico", 20)
 ok = WSLPG.SetParametro("alic_iva_operacion", 10.5)
 ok = WSLPG.SetParametro("campania_ppal", 1213)
 ok = WSLPG.SetParametro("cod_localidad_procedencia", 3)
+ok = WSLPG.SetParametro("cod_prov_procedencia", 1) && agregado v1.1
 ok = WSLPG.SetParametro("datos_adicionales", "DATOS ADICIONALES")
    
 ok = WSLPG.CrearLiquidacion()
@@ -184,8 +187,8 @@ ELSE
     MESSAGEBOX(WSLPG.Traceback, 5 + 48, WSLPG.Excepcion)
 ENDIF
 
-
-ok = WSLPG.ConsultarLiquidacion(nro_orden)
+*-- consulto la liquidación autorizada (pto_emision agregado v1.1)
+ok = WSLPG.ConsultarLiquidacion(pto_emision, nro_orden)
 IF ok
     *-- muestro los resultados devueltos por el webservice   
     ? "COE", WSLPG.COE    
@@ -219,4 +222,5 @@ ENDIF
 * =FWRITE(gnErrFile, WSLPG.Excepcion + CHR(13))
 * =FWRITE(gnErrFile, WSLPG.Traceback + CHR(13))
 * =FCLOSE(gnErrFile)  
+
 

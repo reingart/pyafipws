@@ -81,6 +81,7 @@ Sub Main()
         nro_orden = 1                    ' uso el primero
     End If
     
+    pto_emision = 1  ' agregado v1.1
     cuit_comprador = "23000000000"
     nro_act_comprador = 99: nro_ing_bruto_comprador = "23000000000"
     cod_tipo_operacion = 1
@@ -100,7 +101,11 @@ Sub Main()
     alic_iva_operacion = 10.5
     campania_ppal = 1213
     cod_localidad_procedencia = 3
+    cod_provincia_procedencia = 1  ' agregado v1.1
     datos_adicionales = "DATOS ADICIONALES"
+       
+    ' establezco un parámetro adicional (antes de llamar a CrearLiquidacion)
+    '' ok = WSLPG.SetParametro("peso_neto_sin_certificado", 1000)
        
     ok = WSLPG.CrearLiquidacion(nro_orden, cuit_comprador, _
                                nro_act_comprador, nro_ing_bruto_comprador, _
@@ -115,7 +120,8 @@ Sub Main()
                                factor_ent, precio_flete_tn, cont_proteico, _
                                alic_iva_operacion, campania_ppal, _
                                cod_localidad_procedencia, _
-                               datos_adicionales)
+                               datos_adicionales, _
+                               pto_emision, cod_provincia_procedencia)
     
     ' Agergo un certificado de Depósito a la liquidación:
     
@@ -189,10 +195,11 @@ Sub Main()
     
     ' consulto una liquidacion
     
-    ok = WSLPG.ConsultarLiquidacion(nro_orden)
+    ok = WSLPG.ConsultarLiquidacion(pto_emision, nro_orden)
     If ok Then
         MsgBox "COE:" & WSLPG.COE & vbCrLf & "Estado: " & WSLPG.Estado & vbCrLf, vbInformation, "Consultar Liquidación:"
         For Each er In WSLPG.Errores
+            Debug.Print er
             MsgBox er, vbExclamation, "Error"
         Next
     End If
