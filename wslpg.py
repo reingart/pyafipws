@@ -1095,6 +1095,11 @@ if __name__ == '__main__':
             sys.exit(0)
 
         if '--ult' in sys.argv:
+            try:
+                pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
+            except IndexError, ValueError:
+                pto_emision = 1
+            print "Consultando ultimo nro_orden para pto_emision=%s" % pto_emision
             ret = wslpg.ConsultarUltNroOrden()
             print "Ultimo Nro de Orden", wslpg.NroOrden
             print "Errores:", wslpg.Errores
