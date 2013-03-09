@@ -138,6 +138,11 @@ ENCABEZADO = [
     ('importe_iva', 17, I, 2), # 17.2
     ('operacion_con_iva', 17, I, 2), # 17.2
     ('total_peso_neto', 8, N), # 17.2
+
+    # Campos WSLPGv1.1:
+    ('pto_emision', 4, N), 
+    ('cod_prov_procedencia', 2, N),
+    ('peso_neto_sin_certificado', 8, N),
         
     ]
 
@@ -346,10 +351,12 @@ class WSLPG:
                factor_ent=None, precio_flete_tn=None, cont_proteico=None,
                alic_iva_operacion=None, campania_ppal=None,
                cod_localidad_procedencia=None,
-               datos_adicionales=None,
+               datos_adicionales=None, pto_emision=1, cod_prov_procedencia=1, 
+               peso_neto_sin_certificado=None,
                **kwargs
                ):
         self.liquidacion = dict(
+                            ptoEmision=pto_emision,
                             nroOrden=nro_orden,
                             cuitComprador=cuit_comprador,
                             nroActComprador=nro_act_comprador,
@@ -377,7 +384,9 @@ class WSLPG:
                             alicIvaOperacion=alic_iva_operacion,
                             campaniaPPal=campania_ppal,
                             codLocalidadProcedencia=cod_localidad_procedencia,
+                            codProvProcedencia=cod_prov_procedencia,
                             datosAdicionales=datos_adicionales,
+                            pesoNetoSinCertificado=peso_neto_sin_certificado,
                             certificados=[],
             )
 
@@ -500,12 +509,13 @@ class WSLPG:
         return self.COE
 
     @inicializar_y_capturar_excepciones
-    def ConsultarUltNroOrden(self, nro_orden=None, coe=None):
+    def ConsultarUltNroOrden(self, pto_emision=1):
         "Consulta el último No de orden registrado"
         ret = self.client.liquidacionUltimoNroOrdenConsultar(
                     auth={
                         'token': self.Token, 'sign': self.Sign,
                         'cuit': self.Cuit, },
+                    ptoEmision=pto_emision,
                     )
         ret = ret['liqUltNroOrdenReturn']
         self.__analizar_errores(ret)
@@ -937,6 +947,7 @@ if __name__ == '__main__':
             if '--prueba' in sys.argv:
                 # genero una liquidación de ejemplo:
                 dic = dict(
+                    pto_emision=1,
                     nro_orden=1,
                     cuit_comprador=23000000000, 
                     nro_act_comprador=99, nro_ing_bruto_comprador=23000000000,
@@ -957,6 +968,7 @@ if __name__ == '__main__':
                     alic_iva_operacion=10.5,
                     campania_ppal=1213,
                     cod_localidad_procedencia=3,
+                    cod_prov_procedencia=1,
                     datos_adicionales="DATOS ADICIONALES",
                     certificados=[dict(   
                         tipo_certificado_deposito=5,
