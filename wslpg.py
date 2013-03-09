@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02d"
+__version__ = "1.03a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -258,6 +258,7 @@ class WSLPG:
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
+                        'ConsultarGradoEntregadoXTipoGrano',
                         'ConsultarCodigoGradoReferencia',
                         'ConsultarTipoCertificadoDeposito',
                         'ConsultarTipoDeduccion',
@@ -351,7 +352,7 @@ class WSLPG:
                factor_ent=None, precio_flete_tn=None, cont_proteico=None,
                alic_iva_operacion=None, campania_ppal=None,
                cod_localidad_procedencia=None,
-               datos_adicionales=None, pto_emision=1, cod_prov_procedencia=1, 
+               datos_adicionales=None, pto_emision=1, cod_prov_procedencia=None, 
                peso_neto_sin_certificado=None,
                **kwargs
                ):
