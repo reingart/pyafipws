@@ -476,7 +476,7 @@ class WSLPG:
         return self.COE   
 
     @inicializar_y_capturar_excepciones
-    def ConsultarLiquidacion(self, nro_orden=None, coe=None):
+    def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None):
         "Consulta una liquidación por No de orden"
         if coe:
             ret = self.client.liquidacionXCoeConsultar(
@@ -490,6 +490,7 @@ class WSLPG:
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
+                        ptoEmision=pto_emision,
                         nroOrden=nro_orden,
                         )
         ret = ret['liqConsReturn']
@@ -1076,14 +1077,17 @@ if __name__ == '__main__':
             sys.exit(0)
 
         if '--consultar' in sys.argv:
+            pto_emision = None
             nro_orden = 0
             coe = None
             try:
-                nro_orden = sys.argv[sys.argv.index("--consultar") + 1]
-                coe = sys.argv[sys.argv.index("--consultar") + 2]
+                pto_emision = sys.argv[sys.argv.index("--consultar") + 1]
+                nro_orden = sys.argv[sys.argv.index("--consultar") + 2]
+                coe = sys.argv[sys.argv.index("--consultar") + 3]
             except IndexError:
                 pass
-            ret = wslpg.ConsultarLiquidacion(nro_orden=nro_orden, coe=coe)
+            print "Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe)
+            ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
