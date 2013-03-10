@@ -18,7 +18,7 @@ __license__ = "GPL 3.0"
 __version__ = "1.07b"
 
 DEBUG = False
-HOMO = False
+HOMO = True
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = u"""

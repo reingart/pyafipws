@@ -29,7 +29,7 @@ from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from wsfev1 import inicializar_y_capturar_excepciones
 
-HOMO = False
+HOMO = True
 LANZAR_EXCEPCIONES = True      # valor por defecto: True
 WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 

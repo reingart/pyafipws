@@ -63,7 +63,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsctg.ini"
-HOMO = False
+HOMO = True
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"

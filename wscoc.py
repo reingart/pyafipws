@@ -27,7 +27,7 @@ from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
 from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
-HOMO = False
+HOMO = True
 
 if HOMO:
     WSDL = "https://fwshomo.afip.gov.ar/wscoc/COCService"

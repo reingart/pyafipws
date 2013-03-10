@@ -20,8 +20,7 @@ __version__ = "1.0"
 import datetime, sys, time
 import xml.dom.minidom
 import httplib2
-from simplexml import SimpleXMLElement
-from soap import SoapFault, SoapClient, parse_proxy
+from soap import SoapFault, SoapClient, parse_proxy, SimpleXMLElement
 
 def date(fmt=None,timestamp=None):
     "Manejo de fechas (simil PHP)"

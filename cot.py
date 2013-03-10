@@ -28,7 +28,7 @@ import mimetools, mimetypes
 import os, stat, traceback
 from cStringIO import StringIO
 
-HOMO = False
+HOMO = True
 
 ##URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
 # Nuevo servidor para el "Remito Electrónico Automático"
