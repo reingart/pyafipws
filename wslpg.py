@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.03b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -172,7 +172,7 @@ RETENCION = [
 
 DEDUCCION = [
     ('tipo_reg', 1, A), # 3: Deducción
-    ('codigo_concepto', 2, N), 
+    ('codigo_concepto', 2, A), 
     ('detalle_aclaratorio', 30, A),
     ('dias_almacenaje', 4, N),
     ('precio_pkg_diario', 6, I, 3), # 3.3
@@ -1003,6 +1003,10 @@ if __name__ == '__main__':
                 dic['comision_corredor'] = None
                 dic['nro_ing_bruto_corredor'] = None
             
+            if not dic.get("peso_neto_sin_certificado") or dic['certificados']:
+                # si no corresponde elimino este campo opcional
+                del dic['peso_neto_sin_certificado']
+                
             # establezco los parametros (se pueden pasar directamente al metodo)
             for k, v in dic.items():
                 wslpg.SetParametro(k, v)
