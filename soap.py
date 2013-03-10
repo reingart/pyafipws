@@ -18,7 +18,7 @@ __license__ = "LGPL 3.0"
 __version__ = "1.0"
 
 import httplib2
-from simplexml import SimpleXMLElement
+from pysimplesoap.simplexml import SimpleXMLElement
 
 class SoapFault(RuntimeError):
     def __init__(self,faultcode,faultstring):
