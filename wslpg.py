@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03b"
+__version__ = "1.03c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -94,7 +94,7 @@ ENCABEZADO = [
     ('cuit_comprador', 11, N),
     ('nro_act_comprador', 5, N),
     ('nro_ing_bruto_comprador', 15, N), 
-    ('cod_tipo_operacion', 2, A), 
+    ('cod_tipo_operacion', 2, N), 
     ('es_liquidacion_propia', 1, A),  # S o N
     ('es_canje', 1, A),  # S o N
     ('cod_puerto', 4, N), 
@@ -1006,9 +1006,10 @@ if __name__ == '__main__':
             if not dic.get("peso_neto_sin_certificado") or dic['certificados']:
                 # si no corresponde elimino este campo opcional
                 del dic['peso_neto_sin_certificado']
-                
+
             # establezco los parametros (se pueden pasar directamente al metodo)
-            for k, v in dic.items():
+            for k, v in sorted(dic.items()):
+                if DEBUG: print "%s = %s" % (k, v)
                 wslpg.SetParametro(k, v)
                 
             # cargo la liquidación:
@@ -1028,9 +1029,12 @@ if __name__ == '__main__':
                 else:
                     wslpg.LoadTestXML("wslpg_aut_test.xml")  # cargo respuesta
 
-            print "Liquidacion: pto_emision=%s nro_orden=%s" % (
+            print "Liquidacion: pto_emision=%s nro_orden=%s nro_act=%s tipo_op=%s" % (
                     wslpg.liquidacion['ptoEmision'], 
-                    wslpg.liquidacion['nroOrden'], )
+                    wslpg.liquidacion['nroOrden'], 
+                    wslpg.liquidacion['nroActComprador'],
+                    wslpg.liquidacion['codTipoOperacion'], 
+                    )
         
             if '--ajustar' in sys.argv:
                 print "Ajustando..."
@@ -1040,7 +1044,6 @@ if __name__ == '__main__':
                 ret = wslpg.AutorizarLiquidacion()
 
             print "Errores:", wslpg.Errores
-
             print "COE", wslpg.COE
             print "COEAjustado", wslpg.COEAjustado
             print "TootalDeduccion", wslpg.TotalDeduccion
