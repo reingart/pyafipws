@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03c"
+__version__ = "1.03d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -390,6 +390,7 @@ class WSLPG:
                             pesoNetoSinCertificado=peso_neto_sin_certificado,
                             certificados=[],
             )
+        self.retenciones = []
 
     @inicializar_y_capturar_excepciones
     def AgregarCertificado(self, tipo_certificado_deposito=5,
@@ -411,7 +412,6 @@ class WSLPG:
                         campania=campania,
                         fechaCierre=fecha_cierre,
                       )))
-        self.retenciones = []
 
     @inicializar_y_capturar_excepciones
     def AgregarRetencion(self, codigo_concepto, detalle_aclaratorio, 
@@ -428,6 +428,10 @@ class WSLPG:
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
         "Autorizar Liquidación Primaria Electrónica de Granos"
+        if not self.liquidacion['certificados']:
+            del self.liquidacion['certificados']
+        if not self.retenciones:
+            self.retenciones = None
         ret = self.client.liquidacionAutorizar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
