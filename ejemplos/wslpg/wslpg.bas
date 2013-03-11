@@ -194,6 +194,14 @@ Sub Main()
         Debug.Print "TotalIvaRg2300_07", WSLPG.TotalIvaRg2300_07
         Debug.Print "TotalPagoSegunCondicion", WSLPG.TotalPagoSegunCondicion
         
+        ' obtengo los datos adcionales desde losparametros de salida:
+        Debug.Print "fecha_liquidacion", WSLPG.GetParametro("fecha_liquidacion")
+        Debug.Print "subtotal", WSLPG.GetParametro("subtotal")
+        Debug.Print "primer importe_retencion", WSLPG.GetParametro("retenciones", 0, "importe_retencion")
+        Debug.Print "segundo importe_retencion", WSLPG.GetParametro("retenciones", 1, "importe_retencion")
+        Debug.Print "primer importe_deduccion", WSLPG.GetParametro("deducciones", 0, "importe_deduccion")
+        
+        
         MsgBox "COE: " & WSLPG.COE & vbCrLf, vbInformation, "Autorizar Liquidación:"
         If WSLPG.ErrMsg <> "" Then
             Debug.Print "Errores", WSLPG.ErrMsg

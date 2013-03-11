@@ -215,10 +215,10 @@ def inicializar_y_capturar_excepciones(func):
             self.TotalPagoSegunCondicion = ""
             # actualizo los parámetros
             kwargs.update(self.params)
+            self.params = {}
             # llamo a la función
             func(self, *args, **kwargs)
             # limpio los parámetros
-            self.params = {}
             return True
         except SoapFault, e:
             # guardo destalle de la excepción SOAP
@@ -483,9 +483,62 @@ class WSLPG:
             self.TotalNetoAPagar = aut['totalNetoAPagar']
             self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
             self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
-            self.COE = aut['coe']
+            self.COE = str(aut['coe'])
             self.COEAjustado = aut.get('coeAjustado')
             self.Estado = aut['estado']
+
+            # actualizo parámetros de salida:
+            self.params['coe'] = self.COE
+            self.params['coe_ajustado'] = self.COE
+            self.params['estado'] = self.Estado
+            self.params['total_deduccion'] = self.TotalDeduccion
+            self.params['total_retencion'] = self.TotalRetencion
+            self.params['total_retencion_afip'] = self.TotalRetencionAfip
+            self.params['total_otras_retenciones'] = self.TotalOtrasRetenciones
+            self.params['total_neto_a_pagar'] = self.TotalNetoAPagar
+            self.params['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
+            self.params['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
+            self.params['errores'] = self.errores
+
+            # datos adicionales:
+            self.params['nro_orden'] = aut.get('nroOrden')
+            fecha = aut.get('fechaLiquidacion')
+            if fecha:
+                fecha = fecha.strftime("%d/%m/%Y")
+            self.params['fecha_liquidacion'] = fecha
+            self.params['importe_iva'] = aut.get('importeIva')
+            self.params['nro_op_comercial'] = aut.get('nroOpComercial')
+            self.params['operacion_con_iva'] = aut.get('operacionConIva')
+            self.params['precio_operacion'] = aut.get('precioOperacion')
+            self.params['subtotal'] = aut.get('subTotal')
+            self.params['retenciones'] = []
+            self.params['deducciones'] = []
+            for retret in aut.get("retenciones", []):
+                retret = retret['retencionReturn']
+                self.params['retenciones'].append({
+                    'importe_retencion': retret['importeRetencion'],
+                    'alicuota': retret['retencion'].get('alicuota'),
+                    'base_calculo': retret['retencion'].get('baseCalculo'),
+                    'codigo_concepto': retret['retencion'].get('codigoConcepto'),
+                    'detalle_aclaratorio': retret['retencion'].get('detalleAclaratorio', "").replace("\n", ""),
+                    'importe_certificado_retencion': retret['retencion'].get('importeCertificadoRetencion'),
+                    'nro_certificado_retencion': retret['retencion'].get('nroCertificadoRetencion'),
+                    })
+            for dedret in aut.get("deducciones", []):
+                dedret = dedret['deduccionReturn']
+                self.params['retenciones'].append({
+                    'importe_deduccion': retret['importeDeduccion'],
+                    'importe_iva': retret['importeIva'],
+                     'alicuota_iva': retret['deduccion'].get('alicuotaIva'),
+                     'base_calculo': retret['deduccion'].get('baseCalculo'),
+                     'codigo_concepto': retret['deduccion'].get('codigoConcepto'),
+                     'detalle_aclaratorio': retret['deduccion'].get('detalleAclaratorio', "").replace("\n", ""),
+                     'dias_almacenaje': retret['deduccion'].get('diasAlmacenaje'),
+                     'precio_pkg_diario': retret['deduccion'].get('precioPKGdiario'),
+                     'comision_gastos_adm': retret['deduccion'].get('comisionGastosAdm'),
+                    })
+
+
 
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacion(self):
@@ -508,7 +561,7 @@ class WSLPG:
             self.TotalNetoAPagar = aut['totalNetoAPagar']
             self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
             self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
-            self.COE = aut['coe']
+            self.COE = str(aut['coe'])
             self.COEAjustado = aut.get('coeAjustado')
             self.Estado = aut['estado']
         return self.COE   
@@ -542,7 +595,7 @@ class WSLPG:
             self.TotalNetoAPagar = aut['totalNetoAPagar']
             self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
             self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
-            self.COE = aut['coe']
+            self.COE = str(aut['coe'])
             self.COEAjustado = aut.get('coeAjustado')
             self.Estado = aut['estado']
         return self.COE
@@ -820,11 +873,27 @@ class WSLPG:
         self.params[str(clave)] = valor
         return True
 
-    def GetParametro(self, clave):
+    def GetParametro(self, clave, clave1=None, clave2=None):
         "Devuelve un parámetro general (establecido por llamadas anteriores)"
         # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
-        return self.params.get(clave)
-
+        valor = self.params.get(clave)
+        # busco datos "anidados" (listas / diccionarios)
+        if clave1 is not None and valor is not None:
+            if isinstance(clave1, basestring) and clave1.isdigit():
+                clave1 = int(clave1)
+            try:
+                valor = valor[clave1]
+            except (KeyError, IndexError):
+                valor = None
+        if clave2 is not None and valor is not None:
+            try:
+                valor = valor.get(clave2)
+            except KeyError:
+                valor = None
+        if valor is not None:
+            return str(valor)
+        else:
+            return ""
 
 def escribir_archivo(dic, nombre_archivo, agrega=False):
     archivo = open(nombre_archivo, agrega and "a" or "w")
@@ -1103,24 +1172,16 @@ if __name__ == '__main__':
             print "TotalNetoAPagar", wslpg.TotalNetoAPagar
             print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
             print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
-            if False and TESTING:
-                assert wslpg.COE == 330100000357
+            if '--testing' in sys.argv:
+                assert wslpg.COE == "330100000357"
                 assert wslpg.COEAjustado == None
                 assert wslpg.Estado == "AC"
-                assert wslpg.TotalPagoSegunCondicion == 1968.00           
-
-            # actualizo el archivo de salida con l
-            dic['coe'] = wslpg.COE
-            dic['coe_ajustado'] = wslpg.COE
-            dic['estado'] = wslpg.Estado
-            dic['total_deduccion'] = wslpg.TotalDeduccion
-            dic['total_retencion'] = wslpg.TotalRetencion
-            dic['total_retencion_afip'] = wslpg.TotalRetencionAfip
-            dic['total_otras_retenciones'] = wslpg.TotalOtrasRetenciones
-            dic['total_neto_a_pagar'] = wslpg.TotalNetoAPagar
-            dic['total_iva_rg_2300_07'] = wslpg.TotalIvaRg2300_07
-            dic['total_pago_segun_condicion'] = wslpg.TotalPagoSegunCondicion
-            dic['errores'] = wslpg.errores
+                assert wslpg.TotalPagoSegunCondicion == 1968.00
+                assert wslpg.GetParametro("fecha_liquidacion") == "07/02/2013"
+                assert wslpg.GetParametro("retenciones", 1, "importe_retencion") == "157.60"
+                
+            # actualizo el archivo de salida con los datos devueltos
+            dic.update(wslpg.params)
             escribir_archivo(dic, SALIDA)
             sys.exit(0)            
 

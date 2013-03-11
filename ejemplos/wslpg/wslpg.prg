@@ -155,6 +155,7 @@ ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, 
 *-- Cargo respuesta de prueba según documentación de AFIP (Ejemplo 1)
 *-- (descomentar para probar si el ws no esta operativo o no se dispone de datos válidos)
 &&WSLPG.LoadTestXML ("wslpg_aut_test.xml")
+&&ok = WSLPG.LoadTestXML("Error001.xml")
            
 *-- llamo al webservice con los datos cargados:
 
@@ -172,6 +173,13 @@ IF ok
     ? "TotalNetoAPagar", WSLPG.TotalNetoAPagar
     ? "TotalIvaRg2300_07", WSLPG.TotalIvaRg2300_07
     ? "TotalPagoSegunCondicion", WSLPG.TotalPagoSegunCondicion
+    
+    *-- obtengo los datos adcionales desde losparametros de salida:
+    ? "fecha_liquidacion", WSLPG.GetParametro("fecha_liquidacion")
+    ? "subtotal", WSLPG.GetParametro("subtotal")
+    ? "primer importe_retencion", WSLPG.GetParametro("retenciones", "0", "importe_retencion")
+    ? "segundo importe_retencion", WSLPG.GetParametro("retenciones", 1, "importe_retencion")
+    ? "primer importe_deduccion", WSLPG.GetParametro("deducciones", 0, "importe_deduccion")
     
     MESSAGEBOX("COE: " + WSLPG.COE, 0, "Autorizar Liquidación:")
     ? "Errores", WSLPG.ErrMsg
