@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03d"
+__version__ = "1.04a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -254,7 +254,8 @@ class WSLPG:
                         'AutorizarLiquidacion', 'AjustarLiquidacion',
                         'AnularLiquidacion',
                         'CrearLiquidacion',  
-                        'AgregarCertificado', 'AgregarRetencion',
+                        'AgregarCertificado', 'AgregarRetencion', 
+                        'AgregarDeduccion',
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
@@ -391,15 +392,16 @@ class WSLPG:
                             certificados=[],
             )
         self.retenciones = []
+        self.deducciones = []
 
     @inicializar_y_capturar_excepciones
-    def AgregarCertificado(self, tipo_certificado_deposito=5,
-                           nro_certificado_deposito=101200604,
-                           peso_neto=1000,
-                           cod_localidad_procedencia=3,
-                           cod_prov_procedencia=1,
-                           campania=1213,
-                           fecha_cierre="2013-01-13", **kwargs):
+    def AgregarCertificado(self, tipo_certificado_deposito=None,
+                           nro_certificado_deposito=None,
+                           peso_neto=None,
+                           cod_localidad_procedencia=None,
+                           cod_prov_procedencia=None,
+                           campania=None,
+                           fecha_cierre=None, **kwargs):
         "Agrego el certificado a la liquidación"
         
         self.liquidacion['certificados'].append(
@@ -416,6 +418,7 @@ class WSLPG:
     @inicializar_y_capturar_excepciones
     def AgregarRetencion(self, codigo_concepto, detalle_aclaratorio, 
                                base_calculo, alicuota, **kwargs):
+        "Agrega la información referente a las retenciones de la liquidación"
         self.retenciones.append(dict(
                                     retencion=dict(
                                         codigoConcepto=codigo_concepto,
@@ -426,19 +429,49 @@ class WSLPG:
                             )
 
     @inicializar_y_capturar_excepciones
+    def AgregarDeduccion(self, codigo_concepto=None, detalle_aclaratorio=None,
+                               dias_almacenaje=None, precio_pkg_diario=None,
+                               comision_gastos_adm=None, base_calculo=None,
+                               alicuota=None, **kwargs):
+        "Agrega la información referente a las deducciones de la liquidación."
+        # limpiar campo según validación (comision_gastos_adm debe ser >=0.01)
+        if comision_gastos_adm is not None and float(comision_gastos_adm) == 0:
+            comision_gastos_adm = None
+        self.deducciones.append(dict(
+                                    deduccion=dict(
+                                        codigoConcepto=codigo_concepto,
+                                        detalleAclaratorio=detalle_aclaratorio,
+                                        diasAlmacenaje=dias_almacenaje,
+                                        precioPKGdiario=precio_pkg_diario,
+                                        comisionGastosAdm=comision_gastos_adm,
+                                        baseCalculo=base_calculo,
+                                        alicuotaIva=alicuota
+                                    ))
+                            )
+
+    @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
         "Autorizar Liquidación Primaria Electrónica de Granos"
+        
+        # limpio los elementos que no correspondan por estar vacios:
         if not self.liquidacion['certificados']:
             del self.liquidacion['certificados']
         if not self.retenciones:
             self.retenciones = None
+        if not self.deducciones:
+            self.deducciones = None
+        
+        # llamo al webservice:
         ret = self.client.liquidacionAutorizar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         liquidacion=self.liquidacion,
                         retenciones=self.retenciones,
+                        deducciones=self.deducciones,
                         )
+
+        # analizo la respusta
         ret = ret['liqReturn']
         self.__analizar_errores(ret)
         if 'autorizacion' in ret:
@@ -994,7 +1027,16 @@ if __name__ == '__main__':
                             detalle_aclaratorio="DETALLE DE GANANCIAS",
                             base_calculo=100,
                             alicuota=2,
-                        )]
+                        )],
+                    deducciones=[dict(
+                            codigo_concepto="OD",
+                            detalle_aclaratorio="FLETE",
+                            dias_almacenaje="0",
+                            precio_pkg_diario=0.0,
+                            comision_gastos_adm=0.0,
+                            base_calculo=3000.0,
+                            alicuota=21.0,
+                        )],
                     )
                 escribir_archivo(dic, ENTRADA)
             else:
@@ -1021,6 +1063,10 @@ if __name__ == '__main__':
 
             for cert in dic['certificados']:
                 wslpg.AgregarCertificado(**cert)
+
+            for ded in dic['deducciones']:
+                wslpg.AgregarDeduccion(**ded)
+                print repr(ded)
 
             for ret in dic['retenciones']:
                 wslpg.AgregarRetencion(**ret)

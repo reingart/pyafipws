@@ -35,6 +35,7 @@ Sub Main()
     
     ' Crear objeto interface Web Service de Liquidación Primaria de Granos
     Set WSLPG = CreateObject("WSLPG")
+    Debug.Print WSLPG.Version
     Debug.Print WSLPG.InstallDir
     ' Setear tocken y sing de autorización (pasos previos)
     WSLPG.Token = WSAA.Token
@@ -123,7 +124,7 @@ Sub Main()
                                datos_adicionales, _
                                pto_emision, cod_provincia_procedencia)
     
-    ' Agergo un certificado de Depósito a la liquidación:
+    ' Agergo un certificado de Depósito a la liquidación (opcional):
     
     tipo_certificado_dposito = 5
     nro_certificado_deposito = 101200604
@@ -140,6 +141,21 @@ Sub Main()
                            cod_prov_procedencia, _
                            campania, _
                            fecha_cierre)
+    
+    ' Agrego deducciones (opcional):
+    
+    codigo_concepto = "OD"
+    detalle_aclaratorio = "FLETE"
+    dias_almacenaje = "0"
+    precio_pkg_diario = "0.00"
+    comision_gastos_adm = "0.00"
+    base_calculo = "3000.00"
+    alicuota = "21.00"
+
+    ok = WSLPG.AgregarDeduccion(codigo_concepto, detalle_aclaratorio, _
+                               dias_almacenaje, precio_pkg_diario, _
+                               comision_gastos_adm, base_calculo, _
+                               alicuota)
     
     ' Agrego retenciones (opcional):
     
@@ -164,7 +180,7 @@ Sub Main()
     ' llamo al webservice con los datos cargados:
     
     ok = WSLPG.AutorizarLiquidacion()
-         
+            
     If ok Then
         ' muestro los resultados devueltos por el webservice:
         
@@ -189,6 +205,7 @@ Sub Main()
     Else
         ' muestro el mensaje de error
         Debug.Print WSLPG.Traceback
+        Debug.Print WSLPG.XmlRequest
         Debug.Print WSLPG.XmlResponse
         MsgBox WSLPG.Traceback, vbCritical + vbExclamation, WSLPG.Excepcion
     End If
