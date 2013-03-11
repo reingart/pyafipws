@@ -1051,7 +1051,8 @@ if __name__ == '__main__':
             
             if not dic.get("peso_neto_sin_certificado") or dic['certificados']:
                 # si no corresponde elimino este campo opcional
-                del dic['peso_neto_sin_certificado']
+                if "peso_neto_sin_certificado" in dic:
+                    del dic['peso_neto_sin_certificado']
 
             # establezco los parametros (se pueden pasar directamente al metodo)
             for k, v in sorted(dic.items()):
@@ -1066,7 +1067,6 @@ if __name__ == '__main__':
 
             for ded in dic['deducciones']:
                 wslpg.AgregarDeduccion(**ded)
-                print repr(ded)
 
             for ret in dic['retenciones']:
                 wslpg.AgregarRetencion(**ret)
