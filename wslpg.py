@@ -70,6 +70,7 @@ Ver wslpg.ini para parámetros de configuración (URL, certificados, etc.)"
 import os, sys, time
 from php import date
 import traceback
+import pprint
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 from rece1 import leer, escribir  # esto debería estar en un módulo separado
@@ -476,7 +477,7 @@ class WSLPG:
         self.__analizar_errores(ret)
         if 'autorizacion' in ret:
             aut = ret['autorizacion']
-            self.AnalizarLiquidacion(aut)
+            self.AnalizarLiquidacion(aut, self.liquidacion)
 
     def AnalizarLiquidacion(self, aut, liq=None):
         "Método interno para analizar la respuesta de AFIP"
@@ -1241,7 +1242,10 @@ if __name__ == '__main__':
                 assert wslpg.TotalPagoSegunCondicion == 1968.00
                 assert wslpg.GetParametro("fecha_liquidacion") == "07/02/2013"
                 assert wslpg.GetParametro("retenciones", 1, "importe_retencion") == "157.60"
-                
+
+            if DEBUG: 
+                pprint.pprint(wslpg.params)
+
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params)
             escribir_archivo(dic, SALIDA)
@@ -1277,7 +1281,6 @@ if __name__ == '__main__':
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
             if DEBUG: 
-                import pprint
                 pprint.pprint(wslpg.params)
             sys.exit(0)
 
