@@ -1280,6 +1280,10 @@ if __name__ == '__main__':
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
+
+            # actualizo el archivo de salida con los datos devueltos
+            escribir_archivo(wslpg.params, SALIDA)
+
             if DEBUG: 
                 pprint.pprint(wslpg.params)
             sys.exit(0)
