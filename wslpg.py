@@ -541,16 +541,25 @@ class WSLPG:
 
 
     @inicializar_y_capturar_excepciones
-    def AjustarLiquidacion(self):
-        "Ajustar Liquidación Primaria de Granos"
+    def AjustarLiquidacion(self, coe_ajustado=None, cod_tipo_ajuste=None, 
+                                 total_peso_neto=None, precio_operacion=None,):
+        "Ajustar Liquidación Primaria de Granos (tipo: 3 – Débito, 4 – Crédito)"
+        ajuste = self.liquidacion.copy()
+        # completo los datos del ajuste:
+        ajuste['coeAjustado'] = coe_ajustado
+        ajuste['codTipoAjuste'] = cod_tipo_ajuste
+        ajuste['totalPesoNeto'] = total_peso_neto
+        ajuste['precioOperacion'] = precio_operacion
+        
         ret = self.client.liquidacionAjustar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
-                        ajuste=self.liquidacion,
+                        ajuste=ajuste,
+                        deducciones=self.deducciones,
                         retenciones=self.retenciones,
                         )
-        ret = ret['liqReturn']
+        ret = ret['ajusteReturn']
         self.__analizar_errores(ret)
         if 'autorizacion' in ret:
             aut = ret['autorizacion']
@@ -1083,6 +1092,8 @@ if __name__ == '__main__':
                     cod_prov_procedencia=1,
                     datos_adicionales="DATOS ADICIONALES",
                     ##peso_neto_sin_certificado=2000,
+                    precio_operacion=1970,  # para probar ajustar
+                    total_peso_neto=1000,   # para probar ajustar
                     certificados=[dict(   
                         tipo_certificado_deposito=5,
                         nro_certificado_deposito=555501200623,
@@ -1162,7 +1173,18 @@ if __name__ == '__main__':
         
             if '--ajustar' in sys.argv:
                 print "Ajustando..."
-                ret = wslpg.AjustarLiquidacion()
+                i = sys.argv.index("--ajustar")
+                if i + 2 > len(sys.argv) or sys.argv[i + 1].startswith("--"):
+                    coe_ajustado = raw_input("Ingrese COE ajustado: ")
+                    cod_tipo_ajuste = raw_input("Ingrese Tipo Ajuste: ")
+                else:
+                    coe_ajustado = sys.argv[i + 1]
+                    cod_tipo_ajuste = sys.argv[i + 2]
+                ret = wslpg.AjustarLiquidacion(
+                                coe_ajustado=330100001015,
+                                cod_tipo_ajuste=3,
+                                precio_operacion=dic['precio_operacion'],
+                                total_peso_neto=dic['total_peso_neto'])
             else:
                 print "Autorizando..." 
                 ret = wslpg.AutorizarLiquidacion()
