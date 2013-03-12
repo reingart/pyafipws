@@ -476,6 +476,11 @@ class WSLPG:
         self.__analizar_errores(ret)
         if 'autorizacion' in ret:
             aut = ret['autorizacion']
+            self.AnalizarLiquidacion(aut)
+
+    def AnalizarLiquidacion(self, aut):
+        "Método interno para analizar la respuesta de AFIP"
+        if aut:
             self.TotalDeduccion = aut['totalDeduccion']
             self.TotalRetencion = aut['totalRetencion']
             self.TotalRetencionAfip = aut['totalRetencionAfip']
@@ -528,7 +533,7 @@ class WSLPG:
                 dedret = dedret['deduccionReturn']
                 self.params['deducciones'].append({
                     'importe_deduccion': dedret['importeDeduccion'],
-                    'importe_iva': dedret['importeIva'],
+                    'importe_iva': dedret.get('importeIva'),
                      'alicuota_iva': dedret['deduccion'].get('alicuotaIva'),
                      'base_calculo': dedret['deduccion'].get('baseCalculo'),
                      'codigo_concepto': dedret['deduccion'].get('codigoConcepto'),
@@ -563,17 +568,7 @@ class WSLPG:
         self.__analizar_errores(ret)
         if 'autorizacion' in ret:
             aut = ret['autorizacion']
-            self.TotalDeduccion = aut['totalDeduccion']
-            self.TotalRetencion = aut['totalRetencion']
-            self.TotalRetencionAfip = aut['totalRetencionAfip']
-            self.TotalOtrasRetenciones = aut['totalOtrasRetenciones']
-            self.TotalNetoAPagar = aut['totalNetoAPagar']
-            self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
-            self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
-            self.COE = str(aut['coe'])
-            self.COEAjustado = aut.get('coeAjustado')
-            self.Estado = aut['estado']
-        return self.COE   
+            self.AnalizarLiquidacion(aut)
 
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None):
@@ -596,18 +591,8 @@ class WSLPG:
         ret = ret['liqConsReturn']
         self.__analizar_errores(ret)
         if 'liquidacion' in ret:
-            aut = ret['liquidacion']
-            self.TotalDeduccion = aut['totalDeduccion']
-            self.TotalRetencion = aut['totalRetencion']
-            self.TotalRetencionAfip = aut['totalRetencionAfip']
-            self.TotalOtrasRetenciones = aut['totalOtrasRetenciones']
-            self.TotalNetoAPagar = aut['totalNetoAPagar']
-            self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
-            self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
-            self.COE = str(aut['coe'])
-            self.COEAjustado = aut.get('coeAjustado')
-            self.Estado = aut['estado']
-        return self.COE
+            aut = ret['autorizacion']
+            self.AnalizarLiquidacion(aut)
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltNroOrden(self, pto_emision=1):
