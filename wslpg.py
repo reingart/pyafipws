@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.04b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -526,16 +526,16 @@ class WSLPG:
                     })
             for dedret in aut.get("deducciones", []):
                 dedret = dedret['deduccionReturn']
-                self.params['retenciones'].append({
-                    'importe_deduccion': retret['importeDeduccion'],
-                    'importe_iva': retret['importeIva'],
-                     'alicuota_iva': retret['deduccion'].get('alicuotaIva'),
-                     'base_calculo': retret['deduccion'].get('baseCalculo'),
-                     'codigo_concepto': retret['deduccion'].get('codigoConcepto'),
-                     'detalle_aclaratorio': retret['deduccion'].get('detalleAclaratorio', "").replace("\n", ""),
-                     'dias_almacenaje': retret['deduccion'].get('diasAlmacenaje'),
-                     'precio_pkg_diario': retret['deduccion'].get('precioPKGdiario'),
-                     'comision_gastos_adm': retret['deduccion'].get('comisionGastosAdm'),
+                self.params['deducciones'].append({
+                    'importe_deduccion': dedret['importeDeduccion'],
+                    'importe_iva': dedret['importeIva'],
+                     'alicuota_iva': dedret['deduccion'].get('alicuotaIva'),
+                     'base_calculo': dedret['deduccion'].get('baseCalculo'),
+                     'codigo_concepto': dedret['deduccion'].get('codigoConcepto'),
+                     'detalle_aclaratorio': dedret['deduccion'].get('detalleAclaratorio', "").replace("\n", ""),
+                     'dias_almacenaje': dedret['deduccion'].get('diasAlmacenaje'),
+                     'precio_pkg_diario': dedret['deduccion'].get('precioPKGdiario'),
+                     'comision_gastos_adm': dedret['deduccion'].get('comisionGastosAdm'),
                     })
 
 
@@ -1053,18 +1053,22 @@ if __name__ == '__main__':
         if '--autorizar' in sys.argv or '--ajustar' in sys.argv:
         
             if '--prueba' in sys.argv:
+                # consulto el último número de orden emitido:
+                pto_emision = 99
+                ret = wslpg.ConsultarUltNroOrden(pto_emision)
+                nro_orden = wslpg.NroOrden + 1
                 # genero una liquidación de ejemplo:
                 dic = dict(
-                    pto_emision=1,
-                    nro_orden=1,
-                    cuit_comprador=23000000000, 
-                    nro_act_comprador=99, nro_ing_bruto_comprador=23000000000,
+                    pto_emision=pto_emision,
+                    nro_orden=nro_orden,
+                    cuit_comprador=wslpg.Cuit, 
+                    nro_act_comprador=36, nro_ing_bruto_comprador=wslpg.Cuit,
                     cod_tipo_operacion=1,
                     es_liquidacion_propia='N', es_canje='N',
                     cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
                     cod_grano=31, 
-                    cuit_vendedor=30000000007, nro_ing_bruto_vendedor=30000000007,
-                    actua_corredor="S", liquida_corredor="S", cuit_corredor=20267565393,
+                    cuit_vendedor=20267565393, nro_ing_bruto_vendedor=20267565393,
+                    actua_corredor="N", liquida_corredor="N", cuit_corredor=20267565393,
                     comision_corredor=1, nro_ing_bruto_corredor=20267565393,
                     fecha_precio_operacion="2013-02-07",
                     precio_ref_tn=2000,
@@ -1078,9 +1082,10 @@ if __name__ == '__main__':
                     cod_localidad_procedencia=3,
                     cod_prov_procedencia=1,
                     datos_adicionales="DATOS ADICIONALES",
+                    ##peso_neto_sin_certificado=2000,
                     certificados=[dict(   
                         tipo_certificado_deposito=5,
-                        nro_certificado_deposito=101200604,
+                        nro_certificado_deposito=555501200623,
                         peso_neto=1000,
                         cod_localidad_procedencia=3,
                         cod_prov_procedencia=1,
@@ -1090,12 +1095,12 @@ if __name__ == '__main__':
                             codigo_concepto="RI",
                             detalle_aclaratorio="DETALLE DE IVA",
                             base_calculo=1970,
-                            alicuota=8,
+                            alicuota=10.5,
                         ), dict(
                             codigo_concepto="RG",
                             detalle_aclaratorio="DETALLE DE GANANCIAS",
                             base_calculo=100,
-                            alicuota=2,
+                            alicuota=15,
                         )],
                     deducciones=[dict(
                             codigo_concepto="OD",
@@ -1103,7 +1108,7 @@ if __name__ == '__main__':
                             dias_almacenaje="0",
                             precio_pkg_diario=0.0,
                             comision_gastos_adm=0.0,
-                            base_calculo=3000.0,
+                            base_calculo=100.0,
                             alicuota=21.0,
                         )],
                     )
