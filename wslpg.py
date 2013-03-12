@@ -1220,8 +1220,8 @@ if __name__ == '__main__':
                     coe_ajustado = sys.argv[i + 1]
                     cod_tipo_ajuste = sys.argv[i + 2]
                 ret = wslpg.AjustarLiquidacion(
-                                coe_ajustado=330100001015,
-                                cod_tipo_ajuste=3,
+                                coe_ajustado=coe_ajustado,
+                                cod_tipo_ajuste=cod_tipo_ajuste,
                                 precio_operacion=dic['precio_operacion'],
                                 total_peso_neto=dic['total_peso_neto'])
             else:
