@@ -219,14 +219,35 @@ Sub Main()
     End If
     
     ' consulto una liquidacion
-    
-    ok = WSLPG.ConsultarLiquidacion(pto_emision, nro_orden)
+    COE = Null
+    ok = WSLPG.ConsultarLiquidacion(pto_emision, nro_orden, COE)
     If ok Then
         MsgBox "COE:" & WSLPG.COE & vbCrLf & "Estado: " & WSLPG.Estado & vbCrLf, vbInformation, "Consultar Liquidación:"
         For Each er In WSLPG.Errores
             Debug.Print er
             MsgBox er, vbExclamation, "Error"
         Next
+        
+        ' muestro los resultados devueltos por el webservice:
+        Debug.Print "COE", WSLPG.COE
+        Debug.Print "COEAjustado", WSLPG.COEAjustado
+        Debug.Print "TootalDeduccion", WSLPG.TotalDeduccion
+        Debug.Print "TotalRetencion", WSLPG.TotalRetencion
+        Debug.Print "TotalRetencionAfip", WSLPG.TotalRetencionAfip
+        Debug.Print "TotalOtrasRetenciones", WSLPG.TotalOtrasRetenciones
+        Debug.Print "TotalNetoAPagar", WSLPG.TotalNetoAPagar
+        Debug.Print "TotalIvaRg2300_07", WSLPG.TotalIvaRg2300_07
+        Debug.Print "TotalPagoSegunCondicion", WSLPG.TotalPagoSegunCondicion
+        
+        ' obtengo los datos adcionales desde losparametros de salida:
+        Debug.Print "fecha_liquidacion", WSLPG.GetParametro("fecha_liquidacion")
+        Debug.Print "precio_operacion", WSLPG.GetParametro("precio_operacion")
+        Debug.Print "total_peso_neto", WSLPG.GetParametro("total_peso_neto")
+        Debug.Print "primer importe_retencion", WSLPG.GetParametro("retenciones", 0, "importe_retencion")
+        Debug.Print "segundo importe_retencion", WSLPG.GetParametro("retenciones", 1, "importe_retencion")
+        Debug.Print "primer importe_deduccion", WSLPG.GetParametro("deducciones", 0, "importe_deduccion")
+        Debug.Print "primer nro certificado", WSLPG.GetParametro("certificados", 0, "nro_certificado_deposito")
+        
     End If
     
     
