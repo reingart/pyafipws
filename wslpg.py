@@ -1098,14 +1098,11 @@ if __name__ == '__main__':
         if '--autorizar' in sys.argv or '--ajustar' in sys.argv:
         
             if '--prueba' in sys.argv:
-                # consulto el último número de orden emitido:
                 pto_emision = 99
-                ret = wslpg.ConsultarUltNroOrden(pto_emision)
-                nro_orden = wslpg.NroOrden + 1
                 # genero una liquidación de ejemplo:
                 dic = dict(
                     pto_emision=pto_emision,
-                    nro_orden=nro_orden,
+                    nro_orden=0,  # que lo calcule automáticamente
                     cuit_comprador=wslpg.Cuit, 
                     nro_act_comprador=36, nro_ing_bruto_comprador=wslpg.Cuit,
                     cod_tipo_operacion=1,
@@ -1162,6 +1159,12 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA)
             else:
                 dic = leer_archivo(ENTRADA)
+
+            if dic['nro_orden'] == 0:
+                # consulto el último número de orden emitido:
+                ok = wslpg.ConsultarUltNroOrden(pto_emision)
+                if ok:
+                    dic['nro_orden'] = wslpg.NroOrden + 1
 
             if dic['actua_corredor'] == "N":
                 # borrando datos corredor si no corresponden
