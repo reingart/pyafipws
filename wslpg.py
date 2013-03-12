@@ -478,8 +478,57 @@ class WSLPG:
             aut = ret['autorizacion']
             self.AnalizarLiquidacion(aut)
 
-    def AnalizarLiquidacion(self, aut):
+    def AnalizarLiquidacion(self, aut, liq=None):
         "Método interno para analizar la respuesta de AFIP"
+        # proceso los datos básicos de la liquidación (devuelto por consultar):
+        if liq:
+            self.params = dict(
+                        pto_emision=liq.get('ptoEmision'),
+                        nro_orden=liq.get('nroOrden'),
+                        cuit_comprador=liq.get('cuitComprador'),
+                        nro_act_comprador=liq.get('nroActComprador'),
+                        nro_ing_bruto_comprador=liq.get('nroIngBrutoComprador'),
+                        cod_tipo_operacion=liq.get('codTipoOperacion'),
+                        es_liquidacion_propia=liq.get('esLiquidacionPropia'),
+                        es_canje=liq.get('esCanje'),
+                        cod_puerto=liq.get('codPuerto'),
+                        des_puerto_localidad=liq.get('desPuertoLocalidad'),
+                        cod_grano=liq.get('codGrano'),
+                        cuit_vendedor=liq.get('cuitVendedor'),
+                        nro_ing_bruto_vendedor=liq.get('nroIngBrutoVendedor'),
+                        actua_corredor=liq.get('actuaCorredor'),
+                        liquida_corredor=liq.get('liquidaCorredor'),
+                        cuit_corredor=liq.get('cuitCorredor'),
+                        comision_corredor=liq.get('comisionCorredor'),
+                        nro_ing_bruto_corredor=liq.get('nroIngBrutoCorredor'),
+                        fecha_precio_operacion=liq.get('fechaPrecioOperacion'),
+                        precio_ref_tn=liq.get('precioRefTn'),
+                        cod_grado_ref=liq.get('codGradoRef'),
+                        cod_grado_ent=liq.get('codGradoEnt'),
+                        factor_ent=liq.get('factorEnt'),
+                        precio_flete_tn=liq.get('precioFleteTn'),
+                        cont_proteico=liq.get('contProteico'),
+                        alic_iva_operacion=liq.get('alicIvaOperacion'),
+                        campania_ppal=liq.get('campaniaPPal'),
+                        cod_localidad_procedencia=liq.get('codLocalidadProcedencia'),
+                        cod_prov_procedencia=liq.get('codProvProcedencia'),
+                        datos_adicionales=liq.get('datosAdicionales'),
+                        peso_neto=liq.get('pesoNetoSinCertificado'),
+                        certificados=[],
+                    )
+            if 'certificados' in liq:
+                for c in liq['certificados']:
+                    cert = c['certificado']
+                    self.params['certificados'].append(dict(
+                        tipo_certificado_deposito=cert['tipoCertificadoDeposito'],
+                        nro_certificado_deposito=cert['nroCertificadoDeposito'],
+                        peso_neto=cert['pesoNeto'],
+                        cod_localidad_procedencia=cert['codLocalidadProcedencia'],
+                        cod_prov_procedencia=cert['codProvProcedencia'],
+                        campania=cert['campania'],
+                        fechaCierre=cert['fechaCierre'],
+                    ))
+        # proceso la respuesta de autorizar, ajustar (y consultar):
         if aut:
             self.TotalDeduccion = aut['totalDeduccion']
             self.TotalRetencion = aut['totalRetencion']
@@ -515,6 +564,7 @@ class WSLPG:
             self.params['nro_op_comercial'] = aut.get('nroOpComercial')
             self.params['operacion_con_iva'] = aut.get('operacionConIva')
             self.params['precio_operacion'] = aut.get('precioOperacion')
+            self.params['total_peso_neto'] = aut.get('totalPesoNeto')
             self.params['subtotal'] = aut.get('subTotal')
             self.params['retenciones'] = []
             self.params['deducciones'] = []
@@ -542,7 +592,6 @@ class WSLPG:
                      'precio_pkg_diario': dedret['deduccion'].get('precioPKGdiario'),
                      'comision_gastos_adm': dedret['deduccion'].get('comisionGastosAdm'),
                     })
-
 
 
     @inicializar_y_capturar_excepciones
@@ -592,7 +641,8 @@ class WSLPG:
         self.__analizar_errores(ret)
         if 'liquidacion' in ret:
             aut = ret['autorizacion']
-            self.AnalizarLiquidacion(aut)
+            liq = ret['liquidacion']
+            self.AnalizarLiquidacion(aut, liq)
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltNroOrden(self, pto_emision=1):
@@ -1226,6 +1276,9 @@ if __name__ == '__main__':
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
+            if DEBUG: 
+                import pprint
+                pprint.pprint(wslpg.params)
             sys.exit(0)
 
         if '--ult' in sys.argv:
