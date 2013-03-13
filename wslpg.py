@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04e"
+__version__ = "1.05a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -68,10 +68,12 @@ Ver wslpg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time
+import decimal, datetime
 from php import date
 import traceback
 import pprint
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
+from pyfpdf_hg import Template
 
 from rece1 import leer, escribir  # esto debería estar en un módulo separado
 
@@ -272,6 +274,9 @@ class WSLPG:
                         'ConsultarTiposOperacion',
                         'AnalizarXml', 'ObtenerTagXml',
                         'SetParametro', 'GetParametro',
+                        'CargarFormatoPDF', 'AgregarCampoPDF', 'AgregarDatoPDF',
+                        'CrearPlantillaPDF', 'ProcesarPlantillaPDF', 
+                        'GenerarPDF', 'MostrarPDF',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -299,6 +304,7 @@ class WSLPG:
         self.COE = ''
         self.Estado = self.Resultado = self.NroOrden = ''
         self.params = {}
+        self.datos = {}
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy=""):
@@ -559,7 +565,7 @@ class WSLPG:
             self.params['nro_orden'] = aut.get('nroOrden')
             fecha = aut.get('fechaLiquidacion')
             if fecha:
-                fecha = fecha.strftime("%d/%m/%Y")
+                fecha = fecha.strftime("%d-%m-%Y")
             self.params['fecha_liquidacion'] = fecha
             self.params['importe_iva'] = aut.get('importeIva')
             self.params['nro_op_comercial'] = aut.get('nroOpComercial')
@@ -839,7 +845,12 @@ class WSLPG:
                         )['localidadesReturn']
         self.__analizar_errores(ret)
         array = ret.get('localidades', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
+        if sep is None:
+            return dict([(int(it['codigoDescripcion']['codigo']), 
+                          it['codigoDescripcion']['descripcion']) 
+                         for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
@@ -939,6 +950,351 @@ class WSLPG:
             return str(valor)
         else:
             return ""
+
+
+    # Funciones para generar PDF:
+
+
+    def CargarFormatoPDF(self, archivo=""):
+        "Cargo el formato de campos a generar desde una planilla CSV"
+        if not archivo:
+            archivo = os.path.join(self.InstallDir, 
+                                    "liquidacion_form_c1116b_wslpg.csv")
+        if DEBUG: print "abriendo archivo ", archivo
+        self.elements = []
+        for lno, linea in enumerate(open(archivo.encode('latin1')).readlines()):
+            if DEBUG: print "procesando linea ", lno, linea
+            args = []
+            for i,v in enumerate(linea.split(";")):
+                if not v.startswith("'"): 
+                    v = v.replace(",",".")
+                else:
+                    v = v#.decode('latin1')
+                if v.strip()=='':
+                    v = None
+                else:
+                    v = eval(v.strip())
+                args.append(v)
+            self.AgregarCampoPDF(*args)
+        return True        
+
+
+    def AgregarCampoPDF(self, nombre, tipo, x1, y1, x2, y2, 
+                           font="Arial", size=12,
+                           bold=False, italic=False, underline=False, 
+                           foreground= 0x000000, background=0xFFFFFF,
+                           align="L", text="", priority=0, **kwargs):
+        "Agrego un campo a la plantilla"
+        # convierto colores de string (en hexadecimal)
+        if isinstance(foreground, basestring): foreground = int(foreground, 16)
+        if isinstance(background, basestring): background = int(background, 16)
+        if isinstance(text, unicode): text = text.encode("latin1")
+        field = {
+                'name': nombre, 
+                'type': tipo, 
+                'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2, 
+                'font': font, 'size': size,
+                'bold': bold, 'italic': italic, 'underline': underline, 
+                'foreground': foreground, 'background': background,
+                'align': align, 'text': text, 'priority': priority}
+        field.update(kwargs)
+        self.elements.append(field)
+        
+
+    def CrearPlantillaPDF(self, papel="A4", orientacion="portrait"):
+        "Iniciar la creación del archivo PDF"
+        
+        if HOMO:
+            self.AgregarCampoPDF("homo", 'T', 100, 250, 0, 0,
+                              size=70, rotate=45, foreground=0x808080, 
+                              priority=-1)
+           
+        # genero el renderizador con propiedades del PDF
+        t = Template(elements=self.elements,
+                 format=papel, orientation=orientacion,
+                 title="F 1116 B/C %s" % (self.NroOrden),
+                 author="CUIT %s" % self.Cuit,
+                 subject="COE %s" % self.params['coe'],
+                 keywords="AFIP Liquidacion Electronica Primaria de Granos", 
+                 creator='wslpg.py %s (http://www.PyAfipWs.com.ar)' % __version__,)
+        self.template = t
+
+
+    def AgregarDatoPDF(self, campo, valor, pagina='T'):
+        "Agrego un dato a la factura (internamente)"
+        self.datos[campo] = valor
+        return True
+
+
+    def ProcesarPlantillaPDF(self, num_copias=1, lineas_max=24, qty_pos='izq'):
+        "Generar el PDF según la factura creada y plantilla cargada"
+
+        f = self.template
+        liq = self.params
+
+        if HOMO:
+            self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
+
+        copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
+
+        for copia in range(1, num_copias+1):
+            
+            # completo campos y hojas
+            f.add_page()                   
+            f.set('copia', copias.get(copia, "Adicional %s" % copia))
+
+            # datos
+            for k,v in self.datos.items():
+                f.set(k, v)
+                    
+            # establezco campos según tabla encabezado:
+            for k,v in liq.items():
+                if isinstance(v, (basestring, int, long, float)):
+                    f.set(k, v)
+                elif isinstance(v, decimal.Decimal):
+                    f.set(k, str(v))
+                elif isinstance(v, datetime.datetime):
+                    f.set(k, str(v))
+                else:
+                    print "campo", k, v
+
+            import wslpg_datos as datos
+            
+            f.set("tipo_operacion", datos.TIPOS_OP[int(liq['cod_tipo_operacion'])])
+            f.set("grano", datos.GRANOS[int(liq['cod_grano'])])
+            cod_puerto = int(liq['cod_puerto'])
+            if cod_puerto in datos.PUERTOS:
+                f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
+            
+            cod_prov = int(liq['cod_prov_procedencia'])
+            ##localidades = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
+            ##pprint.pprint(localidades)
+            provincia = datos.PROVINCIAS[cod_prov]
+            localidad = datos.LOCALIDADES[int(liq['cod_localidad_procedencia'])]
+            f.set("procedencia", "%s - %s" % (localidad, provincia))
+            
+            certs = []
+            for cert in liq['certificados']:
+                certs.append(u"%s Nº %s" % (
+                    datos.TIPO_CERT_DEP[int(cert['tipo_certificado_deposito'])],
+                    cert['nro_certificado_deposito']))
+            f.set("certificados_deposito", ', '.join(certs))
+
+            for i, deduccion in enumerate(liq['deducciones']):
+                for k, v in deduccion.items():
+                    f.set("deducciones_%s_%02d" % (k, i + 1), v)
+
+            for i, retencion in enumerate(liq['retenciones']):
+                for k, v in retencion.items():
+                    f.set("retenciones_%s_%02d" % (k, i + 1), v)
+
+
+            continue
+            
+            f.set('Numero', numero)
+            f.set('Fecha', self.fmt_date(fact['fecha_cbte']))
+            f.set('Vencimiento', self.fmt_date(fact['fecha_venc_pago']))
+            
+            f.set('LETRA', letra_fact)
+            f.set('TipoCBTE', "COD.%02d" % int(fact['tipo_cbte']))
+
+            f.set('Comprobante.L', tipo_fact)
+            f.set('ComprobanteEx.L', tipo_fact_ex)
+
+            if fact.get('fecha_serv_desde'):
+                f.set('Periodo.Desde', self.fmt_date(fact['fecha_serv_desde']))
+                f.set('Periodo.Hasta', self.fmt_date(fact['fecha_serv_hasta']))
+            else:
+                for k in 'Periodo.Desde', 'Periodo.Hasta', 'PeriodoFacturadoL':
+                    f.set(k, '')
+
+            f.set('Cliente.Nombre', fact.get('nombre', fact.get('nombre_cliente')))
+            f.set('Cliente.Domicilio', fact.get('domicilio', fact.get('domicilio_cliente')))
+            f.set('Cliente.Localidad', fact.get('localidad', fact.get('localidad_cliente')))
+            f.set('Cliente.Provincia', fact.get('provincia', fact.get('provincia_cliente')))
+            f.set('Cliente.Telefono', fact.get('telefono', fact.get('telefono_cliente')))
+            f.set('Cliente.IVA', fact.get('categoria', fact.get('id_impositivo')))
+            f.set('Cliente.CUIT', self.fmt_cuit(str(fact['nro_doc'])))
+            f.set('Cliente.TipoDoc', {80:'CUIT',86:'CUIL',96:'DNI',99: ''}[int(str(fact['tipo_doc']))])
+            f.set('Cliente.Observaciones', fact.get('obs_comerciales'))
+            f.set('Cliente.PaisDestino', self.paises.get(fact.get('pais_dst_cmp'), fact.get('pais_dst_cmp')) or '')
+
+            if fact['moneda_id']:
+                f.set('moneda_ds', self.monedas_ds.get(fact['moneda_id'],''))
+            else:
+                for k in 'moneda.L', 'moneda_id', 'moneda_ds', 'moneda_ctz.L', 'moneda_ctz':
+                    f.set(k, '')
+
+            if not fact.get('incoterms'):
+                for k in 'incoterms.L', 'incoterms', 'incoterms_ds':
+                    f.set(k, '')
+
+            li = 0
+            k = 0
+            subtotal = Decimal("0.00")
+            for it in li_items:
+                k = k + 1
+                if k > hoja * (lineas_max - 1):
+                    break
+                if it['importe']:
+                    subtotal += Decimal("%.6f" % float(it['importe']))
+                if k > (hoja - 1) * (lineas_max - 1):
+                    if DEBUG: print "it", it
+                    li += 1
+                    if it['qty'] is not None:
+                        f.set('Item.Cantidad%02d' % li, self.fmt_qty(it['qty']))
+                    if it['codigo'] is not None:
+                        f.set('Item.Codigo%02d' % li, it['codigo'])
+                    if it['umed'] is not None:
+                        f.set('Item.Umed%02d' % li, it['umed'])
+                        if it['umed']:
+                            f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(int(it['umed'])))
+                    if it.get('iva_id') is not None:
+                        f.set('Item.IvaId%02d' % li, it['iva_id'])
+                        if it['iva_id']:
+                            f.set('Item.AlicuotaIva%02d' % li, self.ivas_ds.get(int(it['iva_id'])))
+                    if it.get('imp_iva') is not None:
+                        f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
+                    if it.get('despacho') is not None:
+                        f.set('Item.Numero_Despacho%02d' % li, it['despacho'])
+                    if it.get('bonif') is not None:
+                        f.set('Item.Bonif%02d' % li, self.fmt_pre(it['bonif']))
+                    f.set('Item.Descripcion%02d' % li, it['ds'])
+                    if it['precio'] is not None:
+                        f.set('Item.Precio%02d' % li, self.fmt_pre(it['precio']))
+                    if it['importe'] is not None:
+                        f.set('Item.Importe%02d' % li, self.fmt_num(it['importe']))
+
+                    # Datos MTX
+                    if it.get('u_mtx') is not None:
+                        f.set('Item.U_MTX%02d' % li, it['u_mtx'])
+                    if it.get('cod_mtx') is not None:
+                        f.set('Item.COD_MTX%02d' % li, it['cod_mtx'])
+
+                    # datos adicionales de items
+                    for adic in ['dato_a', 'dato_b', 'dato_c', 'dato_d', 'dato_e']:
+                        if adic in it:
+                            f.set('Item.%s%02d' % (adic, li), it[adic])
+
+            if hojas == hoja:
+                # última hoja, imprimo los totales
+                li += 1
+        
+                # agrego otros tributos
+                lit = 0
+                for it in fact['tributos']:
+                    lit += 1
+                    if it['desc']:
+                        f.set('Tributo.Descripcion%02d' % lit, it['desc'])
+                    else:
+                        f.set('Tributo.Descripcion%02d' % lit, self.tributos_ds[it['tributo_id']])
+                    if it['alic'] is not None:
+                        f.set('Tributo.Alicuota%02d' % lit, self.fmt_num(it['alic']) + "%")
+                    if it['importe'] is not None:
+                        f.set('Tributo.Importe%02d' % lit, self.fmt_imp(it['importe']))
+
+                if 'descuento' in fact and fact['descuento']:
+                    descuento = Decimal("%.6f" % float(fact['descuento']))
+                    f.set('descuento', self.fmt_imp(descuento))
+                    subtotal -= descuento
+                f.set('subtotal', self.fmt_imp(subtotal))
+                f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
+                f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
+                f.set('imp_total', self.fmt_imp(fact['imp_total']))
+                f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
+                f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
+
+                f.set('IMPTO_PERC', self.fmt_imp(fact.get('impto_perc')))
+                f.set('IMP_OP_EX', self.fmt_imp(fact.get('imp_op_ex')))
+                f.set('IMP_IIBB', self.fmt_imp(fact.get('imp_iibb')))
+                f.set('IMPTO_PERC_MUN', self.fmt_imp(fact.get('impto_perc_mun')))
+                f.set('IMP_INTERNOS', self.fmt_imp(fact.get('imp_internos')))
+
+                if letra_fact=='A':
+                    f.set('NETO', self.fmt_imp(fact['imp_neto']))
+                    f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
+                    f.set('LeyendaIVA',"")
+                    
+                    for iva in fact['ivas']:
+                        a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[int(iva['iva_id'])]
+                        f.set('IVA%s' % a, self.fmt_imp(iva['importe']))
+
+                else:
+                    f.set('NETO.L',"")
+                    f.set('IVA.L',"")
+                    f.set('LeyendaIVA', "")
+                    f.set('IVA21.L',"")
+                    f.set('IVA10.5.L',"")
+                    f.set('IVA27.L',"")
+
+                f.set('Total.L', 'Total:')
+                f.set('TOTAL', self.fmt_imp(fact['imp_total']))
+            else:
+                for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc', 
+                          'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
+                          'NETO', 'IVA21', 'IVA10.5', 'IVA27'):
+                    f.set(k,"")
+                f.set('NETO.L',"")
+                f.set('IVA.L',"")
+                f.set('LeyendaIVA', "")
+                f.set('Total.L', 'Subtotal:')
+                f.set('TOTAL', self.fmt_imp(subtotal))
+
+            f.set('cmps_asoc_ds', cmps_asoc_ds)
+            f.set('permisos_ds', permisos_ds)
+
+            f.set('motivos_ds', motivos_ds)
+            if f.has_key('motivos_ds1') and motivos_ds:
+                if letra_fact=='A':
+                    msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
+                    if not f.has_key('leyenda_credito_fiscal'):
+                        motivos_ds += msg_no_iva
+                    else:
+                        f.set('leyenda_credito_fiscal', msg_no_iva)
+                for i, txt in enumerate(f.split_multicell(motivos_ds, 'motivos_ds1')):
+                    f.set('motivos_ds%d' % (i+1), txt)
+                
+            f.set('CAE', fact['cae'])
+            f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
+            if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
+                cuit = ''.join([x for x in str(self.CUIT) if x.isdigit()])
+                barras = ''.join([cuit, "%02d" % int(fact['tipo_cbte']), "%04d" % int(fact['punto_vta']), 
+                    str(fact['cae']), fact['fecha_vto']])
+                barras = barras + self.digito_verificador_modulo10(barras)
+            else:
+                barras = ""
+
+            f.set('CodigoBarras', barras)
+            f.set('CodigoBarrasLegible', barras)
+
+            if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
+                for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
+                    f.set('ObservacionesGenerales%d' % (i+1), txt)
+                    
+            # evaluo fórmulas (expresiones python)
+            for field in f.keys:
+                if field.startswith("="):
+                    formula = f.elements[field]['text']
+                    if DEBUG: print "**** formula: %s %s" % (field, formula)
+                    try:
+                        value = eval(formula,dict(fact=fact))
+                        f.set(field, value)
+                        if DEBUG: print "set(%s,%s)" % (field, value)
+                    except Exception, e:
+                        raise RuntimeError("Error al evaluar %s formula '%s': %s" % (field, formula, e))
+
+
+    def GenerarPDF(self, archivo=""):
+        "Generar archivo de salida en formato PDF"
+        self.template.render(archivo)
+
+    def MostrarPDF(self, archivo, imprimir=False):
+        if sys.platform=="linux2":
+            os.system("evince ""%s""" % archivo)
+        else:
+            operation = imprimir and "print" or ""
+            os.startfile(archivo, operation)
+
 
 def escribir_archivo(dic, nombre_archivo, agrega=False):
     archivo = open(nombre_archivo, agrega and "a" or "w")
@@ -1243,7 +1599,7 @@ if __name__ == '__main__':
                 assert wslpg.COEAjustado == None
                 assert wslpg.Estado == "AC"
                 assert wslpg.TotalPagoSegunCondicion == 1968.00
-                assert wslpg.GetParametro("fecha_liquidacion") == "07/02/2013"
+                assert wslpg.GetParametro("fecha_liquidacion") == "07-02-2013"
                 assert wslpg.GetParametro("retenciones", 1, "importe_retencion") == "157.60"
 
             if DEBUG: 
@@ -1289,7 +1645,6 @@ if __name__ == '__main__':
 
             if DEBUG: 
                 pprint.pprint(wslpg.params)
-            sys.exit(0)
 
         if '--ult' in sys.argv:
             try:
@@ -1354,7 +1709,47 @@ if __name__ == '__main__':
         if '--localidades' in sys.argv:    
             ret = wslpg.ConsultarLocalidadesPorProvincia(11)
             print "\n".join(ret)
+
+        if '--pdf' in sys.argv:
+        
+            wslpg.params = leer_archivo(SALIDA)
+        
+            conf_liq = dict(config.items('LIQUIDACION'))
+            conf_pdf = dict(config.items('PDF'))
+        
+            # cargo el formato CSV por defecto (liquidacion....csv)
+            wslpg.CargarFormatoPDF(conf_liq.get("formato"))
             
+            # establezco formatos (cantidad de decimales) según configuración:
+            wslpg.FmtCantidad = conf_liq.get("fmt_cantidad", "0.2")
+            wslpg.FmtPrecio = conf_liq.get("fmt_precio", "0.2")
+            
+            # datos fijos:
+            for k, v in conf_pdf.items():
+                wslpg.AgregarDatoPDF(k, v)
+
+            wslpg.CrearPlantillaPDF(papel=conf_liq.get("papel", "legal"), 
+                                 orientacion=conf_liq.get("orientacion", "portrait"))
+            wslpg.ProcesarPlantillaPDF(num_copias=int(conf_liq.get("copias", 1)),
+                                    lineas_max=int(conf_liq.get("lineas_max", 24)),
+                                    qty_pos=conf_liq.get("cant_pos") or 'izq')
+            salida = conf_liq.get("salida", "")
+
+            liq = wslpg.params
+            # genero el nombre de archivo según datos de factura
+            d = os.path.join(conf_liq.get('directorio', "."), 
+                             liq['fecha_liquidacion'])
+            if not os.path.isdir(d):
+                os.mkdir(d)
+            fs = conf_liq.get('archivo','pto_emision,nro_orden').split(",")
+            fn = u''.join([unicode(liq.get(ff,ff)) for ff in fs])
+            fn = fn.encode('ascii', 'replace').replace('?','_')
+            salida = os.path.join(d, "%s.pdf" % fn)
+            wslpg.GenerarPDF(archivo=salida)
+            if '--mostrar' in sys.argv:
+                wslpg.MostrarPDF(archivo=salida,
+                                 imprimir='--imprimir' in sys.argv)
+
         print "hecho."
         
     except SoapFault,e:
