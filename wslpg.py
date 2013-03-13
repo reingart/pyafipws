@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.05c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1052,6 +1052,34 @@ class WSLPG:
             self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
 
         copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
+        
+        # convierto el formato de intercambio para representar los valores:        
+        fmt_encabezado = dict([(v[0], v[1:]) for v in ENCABEZADO])
+        fmt_deduccion = dict([(v[0], v[1:]) for v in DEDUCCION])
+        fmt_retencion = dict([(v[0], v[1:]) for v in RETENCION])
+        
+        def formatear(campo, valor, formato):
+            "Convertir el valor a una cadena correctamente s/ formato ($ % ...)"
+            if campo in formato and v is not None:
+                fmt = formato[campo]
+                if fmt[1] == N:
+                    if 'cuit' in campo:
+                        c = str(valor)
+                        if len(c) == 11:
+                            valor = "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
+                        else:
+                            valor = ""
+                    else:
+                        valor = "%d" % int(valor)
+                elif fmt[1] == I:
+                    valor = ("%%0.%df" % fmt[2]) % valor
+                    if 'alic' in campo or 'comision' in campo:
+                        valor = valor[:-1] + " %"
+                    elif 'factor' in campo or 'cont' in campo or 'cant' in campo:
+                        pass
+                    else:
+                        valor = "$ " + valor
+            return valor
 
         for copia in range(1, num_copias+1):
             
@@ -1062,9 +1090,10 @@ class WSLPG:
             # datos
             for k,v in self.datos.items():
                 f.set(k, v)
-                    
+            
             # establezco campos según tabla encabezado:
             for k,v in liq.items():
+                v = formatear(k, v, fmt_encabezado)
                 if isinstance(v, (basestring, int, long, float)):
                     f.set(k, v)
                 elif isinstance(v, decimal.Decimal):
@@ -1096,10 +1125,12 @@ class WSLPG:
 
             for i, deduccion in enumerate(liq['deducciones']):
                 for k, v in deduccion.items():
+                    v = formatear(k, v, fmt_deduccion)
                     f.set("deducciones_%s_%02d" % (k, i + 1), v)
 
             for i, retencion in enumerate(liq['retenciones']):
                 for k, v in retencion.items():
+                    v = formatear(k, v, fmt_retencion)
                     f.set("retenciones_%s_%02d" % (k, i + 1), v)
         return True
 
