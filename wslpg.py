@@ -1429,12 +1429,15 @@ if __name__ == '__main__':
                     lista_act_op = wslpg.ConsultarTiposOperacion(sep=None)
                     # recorro las actividades habilitadas buscando la 
                     for nro_act, cod_op, det in lista_act_op:
-                        print "Probando nro_act=", nro_act, "cod_op=", cod_op
+                        print "Probando nro_act=", nro_act, "cod_op=", cod_op, 
                         wslpg.liquidacion['nroActComprador'] = nro_act
                         wslpg.liquidacion['codTipoOperacion'] = cod_op
                         ret = wslpg.AutorizarLiquidacion()
                         if wslpg.COE:
+                            print
                             break       # si obtuve COE salgo
+                        else:
+                            print wslpg.Errores
                 else:
                     print "Autorizando..." 
                     ret = wslpg.AutorizarLiquidacion()
@@ -1565,9 +1568,11 @@ if __name__ == '__main__':
             ret = wslpg.ConsultarLocalidadesPorProvincia(11)
             print "\n".join(ret)
 
+        # Generación del PDF:
+
         if '--pdf' in sys.argv:
         
-            wslpg.params = leer_archivo(SALIDA)
+            liq = wslpg.params = leer_archivo(SALIDA)
         
             conf_liq = dict(config.items('LIQUIDACION'))
             conf_pdf = dict(config.items('PDF'))
@@ -1578,8 +1583,6 @@ if __name__ == '__main__':
             # establezco formatos (cantidad de decimales) según configuración:
             wslpg.FmtCantidad = conf_liq.get("fmt_cantidad", "0.2")
             wslpg.FmtPrecio = conf_liq.get("fmt_precio", "0.2")
-            
-            liq = wslpg.params
 
             # datos fijos (configuracion):
             for k, v in conf_pdf.items():
