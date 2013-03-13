@@ -210,6 +210,37 @@ Sub Main()
                 MsgBox er, vbExclamation, "Error"
             Next
         End If
+        
+        ' GENERACIÓN DEL FORMULARIO C 1116 B EN PDF:
+    
+        ok = WSLPG.CargarFormatoPDF(WSLPG.InstallDir & "\liquidacion_form_c1116b_wslpg.csv")
+        
+        ' agrego datos fijos y campos adicionales
+        ok = WSLPG.AgregarDatoPDF("formulario", "Form. C 1116 B (prueba)")
+        ok = WSLPG.AgregarDatoPDF("fondo", WSLPG.InstallDir & "\liquidacion_form_c1116b_wslpg.png")
+        ok = WSLPG.AgregarDatoPDF("nombre_comprador", "NOMBRE 1")
+        ok = WSLPG.AgregarDatoPDF("domicilio1_comprador", "DOMICILIO 1")
+        ok = WSLPG.AgregarDatoPDF("domicilio2_comprador", "DOMICILIO 1")
+        ok = WSLPG.AgregarDatoPDF("localidad_comprador", "LOCALIDAD 1")
+        ok = WSLPG.AgregarDatoPDF("iva_comprador", "R.I.")
+        ok = WSLPG.AgregarDatoPDF("nombre_vendedor", "NOMBRE 2")
+        ok = WSLPG.AgregarDatoPDF("domicilio1_vendedor", "DOMICILIO 2")
+        ok = WSLPG.AgregarDatoPDF("domicilio2_vendedor", "DOMICILIO 2")
+        ok = WSLPG.AgregarDatoPDF("localidad_vendedor", "LOCALIDAD 2")
+        ok = WSLPG.AgregarDatoPDF("iva_vendedor", "R.I.")
+        ok = WSLPG.AgregarDatoPDF("nombre_corredor", "NOMBRE 3")
+        ok = WSLPG.AgregarDatoPDF("domicilio_corredor", "DOMICILIO 3")
+        ok = WSLPG.AgregarDatoPDF("art_27", "Art. 27 inc. ...................")
+        ok = WSLPG.AgregarDatoPDF("forma_pago", "Forma de Pago: 1234 pesos ..")
+        ok = WSLPG.AgregarDatoPDF("constancia", "Por la presente dejo constancia...")
+    
+        ' genero el PDF y lo muestro
+        ok = WSLPG.CrearPlantillaPDF("A4", "portrait")
+        ok = WSLPG.ProcesarPlantillaPDF(1)
+        ok = WSLPG.GenerarPDF(App.Path & "\form1116b.pdf")
+        ok = WSLPG.MostrarPDF(App.Path & "\form1116b.pdf", False)
+    
+
     Else
         ' muestro el mensaje de error
         Debug.Print WSLPG.Traceback
