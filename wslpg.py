@@ -1069,6 +1069,8 @@ class WSLPG:
                             valor = "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
                         else:
                             valor = ""
+                    elif 'peso' in campo:
+                        valor = "%s kg" % valor
                     else:
                         valor = "%d" % int(valor)
                 elif fmt[1] == I:
