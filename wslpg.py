@@ -1007,7 +1007,8 @@ class WSLPG:
                 'align': align, 'text': text, 'priority': priority}
         field.update(kwargs)
         self.elements.append(field)
-        
+        return True
+
 
     def CrearPlantillaPDF(self, papel="A4", orientacion="portrait"):
         "Iniciar la creación del archivo PDF"
@@ -1026,7 +1027,8 @@ class WSLPG:
                  keywords="AFIP Liquidacion Electronica Primaria de Granos", 
                  creator='wslpg.py %s (http://www.PyAfipWs.com.ar)' % __version__,)
         self.template = t
-
+        return True
+        
 
     def AgregarDatoPDF(self, campo, valor, pagina='T'):
         "Agrego un dato a la factura (internamente)"
@@ -1078,7 +1080,7 @@ class WSLPG:
             ##localidades = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
             ##pprint.pprint(localidades)
             provincia = datos.PROVINCIAS[cod_prov]
-            localidad = datos.LOCALIDADES[int(liq['cod_localidad_procedencia'])]
+            localidad = datos.LOCALIDADES.get(int(liq['cod_localidad_procedencia']), "")
             f.set("procedencia", "%s - %s" % (localidad, provincia))
             
             certs = []
@@ -1095,11 +1097,13 @@ class WSLPG:
             for i, retencion in enumerate(liq['retenciones']):
                 for k, v in retencion.items():
                     f.set("retenciones_%s_%02d" % (k, i + 1), v)
+        return True
 
 
     def GenerarPDF(self, archivo=""):
         "Generar archivo de salida en formato PDF"
         self.template.render(archivo)
+        return True
 
     def MostrarPDF(self, archivo, imprimir=False):
         if sys.platform=="linux2":
@@ -1107,6 +1111,7 @@ class WSLPG:
         else:
             operation = imprimir and "print" or ""
             os.startfile(archivo, operation)
+        return True
 
 
 def escribir_archivo(dic, nombre_archivo, agrega=False):
