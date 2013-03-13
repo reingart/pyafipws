@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -882,11 +882,17 @@ class WSLPG:
                             )['tipoOperacionReturn']
             self.__analizar_errores(ret)
             array = ret.get('tiposOperacion', [])
-            ops.extend([("%s %%s %s %%s %s %%s %s" % (sep, sep, sep, sep)) % 
+            if sep:
+                ops.extend([("%s %%s %s %%s %s %%s %s" % (sep, sep, sep, sep)) % 
                     (it_act['codigoDescripcion']['codigo'],
                      it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                    for it in array])
+            else:
+                ops.extend([(it_act['codigoDescripcion']['codigo'],
+                             it['codigoDescripcion']['codigo'], 
+                             it['codigoDescripcion']['descripcion']) 
+                           for it in array])
         return ops
 
     @property
@@ -1065,8 +1071,6 @@ class WSLPG:
                     f.set(k, str(v))
                 elif isinstance(v, datetime.datetime):
                     f.set(k, str(v))
-                else:
-                    print "campo", k, v
 
             import wslpg_datos as datos
             
@@ -1182,7 +1186,8 @@ if __name__ == '__main__':
                              ('Certificado', CERTIFICADO), 
                              ('Retencion', RETENCION), 
                              ('Deduccion', DEDUCCION), 
-                             ('Evento', EVENTO), ('Error', ERROR)]:
+                             ('Evento', EVENTO), ('Error', ERROR), 
+                             ('Dato', DATO)]:
             comienzo = 1
             print "=== %s ===" % msg
             for fmt in formato:
@@ -1283,8 +1288,8 @@ if __name__ == '__main__':
                 dic = dict(
                     pto_emision=pto_emision,
                     nro_orden=0,  # que lo calcule automáticamente
-                    cuit_comprador=wslpg.Cuit, 
-                    nro_act_comprador=36, nro_ing_bruto_comprador=wslpg.Cuit,
+                    cuit_comprador=wslpg.Cuit,  # uso Cuit representado
+                    nro_act_comprador=29, nro_ing_bruto_comprador=wslpg.Cuit,
                     cod_tipo_operacion=1,
                     es_liquidacion_propia='N', es_canje='N',
                     cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
@@ -1419,9 +1424,21 @@ if __name__ == '__main__':
                                 precio_operacion=dic['precio_operacion'],
                                 total_peso_neto=dic['total_peso_neto'])
             else:
-                print "Autorizando..." 
-                ret = wslpg.AutorizarLiquidacion()
-
+                if '--recorrer' in sys.argv:
+                    print "Consultando actividades y operaciones habilitadas..."
+                    lista_act_op = wslpg.ConsultarTiposOperacion(sep=None)
+                    # recorro las actividades habilitadas buscando la 
+                    for nro_act, cod_op, det in lista_act_op:
+                        print "Probando nro_act=", nro_act, "cod_op=", cod_op
+                        wslpg.liquidacion['nroActComprador'] = nro_act
+                        wslpg.liquidacion['codTipoOperacion'] = cod_op
+                        ret = wslpg.AutorizarLiquidacion()
+                        if wslpg.COE:
+                            break       # si obtuve COE salgo
+                else:
+                    print "Autorizando..." 
+                    ret = wslpg.AutorizarLiquidacion()
+                    
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
             print "COEAjustado", wslpg.COEAjustado
@@ -1571,7 +1588,7 @@ if __name__ == '__main__':
             # datos adicionales (tipo de registro 9):
             for dato in liq['datos']:
                 wslpg.AgregarDatoPDF(dato['campo'], dato['valor'])
-                print "DATO", dato['campo'], dato['valor']
+                if DEBUG: print "DATO", dato['campo'], dato['valor']
 
 
             wslpg.CrearPlantillaPDF(papel=conf_liq.get("papel", "legal"), 
@@ -1583,14 +1600,15 @@ if __name__ == '__main__':
 
             # genero el nombre de archivo según datos de factura
             d = os.path.join(conf_liq.get('directorio', "."), 
-                             liq['fecha_liquidacion'])
+                             liq['fecha_liquidacion'].replace("-", "_"))
             if not os.path.isdir(d):
                 os.mkdir(d)
             fs = conf_liq.get('archivo','pto_emision,nro_orden').split(",")
-            fn = u''.join([unicode(liq.get(ff,ff)) for ff in fs])
+            fn = u'_'.join([unicode(liq.get(ff,ff)) for ff in fs])
             fn = fn.encode('ascii', 'replace').replace('?','_')
             salida = os.path.join(d, "%s.pdf" % fn)
             wslpg.GenerarPDF(archivo=salida)
+            print "Generando PDF", salida
             if '--mostrar' in sys.argv:
                 wslpg.MostrarPDF(archivo=salida,
                                  imprimir='--imprimir' in sys.argv)
