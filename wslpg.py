@@ -200,6 +200,12 @@ ERROR = [
     ('descripcion', 250, A), 
     ]
 
+DATO = [
+    ('tipo_reg', 1, A), # 9: Dato adicional
+    ('campo', 25, A), 
+    ('valor', 250, A), 
+    ]
+
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -1119,6 +1125,10 @@ def escribir_archivo(dic, nombre_archivo, agrega=False):
         for it in dic['deducciones']:
             it['tipo_reg'] = 3
             archivo.write(escribir(it, DEDUCCION))
+    if 'datos' in dic:
+        for it in dic['datos']:
+            it['tipo_reg'] = 9
+            archivo.write(escribir(it, DATO))
     if 'errores' in dic:
         for it in dic['errores']:
             it['tipo_reg'] = 'R'
@@ -1127,7 +1137,7 @@ def escribir_archivo(dic, nombre_archivo, agrega=False):
 
 def leer_archivo(nombre_archivo):
     archivo = open(nombre_archivo, "r")
-    dic = {'retenciones': [], 'deducciones': [], 'certificados': []}
+    dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
     for linea in archivo:
         if str(linea[0])=='0':
             dic.update(leer(linea, ENCABEZADO))
@@ -1137,6 +1147,8 @@ def leer_archivo(nombre_archivo):
             dic['retenciones'].append(leer(linea, RETENCION))
         elif str(linea[0])=='3':
             dic['deducciones'].append(leer(linea, DEDUCCION))
+        elif str(linea[0])=='9':
+            dic['datos'].append(leer(linea, DATO))
         else:
             print "Tipo de registro incorrecto:", linea[0]
     archivo.close()
@@ -1318,6 +1330,20 @@ if __name__ == '__main__':
                             base_calculo=100.0,
                             alicuota=21.0,
                         )],
+                    datos=[
+                        dict(campo="nombre_comprador", valor="NOMBRE 1"),
+                        dict(campo="domicilio1_comprador", valor="DOMICILIO 1"),
+                        dict(campo="domicilio2_comprador", valor="DOMICILIO 1"),
+                        dict(campo="localidad_comprador", valor="LOCALIDAD 1"),
+                        dict(campo="iva_comprador", valor="R.I."),
+                        dict(campo="nombre_vendedor", valor="NOMBRE 2"),
+                        dict(campo="domicilio1_vendedor", valor="DOMICILIO 2"),
+                        dict(campo="domicilio2_vendedor", valor="DOMICILIO 2"),
+                        dict(campo="localidad_vendedor", valor="LOCALIDAD 2"),
+                        dict(campo="iva_vendedor", valor="R.I."),
+                        dict(campo="nombre_corredor", valor="NOMBRE 3"),
+                        dict(campo="domicilio_corredor", valor="DOMICILIO 3"),
+                        ]
                     )
                 escribir_archivo(dic, ENTRADA)
             else:
@@ -1531,9 +1557,17 @@ if __name__ == '__main__':
             wslpg.FmtCantidad = conf_liq.get("fmt_cantidad", "0.2")
             wslpg.FmtPrecio = conf_liq.get("fmt_precio", "0.2")
             
-            # datos fijos:
+            liq = wslpg.params
+
+            # datos fijos (configuracion):
             for k, v in conf_pdf.items():
                 wslpg.AgregarDatoPDF(k, v)
+
+            # datos adicionales (tipo de registro 9):
+            for dato in liq['datos']:
+                wslpg.AgregarDatoPDF(dato['campo'], dato['valor'])
+                print "DATO", dato['campo'], dato['valor']
+
 
             wslpg.CrearPlantillaPDF(papel=conf_liq.get("papel", "legal"), 
                                  orientacion=conf_liq.get("orientacion", "portrait"))
@@ -1542,7 +1576,6 @@ if __name__ == '__main__':
                                     qty_pos=conf_liq.get("cant_pos") or 'izq')
             salida = conf_liq.get("salida", "")
 
-            liq = wslpg.params
             # genero el nombre de archivo según datos de factura
             d = os.path.join(conf_liq.get('directorio', "."), 
                              liq['fecha_liquidacion'])
