@@ -452,6 +452,12 @@ class WSLPG:
         # limpiar campo según validación (comision_gastos_adm debe ser >=0.01)
         if comision_gastos_adm is not None and float(comision_gastos_adm) == 0:
             comision_gastos_adm = None
+        # no enviar campos para prevenir errores AFIP 1705, 1703, 1707, 1708
+        if codigo_concepto in ("AL", "CO"):
+            base_calculo = None
+        if codigo_concepto != "AL":
+            dias_almacenaje = None
+            precio_pkg_diario = None
         self.deducciones.append(dict(
                                     deduccion=dict(
                                         codigoConcepto=codigo_concepto,
