@@ -67,6 +67,12 @@ WSLPG.Dummy()
 ? "dbserver status", WSLPG.DbServerStatus
 ? "authserver status", WSLPG.AuthServerStatus
 
+*-- Consulto las Actividades habilitadas
+actividades = WSLPG.ConsultarTipoActividad()
+*-- recorro el array (vector de strings, similar a FOR EACH)
+FOR i = 1 TO ALEN(actividades)
+  ? actividades[i]
+ENDFOR
 
 *-- obtengo el último número ddie orden registrado (opcional)
 pto_emision = 1 && agregado en v1.1
