@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.13b"
+__version__ = "1.13c"
 
 import datetime
 import decimal
@@ -56,7 +56,7 @@ def inicializar_y_capturar_excepciones(func):
             self.CAEA = ""
 
             # llamo a la función (con reintentos)
-            retry = 5
+            retry = self.reintentos
             while retry:
                 try:
                     retry -= 1
@@ -133,7 +133,7 @@ class WSFEv1:
         
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
-    def __init__(self):
+    def __init__(self, reintentos=5):
         self.Token = self.Sign = self.Cuit = None
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.XmlRequest = ''
@@ -156,6 +156,7 @@ class WSFEv1:
         self.Traceback = self.Excepcion = ""
         self.XmlRequest = self.XmlResponse = ""
         self.xml = None
+        self.reintentos = reintentos
         
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
