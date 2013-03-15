@@ -229,11 +229,12 @@ def inicializar_y_capturar_excepciones(func):
             self.TotalIvaRg2300_07 = ""
             self.TotalPagoSegunCondicion = ""
             # actualizo los parámetros
-            kwargs.update(self.params)
-            self.params = {}
+            kwargs.update(self.params_in)
+            # limpio los parámetros
+            self.params_in = {}
+            self.params_out = {}
             # llamo a la función
             func(self, *args, **kwargs)
-            # limpio los parámetros
             return True
         except SoapFault, e:
             # guardo destalle de la excepción SOAP
@@ -316,7 +317,8 @@ class WSLPG:
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.COE = ''
         self.Estado = self.Resultado = self.NroOrden = ''
-        self.params = {}
+        self.params_in = {}
+        self.params_out = {}
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
@@ -508,7 +510,7 @@ class WSLPG:
         "Método interno para analizar la respuesta de AFIP"
         # proceso los datos básicos de la liquidación (devuelto por consultar):
         if liq:
-            self.params = dict(
+            self.params_out = dict(
                         pto_emision=liq.get('ptoEmision'),
                         nro_orden=liq.get('nroOrden'),
                         cuit_comprador=liq.get('cuitComprador'),
@@ -545,7 +547,7 @@ class WSLPG:
             if 'certificados' in liq:
                 for c in liq['certificados']:
                     cert = c['certificado']
-                    self.params['certificados'].append(dict(
+                    self.params_out['certificados'].append(dict(
                         tipo_certificado_deposito=cert['tipoCertificadoDeposito'],
                         nro_certificado_deposito=cert['nroCertificadoDeposito'],
                         peso_neto=cert['pesoNeto'],
@@ -568,35 +570,35 @@ class WSLPG:
             self.Estado = aut['estado']
 
             # actualizo parámetros de salida:
-            self.params['coe'] = self.COE
-            self.params['coe_ajustado'] = self.COE
-            self.params['estado'] = self.Estado
-            self.params['total_deduccion'] = self.TotalDeduccion
-            self.params['total_retencion'] = self.TotalRetencion
-            self.params['total_retencion_afip'] = self.TotalRetencionAfip
-            self.params['total_otras_retenciones'] = self.TotalOtrasRetenciones
-            self.params['total_neto_a_pagar'] = self.TotalNetoAPagar
-            self.params['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
-            self.params['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
-            self.params['errores'] = self.errores
+            self.params_out['coe'] = self.COE
+            self.params_out['coe_ajustado'] = self.COE
+            self.params_out['estado'] = self.Estado
+            self.params_out['total_deduccion'] = self.TotalDeduccion
+            self.params_out['total_retencion'] = self.TotalRetencion
+            self.params_out['total_retencion_afip'] = self.TotalRetencionAfip
+            self.params_out['total_otras_retenciones'] = self.TotalOtrasRetenciones
+            self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
+            self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
+            self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
+            self.params_out['errores'] = self.errores
 
             # datos adicionales:
-            self.params['nro_orden'] = aut.get('nroOrden')
+            self.params_out['nro_orden'] = aut.get('nroOrden')
             fecha = aut.get('fechaLiquidacion')
             if fecha:
                 fecha = fecha.strftime("%d-%m-%Y")
-            self.params['fecha_liquidacion'] = fecha
-            self.params['importe_iva'] = aut.get('importeIva')
-            self.params['nro_op_comercial'] = aut.get('nroOpComercial')
-            self.params['operacion_con_iva'] = aut.get('operacionConIva')
-            self.params['precio_operacion'] = aut.get('precioOperacion')
-            self.params['total_peso_neto'] = aut.get('totalPesoNeto')
-            self.params['subtotal'] = aut.get('subTotal')
-            self.params['retenciones'] = []
-            self.params['deducciones'] = []
+            self.params_out['fecha_liquidacion'] = fecha
+            self.params_out['importe_iva'] = aut.get('importeIva')
+            self.params_out['nro_op_comercial'] = aut.get('nroOpComercial')
+            self.params_out['operacion_con_iva'] = aut.get('operacionConIva')
+            self.params_out['precio_operacion'] = aut.get('precioOperacion')
+            self.params_out['total_peso_neto'] = aut.get('totalPesoNeto')
+            self.params_out['subtotal'] = aut.get('subTotal')
+            self.params_out['retenciones'] = []
+            self.params_out['deducciones'] = []
             for retret in aut.get("retenciones", []):
                 retret = retret['retencionReturn']
-                self.params['retenciones'].append({
+                self.params_out['retenciones'].append({
                     'importe_retencion': retret['importeRetencion'],
                     'alicuota': retret['retencion'].get('alicuota'),
                     'base_calculo': retret['retencion'].get('baseCalculo'),
@@ -607,7 +609,7 @@ class WSLPG:
                     })
             for dedret in aut.get("deducciones", []):
                 dedret = dedret['deduccionReturn']
-                self.params['deducciones'].append({
+                self.params_out['deducciones'].append({
                     'importe_deduccion': dedret['importeDeduccion'],
                     'importe_iva': dedret.get('importeIva'),
                      'alicuota_iva': dedret['deduccion'].get('alicuotaIva'),
@@ -965,15 +967,15 @@ class WSLPG:
         self.client.http = DummyHTTP(xml)
 
     def SetParametro(self, clave, valor):
-        "Establece un parámetro general (usarse en llamadas posteriores)"
+        "Establece un parámetro de entrada (a usarse en llamada posterior)"
         # útil para parámetros de entrada (por ej. VFP9 no soporta más de 27)
-        self.params[str(clave)] = valor
+        self.params_in[str(clave)] = valor
         return True
 
     def GetParametro(self, clave, clave1=None, clave2=None):
-        "Devuelve un parámetro general (establecido por llamadas anteriores)"
+        "Devuelve un parámetro de salida (establecido por llamada anterior)"
         # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
-        valor = self.params.get(clave)
+        valor = self.params_out.get(clave)
         # busco datos "anidados" (listas / diccionarios)
         if clave1 is not None and valor is not None:
             if isinstance(clave1, basestring) and clave1.isdigit():
@@ -1056,7 +1058,7 @@ class WSLPG:
                  format=papel, orientation=orientacion,
                  title="F 1116 B/C %s" % (self.NroOrden),
                  author="CUIT %s" % self.Cuit,
-                 subject="COE %s" % self.params['coe'],
+                 subject="COE %s" % self.params_out['coe'],
                  keywords="AFIP Liquidacion Electronica Primaria de Granos", 
                  creator='wslpg.py %s (http://www.PyAfipWs.com.ar)' % __version__,)
         self.template = t
@@ -1073,7 +1075,7 @@ class WSLPG:
         "Generar el PDF según la factura creada y plantilla cargada"
 
         f = self.template
-        liq = self.params
+        liq = self.params_out
 
         if HOMO:
             self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
@@ -1523,12 +1525,11 @@ if __name__ == '__main__':
                 assert wslpg.GetParametro("retenciones", 1, "importe_retencion") == "157.60"
 
             if DEBUG: 
-                pprint.pprint(wslpg.params)
+                pprint.pprint(wslpg.params_out)
 
             # actualizo el archivo de salida con los datos devueltos
-            dic.update(wslpg.params)
-            escribir_archivo(dic, SALIDA)
-            sys.exit(0)            
+            dic.update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA)  
 
         if '--anular' in sys.argv:
             ##print wslpg.client.help("anularLiquidacion")
@@ -1561,10 +1562,10 @@ if __name__ == '__main__':
             print "Errores:", wslpg.Errores
 
             # actualizo el archivo de salida con los datos devueltos
-            escribir_archivo(wslpg.params, SALIDA)
+            escribir_archivo(wslpg.params_out, SALIDA)
 
             if DEBUG: 
-                pprint.pprint(wslpg.params)
+                pprint.pprint(wslpg.params_out)
 
         if '--ult' in sys.argv:
             try:
@@ -1639,7 +1640,8 @@ if __name__ == '__main__':
 
         if '--pdf' in sys.argv:
         
-            liq = wslpg.params = leer_archivo(SALIDA)
+            # cargo los datos del archivo de salida:
+            liq = wslpg.params_out = leer_archivo(SALIDA)
         
             conf_liq = dict(config.items('LIQUIDACION'))
             conf_pdf = dict(config.items('PDF'))
