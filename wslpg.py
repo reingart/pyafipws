@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05c"
+__version__ = "1.06a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -52,6 +52,8 @@ Opciones:
          (liquidacionUltimoNroOrdenConsultar)
 
   --pdf: genera el formulario C 1116 B en formato PDF
+  --mostrar: muestra el documento PDF generado (usar con --pdf)
+  --imprimir: imprime el documento PDF generado (usar con --mostrar y --pdf)
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -63,6 +65,8 @@ Opciones:
   --retenciones: obtiene el listado de los tipos de retenciones
   --puertos: obtiene el listado de los puertos habilitados
   --actividades: obtiene el listado de las actividades habilitados
+  --actividadesrep: devuelve las actividades en las que emisor/representado 
+                    se encuentra inscripto en RUOCA
   --operaciones: obtiene el listado de las operaciones para el representado
 
 
@@ -276,7 +280,8 @@ class WSLPG:
                         'ConsultarTipoDeduccion',
                         'ConsultarTipoRetencion',
                         'ConsultarPuerto',
-                        'ConsultarTipoActividad',
+                        'ConsultarTipoActividad', 
+                        'ConsultarTipoActividadRepresentado',
                         'ConsultarProvincias',
                         'ConsultarLocalidadesPorProvincia',
                         'ConsultarTiposOperacion',
@@ -835,6 +840,22 @@ class WSLPG:
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
+
+    def ConsultarTipoActividadRepresentado(self, sep="||"):
+        "Consulta de Tipos de Actividad inscripta en el RUOCA."
+        ret = self.client.tipoActividadRepresentadoConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['tipoActividadReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('tiposActividad', [])
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigoDescripcion']['codigo'], 
+                     it['codigoDescripcion']['descripcion']) 
+               for it in array]
+
+
 
     def ConsultarProvincias(self, sep="||"):
         "Consulta las provincias habilitadas"
@@ -1595,6 +1616,11 @@ if __name__ == '__main__':
             ret = wslpg.ConsultarTipoActividad()
             print "\n".join(ret)
 
+        if '--actividadesrep' in sys.argv:
+            ret = wslpg.ConsultarTipoActividadRepresentado()
+            print "\n".join(ret)
+            print "Errores:", wslpg.Errores
+            
         if '--operaciones' in sys.argv:
             ret = wslpg.ConsultarTiposOperacion()
             print "\n".join(ret)
