@@ -554,7 +554,7 @@ class WSLPG:
                         cod_localidad_procedencia=cert['codLocalidadProcedencia'],
                         cod_prov_procedencia=cert['codProvProcedencia'],
                         campania=cert['campania'],
-                        fechaCierre=cert['fechaCierre'],
+                        fecha_cierre=cert['fechaCierre'],
                     ))
         # proceso la respuesta de autorizar, ajustar (y consultar):
         if aut:
