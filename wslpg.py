@@ -1058,7 +1058,7 @@ class WSLPG:
                  format=papel, orientation=orientacion,
                  title="F 1116 B/C %s" % (self.NroOrden),
                  author="CUIT %s" % self.Cuit,
-                 subject="COE %s" % self.params_out['coe'],
+                 subject="COE %s" % self.params_out.get('coe'),
                  keywords="AFIP Liquidacion Electronica Primaria de Granos", 
                  creator='wslpg.py %s (http://www.PyAfipWs.com.ar)' % __version__,)
         self.template = t
@@ -1073,114 +1073,123 @@ class WSLPG:
 
     def ProcesarPlantillaPDF(self, num_copias=1, lineas_max=24, qty_pos='izq'):
         "Generar el PDF según la factura creada y plantilla cargada"
+        try:
+            f = self.template
+            liq = self.params_out
 
-        f = self.template
-        liq = self.params_out
+            if HOMO:
+                self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
 
-        if HOMO:
-            self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
-
-        copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
-        
-        # convierto el formato de intercambio para representar los valores:        
-        fmt_encabezado = dict([(v[0], v[1:]) for v in ENCABEZADO])
-        fmt_deduccion = dict([(v[0], v[1:]) for v in DEDUCCION])
-        fmt_retencion = dict([(v[0], v[1:]) for v in RETENCION])
-        
-        def formatear(campo, valor, formato):
-            "Convertir el valor a una cadena correctamente s/ formato ($ % ...)"
-            if campo in formato and v is not None:
-                fmt = formato[campo]
-                if fmt[1] == N:
-                    if 'cuit' in campo:
-                        c = str(valor)
-                        if len(c) == 11:
-                            valor = "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
+            copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
+            
+            # convierto el formato de intercambio para representar los valores:        
+            fmt_encabezado = dict([(v[0], v[1:]) for v in ENCABEZADO])
+            fmt_deduccion = dict([(v[0], v[1:]) for v in DEDUCCION])
+            fmt_retencion = dict([(v[0], v[1:]) for v in RETENCION])
+            
+            def formatear(campo, valor, formato):
+                "Convertir el valor a una cadena correctamente s/ formato ($ % ...)"
+                if campo in formato and v is not None:
+                    fmt = formato[campo]
+                    if fmt[1] == N:
+                        if 'cuit' in campo:
+                            c = str(valor)
+                            if len(c) == 11:
+                                valor = "%s-%s-%s" % (c[0:2], c[2:10], c[10:])
+                            else:
+                                valor = ""
+                        elif 'peso' in campo:
+                            valor = "%s kg" % valor
                         else:
-                            valor = ""
-                    elif 'peso' in campo:
-                        valor = "%s kg" % valor
-                    else:
-                        valor = "%d" % int(valor)
-                elif fmt[1] == I:
-                    valor = ("%%0.%df" % fmt[2]) % valor
-                    if 'alic' in campo or 'comision' in campo:
-                        valor = valor[:-1] + " %"
-                    elif 'factor' in campo or 'cont' in campo or 'cant' in campo:
-                        pass
-                    else:
-                        valor = "$ " + valor
-            return valor
+                            valor = "%d" % int(valor)
+                    elif fmt[1] == I:
+                        valor = ("%%0.%df" % fmt[2]) % valor
+                        if 'alic' in campo or 'comision' in campo:
+                            valor = valor[:-1] + " %"
+                        elif 'factor' in campo or 'cont' in campo or 'cant' in campo:
+                            pass
+                        else:
+                            valor = "$ " + valor
+                return valor
 
-        for copia in range(1, num_copias+1):
-            
-            # completo campos y hojas
-            f.add_page()                   
-            f.set('copia', copias.get(copia, "Adicional %s" % copia))
+            for copia in range(1, num_copias+1):
+                
+                # completo campos y hojas
+                f.add_page()                   
+                f.set('copia', copias.get(copia, "Adicional %s" % copia))
 
-            # datos
-            for k,v in self.datos.items():
-                f.set(k, v)
-            
-            # establezco campos según tabla encabezado:
-            for k,v in liq.items():
-                v = formatear(k, v, fmt_encabezado)
-                if isinstance(v, (basestring, int, long, float)):
+                # datos
+                for k,v in self.datos.items():
                     f.set(k, v)
-                elif isinstance(v, decimal.Decimal):
-                    f.set(k, str(v))
-                elif isinstance(v, datetime.datetime):
-                    f.set(k, str(v))
+                
+                # establezco campos según tabla encabezado:
+                for k,v in liq.items():
+                    v = formatear(k, v, fmt_encabezado)
+                    if isinstance(v, (basestring, int, long, float)):
+                        f.set(k, v)
+                    elif isinstance(v, decimal.Decimal):
+                        f.set(k, str(v))
+                    elif isinstance(v, datetime.datetime):
+                        f.set(k, str(v))
 
-            import wslpg_datos as datos
-            
-            campania = int(liq['campania_ppal'])
-            f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
-            f.set("tipo_operacion", datos.TIPOS_OP[int(liq['cod_tipo_operacion'])])
-            f.set("grano", datos.GRANOS[int(liq['cod_grano'])])
-            cod_puerto = int(liq['cod_puerto'])
-            if cod_puerto in datos.PUERTOS:
-                f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
-            
-            cod_prov = int(liq['cod_prov_procedencia'])
-            ##localidades = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
-            ##pprint.pprint(localidades)
-            provincia = datos.PROVINCIAS[cod_prov]
-            localidad = datos.LOCALIDADES.get(int(liq['cod_localidad_procedencia']), "")
-            f.set("procedencia", "%s - %s" % (localidad, provincia))
-            
-            certs = []
-            for cert in liq['certificados']:
-                certs.append(u"%s Nº %s" % (
-                    datos.TIPO_CERT_DEP[int(cert['tipo_certificado_deposito'])],
-                    cert['nro_certificado_deposito']))
-            f.set("certificados_deposito", ', '.join(certs))
+                import wslpg_datos as datos
+                
+                campania = int(liq['campania_ppal'])
+                f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
+                f.set("tipo_operacion", datos.TIPOS_OP[int(liq['cod_tipo_operacion'])])
+                f.set("grano", datos.GRANOS[int(liq['cod_grano'])])
+                cod_puerto = int(liq['cod_puerto'])
+                if cod_puerto in datos.PUERTOS:
+                    f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
+                
+                cod_prov = int(liq['cod_prov_procedencia'])
+                ##localidades = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
+                ##pprint.pprint(localidades)
+                provincia = datos.PROVINCIAS[cod_prov]
+                localidad = datos.LOCALIDADES.get(int(liq['cod_localidad_procedencia']), "")
+                f.set("procedencia", "%s - %s" % (localidad, provincia))
+                
+                certs = []
+                for cert in liq['certificados']:
+                    certs.append(u"%s Nº %s" % (
+                        datos.TIPO_CERT_DEP[int(cert['tipo_certificado_deposito'])],
+                        cert['nro_certificado_deposito']))
+                f.set("certificados_deposito", ', '.join(certs))
 
-            for i, deduccion in enumerate(liq['deducciones']):
-                for k, v in deduccion.items():
-                    v = formatear(k, v, fmt_deduccion)
-                    f.set("deducciones_%s_%02d" % (k, i + 1), v)
+                for i, deduccion in enumerate(liq['deducciones']):
+                    for k, v in deduccion.items():
+                        v = formatear(k, v, fmt_deduccion)
+                        f.set("deducciones_%s_%02d" % (k, i + 1), v)
 
-            for i, retencion in enumerate(liq['retenciones']):
-                for k, v in retencion.items():
-                    v = formatear(k, v, fmt_retencion)
-                    f.set("retenciones_%s_%02d" % (k, i + 1), v)
-        return True
-
+                for i, retencion in enumerate(liq['retenciones']):
+                    for k, v in retencion.items():
+                        v = formatear(k, v, fmt_retencion)
+                        f.set("retenciones_%s_%02d" % (k, i + 1), v)
+            return True
+        except Exception, e:
+            self.Excepcion = str(e)
+            return False
 
     def GenerarPDF(self, archivo=""):
         "Generar archivo de salida en formato PDF"
-        self.template.render(archivo)
-        return True
+        try:
+            self.template.render(archivo)
+            return True
+        except Exception, e:
+            self.Excepcion = str(e)
+            return False
 
     def MostrarPDF(self, archivo, imprimir=False):
-        if sys.platform=="linux2":
-            os.system("evince ""%s""" % archivo)
-        else:
-            operation = imprimir and "print" or ""
-            os.startfile(archivo, operation)
-        return True
-
+        try:
+            if sys.platform=="linux2":
+                os.system("evince ""%s""" % archivo)
+            else:
+                operation = imprimir and "print" or ""
+                os.startfile(archivo, operation)
+            return True
+        except Exception, e:
+            self.Excepcion = str(e)
+            return False
 
 def escribir_archivo(dic, nombre_archivo, agrega=False):
     archivo = open(nombre_archivo, agrega and "a" or "w")
