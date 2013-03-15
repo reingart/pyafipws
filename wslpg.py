@@ -1132,6 +1132,8 @@ class WSLPG:
 
             import wslpg_datos as datos
             
+            campania = int(liq['campania_ppal'])
+            f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
             f.set("tipo_operacion", datos.TIPOS_OP[int(liq['cod_tipo_operacion'])])
             f.set("grano", datos.GRANOS[int(liq['cod_grano'])])
             cod_puerto = int(liq['cod_puerto'])
