@@ -32,8 +32,9 @@ HOMO = True                     # solo homologación
 TYPELIB = False                 # usar librería de tipos (TLB)
 LANZAR_EXCEPCIONES = False      # valor por defecto: True
 
-#WSDL="https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
-WSDL="https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
+#WSDL = "https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
+WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
+#WSDL = "file:///home/reingart/tmp/service.asmx.xml"
 
 
 def inicializar_y_capturar_excepciones(func):
@@ -199,7 +200,7 @@ class WSFEv1:
         return msg    
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
         # cliente soap del web service
         if wrapper:
             Http = set_http_wrapper(wrapper)
@@ -221,6 +222,7 @@ class WSFEv1:
             cache = cache,
             proxy = proxy_dict,
             cacert = cacert,
+            timeout = timeout,
             trace = "--trace" in sys.argv)
         return True
 
