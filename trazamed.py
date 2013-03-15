@@ -16,7 +16,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09a"
+__version__ = "1.09b"
 
 import os
 import socket
@@ -669,6 +669,12 @@ INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
 if __name__ == '__main__':
+
+    # ajusto el encoding por defecto (si se redirije la salida)
+    if sys.stdout.encoding is None:
+        import codecs, locale
+        sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
+        sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
 
     if '--register' in sys.argv or '--unregister' in sys.argv:
         import pythoncom
