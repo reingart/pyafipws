@@ -586,7 +586,7 @@ class WSLPG:
             self.params_out['nro_orden'] = aut.get('nroOrden')
             fecha = aut.get('fechaLiquidacion')
             if fecha:
-                fecha = fecha.strftime("%d-%m-%Y")
+                fecha = str(fecha)
             self.params_out['fecha_liquidacion'] = fecha
             self.params_out['importe_iva'] = aut.get('importeIva')
             self.params_out['nro_op_comercial'] = aut.get('nroOpComercial')
@@ -1110,6 +1110,9 @@ class WSLPG:
                             pass
                         else:
                             valor = "$ " + valor
+                    elif 'fecha' in campo:
+                        d = valor
+                        valor = "%s/%s/%s" % (d[8:10], d[5:7], d[0:4])
                 return valor
 
             for copia in range(1, num_copias+1):
@@ -1118,6 +1121,12 @@ class WSLPG:
                 f.add_page()                   
                 f.set('copia', copias.get(copia, "Adicional %s" % copia))
 
+                # limpio datos del corredor si no corresponden:
+                if liq['liquida_corredor'] == 'N':
+                    for k in ('nombre_corredor', 'domicilio_corredor', 'cuit_corredor'):
+                        if k in self.datos:
+                            del self.datos[k]
+                    
                 # datos
                 for k,v in self.datos.items():
                     f.set(k, v)
@@ -1137,6 +1146,7 @@ class WSLPG:
                 campania = int(liq['campania_ppal'])
                 f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
                 f.set("tipo_operacion", datos.TIPOS_OP[int(liq['cod_tipo_operacion'])])
+                f.set("actividad", datos.ACTIVIDADES.get(int(liq['nro_act_comprador']), ""))
                 f.set("grano", datos.GRANOS[int(liq['cod_grano'])])
                 cod_puerto = int(liq['cod_puerto'])
                 if cod_puerto in datos.PUERTOS:
@@ -1362,14 +1372,14 @@ if __name__ == '__main__':
                     pto_emision=pto_emision,
                     nro_orden=0,  # que lo calcule automáticamente
                     cuit_comprador=wslpg.Cuit,  # uso Cuit representado
-                    nro_act_comprador=29, nro_ing_bruto_comprador=wslpg.Cuit,
+                    nro_act_comprador=36, nro_ing_bruto_comprador=wslpg.Cuit,
                     cod_tipo_operacion=1,
                     es_liquidacion_propia='N', es_canje='N',
                     cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
                     cod_grano=31, 
-                    cuit_vendedor=20267565393, nro_ing_bruto_vendedor=20267565393,
-                    actua_corredor="N", liquida_corredor="N", cuit_corredor=20267565393,
-                    comision_corredor=1, nro_ing_bruto_corredor=20267565393,
+                    cuit_vendedor=20267565393, nro_ing_bruto_vendedor=30688061039,
+                    actua_corredor="N", liquida_corredor="N", cuit_corredor=30697309264,
+                    comision_corredor=1, nro_ing_bruto_corredor=None, #30697309264,
                     fecha_precio_operacion="2013-02-07",
                     precio_ref_tn=2000,
                     cod_grado_ref="G1",
@@ -1530,7 +1540,7 @@ if __name__ == '__main__':
                 assert wslpg.COEAjustado == None
                 assert wslpg.Estado == "AC"
                 assert wslpg.TotalPagoSegunCondicion == 1968.00
-                assert wslpg.GetParametro("fecha_liquidacion") == "07-02-2013"
+                assert wslpg.GetParametro("fecha_liquidacion") == "2013-02-07"
                 assert wslpg.GetParametro("retenciones", 1, "importe_retencion") == "157.60"
 
             if DEBUG: 
