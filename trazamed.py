@@ -16,7 +16,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09b"
+__version__ = "1.09c"
 
 import os
 import socket
@@ -616,7 +616,9 @@ def main():
     elif '--alerta' in sys.argv:
         ws.SendAlertaTransacc(*sys.argv[sys.argv.index("--alerta")+1:])
     elif '--consulta' in sys.argv:
-        ws.GetTransaccionesNoConfirmadas(usuario="pruebasws", password="pruebasws", 
+        ws.GetTransaccionesNoConfirmadas(
+                                *sys.argv[sys.argv.index("--consulta")+1:]
+                                #usuario="pruebasws", password="pruebasws", 
                                 #p_id_transaccion_global="1234", 
                                 #id_agente_informador="1", 
                                 #id_agente_origen="1", 
