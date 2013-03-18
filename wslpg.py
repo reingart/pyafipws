@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -90,7 +90,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = True
+HOMO = False
 
 # definición del formato del archivo de intercambio:
 N = 'Numerico'
@@ -1099,13 +1099,13 @@ class WSLPG:
                             else:
                                 valor = ""
                         elif 'peso' in campo:
-                            valor = "%s kg" % valor
+                            valor = "%s Kg" % valor
                         else:
                             valor = "%d" % int(valor)
                     elif fmt[1] == I:
                         valor = ("%%0.%df" % fmt[2]) % valor
                         if 'alic' in campo or 'comision' in campo:
-                            valor = valor[:-1] + " %"
+                            valor = valor + " %"
                         elif 'factor' in campo or 'cont' in campo or 'cant' in campo:
                             pass
                         else:
@@ -1372,7 +1372,7 @@ if __name__ == '__main__':
                     pto_emision=pto_emision,
                     nro_orden=0,  # que lo calcule automáticamente
                     cuit_comprador=wslpg.Cuit,  # uso Cuit representado
-                    nro_act_comprador=36, nro_ing_bruto_comprador=wslpg.Cuit,
+                    nro_act_comprador=29, nro_ing_bruto_comprador=wslpg.Cuit,
                     cod_tipo_operacion=1,
                     es_liquidacion_propia='N', es_canje='N',
                     cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
