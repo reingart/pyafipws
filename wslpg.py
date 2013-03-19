@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.07a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -82,6 +82,17 @@ from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_p
 from pyfpdf_hg import Template
 
 from rece1 import leer, escribir  # esto debería estar en un módulo separado
+
+# importo paquetes para formatos de archivo de intercambio (opcional)
+
+try:
+    import json
+except ImportError:
+    try:
+        import simplejson as json 
+    except:
+        print "para soporte de JSON debe instalar simplejson"
+
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 #WSDL = "https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl"
@@ -1203,46 +1214,52 @@ class WSLPG:
 
 def escribir_archivo(dic, nombre_archivo, agrega=False):
     archivo = open(nombre_archivo, agrega and "a" or "w")
-    dic['tipo_reg'] = 0
-    archivo.write(escribir(dic, ENCABEZADO))
-    if 'certificados' in dic:
-        for it in dic['certificados']:
-            it['tipo_reg'] = 1
-            archivo.write(escribir(it, CERTIFICADO))
-    if 'retenciones' in dic:
-        for it in dic['retenciones']:
-            it['tipo_reg'] = 2
-            archivo.write(escribir(it, RETENCION))
-    if 'deducciones' in dic:
-        for it in dic['deducciones']:
-            it['tipo_reg'] = 3
-            archivo.write(escribir(it, DEDUCCION))
-    if 'datos' in dic:
-        for it in dic['datos']:
-            it['tipo_reg'] = 9
-            archivo.write(escribir(it, DATO))
-    if 'errores' in dic:
-        for it in dic['errores']:
-            it['tipo_reg'] = 'R'
-            archivo.write(escribir(it, ERROR))
+    if '--json' in sys.argv:
+        json.dump(dic, archivo, sort_keys=True, indent=4)
+    else:
+        dic['tipo_reg'] = 0
+        archivo.write(escribir(dic, ENCABEZADO))
+        if 'certificados' in dic:
+            for it in dic['certificados']:
+                it['tipo_reg'] = 1
+                archivo.write(escribir(it, CERTIFICADO))
+        if 'retenciones' in dic:
+            for it in dic['retenciones']:
+                it['tipo_reg'] = 2
+                archivo.write(escribir(it, RETENCION))
+        if 'deducciones' in dic:
+            for it in dic['deducciones']:
+                it['tipo_reg'] = 3
+                archivo.write(escribir(it, DEDUCCION))
+        if 'datos' in dic:
+            for it in dic['datos']:
+                it['tipo_reg'] = 9
+                archivo.write(escribir(it, DATO))
+        if 'errores' in dic:
+            for it in dic['errores']:
+                it['tipo_reg'] = 'R'
+                archivo.write(escribir(it, ERROR))
     archivo.close()
 
 def leer_archivo(nombre_archivo):
     archivo = open(nombre_archivo, "r")
-    dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
-    for linea in archivo:
-        if str(linea[0])=='0':
-            dic.update(leer(linea, ENCABEZADO))
-        elif str(linea[0])=='1':
-            dic['certificados'].append(leer(linea, CERTIFICADO))
-        elif str(linea[0])=='2':
-            dic['retenciones'].append(leer(linea, RETENCION))
-        elif str(linea[0])=='3':
-            dic['deducciones'].append(leer(linea, DEDUCCION))
-        elif str(linea[0])=='9':
-            dic['datos'].append(leer(linea, DATO))
-        else:
-            print "Tipo de registro incorrecto:", linea[0]
+    if '--json' in sys.argv:
+        dic = json.load(archivo)
+    else:
+        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
+        for linea in archivo:
+            if str(linea[0])=='0':
+                dic.update(leer(linea, ENCABEZADO))
+            elif str(linea[0])=='1':
+                dic['certificados'].append(leer(linea, CERTIFICADO))
+            elif str(linea[0])=='2':
+                dic['retenciones'].append(leer(linea, RETENCION))
+            elif str(linea[0])=='3':
+                dic['deducciones'].append(leer(linea, DEDUCCION))
+            elif str(linea[0])=='9':
+                dic['datos'].append(leer(linea, DATO))
+            else:
+                print "Tipo de registro incorrecto:", linea[0]
     archivo.close()
     return dic
     
