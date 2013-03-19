@@ -81,7 +81,9 @@ import pprint
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from pyfpdf_hg import Template
 
-from rece1 import leer, escribir  # esto debería estar en un módulo separado
+# importo funciones compartidas, deberían estar en un módulo separado:
+
+from rece1 import leer, escribir, leer_dbf, guardar_dbf  
 
 # importo paquetes para formatos de archivo de intercambio (opcional)
 
@@ -92,7 +94,11 @@ except ImportError:
         import simplejson as json 
     except:
         print "para soporte de JSON debe instalar simplejson"
-
+try:
+    import dbf
+except ImportError:
+    print "para soporte de DBF debe instalar dbf 0.88.019 o superior"
+    
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 #WSDL = "https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl"
@@ -1212,10 +1218,19 @@ class WSLPG:
             self.Excepcion = str(e)
             return False
 
-def escribir_archivo(dic, nombre_archivo, agrega=False):
+def escribir_archivo(dic, nombre_archivo, agrega=True):
     archivo = open(nombre_archivo, agrega and "a" or "w")
     if '--json' in sys.argv:
         json.dump(dic, archivo, sort_keys=True, indent=4)
+    elif '--dbf' in sys.argv:
+        formatos = [('Encabezado', ENCABEZADO, [dic]), 
+                    ('Certificado', CERTIFICADO, dic.get('certificados', [])), 
+                    ('Retencion', RETENCION, dic.get('retenciones', [])), 
+                    ('Deduccion', DEDUCCION, dic.get('deducciones', [])),
+                    ('Dato', DATO, dic.get('datos', [])),
+                    ('Error', ERROR, dic.get('errores', [])),
+                    ]
+        guardar_dbf(formatos, agrega, conf_dbf)
     else:
         dic['tipo_reg'] = 0
         archivo.write(escribir(dic, ENCABEZADO))
@@ -1245,6 +1260,13 @@ def leer_archivo(nombre_archivo):
     archivo = open(nombre_archivo, "r")
     if '--json' in sys.argv:
         dic = json.load(archivo)
+    elif '--dbf' in sys.argv:
+        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
+        formatos = [('Encabezado', ENCABEZADO, dic), 
+                    ('Certificado', CERTIFICADO, dic['certificados']), 
+                    ('Retencio', RETENCION, dic['retenciones']), 
+                    ('Deduccion', DEDUCCION, dic['deducciones'])]
+        leer_dbf(formatos, conf_dbf)
     else:
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
         for linea in archivo:
@@ -1335,6 +1357,12 @@ if __name__ == '__main__':
         else:
             WSLPG_url = WSDL
 
+        if config.has_section('DBF'):
+            conf_dbf = dict(config.items('DBF'))
+            if DEBUG: print "conf_dbf", conf_dbf
+        else:
+            conf_dbf = {}
+            
         DEBUG = '--debug' in sys.argv
         XML = '--xml' in sys.argv
 
