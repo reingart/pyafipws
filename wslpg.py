@@ -41,7 +41,8 @@ Opciones:
   --formato: muestra el formato de los archivos de entrada/salida
   --prueba: genera y autoriza una liquidación de prueba (no usar en producción!)
   --xml: almacena los requerimientos y respuestas XML (depuración)
-
+  --dbf: utilizar tablas DBF (xBase) para los archivos de intercambio
+  --json: utilizar formato json para el archivo de intercambio
   --dummy: consulta estado de servidores
   
   --autorizar: Autorizar Liquidación Primaria de Granos (liquidacionAutorizar)

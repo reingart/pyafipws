@@ -30,7 +30,7 @@ from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
 HOMO = wsfev1.HOMO
-DEBUG = False
+DEBUG = True
 XML = False
 if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
     CONFIG_FILE = sys.argv[1]
@@ -300,6 +300,8 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
     for nombre, formato, l in formatos:
         campos = []
         claves = []
+        filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
+        if DEBUG: print "=== tabla %s (%s) ===" %  (nombre, filename)
         for fmt in formato:
             clave, longitud, tipo = fmt[0:3]
             dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
@@ -315,10 +317,9 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                 tipo = "N(%s,%s)" % (longitud, dec)
             clave_dbf = dar_nombre_campo_dbf(clave, claves)
             campo = "%s %s" % (clave_dbf, tipo)
-            if DEBUG: print "tabla %s campo %s" %  (nombre, campo)
+            if DEBUG: print " * %s : %s" %  (campo, clave)
             campos.append(campo)
             claves.append(clave_dbf)
-        filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
         if DEBUG: print "leyendo tabla", nombre, filename
         if agrega:
             tabla = dbf.Table(filename, campos)
