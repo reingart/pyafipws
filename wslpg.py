@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07c"
+__version__ = "1.07d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -108,7 +108,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = False
+HOMO = True
 
 # definición del formato del archivo de intercambio:
 N = 'Numerico'
@@ -1088,7 +1088,6 @@ class WSLPG:
         self.datos[campo] = valor
         return True
 
-
     def ProcesarPlantillaPDF(self, num_copias=1, lineas_max=24, qty_pos='izq'):
         "Generar el PDF según la factura creada y plantilla cargada"
         try:
@@ -1130,7 +1129,10 @@ class WSLPG:
                             valor = "$ " + valor
                     elif 'fecha' in campo:
                         d = valor
-                        valor = "%s/%s/%s" % (d[8:10], d[5:7], d[0:4])
+                        if isinstance(v, (datetime.date, datetime.datetime)):
+                            valor = d.strftime("%d/%m/%Y")
+                        else:
+                            valor = "%s/%s/%s" % (d[8:10], d[5:7], d[0:4])
                 return valor
 
             for copia in range(1, num_copias+1):
@@ -1210,6 +1212,8 @@ class WSLPG:
             return True
         except Exception, e:
             self.Excepcion = str(e)
+            ex = traceback.format_exception(sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
             return False
 
     def GenerarPDF(self, archivo=""):
