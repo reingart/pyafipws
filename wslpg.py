@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.07b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -559,7 +559,7 @@ class WSLPG:
                         cod_localidad_procedencia=liq.get('codLocalidadProcedencia'),
                         cod_prov_procedencia=liq.get('codProvProcedencia'),
                         datos_adicionales=liq.get('datosAdicionales'),
-                        peso_neto=liq.get('pesoNetoSinCertificado'),
+                        peso_neto_sin_certificado=liq.get('pesoNetoSinCertificado'),
                         certificados=[],
                     )
             if 'certificados' in liq:
@@ -1620,6 +1620,10 @@ if __name__ == '__main__':
                 coe = sys.argv[sys.argv.index("--consultar") + 3]
             except IndexError:
                 pass
+            if '--testing' in sys.argv:
+                # mensaje de prueba (no realiza llamada remota), 
+                # usar solo si no está operativo
+                wslpg.LoadTestXML("wslpg_cons_test.xml")     # cargo prueba
             print "Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe)
             ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
             print "COE", wslpg.COE
