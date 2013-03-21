@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.07a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -41,7 +41,8 @@ Opciones:
   --formato: muestra el formato de los archivos de entrada/salida
   --prueba: genera y autoriza una liquidación de prueba (no usar en producción!)
   --xml: almacena los requerimientos y respuestas XML (depuración)
-
+  --dbf: utilizar tablas DBF (xBase) para los archivos de intercambio
+  --json: utilizar formato json para el archivo de intercambio
   --dummy: consulta estado de servidores
   
   --autorizar: Autorizar Liquidación Primaria de Granos (liquidacionAutorizar)
@@ -81,7 +82,24 @@ import pprint
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from pyfpdf_hg import Template
 
-from rece1 import leer, escribir  # esto debería estar en un módulo separado
+# importo funciones compartidas, deberían estar en un módulo separado:
+
+from rece1 import leer, escribir, leer_dbf, guardar_dbf  
+
+# importo paquetes para formatos de archivo de intercambio (opcional)
+
+try:
+    import json
+except ImportError:
+    try:
+        import simplejson as json 
+    except:
+        print "para soporte de JSON debe instalar simplejson"
+try:
+    import dbf
+except ImportError:
+    print "para soporte de DBF debe instalar dbf 0.88.019 o superior"
+    
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 #WSDL = "https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl"
@@ -1201,48 +1219,70 @@ class WSLPG:
             self.Excepcion = str(e)
             return False
 
-def escribir_archivo(dic, nombre_archivo, agrega=False):
+def escribir_archivo(dic, nombre_archivo, agrega=True):
     archivo = open(nombre_archivo, agrega and "a" or "w")
-    dic['tipo_reg'] = 0
-    archivo.write(escribir(dic, ENCABEZADO))
-    if 'certificados' in dic:
-        for it in dic['certificados']:
-            it['tipo_reg'] = 1
-            archivo.write(escribir(it, CERTIFICADO))
-    if 'retenciones' in dic:
-        for it in dic['retenciones']:
-            it['tipo_reg'] = 2
-            archivo.write(escribir(it, RETENCION))
-    if 'deducciones' in dic:
-        for it in dic['deducciones']:
-            it['tipo_reg'] = 3
-            archivo.write(escribir(it, DEDUCCION))
-    if 'datos' in dic:
-        for it in dic['datos']:
-            it['tipo_reg'] = 9
-            archivo.write(escribir(it, DATO))
-    if 'errores' in dic:
-        for it in dic['errores']:
-            it['tipo_reg'] = 'R'
-            archivo.write(escribir(it, ERROR))
+    if '--json' in sys.argv:
+        json.dump(dic, archivo, sort_keys=True, indent=4)
+    elif '--dbf' in sys.argv:
+        formatos = [('Encabezado', ENCABEZADO, [dic]), 
+                    ('Certificado', CERTIFICADO, dic.get('certificados', [])), 
+                    ('Retencion', RETENCION, dic.get('retenciones', [])), 
+                    ('Deduccion', DEDUCCION, dic.get('deducciones', [])),
+                    ('Dato', DATO, dic.get('datos', [])),
+                    ('Error', ERROR, dic.get('errores', [])),
+                    ]
+        guardar_dbf(formatos, agrega, conf_dbf)
+    else:
+        dic['tipo_reg'] = 0
+        archivo.write(escribir(dic, ENCABEZADO))
+        if 'certificados' in dic:
+            for it in dic['certificados']:
+                it['tipo_reg'] = 1
+                archivo.write(escribir(it, CERTIFICADO))
+        if 'retenciones' in dic:
+            for it in dic['retenciones']:
+                it['tipo_reg'] = 2
+                archivo.write(escribir(it, RETENCION))
+        if 'deducciones' in dic:
+            for it in dic['deducciones']:
+                it['tipo_reg'] = 3
+                archivo.write(escribir(it, DEDUCCION))
+        if 'datos' in dic:
+            for it in dic['datos']:
+                it['tipo_reg'] = 9
+                archivo.write(escribir(it, DATO))
+        if 'errores' in dic:
+            for it in dic['errores']:
+                it['tipo_reg'] = 'R'
+                archivo.write(escribir(it, ERROR))
     archivo.close()
 
 def leer_archivo(nombre_archivo):
     archivo = open(nombre_archivo, "r")
-    dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
-    for linea in archivo:
-        if str(linea[0])=='0':
-            dic.update(leer(linea, ENCABEZADO))
-        elif str(linea[0])=='1':
-            dic['certificados'].append(leer(linea, CERTIFICADO))
-        elif str(linea[0])=='2':
-            dic['retenciones'].append(leer(linea, RETENCION))
-        elif str(linea[0])=='3':
-            dic['deducciones'].append(leer(linea, DEDUCCION))
-        elif str(linea[0])=='9':
-            dic['datos'].append(leer(linea, DATO))
-        else:
-            print "Tipo de registro incorrecto:", linea[0]
+    if '--json' in sys.argv:
+        dic = json.load(archivo)
+    elif '--dbf' in sys.argv:
+        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
+        formatos = [('Encabezado', ENCABEZADO, dic), 
+                    ('Certificado', CERTIFICADO, dic['certificados']), 
+                    ('Retencio', RETENCION, dic['retenciones']), 
+                    ('Deduccion', DEDUCCION, dic['deducciones'])]
+        leer_dbf(formatos, conf_dbf)
+    else:
+        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
+        for linea in archivo:
+            if str(linea[0])=='0':
+                dic.update(leer(linea, ENCABEZADO))
+            elif str(linea[0])=='1':
+                dic['certificados'].append(leer(linea, CERTIFICADO))
+            elif str(linea[0])=='2':
+                dic['retenciones'].append(leer(linea, RETENCION))
+            elif str(linea[0])=='3':
+                dic['deducciones'].append(leer(linea, DEDUCCION))
+            elif str(linea[0])=='9':
+                dic['datos'].append(leer(linea, DATO))
+            else:
+                print "Tipo de registro incorrecto:", linea[0]
     archivo.close()
     return dic
     
@@ -1318,6 +1358,12 @@ if __name__ == '__main__':
         else:
             WSLPG_url = WSDL
 
+        if config.has_section('DBF'):
+            conf_dbf = dict(config.items('DBF'))
+            if DEBUG: print "conf_dbf", conf_dbf
+        else:
+            conf_dbf = {}
+            
         DEBUG = '--debug' in sys.argv
         XML = '--xml' in sys.argv
 
