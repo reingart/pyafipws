@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.06d"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -63,7 +63,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsctg.ini"
-HOMO = True
+HOMO = False
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -110,7 +110,7 @@ class WSCTG11:
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
                         'AnularCTG', 'RechazarCTG', 
-                        'ConsultarCTG', 'LeerConsulta', 'ConsultarDetalleCTG',
+                        'ConsultarCTG', 'LeerDatosCTG', 'ConsultarDetalleCTG',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
                         'ConsultarEstablecimientos',
@@ -375,6 +375,7 @@ class WSCTG11:
             self.NumeroCTG = str(datos_ctg['ctg'])
             self.Estado = unicode(datos_ctg['estado'])
             self.ImprimeConstancia = str(datos_ctg['imprimeConstancia'])
+            self.FechaHora = str(datos['fechaSolicitud'])
             return self.NumeroCTG
         else:
             return ""
