@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07d"
+__version__ = "1.07e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1184,7 +1184,7 @@ class WSLPG:
                 else:
                     homo = ""
                 
-                if int(liq['cod_tipo_operacion']) == 2: 
+                if int(liq['cod_tipo_operacion']) == 1: 
                     f.set("comprador.L", "COMPRADOR:")
                     f.set("vendedor.L", "VENDEDOR:")
                     f.set("formulario", u"Form. Electrónico 1116 B %s" % homo)
@@ -1470,7 +1470,7 @@ if __name__ == '__main__':
                     retenciones=[dict(
                             codigo_concepto="RI",
                             detalle_aclaratorio="DETALLE DE IVA",
-                            base_calculo=1970,
+                            base_calculo=1000,
                             alicuota=10.5,
                         ), dict(
                             codigo_concepto="RG",
