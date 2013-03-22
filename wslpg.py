@@ -1129,7 +1129,7 @@ class WSLPG:
                             valor = "$ " + valor
                     elif 'fecha' in campo:
                         d = valor
-                        if isinstance(v, (datetime.date, datetime.datetime)):
+                        if isinstance(d, (datetime.date, datetime.datetime)):
                             valor = d.strftime("%d/%m/%Y")
                         else:
                             valor = "%s/%s/%s" % (d[8:10], d[5:7], d[0:4])
@@ -1147,10 +1147,6 @@ class WSLPG:
                         if k in self.datos:
                             del self.datos[k]
                     
-                # datos
-                for k,v in self.datos.items():
-                    f.set(k, v)
-                
                 # establezco campos según tabla encabezado:
                 for k,v in liq.items():
                     v = formatear(k, v, fmt_encabezado)
@@ -1209,6 +1205,11 @@ class WSLPG:
                     for k, v in retencion.items():
                         v = formatear(k, v, fmt_retencion)
                         f.set("retenciones_%s_%02d" % (k, i + 1), v)
+
+                # cargo campos adicionales ([PDF] en .ini y AgregarDatoPDF)
+                for k,v in self.datos.items():
+                    f.set(k, v)
+                
             return True
         except Exception, e:
             self.Excepcion = str(e)
@@ -1339,12 +1340,11 @@ if __name__ == '__main__':
                 comienzo += longitud
         sys.exit(0)
 
-
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSLPG)
         sys.exit(0)
-        
+
     import csv
     from ConfigParser import SafeConfigParser
 
@@ -1355,10 +1355,10 @@ if __name__ == '__main__':
         if "--version" in sys.argv:
             print "Versión: ", __version__
 
-        if sys.argv[1:] and not sys.argv[1].startswith("--"):
-            print "Usando configuración:", sys.argv[1]
+        if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
-
+            print "Usando configuracion:", CONFIG_FILE
+         
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
         CERT = config.get('WSAA','CERT')
