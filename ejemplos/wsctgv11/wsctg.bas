@@ -9,12 +9,8 @@ Sub Main()
     cache = "" ' Directorio para archivos temporales (dejar en blanco para usar predeterminado)
     proxy = "" ' usar "usuario:clave@servidor:puerto"
 
-    Certificado = App.Path & "\..\..\reingart.crt"   ' certificado es el firmado por la afip
-    ClavePrivada = App.Path & "\..\..\reingart.key"  ' clave privada usada para crear el cert.
-        
-    
-    Token = ""
-    Sign = ""
+    Certificado = App.Path & "\empresa.crt"   ' certificado es el firmado por la afip
+    ClavePrivada = App.Path & "\empresa.key"  ' clave privada usada para crear el cert.
     
     Set WSAA = CreateObject("WSAA")
     tra = WSAA.CreateTRA("wsctg", ttl)
@@ -30,8 +26,6 @@ Sub Main()
     Debug.Print ta
     Debug.Print "Token:", WSAA.Token
     Debug.Print "Sign:", WSAA.Sign
-    
-    
     
     ' Crear objeto interface Web Service de CTG
     Set WSCTGv11 = CreateObject("WSCTG11")
@@ -51,7 +45,54 @@ Sub Main()
     Debug.Print "dbserver status", WSCTGv11.DbServerStatus
     Debug.Print "authserver status", WSCTGv11.AuthServerStatus
     
-    Dim numero_CTG As String
+    ' Establezco los criterios de búsqueda para ConsultarCTG:
+    
+    numero_carta_de_porte = Null
+    numero_ctg = Null
+    patente = Null
+    cuit_solicitante = Null
+    cuit_destino = Null
+    fecha_emision_desde = "01-01-2013"
+    fecha_emision_hasta = "31-03-2013"
+    
+    ' llamo al webservice con los parámetros de busqueda:
+    ok = WSCTGv11.ConsultarCTG(numero_carta_de_porte, numero_ctg, _
+                     patente, cuit_solicitante, cuit_destino, _
+                     fecha_emision_desde, fecha_emision_hasta)
+            
+    Debug.Print WSCTGv11.XmlResponse
+    Debug.Print WSCTGv11.Excepcion
+
+    Debug.Assert False
+    
+    ' si hay datos, recorro los resultados de la consulta:
+    Do While ok
+        Debug.Print WSCTGv11.CartaPorte
+        Debug.Print WSCTGv11.NumeroCTG
+        Debug.Print WSCTGv11.Estado
+        Debug.Print WSCTGv11.ImprimeConstancia
+        Debug.Print WSCTGv11.FechaHora
+        numero_ctg = WSCTGv11.NumeroCTG
+        ' leo el proximo, si devuelve vacio no hay más datos
+        ok = WSCTGv11.LeerDatosCTG() <> ""
+    Loop
+    
+    Debug.Assert False
+
+    ' consulto una CTG
+    numero_ctg = 65013454
+    Call WSCTGv11.ConsultarDetalleCTG(numero_ctg)
+    Debug.Print WSCTGv11.XmlResponse
+    Debug.Print WSCTGv11.Excepcion
+
+    If IsNumeric(WSCTGv11.TarifaReferencia) Then
+        tarifa_ref = WSCTGv11.TarifaReferencia
+        numero_ctg = WSCTGv11.NumeroCTG
+        Debug.Print WSCTGv11.TarifaReferencia
+    End If
+    
+    
+    ' establezco los parametros para solicitar ctg inicial:
     numero_carta_de_porte = "512345679"
     codigo_especie = 23
     cuit_remitente_comercial = "20061341677"
@@ -66,7 +107,8 @@ Sub Main()
     cuit_transportista = "20076641707"
     km_recorridos = "160"
        
-    numero_CTG = WSCTGv11.SolicitarCTGInicial(numero_carta_de_porte, codigo_especie, _
+    ' llamo al webservice para solicitar el ctg inicial:
+    numero_ctg = WSCTGv11.SolicitarCTGInicial(numero_carta_de_porte, codigo_especie, _
             cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen, _
             codigo_localidad_destino, codigo_cosecha, peso_neto_carga, cant_horas, _
             patente_vehiculo, cuit_transportista, km_recorridos)
@@ -74,20 +116,23 @@ Sub Main()
         Debug.Print WSCTGv11.XmlResponse
         Debug.Print WSCTGv11.Observaciones
             
+        ' recorro los errores devueltos por AFIP (si hubo)
         Dim ControlErrores As Variant
         For Each ControlErrores In WSCTGv11.Controles
             Debug.Print ControlErrores
         Next
         
-        Call WSCTGv11.ConsultarDetalleCTG(numero_CTG) 'para que devuelva entre otros datos la tarifa de referencia otorgada por afip
+        ' llamo al webservice para consultar la ctg recien creada
+        ' para que devuelva entre otros datos la tarifa de referencia otorgada por afip
+        Call WSCTGv11.ConsultarDetalleCTG(numero_ctg)
         If IsNumeric(WSCTGv11.TarifaReferencia) Then
             tarifa_ref = WSCTGv11.TarifaReferencia
-            numero_CTG = WSCTGv11.NumeroCTG
+            numero_ctg = WSCTGv11.NumeroCTG
             Debug.Print WSCTGv11.TarifaReferencia
         End If
 
        
-    MsgBox "CTG: " & numero_CTG & vbCrLf & "Km. a recorrer: " & km_recorridos & vbCrLf & "Tarifa ref.: " & tarifa_ref, vbInformation, "SolicitarCTG: número CTG:"
+    MsgBox "CTG: " & numero_ctg & vbCrLf & "Km. a recorrer: " & km_recorridos & vbCrLf & "Tarifa ref.: " & tarifa_ref, vbInformation, "SolicitarCTG: número CTG:"
 Exit Sub
 ManejoError:
     ' Si hubo error:
