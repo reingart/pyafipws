@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06d"
+__version__ = "1.07a"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -141,7 +141,7 @@ class WSCTG11:
         self.client = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.NumeroCTG = ''
-        self.CodigoTransaccion = self.Observaciones = ''
+        self.CodigoTransaccion = self.Observaciones = self.Excepcion = ''
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy=""):
