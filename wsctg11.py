@@ -375,7 +375,7 @@ class WSCTG11:
             self.NumeroCTG = str(datos_ctg['ctg'])
             self.Estado = unicode(datos_ctg['estado'])
             self.ImprimeConstancia = str(datos_ctg['imprimeConstancia'])
-            self.FechaHora = str(datos['fechaSolicitud'])
+            self.FechaHora = str(datos_ctg['fechaSolicitud'])
             return self.NumeroCTG
         else:
             return ""
