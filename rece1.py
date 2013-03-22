@@ -32,11 +32,7 @@ from php import SimpleXMLElement, SoapClient, SoapFault, date
 HOMO = wsfev1.HOMO
 DEBUG = True
 XML = False
-if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
-    CONFIG_FILE = sys.argv[1]
-    print "USING", CONFIG_FILE
-else:
-    CONFIG_FILE = "rece.ini"
+CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
 rece1.py: Interfaz de texto para generar Facturas Electrónica Mercado Interno V1
