@@ -523,6 +523,11 @@ if __name__ == '__main__':
         print AYUDA
         sys.exit(0)
 
+    if "--register" in sys.argv or "--unregister" in sys.argv:
+        import win32com.server.register
+        win32com.server.register.UseCommandLine(WSCTG11)
+        sys.exit(0)
+
     import csv
     from ConfigParser import SafeConfigParser
 
