@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07e"
+__version__ = "1.07f"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -170,6 +170,8 @@ ENCABEZADO = [
     ('pto_emision', 4, N), 
     ('cod_prov_procedencia', 2, N),
     ('peso_neto_sin_certificado', 8, N),
+    
+    ('cod_tipo_ajuste', 2, N),
         
     ]
 
@@ -602,6 +604,7 @@ class WSLPG:
 
             # datos adicionales:
             self.params_out['nro_orden'] = aut.get('nroOrden')
+            self.params_out['cod_tipo_ajuste'] = aut.get('codTipoAjuste')
             fecha = aut.get('fechaLiquidacion')
             if fecha:
                 fecha = str(fecha)
@@ -1066,11 +1069,15 @@ class WSLPG:
     def CrearPlantillaPDF(self, papel="A4", orientacion="portrait"):
         "Iniciar la creación del archivo PDF"
         
+        self.AgregarCampoPDF("anulado", 'T', 150, 250, 0, 0, 
+              size=70, rotate=45, foreground=0x808080, 
+              priority=-1)
+
         if HOMO:
             self.AgregarCampoPDF("homo", 'T', 100, 250, 0, 0,
                               size=70, rotate=45, foreground=0x808080, 
                               priority=-1)
-           
+ 
         # genero el renderizador con propiedades del PDF
         t = Template(elements=self.elements,
                  format=papel, orientation=orientacion,
@@ -1140,6 +1147,17 @@ class WSLPG:
                 # completo campos y hojas
                 f.add_page()                   
                 f.set('copia', copias.get(copia, "Adicional %s" % copia))
+                
+                f.set('anulado', {'AC': '', '': 'SIN ESTADO',
+                                  'AN': "ANULADO"}.get(liq['estado'], "ERROR"))
+
+                try:
+                    cod_tipo_ajuste = int(liq["cod_tipo_ajuste"] or '0')
+                except: 
+                    cod_tipo_ajuste = None
+                f.set('tipo_ajuste', {3: u'Liquidación de Débito', 
+                                      4: u'Liquidación de Crédito',
+                                      }.get(cod_tipo_ajuste, ''))
 
                 # limpio datos del corredor si no corresponden:
                 if liq['liquida_corredor'] == 'N':
@@ -1755,6 +1773,10 @@ if __name__ == '__main__':
             wslpg.ProcesarPlantillaPDF(num_copias=int(conf_liq.get("copias", 1)),
                                     lineas_max=int(conf_liq.get("lineas_max", 24)),
                                     qty_pos=conf_liq.get("cant_pos") or 'izq')
+            if wslpg.Excepcion:
+                print "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print wslpg.Traceback
+
             salida = conf_liq.get("salida", "")
 
             # genero el nombre de archivo según datos de factura
