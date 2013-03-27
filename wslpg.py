@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08a"
+__version__ = "1.08b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -354,6 +354,12 @@ class WSLPG:
             trace='--trace' in sys.argv, 
             ns='wslpg', soap_ns='soapenv',
             exceptions=True, proxy=proxy_dict)
+       
+        # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
+        location = self.client.services['LpgService']['ports']['LpgEndPoint']['location']
+        if location.startswith("http://"):
+            location = location.replace("http://", "https://").replace(":80", ":443")
+            self.client.services['LpgService']['ports']['LpgEndPoint']['location'] = location
         return True
 
     def __analizar_errores(self, ret):
