@@ -358,8 +358,10 @@ class WSLPG:
         # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
         location = self.client.services['LpgService']['ports']['LpgEndPoint']['location']
         if location.startswith("http://"):
+            print "Corrigiendo WSDL ...", location,
             location = location.replace("http://", "https://").replace(":80", ":443")
             self.client.services['LpgService']['ports']['LpgEndPoint']['location'] = location
+            print location
         return True
 
     def __analizar_errores(self, ret):
@@ -1809,7 +1811,10 @@ if __name__ == '__main__':
         print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
         sys.exit(3)
     except Exception, e:
-        print unicode(e).encode("ascii","ignore")
+        try:
+            print traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
+        except:
+            print "Excepción no disponible:", type(e)
         if DEBUG:
             raise
         sys.exit(5)
