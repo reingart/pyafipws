@@ -35,7 +35,7 @@ opts = {
 
 data_files = [
     (".", ["licencia.txt", "wslpg.ini", 
-           "wslpg_aut_test.xml",
+           "wslpg_aut_test.xml", "afip_ca_info.crt",
            "liquidacion_form_c1116b_wslpg.csv",
            "liquidacion_form_c1116b_wslpg.png", ]),
 	("cache", glob.glob("cache/*")),

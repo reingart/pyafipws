@@ -342,9 +342,12 @@ class WSLPG:
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy=""):
+    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=""):
         "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = WSDL
+        if wrapper:
+            Http = set_http_wrapper(wrapper)
+            self.Version = self.Version + " " + Http._wrapper_version
         if not cache or HOMO:
             # use 'cache' from installation base directory 
             cache = os.path.join(self.InstallDir, 'cache')
@@ -353,6 +356,7 @@ class WSLPG:
             wsdl=url, cache=cache,
             trace='--trace' in sys.argv, 
             ns='wslpg', soap_ns='soapenv',
+            cacert = cacert,
             exceptions=True, proxy=proxy_dict)
        
         # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
@@ -1377,7 +1381,7 @@ if __name__ == '__main__':
     import csv
     from ConfigParser import SafeConfigParser
 
-    import wsaa
+    from wsaa import WSAA
 
     try:
     
@@ -1397,14 +1401,18 @@ if __name__ == '__main__':
         SALIDA = config.get('WSLPG','SALIDA')
         
         if config.has_option('WSAA','URL') and not HOMO:
-            wsaa_url = config.get('WSAA','URL')
+            WSAA_URL = config.get('WSAA','URL')
         else:
-            wsaa_url = wsaa.WSAAURL
+            WSAA_URL = None #wsaa.WSAAURL
         if config.has_option('WSLPG','URL') and not HOMO:
-            WSLPG_url = config.get('WSLPG','URL')
+            WSLPG_URL = config.get('WSLPG','URL')
         else:
-            WSLPG_url = WSDL
+            WSLPG_URL = WSDL
 
+        PROXY = config.has_option('WSAA', 'PROXY') and config.get('WSAA', 'PROXY') or None
+        CACERT = config.has_option('WSAA', 'CACERT') and config.get('WSAA', 'CACERT') or None
+        WRAPPER = config.has_option('WSAA', 'WRAPPER') and config.get('WSAA', 'WRAPPER') or None
+        
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
             if DEBUG: print "conf_dbf", conf_dbf
@@ -1416,17 +1424,21 @@ if __name__ == '__main__':
 
         if DEBUG:
             print "Usando Configuración:"
-            print "wsaa_url:", wsaa_url
-            print "WSLPG_url:", WSLPG_url
+            print "WSAA_URL:", WSAA_URL
+            print "WSLPG_URL:", WSLPG_URL
+            print "CACERT", CACERT
+            print "WRAPPER", WRAPPER
         # obteniendo el TA
         TA = "wslpg-ta.xml"
         if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
-            tra = wsaa.create_tra(service="wslpg")
+            wsaa = WSAA()
+            tra = wsaa.CreateTRA(service="wslpg")
             if DEBUG:
                 print tra
-            cms = wsaa.sign_tra(tra, CERT, PRIVATEKEY)
+            cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
             try:
-                ta_string = wsaa.call_wsaa(cms, wsaa_url)
+                wsaa.Conectar(wsdl=WSAA_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
+                ta_string = wsaa.LoginCMS(cms)
             except Exception, e:
                 print e
                 ta_string = ""
@@ -1444,7 +1456,7 @@ if __name__ == '__main__':
         # cliente soap del web service
         wslpg = WSLPG()
         wslpg.LanzarExcepciones = True
-        wslpg.Conectar(url=WSLPG_url)
+        wslpg.Conectar(url=WSLPG_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
         wslpg.Token = token
         wslpg.Sign = sign
         wslpg.Cuit = CUIT
