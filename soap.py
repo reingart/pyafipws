@@ -100,7 +100,7 @@ class SoapClient(object):
             parameters = args
         for k,v in parameters: # dict: tag=valor
             self.parse(getattr(request,method),k,v)
-        self.xml_request = request.asXML()
+        self.xml_request = request.as_xml()
         self.xml_response = self.send(method, self.xml_request)
         response = SimpleXMLElement(self.xml_response, namespace=self.namespace)
         if self.exceptions and ("soapenv:Fault" in response or "soap:Fault" in response):
