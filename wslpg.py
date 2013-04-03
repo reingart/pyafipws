@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07e"
+__version__ = "1.08b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -170,6 +170,8 @@ ENCABEZADO = [
     ('pto_emision', 4, N), 
     ('cod_prov_procedencia', 2, N),
     ('peso_neto_sin_certificado', 8, N),
+    
+    ('cod_tipo_ajuste', 2, N),
         
     ]
 
@@ -340,9 +342,12 @@ class WSLPG:
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy=""):
+    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=""):
         "Establecer la conexión a los servidores de la AFIP"
         if HOMO or not url: url = WSDL
+        if wrapper:
+            Http = set_http_wrapper(wrapper)
+            self.Version = self.Version + " " + Http._wrapper_version
         if not cache or HOMO:
             # use 'cache' from installation base directory 
             cache = os.path.join(self.InstallDir, 'cache')
@@ -351,7 +356,16 @@ class WSLPG:
             wsdl=url, cache=cache,
             trace='--trace' in sys.argv, 
             ns='wslpg', soap_ns='soapenv',
+            cacert = cacert,
             exceptions=True, proxy=proxy_dict)
+       
+        # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
+        location = self.client.services['LpgService']['ports']['LpgEndPoint']['location']
+        if location.startswith("http://"):
+            print "Corrigiendo WSDL ...", location,
+            location = location.replace("http://", "https://").replace(":80", ":443")
+            self.client.services['LpgService']['ports']['LpgEndPoint']['location'] = location
+            print location
         return True
 
     def __analizar_errores(self, ret):
@@ -397,6 +411,9 @@ class WSLPG:
                peso_neto_sin_certificado=None,
                **kwargs
                ):
+        # limpio los campos especiales (segun validaciones de AFIP)
+        if alic_iva_operacion == 0:
+            alic_iva_operacion = None   # no informar alicuota p/ monotributo
         self.liquidacion = dict(
                             ptoEmision=pto_emision,
                             nroOrden=nro_orden,
@@ -602,6 +619,7 @@ class WSLPG:
 
             # datos adicionales:
             self.params_out['nro_orden'] = aut.get('nroOrden')
+            self.params_out['cod_tipo_ajuste'] = aut.get('codTipoAjuste')
             fecha = aut.get('fechaLiquidacion')
             if fecha:
                 fecha = str(fecha)
@@ -1066,11 +1084,15 @@ class WSLPG:
     def CrearPlantillaPDF(self, papel="A4", orientacion="portrait"):
         "Iniciar la creación del archivo PDF"
         
+        self.AgregarCampoPDF("anulado", 'T', 150, 250, 0, 0, 
+              size=70, rotate=45, foreground=0x808080, 
+              priority=-1)
+
         if HOMO:
             self.AgregarCampoPDF("homo", 'T', 100, 250, 0, 0,
                               size=70, rotate=45, foreground=0x808080, 
                               priority=-1)
-           
+ 
         # genero el renderizador con propiedades del PDF
         t = Template(elements=self.elements,
                  format=papel, orientation=orientacion,
@@ -1140,6 +1162,17 @@ class WSLPG:
                 # completo campos y hojas
                 f.add_page()                   
                 f.set('copia', copias.get(copia, "Adicional %s" % copia))
+                
+                f.set('anulado', {'AC': '', '': 'SIN ESTADO',
+                                  'AN': "ANULADO"}.get(liq['estado'], "ERROR"))
+
+                try:
+                    cod_tipo_ajuste = int(liq["cod_tipo_ajuste"] or '0')
+                except: 
+                    cod_tipo_ajuste = None
+                f.set('tipo_ajuste', {3: u'Liquidación de Débito', 
+                                      4: u'Liquidación de Crédito',
+                                      }.get(cod_tipo_ajuste, ''))
 
                 # limpio datos del corredor si no corresponden:
                 if liq['liquida_corredor'] == 'N':
@@ -1348,7 +1381,7 @@ if __name__ == '__main__':
     import csv
     from ConfigParser import SafeConfigParser
 
-    import wsaa
+    from wsaa import WSAA
 
     try:
     
@@ -1368,14 +1401,18 @@ if __name__ == '__main__':
         SALIDA = config.get('WSLPG','SALIDA')
         
         if config.has_option('WSAA','URL') and not HOMO:
-            wsaa_url = config.get('WSAA','URL')
+            WSAA_URL = config.get('WSAA','URL')
         else:
-            wsaa_url = wsaa.WSAAURL
+            WSAA_URL = None #wsaa.WSAAURL
         if config.has_option('WSLPG','URL') and not HOMO:
-            WSLPG_url = config.get('WSLPG','URL')
+            WSLPG_URL = config.get('WSLPG','URL')
         else:
-            WSLPG_url = WSDL
+            WSLPG_URL = WSDL
 
+        PROXY = config.has_option('WSAA', 'PROXY') and config.get('WSAA', 'PROXY') or None
+        CACERT = config.has_option('WSAA', 'CACERT') and config.get('WSAA', 'CACERT') or None
+        WRAPPER = config.has_option('WSAA', 'WRAPPER') and config.get('WSAA', 'WRAPPER') or None
+        
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
             if DEBUG: print "conf_dbf", conf_dbf
@@ -1387,17 +1424,21 @@ if __name__ == '__main__':
 
         if DEBUG:
             print "Usando Configuración:"
-            print "wsaa_url:", wsaa_url
-            print "WSLPG_url:", WSLPG_url
+            print "WSAA_URL:", WSAA_URL
+            print "WSLPG_URL:", WSLPG_URL
+            print "CACERT", CACERT
+            print "WRAPPER", WRAPPER
         # obteniendo el TA
         TA = "wslpg-ta.xml"
         if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
-            tra = wsaa.create_tra(service="wslpg")
+            wsaa = WSAA()
+            tra = wsaa.CreateTRA(service="wslpg")
             if DEBUG:
                 print tra
-            cms = wsaa.sign_tra(tra, CERT, PRIVATEKEY)
+            cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
             try:
-                ta_string = wsaa.call_wsaa(cms, wsaa_url)
+                wsaa.Conectar(wsdl=WSAA_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
+                ta_string = wsaa.LoginCMS(cms)
             except Exception, e:
                 print e
                 ta_string = ""
@@ -1415,7 +1456,7 @@ if __name__ == '__main__':
         # cliente soap del web service
         wslpg = WSLPG()
         wslpg.LanzarExcepciones = True
-        wslpg.Conectar(url=WSLPG_url)
+        wslpg.Conectar(url=WSLPG_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
         wslpg.Token = token
         wslpg.Sign = sign
         wslpg.Cuit = CUIT
@@ -1532,13 +1573,13 @@ if __name__ == '__main__':
             # cargo la liquidación:
             wslpg.CrearLiquidacion()
 
-            for cert in dic['certificados']:
+            for cert in dic.get('certificados', []):
                 wslpg.AgregarCertificado(**cert)
 
-            for ded in dic['deducciones']:
+            for ded in dic.get('deducciones', []):
                 wslpg.AgregarDeduccion(**ded)
 
-            for ret in dic['retenciones']:
+            for ret in dic.get('retenciones', []):
                 wslpg.AgregarRetencion(**ret)
 
             if '--testing' in sys.argv:
@@ -1755,6 +1796,10 @@ if __name__ == '__main__':
             wslpg.ProcesarPlantillaPDF(num_copias=int(conf_liq.get("copias", 1)),
                                     lineas_max=int(conf_liq.get("lineas_max", 24)),
                                     qty_pos=conf_liq.get("cant_pos") or 'izq')
+            if wslpg.Excepcion:
+                print "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print wslpg.Traceback
+
             salida = conf_liq.get("salida", "")
 
             # genero el nombre de archivo según datos de factura
@@ -1778,7 +1823,10 @@ if __name__ == '__main__':
         print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
         sys.exit(3)
     except Exception, e:
-        print unicode(e).encode("ascii","ignore")
+        try:
+            print traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
+        except:
+            print "Excepción no disponible:", type(e)
         if DEBUG:
             raise
         sys.exit(5)
