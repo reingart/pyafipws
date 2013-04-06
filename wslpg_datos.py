@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
+from decimal import Decimal
 
 TIPOS_OP = {1: 'Compraventa de granos', 2: 'Consignación de granos'}
 GRANOS = {
@@ -61,6 +62,48 @@ ACTIVIDADES = {41: "FRACCIONADOR DE GRANOS", 29: "ACOPIADOR - CONSIGNATARIO",
                39: "EXPLOTADOR DE DEPOSITO Y/O ELEVADOR DE GRANOS",
                37: "DESMOTADOR DE ALGODON",
                }
+
+# Datos de grado entregado por tipo de granos:
+GRADO_ENT_VALOR = {
+    49 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    25 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    26 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    27 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    20 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    21 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    22 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    23 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    46 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    47 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    48 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    28 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    1 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    3 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    2 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    5 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    4 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    7 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    6 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    9 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    8 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    59 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    11 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    10 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    12 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    15 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.99'), u'G2': Decimal('1.00'), u'G1': Decimal('1.015'), u'FG': Decimal('0')},
+    14 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    17 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    16 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    19 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    18 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    31 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    30 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    50 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    35 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    34 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    33 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+    32 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},
+}
 
 LOCALIDADES = {
     3: u'12 DE AGOSTO',

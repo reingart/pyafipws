@@ -1212,6 +1212,13 @@ class WSLPG:
                 cod_puerto = int(liq['cod_puerto'])
                 if cod_puerto in datos.PUERTOS:
                     f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
+
+                cod_grano = int(liq['cod_grano'])
+                cod_grado_ent = liq['cod_grado_ent']
+                if cod_grano in datos.GRADO_ENT_VALOR: 
+                    valores = datos.GRADO_ENT_VALOR[cod_grano]
+                    if cod_grado_ent in valores:
+                        f.set("valor_grado_ent", valores[cod_grado_ent])
                 
                 cod_prov = int(liq['cod_prov_procedencia'])
                 ##localidades = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)

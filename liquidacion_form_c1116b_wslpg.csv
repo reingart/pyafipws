@@ -7,7 +7,6 @@
 'art_27';'T';18.10;86.00;197.40;90.10;'Arial';9;False;False;False;0;16777215;'L';'Art. 27 inc. ..........';0
 'campania_ppal';'T';17.60;158.90;54.20;163.00;'Arial';9;False;False;False;0;16777215;'C';'campania_ppal';0
 'certificados_deposito';'T';18.70;140.60;197.90;144.70;'Arial';9;False;False;False;0;16777215;'L';'';0
-'cod_grado_ent';'T';88.30;134.40;100.20;138.50;'Arial';9;False;False;False;0;16777215;'C';'grado';0
 'cod_grado_ref';'T';54.30;122.10;77.00;126.20;'Arial';9;False;False;False;0;16777215;'C';'cod_grado_ref';0
 'cod_grano';'T';78.40;122.10;86.50;126.20;'Arial';9;False;False;False;0;16777215;'R';'cod_grano';0
 'cod_tipo_operacion';'T';50.30;31.80;58.90;37.60;'Arial';9;False;False;False;0;16777215;'L';'op.';0
@@ -129,10 +128,10 @@
 'tipo_operacion';'T';57.80;31.90;127.10;37.70;'Arial';9;False;False;False;0;16777215;'L';'tipo_operacion';0
 'total_deduccion';'T';49.20;262.10;77.60;266.20;'Arial';9;False;False;False;0;16777215;'R';'total_deduccion';0
 'total_deduccion.L';'T';18.30;262.00;46.70;266.10;'Arial';9;False;False;False;0;16777215;'L';'Total deducciones:';0
-'total_iva_rg_2300_07';'T';49.10;267.00;77.50;271.10;'Arial';9;False;False;False;0;16777215;'R';'total_iva_rg_2300_07';0
-'total_iva_rg_2300_07.L';'T';18.30;267.00;46.70;271.10;'Arial';9;False;False;False;0;16777215;'L';'Total IVA RG 2300/07:';0
-'total_neto_a_pagar';'T';110.50;267.00;138.90;271.10;'Arial';9;False;False;False;0;16777215;'R';'total_neto_a_pagar';0
-'total_neto_a_pagar.L_copy';'T';78.60;267.10;107.00;271.20;'Arial';9;False;False;False;0;16777215;'L';'Total Neto a Pagar:';0
+'total_iva_rg_2300_07';'T';110.30;267.00;138.70;271.10;'Arial';9;False;False;False;0;16777215;'R';'total_iva_rg_2300_07';0
+'total_iva_rg_2300_07.L';'T';78.50;267.00;106.90;271.10;'Arial';9;False;False;False;0;16777215;'L';'Total IVA RG 2300/07:';0
+'total_neto_a_pagar';'T';49.30;267.00;77.70;271.10;'Arial';9;False;False;False;0;16777215;'R';'total_neto_a_pagar';0
+'total_neto_a_pagar.L_copy';'T';18.60;267.10;47.00;271.20;'Arial';9;False;False;False;0;16777215;'L';'Total Neto a Pagar:';0
 'total_operacion.L';'T';18.30;257.30;46.70;261.40;'Arial';9;False;False;False;0;16777215;'L';'Total operacion:';0
 'total_otras_retenciones';'T';110.40;262.10;138.80;266.20;'Arial';9;False;False;False;0;16777215;'R';'total_otras_retenciones';0
 'total_otras_retenciones.L';'T';78.50;262.10;106.90;266.20;'Arial';9;False;False;False;0;16777215;'L';'Total Otras Retenciones:';0
@@ -141,4 +140,5 @@
 'total_peso_neto';'T';56.80;158.70;71.40;162.80;'Arial';9;False;False;False;0;16777215;'R';'total_peso_neto';0
 'total_retencion_afip';'T';173.20;262.10;201.60;266.20;'Arial';9;False;False;False;0;16777215;'R';'total_retencion_afip';0
 'total_retencion_afip.L';'T';140.20;262.20;168.60;266.30;'Arial';9;False;False;False;0;16777215;'L';'Total Retencion AFIP:';0
+'valor_grado_ent';'T';88.40;134.30;100.30;138.40;'Arial';9;False;False;False;0;16777215;'C';'grado';0
 'vendedor.L';'T';121.00;47.70;197.50;53.50;'Arial';11;True;False;False;0;16777215;'C';'VENDEDOR:';0
