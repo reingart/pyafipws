@@ -61,6 +61,7 @@ Opciones:
   --tipograno: obtiene el listado de los tipos de granos disponibles
   --campanias: obtiene el listado de las campañas 
   --gradoref: obtiene el listado de los grados de referencias
+  --gradoent: obtiene el listado de los grados y valores entregados
   --certdeposito: obtiene el listado de los tipos de certificados de depósito
   --deducciones: obtiene el listado de los tipos de deducciones
   --retenciones: obtiene el listado de los tipos de retenciones
@@ -773,7 +774,12 @@ class WSLPG:
                             )['tipoGranoReturn']
         self.__analizar_errores(ret)
         array = ret.get('granos', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+        if sep is None:
+            return dict([(it['codigoDescripcion']['codigo'], 
+                          it['codigoDescripcion']['descripcion']) 
+                         for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
@@ -802,7 +808,12 @@ class WSLPG:
                             )['gradoEntReturn']
         self.__analizar_errores(ret)
         array = ret.get('gradoEnt', [])
-        return [("%s %%s %s %%s %s %%s %s" % (sep, sep, sep, sep)) %
+        if sep is None:
+            return dict([(it['gradoEnt']['codigoDescripcion']['codigo'],
+                          it['gradoEnt']['valor'])
+                         for it in array])
+        else:
+            return [("%s %%s %s %%s %s %%s %s" % (sep, sep, sep, sep)) %
                     (it['gradoEnt']['codigoDescripcion']['codigo'], 
                      it['gradoEnt']['codigoDescripcion']['descripcion'],
                      it['gradoEnt']['valor'],
@@ -1735,11 +1746,17 @@ if __name__ == '__main__':
             ret = wslpg.ConsultarCodigoGradoReferencia()
             print "\n".join(ret)
 
-        if '--gradoentregado' in sys.argv:
+        if '--gradoent' in sys.argv:
             ##wslpg.LoadTestXML("wslpg_cod.xml")     # cargo respuesta de ej
             cod_grano = raw_input("Ingrese el código de grano: ")
             ret = wslpg.ConsultarGradoEntregadoXTipoGrano(cod_grano=cod_grano)
             print "\n".join(ret)
+        
+        if '--datos' in sys.argv:
+            print "# Datos de grado entregado por tipo de granos:"
+            for cod_grano in wslpg.ConsultarTipoGrano(sep=None):
+                grad_ent = wslpg.ConsultarGradoEntregadoXTipoGrano(cod_grano, sep=None)
+                print cod_grano, ":", grad_ent
 
         if '--certdeposito' in sys.argv:
             ret = wslpg.ConsultarTipoCertificadoDeposito()
