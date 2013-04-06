@@ -793,7 +793,12 @@ class WSLPG:
                             )['gradoRefReturn']
         self.__analizar_errores(ret)
         array = ret.get('gradosRef', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+        if sep is None:
+            return dict([(it['codigoDescripcion']['codigo'], 
+                          it['codigoDescripcion']['descripcion']) 
+                           for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
@@ -1214,6 +1219,11 @@ class WSLPG:
                     f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
 
                 cod_grano = int(liq['cod_grano'])
+                cod_grado_ref = liq['cod_grado_ref']
+                if cod_grado_ref in datos.GRADOS_REF:
+                    f.set("des_grado_ref", datos.GRADOS_REF[cod_grado_ref])
+                else:
+                    f.set("des_grado_ref", cod_grado_ref)
                 cod_grado_ent = liq['cod_grado_ent']
                 if cod_grano in datos.GRADO_ENT_VALOR: 
                     valores = datos.GRADO_ENT_VALOR[cod_grano]
@@ -1648,7 +1658,7 @@ if __name__ == '__main__':
                             print
                             break       # si obtuve COE salgo
                         else:
-                            print wslpg.Errores
+                            print wslpgPDF.Errores
                 else:
                     print "Autorizando..." 
                     ret = wslpg.AutorizarLiquidacion()
@@ -1760,10 +1770,13 @@ if __name__ == '__main__':
             print "\n".join(ret)
         
         if '--datos' in sys.argv:
+            print "# Grados"
+            print wslpg.ConsultarCodigoGradoReferencia(sep=None)
+            
             print "# Datos de grado entregado por tipo de granos:"
             for cod_grano in wslpg.ConsultarTipoGrano(sep=None):
                 grad_ent = wslpg.ConsultarGradoEntregadoXTipoGrano(cod_grano, sep=None)
-                print cod_grano, ":", grad_ent
+                print cod_grano, ":", grad_ent, ","
 
         if '--certdeposito' in sys.argv:
             ret = wslpg.ConsultarTipoCertificadoDeposito()
@@ -1831,7 +1844,7 @@ if __name__ == '__main__':
 
             wslpg.CrearPlantillaPDF(papel=conf_liq.get("papel", "legal"), 
                                  orientacion=conf_liq.get("orientacion", "portrait"))
-            wslpg.ProcesarPlantillaPDF(num_copias=int(conf_liq.get("copias", 1)),
+            wslpg.ProcesarPlantillaPDF(num_copias=int(conf_liq.get("copias", 3)),
                                     lineas_max=int(conf_liq.get("lineas_max", 24)),
                                     qty_pos=conf_liq.get("cant_pos") or 'izq')
             if wslpg.Excepcion:

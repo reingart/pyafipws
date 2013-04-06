@@ -63,6 +63,9 @@ ACTIVIDADES = {41: "FRACCIONADOR DE GRANOS", 29: "ACOPIADOR - CONSIGNATARIO",
                37: "DESMOTADOR DE ALGODON",
                }
 
+# Grados
+GRADOS_REF = {u'G3': u'Grado 3', u'G2': u'Grado 2', u'G1': u'Grado 1'}
+
 # Datos de grado entregado por tipo de granos:
 GRADO_ENT_VALOR = {
     49 : {u'F1': Decimal('0'), u'F2': Decimal('0'), u'F3': Decimal('0'), u'G3': Decimal('0.985'), u'G2': Decimal('1.00'), u'G1': Decimal('1.01'), u'FG': Decimal('0')},

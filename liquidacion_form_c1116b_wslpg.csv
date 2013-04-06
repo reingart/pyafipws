@@ -7,7 +7,6 @@
 'art_27';'T';18.10;86.00;197.40;90.10;'Arial';9;False;False;False;0;16777215;'L';'Art. 27 inc. ..........';0
 'campania_ppal';'T';17.60;158.90;54.20;163.00;'Arial';9;False;False;False;0;16777215;'C';'campania_ppal';0
 'certificados_deposito';'T';18.70;140.60;197.90;144.70;'Arial';9;False;False;False;0;16777215;'L';'';0
-'cod_grado_ref';'T';54.30;122.10;77.00;126.20;'Arial';9;False;False;False;0;16777215;'C';'cod_grado_ref';0
 'cod_grano';'T';78.40;122.10;86.50;126.20;'Arial';9;False;False;False;0;16777215;'R';'cod_grano';0
 'cod_tipo_operacion';'T';50.30;31.80;58.90;37.60;'Arial';9;False;False;False;0;16777215;'L';'op.';0
 'coe';'T';30.50;40.20;70.00;46.00;'Arial';9;False;False;False;0;16777215;'L';'COE';0
@@ -45,6 +44,7 @@
 'deducciones_importe_iva_03';'T';151.80;189.70;176.10;193.80;'Arial';9;False;False;False;0;16777215;'R';'';0
 'deducciones_importe_iva_04';'T';151.80;193.20;176.10;197.30;'Arial';9;False;False;False;0;16777215;'R';'';0
 'deducciones_importe_iva_05';'T';151.80;196.70;176.10;200.80;'Arial';9;False;False;False;0;16777215;'R';'';0
+'des_grado_ref';'T';54.40;122.20;77.10;126.30;'Arial';9;False;False;False;0;16777215;'C';'des_grado_ref';0
 'des_puerto_localidad';'T';106.50;109.70;162.30;113.80;'Arial';9;False;False;False;0;16777215;'L';'des_puerto_localidad';0
 'domicilio1_comprador';'T';40.60;58.10;98.90;63.90;'Arial';9;False;False;False;0;16777215;'L';'domicilio1_comprador';0
 'domicilio1_vendedor';'T';138.40;58.00;197.40;63.80;'Arial';9;False;False;False;0;16777215;'L';'domicilio1_vendedor';0
