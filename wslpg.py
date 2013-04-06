@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08c"
+__version__ = "1.09a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -145,7 +145,7 @@ ENCABEZADO = [
     ('alic_iva_operacion', 5, I, 2), # 3.2
     ('campania_ppal', 4, N),
     ('cod_localidad_procedencia', 6, N), 
-    ('datos_adicionales', 200, A),
+    ('datos_adicionales', 200, A), # max 400 por WSLPGv1.2
     
     ('coe', 12, N),
     ('coe_ajustado', 12, N),
@@ -203,14 +203,15 @@ RETENCION = [
 DEDUCCION = [
     ('tipo_reg', 1, A), # 3: Deducción
     ('codigo_concepto', 2, A), 
-    ('detalle_aclaratorio', 30, A),
+    ('detalle_aclaratorio', 30, A), # max 50 por WSLPGv1.2
     ('dias_almacenaje', 4, N),
-    ('precio_pkg_diario', 6, I, 3), # 3.3
+    ('reservado1', 6, I, 3),
     ('comision_gastos_adm', 5, I, 2), # 3.2
     ('base_calculo', 10, I, 2),  # 8.2
     ('alicuota', 6, I, 2),  # 3.2
     ('importe_iva', 17, I, 2), # 17.2
     ('importe_deduccion', 17, I, 2), # 17.2
+    ('precio_pkg_diario', 11, I, 8), # 3.8, ajustado WSLPGv1.2
     ]
 
 EVENTO = [
@@ -1359,7 +1360,12 @@ def leer_archivo(nombre_archivo):
             elif str(linea[0])=='2':
                 dic['retenciones'].append(leer(linea, RETENCION))
             elif str(linea[0])=='3':
-                dic['deducciones'].append(leer(linea, DEDUCCION))
+                d = leer(linea, DEDUCCION)
+                # ajustes por cambios en afip (compatibilidad hacia atras):
+                if d['reservado1']:
+                    print "ADVERTENCIA: USAR precio_pkg_diario!" 
+                    d['precio_pkg_diario'] = d['reservado1'] 
+                dic['deducciones'].append(d)
             elif str(linea[0])=='9':
                 dic['datos'].append(leer(linea, DATO))
             else:
@@ -1560,7 +1566,14 @@ if __name__ == '__main__':
                             comision_gastos_adm=0.0,
                             base_calculo=100.0,
                             alicuota=21.0,
-                        )],
+                        ),dict(
+                            codigo_concepto="AL",
+                            detalle_aclaratorio="ALMACENAJE",
+                            dias_almacenaje="30",
+                            precio_pkg_diario=0.0001,
+                            comision_gastos_adm=0.0,
+                            alicuota=21.0,
+                        ),],
                     datos=[
                         dict(campo="nombre_comprador", valor="NOMBRE 1"),
                         dict(campo="domicilio1_comprador", valor="DOMICILIO 1"),
