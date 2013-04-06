@@ -1119,8 +1119,9 @@ class WSLPG:
             if HOMO:
                 self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
 
-            copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
-            
+            copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado', 
+                      4: 'Cuadruplicado', 5: 'Quintuplicado'}
+                        
             # convierto el formato de intercambio para representar los valores:        
             fmt_encabezado = dict([(v[0], v[1:]) for v in ENCABEZADO])
             fmt_deduccion = dict([(v[0], v[1:]) for v in DEDUCCION])
