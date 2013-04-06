@@ -1480,15 +1480,16 @@ if __name__ == '__main__':
                 dic = dict(
                     pto_emision=pto_emision,
                     nro_orden=0,  # que lo calcule automáticamente
-                    cuit_comprador=wslpg.Cuit,  # uso Cuit representado
-                    nro_act_comprador=29, nro_ing_bruto_comprador=wslpg.Cuit,
+                    cuit_comprador='20400000000',  
+                    nro_act_comprador=40, nro_ing_bruto_comprador='20400000000',
                     cod_tipo_operacion=1,
                     es_liquidacion_propia='N', es_canje='N',
                     cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
                     cod_grano=31, 
-                    cuit_vendedor=20267565393, nro_ing_bruto_vendedor=30688061039,
-                    actua_corredor="N", liquida_corredor="N", cuit_corredor=30697309264,
-                    comision_corredor=1, nro_ing_bruto_corredor=None, #30697309264,
+                    cuit_vendedor=23000000019, nro_ing_bruto_vendedor=23000000019,
+                    actua_corredor="S", liquida_corredor="S", 
+                    cuit_corredor=wslpg.Cuit, # uso Cuit representado
+                    comision_corredor=1, nro_ing_bruto_corredor=wslpg.Cuit,
                     fecha_precio_operacion="2013-02-07",
                     precio_ref_tn=2000,
                     cod_grado_ref="G1",
@@ -1502,11 +1503,11 @@ if __name__ == '__main__':
                     cod_prov_procedencia=1,
                     datos_adicionales="DATOS ADICIONALES",
                     ##peso_neto_sin_certificado=2000,
-                    precio_operacion=1970,  # para probar ajustar
+                    precio_operacion=None,  # para probar ajustar
                     total_peso_neto=1000,   # para probar ajustar
                     certificados=[dict(   
                         tipo_certificado_deposito=5,
-                        nro_certificado_deposito=555501200623,
+                        nro_certificado_deposito=555501200729,
                         peso_neto=1000,
                         cod_localidad_procedencia=3,
                         cod_prov_procedencia=1,
@@ -1521,7 +1522,7 @@ if __name__ == '__main__':
                             codigo_concepto="RG",
                             detalle_aclaratorio="DETALLE DE GANANCIAS",
                             base_calculo=100,
-                            alicuota=15,
+                            alicuota=0,
                         )],
                     deducciones=[dict(
                             codigo_concepto="OD",

@@ -83,13 +83,13 @@ Sub Main()
     End If
     
     pto_emision = 1  ' agregado v1.1
-    cuit_comprador = "23000000000"
-    nro_act_comprador = 99: nro_ing_bruto_comprador = "23000000000"
+    cuit_comprador = "20400000000" ' Exportador
+    nro_act_comprador = 40: nro_ing_bruto_comprador = "23000000000"
     cod_tipo_operacion = 1
     es_liquidacion_propia = "N": es_canje = "N"
     cod_puerto = 14: des_puerto_localidad = "DETALLE PUERTO"
     cod_grano = 31
-    cuit_vendedor = "30000000007": nro_ing_bruto_vendedor = "30000000007"
+    cuit_vendedor = "23000000019": nro_ing_bruto_vendedor = "23000000019"
     actua_corredor = "S": liquida_corredor = "S": cuit_corredor = "20267565393"
     comision_corredor = 1: nro_ing_bruto_corredor = "20267565393"
     fecha_precio_operacion = "2013-02-07"
@@ -127,7 +127,7 @@ Sub Main()
     ' Agergo un certificado de Depósito a la liquidación (opcional):
     
     tipo_certificado_dposito = 5
-    nro_certificado_deposito = 101200604
+    nro_certificado_deposito = "555501200729"
     peso_neto = 1000
     cod_localidad_procedencia = 3
     cod_prov_procedencia = 1
@@ -149,7 +149,7 @@ Sub Main()
     dias_almacenaje = "0"
     precio_pkg_diario = "0.00"
     comision_gastos_adm = "0.00"
-    base_calculo = "3000.00"
+    base_calculo = "1000.00"
     alicuota = "21.00"
 
     ok = WSLPG.AgregarDeduccion(codigo_concepto, detalle_aclaratorio, _
@@ -161,15 +161,15 @@ Sub Main()
     
     codigo_concepto = "RI"
     detalle_aclaratorio = "DETALLE DE IVA"
-    base_calculo = 1970
-    alicuota = 8
+    base_calculo = 1000
+    alicuota = 10.5
 
     ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, alicuota)
     
     codigo_concepto = "RG"
     detalle_aclaratorio = "DETALLE DE GANANCIAS"
-    base_calculo = 100
-    alicuota = 2
+    base_calculo = 1000
+    alicuota = 0
     
     ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, alicuota)
                
@@ -233,10 +233,11 @@ Sub Main()
         ok = WSLPG.AgregarDatoPDF("art_27", "Art. 27 inc. ...................")
         ok = WSLPG.AgregarDatoPDF("forma_pago", "Forma de Pago: 1234 pesos ..")
         ok = WSLPG.AgregarDatoPDF("constancia", "Por la presente dejo constancia...")
+        ok = WSLPG.AgregarDatoPDF("lugar_y_fecha", Format(Date, "dd/mm/yyyy") + ", Buenos Aires")
     
         ' genero el PDF y lo muestro
         ok = WSLPG.CrearPlantillaPDF("A4", "portrait")
-        ok = WSLPG.ProcesarPlantillaPDF(1)
+        ok = WSLPG.ProcesarPlantillaPDF(2)
         ok = WSLPG.GenerarPDF(App.Path & "\form1116b.pdf")
         ok = WSLPG.MostrarPDF(App.Path & "\form1116b.pdf", False)
     
@@ -250,7 +251,7 @@ Sub Main()
     End If
     
     ' consulto una liquidacion
-    COE = Null
+    COE = WSLPG.COE
     ok = WSLPG.ConsultarLiquidacion(pto_emision, nro_orden, COE)
     If ok Then
         MsgBox "COE:" & WSLPG.COE & vbCrLf & "Estado: " & WSLPG.Estado & vbCrLf, vbInformation, "Consultar Liquidación:"
@@ -284,7 +285,7 @@ Sub Main()
     
     ' anulo una liquidacion
     
-    COE = "330100000357"     ' nro ejemplo AFIP
+    'COE = "330100000357"     ' nro ejemplo AFIP
     ok = WSLPG.AnularLiquidacion(COE)
     If ok Then
         MsgBox "Resultado: " & WSLPG.Resultado & vbCrLf, vbInformation, "AnularLiquidación:"
