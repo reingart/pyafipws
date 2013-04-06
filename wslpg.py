@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08b"
+__version__ = "1.08c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1439,8 +1439,11 @@ if __name__ == '__main__':
             try:
                 wsaa.Conectar(wsdl=WSAA_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
                 ta_string = wsaa.LoginCMS(cms)
+                if wsaa.Excepcion:
+                    print >> sys.stderr, "EXCEPCION:", wsaa.Excepcion
+                    if DEBUG: print >> sys.stderr, wsaa.Traceback
             except Exception, e:
-                print e
+                print >> sys.stderr, e
                 ta_string = ""
             open(TA,"w").write(ta_string)
         ta_string=open(TA).read()
@@ -1630,6 +1633,9 @@ if __name__ == '__main__':
                     print "Autorizando..." 
                     ret = wslpg.AutorizarLiquidacion()
                     
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
             print "COEAjustado", wslpg.COEAjustado
@@ -1664,6 +1670,9 @@ if __name__ == '__main__':
 
             print "Anulando COE", coe
             ret = wslpg.AnularLiquidacion(coe)
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
             print "COE", wslpg.COE
             print "Resultado", wslpg.Resultado
             print "Errores:", wslpg.Errores
@@ -1702,6 +1711,9 @@ if __name__ == '__main__':
                 pto_emision = 1
             print "Consultando ultimo nro_orden para pto_emision=%s" % pto_emision
             ret = wslpg.ConsultarUltNroOrden()
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
             print "Ultimo Nro de Orden", wslpg.NroOrden
             print "Errores:", wslpg.Errores
             sys.exit(0)
@@ -1797,8 +1809,8 @@ if __name__ == '__main__':
                                     lineas_max=int(conf_liq.get("lineas_max", 24)),
                                     qty_pos=conf_liq.get("cant_pos") or 'izq')
             if wslpg.Excepcion:
-                print "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print wslpg.Traceback
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
 
             salida = conf_liq.get("salida", "")
 
@@ -1820,13 +1832,13 @@ if __name__ == '__main__':
         print "hecho."
         
     except SoapFault,e:
-        print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+        print >> sys.stderr, "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
         sys.exit(3)
     except Exception, e:
         try:
-            print traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
+            print >> sys.stderr, traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
         except:
-            print "Excepción no disponible:", type(e)
+            print >> sys.stderr, "Excepción no disponible:", type(e)
         if DEBUG:
             raise
         sys.exit(5)
