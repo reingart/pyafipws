@@ -173,7 +173,7 @@ ENCABEZADO = [
     ('peso_neto_sin_certificado', 8, N),
     
     ('cod_tipo_ajuste', 2, N),
-    ('val_grado_ent', 4, N, 3), # 1.3
+    ('val_grado_ent', 4, I, 3), # 1.3
         
     ]
 
@@ -1230,10 +1230,17 @@ class WSLPG:
                 else:
                     f.set("des_grado_ref", cod_grado_ref)
                 cod_grado_ent = liq['cod_grado_ent']
-                if cod_grano in datos.GRADO_ENT_VALOR: 
+                if 'val_grado_ent' in liq and int(liq['val_grado_ent']):
+                    val_grado_ent =  liq['val_grado_ent']
+                elif cod_grano in datos.GRADO_ENT_VALOR: 
                     valores = datos.GRADO_ENT_VALOR[cod_grano]
                     if cod_grado_ent in valores:
-                        f.set("valor_grado_ent", valores[cod_grado_ent])
+                        val_grado_ent = valores[cod_grado_ent]
+                    else:
+                        val_grado_ent = ""
+                else:
+                    val_grado_ent = ""
+                f.set("valor_grado_ent", "%s %s" % (cod_grado_ent, val_grado_ent))
                 
                 cod_prov = int(liq['cod_prov_procedencia'])
                 ##localidades = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
@@ -1531,8 +1538,8 @@ if __name__ == '__main__':
                     fecha_precio_operacion="2013-02-07",
                     precio_ref_tn=2000,
                     cod_grado_ref="G1",
-                    cod_grado_ent="F1",
-                    factor_ent=98, val_grado_ent=1,
+                    cod_grado_ent="FG",
+                    factor_ent=98, val_grado_ent=1.02,
                     precio_flete_tn=10,
                     cont_proteico=20,
                     alic_iva_operacion=10.5,
