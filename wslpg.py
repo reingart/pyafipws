@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09a"
+__version__ = "1.09b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -173,6 +173,7 @@ ENCABEZADO = [
     ('peso_neto_sin_certificado', 8, N),
     
     ('cod_tipo_ajuste', 2, N),
+    ('val_grado_ent', 4, N, 3), # 1.3
         
     ]
 
@@ -410,12 +411,14 @@ class WSLPG:
                alic_iva_operacion=None, campania_ppal=None,
                cod_localidad_procedencia=None,
                datos_adicionales=None, pto_emision=1, cod_prov_procedencia=None, 
-               peso_neto_sin_certificado=None,
+               peso_neto_sin_certificado=None, val_grado_ent=None,
                **kwargs
                ):
         # limpio los campos especiales (segun validaciones de AFIP)
         if alic_iva_operacion == 0:
             alic_iva_operacion = None   # no informar alicuota p/ monotributo
+        if val_grado_ent == 0:
+            val_grado_ent = None
         self.liquidacion = dict(
                             ptoEmision=pto_emision,
                             nroOrden=nro_orden,
@@ -439,6 +442,7 @@ class WSLPG:
                             precioRefTn=precio_ref_tn,
                             codGradoRef=cod_grado_ref,
                             codGradoEnt=cod_grado_ent,
+                            valGradoEnt=val_grado_ent,
                             factorEnt=factor_ent,
                             precioFleteTn=precio_flete_tn,
                             contProteico=cont_proteico,
@@ -1527,8 +1531,8 @@ if __name__ == '__main__':
                     fecha_precio_operacion="2013-02-07",
                     precio_ref_tn=2000,
                     cod_grado_ref="G1",
-                    cod_grado_ent="G1",
-                    factor_ent=98,
+                    cod_grado_ent="F1",
+                    factor_ent=98, val_grado_ent=1,
                     precio_flete_tn=10,
                     cont_proteico=20,
                     alic_iva_operacion=10.5,
