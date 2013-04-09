@@ -120,12 +120,18 @@ fecha_desde_op = Null
 fecha_hasta_op = Null 
 fecha_desde_t = Null 
 fecha_hasta_t = Null
+fecha_desde_v = Null 
+fecha_hasta_v = Null
+n_remito = Null
+n_factura = Null
 estado = Null
             
 ok = TrazaMed.GetTransaccionesNoConfirmadas(usuario, password, ;
             id_transaccion_global, id_agente_informador, id_agente_origen, ;
             id_agente_destino, id_medicamento, id_evento, fecha_desde_op, ;
-            fecha_hasta_op, fecha_desde_t, fecha_hasta_t, estado)
+            fecha_hasta_op, fecha_desde_t, fecha_hasta_t, ;
+			fecha_desde_v, fecha_hasta_v, ;			
+			n_remito, n_factura, estado)
 
 IF ok THEN
     *-- Muestro transacciones
