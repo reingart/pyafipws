@@ -16,7 +16,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09c"
+__version__ = "1.09d"
 
 import os
 import socket
@@ -427,7 +427,10 @@ class TrazaMed:
                 id_medicamento=None, id_evento=None, 
                 fecha_desde_op=None, fecha_hasta_op=None, 
                 fecha_desde_t=None, fecha_hasta_t=None, 
-                estado=None):
+                fecha_desde_v=None, fecha_hasta_v=None, 
+                n_remito=None, n_factura=None,
+                estado=None,
+                ):
         "Trae un listado de las transacciones que no están confirmadas"
 
         # preparo los parametros de entrada opcionales:
@@ -435,25 +438,33 @@ class TrazaMed:
         if p_id_transaccion_global is not None:
             kwargs['arg2'] = p_id_transaccion_global
         if id_agente_informador is not None:
-            kwargs['arg4'] = id_agente_informador
+            kwargs['arg3'] = id_agente_informador
         if id_agente_origen is not None:
-            kwargs['arg5'] = id_agente_origen
+            kwargs['arg4'] = id_agente_origen
         if id_agente_destino is not None: 
-            kwargs['arg6'] = id_agente_destino
+            kwargs['arg5'] = id_agente_destino
         if id_medicamento is not None: 
-            kwargs['arg7'] = id_medicamento
+            kwargs['arg6'] = id_medicamento
         if id_evento is not None: 
-            kwargs['arg8'] = id_evento
+            kwargs['arg7'] = id_evento
         if fecha_desde_op is not None: 
-            kwargs['arg9'] = fecha_desde_op
+            kwargs['arg8'] = fecha_desde_op
         if fecha_hasta_op is not None: 
-            kwargs['arg10'] = fecha_hasta_op
+            kwargs['arg9'] = fecha_hasta_op
         if fecha_desde_t is not None: 
-            kwargs['arg11'] = fecha_desde_t
+            kwargs['arg10'] = fecha_desde_t
         if fecha_hasta_t is not None: 
-            kwargs['arg12'] = fecha_hasta_t
+            kwargs['arg11'] = fecha_hasta_t
+        if fecha_desde_v is not None: 
+            kwargs['arg12'] = fecha_desde_v
+        if fecha_hasta_v is not None: 
+            kwargs['arg13'] = fecha_hasta_v
+        if n_remito is not None: 
+            kwargs['arg14'] = n_remito
+        if n_factura is not None: 
+            kwargs['arg15'] = n_factura
         if estado is not None: 
-            kwargs['arg13'] = estado
+            kwargs['arg16'] = estado
 
         # llamo al webservice
         res = self.client.getTransaccionesNoConfirmadas(
@@ -629,6 +640,9 @@ def main():
                                 #fecha_hasta_op="31/12/2013", 
                                 #fecha_desde_t="01/01/2013", 
                                 #fecha_hasta_t="31/12/2013", 
+                                #fecha_desde_v="01/04/2013", 
+                                #fecha_hasta_v="30/04/2013", 
+                                #n_factura=5, n_remito=6,
                                 #estado=1
                                 )
         print "CantPaginas", ws.CantPaginas
@@ -641,6 +655,7 @@ def main():
                   '_d_evento',
                   '_gln_origen', '_gln_destino',
                   '_razon_social_origen', '_razon_social_destino',
+                  '_n_remito', '_n_factura',
                   ]
         # encabezado de la tabla:
         print "||", "||".join(["%s" % clave for clave in claves]), "||"
