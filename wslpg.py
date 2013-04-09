@@ -383,7 +383,8 @@ class WSLPG:
                             for err in errores]
             self.errores = [
                 {'codigo': err['error']['codigo'],
-                 'descripcion': err['error']['descripcion'].replace("\n", "")} 
+                 'descripcion': err['error']['descripcion'].replace("\n", "")
+                                .replace("\r", "")} 
                              for err in errores]
             self.ErrCode = ' '.join(self.Errores)
             self.ErrMsg = '\n'.join(self.Errores)
@@ -543,9 +544,7 @@ class WSLPG:
         # analizo la respusta
         ret = ret['liqReturn']
         self.__analizar_errores(ret)
-        if 'autorizacion' in ret:
-            aut = ret['autorizacion']
-            self.AnalizarLiquidacion(aut, self.liquidacion)
+        self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
 
     def AnalizarLiquidacion(self, aut, liq=None):
         "Método interno para analizar la respuesta de AFIP"
@@ -597,6 +596,9 @@ class WSLPG:
                         campania=cert['campania'],
                         fecha_cierre=cert['fechaCierre'],
                     ))
+
+        self.params_out['errores'] = self.errores
+            
         # proceso la respuesta de autorizar, ajustar (y consultar):
         if aut:
             self.TotalDeduccion = aut['totalDeduccion']
@@ -621,7 +623,6 @@ class WSLPG:
             self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
             self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
             self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
-            self.params_out['errores'] = self.errores
 
             # datos adicionales:
             self.params_out['nro_orden'] = aut.get('nroOrden')
@@ -662,6 +663,7 @@ class WSLPG:
                      'precio_pkg_diario': dedret['deduccion'].get('precioPKGdiario'),
                      'comision_gastos_adm': dedret['deduccion'].get('comisionGastosAdm'),
                     })
+        
 
 
     @inicializar_y_capturar_excepciones
