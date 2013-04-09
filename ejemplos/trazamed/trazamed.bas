@@ -142,13 +142,19 @@ Sub Main()
     fecha_hasta_op = Null
     fecha_desde_t = Null
     fecha_hasta_t = Null
+    fecha_desde_v = Null
+    fecha_hasta_v = Null
+    n_remito = Null
+    n_factura = Null
     estado = Null ' Informada
     ' llamo al webservice para realizar la consulta:
     ok = TrazaMed.GetTransaccionesNoConfirmadas(usuario, password, _
-            p_id_transaccion_global, id_agente_informador, _
-            id_agente_origen, id_agente_destino, id_medicamento, _
-            id_evento, fecha_desde_op, fecha_hasta_op, _
-            fecha_desde_t, fecha_hasta_t, estado)
+        p_id_transaccion_global, id_agente_informador, _
+        id_agente_origen, id_agente_destino, id_medicamento, _
+        id_evento, fecha_desde_op, fecha_hasta_op, _
+        fecha_desde_t, fecha_hasta_t, _
+        fecha_desde_v, fecha_hasta_v, _
+        n_remito, n_factura, estado)
     If ok Then
         ' recorro las transacciones devueltas (TransaccionPlainWS)
         Do While TrazaMed.LeerTransaccion:
@@ -171,6 +177,8 @@ Sub Main()
             Debug.Print TrazaMed.GetParametro("_nombre")
             Debug.Print TrazaMed.GetParametro("_gtin")
             Debug.Print TrazaMed.GetParametro("_id_transaccion")
+            Debug.Print TrazaMed.GetParametro("_n_factura")
+            Debug.Print TrazaMed.GetParametro("_n_remito")
         Loop
     End If
     
