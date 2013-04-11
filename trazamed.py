@@ -33,7 +33,7 @@ TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazamed.WebService?wsdl"
 LOCATION = "https://servicios.pami.org.ar/trazamed.WebService"
-WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
+#WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
          
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -115,14 +115,9 @@ class TrazaMed:
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        self.Errores = []
-        if 'arrayErrores' in ret:
-            errores = ret['arrayErrores']
-            for error in errores:
-                self.Errores.append("%s: %s" % (
-                    error['codigoDescripcion']['codigo'],
-                    error['codigoDescripcion']['descripcion'],
-                    ))
+        self.Errores = ["%s: %s" % (it['_c_error'], it['_d_error'])
+                        for it in ret.get('errores', [])]
+        self.Resultado = ret.get('resultado')
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
         # cliente soap del web service
@@ -242,10 +237,8 @@ class TrazaMed:
 
         ret = res['return']
         
-        self.CodigoTransaccion = ret[0]['codigoTransaccion']
-        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
-                        for it in ret if 'errores' in it]
-        self.Resultado = ret[-1]['resultado']
+        self.CodigoTransaccion = ret['codigoTransaccion']
+        self.__analizar_errores(ret)
 
         return True
 
@@ -303,10 +296,8 @@ class TrazaMed:
 
         ret = res['return']
         
-        self.CodigoTransaccion = ret[0]['codigoTransaccion']
-        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
-                        for it in ret if 'errores' in it]
-        self.Resultado = ret[-1]['resultado']
+        self.CodigoTransaccion = ret['codigoTransaccion']
+        self.__analizar_errores(ret)
 
         return True
         
@@ -365,10 +356,8 @@ class TrazaMed:
 
         ret = res['return']
         
-        self.CodigoTransaccion = ret[0]['codigoTransaccion']
-        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
-                        for it in ret if 'errores' in it]
-        self.Resultado = ret[-1]['resultado']
+        self.CodigoTransaccion = ret['codigoTransaccion']
+        self.__analizar_errores(ret)
 
         return True
 
@@ -383,10 +372,8 @@ class TrazaMed:
 
         ret = res['return']
         
-        self.CodigoTransaccion = ret[0]['codigoTransaccion']
-        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
-                        for it in ret if 'errores' in it]
-        self.Resultado = ret[-1]['resultado']
+        self.CodigoTransaccion = ret['codigoTransaccion']
+        self.__analizar_errores(ret)
 
         return True
 
@@ -399,10 +386,8 @@ class TrazaMed:
             arg2={'p_ids_transac': p_ids_transac, 'f_operacion': f_operacion}, 
         )
         ret = res['return']
-        self.CodigoTransaccion = ret[0].get('codigoTransaccion')
-        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
-                        for it in ret if 'errores' in it]
-        self.Resultado = ret[-1]['resultado']
+        self.CodigoTransaccion = ret.get('id_transac_asociada')
+        self.__analizar_errores(ret)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -414,10 +399,8 @@ class TrazaMed:
             arg2=p_ids_transac_ws, 
         )
         ret = res['return']
-        self.CodigoTransaccion = ret[0].get('codigoTransaccion')
-        self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
-                        for it in ret if 'errores' in it]
-        self.Resultado = ret[-1]['resultado']
+        self.CodigoTransaccion = ret.get('id_transac_asociada')
+        self.__analizar_errores(ret)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -474,11 +457,10 @@ class TrazaMed:
         )
         ret = res['return']
         if ret:
-            self.Errores = ["%s: %s" % (it['errores']['_c_error'], it['errores']['_d_error'])
-                            for it in ret if 'errores' in it]
-            self.CantPaginas = ret[0].get('cantPaginas')
-            self.HayError = ret[0].get('hay_error')
-            self.TransaccionPlainWS = [it['list'] for it in ret if 'list' in it]
+            self.__analizar_errores(ret)
+            self.CantPaginas = ret.get('cantPaginas')
+            self.HayError = ret.get('hay_error')
+            self.TransaccionPlainWS = [it for it in ret.get('list', [])]
         return True
 
     def  LeerTransaccion(self):
@@ -630,6 +612,12 @@ def main():
     elif '--cancela' in sys.argv:
         ws.SendCancelacTransacc(*sys.argv[sys.argv.index("--cancela")+1:])
     elif '--confirma' in sys.argv:
+        if '--loadxml' in sys.argv:
+            ws.LoadTestXML("trazamed_confirma.xml")  # cargo respuesta
+            ok = ws.SendConfirmaTransacc(usuario="pruebasws", password="pruebasws",
+                                   p_ids_transac="1", f_operacion="31-12-2013")
+            if not ok:
+                raise RuntimeError(ws.Excepcion)
         ws.SendConfirmaTransacc(*sys.argv[sys.argv.index("--confirma")+1:])
     elif '--alerta' in sys.argv:
         ws.SendAlertaTransacc(*sys.argv[sys.argv.index("--alerta")+1:])
