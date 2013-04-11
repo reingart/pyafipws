@@ -11,8 +11,9 @@ Sub Main()
     ' Crear la interfaz COM
     Set TrazaMed = CreateObject("TrazaMed")
     
-    Debug.Print TrazaMed.Version
-    Debug.Print TrazaMed.InstallDir
+    Debug.Print TrazaMed.Version, TrazaMed.InstallDir
+    ' chequeo la versión mínima para especificación técnica v2:
+    Debug.Assert TrazaMed.Version >= "1.10a  1.08a"
     
     ' Establecer credenciales de seguridad
     TrazaMed.Username = "testwservice"
@@ -96,39 +97,6 @@ Sub Main()
     
     ' Especificación Técnica Versión 2:
     
-    ' Confirmo la transacción
-    p_ids_transac = "5142760" ' TrazaMed.CodigoTransaccion
-    f_operacion = CStr(Date)  ' ej. 25/02/2013
-    ok = TrazaMed.SendConfirmaTransacc(usuario, password, _
-                                p_ids_transac, f_operacion)
-    If ok Then
-        Debug.Print "Resultado", TrazaMed.Resultado
-        Debug.Print "CodigoTransaccion", TrazaMed.CodigoTransaccion
-        MsgBox "Resultado: " & TrazaMed.Resultado & vbCrLf & _
-                "CodigoTransaccion: " & TrazaMed.CodigoTransaccion, _
-                vbInformation, "SendConfirmaTransacc"
-        For Each er In TrazaMed.Errores
-            Debug.Print er
-            MsgBox er, vbExclamation, "Error en SendConfirmaTransacc"
-        Next
-    End If
-    
-    ' Alerto la transacción (lo contrario a confirmar)
-    p_ids_transac_ws = "5142770" ' TrazaMed.CodigoTransaccion
-    ok = TrazaMed.SendAlertaTransacc(usuario, password, _
-                                p_ids_transac_ws)
-    If ok Then
-        Debug.Print "Resultado", TrazaMed.Resultado
-        Debug.Print "CodigoTransaccion", TrazaMed.CodigoTransaccion
-        MsgBox "Resultado: " & TrazaMed.Resultado & vbCrLf & _
-                "CodigoTransaccion: " & TrazaMed.CodigoTransaccion, _
-                vbInformation, "SendAlertaTransacc"
-        For Each er In TrazaMed.Errores
-            Debug.Print er
-            MsgBox er, vbExclamation, "Error en SendAlertaTransacc"
-        Next
-    End If
-    
     
     ' Consulto las transacciones no confirmada:
     ' (usar valores Nulos para no usar un criterio de búqueda)
@@ -181,5 +149,46 @@ Sub Main()
             Debug.Print TrazaMed.GetParametro("_n_remito")
         Loop
     End If
+    
+    ' Confirmo la transacción (última en la lista consultada)
+    p_ids_transac = TrazaMed.GetParametro("_id_transaccion")
+    f_operacion = CStr(Date)  ' ej. 25/02/2013
+    ok = TrazaMed.SendConfirmaTransacc(usuario, password, _
+                                p_ids_transac, f_operacion)
+    If ok Then
+        Debug.Print "Resultado", TrazaMed.Resultado
+        Debug.Print "CodigoTransaccion", TrazaMed.CodigoTransaccion
+        MsgBox "Resultado: " & TrazaMed.Resultado & vbCrLf & _
+                "CodigoTransaccion: " & TrazaMed.CodigoTransaccion, _
+                vbInformation, "SendConfirmaTransacc"
+        For Each er In TrazaMed.Errores
+            Debug.Print er
+            MsgBox er, vbExclamation, "Error en SendConfirmaTransacc"
+        Next
+    Else
+        Debug.Print TrazaMed.XmlResponse
+        MsgBox TrazaMed.Traceback, vbExclamation, "Excepcion en SendConfirmaTransacc: " & TrazaMed.Excepcion
+    End If
+    
+    ' leo la proxima transaccion (si no termino de recorrer la lista)
+    ok = TrazaMed.LeerTransaccion()
+    Debug.Assert ok
+    
+    ' Alerto la transacción (lo contrario a confirmar)
+    p_ids_transac_ws = TrazaMed.GetParametro("_id_transaccion")
+    ok = TrazaMed.SendAlertaTransacc(usuario, password, _
+                                p_ids_transac_ws)
+    If ok Then
+        Debug.Print "Resultado", TrazaMed.Resultado
+        Debug.Print "CodigoTransaccion", TrazaMed.CodigoTransaccion
+        MsgBox "Resultado: " & TrazaMed.Resultado & vbCrLf & _
+                "CodigoTransaccion: " & TrazaMed.CodigoTransaccion, _
+                vbInformation, "SendAlertaTransacc"
+        For Each er In TrazaMed.Errores
+            Debug.Print er
+            MsgBox er, vbExclamation, "Error en SendAlertaTransacc"
+        Next
+    End If
+    
     
 End Sub
