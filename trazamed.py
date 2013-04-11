@@ -21,6 +21,7 @@ __version__ = "1.10a"
 import os
 import socket
 import sys
+import datetime, time
 import traceback
 import pysimplesoap.client
 from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
@@ -541,17 +542,20 @@ def main():
         ws.SetParametro('nro_asociado', "9999999999999")
         ws.SendMedicamentos(
             usuario='pruebasws', password='pruebasws',
-            f_evento="25/11/2011", h_evento="04:24", 
-            gln_origen="glnws", gln_destino="glnws", 
+            f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
+            h_evento=datetime.datetime.now().strftime("%H:%M"), 
+            gln_origen="9999999999918", gln_destino="glnws", 
             n_remito="1234", n_factura="1234", 
-            vencimiento="30/11/2011", gtin="GTIN1", lote="1111",
-            numero_serial="12345", id_obra_social=None, id_evento=133,
+            vencimiento=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"), 
+            gtin="GTIN1", lote=datetime.datetime.now().strftime("%Y"),
+            numero_serial=int(time.time()), 
+            id_obra_social=None, id_evento=134,
             cuit_origen="20267565393", cuit_destino="20267565393", 
             apellido="Reingart", nombres="Mariano",
             tipo_docmento="96", n_documento="26756539", sexo="M",
             direccion="Saraza", numero="1234", piso="", depto="", 
             localidad="Hurlingham", provincia="Buenos Aires",
-            n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
+            n_postal="1688", fecha_nacimiento="01/01/2000", 
             telefono="5555-5555",
             )
         print "Resultado", ws.Resultado
@@ -563,17 +567,20 @@ def main():
         ws.SetParametro('cantidad', 5)
         ws.SendMedicamentosFraccion(
             usuario='pruebasws', password='pruebasws',
-            f_evento="25/11/2011", h_evento="04:24", 
-            gln_origen="glnws", gln_destino="glnws", 
+            f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
+            h_evento=datetime.datetime.now().strftime("%H:%M"), 
+            gln_origen="9999999999918", gln_destino="glnws", 
             n_remito="1234", n_factura="1234", 
-            vencimiento="30/11/2011", gtin="GTIN1", lote="1111",
-            numero_serial="12345", id_obra_social=None, id_evento=133,
+            vencimiento=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"), 
+            gtin="GTIN1", lote=datetime.datetime.now().strftime("%Y"),
+            numero_serial=int(time.time()), 
+            id_obra_social=None, id_evento=134,
             cuit_origen="20267565393", cuit_destino="20267565393", 
             apellido="Reingart", nombres="Mariano",
             tipo_docmento="96", n_documento="26756539", sexo="M",
             direccion="Saraza", numero="1234", piso="", depto="", 
             localidad="Hurlingham", provincia="Buenos Aires",
-            n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
+            n_postal="1688", fecha_nacimiento="01/01/2000", 
             telefono="5555-5555",)
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
@@ -583,20 +590,14 @@ def main():
         ws.SetParametro('nro_asociado', "1234")
         ws.SendMedicamentosDHSerie(
             usuario='pruebasws', password='pruebasws',
-            f_evento="25/11/2011", h_evento="04:24", 
-            gln_origen="glnws", gln_destino="9999999999918", 
+            f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
+            h_evento=datetime.datetime.now().strftime("%H:%M"), 
+            gln_origen="9999999999918", gln_destino="glnws", 
             n_remito="1234", n_factura="1234", 
-            vencimiento="30/11/2011", gtin="GTIN1", lote="1111",
-            desde_numero_serial="2224", hasta_numero_serial="2225", 
-            id_obra_social=None, id_evento=133,
-            nro_asociado='1234',
-            #cuit_origen="20267565393", cuit_destino="20267565393", 
-            #apellido="Reingart", nombres="Mariano",
-            #tipo_docmento="96", n_documento="26756539", sexo="M",
-            #direccion="Saraza", numero="1234", piso="", depto="", 
-            #localidad="Hurlingham", provincia="Buenos Aires",
-            #n_postal="B1688FDD", fecha_nacimiento="01/01/2000", 
-            #telefono="5555-5555",
+            vencimiento=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"), 
+            gtin="GTIN1", lote=datetime.datetime.now().strftime("%Y"),
+            desde_numero_serial=int(time.time())-1, hasta_numero_serial=int(time.time())+1, 
+            id_obra_social=None, id_evento=134,
             )
         print "Resultado", ws.Resultado
         print "CodigoTransaccion", ws.CodigoTransaccion
