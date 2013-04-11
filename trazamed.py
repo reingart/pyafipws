@@ -16,7 +16,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09d"
+__version__ = "1.10a"
 
 import os
 import socket
@@ -33,7 +33,7 @@ TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazamed.WebService?wsdl"
 LOCATION = "https://servicios.pami.org.ar/trazamed.WebService"
-#WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
+WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
          
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -79,7 +79,7 @@ class TrazaMed:
                         'Conectar', 'LeerError', 'LeerTransaccion',
                         'SetUsername', 
                         'SetParametro', 'GetParametro',
-                        'GetCodigoTransaccion', 'GetResultado']
+                        'GetCodigoTransaccion', 'GetResultado', 'LoadTestXML']
                         
     _public_attrs_ = [
         'Username', 'Password', 
@@ -519,6 +519,13 @@ class TrazaMed:
     def GetResultado(self):
         "Devuelvo el resultado"        
         return self.Resultado
+
+    def LoadTestXML(self, xml_file):
+        "Cargar una respuesta predeterminada de pruebas (emulación del ws)"
+        # cargo el ejemplo de AFIP (emulando respuesta del webservice)
+        from pysimplesoap.transport import DummyTransport as DummyHTTP 
+        xml = open(os.path.join(INSTALL_DIR, xml_file)).read()
+        self.client.http = DummyHTTP(xml)
 
 
 def main():
