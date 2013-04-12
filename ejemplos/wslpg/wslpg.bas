@@ -106,7 +106,11 @@ Sub Main()
     datos_adicionales = "DATOS ADICIONALES"
        
     ' establezco un parámetro adicional (antes de llamar a CrearLiquidacion)
+    ' nuevos parámetros WSLPGv1.1:
     '' ok = WSLPG.SetParametro("peso_neto_sin_certificado", 1000)
+    ' nuevos parámetros WSLPGv1.3:
+    '' ok = WSLPG.SetParametro("cod_prov_procedencia_sin_certificado", 12)
+    '' ok = WSLPG.SetParametro("cod_localidad_procedencia_sin_certificado", 5544)
        
     ok = WSLPG.CrearLiquidacion(nro_orden, cuit_comprador, _
                                nro_act_comprador, nro_ing_bruto_comprador, _
