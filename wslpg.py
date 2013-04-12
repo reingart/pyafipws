@@ -1210,10 +1210,9 @@ class WSLPG:
                                       }.get(cod_tipo_ajuste, ''))
 
                 # limpio datos del corredor si no corresponden:
-                if liq['liquida_corredor'] == 'N':
-                    for k in ('nombre_corredor', 'domicilio_corredor', 'cuit_corredor'):
-                        if k in self.datos:
-                            del self.datos[k]
+                if liq['actua_corredor'] == 'N':
+                    if liq['cuit_corredor', None] == 0:
+                        del self.datos['cuit_corredor']
                     
                 # establezco campos según tabla encabezado:
                 for k,v in liq.items():
