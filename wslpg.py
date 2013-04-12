@@ -1644,7 +1644,19 @@ if __name__ == '__main__':
                         dict(campo="domicilio_corredor", valor="DOMICILIO 3"),
                         ]
                     )
+                if "--sincorr" in sys.argv:
+                    # ajusto datos para prueba sin corredor
+                    dic.update(dict(
+                        cuit_comprador=wslpg.Cuit,  
+                        nro_act_comprador=29, nro_ing_bruto_comprador=wslpg.Cuit,
+                        actua_corredor="N", liquida_corredor="N", 
+                        cuit_corredor=0,
+                        comision_corredor=0, nro_ing_bruto_corredor=0,))
+                    dic['retenciones'][1]['alicuota'] = 15
+                    del dic['datos'][-1]
+                    del dic['datos'][-1]
                 if "--sincert" in sys.argv:
+                    # ajusto datos para prueba sin certificado de deposito
                     dic['peso_neto_sin_certificado'] = 10000
                     dic['cod_prov_procedencia_sin_certificado'] = 1
                     dic['cod_localidad_procedencia_sin_certificado'] = 3                     
