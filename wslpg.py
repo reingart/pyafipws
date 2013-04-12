@@ -75,7 +75,7 @@ Opciones:
 Ver wslpg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, time
+import os, sys, time, shelve
 import decimal, datetime
 from php import date
 import traceback
@@ -373,6 +373,18 @@ class WSLPG:
             location = location.replace("http://", "https://").replace(":80", ":443")
             self.client.services['LpgService']['ports']['LpgEndPoint']['location'] = location
             print location
+        
+        try:
+            # intento abrir el diccionario persistente de localidades
+            import wslpg_datos
+            localidades_db = os.path.join(cache, "localidades.dat")
+            # verificar que puede escribir en el dir, sino abrir solo lectura
+            flag = os.access(cache, os.W_OK) and 'c' or 'r'
+            wslpg_datos.LOCALIDADES = shelve.open(localidades_db, flag=flag)
+            if DEBUG: print "Localidades en BD:", len(wslpg_datos.LOCALIDADES)
+        except Exception, e:
+            print "ADVERTENCIA: No se pudo abrir la bbdd de localidades:", e
+            
         return True
 
     def __analizar_errores(self, ret):
@@ -931,8 +943,6 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
-
-
     def ConsultarProvincias(self, sep="||"):
         "Consulta las provincias habilitadas"
         ret = self.client.provinciasConsultar(
@@ -942,7 +952,12 @@ class WSLPG:
                             )['provinciasReturn']
         self.__analizar_errores(ret)
         array = ret.get('provincias', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+        if sep is None:
+            return dict([(int(it['codigoDescripcion']['codigo']), 
+                              it['codigoDescripcion']['descripcion']) 
+                         for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
@@ -957,7 +972,7 @@ class WSLPG:
         self.__analizar_errores(ret)
         array = ret.get('localidades', [])
         if sep is None:
-            return dict([(int(it['codigoDescripcion']['codigo']), 
+            return dict([(str(it['codigoDescripcion']['codigo']), 
                           it['codigoDescripcion']['descripcion']) 
                          for it in array])
         else:
@@ -1259,10 +1274,19 @@ class WSLPG:
                 f.set("valor_grado_ent", "%s %s" % (cod_grado_ent, val_grado_ent))
                 
                 cod_prov = int(liq['cod_prov_procedencia'])
-                ##localidades = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
-                ##pprint.pprint(localidades)
                 provincia = datos.PROVINCIAS[cod_prov]
-                localidad = datos.LOCALIDADES.get(int(liq['cod_localidad_procedencia']), "")
+                cod_localidad = str(liq['cod_localidad_procedencia'])
+                if not cod_localidad in datos.LOCALIDADES:
+                    d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
+                    try:
+                        # actualizar el diccionario persistente (shelve)
+                        datos.LOCALIDADES.update(d)
+                    except Exception, e:
+                        print "EXCEPCION CAPTURADA", e
+                        # capturo errores por permisos (o por concurrencia)
+                        datos.LOCALIDADES = d   
+
+                localidad = datos.LOCALIDADES.get(cod_localidad, "")
                 f.set("procedencia", "%s - %s" % (localidad, provincia))
                 
                 if HOMO:
@@ -1560,8 +1584,8 @@ if __name__ == '__main__':
                     cont_proteico=20,
                     alic_iva_operacion=10.5,
                     campania_ppal=1213,
-                    cod_localidad_procedencia=3,
-                    cod_prov_procedencia=1,
+                    cod_localidad_procedencia=5544,
+                    cod_prov_procedencia=12,
                     datos_adicionales="DATOS ADICIONALES",
                     ##peso_neto_sin_certificado=2000,
                     precio_operacion=None,  # para probar ajustar
@@ -1823,6 +1847,15 @@ if __name__ == '__main__':
                 grad_ent = wslpg.ConsultarGradoEntregadoXTipoGrano(cod_grano, sep=None)
                 print cod_grano, ":", grad_ent, ","
 
+        if '--shelve' in sys.argv:
+            print "# Construyendo BD de Localidades por Provincias"            
+            import wslpg_datos as datos
+            for cod_prov, desc_prov in wslpg.ConsultarProvincias(sep=None).items():
+                print "Actualizando Provincia", cod_prov, desc_prov
+                d = wslpg.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
+                datos.LOCALIDADES.update(d)
+
+
         if '--certdeposito' in sys.argv:
             ret = wslpg.ConsultarTipoCertificadoDeposito()
             print "\n".join(ret)
@@ -1856,8 +1889,9 @@ if __name__ == '__main__':
             ret = wslpg.ConsultarProvincias()
             print "\n".join(ret)
                     
-        if '--localidades' in sys.argv:    
-            ret = wslpg.ConsultarLocalidadesPorProvincia(11)
+        if '--localidades' in sys.argv:
+            cod_prov = raw_input("Ingrese el código de provincia:")
+            ret = wslpg.ConsultarLocalidadesPorProvincia(cod_prov)
             print "\n".join(ret)
 
         # Generación del PDF:
