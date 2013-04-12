@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09d"
+__version__ = "1.09e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -174,6 +174,10 @@ ENCABEZADO = [
     
     ('cod_tipo_ajuste', 2, N),
     ('val_grado_ent', 4, I, 3), # 1.3
+
+    # Campos WSLPGv1.3:
+    #('cod_prov_procedencia', 2, N),
+    #('cod_localidad_procedencia', 6, N), 
         
     ]
 
@@ -456,7 +460,7 @@ class WSLPG:
                             certificados=[],
             )
         # hay que "copiar" los siguientes campos si no hay certificado:
-        if False and peso_neto_sin_certificado:
+        if peso_neto_sin_certificado:
             self.liquidacion.update(dict(
                 codLocalidadProcedenciaSinCertificado=cod_localidad_procedencia,
                 codProvProcedenciaSinCertificado=cod_prov_procedencia,
@@ -1722,7 +1726,7 @@ if __name__ == '__main__':
 
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)
-            escribir_archivo(dic, SALIDA)  
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
 
         if '--anular' in sys.argv:
             ##print wslpg.client.help("anularLiquidacion")
@@ -1762,7 +1766,7 @@ if __name__ == '__main__':
             print "Errores:", wslpg.Errores
 
             # actualizo el archivo de salida con los datos devueltos
-            escribir_archivo(wslpg.params_out, SALIDA)
+            escribir_archivo(wslpg.params_out, SALIDA, agrega=('--agrega' in sys.argv))
 
             if DEBUG: 
                 pprint.pprint(wslpg.params_out)
