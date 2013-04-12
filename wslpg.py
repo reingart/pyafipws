@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09e"
+__version__ = "1.10a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -176,8 +176,8 @@ ENCABEZADO = [
     ('val_grado_ent', 4, I, 3), # 1.3
 
     # Campos WSLPGv1.3:
-    #('cod_prov_procedencia', 2, N),
-    #('cod_localidad_procedencia', 6, N), 
+    ('cod_prov_procedencia_sin_certificado', 2, N),
+    ('cod_localidad_procedencia_sin_certificado', 6, N), 
         
     ]
 
@@ -417,6 +417,8 @@ class WSLPG:
                cod_localidad_procedencia=None,
                datos_adicionales=None, pto_emision=1, cod_prov_procedencia=None, 
                peso_neto_sin_certificado=None, val_grado_ent=None,
+               cod_localidad_procedencia_sin_certificado=None,
+               cod_prov_procedencia_sin_certificado=None,
                **kwargs
                ):
         # limpio los campos especiales (segun validaciones de AFIP)
@@ -462,8 +464,8 @@ class WSLPG:
         # hay que "copiar" los siguientes campos si no hay certificado:
         if peso_neto_sin_certificado:
             self.liquidacion.update(dict(
-                codLocalidadProcedenciaSinCertificado=cod_localidad_procedencia,
-                codProvProcedenciaSinCertificado=cod_prov_procedencia,
+                codLocalidadProcedenciaSinCertificado=cod_localidad_procedencia_sin_certificado,
+                codProvProcedenciaSinCertificado=cod_prov_procedencia_sin_certificado,
                 ))
 
         self.retenciones = []
@@ -593,6 +595,8 @@ class WSLPG:
                         cod_prov_procedencia=liq.get('codProvProcedencia'),
                         datos_adicionales=liq.get('datosAdicionales'),
                         peso_neto_sin_certificado=liq.get('pesoNetoSinCertificado'),
+                        cod_localidad_procedencia_sin_certificado=liq.get('codLocalidadProcedenciaSinCertificado'),
+                        cod_prov_procedencia_sin_certificado=liq.get('codProvProcedenciaSinCertificado'),
                         certificados=[],
                     )
             if 'certificados' in liq:
@@ -1612,6 +1616,11 @@ if __name__ == '__main__':
                         dict(campo="domicilio_corredor", valor="DOMICILIO 3"),
                         ]
                     )
+                if "--sincert" in sys.argv:
+                    dic['peso_neto_sin_certificado'] = 10000
+                    dic['cod_prov_procedencia_sin_certificado'] = 1
+                    dic['cod_localidad_procedencia_sin_certificado'] = 3                     
+                    dic['certificados'] = []
                 escribir_archivo(dic, ENTRADA)
             else:
                 dic = leer_archivo(ENTRADA)
