@@ -670,7 +670,7 @@ class WSLPG:
                 self.params_out['deducciones'].append({
                     'importe_deduccion': dedret['importeDeduccion'],
                     'importe_iva': dedret.get('importeIva'),
-                     'alicuota_iva': dedret['deduccion'].get('alicuotaIva'),
+                     'alicuota': dedret['deduccion'].get('alicuotaIva'),
                      'base_calculo': dedret['deduccion'].get('baseCalculo'),
                      'codigo_concepto': dedret['deduccion'].get('codigoConcepto'),
                      'detalle_aclaratorio': dedret['deduccion'].get('detalleAclaratorio', "").replace("\n", ""),
