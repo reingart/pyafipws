@@ -475,6 +475,10 @@ class WSLPG:
             )
         # hay que "copiar" los siguientes campos si no hay certificado:
         if peso_neto_sin_certificado:
+            if cod_localidad_procedencia_sin_certificado is None:
+                cod_localidad_procedencia_sin_certificado = cod_localidad_procedencia
+            if cod_prov_procedencia_sin_certificado is None:
+                cod_prov_procedencia_sin_certificado = cod_prov_procedencia
             self.liquidacion.update(dict(
                 codLocalidadProcedenciaSinCertificado=cod_localidad_procedencia_sin_certificado,
                 codProvProcedenciaSinCertificado=cod_prov_procedencia_sin_certificado,
