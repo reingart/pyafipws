@@ -93,22 +93,22 @@ ENDIF
 *-- Establezco los valores de la liquidacion a autorizar:
 ok = WSLPG.SetParametro("pto_emision", pto_emision)  && agregado v1.1
 ok = WSLPG.SetParametro("nro_orden", nro_orden)
-ok = WSLPG.SetParametro("cuit_comprador", "23000000000")
-ok = WSLPG.SetParametro("nro_act_comprador", 99)
-ok = WSLPG.SetParametro("nro_ing_bruto_comprador", "23000000000")
+ok = WSLPG.SetParametro("cuit_comprador", WSLPG.Cuit)
+ok = WSLPG.SetParametro("nro_act_comprador", 29)
+ok = WSLPG.SetParametro("nro_ing_bruto_comprador", WSLPG.Cuit)
 ok = WSLPG.SetParametro("cod_tipo_operacion", 1)
 ok = WSLPG.SetParametro("es_liquidacion_propia", "N")
 ok = WSLPG.SetParametro("es_canje", "N")
 ok = WSLPG.SetParametro("cod_puerto", 14)
 ok = WSLPG.SetParametro("des_puerto_localidad", "DETALLE PUERTO")
 ok = WSLPG.SetParametro("cod_grano", 31)
-ok = WSLPG.SetParametro("cuit_vendedor", "30000000007")
-ok = WSLPG.SetParametro("nro_ing_bruto_vendedor", "30000000007")
-ok = WSLPG.SetParametro("actua_corredor", "S")
-ok = WSLPG.SetParametro("liquida_corredor", "S")
-ok = WSLPG.SetParametro("cuit_corredor", "20267565393")
-ok = WSLPG.SetParametro("comision_corredor", 1)
-ok = WSLPG.SetParametro("nro_ing_bruto_corredor", "20267565393")
+ok = WSLPG.SetParametro("cuit_vendedor", "23000000019")
+ok = WSLPG.SetParametro("nro_ing_bruto_vendedor", "23000000019")
+ok = WSLPG.SetParametro("actua_corredor", "N")
+ok = WSLPG.SetParametro("liquida_corredor", "N")
+&& ok = WSLPG.SetParametro("cuit_corredor", "")
+&& ok = WSLPG.SetParametro("comision_corredor", 0)
+&& ok = WSLPG.SetParametro("nro_ing_bruto_corredor", "")
 ok = WSLPG.SetParametro("fecha_precio_operacion", "2013-02-07")
 ok = WSLPG.SetParametro("precio_ref_tn", 2000)
 ok = WSLPG.SetParametro("cod_grado_ref", "G1")
@@ -127,7 +127,7 @@ ok = WSLPG.CrearLiquidacion()
 *-- Agergo un certificado de Depósito a la liquidación:
 
 tipo_certificado_dposito = 5
-nro_certificado_deposito = 101200604
+nro_certificado_deposito = "555501200729"
 peso_neto = 1000
 cod_localidad_procedencia = 3
 cod_prov_procedencia = 1
@@ -146,15 +146,15 @@ ok = WSLPG.AgregarCertificado(tipo_certificado_dposito, ;
 
 codigo_concepto = "RI"
 detalle_aclaratorio = "DETALLE DE IVA"
-base_calculo = 1970
-alicuota = 8
+base_calculo = 1000
+alicuota = 10.5
 
 ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, alicuota)
 
 codigo_concepto = "RG"
 detalle_aclaratorio = "DETALLE DE GANANCIAS"
 base_calculo = 100
-alicuota = 2
+alicuota = 15
 
 ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, alicuota)
            
