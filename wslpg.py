@@ -82,6 +82,7 @@ import traceback
 import pprint
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from pyfpdf_hg import Template
+import utils
 
 # importo funciones compartidas, deberían estar en un módulo separado:
 
@@ -1353,12 +1354,18 @@ class WSLPG:
                 # cargo campos adicionales ([PDF] en .ini y AgregarDatoPDF)
                 for k,v in self.datos.items():
                     f.set(k, v)
-                
             return True
         except Exception, e:
-            self.Excepcion = str(e)
-            ex = traceback.format_exception(sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
+            ex = utils.exception_info()
+            try:
+                f.set('anulado', "%(name)s:%(lineno)s" % ex)
+            except:
+                pass
+            self.Excepcion = ex['msg']
+            self.Traceback = ex['tb']
+            if DEBUG:
+                print self.Excepcion
+                print self.Traceback
             return False
 
     def GenerarPDF(self, archivo=""):
