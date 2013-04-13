@@ -34,14 +34,14 @@ def exception_info(current_filename=None, index=-1):
             raise ZeroDivisionError
         except ZeroDivisionError:
             f = sys.exc_info()[2].tb_frame.f_back
-        current_filename = f.f_code.co_filename
+        current_filename = os.path.normpath(os.path.abspath(f.f_code.co_filename))
 
     # extraer la última traza del archivo solicitado:
     # (útil para no alargar demasiado la traza con lineas de las librerías)
     ret = {'filename': "", 'lineno': 0, 'function_name': "", 'code': ""}
     try:
         for (filename, lineno, fn, text) in traceback.extract_tb(info[2]):
-            if filename == current_filename:
+            if os.path.normpath(os.path.abspath(filename)) == current_filename:
                 ret = {'filename': filename, 'lineno': lineno, 
                        'function_name': fn, 'code': text}
             else:
