@@ -1215,6 +1215,25 @@ class WSLPG:
                             valor = "%s/%s/%s" % (d[8:10], d[5:7], d[0:4])
                 return valor
 
+            def buscar_localidad_provincia(cod_prov, cod_localidad): 
+                "obtener la descripción de la provincia/localidad (usar cache)"
+                cod_prov = int(cod_prov)
+                cod_localidad = str(cod_localidad)
+                provincia = datos.PROVINCIAS[cod_prov]
+                if not cod_localidad in datos.LOCALIDADES:
+                    d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
+                    try:
+                        # actualizar el diccionario persistente (shelve)
+                        datos.LOCALIDADES.update(d)
+                    except Exception, e:
+                        print "EXCEPCION CAPTURADA", e
+                        # capturo errores por permisos (o por concurrencia)
+                        datos.LOCALIDADES = d
+                if cod_localidad not in datos.LOCALIDADES:
+                    import pdb; pdb.set_trace()
+                localidad = datos.LOCALIDADES.get(cod_localidad, "")
+                return localidad, provincia                
+
             for copia in range(1, num_copias+1):
                 
                 # completo campos y hojas
@@ -1277,22 +1296,29 @@ class WSLPG:
                     val_grado_ent = ""
                 f.set("valor_grado_ent", "%s %s" % (cod_grado_ent, val_grado_ent))
                 
-                cod_prov = int(liq['cod_prov_procedencia'])
-                provincia = datos.PROVINCIAS[cod_prov]
-                cod_localidad = str(liq['cod_localidad_procedencia'])
-                if not cod_localidad in datos.LOCALIDADES:
-                    d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
-                    try:
-                        # actualizar el diccionario persistente (shelve)
-                        datos.LOCALIDADES.update(d)
-                    except Exception, e:
-                        print "EXCEPCION CAPTURADA", e
-                        # capturo errores por permisos (o por concurrencia)
-                        datos.LOCALIDADES = d   
-
-                localidad = datos.LOCALIDADES.get(cod_localidad, "")
+                if liq.get('certificados'):
+                    # uso la procedencia del certificado de depósito 
+                    cert = liq['certificados'][0]
+                    localidad, provincia = buscar_localidad_provincia(
+                        cert['cod_prov_procedencia'],
+                        cert['cod_localidad_procedencia'])
+                elif liq.get('cod_prov_procedencia_sin_certificado'):
+                    localidad, provincia = buscar_localidad_provincia(
+                        liq['cod_prov_procedencia_sin_certificado'], 
+                        liq['cod_localidad_procedencia_sin_certificado'])
+                else:
+                    localidad, provincia = "", ""
+    
                 f.set("procedencia", "%s - %s" % (localidad, provincia))
                 
+                if not 'lugar_y_fecha' in liq['datos']:
+                    localidad, provincia = buscar_localidad_provincia(
+                        liq['cod_prov_procedencia'], 
+                        liq['cod_localidad_procedencia'])
+                    lugar = "%s - %s " % (localidad, provincia)
+                    fecha = datetime.datetime.today().strftime("%d/%m/%Y")
+                    f.set("lugar_y_fecha", "%s, %s" % (fecha, lugar))
+
                 if HOMO:
                     homo = "(pruebas)"
                 else:
@@ -1659,7 +1685,7 @@ if __name__ == '__main__':
                     # ajusto datos para prueba sin certificado de deposito
                     dic['peso_neto_sin_certificado'] = 10000
                     dic['cod_prov_procedencia_sin_certificado'] = 1
-                    dic['cod_localidad_procedencia_sin_certificado'] = 3                     
+                    dic['cod_localidad_procedencia_sin_certificado'] = 1482
                     dic['certificados'] = []
                 escribir_archivo(dic, ENTRADA)
             else:
