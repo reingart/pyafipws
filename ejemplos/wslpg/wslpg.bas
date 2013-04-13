@@ -237,14 +237,19 @@ Sub Main()
         ok = WSLPG.AgregarDatoPDF("art_27", "Art. 27 inc. ...................")
         ok = WSLPG.AgregarDatoPDF("forma_pago", "Forma de Pago: 1234 pesos ..")
         ok = WSLPG.AgregarDatoPDF("constancia", "Por la presente dejo constancia...")
-        ok = WSLPG.AgregarDatoPDF("lugar_y_fecha", Format(Date, "dd/mm/yyyy") + ", Buenos Aires")
+        ok = WSLPG.AgregarDatoPDF("lugar_y_fecha", "")
     
         ' genero el PDF y lo muestro
         ok = WSLPG.CrearPlantillaPDF("A4", "portrait")
         ok = WSLPG.ProcesarPlantillaPDF(2)
+        If Not ok Then
+            MsgBox WSLPG.Traceback, vbExclamation, WSLPG.Excepcion
+        End If
         ok = WSLPG.GenerarPDF(App.Path & "\form1116b.pdf")
+        If Not ok Then
+            MsgBox WSLPG.Traceback, vbExclamation, WSLPG.Excepcion
+        End If
         ok = WSLPG.MostrarPDF(App.Path & "\form1116b.pdf", False)
-    
 
     Else
         ' muestro el mensaje de error

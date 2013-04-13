@@ -1112,6 +1112,13 @@ class WSLPG:
                 else:
                     v = eval(v.strip())
                 args.append(v)
+
+            # corrijo path relativo para las imágenes:
+            if args[1] == 'I':
+                if not os.path.exists(args[14]):
+                    args[14] = os.path.join(self.InstallDir, args[14])
+                if DEBUG: print "NUEVO PATH:", args[14]          
+
             self.AgregarCampoPDF(*args)
         return True        
 
@@ -1230,8 +1237,6 @@ class WSLPG:
                         print "EXCEPCION CAPTURADA", e
                         # capturo errores por permisos (o por concurrencia)
                         datos.LOCALIDADES = d
-                if cod_localidad not in datos.LOCALIDADES:
-                    import pdb; pdb.set_trace()
                 localidad = datos.LOCALIDADES.get(cod_localidad, "")
                 return localidad, provincia                
 
@@ -1312,13 +1317,16 @@ class WSLPG:
     
                 f.set("procedencia", "%s - %s" % (localidad, provincia))
                 
-                if not 'lugar_y_fecha' in liq['datos']:
+                # si no se especifíca, uso la procedencia para el lugar
+                if not self.datos.get('lugar_y_fecha'):
                     localidad, provincia = buscar_localidad_provincia(
                         liq['cod_prov_procedencia'], 
                         liq['cod_localidad_procedencia'])
                     lugar = "%s - %s " % (localidad, provincia)
                     fecha = datetime.datetime.today().strftime("%d/%m/%Y")
                     f.set("lugar_y_fecha", "%s, %s" % (fecha, lugar))
+                    if 'lugar_y_fecha' in self.datos:
+                        del self.datos['lugar_y_fecha']
 
                 if HOMO:
                     homo = "(pruebas)"
