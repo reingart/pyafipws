@@ -40,7 +40,6 @@ Sub Main()
     ' Setear tocken y sing de autorización (pasos previos)
     WSLPG.Token = WSAA.Token
     WSLPG.Sign = WSAA.Sign
-    
     ' CUIT (debe estar registrado en la AFIP)
     WSLPG.cuit = "20267565393"
     
@@ -66,6 +65,10 @@ Sub Main()
     For Each parametro In WSLPG.ConsultarCampanias(":")
         Debug.Print parametro ' devuelve un string ": codigo : descripcion :"
     Next
+    
+    ' Busco una localidad (para verificar que la tabla temporal esté en cache ok
+    ' nota: solo reconstruye la bd local (llama a AFIP) si el tercer parámetro es True
+    Debug.Assert WSLPG.BuscarLocalidades(11, 7295, False) = "LA AGUADA DE LAS ANIMAS"
     
     ' obtengo el último número de orden registrado
     ok = WSLPG.ConsultarUltNroOrden()
