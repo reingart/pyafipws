@@ -314,6 +314,7 @@ class WSLPG:
                         'ConsultarProvincias',
                         'ConsultarLocalidadesPorProvincia',
                         'ConsultarTiposOperacion',
+                        'BuscarLocalidades',
                         'AnalizarXml', 'ObtenerTagXml',
                         'SetParametro', 'GetParametro',
                         'CargarFormatoPDF', 'AgregarCampoPDF', 'AgregarDatoPDF',
@@ -383,8 +384,10 @@ class WSLPG:
             flag = os.access(cache, os.W_OK) and 'c' or 'r'
             wslpg_datos.LOCALIDADES = shelve.open(localidades_db, flag=flag)
             if DEBUG: print "Localidades en BD:", len(wslpg_datos.LOCALIDADES)
+            self.Excepcion = "Localidades en BD: %s" % len(wslpg_datos.LOCALIDADES)
         except Exception, e:
             print "ADVERTENCIA: No se pudo abrir la bbdd de localidades:", e
+            self.Excepcion = str(e)
             
         return True
 
@@ -986,6 +989,21 @@ class WSLPG:
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
 
+    def BuscarLocalidades(self, cod_prov, cod_localidad=None, consultar=True):
+        "Devuelve la localidad o la consulta en AFIP (uso interno)"
+        # si no se especifíca cod_localidad, es util para reconstruir la cache
+        import wslpg_datos as datos
+        if not str(cod_localidad) in datos.LOCALIDADES and consultar:
+            d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
+            try:
+                # actualizar el diccionario persistente (shelve)
+                datos.LOCALIDADES.update(d)
+            except Exception, e:
+                print "EXCEPCION CAPTURADA", e
+                # capturo errores por permisos (o por concurrencia)
+                datos.LOCALIDADES = d
+        return datos.LOCALIDADES.get(str(cod_localidad), "")
+
     def ConsultarTiposOperacion(self, sep="||"):
         "Consulta tipo de Operación por Actividad."
         ops = []
@@ -1228,16 +1246,7 @@ class WSLPG:
                 cod_prov = int(cod_prov)
                 cod_localidad = str(cod_localidad)
                 provincia = datos.PROVINCIAS[cod_prov]
-                if not cod_localidad in datos.LOCALIDADES:
-                    d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
-                    try:
-                        # actualizar el diccionario persistente (shelve)
-                        datos.LOCALIDADES.update(d)
-                    except Exception, e:
-                        print "EXCEPCION CAPTURADA", e
-                        # capturo errores por permisos (o por concurrencia)
-                        datos.LOCALIDADES = d
-                localidad = datos.LOCALIDADES.get(cod_localidad, "")
+                localidad = self.BuscarLocalidades(cod_prov, cod_localidad)
                 return localidad, provincia                
 
             for copia in range(1, num_copias+1):
@@ -1594,7 +1603,7 @@ if __name__ == '__main__':
         wslpg.Token = token
         wslpg.Sign = sign
         wslpg.Cuit = CUIT
-        
+                
         if '--dummy' in sys.argv:
             ret = wslpg.Dummy()
             print "AppServerStatus", wslpg.AppServerStatus
@@ -1909,9 +1918,7 @@ if __name__ == '__main__':
             import wslpg_datos as datos
             for cod_prov, desc_prov in wslpg.ConsultarProvincias(sep=None).items():
                 print "Actualizando Provincia", cod_prov, desc_prov
-                d = wslpg.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
-                datos.LOCALIDADES.update(d)
-
+                d = wslpg.BuscarLocalidades(cod_prov)
 
         if '--certdeposito' in sys.argv:
             ret = wslpg.ConsultarTipoCertificadoDeposito()
