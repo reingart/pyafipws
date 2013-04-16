@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.07b"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -78,6 +78,7 @@ def inicializar_y_capturar_excepciones(func):
             self.DatosCTG = None
             self.CodigoTransaccion = self.Observaciones = ''
             self.TarifaReferencia = None
+            self.Excepcion = self.Traceback = ""
             # llamo a la función (con reintentos)
             return func(self, *args, **kwargs)
         except SoapFault, e:
@@ -121,7 +122,7 @@ class WSCTG11:
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
-        'XmlRequest', 'XmlResponse', 'Version', 
+        'XmlRequest', 'XmlResponse', 'Version', 'Traceback',
         'NumeroCTG', 'CartaPorte', 'FechaHora', 'CodigoOperacion', 
         'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosCTG',
         'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
@@ -141,8 +142,9 @@ class WSCTG11:
         self.client = None
         self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
         self.NumeroCTG = ''
-        self.CodigoTransaccion = self.Observaciones = self.Excepcion = ''
-
+        self.CodigoTransaccion = self.Observaciones = ''
+        self.Excepcion = self.Traceback = ""
+            
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy=""):
         "Establecer la conexión a los servidores de la AFIP"
@@ -161,7 +163,7 @@ class WSCTG11:
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
         if 'arrayErrores' in ret:
-            errores = ret['arrayErrores']
+            errores = ret['arrayErrores'] or []
             self.Errores = [err['error'] for err in errores]
             self.ErrCode = ' '.join(self.Errores)
             self.ErrMsg = '\n'.join(self.Errores)
@@ -539,9 +541,10 @@ if __name__ == '__main__':
             print "Versión: ", __version__
 
         for arg in sys.argv[1:]:
-            if not arg.startswith("--"):
-                print "Usando configuración:", arg
-                CONFIG_FILE = arg
+            if arg.startswith("--"):
+                break
+            print "Usando configuración:", arg
+            CONFIG_FILE = arg
 
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
