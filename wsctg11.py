@@ -743,7 +743,7 @@ if __name__ == '__main__':
             wsctg.LanzarExcepciones = True
             for i, it in enumerate(items):
                 print "consultando detalle...", ctg
-                ctg = wsctg.ConsultarDetalleCTG(ctg)
+                ok = wsctg.ConsultarDetalleCTG(ctg)
                 print "Numero CTG: ", wsctg.NumeroCTG
                 print "Tarifa Referencia: ", wsctg.TarifaReferencia
                 print "Observiacion: ", wsctg.Observaciones
@@ -754,7 +754,7 @@ if __name__ == '__main__':
                 print "Vigencia Hasta", wsctg.VigenciaHasta
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
-                it['numero_CTG'] = ctg
+                it['numero_CTG'] = wsctg.NumeroCTG
                 wsctg.AnalizarXml("XmlResponse")
                 for k in ['ctg', 'solicitante', 'estado', 'especie', 'cosecha', 
                           'cuitCanjeador', 'cuitDestino', 'cuitDestinatario', 
