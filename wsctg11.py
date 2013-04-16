@@ -393,13 +393,14 @@ class WSCTG11:
                         ))['response']
         self.__analizar_errores(ret)
         datos = ret.get('consultarDetalleCTGDatos')
-        self.NumeroCTG = str(datos['ctg'])
-        self.CartaPorte = str(datos['cartaPorte'])
-        self.Estado = unicode(datos['estado'])
-        self.FechaHora = str(datos['fechaEmision'])
-        self.VigenciaDesde = str(datos['fechaVigenciaDesde'])
-        self.VigenciaHasta = str(datos['fechaVigenciaHasta'])
-        self.TarifaReferencia = str(datos['tarifaReferencia'])
+        if datos:
+            self.NumeroCTG = str(datos['ctg'])
+            self.CartaPorte = str(datos['cartaPorte'])
+            self.Estado = unicode(datos['estado'])
+            self.FechaHora = str(datos['fechaEmision'])
+            self.VigenciaDesde = str(datos['fechaVigenciaDesde'])
+            self.VigenciaHasta = str(datos['fechaVigenciaHasta'])
+            self.TarifaReferencia = str(datos['tarifaReferencia'])
         return True
 
     @inicializar_y_capturar_excepciones
