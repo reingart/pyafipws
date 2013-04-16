@@ -9,8 +9,8 @@ Sub Main()
     cache = "" ' Directorio para archivos temporales (dejar en blanco para usar predeterminado)
     proxy = "" ' usar "usuario:clave@servidor:puerto"
 
-    Certificado = App.Path & "\empresa.crt"   ' certificado es el firmado por la afip
-    ClavePrivada = App.Path & "\empresa.key"  ' clave privada usada para crear el cert.
+    Certificado = App.Path & "\..\..\reingart.crt"   ' certificado es el firmado por la afip
+    ClavePrivada = App.Path & "\..\..\reingart.key"  ' clave privada usada para crear el cert.
     
     Set WSAA = CreateObject("WSAA")
     tra = WSAA.CreateTRA("wsctg", ttl)
@@ -34,7 +34,7 @@ Sub Main()
     WSCTGv11.Sign = WSAA.Sign
     
     ' CUIT (debe estar registrado en la AFIP)
-    WSCTGv11.cuit = "20267565393"
+    WSCTGv11.CUIT = "20267565393"
     
     ' Conectar al Servicio Web
     ok = WSCTGv11.Conectar("", "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl") ' homologación
@@ -62,6 +62,7 @@ Sub Main()
             
     Debug.Print WSCTGv11.XmlResponse
     Debug.Print WSCTGv11.Excepcion
+    Debug.Print WSCTGv11.Traceback
 
     Debug.Assert False
     
@@ -84,6 +85,7 @@ Sub Main()
     Call WSCTGv11.ConsultarDetalleCTG(numero_ctg)
     Debug.Print WSCTGv11.XmlResponse
     Debug.Print WSCTGv11.Excepcion
+    Debug.Print WSCTGv11.Traceback
 
     If IsNumeric(WSCTGv11.TarifaReferencia) Then
         tarifa_ref = WSCTGv11.TarifaReferencia
@@ -108,20 +110,22 @@ Sub Main()
     km_recorridos = "160"
        
     ' llamo al webservice para solicitar el ctg inicial:
-    numero_ctg = WSCTGv11.SolicitarCTGInicial(numero_carta_de_porte, codigo_especie, _
+    ok = WSCTGv11.SolicitarCTGInicial(numero_carta_de_porte, codigo_especie, _
             cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen, _
             codigo_localidad_destino, codigo_cosecha, peso_neto_carga, cant_horas, _
             patente_vehiculo, cuit_transportista, km_recorridos)
             
-        Debug.Print WSCTGv11.XmlResponse
-        Debug.Print WSCTGv11.Observaciones
+    Debug.Print WSCTGv11.XmlResponse
+    Debug.Print WSCTGv11.Observaciones
             
+    If ok Then
         ' recorro los errores devueltos por AFIP (si hubo)
         Dim ControlErrores As Variant
         For Each ControlErrores In WSCTGv11.Controles
             Debug.Print ControlErrores
         Next
         
+        numero_ctg = WSCTGv11.NumeroCTG
         ' llamo al webservice para consultar la ctg recien creada
         ' para que devuelva entre otros datos la tarifa de referencia otorgada por afip
         Call WSCTGv11.ConsultarDetalleCTG(numero_ctg)
@@ -130,7 +134,7 @@ Sub Main()
             numero_ctg = WSCTGv11.NumeroCTG
             Debug.Print WSCTGv11.TarifaReferencia
         End If
-
+    End If
        
     MsgBox "CTG: " & numero_ctg & vbCrLf & "Km. a recorrer: " & km_recorridos & vbCrLf & "Tarifa ref.: " & tarifa_ref, vbInformation, "SolicitarCTG: número CTG:"
 Exit Sub
