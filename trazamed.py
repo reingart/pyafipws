@@ -147,7 +147,7 @@ class TrazaMed:
                 ns="tzmed",
                 cacert=cacert,
                 soap_ns="soapenv",
-                #soap_server="jbossas6",
+                soap_server="jetty",
                 trace = "--trace" in sys.argv)
                 
             # corrijo ubicación del servidor (localhost:9050 en el WSDL)
