@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10c"
+__version__ = "1.10d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -442,6 +442,21 @@ class WSLPG:
             alic_iva_operacion = None   # no informar alicuota p/ monotributo
         if val_grado_ent == 0:
             val_grado_ent = None
+        # borrando datos corredor si no corresponden
+        if actua_corredor == "N":
+            cuit_corredor = None
+            comision_corredor = None
+            nro_ing_bruto_corredor = None
+        elif es_liquidacion_propia == "N" and liquida_corredor == "N":
+            nro_ing_bruto_corredor = None           # validación 1623
+        
+        # si no corresponde elimino el peso neto certificado campo opcional
+        if not peso_neto_sin_certificado or not int(peso_neto_sin_certificado):
+            peso_neto_sin_certificado = None
+        
+        if cod_puerto and int(cod_puerto) != 14:
+            des_puerto_localidad = None             # validacion 1630
+
         self.liquidacion = dict(
                             ptoEmision=pto_emision,
                             nroOrden=nro_orden,
@@ -1709,7 +1724,7 @@ if __name__ == '__main__':
                     # ajusto datos para prueba sin certificado de deposito
                     dic['peso_neto_sin_certificado'] = 10000
                     dic['cod_prov_procedencia_sin_certificado'] = 1
-                    dic['cod_localidad_procedencia_sin_certificado'] = 1482
+                    dic['cod_localidad_procedencia_sin_certificado'] = 15124
                     dic['certificados'] = []
                 escribir_archivo(dic, ENTRADA)
             else:
@@ -1720,18 +1735,6 @@ if __name__ == '__main__':
                 ok = wslpg.ConsultarUltNroOrden(dic['pto_emision'])
                 if ok:
                     dic['nro_orden'] = wslpg.NroOrden + 1
-
-            if dic['actua_corredor'] == "N":
-                # borrando datos corredor si no corresponden
-                ##dic['liquida_corredor'] = "N"
-                dic['cuit_corredor'] = None
-                dic['comision_corredor'] = None
-                dic['nro_ing_bruto_corredor'] = None
-            
-            if not dic.get("peso_neto_sin_certificado") or dic['certificados']:
-                # si no corresponde elimino este campo opcional
-                if "peso_neto_sin_certificado" in dic:
-                    del dic['peso_neto_sin_certificado']
 
             # establezco los parametros (se pueden pasar directamente al metodo)
             for k, v in sorted(dic.items()):
