@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10d"
+__version__ = "1.10e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -384,7 +384,7 @@ class WSLPG:
             flag = os.access(cache, os.W_OK) and 'c' or 'r'
             wslpg_datos.LOCALIDADES = shelve.open(localidades_db, flag=flag)
             if DEBUG: print "Localidades en BD:", len(wslpg_datos.LOCALIDADES)
-            self.Excepcion = "Localidades en BD: %s" % len(wslpg_datos.LOCALIDADES)
+            self.Traceback = "Localidades en BD: %s" % len(wslpg_datos.LOCALIDADES)
         except Exception, e:
             print "ADVERTENCIA: No se pudo abrir la bbdd de localidades:", e
             self.Excepcion = str(e)
@@ -954,18 +954,27 @@ class WSLPG:
 
     def ConsultarTipoActividadRepresentado(self, sep="||"):
         "Consulta de Tipos de Actividad inscripta en el RUOCA."
-        ret = self.client.tipoActividadRepresentadoConsultar(
+        try:
+            ret = self.client.tipoActividadRepresentadoConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                             )['tipoActividadReturn']
-        self.__analizar_errores(ret)
-        array = ret.get('tiposActividad', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+            self.__analizar_errores(ret)
+            array = ret.get('tiposActividad', [])
+            self.Excepcion = self.Traceback = ""
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
+        except Exception, e:
+            ex = utils.exception_info()
+            self.Excepcion = ex['msg']
+            self.Traceback = ex['tb']
+            if sep:
+                return ["ERROR"]
 
+            
     def ConsultarProvincias(self, sep="||"):
         "Consulta las provincias habilitadas"
         ret = self.client.provinciasConsultar(
