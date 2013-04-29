@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10f"
+__version__ = "1.10g"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -546,8 +546,9 @@ class WSLPG:
                                comision_gastos_adm=None, base_calculo=None,
                                alicuota=None, **kwargs):
         "Agrega la información referente a las deducciones de la liquidación."
-        # limpiar campo según validación (comision_gastos_adm debe ser >=0.01)
-        if comision_gastos_adm is not None and float(comision_gastos_adm) == 0:
+        # limpiar campo según validación (comision_gastos_adm puede ser 0.00!)
+        if codigo_concepto != "CO" and comision_gastos_adm is not None \
+            and float(comision_gastos_adm) == 0:
             comision_gastos_adm = None
         # no enviar campos para prevenir errores AFIP 1705, 1703, 1707, 1708
         if codigo_concepto in ("AL", "CO"):
@@ -1645,7 +1646,7 @@ if __name__ == '__main__':
                     nro_orden=0,  # que lo calcule automáticamente
                     cuit_comprador='20400000000',  
                     nro_act_comprador=40, nro_ing_bruto_comprador='20400000000',
-                    cod_tipo_operacion=1,
+                    cod_tipo_operacion=2 if "--consign" in sys.argv else 1,
                     es_liquidacion_propia='N', es_canje='N',
                     cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
                     cod_grano=31, 
@@ -1735,6 +1736,16 @@ if __name__ == '__main__':
                     dic['cod_prov_procedencia_sin_certificado'] = 1
                     dic['cod_localidad_procedencia_sin_certificado'] = 15124
                     dic['certificados'] = []
+                if "--consign" in sys.argv:
+                    # agrego deducción por comisión de gastos administrativos
+                    dic['deducciones'].append(dict(
+                            codigo_concepto="CO",
+                            detalle_aclaratorio="COMISION",
+                            dias_almacenaje=None,
+                            precio_pkg_diario=None,
+                            comision_gastos_adm=0.0,
+                            alicuota=21.0,
+                        ))
                 escribir_archivo(dic, ENTRADA)
             else:
                 dic = leer_archivo(ENTRADA)
