@@ -2023,7 +2023,8 @@ if __name__ == '__main__':
             d = os.path.join(conf_liq.get('directorio', "."), 
                              liq['fecha_liquidacion'].replace("-", "_"))
             if not os.path.isdir(d):
-                os.mkdir(d)
+                if DEBUG: print "Creando directorio!", d 
+                os.makedirs(d)
             fs = conf_liq.get('archivo','pto_emision,nro_orden').split(",")
             fn = u'_'.join([unicode(liq.get(ff,ff)) for ff in fs])
             fn = fn.encode('ascii', 'replace').replace('?','_')
