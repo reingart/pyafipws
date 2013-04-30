@@ -938,7 +938,7 @@ if __name__ == '__main__':
             # genero el nombre de archivo según datos de factura
             d = os.path.join(conf_fact.get('directorio', "."), fact['fecha_cbte'])
             if not os.path.isdir(d):
-                os.mkdir(d)
+                os.makedirs(d)
             fs = conf_fact.get('archivo','numero').split(",")
             it = fact.copy()
             tipo_fact, letra_fact, numero_fact = fact['_fmt_fact']
