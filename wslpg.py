@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10g"
+__version__ = "1.11a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -529,7 +529,11 @@ class WSLPG:
 
     @inicializar_y_capturar_excepciones
     def AgregarRetencion(self, codigo_concepto, detalle_aclaratorio, 
-                               base_calculo, alicuota, **kwargs):
+                               base_calculo, alicuota, 
+                               nro_certificado_retencion=None, 
+                               fecha_certificado_retencion=None,
+                               importe_certificado_retencion=None,
+                               **kwargs):
         "Agrega la información referente a las retenciones de la liquidación"
         self.retenciones.append(dict(
                                     retencion=dict(
@@ -537,6 +541,9 @@ class WSLPG:
                                         detalleAclaratorio=detalle_aclaratorio,
                                         baseCalculo=base_calculo,
                                         alicuota=alicuota,
+                                        nroCertificadoRetencion=nro_certificado_retencion,
+                                        fechaCertificadoRetencion=fecha_certificado_retencion,
+                                        importeCertificadoRetencion=importe_certificado_retencion,
                                     ))
                             )
 
@@ -700,6 +707,7 @@ class WSLPG:
                     'detalle_aclaratorio': retret['retencion'].get('detalleAclaratorio', "").replace("\n", ""),
                     'importe_certificado_retencion': retret['retencion'].get('importeCertificadoRetencion'),
                     'nro_certificado_retencion': retret['retencion'].get('nroCertificadoRetencion'),
+                    'fecha_certificado_retencion': retret['retencion'].get('fechaCertificadoRetencion'),
                     })
             for dedret in aut.get("deducciones", []):
                 dedret = dedret['deduccionReturn']
@@ -1392,6 +1400,14 @@ class WSLPG:
                     for k, v in retencion.items():
                         v = formatear(k, v, fmt_retencion)
                         f.set("retenciones_%s_%02d" % (k, i + 1), v)
+                    if retencion['importe_certificado_retencion']:
+                        d = retencion['fecha_certificado_retencion']
+                        f.set('retenciones_cert_retencion_%02d' % (i + 1),
+                            "%s $ %0.2f %s" % (
+                                retencion['nro_certificado_retencion'] or '',
+                                retencion['importe_certificado_retencion'],
+                                "%s/%s/%s" % (d[8:10], d[5:7], d[2:4]), 
+                            ))
 
                 # cargo campos adicionales ([PDF] en .ini y AgregarDatoPDF)
                 for k,v in self.datos.items():
@@ -1687,6 +1703,14 @@ if __name__ == '__main__':
                             detalle_aclaratorio="DETALLE DE GANANCIAS",
                             base_calculo=100,
                             alicuota=0,
+                        ), dict(
+                            codigo_concepto="OG",
+                            detalle_aclaratorio="OTRO GRAVAMEN",
+                            base_calculo=1000,
+                            alicuota=0,
+                            nro_certificado_retencion=111111111111, 
+                            fecha_certificado_retencion="2013-05-01",
+                            importe_certificado_retencion=105,
                         )],
                     deducciones=[dict(
                             codigo_concepto="OD",
