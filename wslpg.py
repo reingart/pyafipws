@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11a"
+__version__ = "1.11b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -437,6 +437,8 @@ class WSLPG:
                cod_prov_procedencia_sin_certificado=None,
                **kwargs
                ):
+        "Inicializa internamente los datos de una liquidación para autorizar"
+
         # limpio los campos especiales (segun validaciones de AFIP)
         if alic_iva_operacion == 0:
             alic_iva_operacion = None   # no informar alicuota p/ monotributo
@@ -457,6 +459,15 @@ class WSLPG:
         if cod_puerto and int(cod_puerto) != 14:
             des_puerto_localidad = None             # validacion 1630
 
+        # limpio los campos opcionales para no enviarlos si no corresponde:
+        if cod_grado_ref == "":
+            cod_grado_ref = None
+        if cod_grado_ent == "":
+            cod_grado_ent = None
+        if val_grado_ent == 0:
+            val_grado_ent = None
+
+        # creo el diccionario con los campos generales de la liquidación:
         self.liquidacion = dict(
                             ptoEmision=pto_emision,
                             nroOrden=nro_orden,
@@ -492,7 +503,7 @@ class WSLPG:
                             pesoNetoSinCertificado=peso_neto_sin_certificado,
                             certificados=[],
             )
-        # hay que "copiar" los siguientes campos si no hay certificado:
+        # para compatibilidad hacia atras, "copiar" los campos si no hay cert:
         if peso_neto_sin_certificado:
             if cod_localidad_procedencia_sin_certificado is None:
                 cod_localidad_procedencia_sin_certificado = cod_localidad_procedencia
@@ -503,6 +514,7 @@ class WSLPG:
                 codProvProcedenciaSinCertificado=cod_prov_procedencia_sin_certificado,
                 ))
 
+        # inicializo las listas que contentran las retenciones y deducciones:
         self.retenciones = []
         self.deducciones = []
 
@@ -1326,13 +1338,13 @@ class WSLPG:
                     f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
 
                 cod_grano = int(liq['cod_grano'])
-                cod_grado_ref = liq['cod_grado_ref']
+                cod_grado_ref = liq.get('cod_grado_ref', "")
                 if cod_grado_ref in datos.GRADOS_REF:
                     f.set("des_grado_ref", datos.GRADOS_REF[cod_grado_ref])
                 else:
                     f.set("des_grado_ref", cod_grado_ref)
                 cod_grado_ent = liq['cod_grado_ent']
-                if 'val_grado_ent' in liq and int(liq['val_grado_ent']):
+                if 'val_grado_ent' in liq and int(liq.get('val_grado_ent', 0)):
                     val_grado_ent =  liq['val_grado_ent']
                 elif cod_grano in datos.GRADO_ENT_VALOR: 
                     valores = datos.GRADO_ENT_VALOR[cod_grano]
@@ -1760,6 +1772,11 @@ if __name__ == '__main__':
                     dic['cod_prov_procedencia_sin_certificado'] = 1
                     dic['cod_localidad_procedencia_sin_certificado'] = 15124
                     dic['certificados'] = []
+                if "--singrado" in sys.argv:
+                    # ajusto datos para prueba sin grado ni valor entregado
+                    dic['cod_grado_ref'] = ""
+                    dic['cod_grado_ent'] = ""
+                    dic['val_grado_ent'] = 0
                 if "--consign" in sys.argv:
                     # agrego deducción por comisión de gastos administrativos
                     dic['deducciones'].append(dict(
