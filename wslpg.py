@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11b"
+__version__ = "1.11c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -547,6 +547,13 @@ class WSLPG:
                                importe_certificado_retencion=None,
                                **kwargs):
         "Agrega la información referente a las retenciones de la liquidación"
+        # limpio los campos opcionales:
+        if fecha_certificado_retencion is not None and not fecha_certificado_retencion.strip():
+            fecha_certificado_retencion = None
+        if importe_certificado_retencion is not None and not float(importe_certificado_retencion):
+            importe_certificado_retencion = None
+        if nro_certificado_retencion is not None and not int(nro_certificado_retencion):
+            nro_certificado_retencion = None
         self.retenciones.append(dict(
                                     retencion=dict(
                                         codigoConcepto=codigo_concepto,
