@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11c"
+__version__ = "1.11d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -576,8 +576,8 @@ class WSLPG:
         if codigo_concepto != "CO" and comision_gastos_adm is not None \
             and float(comision_gastos_adm) == 0:
             comision_gastos_adm = None
-        # no enviar campos para prevenir errores AFIP 1705, 1703, 1707, 1708
-        if codigo_concepto in ("AL", "CO"):
+        # no enviar campos para prevenir errores AFIP 1705, 1707, 1708
+        if codigo_concepto in ("AL", ):
             base_calculo = None
         if codigo_concepto != "AL":
             dias_almacenaje = None
