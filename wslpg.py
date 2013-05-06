@@ -110,7 +110,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = True
+HOMO = False
 
 # definición del formato del archivo de intercambio:
 N = 'Numerico'
@@ -577,8 +577,11 @@ class WSLPG:
             and float(comision_gastos_adm) == 0:
             comision_gastos_adm = None
         # no enviar campos para prevenir errores AFIP 1705, 1707, 1708
-        if codigo_concepto in ("AL", ):
-            base_calculo = None
+        if base_calculo is not None:
+            if codigo_concepto == "AL":
+                base_calculo = None
+            if codigo_concepto == "CO" and float(base_calculo) == 0:
+                base_calculo = None         # no enviar, por retrocompatibilidad
         if codigo_concepto != "AL":
             dias_almacenaje = None
             precio_pkg_diario = None
@@ -1791,7 +1794,8 @@ if __name__ == '__main__':
                             detalle_aclaratorio="COMISION",
                             dias_almacenaje=None,
                             precio_pkg_diario=None,
-                            comision_gastos_adm=0.0,
+                            comision_gastos_adm=1.0,
+                            base_calculo=1000.00,
                             alicuota=21.0,
                         ))
                 escribir_archivo(dic, ENTRADA)
