@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11d"
+__version__ = "1.11e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -110,7 +110,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = False
+HOMO = True
 
 # definición del formato del archivo de intercambio:
 N = 'Numerico'
@@ -1633,22 +1633,36 @@ if __name__ == '__main__':
             print "WRAPPER", WRAPPER
         # obteniendo el TA
         TA = "wslpg-ta.xml"
-        if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
+        # verifico que el TA exista, no esté vacio, no haya expirado (5hs)
+        # y que no haya sido tramitado antes de la ult. modificación del .ini
+        if (not os.path.exists(TA) or os.path.getsize(TA) == 0  
+            or os.path.getmtime(TA)+(60*60*5) < time.time() 
+            or os.path.getmtime(CONFIG_FILE) > os.path.getmtime(TA)):
+            # Tramito un nuevo Ticket de Acceso:
             wsaa = WSAA()
+            wsaa.LanzarExcepciones = False
             tra = wsaa.CreateTRA(service="wslpg")
             if DEBUG:
                 print tra
             cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
+            if wsaa.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wsaa.Excepcion
+                if DEBUG: print >> sys.stderr, wsaa.Traceback
+                sys.exit(6)
             try:
                 wsaa.Conectar(wsdl=WSAA_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
                 ta_string = wsaa.LoginCMS(cms)
                 if wsaa.Excepcion:
                     print >> sys.stderr, "EXCEPCION:", wsaa.Excepcion
                     if DEBUG: print >> sys.stderr, wsaa.Traceback
+                    sys.exit(6)
             except Exception, e:
                 print >> sys.stderr, e
                 ta_string = ""
+                sys.exit(7)
+            # guardo el TA en el archivo
             open(TA,"w").write(ta_string)
+        # leo el TA del archivo, extraigo token y sign:
         ta_string=open(TA).read()
         if ta_string:
             ta = SimpleXMLElement(ta_string)
