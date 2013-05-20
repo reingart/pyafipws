@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.07b"
+__version__ = "1.07c"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -696,6 +696,13 @@ if __name__ == '__main__':
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
                 it['numero_CTG'] = ctg
+                it['observaciones'] = wsctg.Observaciones
+                it['fecha_hora'] = wsctg.FechaHora
+                it['vigencia_desde'] = wsctg.VigenciaDesde
+                it['vigencia_hasta'] = wsctg.VigenciaHasta
+                it['errores'] = wsctg.Errores
+                it['controles'] = wsctg.Controles
+                
 
         if '--parcial' in sys.argv:
             wsctg.LanzarExcepciones = True
