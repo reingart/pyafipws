@@ -599,9 +599,14 @@ if __name__ == '__main__':
             sys.exit(0)
 
         if '--anular' in sys.argv:
-            print wsctg.client.help("anularCTG")
-            carta_porte = 1234
-            ctg = 12345678
+            i = sys.argv.index("--anular")
+            ##print wsctg.client.help("anularCTG")
+            if i + 2 > len(sys.argv) or sys.argv[i + 1].startswith("--"):
+                carta_porte = raw_input("Ingrese Carta de Porte: ")
+                ctg = raw_input("Ingrese CTG: ")
+            else:
+                carta_porte = sys.argv[i + 1]
+                ctg = sys.argv[i + 2]
             ret = wsctg.AnularCTG(carta_porte, ctg)
             print "Carta Porte", wsctg.CartaPorte
             print "Numero CTG", wsctg.NumeroCTG
@@ -611,10 +616,16 @@ if __name__ == '__main__':
             sys.exit(0)
 
         if '--rechazar' in sys.argv:
-            print wsctg.client.help("rechazarCTG")
-            carta_porte = 1234
-            ctg = 12345678
-            motivo = "saraza"
+            i = sys.argv.index("--rechazar")
+            ##print wsctg.client.help("rechazarCTG")
+            if i + 3 > len(sys.argv) or sys.argv[i + 1].startswith("--"):
+                carta_porte = raw_input("Ingrese Carta de Porte: ")
+                ctg = raw_input("Ingrese CTG: ")
+                motivo = raw_input("Motivo: ")
+            else:
+                carta_porte = sys.argv[i + 1]
+                ctg = sys.argv[i + 2]
+                motivo = sys.argv[i + 3]
             ret = wsctg.RechazarCTG(carta_porte, ctg, motivo)
             print "Carta Porte", wsctg.CartaPorte
             print "Numero CTG", wsctg.NumeroCTG
