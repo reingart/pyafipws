@@ -30,7 +30,7 @@ from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
 HOMO = wsfev1.HOMO
-DEBUG = True
+DEBUG = False
 XML = False
 CONFIG_FILE = "rece.ini"
 
@@ -339,6 +339,8 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                             v = v.encode("ascii", "replace")
                         if isinstance(v, str):
                             v = v.decode("ascii", "replace").encode("ascii", "replace")
+                        if not isinstance(v, basestring):
+                            v = str(v)
                     clave_dbf = dar_nombre_campo_dbf(clave, claves)
                     claves.append(clave_dbf)
                     r[clave_dbf] = v
