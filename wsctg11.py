@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.07c"
+__version__ = "1.08a"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -63,7 +63,43 @@ WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsctg.ini"
-HOMO = False
+HOMO = True
+
+# definición del formato del archivo de intercambio:
+N = 'Numerico'
+A = 'Alfanumerico'
+I = 'Importe'
+
+ENCABEZADO = [
+    # datos enviados
+    ('tipo_reg', 1, A), # 0: encabezado
+    ('numero_carta_de_porte', 13, N),
+    ('codigo_especie', 5, N),
+    ('cuit_canjeado', 11, N), 
+    ('cuit_destino', 11, N), 
+    ('cuit_destinatario', 11, N), 
+    ('codigo_localidad_origen', 6, N), 
+    ('codigo_localidad_destino', 6, N), 
+    ('codigo_cosecha', 4, N), 
+    ('peso_neto_carga', 5, N), 
+    ('cant_horas', 2, N), 
+    ('patente_vehiculo', 6, A), 
+    ('cuit_transportista', 11, N), 
+    ('km_recorridos', 4, N),     
+    ('establecimiento', 6, N),             # confirmar arribo
+                     
+    # datos devueltos
+    ('numero_ctg', 8, N), 
+    ('fecha_hora', 19, N), 
+    ('vigencia_desde', 10, A), 
+    ('vigencia_hasta', 10, A), 
+    ('codigo_transaccion', 6, N), 
+    ('tarifa_referencia', 6, I, 2),           # consultar detalle
+    ('estado', 20, N), 
+    ('imprime_constancia', 2, N), 
+    ('observaciones', 200, A), 
+    ]        
+
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -525,6 +561,18 @@ if __name__ == '__main__':
         print LICENCIA
         print AYUDA
         sys.exit(0)
+    if '--formato' in sys.argv:
+        print "Formato:"
+        for msg, formato in [('Encabezado', ENCABEZADO), ]:
+            comienzo = 1
+            print "=== %s ===" % msg
+            for fmt in formato:
+                clave, longitud, tipo = fmt[0:3]
+                dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    clave, comienzo, longitud, tipo, dec)
+                comienzo += longitud
+        sys.exit(0)
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -660,7 +708,7 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv or '--formato' in sys.argv:
             prueba = dict(numero_carta_de_porte=512345679, codigo_especie=23,
-                cuit_canjeador=30640872566, 
+                cuit_canjeador=30660685908, 
                 cuit_destino=20061341677, cuit_destinatario=20267565393, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
                 codigo_cosecha='0910', peso_neto_carga=1000, 
