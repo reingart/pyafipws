@@ -921,15 +921,18 @@ def main():
         print "pysimplesoap.__version__ = ", soapver
 
     wsfev1 = WSFEv1()
+    wsfev1.LanzarExcepciones = True
 
     cache = None
     wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
     proxy = ""
     wrapper = "" #"pycurl"
-    cacert = None #"geotrust.crt"
-    wsfev1.LanzarExcepciones = True
+    cacert = None #geotrust.crt"
 
-    wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert, timeout=None)
+    ok = wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
+    
+    if not ok:
+        raise RuntimeError(wsfev1.Excepcion)
 
     if DEBUG:
         print "LOG: ", wsfev1.DebugLog()
@@ -1028,6 +1031,11 @@ def main():
         p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '2')
         p_assert_eq(wsfev1.ObtenerTagXml('Obs',0,'Code'), "10063")
         print wsfev1.ObtenerTagXml('Obs',0,'Msg')
+
+        if "--reprocesar" in sys.argv:
+            print "reprocesando...."
+            wsfev1.Reproceso = True
+            wsfev1.CAESolicitar()
     
     if "--get" in sys.argv:
         tipo_cbte = 2
