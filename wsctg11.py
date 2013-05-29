@@ -94,13 +94,13 @@ ENCABEZADO = [
                      
     # datos devueltos
     ('numero_ctg', 8, N), 
-    ('fecha_hora', 19, N), 
+    ('fecha_hora', 19, A), 
     ('vigencia_desde', 10, A), 
     ('vigencia_hasta', 10, A), 
     ('transaccion', 12, N), 
     ('tarifa_referencia', 6, I, 2),           # consultar detalle
-    ('estado', 20, N), 
-    ('imprime_constancia', 2, N), 
+    ('estado', 20, A), 
+    ('imprime_constancia', 2, A), 
     ('observaciones', 200, A), 
     ('errores', 1000, A),
     ('controles', 1000, A),
@@ -876,15 +876,33 @@ if __name__ == '__main__':
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
                 it['numero_ctg'] = wsctg.NumeroCTG
+                it['observaciones'] = wsctg.Observaciones
+                it['fecha_hora'] = wsctg.FechaHora
+                it['vigencia_desde'] = wsctg.VigenciaDesde
+                it['vigencia_hasta'] = wsctg.VigenciaHasta
                 wsctg.AnalizarXml("XmlResponse")
-                for k in ['ctg', 'solicitante', 'estado', 'especie', 'cosecha', 
-                          'cuitCanjeador', 'cuitDestino', 'cuitDestinatario', 
-                          'cuitTransportista', 'establecimiento', 
-                          'localidadOrigen', 'localidadDestino', ''
-                          'cantidadHoras', 'patenteVehiculo', 'pesoNetoCarga',
-                          'kmRecorridos', 'tarifaReferencia']:
-                    print k, wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
-              
+                for k, ki in {'ctg': 'numero_ctg', 'solicitante': '', 
+                          'estado': 'estado', 
+                          'especie': '', ##'codigo_especie', no devuelve codigo! 
+                          'cosecha': '', ##'codigo_cosecha', no devuelve codigo!
+                          'cuitCanjeador': 'cuit_canjeador', 
+                          'cuitDestino': 'cuit_destino', 
+                          'cuitDestinatario': 'cuit_destinatario', 
+                          'cuitTransportista': 'cuit_transportista', 
+                          'establecimiento': 'establecimiento', 
+                          'localidadOrigen': 'localidad_origen', 
+                          'localidadDestino': 'localidad_destino',
+                          'cantidadHoras': 'cantidad_horas', 
+                          'patenteVehiculo': 'patente_vehiculo', 
+                          'pesoNetoCarga': 'peso_neto_carga',
+                          'kmRecorridos': 'km_recorridos', 
+                          'tarifaReferencia': 'tarifa_referencia', }.items():
+                    v = wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
+                    print k, v
+                    if ki.startswith("cuit"):
+                        v = v[:11]
+                    it[ki] = v
+    
         escribir_archivo(cols, items, SALIDA)
         
         if "--consultar" in sys.argv:
