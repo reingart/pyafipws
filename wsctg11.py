@@ -552,7 +552,8 @@ class WSCTG11:
 def leer_archivo(nombre_archivo):
     archivo = open(nombre_archivo, "r")
     items = []
-    if '--csv' in sys.argv:
+    ext = os.path.splitext(nombre_archivo)[1]
+    if ext == '.csv':
         csv_reader = csv.reader(open(ENTRADA), dialect='excel', delimiter=";")
         for row in csv_reader:
             items.append(row)
@@ -560,16 +561,13 @@ def leer_archivo(nombre_archivo):
         # armar diccionario por cada linea
         items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
         return cols, items
-    elif '--json' in sys.argv:
+    elif ext == '.json':
         dic = json.load(archivo)
-    elif '--dbf' in sys.argv:
-        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
-        formatos = [('Encabezado', ENCABEZADO, dic), 
-                    ('Certificado', CERTIFICADO, dic['certificados']), 
-                    ('Retencio', RETENCION, dic['retenciones']), 
-                    ('Deduccion', DEDUCCION, dic['deducciones'])]
+    elif ext == '.dbf':
+        dic = {}
+        formatos = [('Encabezado', ENCABEZADO, dic), ]
         leer_dbf(formatos, conf_dbf)
-    else:
+    elif ext == '.txt':
         dic = {}
         for linea in archivo:
             if str(linea[0])=='0':
@@ -577,6 +575,8 @@ def leer_archivo(nombre_archivo):
             else:
                 print "Tipo de registro incorrecto:", linea[0]
         items.append(dic)
+    else:
+        raise RuntimeError("Extension de archivo desconocida: %s" % ext)
     archivo.close()
     cols = [k[0] for k in ENCABEZADO]
     return cols, items
@@ -584,20 +584,22 @@ def leer_archivo(nombre_archivo):
 
 def escribir_archivo(cols, items, nombre_archivo, agrega=False):
     archivo = open(nombre_archivo, agrega and "a" or "w")
-    if '--csv' in sys.argv:
+    ext = os.path.splitext(nombre_archivo)[1]
+    if ext == '.csv':
         csv_writer = csv.writer(archivo, dialect='excel', delimiter=";")
         csv_writer.writerows([cols])
         csv_writer.writerows([[item[k] for k in cols] for item in items])
-    elif '--json' in sys.argv:
+    elif ext == '.json':
         json.dump(dic, archivo, sort_keys=True, indent=4)
-    elif '--dbf' in sys.argv:
-        formatos = [('Encabezado', ENCABEZADO, [dic]), 
-                    ]
+    elif ext == '.dbf':
+        formatos = [('Encabezado', ENCABEZADO, [dic]), ]
         guardar_dbf(formatos, agrega, conf_dbf)
-    else:
+    elif ext == '.txt':
         for dic in items:
             dic['tipo_reg'] = 0
             archivo.write(escribir(dic, ENCABEZADO))
+    else:
+        raise RuntimeError("Extension de archivo desconocida: %s" % ext)
     archivo.close()
     
 
