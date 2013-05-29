@@ -97,11 +97,13 @@ ENCABEZADO = [
     ('fecha_hora', 19, N), 
     ('vigencia_desde', 10, A), 
     ('vigencia_hasta', 10, A), 
-    ('codigo_transaccion', 6, N), 
+    ('transaccion', 12, N), 
     ('tarifa_referencia', 6, I, 2),           # consultar detalle
     ('estado', 20, N), 
     ('imprime_constancia', 2, N), 
     ('observaciones', 200, A), 
+    ('errores', 1000, A),
+    ('controles', 1000, A),
     ]        
 
 
@@ -807,9 +809,8 @@ if __name__ == '__main__':
                 it['fecha_hora'] = wsctg.FechaHora
                 it['vigencia_desde'] = wsctg.VigenciaDesde
                 it['vigencia_hasta'] = wsctg.VigenciaHasta
-                it['errores'] = wsctg.Errores
-                it['controles'] = wsctg.Controles
-                
+                it['errores'] = '|'.join(wsctg.Errores)
+                it['controles'] = '|'.join(wsctg.Controles)
 
         if '--parcial' in sys.argv:
             wsctg.LanzarExcepciones = True
@@ -827,7 +828,9 @@ if __name__ == '__main__':
                 print "Vigencia Hasta", wsctg.VigenciaHasta
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
-                it['numeroCTG'] = ctg
+                it['numero_ctg'] = ctg
+                it['errores'] = '|'.join(wsctg.Errores)
+                it['controles'] = '|'.join(wsctg.Controles)
 
         if '--confirmar_arribo' in sys.argv:
             for it in items:
@@ -837,7 +840,9 @@ if __name__ == '__main__':
                 print "Fecha y Hora", wsctg.FechaHora
                 print "Errores:", wsctg.Errores
                 it['transaccion'] = transaccion
-
+                it['errores'] = '|'.join(wsctg.Errores)
+                it['controles'] = '|'.join(wsctg.Controles)
+                
         if '--confirmar_definitivo' in sys.argv:
             for it in items:
                 print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
@@ -846,6 +851,8 @@ if __name__ == '__main__':
                 print "Fecha y Hora", wsctg.FechaHora
                 print "Errores:", wsctg.Errores
                 it['transaccion'] = transaccion
+                it['errores'] = '|'.join(wsctg.Errores)
+                it['controles'] = '|'.join(wsctg.Errores)
                 
         if '--consultar_detalle' in sys.argv:
             i = sys.argv.index("--consultar_detalle")
@@ -878,7 +885,6 @@ if __name__ == '__main__':
                           'kmRecorridos', 'tarifaReferencia']:
                     print k, wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
               
-
         escribir_archivo(cols, items, SALIDA)
         
         if "--consultar" in sys.argv:
