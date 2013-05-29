@@ -330,7 +330,7 @@ class WSCTG11:
         
     @inicializar_y_capturar_excepciones
     def ConfirmarArribo(self, numero_carta_de_porte, numero_CTG, 
-                        cuit_transportista, cant_kilos_carta_porte, 
+                        cuit_transportista, peso_neto_carga, 
                         establecimiento, **kwargs):
         "Confirma arribo CTG"
         ret = self.client.confirmarArribo(request=dict(
@@ -341,7 +341,7 @@ class WSCTG11:
                             cartaPorte=numero_carta_de_porte, 
                             ctg=numero_CTG,
                             cuitTransportista=cuit_transportista,
-                            cantKilosCartaPorte=cant_kilos_carta_porte,
+                            cantKilosCartaPorte=peso_neto_carga,
                             establecimiento=establecimiento,
                             )))['response']
         self.__analizar_errores(ret)
