@@ -329,7 +329,7 @@ class WSCTG11:
         return self.NumeroCTG
         
     @inicializar_y_capturar_excepciones
-    def ConfirmarArribo(self, numero_carta_de_porte, numero_CTG, 
+    def ConfirmarArribo(self, numero_carta_de_porte, numero_ctg, 
                         cuit_transportista, peso_neto_carga, 
                         establecimiento, **kwargs):
         "Confirma arribo CTG"
@@ -339,7 +339,7 @@ class WSCTG11:
                             'cuitRepresentado': self.Cuit, },
                         datosConfirmarArribo=dict(
                             cartaPorte=numero_carta_de_porte, 
-                            ctg=numero_CTG,
+                            ctg=numero_ctg,
                             cuitTransportista=cuit_transportista,
                             cantKilosCartaPorte=peso_neto_carga,
                             establecimiento=establecimiento,
@@ -355,7 +355,7 @@ class WSCTG11:
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_CTG, **kwargs):
+    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_ctg, **kwargs):
         "Confirma arribo definitivo CTG"
         ret = self.client.confirmarDefinitivo(request=dict(
                         auth={
@@ -363,7 +363,7 @@ class WSCTG11:
                             'cuitRepresentado': self.Cuit, },
                         datosConfirmarDefinitivo=dict(
                             cartaPorte=numero_carta_de_porte, 
-                            ctg=numero_CTG,
+                            ctg=numero_ctg,
                             )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
@@ -376,7 +376,7 @@ class WSCTG11:
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCTG(self, numero_carta_de_porte=None, numero_CTG=None, 
+    def ConsultarCTG(self, numero_carta_de_porte=None, numero_ctg=None, 
                      patente=None, cuit_solicitante=None, cuit_destino=None,
                      fecha_emision_desde=None, fecha_emision_hasta=None):
         "Operación que realiza consulta de CTGs según el criterio ingresado."
@@ -386,7 +386,7 @@ class WSCTG11:
                             'cuitRepresentado': self.Cuit, },
                         consultarCTGDatos=dict(
                             cartaPorte=numero_carta_de_porte, 
-                            ctg=numero_CTG,
+                            ctg=numero_ctg,
                             patente=patente,
                             cuitSolicitante=cuit_solicitante,
                             cuitDestino=cuit_destino,
@@ -423,13 +423,13 @@ class WSCTG11:
             return ""
 
     @inicializar_y_capturar_excepciones
-    def ConsultarDetalleCTG(self, numero_CTG=None):
+    def ConsultarDetalleCTG(self, numero_ctg=None):
         "Operación mostrar este detalle de la  solicitud de CTG seleccionada."
         ret = self.client.consultarDetalleCTG(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuitRepresentado': self.Cuit, },
-                        ctg=numero_CTG, 
+                        ctg=numero_ctg, 
                         ))['response']
         self.__analizar_errores(ret)
         datos = ret.get('consultarDetalleCTGDatos')
@@ -802,7 +802,7 @@ if __name__ == '__main__':
                 print "Vigencia Hasta", wsctg.VigenciaHasta
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
-                it['numero_CTG'] = ctg
+                it['numero_ctg'] = ctg
                 it['observaciones'] = wsctg.Observaciones
                 it['fecha_hora'] = wsctg.FechaHora
                 it['vigencia_desde'] = wsctg.VigenciaDesde
@@ -868,7 +868,7 @@ if __name__ == '__main__':
                 print "Vigencia Hasta", wsctg.VigenciaHasta
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
-                it['numero_CTG'] = wsctg.NumeroCTG
+                it['numero_ctg'] = wsctg.NumeroCTG
                 wsctg.AnalizarXml("XmlResponse")
                 for k in ['ctg', 'solicitante', 'estado', 'especie', 'cosecha', 
                           'cuitCanjeador', 'cuitDestino', 'cuitDestinatario', 
