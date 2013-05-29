@@ -57,6 +57,10 @@ from php import date
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
+# importo funciones compartidas, deberían estar en un módulo separado:
+
+from rece1 import leer, escribir, leer_dbf, guardar_dbf  
+
 
 WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
 
@@ -75,7 +79,7 @@ ENCABEZADO = [
     ('tipo_reg', 1, A), # 0: encabezado
     ('numero_carta_de_porte', 13, N),
     ('codigo_especie', 5, N),
-    ('cuit_canjeado', 11, N), 
+    ('cuit_canjeador', 11, N), 
     ('cuit_destino', 11, N), 
     ('cuit_destinatario', 11, N), 
     ('codigo_localidad_origen', 6, N), 
@@ -545,6 +549,59 @@ class WSCTG11:
             self.Excepcion = u"%s" % (e)
 
 
+def leer_archivo(nombre_archivo):
+    archivo = open(nombre_archivo, "r")
+    items = []
+    if '--csv' in sys.argv:
+        csv_reader = csv.reader(open(ENTRADA), dialect='excel', delimiter=";")
+        for row in csv_reader:
+            items.append(row)
+        cols = [str(it).strip() for it in items[0]]
+        # armar diccionario por cada linea
+        items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
+        return cols, items
+    elif '--json' in sys.argv:
+        dic = json.load(archivo)
+    elif '--dbf' in sys.argv:
+        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
+        formatos = [('Encabezado', ENCABEZADO, dic), 
+                    ('Certificado', CERTIFICADO, dic['certificados']), 
+                    ('Retencio', RETENCION, dic['retenciones']), 
+                    ('Deduccion', DEDUCCION, dic['deducciones'])]
+        leer_dbf(formatos, conf_dbf)
+    else:
+        dic = {}
+        for linea in archivo:
+            if str(linea[0])=='0':
+                dic.update(leer(linea, ENCABEZADO))
+            else:
+                print "Tipo de registro incorrecto:", linea[0]
+        items.append(dic)
+    archivo.close()
+    cols = [k[0] for k in ENCABEZADO]
+    return cols, items
+
+
+def escribir_archivo(cols, items, nombre_archivo, agrega=False):
+    archivo = open(nombre_archivo, agrega and "a" or "w")
+    if '--csv' in sys.argv:
+        csv_writer = csv.writer(archivo, dialect='excel', delimiter=";")
+        csv_writer.writerows([cols])
+        csv_writer.writerows([[item[k] for k in cols] for item in items])
+    elif '--json' in sys.argv:
+        json.dump(dic, archivo, sort_keys=True, indent=4)
+    elif '--dbf' in sys.argv:
+        formatos = [('Encabezado', ENCABEZADO, [dic]), 
+                    ]
+        guardar_dbf(formatos, agrega, conf_dbf)
+    else:
+        for dic in items:
+            dic['tipo_reg'] = 0
+            archivo.write(escribir(dic, ENCABEZADO))
+    archivo.close()
+    
+
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
@@ -723,21 +780,10 @@ if __name__ == '__main__':
                     )
             if not '--parcial' in sys.argv:
                 prueba.update(parcial)
-                
-            f = open(ENTRADA,"wb")
-            csv_writer = csv.writer(f, dialect='excel', delimiter=";")
-            csv_writer.writerows([prueba.keys()])
-            csv_writer.writerows([[prueba[k] for k in prueba.keys()]])
-            f.close()
             
-        items = []
-        csv_reader = csv.reader(open(ENTRADA), dialect='excel', delimiter=";")
-        for row in csv_reader:
-            items.append(row)
-        cols = [str(it).strip() for it in items[0]]
-        # armar diccionario por cada linea
-        items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
-
+            escribir_archivo(prueba.keys(), [prueba], ENTRADA)
+            
+        cols, items = leer_archivo(ENTRADA)
         ctg = None
 
         if '--solicitar' in sys.argv:
@@ -831,12 +877,7 @@ if __name__ == '__main__':
                     print k, wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
               
 
-
-        f = open(SALIDA,"wb")
-        csv_writer = csv.writer(f, dialect='excel', delimiter=";")
-        csv_writer.writerows([cols])
-        csv_writer.writerows([[item[k] for k in cols] for item in items])
-        f.close()
+        escribir_archivo(cols, items, SALIDA)
         
         if "--consultar" in sys.argv:
             wsctg.LanzarExcepciones = True
