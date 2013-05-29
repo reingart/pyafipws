@@ -926,9 +926,10 @@ def main():
     wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
     proxy = ""
     wrapper = "" #"pycurl"
-    cacert = "geotrust.crt"
+    cacert = None #"geotrust.crt"
+    wsfev1.LanzarExcepciones = True
 
-    wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
+    wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert, timeout=None)
 
     if DEBUG:
         print "LOG: ", wsfev1.DebugLog()
