@@ -266,6 +266,9 @@ class WSCTG11:
         cant_horas=None, patente_vehiculo=None, cuit_transportista=None, 
         km_recorridos=None, **kwargs):
         "Solicitar CTG Desde el Inicio"
+        # ajusto parámetros según validaciones de AFIP:
+        if it['cuit_canjeador'] == 0:
+                    it['cuit_canjeador'] = None         # nulo
         ret = self.client.solicitarCTGInicial(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -766,7 +769,7 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv or '--formato' in sys.argv:
             prueba = dict(numero_carta_de_porte=512345679, codigo_especie=23,
-                cuit_canjeador=30660685908, 
+                cuit_canjeador=0, #30660685908, 
                 cuit_destino=20061341677, cuit_destinatario=20267565393, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
                 codigo_cosecha='0910', peso_neto_carga=1000, 
