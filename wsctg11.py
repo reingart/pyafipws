@@ -68,7 +68,7 @@ from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_p
 import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
@@ -619,7 +619,7 @@ def leer_archivo(nombre_archivo):
         items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
         return cols, items
     elif ext == '.json':
-        dic = json.load(archivo)
+        items = json.load(archivo)
     elif ext == '.dbf':
         dic = {}
         formatos = [('Encabezado', ENCABEZADO, dic), ]
@@ -648,7 +648,7 @@ def escribir_archivo(cols, items, nombre_archivo, agrega=False):
         csv_writer.writerows([cols])
         csv_writer.writerows([[item[k] for k in cols] for item in items])
     elif ext == '.json':
-        json.dump(dic, archivo, sort_keys=True, indent=4)
+        json.dump(items, archivo, sort_keys=True, indent=4)
     elif ext == '.dbf':
         formatos = [('Encabezado', ENCABEZADO, items), ]
         guardar_dbf(formatos, True, conf_dbf)

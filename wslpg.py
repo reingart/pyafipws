@@ -85,18 +85,8 @@ from pyfpdf_hg import Template
 import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
 
-# importo paquetes para formatos de archivo de intercambio (opcional)
-
-try:
-    import json
-except ImportError:
-    try:
-        import simplejson as json 
-    except:
-        print "para soporte de JSON debe instalar simplejson"
-    
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 #WSDL = "https://serviciosjava.afip.gob.ar/wslpg/LpgService?wsdl"

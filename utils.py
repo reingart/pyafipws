@@ -27,6 +27,15 @@ try:
 except ImportError:
     print "para soporte de DBF debe instalar dbf 0.88.019 o superior"
 
+try:
+    import json
+except ImportError:
+    try:
+        import simplejson as json 
+    except:
+        print "para soporte de JSON debe instalar simplejson"
+        json = None
+
 
 DEBUG = False
 
