@@ -56,6 +56,7 @@ import os, sys, time
 from php import date
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
+import utils
 
 # importo funciones compartidas, deberían estar en un módulo separado:
 
@@ -917,7 +918,8 @@ if __name__ == '__main__':
         print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
         sys.exit(3)
     except Exception, e:
-        print unicode(e).encode("ascii","ignore")
+        ex = utils.exception_info()
+        print ex
         if DEBUG:
             raise
         sys.exit(5)
