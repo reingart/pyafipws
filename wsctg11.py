@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.09a"
+__version__ = "1.09b"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -836,9 +836,8 @@ if __name__ == '__main__':
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
                 codigo_cosecha='0910', peso_neto_carga=1000, 
                 km_recorridos=1234,
-                numero_ctg="43816783", transaccion='10000001681', 
-                observaciones='',      
-                cant_kilos_carta_porte=1000, establecimiento=1,
+                ##numero_ctg="43816783", transaccion='10000001681', 
+                observaciones='', establecimiento=1,
             )
             parcial = dict(
                     cant_horas=1, 
