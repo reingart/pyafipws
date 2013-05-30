@@ -96,9 +96,9 @@ def leer(linea, formato):
                 valor = None        # nulo
             elif tipo == N:
                 if valor:
-                    valor = str(int(valor))
+                    valor = int(valor)
                 else:
-                    valor = '0'
+                    valor = 0
             elif tipo == I:
                 if valor:
                     try:
