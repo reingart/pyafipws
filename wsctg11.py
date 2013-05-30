@@ -151,7 +151,7 @@ class WSCTG11:
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
                         'AnularCTG', 'RechazarCTG', 
                         'ConsultarCTG', 'LeerDatosCTG', 'ConsultarDetalleCTG',
-                        'ConsultarConstanciaCTGPDF',
+                        'ConsultarCTGExcel', 'ConsultarConstanciaCTGPDF',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
                         'ConsultarEstablecimientos',
@@ -427,6 +427,32 @@ class WSCTG11:
         else:
             return ""
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarCTGExcel(self, numero_carta_de_porte=None, numero_ctg=None, 
+                     patente=None, cuit_solicitante=None, cuit_destino=None,
+                     fecha_emision_desde=None, fecha_emision_hasta=None,
+                     archivo="planilla.xls"):
+        "Operación que realiza consulta de CTGs, graba una planilla xls"
+        ret = self.client.consultarCTGExcel(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        consultarCTGDatos=dict(
+                            cartaPorte=numero_carta_de_porte, 
+                            ctg=numero_ctg,
+                            patente=patente,
+                            cuitSolicitante=cuit_solicitante,
+                            cuitDestino=cuit_destino,
+                            fechaEmisionDesde=fecha_emision_desde,
+                            fechaEmisionHasta=fecha_emision_hasta,
+                            )))['response']
+        self.__analizar_errores(ret)
+        datos = base64.b64decode(ret.get('archivo', ""))
+        f = open(archivo, "wb")
+        f.write(datos)
+        f.close()
+        return True
+        
     @inicializar_y_capturar_excepciones
     def ConsultarDetalleCTG(self, numero_ctg=None):
         "Operación mostrar este detalle de la  solicitud de CTG seleccionada."
@@ -935,13 +961,21 @@ if __name__ == '__main__':
             while wsctg.LeerDatosCTG():
                 print "numero CTG: ", wsctg.NumeroCTG
 
+        if '--consultar_excel' in sys.argv:
+            archivo = raw_input("Archivo a generar (planilla.xls): ") or \
+                        'planilla.xls'
+            wsctg.LanzarExcepciones = True
+            ok = wsctg.ConsultarCTGExcel(fecha_emision_desde="01/04/2012",
+                                         archivo=archivo)
+            print "Errores:", wsctg.Errores
+
         if '--consultar_constancia_pdf' in sys.argv:
             i = sys.argv.index("--consultar_constancia_pdf")
             if len(sys.argv) > i + 2 and not sys.argv[i+1].startswith("--"):
                 ctg = int(sys.argv[i+1])
                 archivo = sys.argv[i+2]
             elif not ctg:
-                ctg = int(raw_input("Numero de CTG: ") or '0') or 73714620
+                ctg = int(raw_input("Numero de CTG: ") or '0') or 83139794
                 archivo = raw_input("Archivo a generar (constancia.pdf): ") or \
                             'constancia.pdf'
 
@@ -949,6 +983,7 @@ if __name__ == '__main__':
             ok = wsctg.ConsultarConstanciaCTGPDF(ctg, archivo)
             print "Errores:", wsctg.Errores
 
+            
         print "hecho."
         
     except SoapFault,e:
