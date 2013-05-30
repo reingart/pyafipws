@@ -84,9 +84,8 @@ from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_p
 from pyfpdf_hg import Template
 import utils
 
-# importo funciones compartidas, deberían estar en un módulo separado:
-
-from rece1 import leer, escribir, leer_dbf, guardar_dbf  
+# importo funciones compartidas:
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
 
 # importo paquetes para formatos de archivo de intercambio (opcional)
 
@@ -97,10 +96,6 @@ except ImportError:
         import simplejson as json 
     except:
         print "para soporte de JSON debe instalar simplejson"
-try:
-    import dbf
-except ImportError:
-    print "para soporte de DBF debe instalar dbf 0.88.019 o superior"
     
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
@@ -113,9 +108,6 @@ CONFIG_FILE = "wslpg.ini"
 HOMO = True
 
 # definición del formato del archivo de intercambio:
-N = 'Numerico'
-A = 'Alfanumerico'
-I = 'Importe'
 
 ENCABEZADO = [
     ('tipo_reg', 1, A), # 0: encabezado

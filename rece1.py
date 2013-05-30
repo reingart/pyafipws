@@ -27,6 +27,7 @@ from ConfigParser import SafeConfigParser
 # revisar la instalación de pyafip.ws:
 import wsaa, wsfev1
 from php import SimpleXMLElement, SoapClient, SoapFault, date
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
 
 
 HOMO = wsfev1.HOMO
@@ -47,9 +48,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
 # definición del formato del archivo de intercambio:
-N = 'Numerico'
-A = 'Alfanumerico'
-I = 'Importe'
+
 ENCABEZADO = [
     ('tipo_reg', 1, N), # 0: encabezado
     ('fecha_cbte', 8, A),
@@ -115,67 +114,6 @@ CMP_ASOC = [
     ]
 
 
-def leer(linea, formato):
-    dic = {}
-    comienzo = 1
-    for fmt in formato:    
-        clave, longitud, tipo = fmt[0:3]
-        dec = len(fmt)>3 and fmt[3] or 2
-        valor = linea[comienzo-1:comienzo-1+longitud].strip()
-        try:
-            if chr(8) in valor or chr(127) in valor or chr(255) in valor:
-                valor = None        # nulo
-            elif tipo == N:
-                if valor:
-                    valor = str(int(valor))
-                else:
-                    valor = '0'
-            elif tipo == I:
-                if valor:
-                    try:
-                        valor = valor.strip(" ")
-                        valor = float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
-                    except ValueError:
-                        raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
-                else:
-                    valor = 0.00
-            else:
-                valor = valor.decode("ascii","ignore")
-            dic[clave] = valor
-            comienzo += longitud
-        except Exception, e:
-            raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
-                clave, comienzo, valor, str(e)))
-    return dic
-
-def escribir(dic, formato):
-    linea = " " * 335
-    comienzo = 1
-    for fmt in formato:
-        clave, longitud, tipo = fmt[0:3]
-        try:
-            dec = len(fmt)>3 and fmt[3] or 2
-            if clave.capitalize() in dic:
-                clave = clave.capitalize()
-            s = dic.get(clave,"")
-            if isinstance(s, unicode):
-                s = s.encode("latin1")
-            if s is None:
-                valor = ""
-            else:
-                valor = str(s)
-            if tipo == N and valor and valor!="NULL":
-                valor = ("%%0%dd" % longitud) % int(valor)
-            elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % int(float(valor)*(10**dec))
-            else:
-                valor = ("%%-0%ds" % longitud) % valor
-            linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
-            comienzo += longitud
-        except Exception, e:
-            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
-                clave, comienzo, valor, str(e)))
-    return linea + "\n"
 
 def autenticar(cert, privatekey, url):
     "Obtener el TA"
@@ -199,7 +137,6 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     cbtasocs = []
     encabezado = []
     if '/dbf' in sys.argv:
-        import dbf
         if DEBUG: print "Leyendo DBF..."
 
         formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs)]
@@ -275,115 +212,6 @@ def escribir_factura(dic, archivo, agrega=False):
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic.get('tributos', [])), ('Iva', IVA, dic.get('iva', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', []))]
         guardar_dbf(formatos, agrega, conf_dbf)
-
-
-def dar_nombre_campo_dbf(clave, claves):
-    "Reducir nombre de campo a 10 caracteres, sin espacios ni _, sin repetir"
-    # achico el nombre del campo para que quepa en la tabla:
-    nombre = clave.replace("_","")[:10]
-    # si el campo esta repetido, le agrego un número
-    i = 0
-    while nombre in claves:
-        i += 1    
-        nombre = nombre[:9] + str(i)
-    return nombre.lower()
-    
-    
-def guardar_dbf(formatos, agrega=False, conf_dbf=None):
-    import dbf
-    if DEBUG: print "Creando DBF..."
-
-    tablas = {}
-    for nombre, formato, l in formatos:
-        campos = []
-        claves = []
-        filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
-        if DEBUG: print "=== tabla %s (%s) ===" %  (nombre, filename)
-        for fmt in formato:
-            clave, longitud, tipo = fmt[0:3]
-            dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-            if longitud>250:
-                tipo = "M" # memo!
-            elif tipo == A:
-                tipo = "C(%s)" % longitud 
-            elif tipo == N:
-                if longitud >= 18:
-                    longitud = 17
-                tipo = "N(%s,0)" % longitud 
-            elif tipo == I:
-                if longitud - 2 <= dec:
-                    longitud += longitud - dec + 1      # ajusto long. decimales 
-                tipo = "N(%s,%s)" % (longitud, dec)
-            clave_dbf = dar_nombre_campo_dbf(clave, claves)
-            campo = "%s %s" % (clave_dbf, tipo)
-            if DEBUG: print " * %s : %s" %  (campo, clave)
-            campos.append(campo)
-            claves.append(clave_dbf)
-        if DEBUG: print "leyendo tabla", nombre, filename
-        if agrega:
-            tabla = dbf.Table(filename, campos)
-        else:
-            tabla = dbf.Table(filename)
-
-        for d in l:
-            r = {}
-            claves = []
-            for fmt in formato:
-                clave, longitud, tipo = fmt[0:3]
-                if agrega or clave in d:
-                    v = d.get(clave, None)
-                    if DEBUG: print clave,v, tipo
-                    if v is None and tipo == A:
-                        v = ''
-                    if (v is None or v=='') and tipo in (I, N):
-                        v = 0
-                    if tipo == A:
-                        if isinstance(v, unicode):
-                            v = v.encode("ascii", "replace")
-                        if isinstance(v, str):
-                            v = v.decode("ascii", "replace").encode("ascii", "replace")
-                        if not isinstance(v, basestring):
-                            v = str(v)
-                    clave_dbf = dar_nombre_campo_dbf(clave, claves)
-                    claves.append(clave_dbf)
-                    r[clave_dbf] = v
-            if agrega:
-                print "Agregando ", r
-                registro = tabla.append(r)
-            else:
-                print "Actualizando ", r
-                reg = tabla.current()
-                for k, v in reg.scatter_fields().items():
-                    if k not in r:
-                        r[k] = v
-                print "Actualizando ", r
-                reg.write_record(**r)
-        tabla.close()
-
-
-def leer_dbf(formatos, conf_dbf):
-    import dbf
-    if DEBUG: print "Leyendo DBF..."
-    
-    for nombre, formato, ld in formatos:
-        filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
-        if DEBUG: print "leyendo tabla", nombre, filename
-        tabla = dbf.Table(filename)
-        for reg in tabla:
-            r = {}
-            d = reg.scatter_fields() 
-            claves = []
-            for fmt in formato:
-                clave, longitud, tipo = fmt[0:3]
-                #import pdb; pdb.set_trace()
-                clave_dbf = dar_nombre_campo_dbf(clave, claves)
-                claves.append(clave_dbf)
-                v = d[clave_dbf]
-                r[clave] = v
-            if isinstance(ld, dict):
-                ld.update(r)
-            else:
-                ld.append(r)    
 
 
 def depurar_xml(client):

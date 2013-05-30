@@ -58,9 +58,8 @@ import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 import utils
 
-# importo funciones compartidas, deberían estar en un módulo separado:
-
-from rece1 import leer, escribir, leer_dbf, guardar_dbf  
+# importo funciones compartidas:
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
@@ -71,9 +70,6 @@ CONFIG_FILE = "wsctg.ini"
 HOMO = True
 
 # definición del formato del archivo de intercambio:
-N = 'Numerico'
-A = 'Alfanumerico'
-I = 'Importe'
 
 ENCABEZADO = [
     # datos enviados
