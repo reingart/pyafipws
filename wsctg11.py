@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.08b"
+__version__ = "1.08c"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -905,7 +905,7 @@ if __name__ == '__main__':
                           'tarifaReferencia': 'tarifa_referencia', }.items():
                     v = wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
                     print k, v
-                    if ki.startswith("cuit"):
+                    if ki.startswith("cuit") and v:
                         v = v[:11]
                     it[ki] = v
     
