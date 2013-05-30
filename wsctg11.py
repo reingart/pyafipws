@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.08a"
+__version__ = "1.08b"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -299,6 +299,7 @@ class WSCTG11:
                 self.FechaHora = str(datos_ctg['fechaEmision'])
                 self.VigenciaDesde = str(datos_ctg['fechaVigenciaDesde'])
                 self.VigenciaHasta = str(datos_ctg['fechaVigenciaHasta'])
+                self.TarifaReferencia = str(datos_ctg.get('tarifaReferencia'))
             self.__analizar_controles(datos)
         return self.NumeroCTG
     
@@ -327,6 +328,7 @@ class WSCTG11:
                 self.FechaHora = str(datos_ctg['fechaEmision'])
                 self.VigenciaDesde = str(datos_ctg['fechaVigenciaDesde'])
                 self.VigenciaHasta = str(datos_ctg['fechaVigenciaHasta'])
+                self.TarifaReferencia = str(datos_ctg.get('tarifaReferencia'))
             self.__analizar_controles(datos)
         return self.NumeroCTG
         
@@ -802,9 +804,11 @@ if __name__ == '__main__':
                 print "Fecha y Hora", wsctg.FechaHora
                 print "Vigencia Desde", wsctg.VigenciaDesde
                 print "Vigencia Hasta", wsctg.VigenciaHasta
+                print "Tarifa Referencia: ", wsctg.TarifaReferencia
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
-                it['numero_ctg'] = ctg
+                it['numero_ctg'] = wsctg.NumeroCTG
+                it['tarifa_referencia'] = wsctg.TarifaReferencia
                 it['observaciones'] = wsctg.Observaciones
                 it['fecha_hora'] = wsctg.FechaHora
                 it['vigencia_desde'] = wsctg.VigenciaDesde
@@ -826,9 +830,11 @@ if __name__ == '__main__':
                 print "Fecha y Hora", wsctg.FechaHora
                 print "Vigencia Desde", wsctg.VigenciaDesde
                 print "Vigencia Hasta", wsctg.VigenciaHasta
+                print "Tarifa Referencia: ", wsctg.TarifaReferencia
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
-                it['numero_ctg'] = ctg
+                it['numero_ctg'] = wsctg.NumeroCTG
+                it['tarifa_referencia'] = wsctg.TarifaReferencia
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Controles)
 
