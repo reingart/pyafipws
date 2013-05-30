@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.08c"
+__version__ = "1.09a"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -52,7 +52,7 @@ Opciones:
 Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, time
+import os, sys, time, base64
 from php import date
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
@@ -151,6 +151,7 @@ class WSCTG11:
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
                         'AnularCTG', 'RechazarCTG', 
                         'ConsultarCTG', 'LeerDatosCTG', 'ConsultarDetalleCTG',
+                        'ConsultarConstanciaCTGPDF',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
                         'ConsultarEstablecimientos',
@@ -445,6 +446,23 @@ class WSCTG11:
             self.VigenciaDesde = str(datos['fechaVigenciaDesde'])
             self.VigenciaHasta = str(datos['fechaVigenciaHasta'])
             self.TarifaReferencia = str(datos['tarifaReferencia'])
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarConstanciaCTGPDF(self, numero_ctg=None, 
+                                        archivo="constancia.pdf"):
+        "Operación Consultar Constancia de CTG en PDF"
+        ret = self.client.consultarConstanciaCTGPDF(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        ctg=numero_ctg, 
+                        ))['response']
+        self.__analizar_errores(ret)
+        datos = base64.b64decode(ret.get('archivo', ""))
+        f = open(archivo, "wb")
+        f.write(datos)
+        f.close()
         return True
 
     @inicializar_y_capturar_excepciones
@@ -916,7 +934,21 @@ if __name__ == '__main__':
             wsctg.ConsultarCTG(fecha_emision_desde="01/04/2012")
             while wsctg.LeerDatosCTG():
                 print "numero CTG: ", wsctg.NumeroCTG
-            
+
+        if '--consultar_constancia_pdf' in sys.argv:
+            i = sys.argv.index("--consultar_constancia_pdf")
+            if len(sys.argv) > i + 2 and not sys.argv[i+1].startswith("--"):
+                ctg = int(sys.argv[i+1])
+                archivo = sys.argv[i+2]
+            elif not ctg:
+                ctg = int(raw_input("Numero de CTG: ") or '0') or 73714620
+                archivo = raw_input("Archivo a generar (constancia.pdf): ") or \
+                            'constancia.pdf'
+
+            wsctg.LanzarExcepciones = True
+            ok = wsctg.ConsultarConstanciaCTGPDF(ctg, archivo)
+            print "Errores:", wsctg.Errores
+
         print "hecho."
         
     except SoapFault,e:
