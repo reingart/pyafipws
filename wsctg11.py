@@ -277,8 +277,8 @@ class WSCTG11:
         km_recorridos=None, **kwargs):
         "Solicitar CTG Desde el Inicio"
         # ajusto parámetros según validaciones de AFIP:
-        if it['cuit_canjeador'] == 0:
-                    it['cuit_canjeador'] = None         # nulo
+        if cuit_canjeador and int(cuit_canjeador) == 0:
+            cuit_canjeador = None         # nulo
         ret = self.client.solicitarCTGInicial(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
