@@ -123,7 +123,9 @@ def leer(linea, formato):
         dec = len(fmt)>3 and fmt[3] or 2
         valor = linea[comienzo-1:comienzo-1+longitud].strip()
         try:
-            if tipo == N:
+            if chr(8) in valor or chr(127) in valor or chr(255) in valor:
+                valor = None        # nulo
+            elif tipo == N:
                 if valor:
                     valor = str(int(valor))
                 else:
@@ -140,7 +142,6 @@ def leer(linea, formato):
             else:
                 valor = valor.decode("ascii","ignore")
             dic[clave] = valor
-
             comienzo += longitud
         except Exception, e:
             raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
