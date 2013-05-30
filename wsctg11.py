@@ -97,7 +97,7 @@ ENCABEZADO = [
     ('transaccion', 12, N), 
     ('tarifa_referencia', 6, I, 2),           # consultar detalle
     ('estado', 20, A), 
-    ('imprime_constancia', 2, A), 
+    ('imprime_constancia', 5, A), 
     ('observaciones', 200, A), 
     ('errores', 1000, A),
     ('controles', 1000, A),
