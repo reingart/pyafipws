@@ -41,9 +41,18 @@ Opciones:
   --xml: almacena los requerimientos y respuestas XML (depuración)
 
   --dummy: consulta estado de servidores
-  --solicitar: obtiene el CTG
-  --confirmar: confirma el CTG 
+  --solicitar: obtiene el CTG (según archivo de entrada en TXT o CSV)
+  --confirmar: confirma el CTG (según archivo de entrada en TXT o CSV)
+  --anular: anula el CTG
+  --rechazar: permite al destino rechazar el CTG
+  --confirmar_arribo: confirma el arribo de un CTG
+  --confirmar_definitivo: confirma el arribo definitivo de un CTG
 
+  --consultar: consulta las CTG generadas
+  --consultar_excel: consulta las CTG generadas (genera un excel)
+  --consultar_detalle: obtiene el detalle de una CTG
+  --consultar_constancia_pdf: descarga el documento PDF de una CTG
+  
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
   --especies: obtiene el listado de especies
