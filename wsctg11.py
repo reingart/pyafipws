@@ -624,6 +624,7 @@ def leer_archivo(nombre_archivo):
         dic = {}
         formatos = [('Encabezado', ENCABEZADO, dic), ]
         leer_dbf(formatos, conf_dbf)
+        items = [dic]
     elif ext == '.txt':
         dic = {}
         for linea in archivo:
@@ -649,8 +650,8 @@ def escribir_archivo(cols, items, nombre_archivo, agrega=False):
     elif ext == '.json':
         json.dump(dic, archivo, sort_keys=True, indent=4)
     elif ext == '.dbf':
-        formatos = [('Encabezado', ENCABEZADO, [dic]), ]
-        guardar_dbf(formatos, agrega, conf_dbf)
+        formatos = [('Encabezado', ENCABEZADO, items), ]
+        guardar_dbf(formatos, True, conf_dbf)
     elif ext == '.txt':
         for dic in items:
             dic['tipo_reg'] = 0
@@ -727,6 +728,12 @@ if __name__ == '__main__':
             wsctg_url = config.get('WSCTG','URL')
         else:
             wsctg_url = WSDL
+
+        if config.has_section('DBF'):
+            conf_dbf = dict(config.items('DBF'))
+            if DEBUG: print "conf_dbf", conf_dbf
+        else:
+            conf_dbf = {}
 
         DEBUG = '--debug' in sys.argv
         XML = '--xml' in sys.argv
