@@ -39,6 +39,9 @@ Sub Main()
     ' Conectar al Servicio Web
     ok = WSCTGv11.Conectar("", "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl") ' homologación
     
+    ' Verifico que la versión esté actualizada (nuevos métodos)
+    Debug.Print WSCTGv11.version > "1.09b"
+    
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSCTGv11.Dummy
     Debug.Print "appserver status", WSCTGv11.AppServerStatus
@@ -97,9 +100,9 @@ Sub Main()
     ' establezco los parametros para solicitar ctg inicial:
     numero_carta_de_porte = "512345679"
     codigo_especie = 23
-    cuit_remitente_comercial = "20061341677"
-    cuit_destino = "20076641707"
-    cuit_destinatario = "30500959629"
+    cuit_remitente_comercial = Null ' Opcional!
+    cuit_destino = "20061341677"
+    cuit_destinatario = "20267565393"
     codigo_localidad_origen = 3058
     codigo_localidad_destino = 3059
     codigo_cosecha = "1112"
@@ -117,6 +120,7 @@ Sub Main()
             
     Debug.Print WSCTGv11.XmlResponse
     Debug.Print WSCTGv11.Observaciones
+    Debug.Print WSCTGv11.ErrMsg
             
     If ok Then
         ' recorro los errores devueltos por AFIP (si hubo)
@@ -134,9 +138,37 @@ Sub Main()
             numero_ctg = WSCTGv11.NumeroCTG
             Debug.Print WSCTGv11.TarifaReferencia
         End If
+    Else
+        ' muestro los errores
+        Dim MensajeError As Variant
+        For Each MensajeError In WSCTGv11.Errores
+            Debug.Print MensajeError
+        Next
+        For Each MensajeError In WSCTGv11.Controles
+            Debug.Print ControlErrores
+        Next
     End If
        
     MsgBox "CTG: " & numero_ctg & vbCrLf & "Km. a recorrer: " & km_recorridos & vbCrLf & "Tarifa ref.: " & tarifa_ref, vbInformation, "SolicitarCTG: número CTG:"
+    
+    ' Consulto los CTG generados (genera planilla Excel por AFIP)
+    archivo = App.Path & "\planilla.xls"
+    numero_ctg = Null
+    patente = Null
+    cuit_solicitante = Null
+    cuit_destino = Null
+    fecha_emision_desde = "01-01-2013"
+    fecha_emision_hasta = Null
+    ok = WSCTGv11.ConsultarCTGExcel(numero_carta_de_porte, numero_ctg, patente, cuit_solicitante, cuit_destino, fecha_emision_desde, fecha_emision_hasta, archivo)
+    Debug.Print "Errores:", WSCTGv11.ErrMsg
+    
+    ' Obtengo la constacia CTG -debe estar confirmada- (documento PDF AFIP)
+    ctg = 83139794
+    archivo = App.Path & "\constancia.pdf"
+    ok = WSCTGv11.ConsultarConstanciaCTGPDF(ctg, archivo)
+    Debug.Print "Errores:", WSCTGv11.ErrMsg
+    
+            
 Exit Sub
 ManejoError:
     ' Si hubo error:
