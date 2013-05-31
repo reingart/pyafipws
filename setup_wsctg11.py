@@ -35,7 +35,7 @@ data_files = [
 	("cache", glob.glob("cache/*")),
     ]
 
-import wsctg11
+import wsctg11, wsaa
 from nsis import build_installer, Target
 
 setup( 
@@ -47,8 +47,10 @@ setup(
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = [Target(module=wsctg11,modules="wsctg11")],
+    com_server = [Target(module=wsctg11,modules="wsctg11"), 
+                  Target(module=wsaa, modules='wsaa', create_exe=False, create_dll=True)],
     console=[Target(module=wsctg11, script='wsctg11.py', dest_base="wsctg11_cli"), 
+             Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")
              ],
     options=opts,
     data_files = data_files,
