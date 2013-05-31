@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.09b"
+__version__ = "1.09c"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -311,7 +311,7 @@ class WSCTG11:
                 self.VigenciaHasta = str(datos_ctg['fechaVigenciaHasta'])
                 self.TarifaReferencia = str(datos_ctg.get('tarifaReferencia'))
             self.__analizar_controles(datos)
-        return self.NumeroCTG
+        return self.NumeroCTG or 0
     
     @inicializar_y_capturar_excepciones
     def SolicitarCTGDatoPendiente(self, numero_carta_de_porte, cant_horas, 
