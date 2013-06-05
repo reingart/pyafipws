@@ -807,6 +807,11 @@ if __name__ == '__main__':
                 conf_dbf = dict(config.items('DBF'))
                 if DEBUG: print "conf_dbf", conf_dbf
                 regs = formato_dbf.leer(conf_dbf)
+            if '--json' in sys.argv:
+                import formato_json
+                entrada = conf_fact.get("entrada", "entrada.txt")
+                if DEBUG: print "entrada", entrada
+                regs = formato_json.leer(entrada)
             else:
                 import formato_txt
                 entrada = conf_fact.get("entrada", "entrada.txt")
