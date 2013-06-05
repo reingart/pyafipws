@@ -112,7 +112,7 @@ class WSFEv1:
                         'ParamGetPtosVenta',
                         'AnalizarXml', 'ObtenerTagXml',
                         'SetParametros',
-                        'Dummy', 'Conectar', 'DebugLog', 'Eval']
+                        'Dummy', 'Conectar', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 'Excepcion', 'LanzarExcepciones',
@@ -182,12 +182,7 @@ class WSFEv1:
             self.Log = StringIO()
         self.Log.write(msg)
         self.Log.write('\n\r')
-    
-    def Eval(self, code):
-        "Devolver el resultado de ejecutar una expresión (para depuración)"
-        if not HOMO:
-            return str(eval(code))
-    
+       
     def DebugLog(self):
         "Devolver y limpiar la bitácora de depuración"
         if self.Log:
