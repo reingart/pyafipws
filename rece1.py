@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31a"
+__version__ = "1.32a"
 
 import datetime
 import os
@@ -115,7 +115,7 @@ CMP_ASOC = [
 
 
 
-def autenticar(cert, privatekey, url):
+def autenticar(cert, privatekey, url, proxy=None):
     "Obtener el TA"
     TA = "TA.xml"
     ttl = 60*60*5
@@ -123,7 +123,7 @@ def autenticar(cert, privatekey, url):
         import wsaa
         tra = wsaa.create_tra(service="wsfe",ttl=ttl)
         cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
-        ta_string = wsaa.call_wsaa(cms,wsaa_url,trace=DEBUG)
+        ta_string = wsaa.call_wsaa(cms,wsaa_url,trace=DEBUG, proxy=proxy)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
     ta = SimpleXMLElement(ta_string)
@@ -286,19 +286,28 @@ if __name__ == "__main__":
     else:
         conf_dbf = {}
 
+    if config.has_section('PROXY') and not HOMO:
+        proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))
+        proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
+    else:
+        proxy_dict = {}
+
+
     if '/xml'in sys.argv:
         XML = True
 
     if DEBUG:
         print "wsaa_url %s\nwsfev1_url %s\ncuit %s" % (wsaa_url, wsfev1_url, cuit)
-    
+        if proxy_dict: print "proxy_dict=",proxy_dict
+
     if '/x' in sys.argv:
         escribir_factura({'err_msg': "Prueba",
                      }, open("x.txt","w"))
 
     try:
         ws = wsfev1.WSFEv1()
-        ws.Conectar("", wsfev1_url)
+        ws.LanzarExcepciones = True
+        ws.Conectar("", wsfev1_url, proxy=proxy_dict)
         ws.Cuit = cuit
         if wsfev1_reprocesar is not None:
             ws.Reprocesar = wsfev1_reprocesar
@@ -324,7 +333,7 @@ if __name__ == "__main__":
                     comienzo += longitud
             sys.exit(0)
 
-        token, sign = autenticar(cert, privatekey, wsaa_url)
+        token, sign = autenticar(cert, privatekey, wsaa_url, proxy=proxy_dict)
         ws.Token = token
         ws.Sign = sign
         
@@ -507,7 +516,7 @@ if __name__ == "__main__":
                 print "FchProceso:", ws.FchProceso
             sys.exit(0)
 
-
+        ws.LanzarExcepciones = False
         f_entrada = f_salida = None
         try:
             f_entrada = open(entrada,"r")
@@ -526,13 +535,13 @@ if __name__ == "__main__":
         sys.exit(0)
     
     except SoapFault, e:
-        print e.faultcode, e.faultstring.encode("ascii","ignore")
+        print "SoapFault:", e.faultcode, e.faultstring.encode("ascii","ignore")
         sys.exit(3)
     except Exception, e:
         e_str = unicode(e).encode("ascii","ignore")
         if not e_str:
             e_str = repr(e)
-        print e_str
+        print "Excepcion:", e_str
         escribir_factura({'err_msg': e_str,
                          }, open(salida,"w"))
         ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
