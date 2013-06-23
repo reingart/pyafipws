@@ -13,7 +13,7 @@ import glob, sys
 
 
 # includes for py2exe
-includes=['email.generator', 'email.iterators', 'email.message', 'email.utils']
+includes=['email.generator', 'email.iterators', 'email.message', 'email.utils', 'socks']
 
 # don't pull in all this MFC stuff used by the makepy UI.
 excludes=["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui"]
