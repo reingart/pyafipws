@@ -4,7 +4,6 @@
  * 2013 (C) Mariano Reingart <reingart@gmail.com>
  * Licencia: GPLv3
  * Requerimientos: scripts wsaa.py y libpyafipws.h / libpyafipws.c
- * Nota: debe configurar certificado, clave privada y CUIT en rece.ini
  * Documentacion: 
  *  http://www.sistemasagiles.com.ar/trac/wiki/LibPyAfipWs
  *  http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs
