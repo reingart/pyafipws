@@ -19,3 +19,4 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
 #endif
 
 EXPORT int test();
+EXPORT char * WSAA_CreateTRA(const char *service, long ttl);

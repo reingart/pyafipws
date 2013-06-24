@@ -33,44 +33,40 @@ EXPORT char * WSAA_CreateTRA(const char *service, long ttl) {
     fprintf(stderr, "imported!\n");
 
     if (pModule != NULL) {
+        
+        pArgs = PyTuple_New(2);
+
+        pValue = PyString_FromString(service);
+        if (!pValue) {
+            Py_DECREF(pArgs);
+            Py_DECREF(pModule);
+            fprintf(stderr, "Cannot convert argument\n");
+            return NULL;
+        }
+        PyTuple_SetItem(pArgs, 0, pValue);
+        pValue = PyInt_FromLong(ttl);
+        if (!pValue) {
+            Py_DECREF(pArgs);
+            Py_DECREF(pModule);
+            fprintf(stderr, "Cannot convert argument\n");
+            return NULL;
+        }
+        PyTuple_SetItem(pArgs, 1, pValue);
+
         pFunc = PyObject_GetAttrString(pModule, "create_tra");
 
         if (pFunc && PyCallable_Check(pFunc)) {
             fprintf(stderr, "pfunc!!!\n");
-            pArgs = PyTuple_New(2);
-
-            pValue = PyString_FromString(service);
-            if (!pValue) {
-                Py_DECREF(pArgs);
-                Py_DECREF(pModule);
-                fprintf(stderr, "Cannot convert argument\n");
-                return NULL;
-            }
-            PyTuple_SetItem(pArgs, 0, pValue);
-            pValue = PyInt_FromLong(ttl);
-            if (!pValue) {
-                Py_DECREF(pArgs);
-                Py_DECREF(pModule);
-                fprintf(stderr, "Cannot convert argument\n");
-                return NULL;
-            }
-            PyTuple_SetItem(pArgs, 1, pValue);
-
             pValue = PyObject_CallObject(pFunc, pArgs);
             fprintf(stderr, "call!!!\n");
             Py_DECREF(pArgs);
             if (pValue != NULL) {
                 ret = PyString_AsString(pValue);
-                printf("Result of call: %sd\n", ret);               
                 Py_DECREF(pValue);
-                return ret;
             }
             else {
-                Py_DECREF(pFunc);
-                Py_DECREF(pModule);
                 PyErr_Print();
                 fprintf(stderr,"Call failed\n");
-                return NULL;
             }
         }
         else {
@@ -84,7 +80,7 @@ EXPORT char * WSAA_CreateTRA(const char *service, long ttl) {
     else {
         PyErr_Print();
         fprintf(stderr, "Failed to load module\n");
-        return NULL;
     }
+    return ret;
 }
 
