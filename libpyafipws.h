@@ -21,3 +21,4 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
 EXPORT int test();
 EXPORT char * WSAA_CreateTRA(const char *service, long ttl);
 EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey);
+EXPORT char * WSAA_LoginCMS(char *cms);

@@ -155,3 +155,61 @@ EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
     return ret;
 }
 
+
+EXPORT char * WSAA_LoginCMS(char *cms) {
+
+    PyObject *pName, *pModule, *pDict, *pFunc;
+    PyObject *pArgs, *pValue;
+    char *ret;
+    char *argv[] = {"libpyafipws", "--trace"};
+
+    PySys_SetArgv(2, argv);
+
+    pName = PyString_FromString("wsaa");
+    pModule = PyImport_Import(pName);
+    Py_DECREF(pName);
+    fprintf(stderr, "imported!\n");
+
+    if (pModule != NULL) {
+        
+        pArgs = PyTuple_New(1);
+
+        pValue = PyString_FromString(cms);
+        if (!pValue) {
+            Py_DECREF(pArgs);
+            Py_DECREF(pModule);
+            fprintf(stderr, "Cannot convert argument\n");
+            return NULL;
+        }
+        PyTuple_SetItem(pArgs, 0, pValue);
+
+        pFunc = PyObject_GetAttrString(pModule, "call_wsaa");
+
+        if (pFunc && PyCallable_Check(pFunc)) {
+            fprintf(stderr, "pfunc!!!\n");
+            pValue = PyObject_CallObject(pFunc, pArgs);
+            fprintf(stderr, "call!!!\n");
+            Py_DECREF(pArgs);
+            if (pValue != NULL) {
+                ret = PyString_AsString(pValue);
+                Py_DECREF(pValue);
+            }
+            else {
+                PyErr_Print();
+                fprintf(stderr,"Call failed\n");
+            }
+        }
+        else {
+            if (PyErr_Occurred())
+                PyErr_Print();
+            fprintf(stderr, "Cannot find function");
+        }
+        Py_XDECREF(pFunc);
+        Py_DECREF(pModule);
+    }
+    else {
+        PyErr_Print();
+        fprintf(stderr, "Failed to load module\n");
+    }
+    return ret;
+}
