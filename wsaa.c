@@ -84,3 +84,74 @@ EXPORT char * WSAA_CreateTRA(const char *service, long ttl) {
     return ret;
 }
 
+EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
+
+    PyObject *pName, *pModule, *pDict, *pFunc;
+    PyObject *pArgs, *pValue;
+    char *ret;
+
+    pName = PyString_FromString("wsaa");
+    pModule = PyImport_Import(pName);
+    Py_DECREF(pName);
+    fprintf(stderr, "imported!\n");
+
+    if (pModule != NULL) {
+        
+        pArgs = PyTuple_New(3);
+
+        pValue = PyString_FromString(tra);
+        if (!pValue) {
+            Py_DECREF(pArgs);
+            Py_DECREF(pModule);
+            fprintf(stderr, "Cannot convert argument\n");
+            return NULL;
+        }
+        PyTuple_SetItem(pArgs, 0, pValue);
+        pValue = PyString_FromString(cert);
+        if (!pValue) {
+            Py_DECREF(pArgs);
+            Py_DECREF(pModule);
+            fprintf(stderr, "Cannot convert argument\n");
+            return NULL;
+        }
+        PyTuple_SetItem(pArgs, 1, pValue);
+        pValue = PyString_FromString(privatekey);
+        if (!pValue) {
+            Py_DECREF(pArgs);
+            Py_DECREF(pModule);
+            fprintf(stderr, "Cannot convert argument\n");
+            return NULL;
+        }
+        PyTuple_SetItem(pArgs, 2, pValue);
+
+        pFunc = PyObject_GetAttrString(pModule, "sign_tra");
+
+        if (pFunc && PyCallable_Check(pFunc)) {
+            fprintf(stderr, "pfunc!!!\n");
+            pValue = PyObject_CallObject(pFunc, pArgs);
+            fprintf(stderr, "call!!!\n");
+            Py_DECREF(pArgs);
+            if (pValue != NULL) {
+                ret = PyString_AsString(pValue);
+                Py_DECREF(pValue);
+            }
+            else {
+                PyErr_Print();
+                fprintf(stderr,"Call failed\n");
+            }
+        }
+        else {
+            if (PyErr_Occurred())
+                PyErr_Print();
+            fprintf(stderr, "Cannot find function");
+        }
+        Py_XDECREF(pFunc);
+        Py_DECREF(pModule);
+    }
+    else {
+        PyErr_Print();
+        fprintf(stderr, "Failed to load module\n");
+    }
+    return ret;
+}
+
