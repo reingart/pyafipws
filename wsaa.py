@@ -40,7 +40,7 @@ SOAP_ACTION = 'http://ar.gov.afip.dif.facturaelectronica/' # Revisar WSDL
 SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL 
 
 # Verificación del web server remoto
-CACERT = "geotrust.crt" # WSAA CA Cert
+CACERT = "afip_ca_info.crt" # WSAA CA Cert
 
 HOMO = True
 TYPELIB = False
