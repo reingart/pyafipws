@@ -74,6 +74,7 @@ class WSFEXv1:
         self.InstallDir = INSTALL_DIR
         self.DebugLog = ""
         self.FchVencCAE = ""              # retrocompatibilidad
+        self.reintentos = 1               # usado en el decorador de errores
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -503,7 +504,7 @@ if __name__ == "__main__":
         wsdl = "http://wswhomo.afip.gov.ar/WSFEXv1/service.asmx"
         cache = proxy = ""
         wrapper = "httplib2"
-        cacert = open("geotrust.crt").read()
+        cacert = open("afip_ca_info.crt").read()
         ok = wsfexv1.Conectar(cache, wsdl, proxy, wrapper, cacert)
     
         if '--dummy' in sys.argv:
