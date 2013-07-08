@@ -109,7 +109,7 @@ class WSCOC:
                         'LeerError', 'LeerErrorFormato', 'LeerInconsistencia',
                         'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml',
-                        'Dummy', 'Conectar', 'Eval', 'DebugLog']
+                        'Dummy', 'Conectar', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit',
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
         'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 
@@ -218,11 +218,6 @@ class WSCOC:
         self.Log.write(msg)
         self.Log.write('\n\r')
     
-    def Eval(self, code):
-        "Devolver el resultado de ejecutar una expresión (para depuración)"
-        if not HOMO:
-            return str(eval(code))
-
     def DebugLog(self):
         "Devolver y limpiar la bitácora de depuración"
         if self.Log:
