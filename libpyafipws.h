@@ -1,0 +1,41 @@
+/* 
+ *  This file is part of PyAfipWs dynamical-link shared library
+ *  Copyright (C) 2013 Mariano Reingart <reingart@gmail.com>
+ *
+ *  PyAfipWs is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  PyAfipWs is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with PyAfipWs.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#if defined(__GNUG__)
+
+#define EXPORT extern "C" 
+#define CONSTRUCTOR __attribute__((constructor))
+#define DESTRUCTOR __attribute__((destructor))
+
+#else
+
+#include <windows.h>
+#define EXPORT __declspec(dllexport) 
+#define CONSTRUCTOR
+#define DESTRUCTOR
+
+BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
+
+#define WIN32
+
+#endif
+
+EXPORT int test();
+EXPORT char * WSAA_CreateTRA(const char *service, long ttl);
+EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey);
+EXPORT char * WSAA_LoginCMS(char *cms);
