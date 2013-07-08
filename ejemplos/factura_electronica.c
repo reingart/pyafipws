@@ -17,8 +17,11 @@
 
 int main(int argc, char *argv[]) {
   char *tra, *cms, *ta;
+  void *wsfev1;
+  
   /* prueba generica */
   test();
+  
   /* Generar ticket de requerimiento de acceso */
   tra = WSAA_CreateTRA("wsfe", 999);
   printf("TRA:\n%s\n", tra);
@@ -27,7 +30,15 @@ int main(int argc, char *argv[]) {
   printf("CMS:\n%s\n", cms);  
   /* Llamar al webservice y obtener el ticket de acceso */
   ta = WSAA_LoginCMS(cms);
-  printf("TA:\n%s\n", ta);  
+  printf("TA:\n%s\n", ta);    
+  
+  /* Crear una objeto WSFEv1 (interfaz webservice factura electronica) */
+  wsfev1 = PYAFIPWS_CreateObject("wsfev1", "WSFEv1");
+  printf("wsfev1: %p\n", wsfev1);    /* si funiconó ok, no debe ser NULL! */  
+  /* destruir el objeto */
+  PYAFIPWS_DestroyObject(wsfev1);  
+
+
   return 0;
 }
 

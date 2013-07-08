@@ -36,7 +36,14 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
 #endif
 
 EXPORT int test(void);
+
+/* PYAFIPWS: COM-like generic functions to instantiate python objects */
+EXPORT void * PYAFIPWS_CreateObject(char *module, char *name);
+EXPORT void PYAFIPWS_DestroyObject(void *object);
+
+/* WSAA: Autentication Webservice functions */
 EXPORT char * WSAA_CreateTRA(const char *service, long ttl);
 EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey);
 EXPORT char * WSAA_LoginCMS(char *cms);
+
 

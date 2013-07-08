@@ -59,3 +59,34 @@ EXPORT int test() {
   return 0;
 }
 
+/* CreateObject: import the module, instantiate the object and return the ref */
+EXPORT void * PYAFIPWS_CreateObject(char *module, char *name) {
+
+    PyObject *pName, *pModule, *pClass, *pObject=NULL;
+
+    pName = PyString_FromString(module);
+    pModule = PyImport_Import(pName);
+    Py_DECREF(pName);
+    fprintf(stderr, "imported!\n");
+
+    if (pModule != NULL) {
+        pClass = PyObject_GetAttrString(pModule, name);
+        if (pClass && PyCallable_Check(pClass)) {
+            fprintf(stderr, "pfunc!!!\n");
+            pObject = PyObject_CallObject(pClass, NULL);
+            fprintf(stderr, "call!!!\n");
+            Py_XDECREF(pClass);
+        }
+        Py_DECREF(pModule);
+        return (void *) pObject;
+    } else {
+        return NULL;
+    }
+}
+
+/* DestroyObject: decrement the reference to the module */
+EXPORT void PYAFIPWS_DestroyObject(void * pObject) {
+
+    Py_DECREF((PyObject*) pObject);
+    
+}
