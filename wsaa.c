@@ -23,9 +23,9 @@
 
 EXPORT char * WSAA_CreateTRA(const char *service, long ttl) {
 
-    PyObject *pName, *pModule, *pDict, *pFunc;
+    PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
-    char *ret;
+    char *ret=NULL;
 
     pName = PyString_FromString("wsaa");
     pModule = PyImport_Import(pName);
@@ -86,9 +86,9 @@ EXPORT char * WSAA_CreateTRA(const char *service, long ttl) {
 
 EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
 
-    PyObject *pName, *pModule, *pDict, *pFunc;
+    PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
-    char *ret;
+    char *ret=NULL;
 
     pName = PyString_FromString("wsaa");
     pModule = PyImport_Import(pName);
@@ -158,9 +158,9 @@ EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
 
 EXPORT char * WSAA_LoginCMS(char *cms) {
 
-    PyObject *pName, *pModule, *pDict, *pFunc;
+    PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
-    char *ret;
+    char *ret=NULL;
     char *argv[] = {"libpyafipws", "--trace"};
 
     PySys_SetArgv(2, argv);

@@ -11,6 +11,10 @@
 
 #include "libpyafipws.h"
 
+#if defined(__GNUC__)
+#include <stdio.h>
+#endif
+
 int main(int argc, char *argv[]) {
   char *tra, *cms, *ta;
   /* prueba generica */

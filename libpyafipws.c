@@ -20,13 +20,16 @@
 #include "libpyafipws.h"
 
 /* Start-up the python interpreter */
-CONSTRUCTOR static void initialize() {
+CONSTRUCTOR static void initialize(void) {
     Py_SetProgramName("pyafipws");
     Py_Initialize();
+    /* on linux, add the current directory so python can find the modules */
+    PyRun_SimpleString("import sys, os");
+    PyRun_SimpleString("sys.path.append(os.curdir)");
 }
 
 /* Tear down the python interpreter */
-DESTRUCTOR static void finalize() {
+DESTRUCTOR static void finalize(void) {
     Py_Finalize();
 }
 

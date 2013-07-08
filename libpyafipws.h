@@ -16,9 +16,9 @@
  *  along with PyAfipWs.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if defined(__GNUG__)
+#if defined(__GNUC__)
 
-#define EXPORT extern "C" 
+#define EXPORT extern
 #define CONSTRUCTOR __attribute__((constructor))
 #define DESTRUCTOR __attribute__((destructor))
 
@@ -35,7 +35,8 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
 
 #endif
 
-EXPORT int test();
+EXPORT int test(void);
 EXPORT char * WSAA_CreateTRA(const char *service, long ttl);
 EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey);
 EXPORT char * WSAA_LoginCMS(char *cms);
+
