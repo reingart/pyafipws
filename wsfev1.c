@@ -22,44 +22,44 @@
 #define MODULE "wsfev1"
 
 
-EXPORT char * WSFEv1_Conectar(void *object, char *cache, char *wsdl, char *proxy) {
+EXPORT bool WSFEv1_Conectar(void *object, char *cache, char *wsdl, char *proxy) {
 
     PyObject *pValue;
-    char *ret = NULL;
+    bool ok = false;
 
     if (object != NULL) {
 
         pValue = PyObject_CallMethod((PyObject *)object, "Conectar", "(s)", cache, wsdl, proxy);
         fprintf(stderr, "conectar call!!!\n");
         if (pValue != NULL) {
-                ret = PyString_AsString(pValue);
+                ok = PyObject_IsTrue(pValue);
                 Py_DECREF(pValue);
         } else {
             PyErr_Print();
             fprintf(stderr,"Call failed\n");
         }
     }
-    return ret;
+    return ok;
 }
 
 
-EXPORT char * WSFEv1_Dummy(void *object) {
+EXPORT bool WSFEv1_Dummy(void *object) {
 
     PyObject *pValue;
-    char *ret = NULL;
+    char ok = false;
 
     if (object != NULL) {
 
         pValue = PyObject_CallMethod((PyObject *)object, "Dummy", "");
         fprintf(stderr, "dummy call!!!\n");
         if (pValue != NULL) {
-                ret = PyString_AsString(pValue);
+                ok = PyObject_IsTrue(pValue);
                 Py_DECREF(pValue);
         } else {
             PyErr_Print();
             fprintf(stderr,"Call failed\n");
         }
     }
-    return ret;
+    return ok;
 }
 

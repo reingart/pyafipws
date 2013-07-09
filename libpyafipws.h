@@ -22,6 +22,8 @@
 #define CONSTRUCTOR __attribute__((constructor))
 #define DESTRUCTOR __attribute__((destructor))
 
+#include <stdbool.h>
+
 #else
 
 #include <windows.h>
@@ -30,6 +32,10 @@
 #define DESTRUCTOR
 
 BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
+
+typedef int bool;
+#define false 0
+#define true 1
 
 #define WIN32
 
@@ -47,6 +53,6 @@ EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey);
 EXPORT char * WSAA_LoginCMS(char *cms);
 
 /* WSFEv1: Electronic Invoice Webservice methods */
-EXPORT char * WSFEV1_Conectar(void *object, char *cache, char *wsdl, char *proxy);
-EXPORT char * WSFEV1_Dummy(void *object);
+EXPORT bool WSFEV1_Conectar(void *object, char *cache, char *wsdl, char *proxy);
+EXPORT bool WSFEV1_Dummy(void *object);
 

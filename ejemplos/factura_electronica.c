@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
   char *tra, *cms, *ta;
   void *wsfev1;
   char *ret;
+  bool ok;
   
   /* prueba generica */
   test();
@@ -35,13 +36,13 @@ int main(int argc, char *argv[]) {
   
   /* Crear una objeto WSFEv1 (interfaz webservice factura electronica) */
   wsfev1 = PYAFIPWS_CreateObject("wsfev1", "WSFEv1");
-  printf("wsfev1: %p\n", wsfev1);    /* si funiconó ok, no debe ser NULL! */  
+  printf("crear wsfev1: %p\n", wsfev1);    /* si funiconó ok, no debe ser NULL! */  
   /* conectar al webservice (para produccion cambiar URL) */
-  ret = WSFEv1_Conectar(wsfev1, "", "", "");
-  printf("concetar: %s", ret);
+  ok = WSFEv1_Conectar(wsfev1, "", "", "");
+  printf("concetar: %s", ok ? "true" : "false");
   /* obtener el estado de los servidores */
-  ret = WSFEv1_Dummy(wsfev1);
-  printf("dummy: %s", ret);
+  ok = WSFEv1_Dummy(wsfev1);
+  printf("llamar a dummy: %s\n", ok ? "true" : "false");
   
   /* destruir el objeto */
   PYAFIPWS_DestroyObject(wsfev1);  
