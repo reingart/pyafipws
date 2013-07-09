@@ -901,6 +901,13 @@ class WSFEv1:
         self.Cuit = cuit
         return True
 
+    def SetTicketAcceso(self, ta_string):
+        "Establecer el token y sign desde un ticket de acceso XML"
+        ta = SimpleXMLElement(ta_string)
+        self.Token = str(ta.credentials.token)
+        self.Sign = str(ta.credentials.sign)
+        return True
+
         
 def p_assert_eq(a,b):
     print a, a==b and '==' or '!=', b

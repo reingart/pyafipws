@@ -57,4 +57,5 @@ EXPORT char * WSAA_LoginCMS(char *cms);
 /* WSFEv1: Electronic Invoice Webservice methods */
 EXPORT bool WSFEV1_Conectar(void *object, char *cache, char *wsdl, char *proxy);
 EXPORT bool WSFEV1_Dummy(void *object);
+EXPORT bool WSFEv1_SetTicketAccesso(void *object, char *ta);
 

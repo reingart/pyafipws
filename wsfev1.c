@@ -63,3 +63,26 @@ EXPORT bool WSFEv1_Dummy(void *object) {
     return ok;
 }
 
+
+EXPORT bool WSFEv1_SetTicketAcceso(void *object, char *ta) {
+
+    PyObject *pValue;
+    char ok = false;
+
+    if (object != NULL) {
+
+        pValue = PyObject_CallMethod((PyObject *)object, "SetTicketAcceso", "s", ta);
+        fprintf(stderr, "set TA call!!!\n");
+        if (pValue != NULL) {
+                ok = PyObject_IsTrue(pValue);
+                Py_DECREF(pValue);
+        } else {
+            PyErr_Print();
+            fprintf(stderr,"Call failed\n");
+        }
+    }
+    return ok;
+}
+
+
+

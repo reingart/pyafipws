@@ -53,7 +53,8 @@ int main(int argc, char *argv[]) {
 
   /* establezco los datos para operar el webservice */
   ok = PYAFIPWS_Set(wsfev1, "Cuit", "267565393");
-  
+  ok = WSFEv1_SetTicketAcceso(wsfev1, ta);
+
   /* destruir el objeto */
   PYAFIPWS_DestroyObject(wsfev1);  
 
