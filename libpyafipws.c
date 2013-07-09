@@ -59,6 +59,22 @@ EXPORT int test() {
   return 0;
 }
 
+/* cstr: utility function to convert a python string to c (uses malloc!) */
+char *cstr(void *pStr) {
+    char *ret;
+    size_t len;
+    
+    /* get the string size, remeber to copy '\0' termination character */
+    len = PyString_Size((PyObject*) pStr) + 1; 
+    /* allocate memory for the c string */
+    ret = (char *) malloc(len);
+    if (ret) {
+        /* copy the py string to c (note that it may have \0 characters */
+        strncpy(ret, PyString_AsString((PyObject*) pStr), len);
+    }
+    return ret;
+}
+
 /* CreateObject: import the module, instantiate the object and return the ref */
 EXPORT void * PYAFIPWS_CreateObject(char *module, char *name) {
 
@@ -100,7 +116,7 @@ EXPORT char * PYAFIPWS_Get(void * object, char * name) {
     pValue = PyObject_GetAttrString((PyObject *) object, name);
 
     if (pValue) {
-        ret = PyString_AsString(pValue);
+        ret = cstr(pValue);
         Py_DECREF(pValue);
     } else {
         PyErr_Print();

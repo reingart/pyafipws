@@ -13,6 +13,7 @@
 
 #if defined(__GNUC__)
 #include <stdio.h>
+#include <stdlib.h>
 #endif
 
 int main(int argc, char *argv[]) {
@@ -40,17 +41,21 @@ int main(int argc, char *argv[]) {
   /* conectar al webservice (para produccion cambiar URL) */
   ok = WSFEv1_Conectar(wsfev1, "", "", "");
   printf("concetar: %s", ok ? "true" : "false");
+  
   /* obtener el estado de los servidores */
   ok = WSFEv1_Dummy(wsfev1);
   printf("llamar a dummy: %s\n", ok ? "true" : "false");
   /* obtener los atributos devueltos por AFIP */
   ret = PYAFIPWS_Get(wsfev1, "AppServerStatus");
   printf("dummy AppServerStatus: %s\n", ret);
+  free(ret);
   ret = PYAFIPWS_Get(wsfev1, "DbServerStatus");
   printf("dummy DbServerStatus: %s\n", ret);
+  free(ret);
   ret = PYAFIPWS_Get(wsfev1, "AuthServerStatus");
   printf("dummy AuthServerStatus: %s\n", ret);
-
+  free(ret);
+  
   /* establezco los datos para operar el webservice */
   ok = PYAFIPWS_Set(wsfev1, "Cuit", "267565393");
   ok = WSFEv1_SetTicketAcceso(wsfev1, ta);
@@ -58,6 +63,11 @@ int main(int argc, char *argv[]) {
   /* destruir el objeto */
   PYAFIPWS_DestroyObject(wsfev1);  
 
+
+  /* liberar la memoria adquirida para los valores devueltos de WSAA */
+  free(ta);
+  free(cms);
+  free(tra);
 
   return 0;
 }

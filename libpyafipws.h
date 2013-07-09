@@ -42,6 +42,7 @@ typedef int bool;
 #endif
 
 EXPORT int test(void);
+char *cstr(void *pStr);
 
 /* PYAFIPWS: COM-like generic functions to instantiate python objects */
 EXPORT void * PYAFIPWS_CreateObject(char *module, char *name);

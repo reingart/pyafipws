@@ -61,7 +61,7 @@ EXPORT char * WSAA_CreateTRA(const char *service, long ttl) {
             fprintf(stderr, "call!!!\n");
             Py_DECREF(pArgs);
             if (pValue != NULL) {
-                ret = PyString_AsString(pValue);
+                ret = cstr(pValue);
                 Py_DECREF(pValue);
             }
             else {
@@ -132,7 +132,7 @@ EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
             fprintf(stderr, "call!!!\n");
             Py_DECREF(pArgs);
             if (pValue != NULL) {
-                ret = PyString_AsString(pValue);
+                ret = cstr(pValue);
                 Py_DECREF(pValue);
             }
             else {
@@ -191,7 +191,7 @@ EXPORT char * WSAA_LoginCMS(char *cms) {
             fprintf(stderr, "call!!!\n");
             Py_DECREF(pArgs);
             if (pValue != NULL) {
-                ret = PyString_AsString(pValue);
+                ret = cstr(pValue);
                 Py_DECREF(pValue);
             }
             else {
