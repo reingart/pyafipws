@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
   printf("CMS:\n%s\n", cms);  
   /* Llamar al webservice y obtener el ticket de acceso */
   ta = WSAA_LoginCMS(cms);
-  printf("TA:\n%s\n", ta);    
+  printf("TA:\n%s\n", ta);
   
   /* Crear una objeto WSFEv1 (interfaz webservice factura electronica) */
   wsfev1 = PYAFIPWS_CreateObject("wsfev1", "WSFEv1");
@@ -43,13 +43,16 @@ int main(int argc, char *argv[]) {
   /* obtener el estado de los servidores */
   ok = WSFEv1_Dummy(wsfev1);
   printf("llamar a dummy: %s\n", ok ? "true" : "false");
-  /* obtener */
+  /* obtener los atributos devueltos por AFIP */
   ret = PYAFIPWS_Get(wsfev1, "AppServerStatus");
   printf("dummy AppServerStatus: %s\n", ret);
   ret = PYAFIPWS_Get(wsfev1, "DbServerStatus");
   printf("dummy DbServerStatus: %s\n", ret);
   ret = PYAFIPWS_Get(wsfev1, "AuthServerStatus");
   printf("dummy AuthServerStatus: %s\n", ret);
+
+  /* establezco los datos para operar el webservice */
+  ok = PYAFIPWS_Set(wsfev1, "Cuit", "267565393");
   
   /* destruir el objeto */
   PYAFIPWS_DestroyObject(wsfev1);  

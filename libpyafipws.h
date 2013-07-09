@@ -47,6 +47,7 @@ EXPORT int test(void);
 EXPORT void * PYAFIPWS_CreateObject(char *module, char *name);
 EXPORT void PYAFIPWS_DestroyObject(void *object);
 EXPORT char * PYAFIPWS_Get(void *object, char *name);
+EXPORT bool PYAFIPWS_Set(void * object, char * name, char * value);
 
 /* WSAA: Autentication Webservice functions */
 EXPORT char * WSAA_CreateTRA(const char *service, long ttl);

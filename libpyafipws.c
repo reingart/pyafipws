@@ -110,3 +110,26 @@ EXPORT char * PYAFIPWS_Get(void * object, char * name) {
     return ret;    
 }
 
+/* Set: generic method to set an attribute of an object (string value) */
+EXPORT bool PYAFIPWS_Set(void * object, char * name, char * value) {
+
+    PyObject *pValue;
+    int ret;
+    bool ok=false;
+
+    pValue = PyString_FromString(value);
+    ret = PyObject_SetAttrString((PyObject *) object, name, pValue);
+
+    if (pValue) {
+        Py_DECREF(pValue);
+    }
+    if (ret == -1) {
+        PyErr_Print();
+        fprintf(stderr,"GetAttr to %s failed\n", name);
+        ok = false;
+    } else {
+        ok = true;
+    }
+    return ok;
+}
+
