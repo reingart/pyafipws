@@ -43,6 +43,13 @@ int main(int argc, char *argv[]) {
   /* obtener el estado de los servidores */
   ok = WSFEv1_Dummy(wsfev1);
   printf("llamar a dummy: %s\n", ok ? "true" : "false");
+  /* obtener */
+  ret = PYAFIPWS_Get(wsfev1, "AppServerStatus");
+  printf("dummy AppServerStatus: %s\n", ret);
+  ret = PYAFIPWS_Get(wsfev1, "DbServerStatus");
+  printf("dummy DbServerStatus: %s\n", ret);
+  ret = PYAFIPWS_Get(wsfev1, "AuthServerStatus");
+  printf("dummy AuthServerStatus: %s\n", ret);
   
   /* destruir el objeto */
   PYAFIPWS_DestroyObject(wsfev1);  

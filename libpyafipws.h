@@ -46,6 +46,7 @@ EXPORT int test(void);
 /* PYAFIPWS: COM-like generic functions to instantiate python objects */
 EXPORT void * PYAFIPWS_CreateObject(char *module, char *name);
 EXPORT void PYAFIPWS_DestroyObject(void *object);
+EXPORT char * PYAFIPWS_Get(void *object, char *name);
 
 /* WSAA: Autentication Webservice functions */
 EXPORT char * WSAA_CreateTRA(const char *service, long ttl);

@@ -85,8 +85,28 @@ EXPORT void * PYAFIPWS_CreateObject(char *module, char *name) {
 }
 
 /* DestroyObject: decrement the reference to the module */
-EXPORT void PYAFIPWS_DestroyObject(void * pObject) {
+EXPORT void PYAFIPWS_DestroyObject(void * object) {
 
-    Py_DECREF((PyObject*) pObject);
+    Py_DECREF((PyObject *) object);
     
 }
+
+/* Get: generic method to get an attribute of an object (returns a string) */
+EXPORT char * PYAFIPWS_Get(void * object, char * name) {
+
+    PyObject *pValue;
+    char *ret=NULL;
+
+    pValue = PyObject_GetAttrString((PyObject *) object, name);
+
+    if (pValue) {
+        ret = PyString_AsString(pValue);
+        Py_DECREF(pValue);
+    } else {
+        PyErr_Print();
+        fprintf(stderr,"GetAttr to %s failed\n", name);
+    }
+
+    return ret;    
+}
+
