@@ -165,8 +165,10 @@ def escribir(regs, archivos=None):
                     if (v is None or v=='') and tipo in (I, N):
                         v = 0
                     if tipo == A:
-                        if isinstance(v, str):
-                            v = unicode(v,'latin1', 'ignore')
+                        if isinstance(v, unicode):
+                            v = v.encode('utf8', 'ignore')
+                        elif isinstance(v, str):
+                            v = v.decode('latin1', 'ignore').encode('utf8', 'ignore')
                         else:
                             v = str(v)
                     r[dar_nombre_campo(clave)] = v
