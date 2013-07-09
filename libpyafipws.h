@@ -59,4 +59,4 @@ EXPORT char * WSAA_LoginCMS(char *cms);
 EXPORT bool WSFEV1_Conectar(void *object, char *cache, char *wsdl, char *proxy);
 EXPORT bool WSFEV1_Dummy(void *object);
 EXPORT bool WSFEv1_SetTicketAccesso(void *object, char *ta);
-
+EXPORT long WSFEv1_CompUltimoAutorizado(void *object, char *tipo_cbte, char *punto_vta);

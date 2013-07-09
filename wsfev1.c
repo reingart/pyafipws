@@ -85,4 +85,23 @@ EXPORT bool WSFEv1_SetTicketAcceso(void *object, char *ta) {
 }
 
 
+EXPORT long WSFEv1_CompUltimoAutorizado(void *object, char *tipo_cbte, char *punto_vta) {
+
+    PyObject *pValue;
+    long nro = -1;
+
+    if (object != NULL) {
+
+        pValue = PyObject_CallMethod((PyObject *)object, "CompUltimoAutorizado", "(s,s)", tipo_cbte, punto_vta);
+        if (pValue != NULL) {
+                nro = atol(PyString_AsString(pValue));
+                Py_DECREF(pValue);
+        } else {
+            PyErr_Print();
+            fprintf(stderr,"Call failed\n");
+        }
+    }
+    return nro;
+}
+
 

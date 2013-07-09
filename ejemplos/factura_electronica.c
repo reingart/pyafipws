@@ -21,6 +21,7 @@ int main(int argc, char *argv[]) {
   void *wsfev1;
   char *ret;
   bool ok;
+  long nro;
   
   /* prueba generica */
   test();
@@ -55,10 +56,14 @@ int main(int argc, char *argv[]) {
   ret = PYAFIPWS_Get(wsfev1, "AuthServerStatus");
   printf("dummy AuthServerStatus: %s\n", ret);
   free(ret);
-  
+
   /* establezco los datos para operar el webservice */
-  ok = PYAFIPWS_Set(wsfev1, "Cuit", "267565393");
+  ok = PYAFIPWS_Set(wsfev1, "Cuit", "20267565393");
   ok = WSFEv1_SetTicketAcceso(wsfev1, ta);
+
+  /* obtengo el ultimo numero de comprobante generado */
+  nro = WSFEv1_CompUltimoAutorizado(wsfev1, "1", "1");
+  printf("ultimo comprobante: %ld\n", nro);
 
   /* destruir el objeto */
   PYAFIPWS_DestroyObject(wsfev1);  
