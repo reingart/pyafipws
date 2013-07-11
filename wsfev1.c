@@ -22,14 +22,14 @@
 #define MODULE "wsfev1"
 
 
-EXPORT bool WSFEv1_Conectar(void *object, char *cache, char *wsdl, char *proxy) {
+EXPORT bool STDCALL WSFEv1_Conectar(void *object, char *cache, char *wsdl, char *proxy) {
 
     PyObject *pValue;
     bool ok = false;
 
     if (object != NULL) {
 
-        pValue = PyObject_CallMethod((PyObject *)object, "Conectar", "(s)", cache, wsdl, proxy);
+        pValue = PyObject_CallMethod((PyObject *)object, "Conectar", "(sss)", cache, wsdl, proxy);
         fprintf(stderr, "conectar call!!!\n");
         if (pValue != NULL) {
                 ok = PyObject_IsTrue(pValue);
@@ -43,7 +43,7 @@ EXPORT bool WSFEv1_Conectar(void *object, char *cache, char *wsdl, char *proxy) 
 }
 
 
-EXPORT bool WSFEv1_Dummy(void *object) {
+EXPORT bool STDCALL WSFEv1_Dummy(void *object) {
 
     PyObject *pValue;
     char ok = false;
@@ -64,7 +64,7 @@ EXPORT bool WSFEv1_Dummy(void *object) {
 }
 
 
-EXPORT bool WSFEv1_SetTicketAcceso(void *object, char *ta) {
+EXPORT bool STDCALL WSFEv1_SetTicketAcceso(void *object, char *ta) {
 
     PyObject *pValue;
     char ok = false;
@@ -85,14 +85,14 @@ EXPORT bool WSFEv1_SetTicketAcceso(void *object, char *ta) {
 }
 
 
-EXPORT long WSFEv1_CompUltimoAutorizado(void *object, char *tipo_cbte, char *punto_vta) {
+EXPORT long STDCALL WSFEv1_CompUltimoAutorizado(void *object, char *tipo_cbte, char *punto_vta) {
 
     PyObject *pValue;
     long nro = -1;
 
     if (object != NULL) {
 
-        pValue = PyObject_CallMethod((PyObject *)object, "CompUltimoAutorizado", "(s,s)", tipo_cbte, punto_vta);
+        pValue = PyObject_CallMethod((PyObject *)object, "CompUltimoAutorizado", "(ss)", tipo_cbte, punto_vta);
         if (pValue != NULL) {
                 nro = atol(PyString_AsString(pValue));
                 Py_DECREF(pValue);

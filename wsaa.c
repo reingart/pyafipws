@@ -21,7 +21,7 @@
 
 #define MODULE "wsaa"
 
-EXPORT char * WSAA_CreateTRA(const char *service, long ttl) {
+EXPORT char * STDCALL WSAA_CreateTRA(char *service, long ttl) {
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
@@ -84,7 +84,7 @@ EXPORT char * WSAA_CreateTRA(const char *service, long ttl) {
     return ret;
 }
 
-EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
+EXPORT char * STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
@@ -156,7 +156,7 @@ EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
 }
 
 
-EXPORT char * WSAA_LoginCMS(char *cms) {
+EXPORT char * STDCALL WSAA_LoginCMS(char *cms) {
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;

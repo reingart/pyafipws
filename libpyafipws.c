@@ -53,7 +53,8 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved) {
 
 #endif
 
-EXPORT int test() {
+/* test function to check if python & stdlib is installed ok */
+EXPORT int STDCALL test() {
   PyRun_SimpleString("from time import time,ctime\n"
                      "print 'Today is',ctime(time())\n");
   return 0;
@@ -76,7 +77,7 @@ char *cstr(void *pStr) {
 }
 
 /* CreateObject: import the module, instantiate the object and return the ref */
-EXPORT void * PYAFIPWS_CreateObject(char *module, char *name) {
+EXPORT void * STDCALL PYAFIPWS_CreateObject(char *module, char *name) {
 
     PyObject *pName, *pModule, *pClass, *pObject=NULL;
 
@@ -101,14 +102,14 @@ EXPORT void * PYAFIPWS_CreateObject(char *module, char *name) {
 }
 
 /* DestroyObject: decrement the reference to the module */
-EXPORT void PYAFIPWS_DestroyObject(void * object) {
+EXPORT void STDCALL PYAFIPWS_DestroyObject(void * object) {
 
     Py_DECREF((PyObject *) object);
     
 }
 
 /* Get: generic method to get an attribute of an object (returns a string) */
-EXPORT char * PYAFIPWS_Get(void * object, char * name) {
+EXPORT char * STDCALL PYAFIPWS_Get(void * object, char * name) {
 
     PyObject *pValue;
     char *ret=NULL;
@@ -127,7 +128,7 @@ EXPORT char * PYAFIPWS_Get(void * object, char * name) {
 }
 
 /* Set: generic method to set an attribute of an object (string value) */
-EXPORT bool PYAFIPWS_Set(void * object, char * name, char * value) {
+EXPORT bool STDCALL PYAFIPWS_Set(void * object, char * name, char * value) {
 
     PyObject *pValue;
     int ret;

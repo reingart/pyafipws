@@ -19,6 +19,7 @@
 #if defined(__GNUC__)
 
 #define EXPORT extern
+#define STDCALL 
 #define CONSTRUCTOR __attribute__((constructor))
 #define DESTRUCTOR __attribute__((destructor))
 
@@ -27,7 +28,10 @@
 #else
 
 #include <windows.h>
-#define EXPORT __declspec(dllexport) 
+#define EXPORT 
+//__declspec(dllexport)
+#define STDCALL _stdcall
+//__export
 #define CONSTRUCTOR
 #define DESTRUCTOR
 
@@ -41,22 +45,22 @@ typedef int bool;
 
 #endif
 
-EXPORT int test(void);
+EXPORT int STDCALL test(void);
 char *cstr(void *pStr);
 
 /* PYAFIPWS: COM-like generic functions to instantiate python objects */
-EXPORT void * PYAFIPWS_CreateObject(char *module, char *name);
-EXPORT void PYAFIPWS_DestroyObject(void *object);
-EXPORT char * PYAFIPWS_Get(void *object, char *name);
-EXPORT bool PYAFIPWS_Set(void * object, char * name, char * value);
+EXPORT void * STDCALL PYAFIPWS_CreateObject(char *module, char *name);
+EXPORT void STDCALL PYAFIPWS_DestroyObject(void *object);
+EXPORT char * STDCALL PYAFIPWS_Get(void *object, char *name);
+EXPORT bool STDCALL PYAFIPWS_Set(void * object, char * name, char * value);
 
 /* WSAA: Autentication Webservice functions */
-EXPORT char * WSAA_CreateTRA(const char *service, long ttl);
-EXPORT char * WSAA_SignTRA(char *tra, char *cert, char *privatekey);
-EXPORT char * WSAA_LoginCMS(char *cms);
+EXPORT char * STDCALL WSAA_CreateTRA(char *service, long ttl);
+EXPORT char * STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey);
+EXPORT char * STDCALL WSAA_LoginCMS(char *cms);
 
 /* WSFEv1: Electronic Invoice Webservice methods */
-EXPORT bool WSFEV1_Conectar(void *object, char *cache, char *wsdl, char *proxy);
-EXPORT bool WSFEV1_Dummy(void *object);
-EXPORT bool WSFEv1_SetTicketAccesso(void *object, char *ta);
-EXPORT long WSFEv1_CompUltimoAutorizado(void *object, char *tipo_cbte, char *punto_vta);
+EXPORT bool STDCALL WSFEv1_Conectar(void *object, char *cache, char *wsdl, char *proxy);
+EXPORT bool STDCALL WSFEv1_Dummy(void *object);
+EXPORT bool STDCALL WSFEv1_SetTicketAcceso(void *object, char *ta);
+EXPORT long STDCALL WSFEv1_CompUltimoAutorizado(void *object, char *tipo_cbte, char *punto_vta);
