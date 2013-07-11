@@ -17,6 +17,7 @@
  */
 
 #include <Python.h>
+#include <frameobject.h>
 #include "libpyafipws.h"
 
 /* Start-up the python interpreter */
@@ -54,10 +55,18 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved) {
 #endif
 
 /* test function to check if python & stdlib is installed ok */
-EXPORT int STDCALL test() {
-  PyRun_SimpleString("from time import time,ctime\n"
-                     "print 'Today is',ctime(time())\n");
-  return 0;
+EXPORT char *STDCALL test() {
+  PyObject *ret, *pdict;
+  pdict = PyDict_New();
+  PyDict_SetItemString(pdict, "__builtins__", PyEval_GetBuiltins()); 
+  ret = PyRun_String("from time import time,ctime", Py_single_input, pdict, pdict);
+  ret = PyRun_String("'Today is %s' % ctime(time())", Py_eval_input, pdict, pdict);
+  Py_XDECREF(pdict);
+  if (ret == NULL) {
+    return format_ex();
+  } else {
+    return cstr(PyObject_Str(ret));
+  }  
 }
 
 /* cstr: utility function to convert a python string to c (uses malloc!) */
@@ -74,6 +83,58 @@ char *cstr(void *pStr) {
         strncpy(ret, PyString_AsString((PyObject*) pStr), len);
     }
     return ret;
+}
+
+#define FMT "%s: %s - File %s, line %d, in %s"
+
+/* format exception: simplified PyErr_PrintEx (to not write to stdout) */
+char *format_ex(void) {
+    char *buf;
+    char *ex, *v, *filename, *name;
+    int lineno;
+    PyObject *exception, *value, *tb;
+    PyTracebackObject *tb1;
+    
+    /* PyErr_PrintEx (pythonrun.c) */
+    PyErr_Fetch(&exception, &value, &tb);
+	if (exception == NULL) return NULL;
+	PyErr_NormalizeException(&exception, &value, &tb);
+	if (exception == NULL) return NULL;
+    
+    /* PyErr_Display (pythonrun.c) */
+    ex = PyExceptionClass_Name(exception);
+    if (ex == NULL){
+        ex = "<no exception class name>";
+    }
+    
+    if (value == NULL) {
+        v = "<no exception value>";
+    } else {
+        v = PyString_AsString(PyObject_Str(value));
+    }
+    
+    /* PyTracebackObject seems defined at frameobject.h, it should be included
+       to avoid "error: dereferencing pointer to incomplete type"
+    */
+    tb1 = (PyTracebackObject *)tb;
+    
+    /* tb_printinternal (traceback.c) */
+    filename = PyString_AsString(tb1->tb_frame->f_code->co_filename);
+	lineno = tb1->tb_lineno;
+    name = PyString_AsString(tb1->tb_frame->f_code->co_name);
+
+    buf = (char *) malloc(2000);
+
+    if (buf) {
+        /* tb_displayline (traceback.c) */    
+        PyOS_snprintf(buf, 2000, FMT, ex, v, filename, lineno, name);
+    }
+    
+	Py_XDECREF(exception);
+	Py_XDECREF(value);
+	Py_XDECREF(tb);
+	
+	return buf;
 }
 
 /* CreateObject: import the module, instantiate the object and return the ref */

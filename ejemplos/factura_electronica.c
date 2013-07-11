@@ -23,8 +23,8 @@ int main(int argc, char *argv[]) {
   bool ok;
   long nro;
   
-  /* prueba generica */
-  test();
+  /* prueba generica, el valor devuelto no debería ser nulo */
+  printf("%s\n", test());
   
   /* Generar ticket de requerimiento de acceso */
   tra = WSAA_CreateTRA("wsfe", 999);
@@ -38,12 +38,21 @@ int main(int argc, char *argv[]) {
   
   /* Crear una objeto WSFEv1 (interfaz webservice factura electronica) */
   wsfev1 = PYAFIPWS_CreateObject("wsfev1", "WSFEv1");
-  printf("crear wsfev1: %p\n", wsfev1);    /* si funiconó ok, no debe ser NULL! */  
+  printf("crear wsfev1: %p\n", wsfev1);    /* si funcionó ok, no debe ser NULL! */  
+  
   /* conectar al webservice (para produccion cambiar URL) */
   ok = WSFEv1_Conectar(wsfev1, "", "", "");
-  printf("concetar: %s", ok ? "true" : "false");
+  printf("concetar: %s\n", ok ? "true" : "false");
   
-  /* obtener el estado de los servidores */
+  /* obtener datos genericos de la interfaz (version y ruta de instalación) */
+  ret = PYAFIPWS_Get(wsfev1, "Version");
+  printf("wsfev1 Version: %s\n", ret);
+  free(ret);
+  ret = PYAFIPWS_Get(wsfev1, "InstallDir");
+  printf("wsfev1 InstallDir: %s\n", ret);
+  free(ret);
+  
+  /* obtener el estado de los servidores (llama al ws) */
   ok = WSFEv1_Dummy(wsfev1);
   printf("llamar a dummy: %s\n", ok ? "true" : "false");
   /* obtener los atributos devueltos por AFIP */
@@ -59,7 +68,7 @@ int main(int argc, char *argv[]) {
 
   /* establezco los datos para operar el webservice */
   ok = PYAFIPWS_Set(wsfev1, "Cuit", "20267565393");
-  ok = WSFEv1_SetTicketAcceso(wsfev1, ta);
+  ok = WSFEv1_SetTicketAcceso(wsfev1, ta);  /* devuelto por WSAA_LoginCMS */
 
   /* obtengo el ultimo numero de comprobante generado */
   nro = WSFEv1_CompUltimoAutorizado(wsfev1, "1", "1");
