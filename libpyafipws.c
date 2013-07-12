@@ -20,13 +20,38 @@
 #include <frameobject.h>
 #include "libpyafipws.h"
 
+#ifdef WIN32
+    #include "Shlwapi.h"
+    /* sys.fronzenddlhandle emulation (set by DllMain) */
+    HMODULE dllhandle;
+#endif
+
 /* Start-up the python interpreter */
 CONSTRUCTOR static void initialize(void) {
-    Py_SetProgramName("pyafipws");
-    Py_Initialize();
-    /* on linux, add the current directory so python can find the modules */
-    PyRun_SimpleString("import sys, os");
-    PyRun_SimpleString("sys.path.append(os.curdir)");
+    //Py_SetProgramName("libpyafipws");
+    #ifdef WIN32
+        char buf[2000], *b;
+        unsigned long ok;
+        PyObject *pSysPath, *pName;
+       
+        Py_Initialize();
+        /* on windows, add the base path of the .DLL */
+        ok = GetModuleFileName(dllhandle, buf, sizeof(buf));
+        ok = PathRemoveFileSpec(buf);
+        pSysPath = PySys_GetObject("path");
+        pName = PyString_FromString(buf);
+        if (PyList_Insert(pSysPath, 0, pName))
+            MessageBox(NULL, "PyList_Insert", "LibPyAfipWs Initialize", 0);
+        Py_XDECREF(pName);   /* note that pSysPath is a Borrowed reference! */
+    #else
+        Py_Initialize();
+        puts(Py_GetPath());
+        /* on linux, add the current directory so python can find the modules */
+        PyRun_SimpleString("import sys, os");
+        PyRun_SimpleString("sys.path.append(os.curdir)");
+        /* preliminary fix, it could not work on some cases and there could be 
+           some security concerns. It should add the base path of the .so */
+    #endif
 }
 
 /* Tear down the python interpreter */
@@ -41,6 +66,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved) {
     BOOL ret = TRUE;
     switch (dwReason) {
         case DLL_PROCESS_ATTACH: {
+            dllhandle = (HINSTANCE) hInstance;
             initialize();
             break;
         }

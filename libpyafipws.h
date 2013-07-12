@@ -49,6 +49,7 @@ typedef int bool;
 /* MessageBoxA and BSTR support */
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "oleaut32.lib")
+#pragma comment(lib, "Shlwapi.lib")
 
 #define WIN32
 
