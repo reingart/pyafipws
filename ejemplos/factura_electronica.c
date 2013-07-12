@@ -17,23 +17,26 @@
 #endif
 
 int main(int argc, char *argv[]) {
-  char *tra, *cms, *ta;
+  BSTR tra, cms, ta;
   void *wsfev1;
-  char *ret;
+  BSTR ret;
   bool ok;
   long nro;
   
   /* prueba generica, el valor devuelto no debería ser nulo */
-  printf("%s\n", test());
+  ret = test();
+  printf("%s\n", ret);
+  PYAFIPWS_Free(ret);
+  if (ret == NULL) exit(1);
   
   /* Generar ticket de requerimiento de acceso */
   tra = WSAA_CreateTRA("wsfe", 999);
   printf("TRA:\n%s\n", tra);
   /* Firmar criptograficamente el mensaje */
-  cms = WSAA_SignTRA(tra, "reingart.crt", "reingart.key");
+  cms = WSAA_SignTRA((char*) tra, "reingart.crt", "reingart.key");
   printf("CMS:\n%s\n", cms);  
   /* Llamar al webservice y obtener el ticket de acceso */
-  ta = WSAA_LoginCMS(cms);
+  ta = WSAA_LoginCMS((char*) cms);
   printf("TA:\n%s\n", ta);
   
   /* Crear una objeto WSFEv1 (interfaz webservice factura electronica) */
@@ -68,7 +71,7 @@ int main(int argc, char *argv[]) {
 
   /* establezco los datos para operar el webservice */
   ok = PYAFIPWS_Set(wsfev1, "Cuit", "20267565393");
-  ok = WSFEv1_SetTicketAcceso(wsfev1, ta);  /* devuelto por WSAA_LoginCMS */
+  ok = WSFEv1_SetTicketAcceso(wsfev1, (char*) ta);  /* devuelto por WSAA_LoginCMS */
 
   /* obtengo el ultimo numero de comprobante generado */
   nro = WSFEv1_CompUltimoAutorizado(wsfev1, "1", "1");
@@ -79,9 +82,9 @@ int main(int argc, char *argv[]) {
 
 
   /* liberar la memoria adquirida para los valores devueltos de WSAA */
-  free(ta);
-  free(cms);
-  free(tra);
+  PYAFIPWS_Free(ta);
+  PYAFIPWS_Free(cms);
+  PYAFIPWS_Free(tra);
 
   return 0;
 }

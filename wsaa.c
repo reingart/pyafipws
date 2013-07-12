@@ -21,11 +21,11 @@
 
 #define MODULE "wsaa"
 
-EXPORT char * STDCALL WSAA_CreateTRA(char *service, long ttl) {
+EXPORT BSTR STDCALL WSAA_CreateTRA(char *service, long ttl) {
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
-    char *ret=NULL;
+    BSTR ret=NULL;
 
     pName = PyString_FromString("wsaa");
     pModule = PyImport_Import(pName);
@@ -84,11 +84,11 @@ EXPORT char * STDCALL WSAA_CreateTRA(char *service, long ttl) {
     return ret;
 }
 
-EXPORT char * STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
+EXPORT BSTR STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
-    char *ret=NULL;
+    BSTR ret=NULL;
 
     pName = PyString_FromString("wsaa");
     pModule = PyImport_Import(pName);
@@ -156,11 +156,11 @@ EXPORT char * STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
 }
 
 
-EXPORT char * STDCALL WSAA_LoginCMS(char *cms) {
+EXPORT BSTR STDCALL WSAA_LoginCMS(char *cms) {
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
-    char *ret=NULL;
+    BSTR ret = NULL;
     char *argv[] = {"libpyafipws", "--trace"};
 
     PySys_SetArgv(2, argv);

@@ -25,6 +25,10 @@
 
 #include <stdbool.h>
 
+typedef char * BSTR ; 
+#define SysAllocStringByteLen(psz,len) psz
+#define SysFreeString(psz)  
+
 #else
 
 #include <windows.h>
@@ -45,20 +49,22 @@ typedef int bool;
 
 #endif
 
-EXPORT char * STDCALL test(void);
-char *cstr(void *pStr);
-char *format_ex(void);
+/* Debugging and Internal functions */
+EXPORT BSTR STDCALL test(void);
+BSTR cstr(void *pStr);
+BSTR format_ex(void);
 
 /* PYAFIPWS: COM-like generic functions to instantiate python objects */
 EXPORT void * STDCALL PYAFIPWS_CreateObject(char *module, char *name);
 EXPORT void STDCALL PYAFIPWS_DestroyObject(void *object);
-EXPORT char * STDCALL PYAFIPWS_Get(void *object, char *name);
+EXPORT BSTR STDCALL PYAFIPWS_Get(void *object, char *name);
 EXPORT bool STDCALL PYAFIPWS_Set(void * object, char * name, char * value);
+EXPORT void STDCALL PYAFIPWS_Free(BSTR psz);
 
 /* WSAA: Autentication Webservice functions */
-EXPORT char * STDCALL WSAA_CreateTRA(char *service, long ttl);
-EXPORT char * STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey);
-EXPORT char * STDCALL WSAA_LoginCMS(char *cms);
+EXPORT BSTR STDCALL WSAA_CreateTRA(char *service, long ttl);
+EXPORT BSTR STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey);
+EXPORT BSTR STDCALL WSAA_LoginCMS(char *cms);
 
 /* WSFEv1: Electronic Invoice Webservice methods */
 EXPORT bool STDCALL WSFEv1_Conectar(void *object, char *cache, char *wsdl, char *proxy);
