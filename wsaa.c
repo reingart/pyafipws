@@ -21,7 +21,7 @@
 
 #define MODULE "wsaa"
 
-EXPORT BSTR STDCALL WSAA_CreateTRA(char *service, long ttl) {
+EXPORT BSTR STDCALL WSAA_CreateTRA(char * service, long ttl) {
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs, *pValue;
@@ -30,17 +30,15 @@ EXPORT BSTR STDCALL WSAA_CreateTRA(char *service, long ttl) {
     pName = PyString_FromString("wsaa");
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
-    fprintf(stderr, "imported!\n");
 
     if (pModule != NULL) {
         
         pArgs = PyTuple_New(2);
-
-        pValue = PyString_FromString(service);
+        pValue = PyString_FromString((char*)service);
         if (!pValue) {
             Py_DECREF(pArgs);
             Py_DECREF(pModule);
-            fprintf(stderr, "Cannot convert argument\n");
+            MessageBox(NULL, "Cannot convert argument 1", "WSAA_CreateTRA", 0);
             return NULL;
         }
         PyTuple_SetItem(pArgs, 0, pValue);
@@ -48,7 +46,7 @@ EXPORT BSTR STDCALL WSAA_CreateTRA(char *service, long ttl) {
         if (!pValue) {
             Py_DECREF(pArgs);
             Py_DECREF(pModule);
-            fprintf(stderr, "Cannot convert argument\n");
+            MessageBox(NULL, "Cannot convert argument 2", "WSAA_CreateTRA", 0);
             return NULL;
         }
         PyTuple_SetItem(pArgs, 1, pValue);
@@ -56,30 +54,32 @@ EXPORT BSTR STDCALL WSAA_CreateTRA(char *service, long ttl) {
         pFunc = PyObject_GetAttrString(pModule, "create_tra");
 
         if (pFunc && PyCallable_Check(pFunc)) {
-            fprintf(stderr, "pfunc!!!\n");
+            MessageBox(NULL, "pfunc!!!", "WSAA_CreateTRA", 0);
             pValue = PyObject_CallObject(pFunc, pArgs);
-            fprintf(stderr, "call!!!\n");
+            MessageBox(NULL, "call!!!", "WSAA_CreateTRA", 0);
             Py_DECREF(pArgs);
             if (pValue != NULL) {
                 ret = cstr(pValue);
                 Py_DECREF(pValue);
             }
             else {
-                PyErr_Print();
-                fprintf(stderr,"Call failed\n");
+                ret = format_ex();
+                MessageBox(NULL, (char*)ret, "WSAA_CreateTRA: Call failed", 0);
             }
         }
         else {
             if (PyErr_Occurred())
-                PyErr_Print();
-            fprintf(stderr, "Cannot find function");
+                ret = format_ex();
+            MessageBox(NULL, (char*)ret, "WSAA_CreateTRA: Cannot find function", 0);
         }
         Py_XDECREF(pFunc);
         Py_DECREF(pModule);
     }
     else {
-        PyErr_Print();
-        fprintf(stderr, "Failed to load module\n");
+        if (PyErr_Occurred()) {
+            ret = format_ex();
+            }
+        MessageBox(NULL, (char*)ret, "WSAA_CreateTRA: Failed to load module", 0);
     }
     return ret;
 }

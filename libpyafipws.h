@@ -28,6 +28,7 @@
 typedef char * BSTR ; 
 #define SysAllocStringByteLen(psz,len) psz
 #define SysFreeString(psz)  
+#define MessageBox(hwnd,msg,title,flags) fprintf(stderr, "%s: %s", title, msg)
 
 #else
 
@@ -44,6 +45,10 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved);
 typedef int bool;
 #define false 0
 #define true 1
+
+/* MessageBoxA and BSTR support */
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "oleaut32.lib")
 
 #define WIN32
 
