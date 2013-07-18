@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04b"
+__version__ = "1.05a"
 
 import datetime
 import decimal
@@ -395,6 +395,27 @@ class WSFEXv1:
             ret.append(r)
         return ret
 
+    @inicializar_y_capturar_excepciones
+    def GetParamTipoExpo(self):
+        "Recuperador de valores referenciales de códigos de Tipo de exportación"
+        ret = self.client.FEXGetPARAM_Tipo_Expo(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_Tipo_ExpoResult']
+        self.__analizar_errores(result)
+     
+        ret = []
+        print result
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_Tex']
+            try:
+                r = {'codigo': u.get('Tex_Id'), 'ds': u.get('Tex_Ds'),
+                     'vig_desde': u.get('Tex_vig_desde'), 
+                     'vig_hasta': u.get('Tex_vig_hasta')}
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        return ret
 
     @inicializar_y_capturar_excepciones
     def GetParamCtz(self, moneda_id):
@@ -647,6 +668,12 @@ if __name__ == "__main__":
         if "--params" in sys.argv:
             import codecs, locale
             sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
+
+            print "=== Tipos Expo ==="
+            tipos = wsfexv1.GetParamTipoExpo()    
+            for t in tipos:
+                print "||%(codigo)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % t
+            #umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
                 
             print "=== Monedas ==="
             mons = wsfexv1.GetParamMon()    
