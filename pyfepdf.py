@@ -55,7 +55,7 @@ import sys
 import traceback
 from cStringIO import StringIO
 from decimal import Decimal
-from pyfpdf_hg import Template
+from fpdf import Template
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
