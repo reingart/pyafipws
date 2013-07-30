@@ -1,0 +1,98 @@
+# EJEMPLO de archivo de configuración de la interfaz PyAfipWs
+# DEBE CAMBIAR Certificado (CERT) y Clave Privada (PRIVATEKEY)
+# Para producción debe descomentar las URL (sacar ##)
+# Más información:
+# http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs#Configuración
+
+[WSAA]
+CERT=homo.crt
+PRIVATEKEY=homo.key
+##URL=https://wsaa.afip.gov.ar/ws/services/LoginCms
+
+[WSFE]
+CUIT=30000000000
+ENTRADA=entrada.txt
+SALIDA=salida.txt
+##URL=https://servicios1.afip.gov.ar/wsfe/service.asmx
+
+[WSFEv1]
+CUIT=30000000000
+ENTRADA=entrada.txt
+SALIDA=salida.txt
+##URL=https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL
+
+[WSMTXCA]
+CUIT=30000000000
+ENTRADA=entrada.txt
+SALIDA=salida.txt
+Reprocesar= S
+##URL=https://serviciosjava.afip.gob.ar/wsmtxca/services/MTXCAService
+
+[WSBFE]
+CUIT=30000000000
+ENTRADA=entrada.txt
+SALIDA=salida.txt
+##URL=https://servicios1.afip.gov.ar/wsfe/service.asmx
+
+[WSFEX]
+CUIT=30000000000
+ENTRADA=entrada.txt
+SALIDA=salida.txt
+##URL=https://servicios1.afip.gov.ar/wsfe/service.asmx
+
+[FACTURA]
+ARCHIVO=tipo,letra,numero
+FORMATO=factura.csv
+DIRECTORIO=.
+PAPEL=legal
+ORIENTACION=portrait
+DIRECTORIO=.
+SUBDIRECTORIO=
+LOCALE=Spanish_Argentina.1252
+FMT_CANTIDAD=0.6
+FMT_PRECIO=0.3
+CANT_POS=izq
+ENTRADA=factura.txt
+SALIDA=factura.pdf
+
+[PDF]
+LOGO=logo.png
+EMPRESA=Empresa de Prueba
+MEMBRETE1=Direccion de Prueba
+MEMBRETE2=Capital Federal
+CUIT=CUIT 30-00000000-0
+IIBB=IIBB 30-00000000-0
+IVA=IVA Responsable Inscripto
+INICIO=Inicio de Actividad: 01/04/2006
+
+[MAIL]
+SERVIDOR=adan.nsis.com.ar
+PUERTO=25
+USUARIO=no.responder@nsis.com.ar
+CLAVE=noreplyauto123
+MOTIVO=Factura Electronica Nro. NUMERO
+CUERPO=Se adjunta Factura en formato PDF
+HTML=<b>Se adjunta <i>factura electronica</i> en formato PDF</b>
+REMITENTE=Facturador PyAfipWs <pyafipws@nsis.com.ar>
+
+#[BASE_DATOS]
+#DRIVER=PGSQL
+#SERVER=localhost
+#DATABASE=pyafipws
+#UID=pyafipws
+#PWD=pyafipws
+
+[DBF]
+Encabezado = encabeza.dbf
+Tributo = tributo.dbf
+Iva = iva.dbf
+Comprobante Asociado = cbteasoc.dbf
+Detalle = detalles.dbf
+Permiso = permiso.dbf
+Dato = dato.dbf
+
+#[PROXY]
+#HOST=localhost
+#PORT=8000
+#USER=mariano
+#PASS=reingart

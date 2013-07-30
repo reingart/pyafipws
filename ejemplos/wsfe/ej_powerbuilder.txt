@@ -1,0 +1,46 @@
+// Ejemplo básico en PowerBuilder
+// ver más en http://techno-kitten.com/Changes_to_PowerBuilder/New_In_PowerBuilder_5/Inbound_OLE_automation/inbound_ole_automation.htm
+
+oleObject    WSAA
+oleObject    WSFE
+long         status
+string       tra
+string       cms
+string       ta
+string       cae
+boolean      ok
+
+// Crear objeto interface Web Service Autenticación y Autorización
+WSAA = create oleObject
+status = WSAA.ConnectToNewObject("WSAA")
+// si status<0 hubo error
+
+// Generar un Ticket de Requerimiento de Acceso (TRA)
+tra = WSAA.CreateTRA() 
+// Generar el mensaje firmado (CMS) 
+cms =WSAA.SignTRA(tra, "ghf.crt", "ghf.key") 
+
+// Llamar al web service para autenticar
+ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms")
+    
+// Crear objeto interface Web Service de Factura Electrónica
+WSFE = create oleObject
+status = WSFE.ConnectToNewObject("WSFE")
+// si status<0 hubo error
+
+// Setear tocken y sing de autorización (pasos previos)
+WSFE.Token = WSAA.Token 
+WSFE.Sign = WSAA.Sign    
+
+// CUIT del emisor
+WSFE.Cuit = "3000000000" 
+
+// Conectar al Servicio Web de Facturación
+ok = WSFE.Conectar("https://wswhomo.afip.gov.ar/wsfe/service.asmx") 
+    
+// Llamo al WebService de Autorización para obtener el CAE
+cae = WSFE.Aut(id, presta_serv, tipo_doc, nro_doc, tipo_cbte, punto_vta, cbt_desde, cbt_hasta, imp_total, 
+        imp_tot_conc, imp_neto, impto_liq, impto_liq_rni, imp_op_ex, fecha_cbte, fecha_venc_pago) 
+
+destroy WSAA
+destroy WSFE

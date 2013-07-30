@@ -1,0 +1,16 @@
+LIBRARY   LIBPYAFIPWS
+
+EXPORTS
+test
+PYAFIPWS_CreateObject
+PYAFIPWS_DestroyObject
+PYAFIPWS_Get
+PYAFIPWS_Set
+PYAFIPWS_Free
+WSAA_CreateTRA
+WSAA_SignTRA
+WSAA_LoginCMS
+WSFEv1_Conectar
+WSFEv1_Dummy
+WSFEv1_SetTicketAcceso
+WSFEv1_CompUltimoAutorizado

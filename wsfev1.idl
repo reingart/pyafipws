@@ -1,0 +1,191 @@
+//
+// WSFEv1.idl: source PyAfipWs WSFEv1 COM Type Library 
+// influenced by msdn example2.idl and pythoncom's pippo.idl
+//
+// Use "print pythoncom.CreateGuid()" to make a new one.
+
+import "unknwn.idl","oaidl.idl"; 
+
+[
+	uuid(9588B307-67B7-4F27-8968-B78A37D342A2),
+	helpstring("PyAfipWs WSFEv1 interface"),
+	pointer_default(unique),
+	dual,
+	object
+	//oleautomation
+] 
+interface IWSFEv1 : IDispatch
+{
+    [id( 1)] HRESULT CrearFactura(
+                                  [in] BSTR concepto, 
+                                  [in] BSTR tipo_doc, 
+                                  [in] BSTR nro_doc, 
+                                  [in] BSTR tipo_cbte, 
+                                  [in] BSTR punto_vta, 
+                                  [in] BSTR cbt_desde, 
+                                  [in] BSTR cbt_hasta, 
+                                  [in] BSTR imp_total, 
+                                  [in] BSTR imp_tot_conc, 
+                                  [in] BSTR imp_neto, 
+                                  [in] BSTR imp_iva, 
+                                  [in] BSTR imp_trib, 
+                                  [in] BSTR imp_op_ex, 
+                                  [in] BSTR fecha_cbte, 
+                                  [in] BSTR fecha_venc_pago, 
+                                  [in] BSTR fecha_serv_desde, 
+                                  [in] BSTR fecha_serv_hasta, 
+                                  [in] BSTR moneda_id, 
+                                  [in] BSTR moneda_ctz, 
+                                  [in] BSTR caea, 
+                                  [out, retval] BOOL * ok);
+    [id( 2)] HRESULT AgregarIva(
+                                [in] BSTR iva_id, 
+                                [in] BSTR base_imp, 
+                                [in] BSTR importe, 
+                                [out, retval] BOOL * ok);
+    [id( 3)] HRESULT CAESolicitar(
+                                  [out, retval] BSTR * cae);
+    [id( 4)] HRESULT AgregarTributo(
+                                    [in] BSTR tributo_id, 
+                                    [in] BSTR desc, 
+                                    [in] BSTR base_imp, 
+                                    [in] BSTR alic, 
+                                    [in] BSTR importe, 
+                                    [out, retval] BOOL * ok);
+    [id( 5)] HRESULT AgregarCmpAsoc(
+                                    [in] BSTR tipo, 
+                                    [in] BSTR pto_vta, 
+                                    [in] BSTR nro, 
+                                    [out, retval] BOOL * ok);
+    [id( 6)] HRESULT CompUltimoAutorizado(
+                                          [in] BSTR tipo_cbte, 
+                                          [in] BSTR punto_vta, 
+                                          [out, retval] BSTR * cbte_nro);
+    [id( 7)] HRESULT CompConsultar(
+                                   [in] BSTR tipo_cbte, 
+                                   [in] BSTR punto_vta, 
+                                   [in] BSTR cbte_nro, 
+                                   [in] BSTR reproceso, 
+                                   [out, retval] BSTR * cae);
+    [id( 8)] HRESULT CAEASolicitar(
+                                   [in] BSTR periodo, 
+                                   [in] BSTR orden, 
+                                   [out, retval] BSTR * caea);
+    [id( 9)] HRESULT CAEAConsultar(
+                                   [in] BSTR periodo, 
+                                   [in] BSTR orden, 
+                                   [out, retval] BSTR * caea);
+    [id(10)] HRESULT CAEARegInformativo(
+                                        [out, retval] BSTR * caea);
+    [id(11)] HRESULT CAEASinMovimientoInformar(
+                                               [in] BSTR punto_vta, 
+                                               [in] BSTR caea, 
+                                               [out, retval] BOOL * ok);
+    [id(12)] HRESULT ParamGetTiposCbte(
+                                       [in] BSTR sep, 
+                                       [out, retval] BOOL * ok);
+    [id(13)] HRESULT ParamGetTiposConcepto(
+                                           [in] BSTR sep, 
+                                           [out, retval] BOOL * ok);
+    [id(14)] HRESULT ParamGetTiposDoc(
+                                      [in] BSTR sep, 
+                                      [out, retval] BOOL * ok);
+    [id(15)] HRESULT ParamGetTiposIva(
+                                      [in] BSTR sep, 
+                                      [out, retval] BOOL * ok);
+    [id(16)] HRESULT ParamGetTiposMonedas(
+                                          [in] BSTR sep, 
+                                          [out, retval] BOOL * ok);
+    [id(17)] HRESULT ParamGetTiposOpcional(
+                                           [in] BSTR sep, 
+                                           [out, retval] BOOL * ok);
+    [id(18)] HRESULT ParamGetTiposTributos(
+                                           [in] BSTR sep, 
+                                           [out, retval] BOOL * ok);
+    [id(19)] HRESULT ParamGetCotizacion(
+                                        [in] BSTR moneda_id, 
+                                        [out, retval] BOOL * ok);
+    [id(20)] HRESULT ParamGetPtosVenta(
+                                       [in] BSTR sep, 
+                                       [out, retval] BOOL * ok);
+    [id(21)] HRESULT AnalizarXml(
+                                 [in] BSTR xml, 
+                                 [out, retval] BOOL * ok);
+    [id(22)] HRESULT ObtenerTagXml(
+                                   [out, retval] BOOL * ok);
+    [id(23)] HRESULT Dummy(
+                           [out, retval] BOOL * ok);
+    [id(24)] HRESULT Conectar(
+                              [in] BSTR cache, 
+                              [in] BSTR wsdl, 
+                              [in] BSTR proxy, 
+                              [in] BSTR wrapper, 
+                              [in] BSTR cacert, 
+                              [out, retval] BOOL * ok);
+    [id(25)] HRESULT DebugLog(
+                              [out, retval] BOOL * ok);
+    [id(26)] HRESULT Eval(
+                          [in] BSTR code, 
+                          [out, retval] BOOL * ok);
+
+    [propput, id(27)] HRESULT Token( [in] BSTR val);
+    [propput, id(28)] HRESULT Sign( [in] BSTR val);
+    [propput, id(29)] HRESULT Cuit( [in] BSTR val);
+    [propget, id(30)] HRESULT AppServerStatus( [out, retval] BSTR * val);
+    [propget, id(31)] HRESULT DbServerStatus( [out, retval] BSTR * val);
+    [propget, id(32)] HRESULT AuthServerStatus( [out, retval] BSTR * val);
+    [propget, id(33)] HRESULT XmlRequest( [out, retval] BSTR * val);
+    [propget, id(34)] HRESULT XmlResponse( [out, retval] BSTR * val);
+    [propget, id(35)] HRESULT Version( [out, retval] BSTR * val);
+    [propget, id(36)] HRESULT Excepcion( [out, retval] BSTR * val);
+    [propput, id(37)] HRESULT LanzarExcepciones( [in] BOOL * val);
+    [propget, id(38)] HRESULT Resultado( [out, retval] BSTR * val);
+    [propget, id(39)] HRESULT Obs( [out, retval] BSTR * val);
+    [propget, id(40)] HRESULT Observaciones( [out, retval] BSTR * val);
+    [propget, id(41)] HRESULT Traceback( [out, retval] BSTR * val);
+    [propget, id(42)] HRESULT InstallDir( [out, retval] BSTR * val);
+    [propget, id(43)] HRESULT CAE( [out, retval] BSTR * val);
+    [propget, id(44)] HRESULT Vencimiento( [out, retval] BSTR * val);
+    [propget, id(45)] HRESULT Eventos( [out, retval] BSTR * val);
+    [propget, id(46)] HRESULT Errores( [out, retval] BSTR * val);
+    [propget, id(47)] HRESULT ErrCode( [out, retval] BSTR * val);
+    [propget, id(48)] HRESULT ErrMsg( [out, retval] BSTR * val);
+    [propput, id(49)] HRESULT Reprocesar( [in] BSTR val);
+    [propget, id(50)] HRESULT Reproceso( [out, retval] BSTR * val);
+    [propget, id(51)] HRESULT EmisionTipo( [out, retval] BSTR * val);
+    [propget, id(52)] HRESULT CAEA( [out, retval] BSTR * val);
+    [propget, id(53)] HRESULT CbteNro( [out, retval] BSTR * val);
+    [propget, id(54)] HRESULT CbtDesde( [out, retval] BSTR * val);
+    [propget, id(55)] HRESULT CbtHasta( [out, retval] BSTR * val);
+    [propget, id(56)] HRESULT FechaCbte( [out, retval] BSTR * val);
+    [propget, id(57)] HRESULT ImpTotal( [out, retval] BSTR * val);
+    [propget, id(58)] HRESULT ImpNeto( [out, retval] BSTR * val);
+    [propget, id(59)] HRESULT ImptoLiq( [out, retval] BSTR * val);
+    [propget, id(60)] HRESULT ImpOpExImptIVA( [out, retval] BSTR * val);
+    [propget, id(61)] HRESULT ImpOpEx( [out, retval] BSTR * val);
+    [propget, id(62)] HRESULT ImpTrib( [out, retval] BSTR * val);
+
+    [id(63)] HRESULT SetParametros(
+                          [in] BSTR cuit,
+                          [in] BSTR token,
+                          [in] BSTR sign, 
+                          [out, retval] BOOL * ok);
+
+};  //end interface def
+
+[
+	uuid(B1D7283C-3EC2-463E-89B4-11F5228E2A15),
+	version(1.13),
+	helpstring("PyAfipWs WSFEv1 1.13 Type Library"),
+] library PyAfipWsWSFEv1Lib
+{
+	importlib("stdole32.tlb");
+
+	[
+		uuid(D50B5D14-621E-4473-AC63-8A7B5E9DD57F),
+		helpstring("WSFEv1 Component Class")
+	] coclass WSFEv1
+	{
+		[default]interface IWSFEv1;
+	}
+}; //end library def

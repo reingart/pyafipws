@@ -1,0 +1,42 @@
+Formato del registro para COBOL (interfase de texto):
+(ignorar campos de relleno FILLERx)
+
+       01  HDR-PYAFIPWS.
+           02 FE-FILLERA        PIC 9.
+           02 FE-FECHACBTE      PIC 9(8).
+           02 FE-TIPOCBTE       PIC 99.
+           02 FE-FILLERB        PIC X.
+           02 FE-PUNTOVTA       PIC 9999.
+           02 FE-CBTDESDE       PIC 9(8).
+           02 FE-CBTHASTA       PIC 9(8).
+           02 FE-FILLERC        PIC 999.
+           02 FE-TIPODOC        PIC 99.
+           02 FE-NRODOC         PIC 9(11).
+           02 FE-FILLERD        PIC X(30).
+           02 FE-IMPTOTAL       PIC 9(15).
+           02 FE-IMPTOTCONC     PIC 9(15).
+           02 FE-IMPNETO        PIC 9(15).
+           02 FE-IMPTOLIQ       PIC 9(15).
+           02 FE-IMPTOLIQRNI    PIC 9(15).
+           02 FE-IMPOPEX        PIC 9(15).
+           02 FE-FILLERE        PIC 9(15).
+           02 FE-FILLERF        PIC 9(15).
+           02 FE-FILLERG        PIC 9(15).
+           02 FE-FILLERH        PIC 9(15).
+           02 FE-FILLERI        PIC 9(8).
+           02 FE-FILLERJ        PIC 9(8).
+           02 FE-FILLERK        PIC 9(8).
+           02 FE-FILLERL        PIC 9(6).
+           02 FE-FILLERM        PIC 9.
+           02 FE-FILLERN        PIC X.
+           02 FE-CAE            PIC 9(14).
+           02 FE-FECHAVTO       PIC 9(8).
+           02 FE-FILLERO        PIC 9(8).
+           02 FE-RESULTADO      PIC X.
+           02 FE-MOTIVO         PIC XX.
+           02 FE-REPROCESO      PIC X.
+           02 FE-FECHAVENCPAGO  PIC 9(8).
+           02 FE-PRESTASERV     PIC 9.
+           02 FE-FECHASERVDESDE PIC 9(8).
+           02 FE-FECHASERVHASTA PIC 9(8).
+           02 FE-ID             PIC 9(15).

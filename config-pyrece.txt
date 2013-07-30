@@ -1,0 +1,6 @@
+﻿;!@Install@!UTF-8!
+Title="PyRece 1.17"
+BeginPrompt="¿Desea instalar el Aplicativo para Generar Facturas Electrónicas en el directorio C:\PYRECE?"
+RunProgram="INSTALAR.BAT %%T"
+Directory=".\\DIST\\" 
+;!@InstallEnd@!

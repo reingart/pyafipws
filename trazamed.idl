@@ -1,0 +1,80 @@
+//
+// trazamed.idl: source PyAfipWs TrazaMed (ANMAT/PAMI) COM Type Library 
+// influenced by msdn example2.idl and pythoncom's pippo.idl
+//
+// Use "print pythoncom.CreateGuid()" to make a new uuid
+// Use MIDL.EXE to compile this file to create TrazaMed.TLB
+
+import "unknwn.idl","oaidl.idl"; 
+
+[
+	uuid(423FA890-1FE5-4F53-B5F7-71A7737EDB8B),
+	helpstring("PyAfipWs TrazaMed ANMAT / PAMI interface"),
+	pointer_default(unique),
+	dual,
+	object
+	//oleautomation
+] 
+interface ITrazaMed : IDispatch
+{
+    [id(1)] HRESULT Conectar([in] BSTR cache, [in] BSTR wsdl, 
+                    [in] BSTR proxy, [in] BSTR wrapper, [in] BSTR cacert,
+                    [out, retval] BOOL * ok);
+	[id(2)] HRESULT SendMedicamentos([in] BSTR usuario, [in] BSTR password,
+                    [in] BSTR f_evento, [in] BSTR h_evento, [in] BSTR gln_origen, [in] BSTR gln_destino, 
+                    [in] BSTR n_remito, [in] BSTR n_factura, [in] BSTR vencimiento, [in] BSTR gtin, [in] BSTR lote,
+                    [in] BSTR numero_serial, [in] BSTR id_obra_social, [in] BSTR id_evento,
+                    [in] BSTR cuit_origen, [in] BSTR cuit_destino, [in] BSTR apellido, [in] BSTR nombres,
+                    [in] BSTR tipo_docmento, [in] BSTR n_documento, [in] BSTR sexo,
+                    [in] BSTR direccion, [in] BSTR numero, [in] BSTR piso, [in] BSTR depto, [in] BSTR localidad, [in] BSTR provincia,
+                    [in] BSTR n_postal, [in] BSTR fecha_nacimiento, [in] BSTR telefono,
+					[out, retval] BOOL * ok);
+	[id(3)] HRESULT SendMedicamentosDHSerie([in] BSTR usuario, [in] BSTR password,
+                    [in] BSTR f_evento, [in] BSTR h_evento, [in] BSTR gln_origen, [in] BSTR gln_destino, 
+                    [in] BSTR n_remito, [in] BSTR n_factura, [in] BSTR vencimiento, [in] BSTR gtin, [in] BSTR lote,
+                    [in] BSTR desde_numero_serial, [in] BSTR hasta_numero_serial, [in] BSTR id_obra_social, [in] BSTR id_evento,
+                    [in] BSTR cuit_origen, [in] BSTR cuit_destino, [in] BSTR apellido, [in] BSTR nombres,
+                    [in] BSTR tipo_docmento, [in] BSTR n_documento, [in] BSTR sexo,
+                    [in] BSTR direccion, [in] BSTR numero, [in] BSTR piso, [in] BSTR depto, [in] BSTR localidad, [in] BSTR provincia,
+                    [in] BSTR n_postal, [in] BSTR fecha_nacimiento, [in] BSTR telefono,
+					[out, retval] BOOL * ok);
+	[id(4)] HRESULT SendCancelacTransacc([in] BSTR usuario, [in] BSTR password, [in] BSTR codigo_transaccion,
+					[out, retval] BOOL * ok);
+
+    [id(5)] HRESULT LeerError([out, retval] BSTR * texto);
+
+	[propget, id(6)] HRESULT InstallDir( [out, retval] BSTR *  val); 
+	[propget, id(7)] HRESULT Traceback( [out, retval] BSTR *  val); 
+	[propget, id(8)] HRESULT Excepcion( [out, retval] BSTR *  val); 
+	[propget, id(9)] HRESULT LanzarExcepciones( [in] BOOL modo, [out, retval] BOOL *  val); 
+	[propget, id(10)] HRESULT Version( [out, retval] BSTR *  sign); 
+	[propget, id(11)] HRESULT XmlRequest( [out, retval] BSTR *  val); 
+	[propget, id(12)] HRESULT XmlResponse( [out, retval] BSTR *  val); 
+	[propput, id(13)] HRESULT Username( [in] BSTR val); 
+	[propput, id(14)] HRESULT Password( [in] BSTR val); 
+	[propget, id(15)] HRESULT CodigoTransaccion( [out, retval] BSTR *  codigo); 
+	[propget, id(16)] HRESULT Resultado( [out, retval] BSTR *  resultado); 
+    
+    [id(17)] HRESULT SetUsername([in] BSTR username);
+    [id(18)] HRESULT SetPassword([in] BSTR password);
+    [id(19)] HRESULT GetCodigoTransaccion([out, retval] BSTR * texto);
+    [id(20)] HRESULT GetResultado([out, retval] BSTR * texto);
+                        
+};  //end interface def
+
+[
+	uuid(F992EB7E-AFBD-41BB-B717-5693D3A2BADB),
+	version(1.5),
+	helpstring("PyAfipWs TrazaMed 1.05 Type Library"),
+] library PyAfipWsTrazaMedLib
+{
+	importlib("stdole32.tlb");
+
+	[
+		uuid(EC779985-0CED-44A5-B44D-057FCA9E3389),
+		helpstring("TrazaMed Component Class")
+	] coclass TrazaMed
+	{
+		[default]interface ITrazaMed;
+	}
+}; //end library def
