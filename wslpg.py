@@ -373,8 +373,8 @@ class WSLPG:
         self.client = SoapClient(url,
             wsdl=url, cache=cache,
             trace='--trace' in sys.argv, 
-            ns='wslpg', soap_ns='soapenv',
-            cacert = cacert,
+            ns='wslpg', #soap_ns='soapenv',
+            cacert = cacert, #server="",
             exceptions=True, proxy=proxy_dict)
        
         # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
@@ -762,7 +762,7 @@ class WSLPG:
                nro_contrato=None,                   # contrato
                tipo_formulario=None,                # papel
                nro_formulario=None,                 # papel
-               nro_act_comprador=None,              # contrato / papel
+               actividad=None,                      # contrato / papel
                cod_grano=None,                      # contrato / papel
                cuit_vendedor=None,                  # contrato / papel
                cuit_comprador=None,                 # contrato / papel
@@ -770,7 +770,7 @@ class WSLPG:
                nro_ing_bruto_vendedor=None,         # papel
                nro_ing_bruto_comprador=None,        # papel
                nro_ing_bruto_corredor=None,         # papel
-               cod_tipo_operacion=None,             # papel
+               tipo_operacion=None,                 # papel
                precio_ref_tn=None,                  # contrato
                cod_grado_ent=None,                  # contrato
                val_grado_ent=None,                  # contrato
@@ -786,10 +786,14 @@ class WSLPG:
 
         # ajusto nombre de campos para compatibilidad hacia atrás (encabezado):
         if 'cod_localidad_procedencia' in kwargs:
-            cod_localidad = cod_localidad_procedencia
+            cod_localidad = kwargs['cod_localidad_procedencia']
         if 'cod_provincia_procedencia' in kwargs:
-            cod_provincia = cod_provincia_procedencia
-
+            cod_provincia = kwargs['cod_provincia_procedencia']
+        if 'nro_act_comprador' in kwargs:
+            actividad = kwargs['nro_act_comprador']
+        if 'cod_tipo_operacion' in kwargs:
+            tipo_operacion = kwargs['cod_tipo_operacion']
+            
         # limpio los campos especiales (segun validaciones de AFIP)
         if val_grado_ent == 0:
             val_grado_ent = None
@@ -816,7 +820,7 @@ class WSLPG:
                             'nroContrato': nro_contrato,
                             'tipoFormulario': tipo_formulario,
                             'nroFormulario': nro_formulario,
-                            'actividad': nro_act_comprador,
+                            'actividad': actividad,
                             'codGrano': cod_grano,
                             'cuitVendedor': cuit_vendedor,
                             'cuitComprador': cuit_comprador,
@@ -824,7 +828,7 @@ class WSLPG:
                             'nroIngBrutoVendedor': nro_ing_bruto_vendedor,
                             'nroIngBrutoComprador': nro_ing_bruto_comprador,
                             'nroIngBrutoCorredor': nro_ing_bruto_corredor,
-                            'codTipoOperacion': cod_tipo_operacion,
+                            'tipoOperacion': tipo_operacion,
                             'codPuerto': cod_puerto,
                             'desPuertoLocalidad': des_puerto_localidad,
                             'comisionCorredor': comision_corredor,
@@ -944,6 +948,13 @@ class WSLPG:
     def AjustarLiquidacionUnificadoPapel(self):
         "Ajustar Liquidación realizada en un formulario F1116 B / C (papel)"
         
+        # limpiar arrays no enviados:
+        if not self.ajuste['ajusteBase']['certificados']:
+            del self.ajuste['ajusteBase']['certificados']
+        for k1 in ('ajusteCredito', 'ajusteDebito'):
+            for k2 in ('retenciones', 'deducciones'):
+                if not self.ajuste[k1][k2]:
+                    del self.ajuste[k1][k2]
         ret = self.client.liquidacionAjustarUnificadoPapel(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -960,6 +971,14 @@ class WSLPG:
     def AjustarLiquidacionContrato(self):
         "Ajustar Liquidación activas relacionadas a un contrato"
         
+        # limpiar arrays no enviados:
+        if not self.ajuste['ajusteBase']['certificados']:
+            del self.ajuste['ajusteBase']['certificados']
+        for k1 in ('ajusteCredito', 'ajusteDebito'):
+            for k2 in ('retenciones', 'deducciones'):
+                if not self.ajuste[k1][k2]:
+                    del self.ajuste[k1][k2]
+
         ret = self.client.liquidacionAjustarContrato(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
