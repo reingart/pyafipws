@@ -47,6 +47,7 @@ Web services supported so far:
 AFIP:
  * [WSAA][10]: authorization & authentication, including digital cryptographic signature
  * [WSFEv1][11]: domestic market (electronic invoice) -[English][12]-
+ * [WSMTXCA][22]: domestic market (electronic invoice) -detailing articles and barcodes-
  * [WSBFE][13]: tax bonus (electronic invoice)
  * [WSFEXv1][14]: foreign trade (electronic invoice) -[English][15]-
  * [WSCTG][16]: agriculture (grain traceability code)
@@ -118,3 +119,4 @@ On Windows, you can see available installers released for evaluation purposes on
  [19]: http://www.sistemasagiles.com.ar/trac/wiki/ConsultaOperacionesCambiarias
  [20]: http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCotArba
  [21]: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
+ [21]: http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaMTXCAService
