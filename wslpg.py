@@ -1604,6 +1604,12 @@ class WSLPG:
                 localidad = self.BuscarLocalidades(cod_prov, cod_localidad)
                 return localidad, provincia                
 
+            # divido los datos adicionales (debe haber renglones 1 al 9):
+            if liq.get('datos_adicionales') and f.has_key('datos_adicionales1'):
+                d = liq.get('datos_adicionales')
+                for i, ds in enumerate(f.split_multicell(d, 'datos_adicionales1')):
+                    liq['datos_adicionales%s' % (i + 1)] = ds
+                
             for copia in range(1, num_copias+1):
                 
                 # completo campos y hojas
@@ -2055,7 +2061,7 @@ if __name__ == '__main__':
                     campania_ppal=1213,
                     cod_localidad_procedencia=5544,
                     cod_prov_procedencia=12,
-                    datos_adicionales="DATOS ADICIONALES",
+                    datos_adicionales=("DATOS ADICIONALES 1234 " * 17) + ".",
                     ##peso_neto_sin_certificado=2000,
                     precio_operacion=None,  # para probar ajustar
                     total_peso_neto=1000,   # para probar ajustar
