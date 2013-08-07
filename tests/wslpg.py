@@ -55,6 +55,58 @@ class TestIssues(unittest.TestCase):
         wslpg.Cuit = CUIT
         wslpg.Token = wsaa.Token
         wslpg.Sign = wsaa.Sign                    
+                    
+    def test_liquidacion(self):
+        wslpg = self.wslpg
+        pto_emision = 99
+        ok = wslpg.ConsultarUltNroOrden(pto_emision)
+        self.assertTrue(ok)
+        ok = wslpg.CrearLiquidacion(
+                pto_emision=pto_emision,
+                nro_orden=wslpg.NroOrden + 1, 
+                cuit_comprador=wslpg.Cuit,
+                nro_act_comprador=29, nro_ing_bruto_comprador=wslpg.Cuit,
+                cod_tipo_operacion=1,
+                es_liquidacion_propia='N', es_canje='N',
+                cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
+                cod_grano=31, 
+                cuit_vendedor=23000000019, nro_ing_bruto_vendedor=23000000019,
+                actua_corredor="N", liquida_corredor="N", 
+                cuit_corredor=0,
+                comision_corredor=0, nro_ing_bruto_corredor=0,
+                fecha_precio_operacion="2013-02-07",
+                precio_ref_tn=2000,
+                cod_grado_ref="G1",
+                cod_grado_ent="FG",
+                factor_ent=98, val_grado_ent=1.02,
+                precio_flete_tn=10,
+                cont_proteico=20,
+                alic_iva_operacion=10.5,
+                campania_ppal=1213,
+                cod_localidad_procedencia=5544,
+                cod_prov_procedencia=12,
+                datos_adicionales="DATOS ADICIONALES",
+                peso_neto_sin_certificado=10000,
+                cod_prov_procedencia_sin_certificado=1,
+                cod_localidad_procedencia_sin_certificado=15124,
+                )        
+
+        wslpg.AgregarRetencion(
+                        codigo_concepto="RI",
+                        detalle_aclaratorio="DETALLE DE IVA",
+                        base_calculo=1000,
+                        alicuota=10.5,
+                    )
+        wslpg.AgregarRetencion(                        
+                        codigo_concepto="RG",
+                        detalle_aclaratorio="DETALLE DE GANANCIAS",
+                        base_calculo=100,
+                        alicuota=15,
+                    )
+        ok = wslpg.AutorizarLiquidacion()
+        self.assertTrue(ok)
+        self.assertIsInstance(wslpg.COE, basestring)
+        self.assertEqual(len(wslpg.COE), len("330100013142")) 
 
     def test_ajuste_unificado(self):
         wslpg = self.wslpg
