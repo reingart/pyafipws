@@ -119,12 +119,19 @@ class TestIssues(unittest.TestCase):
 
     def test_ajuste_unificado(self):
         wslpg = self.wslpg
-        wslpg.CrearAjusteBase(pto_emision=55, nro_orden=1, 
-                              coe_ajustado=330100006706)
-        wslpg.AgregarCertificado(tipo_certificado_deposito=1,
-                       nro_certificado_deposito=100000009,
+        self.test_liquidacion()
+        coe = wslpg.COE                                 # COE autorizado
+        pto_emision = 55
+        ok = wslpg.ConsultarUltNroOrden(pto_emision)
+        self.assertTrue(ok)
+        nro_orden = wslpg.NroOrden + 1                  # último nro de orden                 
+        wslpg.CrearAjusteBase(pto_emision=pto_emision, 
+                              nro_orden=nro_orden, 
+                              coe_ajustado=coe)
+        wslpg.AgregarCertificado(tipo_certificado_deposito=5,
+                       nro_certificado_deposito=555501200729,
                        peso_neto=10000,
-                       cod_localidad_procedencia=1,
+                       cod_localidad_procedencia=3,
                        cod_prov_procedencia=1,
                        campania=1213,
                        fecha_cierre='2013-04-15')
@@ -150,7 +157,7 @@ class TestIssues(unittest.TestCase):
         wslpg.AgregarRetencion(codigo_concepto="RI",
                                detalle_aclaratorio="Ret IVA",
                                base_calculo=1000,
-                               alicuota=8, )
+                               alicuota=10.5, )
         wslpg.CrearAjusteDebito(
                 diferencia_peso_neto=500, diferencia_precio_operacion=100,
                 cod_grado="G2", val_grado=1.0, factor=100,
@@ -173,7 +180,7 @@ class TestIssues(unittest.TestCase):
         wslpg.AgregarRetencion(codigo_concepto="RI",
                                detalle_aclaratorio="Ret IVA",
                                base_calculo=100,
-                               alicuota=8, )
+                               alicuota=10.5, )
 
         ret = wslpg.AjustarLiquidacionUnificado()
 
