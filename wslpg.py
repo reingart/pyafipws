@@ -167,10 +167,10 @@ ENCABEZADO = [
     ('tipo_formulario', 2, N), 
     ('nro_formulario', 12, N), 
     # datos devuetos:
+    ('total_iva_10_5', 17, I, 2), # 17.2
     ('total_iva_21', 17, I, 2), # 17.2
     ('total_retenciones_ganancias', 17, I, 2), # 17.2
     ('total_retenciones_iva', 17, I, 2), # 17.2
-    ('total_iva_10_5', 17, I, 2), # 17.2
     
 
     ]
