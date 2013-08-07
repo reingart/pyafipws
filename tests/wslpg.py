@@ -119,13 +119,17 @@ class TestIssues(unittest.TestCase):
         self.assertEqual(wslpg.Resultado, "A")
 
     def test_ajuste_unificado(self):
+        "Prueba de ajuste unificado de una liquidación de granos (WSLPGv1.4)"
         wslpg = self.wslpg
+        # solicito una liquidación para tener el COE autorizado a ajustar:
         self.test_liquidacion()
-        coe = wslpg.COE                                 # COE autorizado
+        coe = wslpg.COE
+        # solicito el último nro de orden para la nueva liquidación de ajuste:
         pto_emision = 55
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
         self.assertTrue(ok)
-        nro_orden = wslpg.NroOrden + 1                  # último nro de orden                 
+        nro_orden = wslpg.NroOrden + 1
+        # creo el ajuste base y agrego los datos de certificado:
         wslpg.CrearAjusteBase(pto_emision=pto_emision, 
                               nro_orden=nro_orden, 
                               coe_ajustado=coe)
@@ -136,6 +140,7 @@ class TestIssues(unittest.TestCase):
                        cod_prov_procedencia=1,
                        campania=1213,
                        fecha_cierre='2013-04-15')
+        # creo el ajuste de crédito (ver documentación AFIP)
         wslpg.CrearAjusteCredito(
                 diferencia_peso_neto=1000, diferencia_precio_operacion=100,
                 cod_grado="G2", val_grado=1.0, factor=100,
@@ -159,6 +164,7 @@ class TestIssues(unittest.TestCase):
                                detalle_aclaratorio="Ret IVA",
                                base_calculo=1000,
                                alicuota=10.5, )
+        # creo el ajuste de débito (ver documentación AFIP)
         wslpg.CrearAjusteDebito(
                 diferencia_peso_neto=500, diferencia_precio_operacion=100,
                 cod_grado="G2", val_grado=1.0, factor=100,
@@ -182,9 +188,10 @@ class TestIssues(unittest.TestCase):
                                detalle_aclaratorio="Ret IVA",
                                base_calculo=100,
                                alicuota=10.5, )
-
+        # autorizo el ajuste:
         ok = wslpg.AjustarLiquidacionUnificado()
         self.assertTrue(ok)
+        # verificar respuesta general:
         self.assertIsInstance(wslpg.COE, basestring)
         self.assertEqual(len(wslpg.COE), len("330100013133"))
         self.assertEqual(wslpg.Estado, "AC")
@@ -196,6 +203,26 @@ class TestIssues(unittest.TestCase):
         self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-639.07"))
         self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("94.50"))
         self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-733.57"))
+        # verificar ajuste credito
+        ok = wslpg.AnalizarAjusteCredito()
+        self.assertTrue(ok)
+        self.assertEqual(wslpg.GetParametro("precio_operacion"), "1.900")
+        self.assertEqual(wslpg.GetParametro("total_peso_neto"), "1000")
+        self.assertEqual(wslpg.TotalDeduccion, Decimal("11.05"))
+        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2780.95"))
+        self.assertEqual(wslpg.GetParametro("importe_iva"), "293.16")
+        self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "3085.16")
+        self.assertEqual(wslpg.GetParametro("deducciones", 0, "importe_iva"), "1.05")
+        # verificar ajuste debito
+        ok = wslpg.AnalizarAjusteDebito()
+        self.assertTrue(ok)
+        self.assertEqual(wslpg.GetParametro("precio_operacion"), "2.090")
+        self.assertEqual(wslpg.GetParametro("total_peso_neto"), "500")
+        self.assertEqual(wslpg.TotalDeduccion, Decimal("11.05"))
+        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2047.38"))
+        self.assertEqual(wslpg.GetParametro("importe_iva"), "215.55")
+        self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "2268.45")
+        self.assertEqual(wslpg.GetParametro("retenciones", 0, "importe_retencion"), "10.50")
         
     def test_ajuste_contrato(self):
         wslpg = self.wslpg

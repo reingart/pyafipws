@@ -312,6 +312,7 @@ class WSLPG:
                         'AjustarLiquidacionUnificado',
                         'AjustarLiquidacionUnificadoPapel',
                         'AjustarLiquidacionContrato',
+                        'AnalizarAjusteDebito', 'AnalizarAjusteCredito',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
                         'ConsultarGradoEntregadoXTipoGrano',
@@ -700,9 +701,9 @@ class WSLPG:
             self.TotalNetoAPagar = aut['totalNetoAPagar']
             self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
             self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
-            self.COE = str(aut['coe'])
+            self.COE = str(aut.get('coe', ''))
             self.COEAjustado = aut.get('coeAjustado')
-            self.Estado = aut['estado']
+            self.Estado = aut.get('estado', '')
 
             # actualizo parámetros de salida:
             self.params_out['coe'] = self.COE
@@ -994,7 +995,6 @@ class WSLPG:
             aut = ret['ajusteContrato']
             self.AnalizarAjuste(aut)
     
-    @inicializar_y_capturar_excepciones
     def AnalizarAjuste(self, aut):
         "Método interno para analizar la respuesta de AFIP (ajustes)"
         
@@ -1034,8 +1034,21 @@ class WSLPG:
             self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
             
             # almaceno los datos de ajustes crédito y débito para usarlos luego
-            self.params_out['AjusteDebito'] = aut['ajusteDebito']
-            self.params_out['AjusteCredito'] = aut['ajusteCredito']
+            self.__ajuste_debito = aut['ajusteDebito']
+            self.__ajuste_credito = aut['ajusteCredito']
+        else:
+            self.__ajuste_debito = None
+            self.__ajuste_credito = None
+
+    @inicializar_y_capturar_excepciones
+    def AnalizarAjusteDebito(self):
+        "Método para analizar la respuesta de AFIP para Ajuste Debito"
+        self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=self.__ajuste_debito)
+
+    @inicializar_y_capturar_excepciones
+    def AnalizarAjusteCredito(self):
+        "Método para analizar la respuesta de AFIP para Ajuste Credito"
+        self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=self.__ajuste_credito)
 
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None):
