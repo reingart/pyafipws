@@ -128,7 +128,7 @@ ENCABEZADO = [
     ('alic_iva_operacion', 5, I, 2), # 3.2
     ('campania_ppal', 4, N),
     ('cod_localidad_procedencia', 6, N), 
-    ('datos_adicionales', 200, A), # max 400 por WSLPGv1.2
+    ('reservado1', 200, A),   # datos_adicionales (compatibilidad hacia atras)
     
     ('coe', 12, N),
     ('coe_ajustado', 12, N),
@@ -172,6 +172,7 @@ ENCABEZADO = [
     ('total_retenciones_ganancias', 17, I, 2), # 17.2
     ('total_retenciones_iva', 17, I, 2), # 17.2
     
+    ('datos_adicionales', 400, A), # max 400 desde WSLPGv1.2
 
     ]
 
@@ -1844,7 +1845,11 @@ def leer_archivo(nombre_archivo):
                'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], }
         for linea in archivo:
             if str(linea[0])=='0':
-                dic.update(leer(linea, ENCABEZADO))
+                d = leer(linea, ENCABEZADO)
+                if d['reservado1']:
+                    print "ADVERTENCIA: USAR datos adicionales (nueva posición)" 
+                    d['datos_adicionales'] = d['reservado1'] 
+                dic.update(d)
                 # referenciar la liquidación para agregar ret. / ded.:
                 liq = dic
             elif str(linea[0])=='1':
