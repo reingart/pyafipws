@@ -2337,6 +2337,20 @@ if __name__ == '__main__':
 
             ret = wslpg.AjustarLiquidacionUnificado()
             
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
+            print "Errores:", wslpg.Errores
+            print "COE", wslpg.COE
+            print "Subtotal", wslpg.Subtotal
+            print "TotalIva105", wslpg.TotalIva105
+            print "TotalIva21", wslpg.TotalIva21
+            print "TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias
+            print "TotalRetencionesIVA", wslpg.TotalRetencionesIVA
+            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
+            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+            
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)            
             ok = wslpg.AnalizarAjusteCredito()
@@ -2345,6 +2359,9 @@ if __name__ == '__main__':
             dic['ajuste_debito'].update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
 
+            if DEBUG: 
+                pprint.pprint(dic)
+            
         if '--anular' in sys.argv:
             ##print wslpg.client.help("anularLiquidacion")
             try:
