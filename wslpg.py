@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12a"
+__version__ = "1.12b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -166,6 +166,12 @@ ENCABEZADO = [
     ('nro_contrato', 15, N),
     ('tipo_formulario', 2, N), 
     ('nro_formulario', 12, N), 
+    # datos devuetos:
+    ('total_iva_21', 17, I, 2), # 17.2
+    ('total_retenciones_ganancias', 17, I, 2), # 17.2
+    ('total_retenciones_iva', 17, I, 2), # 17.2
+    ('total_iva_10_5', 17, I, 2), # 17.2
+    
 
     ]
 
@@ -208,7 +214,7 @@ DEDUCCION = [
     ]
 
 AJUSTE = [
-    ('tipo_reg', 1, A), # 1: ajuste débito / crédito (WSLPGv1.4)
+    ('tipo_reg', 1, A), # 4: ajuste débito / 5: crédito (WSLPGv1.4)
     ('concepto_importe_iva_0', 20, A),
     ('importe_ajustar_iva_0', 15, I, 2), # 11.2
     ('concepto_importe_iva_105', 20, A),
@@ -222,6 +228,21 @@ AJUSTE = [
     ('factor', 6, I, 3), # 3.3
     ('diferencia_precio_flete_tn', 7, I, 2), # 5.2
     ('datos_adicionales', 400, A),
+    # datos devueltos:
+    ('fecha_liquidacion', 10, A), 
+    ('nro_op_comercial', 10, N), 
+    ('precio_operacion', 17, I, 3), # 17.3
+    ('subtotal', 17, I, 2), # 17.2
+    ('importe_iva', 17, I, 2), # 17.2
+    ('operacion_con_iva', 17, I, 2), # 17.2
+    ('total_peso_neto', 8, N), # 17.2
+    ('total_deduccion', 17, I, 2), # 17.2
+    ('total_retencion', 17, I, 2), # 17.2
+    ('total_retencion_afip', 17, I, 2), # 17.2
+    ('total_otras_retenciones', 17, I, 2), # 17.2
+    ('total_neto_a_pagar', 17, I, 2), # 17.2
+    ('total_iva_rg_2300_07', 17, I, 2), # 17.2
+    ('total_pago_segun_condicion', 17, I, 2), # 17.2
     ]
 
 EVENTO = [
@@ -260,7 +281,7 @@ def inicializar_y_capturar_excepciones(func):
             self.TotalNetoAPagar = ""
             self.TotalIvaRg2300_07 = ""
             self.TotalPagoSegunCondicion = ""
-            self.SubtotalGeneral = self.TotalIva105 = self.TotalIva21 = ""
+            self.Subtotal = self.TotalIva105 = self.TotalIva21 = ""
             self.TotalRetencionesGanancias = self.TotalRetencionesIVA = ""
             # actualizo los parámetros
             kwargs.update(self.params_in)
@@ -340,7 +361,7 @@ class WSLPG:
         'COE', 'COEAjustado', 'Estado', 'Resultado', 'NroOrden',
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
-        'TotalIvaRg2300_07', 'SubtotalGeneral', 'TotalIva105', 'TotalIva21',
+        'TotalIvaRg2300_07', 'Subtotal', 'TotalIva105', 'TotalIva21',
         'TotalRetencionesGanancias', 'TotalRetencionesIVA', 'NroContrato',
         ]
     _reg_progid_ = "WSLPG"
@@ -1008,7 +1029,7 @@ class WSLPG:
             self.Estado = aut['estado']
 
             totunif = aut["totalesUnificados"]
-            self.SubtotalGeneral = totunif['subTotalGeneral']
+            self.Subtotal = totunif['subTotalGeneral']
             self.TotalIva105 = totunif['iva105']
             self.TotalIva21 = totunif['iva21']
             self.TotalRetencionesGanancias = totunif['retencionesGanancias']
@@ -1024,7 +1045,7 @@ class WSLPG:
             self.params_out['nro_orden'] = aut.get('nroOrden')
             self.params_out['cod_tipo_operacion'] = aut.get('codTipoOperacion')
             self.params_out['nro_contrato'] = aut.get('nroContrato')
-            self.params_out['subtotal_general'] = self.SubtotalGeneral
+            self.params_out['subtotal'] = self.Subtotal
             self.params_out['total_iva_10_5'] = self.TotalIva105
             self.params_out['total_iva_21'] = self.TotalIva21
             self.params_out['total_retenciones_ganancias'] = self.TotalRetencionesGanancias
@@ -1775,6 +1796,24 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['deducciones']:
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
+        if 'ajuste_debito' in dic:
+            dic['ajuste_debito']['tipo_reg'] = 4
+            archivo.write(escribir(dic['ajuste_debito'], AJUSTE))
+            for it in dic['ajuste_debito']['retenciones']:
+                it['tipo_reg'] = 2
+                archivo.write(escribir(it, RETENCION))
+            for it in dic['ajuste_debito']['deducciones']:
+                it['tipo_reg'] = 3
+                archivo.write(escribir(it, DEDUCCION))
+        if 'ajuste_credito' in dic:
+            dic['ajuste_credito']['tipo_reg'] = 5
+            archivo.write(escribir(dic['ajuste_credito'], AJUSTE))
+            for it in dic['ajuste_credito']['retenciones']:
+                it['tipo_reg'] = 2
+                archivo.write(escribir(it, RETENCION))
+            for it in dic['ajuste_credito']['deducciones']:
+                it['tipo_reg'] = 3
+                archivo.write(escribir(it, DEDUCCION))
         if 'datos' in dic:
             for it in dic['datos']:
                 it['tipo_reg'] = 9
@@ -1790,30 +1829,45 @@ def leer_archivo(nombre_archivo):
     if '--json' in sys.argv:
         dic = json.load(archivo)
     elif '--dbf' in sys.argv:
-        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
+        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
+               'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], }
         formatos = [('Encabezado', ENCABEZADO, dic), 
                     ('Certificado', CERTIFICADO, dic['certificados']), 
                     ('Retencio', RETENCION, dic['retenciones']), 
-                    ('Deduccion', DEDUCCION, dic['deducciones'])]
+                    ('Deduccion', DEDUCCION, dic['deducciones']),
+                    ('Ajuste Credito', AJUSTE, dic['ajuste_credito']),
+                    ('Ajuste Debito', AJUSTE, dic['ajuste_debito']),
+                    ]
         leer_dbf(formatos, conf_dbf)
     else:
-        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 'datos': []}
+        dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
+               'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], }
         for linea in archivo:
             if str(linea[0])=='0':
                 dic.update(leer(linea, ENCABEZADO))
+                # referenciar la liquidación para agregar ret. / ded.:
+                liq = dic
             elif str(linea[0])=='1':
-                dic['certificados'].append(leer(linea, CERTIFICADO))
+                liq['certificados'].append(leer(linea, CERTIFICADO))
             elif str(linea[0])=='2':
-                dic['retenciones'].append(leer(linea, RETENCION))
+                liq['retenciones'].append(leer(linea, RETENCION))
             elif str(linea[0])=='3':
                 d = leer(linea, DEDUCCION)
                 # ajustes por cambios en afip (compatibilidad hacia atras):
                 if d['reservado1']:
                     print "ADVERTENCIA: USAR precio_pkg_diario!" 
                     d['precio_pkg_diario'] = d['reservado1'] 
-                dic['deducciones'].append(d)
+                liq['deducciones'].append(d)
+            elif str(linea[0])=='4':
+                liq = leer(linea, AJUSTE)
+                liq.update({'retenciones': [], 'deducciones': []})
+                dic['ajuste_debito'] = liq
+            elif str(linea[0])=='5':
+                liq = leer(linea, AJUSTE)
+                liq.update({'retenciones': [], 'deducciones': []})
+                dic['ajuste_credito'] = liq
             elif str(linea[0])=='9':
-                dic['datos'].append(leer(linea, DATO))
+                liq['datos'].append(leer(linea, DATO))
             else:
                 print "Tipo de registro incorrecto:", linea[0]
     archivo.close()
@@ -2185,64 +2239,111 @@ if __name__ == '__main__':
 
         if '--ajustar' in sys.argv:
             print "Ajustando..."
-            wslpg.CrearAjusteBase(pto_emision=55, nro_orden=1, 
-                                  coe_ajustado=330100006706)
-            wslpg.AgregarCertificado(tipo_certificado_deposito=1,
-                           nro_certificado_deposito=100000009,
-                           peso_neto=10000,
-                           cod_localidad_procedencia=1,
-                           cod_prov_procedencia=1,
-                           campania=1213,
-                           fecha_cierre='2013-04-15')
-            wslpg.CrearAjusteCredito(
-                    diferencia_peso_neto=1000, diferencia_precio_operacion=100,
-                    cod_grado="G2", val_grado=1.0, factor=100,
-                    diferencia_precio_flete_tn=10,
-                    datos_adicionales='AJUSTE CRED UNIF',
-                    concepto_importe_iva_0='Alicuota Cero',
-                    importe_ajustar_Iva_0=900,
-                    concepto_importe_iva_105='Alicuota Diez',
-                    importe_ajustar_Iva_105=800,
-                    concepto_importe_iva_21='Alicuota Veintiuno',
-                    importe_ajustar_Iva_21=700,
-                )
-            wslpg.AgregarDeduccion(codigo_concepto="AL",
-                                   detalle_aclaratorio="Deduc Alm",
-                                   dias_almacenaje="1",
-                                   precio_pkg_diario=0.01,
-                                   comision_gastos_adm=1.0,
-                                   base_calculo=1000.0,
-                                   alicuota=10.5, )
-            wslpg.AgregarRetencion(codigo_concepto="RI",
-                                   detalle_aclaratorio="Ret IVA",
-                                   base_calculo=1000,
-                                   alicuota=8, )
-            wslpg.CrearAjusteDebito(
-                    diferencia_peso_neto=500, diferencia_precio_operacion=100,
-                    cod_grado="G2", val_grado=1.0, factor=100,
-                    diferencia_precio_flete_tn=0.01,
-                    datos_adicionales='AJUSTE DEB UNIF',
-                    concepto_importe_iva_0='Alic 0',
-                    importe_ajustar_Iva_0=250,
-                    concepto_importe_iva_105='Alic 10.5',
-                    importe_ajustar_Iva_105=200,
-                    concepto_importe_iva_21='Alicuota 21',
-                    importe_ajustar_Iva_21=50,
-                )
-            wslpg.AgregarDeduccion(codigo_concepto="AL",
-                                   detalle_aclaratorio="Deduc Alm",
-                                   dias_almacenaje="1",
-                                   precio_pkg_diario=0.01,
-                                   comision_gastos_adm=1.0,
-                                   base_calculo=500.0,
-                                   alicuota=10.5, )
-            wslpg.AgregarRetencion(codigo_concepto="RI",
-                                   detalle_aclaratorio="Ret IVA",
-                                   base_calculo=100,
-                                   alicuota=8, )
+            if '--prueba' in sys.argv:
+                # genero una liquidación de ejemplo:
+                dic = dict(
+                    pto_emision=55, nro_orden=0, coe_ajustado='330100013184',
+                    certificados=[dict(
+                       tipo_certificado_deposito=5,
+                       nro_certificado_deposito=555501200729,
+                       peso_neto=10000,
+                       cod_localidad_procedencia=3,
+                       cod_prov_procedencia=1,
+                       campania=1213,
+                       fecha_cierre='2013-04-15')],
+                    ajuste_credito=dict(
+                        diferencia_peso_neto=1000, diferencia_precio_operacion=100,
+                        cod_grado="G2", val_grado=1.0, factor=100,
+                        diferencia_precio_flete_tn=10,
+                        datos_adicionales='AJUSTE CRED UNIF',
+                        concepto_importe_iva_0='Alicuota Cero',
+                        importe_ajustar_Iva_0=900,
+                        concepto_importe_iva_105='Alicuota Diez',
+                        importe_ajustar_Iva_105=800,
+                        concepto_importe_iva_21='Alicuota Veintiuno',
+                        importe_ajustar_Iva_21=700,
+                        deducciones=[dict(codigo_concepto="AL",
+                               detalle_aclaratorio="Deduc Alm",
+                               dias_almacenaje="1",
+                               precio_pkg_diario=0.01,
+                               comision_gastos_adm=1.0,
+                               base_calculo=1000.0,
+                               alicuota=10.5, )],
+                        retenciones=[dict(codigo_concepto="RI",
+                               detalle_aclaratorio="Ret IVA",
+                               base_calculo=1000,
+                               alicuota=10.5, )], 
+                        ),
+                    ajuste_debito=dict(
+                        diferencia_peso_neto=500, diferencia_precio_operacion=100,
+                        cod_grado="G2", val_grado=1.0, factor=100,
+                        diferencia_precio_flete_tn=0.01,
+                        datos_adicionales='AJUSTE DEB UNIF',
+                        concepto_importe_iva_0='Alic 0',
+                        importe_ajustar_Iva_0=250,
+                        concepto_importe_iva_105='Alic 10.5',
+                        importe_ajustar_Iva_105=200,
+                        concepto_importe_iva_21='Alicuota 21',
+                        importe_ajustar_Iva_21=50,
+                        deducciones=[dict(codigo_concepto="AL",
+                               detalle_aclaratorio="Deduc Alm",
+                               dias_almacenaje="1",
+                               precio_pkg_diario=0.01,
+                               comision_gastos_adm=1.0,
+                               base_calculo=500.0,
+                               alicuota=10.5, )],
+                        retenciones=[dict(codigo_concepto="RI",
+                               detalle_aclaratorio="Ret IVA",
+                               base_calculo=100,
+                               alicuota=10.5, )],
+                        ),
+                    )
+                escribir_archivo(dic, ENTRADA)
+            
+            dic = leer_archivo(ENTRADA)
+            
+            if not 'nro_orden' in dic:
+                raise RuntimeError("Archivo de entrada invalido, revise campos y lineas en blanco")
+                
+            if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
+                # consulto el último número de orden emitido:
+                ok = wslpg.ConsultarUltNroOrden(dic['pto_emision'])
+                if ok:
+                    dic['nro_orden'] = wslpg.NroOrden + 1
+                    
+            wslpg.CrearAjusteBase(pto_emision=dic['pto_emision'], 
+                              nro_orden=dic['nro_orden'], 
+                              coe_ajustado=dic['coe_ajustado'])
+            
+            for cert in dic.get('certificados', []):
+                wslpg.AgregarCertificado(**cert)
+
+            liq = dic['ajuste_credito']
+            wslpg.CrearAjusteCredito(**liq)
+            for ded in liq.get('deducciones', []):
+                wslpg.AgregarDeduccion(**ded)
+            for ret in liq.get('retenciones', []):
+                wslpg.AgregarRetencion(**ret)
+            
+            liq = dic['ajuste_debito']
+            wslpg.CrearAjusteDebito(**liq)
+            for ded in liq.get('deducciones', []):
+                wslpg.AgregarDeduccion(**ded)
+            for ret in liq.get('retenciones', []):
+                wslpg.AgregarRetencion(**ret)
+            
+            if '--testing' in sys.argv:
+                wslpg.LoadTestXML("tests/wslpg_ajuste_unificado.xml")
 
             ret = wslpg.AjustarLiquidacionUnificado()
-
+            
+            # actualizo el archivo de salida con los datos devueltos
+            dic.update(wslpg.params_out)            
+            ok = wslpg.AnalizarAjusteCredito()
+            dic['ajuste_credito'].update(wslpg.params_out)
+            ok = wslpg.AnalizarAjusteDebito()
+            dic['ajuste_debito'].update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
 
         if '--anular' in sys.argv:
             ##print wslpg.client.help("anularLiquidacion")

@@ -195,7 +195,7 @@ class TestIssues(unittest.TestCase):
         self.assertIsInstance(wslpg.COE, basestring)
         self.assertEqual(len(wslpg.COE), len("330100013133"))
         self.assertEqual(wslpg.Estado, "AC")
-        self.assertEqual(wslpg.SubtotalGeneral, Decimal("-734.10"))
+        self.assertEqual(wslpg.Subtotal, Decimal("-734.10"))
         self.assertEqual(wslpg.TotalIva105, Decimal("0"))
         self.assertEqual(wslpg.TotalIva21, Decimal("0"))
         self.assertEqual(wslpg.TotalRetencionesGanancias, Decimal("0"))
