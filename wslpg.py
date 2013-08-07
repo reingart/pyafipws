@@ -248,7 +248,7 @@ def inicializar_y_capturar_excepciones(func):
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
             # inicializo (limpio variables)
-            self.COE = self.COEAjustado = ""
+            self.COE = self.COEAjustado = NroContrato = ""
             self.Excepcion = self.Traceback = ""
             self.ErrMsg = self.ErrCode = ""
             self.Errores = []
@@ -260,6 +260,8 @@ def inicializar_y_capturar_excepciones(func):
             self.TotalNetoAPagar = ""
             self.TotalIvaRg2300_07 = ""
             self.TotalPagoSegunCondicion = ""
+            self.SubtotalGeneral = self.TotalIva105 = self.TotalIva21 = ""
+            self.TotalRetencionesGanancias = self.TotalRetencionesIVA = ""
             # actualizo los parámetros
             kwargs.update(self.params_in)
             # limpio los parámetros
@@ -337,7 +339,8 @@ class WSLPG:
         'COE', 'COEAjustado', 'Estado', 'Resultado', 'NroOrden',
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
-        'TotalIvaRg2300_07'
+        'TotalIvaRg2300_07', 'SubtotalGeneral', 'TotalIva105', 'TotalIva21',
+        'TotalRetencionesGanancias', 'TotalRetencionesIVA', 'NroContrato',
         ]
     _reg_progid_ = "WSLPG"
     _reg_clsid_ = "{9D21C513-21A6-413C-8592-047357692608}"
@@ -990,7 +993,50 @@ class WSLPG:
         if 'ajusteContrato' in ret:
             aut = ret['ajusteContrato']
             self.AnalizarAjuste(aut)
+    
+    @inicializar_y_capturar_excepciones
+    def AnalizarAjuste(self, aut):
+        "Método interno para analizar la respuesta de AFIP (ajustes)"
+        
+        self.params_out['errores'] = self.errores
             
+        # proceso la respuesta de autorizar, ajustar (y consultar):
+        if aut:
+            self.COE = str(aut['coe'])
+            self.COEAjustado = aut.get('coeAjustado')
+            self.NroContrato = aut.get('nroContrato')
+            self.Estado = aut['estado']
+
+            totunif = aut["totalesUnificados"]
+            self.SubtotalGeneral = totunif['subTotalGeneral']
+            self.TotalIva105 = totunif['iva105']
+            self.TotalIva21 = totunif['iva21']
+            self.TotalRetencionesGanancias = totunif['retencionesGanancias']
+            self.TotalRetencionesIVA = totunif['retencionesIVA']
+            self.TotalNetoAPagar = totunif['importeNeto']
+            self.TotalIvaRg2300_07 = totunif['ivaRG2300_2007']
+            self.TotalPagoSegunCondicion = totunif['pagoSCondicion']
+            
+            # actualizo parámetros de salida:
+            self.params_out['coe'] = self.COE
+            self.params_out['coe_ajustado'] = self.COE
+            self.params_out['estado'] = self.Estado
+            self.params_out['nro_orden'] = aut.get('nroOrden')
+            self.params_out['cod_tipo_operacion'] = aut.get('codTipoOperacion')
+            self.params_out['nro_contrato'] = aut.get('nroContrato')
+            self.params_out['subtotal_general'] = self.SubtotalGeneral
+            self.params_out['total_iva_10_5'] = self.TotalIva105
+            self.params_out['total_iva_21'] = self.TotalIva21
+            self.params_out['total_retenciones_ganancias'] = self.TotalRetencionesGanancias
+            self.params_out['total_retenciones_iva'] = self.TotalRetencionesIVA
+            self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
+            self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
+            self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
+            
+            # almaceno los datos de ajustes crédito y débito para usarlos luego
+            self.params_out['AjusteDebito'] = aut['ajusteDebito']
+            self.params_out['AjusteCredito'] = aut['ajusteCredito']
+
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None):
         "Consulta una liquidación por No de orden"

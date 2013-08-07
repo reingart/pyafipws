@@ -19,6 +19,7 @@ __license__ = "GPL 3.0"
 
 import unittest
 import sys
+from decimal import Decimal
 
 sys.path.append("/home/reingart")        # TODO: proper packaging
 
@@ -182,8 +183,20 @@ class TestIssues(unittest.TestCase):
                                base_calculo=100,
                                alicuota=10.5, )
 
-        ret = wslpg.AjustarLiquidacionUnificado()
-
+        ok = wslpg.AjustarLiquidacionUnificado()
+        self.assertTrue(ok)
+        self.assertIsInstance(wslpg.COE, basestring)
+        self.assertEqual(len(wslpg.COE), len("330100013133"))
+        self.assertEqual(wslpg.Estado, "AC")
+        self.assertEqual(wslpg.SubtotalGeneral, Decimal("-734.10"))
+        self.assertEqual(wslpg.TotalIva105, Decimal("0"))
+        self.assertEqual(wslpg.TotalIva21, Decimal("0"))
+        self.assertEqual(wslpg.TotalRetencionesGanancias, Decimal("0"))
+        self.assertEqual(wslpg.TotalRetencionesIVA, Decimal("-94.50"))
+        self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-639.07"))
+        self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("94.50"))
+        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-733.57"))
+        
     def test_ajuste_contrato(self):
         wslpg = self.wslpg
         wslpg.CrearAjusteBase(pto_emision=55, nro_orden=1, 
