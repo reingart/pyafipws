@@ -57,6 +57,7 @@ class TestIssues(unittest.TestCase):
         wslpg.Sign = wsaa.Sign                    
                     
     def test_liquidacion(self):
+        "Prueba de autorización (obtener COE) liquidación electrónica de granos"
         wslpg = self.wslpg
         pto_emision = 99
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
@@ -107,6 +108,14 @@ class TestIssues(unittest.TestCase):
         self.assertTrue(ok)
         self.assertIsInstance(wslpg.COE, basestring)
         self.assertEqual(len(wslpg.COE), len("330100013142")) 
+
+    def test_anular(self):
+        "Prueba de anulación de una liquidación electrónica de granos"
+        wslpg = self.wslpg
+        self.test_liquidacion()                     # autorizo una nueva liq.
+        ok = wslpg.AnularLiquidacion(wslpg.COE)     # la anulo
+        self.assertTrue(ok)
+        self.assertEqual(wslpg.Resultado, "A")
 
     def test_ajuste_unificado(self):
         wslpg = self.wslpg
