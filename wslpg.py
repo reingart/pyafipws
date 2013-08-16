@@ -1784,6 +1784,8 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
                     ('Certificado', CERTIFICADO, dic.get('certificados', [])), 
                     ('Retencion', RETENCION, dic.get('retenciones', [])), 
                     ('Deduccion', DEDUCCION, dic.get('deducciones', [])),
+                    ('Ajuste Credito', AJUSTE, dic.get('ajuste_credito', [])),
+                    ('Ajuste Debito', AJUSTE, dic.get('ajuste_debito', [])),
                     ('Dato', DATO, dic.get('datos', [])),
                     ('Error', ERROR, dic.get('errores', [])),
                     ]
