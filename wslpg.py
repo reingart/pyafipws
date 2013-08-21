@@ -1784,8 +1784,8 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
                     ('Certificado', CERTIFICADO, dic.get('certificados', [])), 
                     ('Retencion', RETENCION, dic.get('retenciones', [])), 
                     ('Deduccion', DEDUCCION, dic.get('deducciones', [])),
-                    ('Ajuste Credito', AJUSTE, dic.get('ajuste_credito', [])),
-                    ('Ajuste Debito', AJUSTE, dic.get('ajuste_debito', [])),
+                    ('AjusteCredito', AJUSTE, dic.get('ajuste_credito', [])),
+                    ('AjusteDebito', AJUSTE, dic.get('ajuste_debito', [])),
                     ('Dato', DATO, dic.get('datos', [])),
                     ('Error', ERROR, dic.get('errores', [])),
                     ]
@@ -1844,8 +1844,8 @@ def leer_archivo(nombre_archivo):
                     ('Certificado', CERTIFICADO, dic['certificados']), 
                     ('Retencio', RETENCION, dic['retenciones']), 
                     ('Deduccion', DEDUCCION, dic['deducciones']),
-                    ('Ajuste Credito', AJUSTE, dic['ajuste_credito']),
-                    ('Ajuste Debito', AJUSTE, dic['ajuste_debito']),
+                    ('AjusteCredito', AJUSTE, dic['ajuste_credito']),
+                    ('AjusteDebito', AJUSTE, dic['ajuste_debito']),
                     ]
         leer_dbf(formatos, conf_dbf)
     else:
