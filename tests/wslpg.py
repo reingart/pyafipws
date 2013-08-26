@@ -325,7 +325,8 @@ class TestIssues(unittest.TestCase):
 
         ret = wslpg.AjustarLiquidacionContrato()
 
-    def test_ajuste_papel(self):
+    def atest_ajuste_papel(self):
+        # deshabilitado ya que el método esta "en estudio" por parte de AFIP
         wslpg = self.wslpg
         wslpg.CrearAjusteBase(pto_emision=50,
                               nro_orden=1,
