@@ -110,16 +110,13 @@ class TestIssues(unittest.TestCase):
         self.assertIsInstance(wslpg.COE, basestring)
         self.assertEqual(len(wslpg.COE), len("330100013142")) 
 
-    def test_liquidacion_contrato(self):
+    def test_liquidacion_contrato(self, nro_contrato=26):
         "Prueba de obtener COE variante con contrato / corredor (WSLPGv1.4)"
         wslpg = self.wslpg
         pto_emision = 99
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
         self.assertTrue(ok)
         nro_orden = wslpg.NroOrden + 1
-
-        # nro de contrato a utilizar:
-        nro_contrato = 26
         
         # probar todas las actividades en caso de que devuelva error AFIP:
         #     1106: La actividad seleccionada no corresponde al comprador
@@ -180,11 +177,13 @@ class TestIssues(unittest.TestCase):
         self.assertEqual(len(wslpg.COE), len("330100013142")) 
         self.assertEqual(wslpg.NroContrato, nro_contrato)
 
-    def test_anular(self):
+    def test_anular(self, coe=None):
         "Prueba de anulación de una liquidación electrónica de granos"
         wslpg = self.wslpg
-        self.test_liquidacion()                     # autorizo una nueva liq.
-        ok = wslpg.AnularLiquidacion(wslpg.COE)     # la anulo
+        if not coe:
+            self.test_liquidacion()                 # autorizo una nueva liq.
+            coe = wslpg.COE
+        ok = wslpg.AnularLiquidacion(coe)           # la anulo
         self.assertTrue(ok)
         self.assertEqual(wslpg.Resultado, "A")
 
@@ -294,14 +293,28 @@ class TestIssues(unittest.TestCase):
         self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "2268.45")
         self.assertEqual(wslpg.GetParametro("retenciones", 0, "importe_retencion"), "10.50")
         
-    def test_ajuste_contrato(self):
-        wslpg = self.wslpg
-        wslpg.CrearAjusteBase(pto_emision=55, nro_orden=1, 
-                              nro_contrato=100001005,
-                              nro_act_comprador=41, 
-                              cod_grano=41,
-                              cuit_vendedor=30000000007,
-                              cuit_comprador=99999999999,
+        # anulo el ajuste para que no fallen subsiguientes tests
+        #self.test_anular()
+        
+    def test_ajuste_contrato(self, nro_contrato=26):
+        "Prueba de ajuste por contrato de una liquidación de granos (WSLPGv1.4)"
+        wslpg = self.wslpg        
+        # solicito una liquidación para tener el COE autorizado a ajustar:
+        self.test_liquidacion_contrato(nro_contrato)
+        coe = wslpg.COE
+        # solicito el último nro de orden para la nueva liquidación de ajuste:
+        pto_emision = 55
+        ok = wslpg.ConsultarUltNroOrden(pto_emision)
+        self.assertTrue(ok)
+        nro_orden = wslpg.NroOrden + 1
+        wslpg.CrearAjusteBase(pto_emision=55, nro_orden=nro_orden, 
+                              nro_contrato=26,
+                              coe_ajustado=coe,
+                              nro_act_comprador=40, 
+                              cod_grano=31,
+                              cuit_vendedor=23000000019,
+                              cuit_comprador=20400000000,
+                              cuit_corredor=20267565393,
                               precio_ref_tn=100,
                               cod_grado_ent="G1",
                               val_grado_ent=1.01,
@@ -323,8 +336,58 @@ class TestIssues(unittest.TestCase):
                                base_calculo=100.0,
                                alicuota=10.5, )
 
-        ret = wslpg.AjustarLiquidacionContrato()
-
+        # autorizo el ajuste:
+        ok = wslpg.AjustarLiquidacionContrato()
+        self.assertTrue(ok)
+        # verificar respuesta general:
+        self.assertIsInstance(wslpg.COE, basestring)
+        self.assertEqual(len(wslpg.COE), len("330100013133"))
+        try:
+            self.assertEqual(wslpg.Estado, "AC")
+            self.assertEqual(wslpg.Subtotal, Decimal("-100.00"))
+            self.assertEqual(wslpg.TotalIva105, Decimal("0"))
+            self.assertEqual(wslpg.TotalIva21, Decimal("0"))
+            self.assertEqual(wslpg.TotalRetencionesGanancias, Decimal("0"))
+            self.assertEqual(wslpg.TotalRetencionesIVA, Decimal("0"))
+            self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-110.50"))
+            self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("0"))
+            self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-110.50"))
+            ##self.assertEqual(wslpg.NroContrato, nro_contrato)  # no devuelto AFIP
+            # verificar campos globales no documentados (directamente desde el XML):
+            wslpg.AnalizarXml()
+            v = wslpg.ObtenerTagXml("totalesUnificados", "subTotalDebCred")
+            self.assertEqual(v, "0")
+            v = wslpg.ObtenerTagXml("totalesUnificados", "totalBaseDeducciones")
+            self.assertEqual(v, "100.0")
+            v = wslpg.ObtenerTagXml("totalesUnificados", "ivaDeducciones")
+            self.assertEqual(v, "10.50")
+            # verificar ajuste credito
+            ok = wslpg.AnalizarAjusteCredito()
+            self.assertTrue(ok)
+            self.assertEqual(wslpg.GetParametro("precio_operacion"), "0.000")
+            self.assertEqual(wslpg.GetParametro("total_peso_neto"), "0")
+            self.assertEqual(wslpg.TotalDeduccion, Decimal("0.000"))
+            self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("0.000"))
+            self.assertEqual(wslpg.GetParametro("importe_iva"), "0.00")
+            self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "0.00")
+            # verificar ajuste debito
+            ok = wslpg.AnalizarAjusteDebito()
+            self.assertTrue(ok)
+            self.assertEqual(wslpg.GetParametro("precio_operacion"), "0.000")
+            self.assertEqual(wslpg.GetParametro("total_peso_neto"), "0")
+            self.assertEqual(wslpg.TotalDeduccion, Decimal("110.50"))
+            self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-110.50"))
+            self.assertEqual(wslpg.GetParametro("importe_iva"), "0.00")
+            self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "0.00")
+            self.assertEqual(wslpg.GetParametro("deducciones", 0, "importe_iva"), "10.50")
+            self.assertEqual(wslpg.GetParametro("deducciones", 0, "importe_deduccion"), "110.50")
+        
+        finally:
+            # anulo el ajuste para evitar subsiguiente validación AFIP:
+            # 2105: No puede relacionar la liquidacion con el contrato, porque el contrato tiene un Ajuste realizado.
+            self.test_anular(wslpg.COE)
+            self.test_anular(coe)   # anulo también el COE ajustado
+                    
     def atest_ajuste_papel(self):
         # deshabilitado ya que el método esta "en estudio" por parte de AFIP
         wslpg = self.wslpg
