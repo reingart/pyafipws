@@ -264,39 +264,45 @@ class TestIssues(unittest.TestCase):
         # verificar respuesta general:
         self.assertIsInstance(wslpg.COE, basestring)
         self.assertEqual(len(wslpg.COE), len("330100013133"))
-        self.assertEqual(wslpg.Estado, "AC")
-        self.assertEqual(wslpg.Subtotal, Decimal("-734.10"))
-        self.assertEqual(wslpg.TotalIva105, Decimal("-77.61"))
-        self.assertEqual(wslpg.TotalIva21, Decimal("0"))
-        self.assertEqual(wslpg.TotalRetencionesGanancias, Decimal("0"))
-        self.assertEqual(wslpg.TotalRetencionesIVA, Decimal("-94.50"))
-        self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-716.68"))
-        self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("16.89"))
-        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-733.57"))
-        # verificar ajuste credito
-        ok = wslpg.AnalizarAjusteCredito()
-        self.assertTrue(ok)
-        self.assertEqual(wslpg.GetParametro("precio_operacion"), "1.900")
-        self.assertEqual(wslpg.GetParametro("total_peso_neto"), "1000")
-        self.assertEqual(wslpg.TotalDeduccion, Decimal("11.05"))
-        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2780.95"))
-        self.assertEqual(wslpg.GetParametro("importe_iva"), "293.16")
-        self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "3085.16")
-        self.assertEqual(wslpg.GetParametro("deducciones", 0, "importe_iva"), "1.05")
-        # verificar ajuste debito
-        ok = wslpg.AnalizarAjusteDebito()
-        self.assertTrue(ok)
-        self.assertEqual(wslpg.GetParametro("precio_operacion"), "2.090")
-        self.assertEqual(wslpg.GetParametro("total_peso_neto"), "500")
-        self.assertEqual(wslpg.TotalDeduccion, Decimal("5.52"))
-        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2047.38"))
-        self.assertEqual(wslpg.GetParametro("importe_iva"), "215.55")
-        self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "2268.45")
-        self.assertEqual(wslpg.GetParametro("retenciones", 0, "importe_retencion"), "10.50")
-        
-        # anulo el ajuste para que no fallen subsiguientes tests
-        #self.test_anular()
-
+        coe_ajustado = coe
+        coe = wslpg.COE
+        try:
+            self.assertEqual(wslpg.Estado, "AC")
+            self.assertEqual(wslpg.Subtotal, Decimal("-734.10"))
+            self.assertEqual(wslpg.TotalIva105, Decimal("-77.61"))
+            self.assertEqual(wslpg.TotalIva21, Decimal("0"))
+            self.assertEqual(wslpg.TotalRetencionesGanancias, Decimal("0"))
+            self.assertEqual(wslpg.TotalRetencionesIVA, Decimal("-94.50"))
+            self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-716.68"))
+            self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("16.89"))
+            self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-733.57"))
+            # verificar ajuste credito
+            ok = wslpg.AnalizarAjusteCredito()
+            self.assertTrue(ok)
+            self.assertEqual(wslpg.GetParametro("precio_operacion"), "1.900")
+            self.assertEqual(wslpg.GetParametro("total_peso_neto"), "1000")
+            self.assertEqual(wslpg.TotalDeduccion, Decimal("11.05"))
+            self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2780.95"))
+            self.assertEqual(wslpg.GetParametro("importe_iva"), "293.16")
+            self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "3085.16")
+            self.assertEqual(wslpg.GetParametro("deducciones", 0, "importe_iva"), "1.05")
+            # verificar ajuste debito
+            ok = wslpg.AnalizarAjusteDebito()
+            self.assertTrue(ok)
+            self.assertEqual(wslpg.GetParametro("precio_operacion"), "2.090")
+            self.assertEqual(wslpg.GetParametro("total_peso_neto"), "500")
+            self.assertEqual(wslpg.TotalDeduccion, Decimal("5.52"))
+            self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2047.38"))
+            self.assertEqual(wslpg.GetParametro("importe_iva"), "215.55")
+            self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "2268.45")
+            self.assertEqual(wslpg.GetParametro("retenciones", 0, "importe_retencion"), "10.50")
+            
+        finally:
+            # anulo el ajuste para evitar subsiguiente validación AFIP:
+            if coe:
+                self.test_anular(coe)
+            if coe_ajustado:
+                self.test_anular(coe_ajustado)   # anulo también la liq. orig.
         
     def test_ajuste_contrato(self, nro_contrato=26):
         "Prueba de ajuste por contrato de una liquidación de granos (WSLPGv1.4)"
