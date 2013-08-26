@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12c"
+__version__ = "1.12d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -186,6 +186,7 @@ CERTIFICADO = [
     ('reservado', 2, N),
     ('campania', 4, N),
     ('fecha_cierre', 10, A),
+    ('peso_neto_total_certificado', 8, N), # para ajuste unificado (WSLPGv1.4)
     ]
     
 RETENCION = [
@@ -561,8 +562,8 @@ class WSLPG:
                            peso_neto=None,
                            cod_localidad_procedencia=None,
                            cod_prov_procedencia=None,
-                           campania=None,
-                           fecha_cierre=None, **kwargs):
+                           campania=None, fecha_cierre=None, 
+                           peso_neto_total_certificado=None, **kwargs):
         "Agrego el certificado a la liquidación"
         
         self.liquidacion['certificados'].append(
@@ -574,6 +575,7 @@ class WSLPG:
                         codProvProcedencia=cod_prov_procedencia,
                         campania=campania,
                         fechaCierre=fecha_cierre,
+                        pesoNetoTotalCertificado=peso_neto_total_certificado,
                       )))
 
     @inicializar_y_capturar_excepciones
