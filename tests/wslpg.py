@@ -208,7 +208,8 @@ class TestIssues(unittest.TestCase):
                        cod_localidad_procedencia=3,
                        cod_prov_procedencia=1,
                        campania=1213,
-                       fecha_cierre='2013-04-15')
+                       fecha_cierre='2013-01-13',
+                       peso_neto_total_certificado=10000)
         # creo el ajuste de crédito (ver documentación AFIP)
         wslpg.CrearAjusteCredito(
                 diferencia_peso_neto=1000, diferencia_precio_operacion=100,
@@ -265,12 +266,12 @@ class TestIssues(unittest.TestCase):
         self.assertEqual(len(wslpg.COE), len("330100013133"))
         self.assertEqual(wslpg.Estado, "AC")
         self.assertEqual(wslpg.Subtotal, Decimal("-734.10"))
-        self.assertEqual(wslpg.TotalIva105, Decimal("0"))
+        self.assertEqual(wslpg.TotalIva105, Decimal("-77.61"))
         self.assertEqual(wslpg.TotalIva21, Decimal("0"))
         self.assertEqual(wslpg.TotalRetencionesGanancias, Decimal("0"))
         self.assertEqual(wslpg.TotalRetencionesIVA, Decimal("-94.50"))
-        self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-639.07"))
-        self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("94.50"))
+        self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-716.68"))
+        self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("16.89"))
         self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-733.57"))
         # verificar ajuste credito
         ok = wslpg.AnalizarAjusteCredito()
@@ -287,7 +288,7 @@ class TestIssues(unittest.TestCase):
         self.assertTrue(ok)
         self.assertEqual(wslpg.GetParametro("precio_operacion"), "2.090")
         self.assertEqual(wslpg.GetParametro("total_peso_neto"), "500")
-        self.assertEqual(wslpg.TotalDeduccion, Decimal("11.05"))
+        self.assertEqual(wslpg.TotalDeduccion, Decimal("5.52"))
         self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2047.38"))
         self.assertEqual(wslpg.GetParametro("importe_iva"), "215.55")
         self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "2268.45")
@@ -295,6 +296,7 @@ class TestIssues(unittest.TestCase):
         
         # anulo el ajuste para que no fallen subsiguientes tests
         #self.test_anular()
+
         
     def test_ajuste_contrato(self, nro_contrato=26):
         "Prueba de ajuste por contrato de una liquidación de granos (WSLPGv1.4)"
