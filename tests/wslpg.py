@@ -110,6 +110,76 @@ class TestIssues(unittest.TestCase):
         self.assertIsInstance(wslpg.COE, basestring)
         self.assertEqual(len(wslpg.COE), len("330100013142")) 
 
+    def test_liquidacion_contrato(self):
+        "Prueba de obtener COE variante con contrato / corredor (WSLPGv1.4)"
+        wslpg = self.wslpg
+        pto_emision = 99
+        ok = wslpg.ConsultarUltNroOrden(pto_emision)
+        self.assertTrue(ok)
+        nro_orden = wslpg.NroOrden + 1
+
+        # nro de contrato a utilizar:
+        nro_contrato = 26
+        
+        # probar todas las actividades en caso de que devuelva error AFIP:
+        #     1106: La actividad seleccionada no corresponde al comprador
+        actividades = (40, 41, 29, 33, 31, 30, 35, 44, 47, 46, 48, 49, 51, 50, 
+                       45, 59, 57, 52, 34, 28, 36, 55, 39, 37)        
+        
+        for actid in actividades:
+            ok = wslpg.CrearLiquidacion(
+                pto_emision=pto_emision,
+                nro_orden=nro_orden, 
+                nro_contrato=nro_contrato,
+                cuit_comprador=20400000000,
+                nro_act_comprador=actid, nro_ing_bruto_comprador=20400000000,
+                cod_tipo_operacion=1,
+                es_liquidacion_propia='N', es_canje='N',
+                cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
+                cod_grano=31, 
+                cuit_vendedor=23000000019, nro_ing_bruto_vendedor=23000000019,
+                actua_corredor="S", liquida_corredor="S", 
+                cuit_corredor=20267565393,
+                comision_corredor=1, nro_ing_bruto_corredor=20267565393,
+                fecha_precio_operacion="2013-02-07",
+                precio_ref_tn=2000,
+                cod_grado_ref="G1",
+                cod_grado_ent="FG",
+                factor_ent=98, val_grado_ent=1.02,
+                precio_flete_tn=10,
+                cont_proteico=20,
+                alic_iva_operacion=10.5,
+                campania_ppal=1213,
+                cod_localidad_procedencia=5544,
+                cod_prov_procedencia=12,
+                datos_adicionales="DATOS ADICIONALES",
+                peso_neto_sin_certificado=10000,
+                cod_prov_procedencia_sin_certificado=1,
+                cod_localidad_procedencia_sin_certificado=15124,
+                )        
+
+            wslpg.AgregarRetencion(
+                        codigo_concepto="RI",
+                        detalle_aclaratorio="DETALLE DE IVA",
+                        base_calculo=1000,
+                        alicuota=10.5,
+                    )
+            wslpg.AgregarRetencion(                        
+                        codigo_concepto="RG",
+                        detalle_aclaratorio="DETALLE DE GANANCIAS",
+                        base_calculo=100,
+                        alicuota=15,
+                    )
+            ok = wslpg.AutorizarLiquidacion()
+            if wslpg.COE:
+                #print "Actividad OK", actid
+                break                
+                
+        self.assertTrue(ok)
+        self.assertIsInstance(wslpg.COE, basestring)
+        self.assertEqual(len(wslpg.COE), len("330100013142")) 
+        self.assertEqual(wslpg.NroContrato, nro_contrato)
+
     def test_anular(self):
         "Prueba de anulación de una liquidación electrónica de granos"
         wslpg = self.wslpg
