@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12b"
+__version__ = "1.12c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -274,7 +274,7 @@ def inicializar_y_capturar_excepciones(func):
             self.Excepcion = self.Traceback = ""
             self.ErrMsg = self.ErrCode = ""
             self.Errores = []
-            self.Estado = self.Resultado = self.NroOrden = ''
+            self.Estado = self.Resultado = self.NroOrden = self.NroContrato = ''
             self.TotalDeduccion = ""
             self.TotalRetencion = ""
             self.TotalRetencionAfip = ""
@@ -470,6 +470,7 @@ class WSLPG:
                peso_neto_sin_certificado=None, val_grado_ent=None,
                cod_localidad_procedencia_sin_certificado=None,
                cod_prov_procedencia_sin_certificado=None,
+               nro_contrato=None,
                **kwargs
                ):
         "Inicializa internamente los datos de una liquidación para autorizar"
@@ -536,6 +537,7 @@ class WSLPG:
                             codProvProcedencia=cod_prov_procedencia,
                             datosAdicionales=datos_adicionales,
                             pesoNetoSinCertificado=peso_neto_sin_certificado,
+                            numeroContrato=nro_contrato,
                             certificados=[],
             )
         # para compatibilidad hacia atras, "copiar" los campos si no hay cert:
@@ -726,6 +728,7 @@ class WSLPG:
             self.COE = str(aut.get('coe', ''))
             self.COEAjustado = aut.get('coeAjustado')
             self.Estado = aut.get('estado', '')
+            self.NroContrato = aut.get('numeroContrato', '')
 
             # actualizo parámetros de salida:
             self.params_out['coe'] = self.COE
