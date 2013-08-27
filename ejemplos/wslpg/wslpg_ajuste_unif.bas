@@ -3,7 +3,7 @@ Attribute VB_Name = "Module1"
 ' más info en: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
 ' 2013 (C) Mariano Reingart <reingart@gmail.com>
 
-' Ejemplo simplificado para Ajuste Unificado
+' Ejemplo simplificado para Ajuste Unificado (WSLPGv1.4)
 ' ver wslpg.bas para ejemplo de liquidación general
 
 Sub Main()
@@ -172,6 +172,7 @@ Sub Main()
             Next
         End If
         
+        coe = WSLPG.coe
         Debug.Print "COE", WSLPG.coe
         Debug.Print "COEAjustado", WSLPG.COEAjustado
         Debug.Print "Subtotal", WSLPG.Subtotal
@@ -206,7 +207,10 @@ Sub Main()
         Debug.Print "importe iva", WSLPG.GetParametro("importe_iva")
         Debug.Print "primer importe_retencion", WSLPG.GetParametro("retenciones", 0, "importe_retencion")
         Debug.Print "primer importe_deduccion", WSLPG.GetParametro("deducciones", 0, "importe_deduccion")
-                
+        
+        ' anulo el ajuste para evitar subsiguiente validación AFIP:
+        ' 1909: El coe ya registra un ajuste activo del tipo seleccionado.
+        WSLPG.AnularLiquidacion (coe)
     Else
     
         MsgBox WSLPG.Traceback, vbExclamation, WSLPG.Excepcion
