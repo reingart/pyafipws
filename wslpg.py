@@ -1813,19 +1813,19 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
         if 'ajuste_debito' in dic:
             dic['ajuste_debito']['tipo_reg'] = 4
             archivo.write(escribir(dic['ajuste_debito'], AJUSTE))
-            for it in dic['ajuste_debito']['retenciones']:
+            for it in dic['ajuste_debito'].get('retenciones', []):
                 it['tipo_reg'] = 2
                 archivo.write(escribir(it, RETENCION))
-            for it in dic['ajuste_debito']['deducciones']:
+            for it in dic['ajuste_debito'].get('deducciones', []):
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
         if 'ajuste_credito' in dic:
             dic['ajuste_credito']['tipo_reg'] = 5
             archivo.write(escribir(dic['ajuste_credito'], AJUSTE))
-            for it in dic['ajuste_credito']['retenciones']:
+            for it in dic['ajuste_credito'].get('retenciones', []):
                 it['tipo_reg'] = 2
                 archivo.write(escribir(it, RETENCION))
-            for it in dic['ajuste_credito']['deducciones']:
+            for it in dic['ajuste_credito'].get('deducciones', []):
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
         if 'datos' in dic:
@@ -2268,7 +2268,9 @@ if __name__ == '__main__':
                        cod_localidad_procedencia=3,
                        cod_prov_procedencia=1,
                        campania=1213,
-                       fecha_cierre='2013-04-15')],
+                       fecha_cierre='2013-01-13',
+                       peso_neto_total_certificado=10000,
+                       )],
                     ajuste_credito=dict(
                         diferencia_peso_neto=1000, diferencia_precio_operacion=100,
                         cod_grado="G2", val_grado=1.0, factor=100,
@@ -2316,6 +2318,20 @@ if __name__ == '__main__':
                                alicuota=10.5, )],
                         ),
                     )
+                if '--contrato' in sys.argv:
+                    dic.update(
+                        {'nro_act_comprador': 40,
+                         'cod_grado_ent': 'G1',
+                         'cod_grano': 31,
+                         'cod_puerto': 14,
+                         'cuit_comprador': 20400000000,
+                         'cuit_corredor': 20267565393,
+                         'cuit_vendedor': 23000000019,
+                         'des_puerto_localidad': 'Desc Puerto',
+                         'nro_contrato': 26,
+                         'precio_flete_tn': 1000,
+                         'precio_ref_tn': 1000,
+                         'val_grado_ent': 1.01})
                 escribir_archivo(dic, ENTRADA)
             
             dic = leer_archivo(ENTRADA)
@@ -2328,13 +2344,24 @@ if __name__ == '__main__':
                 ok = wslpg.ConsultarUltNroOrden(dic['pto_emision'])
                 if ok:
                     dic['nro_orden'] = wslpg.NroOrden + 1
-                    
+            
+            if '--contrato' in sys.argv:
+                for k in ("nro_contrato", "nro_act_comprador", "cod_grano", 
+                          "cuit_vendedor", "cuit_comprador", "cuit_corredor", 
+                          "precio_ref_tn", "cod_grado_ent", "val_grado_ent", 
+                          "precio_flete_tn", "cod_puerto", 
+                          "des_puerto_localidad"):
+                    v = dic.get(k)
+                    if v:
+                        wslpg.SetParametro(k, v)
+                        
             wslpg.CrearAjusteBase(pto_emision=dic['pto_emision'], 
                               nro_orden=dic['nro_orden'], 
                               coe_ajustado=dic['coe_ajustado'])
             
             for cert in dic.get('certificados', []):
-                wslpg.AgregarCertificado(**cert)
+                if cert:
+                    wslpg.AgregarCertificado(**cert)
 
             liq = dic['ajuste_credito']
             wslpg.CrearAjusteCredito(**liq)
@@ -2353,7 +2380,10 @@ if __name__ == '__main__':
             if '--testing' in sys.argv:
                 wslpg.LoadTestXML("tests/wslpg_ajuste_unificado.xml")
 
-            ret = wslpg.AjustarLiquidacionUnificado()
+            if '--contrato' in sys.argv:
+                ret = wslpg.AjustarLiquidacionContrato()
+            else:
+                ret = wslpg.AjustarLiquidacionUnificado()
             
             if wslpg.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
