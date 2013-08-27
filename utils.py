@@ -245,6 +245,8 @@ def leer_dbf(formatos, conf_dbf):
     for nombre, formato, ld in formatos:
         filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
         if DEBUG: print "leyendo tabla", nombre, filename
+        if not os.path.exists(filename):
+            continue
         tabla = dbf.Table(filename)
         for reg in tabla:
             r = {}
@@ -255,7 +257,7 @@ def leer_dbf(formatos, conf_dbf):
                 #import pdb; pdb.set_trace()
                 clave_dbf = dar_nombre_campo_dbf(clave, claves)
                 claves.append(clave_dbf)
-                v = d[clave_dbf]
+                v = d.get(clave_dbf)
                 r[clave] = v
             if isinstance(ld, dict):
                 ld.update(r)
