@@ -32,10 +32,20 @@ Sub Main()
         MsgBox WSLPG.Traceback, vbCritical + vbExclamation, WSLPG.Excepcion
     End If
     
+    ' obtengo el siguiente número de liquidación
+    ok = WSLPG.ConsultarUltNroOrden(55)
+    If Not ok Then
+        Debug.Print WSLPG.Traceback
+        MsgBox WSLPG.Traceback, vbCritical + vbExclamation, WSLPG.Excepcion
+    ElseIf WSLPG.NroOrden <> "" Then
+        nro_orden = CLng(WSLPG.NroOrden) + 1
+    Else:
+        nro_orden = 1
+    End If
     
     ' creo el ajuste base y agrego los datos de certificado:
     pto_emision = 55
-    nro_orden = 5
+    nro_orden = nro_orden
     coe_ajustado = "330100013190"
     ok = WSLPG.CrearAjusteBase(pto_emision, nro_orden, coe_ajustado)
     
@@ -47,7 +57,8 @@ Sub Main()
     cod_prov_procedencia = 1
     campania = 1213
     fecha_cierre = "2013-04-15"
-    ok = WSLPG.AgregarCertificado(tipo_certificado_deposito, nro_certificado_deposito, peso_neto, cod_localidad_procedencia, cod_prov_procedencia, campania, fecha_cierre)
+    peso_neto_total_certificado = 1000
+    ok = WSLPG.AgregarCertificado(tipo_certificado_deposito, nro_certificado_deposito, peso_neto, cod_localidad_procedencia, cod_prov_procedencia, campania, fecha_cierre, peso_neto_total_certificado)
      
     ' creo el ajuste de crédito (ver documentación AFIP):
     
@@ -142,9 +153,9 @@ Sub Main()
 
     ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, alicuota)
     
-    ' Cargo respuesta de prueba según documentación de AFIP (Ejemplo 1)
+    ' Cargo respuesta de prueba anteriormente obtenida
     ' (descomentar para probar si el ws no esta operativo o no se dispone de datos válidos)
-     WSLPG.LoadTestXML ("wslpg_ajuste_unificado.xml")
+    '' WSLPG.LoadTestXML ("wslpg_ajuste_unificado.xml")
 
     ' autorizo el ajuste (llamo al webservice con los datos cargados):
     
