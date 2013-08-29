@@ -224,8 +224,9 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                     clave_dbf = dar_nombre_campo_dbf(clave, claves)
                     claves.append(clave_dbf)
                     r[clave_dbf] = v
-            if agrega:
-                print "Agregando ", r
+            # agregar si lo solicitaron o si la tabla no tiene registros:
+            if agrega or (tabla.eof() and tabla.bof()):
+                print "Agregando !!!", r
                 registro = tabla.append(r)
             else:
                 print "Actualizando ", r
@@ -235,6 +236,10 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                         r[k] = v
                 print "Actualizando ", r
                 reg.write_record(**r)
+                # mover de registro para no actualizar siempre el primero:
+                if not tabla.eof() and len(l) > 1:
+                    print "Moviendo al próximo registro ", tabla.record_number
+                    tabla.next()
         tabla.close()
 
 
