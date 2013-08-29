@@ -221,6 +221,8 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                             v = v.decode("ascii", "replace").encode("ascii", "replace")
                         if not isinstance(v, basestring):
                             v = str(v)
+                        if len(v) > longitud:
+                            v = v[:longitud]  # recorto el string para que quepa
                     clave_dbf = dar_nombre_campo_dbf(clave, claves)
                     claves.append(clave_dbf)
                     r[clave_dbf] = v
