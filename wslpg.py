@@ -1855,7 +1855,7 @@ def leer_archivo(nombre_archivo):
         leer_dbf(formatos, conf_dbf)
     else:
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
-               'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], }
+               'datos': [], 'ajuste_credito': {}, 'ajuste_debito': {}, }
         for linea in archivo:
             if str(linea[0])=='0':
                 d = leer(linea, ENCABEZADO)
@@ -1878,11 +1878,11 @@ def leer_archivo(nombre_archivo):
                 liq['deducciones'].append(d)
             elif str(linea[0])=='4':
                 liq = leer(linea, AJUSTE)
-                liq.update({'retenciones': [], 'deducciones': []})
+                liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
                 dic['ajuste_debito'] = liq
             elif str(linea[0])=='5':
                 liq = leer(linea, AJUSTE)
-                liq.update({'retenciones': [], 'deducciones': []})
+                liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
                 dic['ajuste_credito'] = liq
             elif str(linea[0])=='9':
                 liq['datos'].append(leer(linea, DATO))
@@ -2564,7 +2564,7 @@ if __name__ == '__main__':
                 wslpg.AgregarDatoPDF(k, v)
 
             # datos adicionales (tipo de registro 9):
-            for dato in liq['datos']:
+            for dato in liq.get('datos', []):
                 wslpg.AgregarDatoPDF(dato['campo'], dato['valor'])
                 if DEBUG: print "DATO", dato['campo'], dato['valor']
 
