@@ -538,7 +538,7 @@ class WSLPG:
                             codProvProcedencia=cod_prov_procedencia,
                             datosAdicionales=datos_adicionales,
                             pesoNetoSinCertificado=peso_neto_sin_certificado,
-                            numeroContrato=nro_contrato,
+                            numeroContrato=nro_contrato or None,
                             certificados=[],
             )
         # para compatibilidad hacia atras, "copiar" los campos si no hay cert:
@@ -2068,6 +2068,7 @@ if __name__ == '__main__':
                     campania_ppal=1213,
                     cod_localidad_procedencia=5544,
                     cod_prov_procedencia=12,
+                    nro_contrato=0,
                     datos_adicionales=("DATOS ADICIONALES 1234 " * 17) + ".",
                     ##peso_neto_sin_certificado=2000,
                     precio_operacion=None,  # para probar ajustar
