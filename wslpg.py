@@ -565,7 +565,6 @@ class WSLPG:
                            campania=None, fecha_cierre=None, 
                            peso_neto_total_certificado=None, **kwargs):
         "Agrego el certificado a la liquidación"
-        
         self.liquidacion['certificados'].append(
                     dict(certificado=dict(
                         tipoCertificadoDeposito=tipo_certificado_deposito,
@@ -808,8 +807,8 @@ class WSLPG:
                precio_flete_tn=None,                # contrato
                cod_puerto=None,                     # contrato
                des_puerto_localidad=None,           # contrato
-               cod_provincia=None,                  # papel
-               cod_localidad=None,                  # papel
+               cod_provincia=None,                  # unificado, contrato, papel
+               cod_localidad=None,                  # unificado, contrato, papel
                comision_corredor=None,              # papel
                **kwargs
                ):
@@ -817,6 +816,7 @@ class WSLPG:
 
         # ajusto nombre de campos para compatibilidad hacia atrás (encabezado):
         if 'cod_localidad_procedencia' in kwargs:
+            import pdb; pdb.set_trace()
             cod_localidad = kwargs['cod_localidad_procedencia']
         if 'cod_provincia_procedencia' in kwargs:
             cod_provincia = kwargs['cod_provincia_procedencia']
@@ -868,7 +868,7 @@ class WSLPG:
                             'valGradoEnt': val_grado_ent,
                             'precioFleteTn': precio_flete_tn,
                             'codLocalidad': cod_localidad,
-                            'codProvincia': cod_provincia,
+                            'codProv': cod_provincia,
                             'certificados': [],
                             }
                         }
@@ -2262,6 +2262,7 @@ if __name__ == '__main__':
                 # genero una liquidación de ejemplo:
                 dic = dict(
                     pto_emision=55, nro_orden=0, coe_ajustado='330100013184',
+                    cod_localidad_procedencia=5544, cod_prov_procedencia=12,
                     certificados=[dict(
                        tipo_certificado_deposito=5,
                        nro_certificado_deposito=555501200729,
@@ -2358,7 +2359,10 @@ if __name__ == '__main__':
                         
             wslpg.CrearAjusteBase(pto_emision=dic['pto_emision'], 
                               nro_orden=dic['nro_orden'], 
-                              coe_ajustado=dic['coe_ajustado'])
+                              coe_ajustado=dic['coe_ajustado'],
+                              cod_localidad=dic['cod_localidad_procedencia'],
+                              cod_provincia=dic['cod_prov_procedencia'],
+                              )
             
             for cert in dic.get('certificados', []):
                 if cert:
