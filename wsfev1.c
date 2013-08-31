@@ -30,13 +30,13 @@ EXPORT bool STDCALL WSFEv1_Conectar(void *object, char *cache, char *wsdl, char 
     if (object != NULL) {
 
         pValue = PyObject_CallMethod((PyObject *)object, "Conectar", "(sss)", cache, wsdl, proxy);
-        fprintf(stderr, "conectar call!!!\n");
+        //fprintf(stderr, "conectar call!!!\n");
         if (pValue != NULL) {
                 ok = PyObject_IsTrue(pValue);
                 Py_DECREF(pValue);
         } else {
             PyErr_Print();
-            fprintf(stderr,"Call failed\n");
+            //fprintf(stderr,"Call failed\n");
         }
     }
     return ok;
@@ -51,13 +51,13 @@ EXPORT bool STDCALL WSFEv1_Dummy(void *object) {
     if (object != NULL) {
 
         pValue = PyObject_CallMethod((PyObject *)object, "Dummy", "");
-        fprintf(stderr, "dummy call!!!\n");
+        //fprintf(stderr, "dummy call!!!\n");
         if (pValue != NULL) {
                 ok = PyObject_IsTrue(pValue);
                 Py_DECREF(pValue);
         } else {
             PyErr_Print();
-            fprintf(stderr,"Call failed\n");
+            //fprintf(stderr,"Call failed\n");
         }
     }
     return ok;
@@ -72,13 +72,13 @@ EXPORT bool STDCALL WSFEv1_SetTicketAcceso(void *object, char *ta) {
     if (object != NULL) {
 
         pValue = PyObject_CallMethod((PyObject *)object, "SetTicketAcceso", "s", ta);
-        fprintf(stderr, "set TA call!!!\n");
+        //fprintf(stderr, "set TA call!!!\n");
         if (pValue != NULL) {
                 ok = PyObject_IsTrue(pValue);
                 Py_DECREF(pValue);
         } else {
             PyErr_Print();
-            fprintf(stderr,"Call failed\n");
+            //fprintf(stderr,"Call failed\n");
         }
     }
     return ok;
@@ -98,7 +98,7 @@ EXPORT long STDCALL WSFEv1_CompUltimoAutorizado(void *object, char *tipo_cbte, c
                 Py_DECREF(pValue);
         } else {
             PyErr_Print();
-            fprintf(stderr,"Call failed\n");
+            //fprintf(stderr,"Call failed\n");
         }
     }
     return nro;

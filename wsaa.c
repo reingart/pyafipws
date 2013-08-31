@@ -93,7 +93,7 @@ EXPORT BSTR STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
     pName = PyString_FromString("wsaa");
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
-    fprintf(stderr, "imported!\n");
+    //fprintf(stderr, "imported!\n");
 
     if (pModule != NULL) {
         
@@ -103,7 +103,7 @@ EXPORT BSTR STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
         if (!pValue) {
             Py_DECREF(pArgs);
             Py_DECREF(pModule);
-            fprintf(stderr, "Cannot convert argument\n");
+            //fprintf(stderr, "Cannot convert argument\n");
             return NULL;
         }
         PyTuple_SetItem(pArgs, 0, pValue);
@@ -111,7 +111,7 @@ EXPORT BSTR STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
         if (!pValue) {
             Py_DECREF(pArgs);
             Py_DECREF(pModule);
-            fprintf(stderr, "Cannot convert argument\n");
+            //fprintf(stderr, "Cannot convert argument\n");
             return NULL;
         }
         PyTuple_SetItem(pArgs, 1, pValue);
@@ -119,7 +119,7 @@ EXPORT BSTR STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
         if (!pValue) {
             Py_DECREF(pArgs);
             Py_DECREF(pModule);
-            fprintf(stderr, "Cannot convert argument\n");
+            //fprintf(stderr, "Cannot convert argument\n");
             return NULL;
         }
         PyTuple_SetItem(pArgs, 2, pValue);
@@ -127,9 +127,9 @@ EXPORT BSTR STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
         pFunc = PyObject_GetAttrString(pModule, "sign_tra");
 
         if (pFunc && PyCallable_Check(pFunc)) {
-            fprintf(stderr, "pfunc!!!\n");
+            //fprintf(stderr, "pfunc!!!\n");
             pValue = PyObject_CallObject(pFunc, pArgs);
-            fprintf(stderr, "call!!!\n");
+            //fprintf(stderr, "call!!!\n");
             Py_DECREF(pArgs);
             if (pValue != NULL) {
                 ret = cstr(pValue);
@@ -137,20 +137,20 @@ EXPORT BSTR STDCALL WSAA_SignTRA(char *tra, char *cert, char *privatekey) {
             }
             else {
                 PyErr_Print();
-                fprintf(stderr,"Call failed\n");
+                //fprintf(stderr,"Call failed\n");
             }
         }
         else {
             if (PyErr_Occurred())
                 PyErr_Print();
-            fprintf(stderr, "Cannot find function");
+            //fprintf(stderr, "Cannot find function");
         }
         Py_XDECREF(pFunc);
         Py_DECREF(pModule);
     }
     else {
         PyErr_Print();
-        fprintf(stderr, "Failed to load module\n");
+        //fprintf(stderr, "Failed to load module\n");
     }
     return ret;
 }
@@ -168,7 +168,7 @@ EXPORT BSTR STDCALL WSAA_LoginCMS(char *cms) {
     pName = PyString_FromString("wsaa");
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
-    fprintf(stderr, "imported!\n");
+    //fprintf(stderr, "imported!\n");
 
     if (pModule != NULL) {
         
@@ -178,7 +178,7 @@ EXPORT BSTR STDCALL WSAA_LoginCMS(char *cms) {
         if (!pValue) {
             Py_DECREF(pArgs);
             Py_DECREF(pModule);
-            fprintf(stderr, "Cannot convert argument\n");
+            //fprintf(stderr, "Cannot convert argument\n");
             return NULL;
         }
         PyTuple_SetItem(pArgs, 0, pValue);
@@ -186,9 +186,9 @@ EXPORT BSTR STDCALL WSAA_LoginCMS(char *cms) {
         pFunc = PyObject_GetAttrString(pModule, "call_wsaa");
 
         if (pFunc && PyCallable_Check(pFunc)) {
-            fprintf(stderr, "pfunc!!!\n");
+            //fprintf(stderr, "pfunc!!!\n");
             pValue = PyObject_CallObject(pFunc, pArgs);
-            fprintf(stderr, "call!!!\n");
+            //fprintf(stderr, "call!!!\n");
             Py_DECREF(pArgs);
             if (pValue != NULL) {
                 ret = cstr(pValue);
@@ -196,20 +196,20 @@ EXPORT BSTR STDCALL WSAA_LoginCMS(char *cms) {
             }
             else {
                 PyErr_Print();
-                fprintf(stderr,"Call failed\n");
+                //fprintf(stderr,"Call failed\n");
             }
         }
         else {
             if (PyErr_Occurred())
                 PyErr_Print();
-            fprintf(stderr, "Cannot find function");
+            //fprintf(stderr, "Cannot find function");
         }
         Py_XDECREF(pFunc);
         Py_DECREF(pModule);
     }
     else {
         PyErr_Print();
-        fprintf(stderr, "Failed to load module\n");
+        //fprintf(stderr, "Failed to load module\n");
     }
     return ret;
 }

@@ -34,15 +34,22 @@ CONSTRUCTOR static void initialize(void) {
         unsigned long ok;
         PyObject *pSysPath, *pName;
        
+        MessageBox(NULL, "Py_Initialize...", "LibPyAfipWs Initialize", 0);
         Py_Initialize();
+        PyRun_SimpleString("import sys, os");
+        PyRun_SimpleString("sys.stdout = open('stdout.txt', 'w')");
+        PyRun_SimpleString("sys.stderr = open('stderr.txt', 'w')");
         /* on windows, add the base path of the .DLL */
         ok = GetModuleFileName(dllhandle, buf, sizeof(buf));
+        MessageBox(NULL, buf, "LibPyAfipWs Initialize (module name)", 0);
         ok = PathRemoveFileSpec(buf);
+        MessageBox(NULL, buf, "LibPyAfipWs Initialize (module path)", 0);
         pSysPath = PySys_GetObject("path");
         pName = PyString_FromString(buf);
         if (PyList_Insert(pSysPath, 0, pName))
             MessageBox(NULL, "PyList_Insert", "LibPyAfipWs Initialize", 0);
         Py_XDECREF(pName);   /* note that pSysPath is a Borrowed reference! */
+        MessageBox(NULL, "done!", "LibPyAfipWs Initialize", 0);
     #else
         Py_Initialize();
         puts(Py_GetPath());
@@ -56,7 +63,9 @@ CONSTRUCTOR static void initialize(void) {
 
 /* Tear down the python interpreter */
 DESTRUCTOR static void finalize(void) {
+    MessageBox(NULL, "Py_Finalize...", "LibPyAfipWs Finalize", 0);
     Py_Finalize();
+    MessageBox(NULL, "done!", "LibPyAfipWs Finalize", 0);
 }
 
 #ifdef WIN32
@@ -84,6 +93,7 @@ BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved) {
 EXPORT BSTR STDCALL test() {
   PyObject *pret, *pdict;
   BSTR ret = NULL;
+  MessageBox(NULL, "iniciando pruebas...", "LibPyAfipWs Test!", 0);
   pdict = PyDict_New();
   PyDict_SetItemString(pdict, "__builtins__", PyEval_GetBuiltins()); 
   pret = PyRun_String("from time import time,ctime", Py_single_input, pdict, pdict);
@@ -198,14 +208,14 @@ EXPORT void * STDCALL PYAFIPWS_CreateObject(char *module, char *name) {
     pName = PyString_FromString(module);
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
-    fprintf(stderr, "imported!\n");
+    //fprintf(stderr, "imported!\n");
 
     if (pModule != NULL) {
         pClass = PyObject_GetAttrString(pModule, name);
         if (pClass && PyCallable_Check(pClass)) {
-            fprintf(stderr, "pfunc!!!\n");
+            //fprintf(stderr, "pfunc!!!\n");
             pObject = PyObject_CallObject(pClass, NULL);
-            fprintf(stderr, "call!!!\n");
+            //fprintf(stderr, "call!!!\n");
             Py_XDECREF(pClass);
         }
         Py_DECREF(pModule);
@@ -234,7 +244,7 @@ EXPORT BSTR STDCALL PYAFIPWS_Get(void * object, char * name) {
         Py_DECREF(pValue);
     } else {
         PyErr_Print();
-        fprintf(stderr,"GetAttr to %s failed\n", name);
+        //fprintf(stderr,"GetAttr to %s failed\n", name);
     }
 
     return ret;    
@@ -254,7 +264,7 @@ EXPORT bool STDCALL PYAFIPWS_Set(void * object, char * name, char * value) {
     }
     if (ret == -1) {
         PyErr_Print();
-        fprintf(stderr,"GetAttr to %s failed\n", name);
+        //fprintf(stderr,"GetAttr to %s failed\n", name);
         ok = false;
     } else {
         ok = true;
