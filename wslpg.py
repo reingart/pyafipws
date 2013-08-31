@@ -1918,6 +1918,10 @@ def leer_archivo(nombre_archivo):
             else:
                 print "Tipo de registro incorrecto:", linea[0]
     archivo.close()
+                
+    if not 'nro_orden' in dic:
+        raise RuntimeError("Archivo de entrada invalido, revise campos y lineas en blanco")
+
     return dic
     
 
@@ -2196,9 +2200,6 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA)
             else:
                 dic = leer_archivo(ENTRADA)
-
-            if not 'nro_orden' in dic:
-                raise RuntimeError("Archivo de entrada invalido, revise campos y lineas en blanco")
                 
             if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
                 # consulto el último número de orden emitido:
@@ -2366,10 +2367,7 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA)
             
             dic = leer_archivo(ENTRADA)
-            
-            if not 'nro_orden' in dic:
-                raise RuntimeError("Archivo de entrada invalido, revise campos y lineas en blanco")
-                
+                            
             if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
                 # consulto el último número de orden emitido:
                 ok = wslpg.ConsultarUltNroOrden(dic['pto_emision'])
@@ -2456,9 +2454,6 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA)
             
             dic = leer_archivo(ENTRADA)
-            
-            if not 'coe' in dic:
-                raise RuntimeError("Archivo de entrada invalido, revise campos y lineas en blanco")
 
             wslpg.AsociarLiquidacionAContrato(**dic)
             print "Errores:", wslpg.Errores
