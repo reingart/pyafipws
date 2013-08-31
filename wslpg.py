@@ -1083,7 +1083,7 @@ class WSLPG:
                                           cuit_vendedor=None,
                                           cuit_corredor=None,
                                           cod_grano=None,
-                                   ):
+                                    **kwargs):
         "Asociar una Liquidación a un contrato"
         
         ret = self.client.asociarLiquidacionAContrato(
@@ -2445,13 +2445,22 @@ if __name__ == '__main__':
                 pprint.pprint(dic)
         
         if '--asociar' in sys.argv:
-            ##print wslpg.client.help("asociarLiquidacionAContrato")
-            wslpg.AsociarLiquidacionAContrato(coe="330100004664",
-                                              nro_contrato=25, 
-                                              cuit_comprador="20400000000", 
-                                              cuit_vendedor="23000000019",
-                                              cuit_corredor="20267565393",
-                                              cod_grano=31)
+            print "Asociando..."
+            if '--prueba' in sys.argv:
+                # genero una liquidación de ejemplo:
+                dic = dict(coe="330100004664", nro_contrato=26, cod_grano=31,
+                           cuit_comprador="20400000000", 
+                           cuit_vendedor="23000000019",
+                           cuit_corredor="20267565393",
+                           )
+                escribir_archivo(dic, ENTRADA)
+            
+            dic = leer_archivo(ENTRADA)
+            
+            if not 'coe' in dic:
+                raise RuntimeError("Archivo de entrada invalido, revise campos y lineas en blanco")
+
+            wslpg.AsociarLiquidacionAContrato(**dic)
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
