@@ -434,6 +434,17 @@ class TestIssues(unittest.TestCase):
 
         ret = wslpg.AjustarLiquidacionUnificadoPapel()
         
+    def test_asociaciar_coe_contrato(self):
+        wslpg = self.wslpg
+        wslpg.AsociarLiquidacionAContrato(coe="330100004664",
+                                          nro_contrato=26, 
+                                          cuit_comprador="20400000000", 
+                                          cuit_vendedor="23000000019",
+                                          cuit_corredor="20267565393",
+                                          cod_grano=31)
+        self.assertEqual(wslpg.Errores, [])
+        self.assertEqual(wslpg.COE, "330100004664")
+        self.assertEqual(wslpg.Estado, "AC")
 
 if __name__ == '__main__':
     unittest.main()
