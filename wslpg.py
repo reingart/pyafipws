@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12e"
+__version__ = "1.13a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -336,6 +336,7 @@ class WSLPG:
                         'AjustarLiquidacionUnificadoPapel',
                         'AjustarLiquidacionContrato',
                         'AnalizarAjusteDebito', 'AnalizarAjusteCredito',
+                        'AsociarLiquidacionAContrato',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
                         'ConsultarGradoEntregadoXTipoGrano',
@@ -816,7 +817,6 @@ class WSLPG:
 
         # ajusto nombre de campos para compatibilidad hacia atrás (encabezado):
         if 'cod_localidad_procedencia' in kwargs:
-            import pdb; pdb.set_trace()
             cod_localidad = kwargs['cod_localidad_procedencia']
         if 'cod_provincia_procedencia' in kwargs:
             cod_provincia = kwargs['cod_provincia_procedencia']
@@ -1077,6 +1077,35 @@ class WSLPG:
         "Método para analizar la respuesta de AFIP para Ajuste Credito"
         self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=self.__ajuste_credito)
 
+    @inicializar_y_capturar_excepciones
+    def AsociarLiquidacionAContrato(self, coe=None, nro_contrato=None, 
+                                          cuit_comprador=None, 
+                                          cuit_vendedor=None,
+                                          cuit_corredor=None,
+                                          cod_grano=None,
+                                   ):
+        "Asociar una Liquidación a un contrato"
+        
+        ret = self.client.asociarLiquidacionAContrato(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        nroContrato=nro_contrato,
+                        cuitComprador=cuit_comprador,
+                        cuitVendedor=cuit_vendedor,
+                        cuitCorredor=cuit_corredor,
+                        codGrano=cod_grano,
+                        )
+        ret = ret['liquidacion']
+        self.__analizar_errores(ret)
+        if 'liquidacion' in ret:
+            # analizo la respusta
+            liq = ret['liquidacion']
+            aut = ret['autorizacion']
+            self.AnalizarLiquidacion(aut, liq)
+        
+    
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None):
         "Consulta una liquidación por No de orden"
@@ -2414,6 +2443,18 @@ if __name__ == '__main__':
 
             if DEBUG: 
                 pprint.pprint(dic)
+        
+        if '--asociar' in sys.argv:
+            ##print wslpg.client.help("asociarLiquidacionAContrato")
+            wslpg.AsociarLiquidacionAContrato(coe="330100004664",
+                                              nro_contrato=25, 
+                                              cuit_comprador="20400000000", 
+                                              cuit_vendedor="23000000019",
+                                              cuit_corredor="20267565393",
+                                              cod_grano=31)
+            print "Errores:", wslpg.Errores
+            print "COE", wslpg.COE
+            print "Estado", wslpg.Estado
             
         if '--anular' in sys.argv:
             ##print wslpg.client.help("anularLiquidacion")
