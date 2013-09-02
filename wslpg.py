@@ -2486,6 +2486,9 @@ if __name__ == '__main__':
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
+            # actualizo el archivo de salida con los datos devueltos
+            dic.update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
             
         if '--anular' in sys.argv:
             ##print wslpg.client.help("anularLiquidacion")
@@ -2549,7 +2552,10 @@ if __name__ == '__main__':
                 print "COE", wslpg.COE
                 wslpg.LeerDatosLiquidacion()
                 ##print "Estado", wslpg.Estado
-            
+                # actualizo el archivo de salida con los datos devueltos
+                dic['coe'] = wslpg.COE
+                escribir_archivo(dic, SALIDA, agrega=True)
+                
         if '--ult' in sys.argv:
             try:
                 pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
