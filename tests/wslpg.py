@@ -201,7 +201,10 @@ class TestIssues(unittest.TestCase):
         # creo el ajuste base y agrego los datos de certificado:
         wslpg.CrearAjusteBase(pto_emision=pto_emision, 
                               nro_orden=nro_orden, 
-                              coe_ajustado=coe)
+                              coe_ajustado=coe,
+                              cod_provincia=1,
+                              cod_localidad=5,
+                              )
         wslpg.AgregarCertificado(tipo_certificado_deposito=5,
                        nro_certificado_deposito=555501200729,
                        peso_neto=10000,
@@ -304,20 +307,20 @@ class TestIssues(unittest.TestCase):
             if coe_ajustado:
                 self.test_anular(coe_ajustado)   # anulo también la liq. orig.
         
-    def test_ajuste_contrato(self, nro_contrato=26):
+    def test_ajuste_contrato(self, nro_contrato=27):
         "Prueba de ajuste por contrato de una liquidación de granos (WSLPGv1.4)"
         wslpg = self.wslpg        
         # solicito una liquidación para tener el COE autorizado a ajustar:
         self.test_liquidacion_contrato(nro_contrato)
-        coe = wslpg.COE
+        coe_ajustado = wslpg.COE
         # solicito el último nro de orden para la nueva liquidación de ajuste:
         pto_emision = 55
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
         self.assertTrue(ok)
         nro_orden = wslpg.NroOrden + 1
         wslpg.CrearAjusteBase(pto_emision=55, nro_orden=nro_orden, 
-                              nro_contrato=26,
-                              coe_ajustado=coe,
+                              nro_contrato=nro_contrato,
+                              coe_ajustado=coe_ajustado,
                               nro_act_comprador=40, 
                               cod_grano=31,
                               cuit_vendedor=23000000019,
@@ -329,6 +332,8 @@ class TestIssues(unittest.TestCase):
                               precio_flete_tn=1000,
                               cod_puerto=14,
                               des_puerto_localidad="Desc Puerto",
+                              cod_provincia=1,
+                              cod_localidad=5,
                               )
         wslpg.CrearAjusteCredito(
                 concepto_importe_iva_0='Ajuste IVA al 0%',
@@ -348,6 +353,7 @@ class TestIssues(unittest.TestCase):
         ok = wslpg.AjustarLiquidacionContrato()
         self.assertTrue(ok)
         # verificar respuesta general:
+        coe = wslpg.COE
         self.assertIsInstance(wslpg.COE, basestring)
         self.assertEqual(len(wslpg.COE), len("330100013133"))
         try:
@@ -376,25 +382,28 @@ class TestIssues(unittest.TestCase):
             self.assertEqual(wslpg.GetParametro("total_peso_neto"), "0")
             self.assertEqual(wslpg.TotalDeduccion, Decimal("0.000"))
             self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("0.000"))
-            self.assertEqual(wslpg.GetParametro("importe_iva"), "0.00")
-            self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "0.00")
+            self.assertEqual(float(wslpg.GetParametro("importe_iva")), 0.00)
+            self.assertEqual(float(wslpg.GetParametro("operacion_con_iva")), 0.00)
             # verificar ajuste debito
             ok = wslpg.AnalizarAjusteDebito()
             self.assertTrue(ok)
-            self.assertEqual(wslpg.GetParametro("precio_operacion"), "0.000")
-            self.assertEqual(wslpg.GetParametro("total_peso_neto"), "0")
+            self.assertEqual(float(wslpg.GetParametro("precio_operacion")), 0.00)
+            self.assertEqual(float(wslpg.GetParametro("total_peso_neto")), 0)
             self.assertEqual(wslpg.TotalDeduccion, Decimal("110.50"))
             self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-110.50"))
-            self.assertEqual(wslpg.GetParametro("importe_iva"), "0.00")
-            self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "0.00")
-            self.assertEqual(wslpg.GetParametro("deducciones", 0, "importe_iva"), "10.50")
-            self.assertEqual(wslpg.GetParametro("deducciones", 0, "importe_deduccion"), "110.50")
+            self.assertEqual(float(wslpg.GetParametro("importe_iva")), 0.00)
+            self.assertEqual(float(wslpg.GetParametro("operacion_con_iva")), 0.00)
+            self.assertEqual(float(wslpg.GetParametro("deducciones", 0, "importe_iva")), 10.50)
+            self.assertEqual(float(wslpg.GetParametro("deducciones", 0, "importe_deduccion")), 110.50)
         
         finally:
             # anulo el ajuste para evitar subsiguiente validación AFIP:
             # 2105: No puede relacionar la liquidacion con el contrato, porque el contrato tiene un Ajuste realizado.
-            self.test_anular(wslpg.COE)
-            self.test_anular(coe)   # anulo también el COE ajustado
+            # 2106: No puede ajustar el contrato, porque tiene liquidaciones relacionadas con ajuste.
+            # anular primero el ajuste para evitar la validación de AFIP:
+            # 2108: No puede anular la liquidación porque está relacionada a un contrato con ajuste vigente.
+            self.test_anular(coe)
+            self.test_anular(coe_ajustado)   # anulo también el COE ajustado
                     
     def atest_ajuste_papel(self):
         # deshabilitado ya que el método esta "en estudio" por parte de AFIP
