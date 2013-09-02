@@ -336,7 +336,7 @@ class WSLPG:
                         'AjustarLiquidacionUnificadoPapel',
                         'AjustarLiquidacionContrato',
                         'AnalizarAjusteDebito', 'AnalizarAjusteCredito',
-                        'AsociarLiquidacionAContrato',
+                        'AsociarLiquidacionAContrato', 'ConsultarAjuste',
                         'ConsultarLiquidacionesPorContrato', 
                         'LeerDatosLiquidacion',
                         'ConsultarCampanias',
@@ -1158,6 +1158,32 @@ class WSLPG:
             liq = ret['liquidacion']
             self.AnalizarLiquidacion(aut, liq)
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarAjuste(self, pto_emision=None, nro_orden=None, nro_contrato=None):
+        "Consulta una liquidación por No de orden"
+        if nro_contrato:
+            ret = self.client.ajustePorContratoConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        nroContrato=nro_contrato,
+                        )
+            ret = ret['ajusteContratoReturn']
+        else:
+            ret = self.client.ajusteXNroOrdenConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        ptoEmision=pto_emision,
+                        nroOrden=nro_orden,
+                        )
+            ret = ret['ajusteXNroOrdenConsReturn']
+        self.__analizar_errores(ret)
+        import pdb;pdb.set_trace()
+        if 'ajusteUnificado' in ret:
+            aut = ret['ajusteUnificado']
+            self.AnalizarAjuste(aut)
+            
     @inicializar_y_capturar_excepciones
     def ConsultarUltNroOrden(self, pto_emision=1):
         "Consulta el último No de orden registrado"
@@ -2532,6 +2558,15 @@ if __name__ == '__main__':
 
             if DEBUG: 
                 pprint.pprint(wslpg.params_out)
+
+        if '--consultar_ajuste' in sys.argv:
+            pto_emision = 55
+            nro_orden = 75
+            nro_contrato = None
+            wslpg.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
+            print "COE", wslpg.COE
+            print "Estado", wslpg.Estado
+            print "Errores:", wslpg.Errores
 
         if '--consultar_por_contrato' in sys.argv:
             print "Consultando liquidaciones por contrato...",
