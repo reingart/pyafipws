@@ -1160,7 +1160,7 @@ class WSLPG:
 
     @inicializar_y_capturar_excepciones
     def ConsultarAjuste(self, pto_emision=None, nro_orden=None, nro_contrato=None):
-        "Consulta una liquidación por No de orden"
+        "Consulta un ajuste de liquidación por No de orden o numero de contrato"
         if nro_contrato:
             ret = self.client.ajustePorContratoConsultar(
                         auth={
@@ -1179,7 +1179,6 @@ class WSLPG:
                         )
             ret = ret['ajusteXNroOrdenConsReturn']
         self.__analizar_errores(ret)
-        import pdb;pdb.set_trace()
         if 'ajusteUnificado' in ret:
             aut = ret['ajusteUnificado']
             self.AnalizarAjuste(aut)
@@ -2560,14 +2559,29 @@ if __name__ == '__main__':
                 pprint.pprint(wslpg.params_out)
 
         if '--consultar_ajuste' in sys.argv:
-            pto_emision = 55
-            nro_orden = 75
+            pto_emision = None
+            nro_orden = 0
             nro_contrato = None
+            try:
+                pto_emision = sys.argv[sys.argv.index("--consultar_ajuste") + 1]
+                nro_orden = sys.argv[sys.argv.index("--consultar_ajuste") + 2]
+                nro_contrato = sys.argv[sys.argv.index("--consultar_ajuste") + 3]
+            except IndexError:
+                pass
             wslpg.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
-
+            # actualizo el archivo de salida con los datos devueltos
+            dic = wslpg.params_out            
+            ok = wslpg.AnalizarAjusteCredito()
+            dic['ajuste_credito'] = wslpg.params_out
+            ok = wslpg.AnalizarAjusteDebito()
+            dic['ajuste_debito'] = wslpg.params_out
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
+            if DEBUG: 
+                pprint.pprint(dic)
+                
         if '--consultar_por_contrato' in sys.argv:
             print "Consultando liquidaciones por contrato...",
             if '--prueba' in sys.argv:
