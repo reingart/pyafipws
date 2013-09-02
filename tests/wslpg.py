@@ -471,6 +471,30 @@ class TestIssues(unittest.TestCase):
                 self.assertEqual(wslpg.Errores[0], "2100: El contrato ingresado no se encuentra registrado.")
                 pass
 
+    def test_consultar_liquidaciones_por_contrato(self, nro_contrato=26):
+        wslpg = self.wslpg
+        # obtener las liquidaciones relacionadas al contrato:
+        wslpg.ConsultarLiquidacionesPorContrato(
+                                          nro_contrato=nro_contrato, 
+                                          cuit_comprador="20400000000", 
+                                          cuit_vendedor="23000000019",
+                                          cuit_corredor="20267565393",
+                                          cod_grano=31,
+                                          )
+        self.assertEqual(wslpg.Errores, [])
+        # verifico COEs previamente relacionados al contrato:
+        for coe in sorted([330100014020, 330100014022, 330100014023, 
+                           330100014025, 330100014028, 330100014029, 
+                           330100014040, 330100014043, 330100014057, 
+                           330100014061, 330100014450, 330100014454, 
+                           330100014455, 330100014459, 330100014467, 
+                           330100014472, 330100004664]):            
+            self.assertIsInstance(wslpg.COE, basestring) 
+            self.assertEqual(wslpg.COE, str(coe))
+            self.assertEqual(wslpg.Estado, "")  # por el momento no lo devuelve
+            # leo el próximo numero
+            wslpg.LeerDatosLiquidacion()
+                
 if __name__ == '__main__':
     unittest.main()
 
