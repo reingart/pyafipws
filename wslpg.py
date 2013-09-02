@@ -2469,18 +2469,19 @@ if __name__ == '__main__':
                 pprint.pprint(dic)
         
         if '--asociar' in sys.argv:
-            print "Asociando..."
+            print "Asociando...",
             if '--prueba' in sys.argv:
-                # genero una liquidación de ejemplo:
+                # genero datos de ejemplo en el archivo para consultar:
                 dic = dict(coe="330100004664", nro_contrato=26, cod_grano=31,
                            cuit_comprador="20400000000", 
                            cuit_vendedor="23000000019",
                            cuit_corredor="20267565393",
                            )
                 escribir_archivo(dic, ENTRADA)
-            
             dic = leer_archivo(ENTRADA)
-
+            print ', '.join(sorted(["%s=%s" % (k, v) for k,v in dic.items() 
+                                    if k in ("nro_contrato", "coe") or 
+                                    k.startswith("cuit")]))
             wslpg.AsociarLiquidacionAContrato(**dic)
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
@@ -2539,7 +2540,6 @@ if __name__ == '__main__':
                            cuit_corredor="20267565393",
                            )
                 escribir_archivo(dic, ENTRADA)
-            
             dic = leer_archivo(ENTRADA)
             print ', '.join(sorted(["%s=%s" % (k, v) for k,v in dic.items() 
                              if k == "nro_contrato" or k.startswith("cuit")]))
