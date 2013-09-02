@@ -46,8 +46,9 @@ Sub Main()
     ' creo el ajuste base y agrego los datos de certificado:
     pto_emision = 55
     nro_orden = nro_orden
+    nro_contrato = 27
     coe_ajustado = "330100013183"
-    ok = WSLPG.SetParametro("nro_contrato", 26)
+    ok = WSLPG.SetParametro("nro_contrato", nro_contrato)
     ok = WSLPG.SetParametro("nro_act_comprador", 40)
     ok = WSLPG.SetParametro("cod_grano", 31)
     ok = WSLPG.SetParametro("cuit_vendedor", "23000000019")
@@ -59,6 +60,8 @@ Sub Main()
     ok = WSLPG.SetParametro("precio_flete_tn", 1000)
     ok = WSLPG.SetParametro("cod_puerto", 14)
     ok = WSLPG.SetParametro("des_puerto_localidad", "Desc Puerto")
+    ok = WSLPG.SetParametro("cod_provincia", "1")
+    ok = WSLPG.SetParametro("cod_localidad", "5")
     ok = WSLPG.CrearAjusteBase(pto_emision, nro_orden, coe_ajustado)
     
     ' verifico que se hayan establecido todos los parámetros
@@ -155,7 +158,33 @@ Sub Main()
         Debug.Print v ' 100.00
         v = WSLPG.ObtenerTagXml("totalesUnificados", "ivaDeducciones")
         Debug.Print v ' 20.50
+        
+        ' consulto el ajuste por contrato (ajustePorContratoConsultar):
+        ok = WSLPG.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
+        If ok Then
+            Debug.Print "COE", WSLPG.COE
+            Debug.Print "COEAjustado", WSLPG.COEAjustado
+            Debug.Print "Subtotal", WSLPG.Subtotal
+            Debug.Print "TotalIva105", WSLPG.TotalIva105
+            Debug.Print "TotalIva21", WSLPG.TotalIva21
+            Debug.Print "TotalPagoSegunCondicion", WSLPG.TotalPagoSegunCondicion
             
+            ok = WSLPG.AnalizarAjusteCredito()
+            ' obtengo los datos adcionales desde los parametros de salida (ajuste crédito):
+            Debug.Print "fecha_liquidacion", WSLPG.GetParametro("fecha_liquidacion")
+            Debug.Print "subtotal", WSLPG.GetParametro("subtotal")
+            Debug.Print "operacion con iva", WSLPG.GetParametro("operacion_con_iva")
+            Debug.Print "importe iva", WSLPG.GetParametro("importe_iva")
+            
+            ok = WSLPG.AnalizarAjusteDebito()
+            ' obtengo los datos adcionales desde los parametros de salida (ajuste crédito):
+            Debug.Print "fecha_liquidacion", WSLPG.GetParametro("fecha_liquidacion")
+            Debug.Print "subtotal", WSLPG.GetParametro("subtotal")
+            Debug.Print "operacion con iva", WSLPG.GetParametro("operacion_con_iva")
+            Debug.Print "importe iva", WSLPG.GetParametro("importe_iva")
+            
+        End If
+        
         ' anulo el ajuste para evitar subsiguiente validación AFIP:
         ' 2105: No puede relacionar la liquidacion con el contrato, porque el contrato tiene un Ajuste realizado.
         ok = WSLPG.AnularLiquidacion(COE)

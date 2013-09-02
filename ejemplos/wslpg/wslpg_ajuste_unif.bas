@@ -47,6 +47,8 @@ Sub Main()
     pto_emision = 55
     nro_orden = nro_orden
     coe_ajustado = "330100013190"
+    ok = WSLPG.SetParametro("cod_provincia", "1")
+    ok = WSLPG.SetParametro("cod_localidad", "5")
     ok = WSLPG.CrearAjusteBase(pto_emision, nro_orden, coe_ajustado)
     
     ' agrego el certificado de depósito a ajustar
@@ -163,7 +165,7 @@ Sub Main()
             
     If ok Then
         ' muestro los resultados devueltos por el webservice:
-        MsgBox "COE: " & WSLPG.coe & vbCrLf, vbInformation, "Autorizar Liquidación:"
+        MsgBox "COE: " & WSLPG.COE & vbCrLf, vbInformation, "Autorizar Liquidación:"
         If WSLPG.ErrMsg <> "" Then
             Debug.Print "Errores", WSLPG.ErrMsg
             ' recorro y muestro los errores
@@ -172,8 +174,8 @@ Sub Main()
             Next
         End If
         
-        coe = WSLPG.coe
-        Debug.Print "COE", WSLPG.coe
+        COE = WSLPG.COE
+        Debug.Print "COE", WSLPG.COE
         Debug.Print "COEAjustado", WSLPG.COEAjustado
         Debug.Print "Subtotal", WSLPG.Subtotal
         Debug.Print "TotalIva105", WSLPG.TotalIva105
@@ -210,11 +212,49 @@ Sub Main()
         
         ' anulo el ajuste para evitar subsiguiente validación AFIP:
         ' 1909: El coe ya registra un ajuste activo del tipo seleccionado.
-        WSLPG.AnularLiquidacion (coe)
+        WSLPG.AnularLiquidacion (COE)
     Else
     
         MsgBox WSLPG.Traceback, vbExclamation, WSLPG.Excepcion
                 
+    End If
+    
+    ' consulto un ajuste por número de orden (ajusteXNroOrdenConsultar):
+    pto_emision = 55
+    nro_orden = 78
+    nro_contrato = Null ' (puede omitirse)
+    ok = WSLPG.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
+        
+    If ok Then
+    
+        If WSLPG.ErrMsg <> "" Then
+            Debug.Print "Errores", WSLPG.ErrMsg
+            Debug.Print WSLPG.XmlRequest
+        End If
+        
+        Debug.Print "COE", WSLPG.COE
+        Debug.Print "COEAjustado", WSLPG.COEAjustado
+        Debug.Print "Subtotal", WSLPG.Subtotal
+        Debug.Print "TotalIva105", WSLPG.TotalIva105
+        Debug.Print "TotalIva21", WSLPG.TotalIva21
+        Debug.Print "TotalPagoSegunCondicion", WSLPG.TotalPagoSegunCondicion
+        
+        ok = WSLPG.AnalizarAjusteCredito()
+        ' obtengo los datos adcionales desde los parametros de salida (ajuste crédito):
+        Debug.Print "fecha_liquidacion", WSLPG.GetParametro("fecha_liquidacion")
+        Debug.Print "subtotal", WSLPG.GetParametro("subtotal")
+        Debug.Print "operacion con iva", WSLPG.GetParametro("operacion_con_iva")
+        Debug.Print "importe iva", WSLPG.GetParametro("importe_iva")
+        
+        ok = WSLPG.AnalizarAjusteDebito()
+        ' obtengo los datos adcionales desde los parametros de salida (ajuste crédito):
+        Debug.Print "fecha_liquidacion", WSLPG.GetParametro("fecha_liquidacion")
+        Debug.Print "subtotal", WSLPG.GetParametro("subtotal")
+        Debug.Print "operacion con iva", WSLPG.GetParametro("operacion_con_iva")
+        Debug.Print "importe iva", WSLPG.GetParametro("importe_iva")
+        
+    Else
+        MsgBox WSLPG.Traceback, vbCritical, WSLPG.Excepcion
     End If
     
 End Sub
