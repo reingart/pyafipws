@@ -2568,6 +2568,8 @@ if __name__ == '__main__':
                 nro_contrato = sys.argv[sys.argv.index("--consultar_ajuste") + 3]
             except IndexError:
                 pass
+            print "Consultando: pto_emision=%s nro_orden=%s nro_contrato=%s" % (
+                    pto_emision, nro_orden, nro_contrato)
             wslpg.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado

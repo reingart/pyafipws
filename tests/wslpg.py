@@ -402,8 +402,10 @@ class TestIssues(unittest.TestCase):
             # 2106: No puede ajustar el contrato, porque tiene liquidaciones relacionadas con ajuste.
             # anular primero el ajuste para evitar la validación de AFIP:
             # 2108: No puede anular la liquidación porque está relacionada a un contrato con ajuste vigente.
-            self.test_anular(coe)
-            self.test_anular(coe_ajustado)   # anulo también el COE ajustado
+            if coe:
+                self.test_anular(coe)
+            if coe_ajustado:
+                self.test_anular(coe_ajustado)   # anulo también el COE ajustado
                     
     def atest_ajuste_papel(self):
         # deshabilitado ya que el método esta "en estudio" por parte de AFIP
