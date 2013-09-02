@@ -494,7 +494,49 @@ class TestIssues(unittest.TestCase):
             self.assertEqual(wslpg.Estado, "")  # por el momento no lo devuelve
             # leo el próximo numero
             wslpg.LeerDatosLiquidacion()
-                
+
+    def test_consultar_ajuste_unificado(self):
+        "Prueba de consulta de un ajuste unificado (WSLPGv1.4)"
+        wslpg = self.wslpg
+        # uso datos de un ajuste generado con test_ajuste_unificado:
+        pto_emision = 55
+        nro_orden = 78
+        # consulto el ajuste:
+        ok = wslpg.ConsultarAjuste(pto_emision, nro_orden)
+        self.assertTrue(ok)
+        # verificar respuesta general:
+        self.assertEqual(wslpg.COE, "330100014501")
+        self.assertEqual(wslpg.Estado, "AN") # anulado!
+        self.assertEqual(wslpg.Subtotal, Decimal("-734.10"))
+        self.assertEqual(wslpg.TotalIva105, Decimal("-77.61"))
+        self.assertEqual(wslpg.TotalIva21, Decimal("0"))
+        self.assertEqual(wslpg.TotalRetencionesGanancias, Decimal("0"))
+        self.assertEqual(wslpg.TotalRetencionesIVA, Decimal("-94.50"))
+        self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-716.68"))
+        self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("16.89"))
+        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-733.57"))
+        # verificar ajuste credito
+        ok = wslpg.AnalizarAjusteCredito()
+        self.assertTrue(ok)
+        self.assertEqual(float(wslpg.GetParametro("precio_operacion")), 1.9)
+        self.assertEqual(wslpg.GetParametro("total_peso_neto"), "1000")
+        self.assertEqual(wslpg.TotalDeduccion, Decimal("11.05"))
+        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2780.95"))
+        self.assertEqual(float(wslpg.GetParametro("importe_iva")), 293.16)
+        self.assertEqual(float(wslpg.GetParametro("operacion_con_iva")), 3085.16)
+        self.assertEqual(float(wslpg.GetParametro("deducciones", 0, "importe_iva")), 1.05)
+        # verificar ajuste debito
+        ok = wslpg.AnalizarAjusteDebito()
+        self.assertTrue(ok)
+        self.assertEqual(float(wslpg.GetParametro("precio_operacion")), 2.09)
+        self.assertEqual(wslpg.GetParametro("total_peso_neto"), "500")
+        self.assertEqual(wslpg.TotalDeduccion, Decimal("5.52"))
+        self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2047.38"))
+        self.assertEqual(float(wslpg.GetParametro("importe_iva")), 215.55)
+        self.assertEqual(float(wslpg.GetParametro("operacion_con_iva")), 2268.45)
+        self.assertEqual(float(wslpg.GetParametro("retenciones", 0, "importe_retencion")), 10.50)            
+        
+        
 if __name__ == '__main__':
     unittest.main()
 
