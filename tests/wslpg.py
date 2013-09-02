@@ -443,17 +443,33 @@ class TestIssues(unittest.TestCase):
 
         ret = wslpg.AjustarLiquidacionUnificadoPapel()
         
-    def test_asociaciar_coe_contrato(self):
+    def test_asociaciar_coe_contrato(self, nro_contrato=27):
         wslpg = self.wslpg
-        wslpg.AsociarLiquidacionAContrato(coe="330100004664",
-                                          nro_contrato=26, 
-                                          cuit_comprador="20400000000", 
-                                          cuit_vendedor="23000000019",
-                                          cuit_corredor="20267565393",
-                                          cod_grano=31)
-        self.assertEqual(wslpg.Errores, [])
-        self.assertEqual(wslpg.COE, "330100004664")
-        self.assertEqual(wslpg.Estado, "AC")
+        # solicito una liquidación para tener el COE autorizado a asociar:
+        self.test_liquidacion()
+        coe = wslpg.COE
+        try:
+            # Asocio la liquidación con el contrato:
+            wslpg.AsociarLiquidacionAContrato(coe=coe,
+                                              nro_contrato=nro_contrato, 
+                                              cuit_comprador="20400000000", 
+                                              cuit_vendedor="23000000019",
+                                              cuit_corredor="20267565393",
+                                              cod_grano=31)
+            self.assertEqual(wslpg.Errores, [])
+            self.assertIsInstance(wslpg.COE, basestring)
+            self.assertEqual(len(wslpg.COE), len("330100013133"))
+            self.assertEqual(wslpg.Estado, "AC")
+        finally:
+            # anulo el ajuste para evitar subsiguiente validación AFIP:
+            # 2105: No puede relacionar la liquidacion con el contrato, porque el contrato tiene un Ajuste realizado.
+            # 2112: La liquidacion ya esta relacionada al contrato.
+            try:
+                self.test_anular(coe)
+            except: 
+                # ignorar error de AFIP (aparentemente problema interno):
+                self.assertEqual(wslpg.Errores[0], "2100: El contrato ingresado no se encuentra registrado.")
+                pass
 
 if __name__ == '__main__':
     unittest.main()
