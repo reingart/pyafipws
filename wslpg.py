@@ -337,6 +337,8 @@ class WSLPG:
                         'AjustarLiquidacionContrato',
                         'AnalizarAjusteDebito', 'AnalizarAjusteCredito',
                         'AsociarLiquidacionAContrato',
+                        'ConsultarLiquidacionesPorContrato', 
+                        'LeerDatosLiquidacion',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
                         'ConsultarGradoEntregadoXTipoGrano',
@@ -1105,6 +1107,31 @@ class WSLPG:
             aut = ret['autorizacion']
             self.AnalizarLiquidacion(aut, liq)
         
+    @inicializar_y_capturar_excepciones
+    def ConsultarLiquidacionesPorContrato(self, nro_contrato=None, 
+                                                cuit_comprador=None, 
+                                                cuit_vendedor=None,
+                                                cuit_corredor=None,
+                                                cod_grano=None,
+                                                **kwargs):
+        "Obtener los COE de liquidaciones relacionadas a un contrato"
+        ret = self.client.liquidacionPorContratoConsultar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        nroContrato=nro_contrato,
+                        cuitComprador=cuit_comprador,
+                        cuitVendedor=cuit_vendedor,
+                        cuitCorredor=cuit_corredor,
+                        codGrano=cod_grano,
+                        )
+        ret = ret['liqPorContratoCons']
+        self.__analizar_errores(ret)
+        if 'coeRelacionados' in ret:
+            # analizo la respuesta = [{'coe': "...."}]
+            self.DatosLiquidacion = sorted(ret['coeRelacionados'])  
+            # establezco el primer COE
+            self.LeerDatosLiquidacion()
     
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None):
@@ -1151,12 +1178,11 @@ class WSLPG:
         if self.DatosLiquidacion:
             # extraigo el primer item
             if pop:
-                datos = self.DatosLiquidacion.pop(0)
+                datos_liq = self.DatosLiquidacion.pop(0)
             else:
-                datos = self.DatosLiquidacion[0]
-            datos_Liquidacion = datos['datosConsultarLiquidacion']
-            self.COE = str(datos_Liquidacion['Liquidacion'])
-            self.Estado = unicode(datos_Liquidacion['estado'])
+                datos_liq = self.DatosLiquidacion[0]
+            self.COE = str(datos_liq['coe'])
+            self.Estado = unicode(datos_liq.get('estado', ""))
             return self.COE
         else:
             return ""
