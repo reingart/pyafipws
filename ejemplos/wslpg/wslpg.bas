@@ -294,6 +294,28 @@ Sub Main()
         
     End If
     
+    ' asocio la liquidación previamente emitida a un contrato (asociarLiquidacionAContrato):
+    
+    nro_contrato = 27
+    
+    ok = WSLPG.AsociarLiquidacionAContrato(COE, nro_contrato, cuit_comprador, cuit_vendedor, cuit_corredor, cod_grano)
+    For Each er In WSLPG.Errores
+        Debug.Print er
+        MsgBox er, vbExclamation, "Error"
+    Next
+    Debug.Print WSLPG.COE   ' devuelve el COE ajustado
+    Debug.Print WSLPG.Estado ' debería ser "AC"
+    
+    ' consulto las liquidaciones relacionadas a un contrato (liquidacionPorContratoConsultar):
+    
+    ok = WSLPG.ConsultarLiquidacionesPorContrato(nro_contrato, cuit_comprador, cuit_vendedor, cuit_corredor, cod_grano)
+    Do While ok
+        If WSLPG.COE = "" Then Exit Do
+        ' si existe COE relacionado, lo muestro:
+        Debug.Print WSLPG.COE
+        ' leo la próxima liquidación:
+        ok = WSLPG.LeerDatosLiquidacion()
+    Loop
     
     ' anulo una liquidacion
     
