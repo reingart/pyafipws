@@ -29,13 +29,55 @@ from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
 from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
+# importo funciones compartidas:
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
+
 HOMO = False
 TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazamed.WebService?wsdl"
 LOCATION = "https://servicios.pami.org.ar/trazamed.WebService"
 #WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
-         
+
+# Formato de MedicamentosDTO, MedicamentosDTODHSerie, MedicamentosDTOFraccion  
+MEDICAMENTOS = [
+    ('tipo_reg', 1, A),                 # 0: encabezado
+    ('f_evento', 10, A),                # formato DD/MM/AAAA
+    ('h_evento', 5, A),                 # formato HH:MM
+    ('gln_origen', 13, A),
+    ('gln_destino', 13, A),
+    ('n_remito', 20, A),
+    ('n_factura', 20, A),
+    ('vencimiento', 10, A),
+    ('gtin', 14, A),
+    ('lote', 20, A),
+    ('numero_serial', 20, A),
+    ('desde_numero_serial', 20, A),     # sendMedicamentosDHSerie
+    ('hasta_numero_serial', 20, A),     # sendMedicamentosDHSerie
+    ('id_obra_social', 9, N),
+    ('id_evento', 2, N),
+    ('cuit_origen', 11, A),
+    ('cuit_destino', 11, A),
+    ('apellido', 50, A),
+    ('nombres', 100, A),
+    ('tipo_documento', 2, N),           # 96: DNI,80: CUIT
+    ('n_documento', 10, A),
+    ('sexo', 1, A),                     # M o F
+    ('direccion', 100, A),
+    ('numero', 10, A),
+    ('piso', 5, A),
+    ('depto', 5, A),
+    ('localidad', 50, A),
+    ('provincia', 100, A),
+    ('n_postal', 8, A),
+    ('fecha_nacimiento', 100, A),
+    ('telefono', 30, A),
+    ('nro_asociado', 30, A),
+    ('cantidad', 3, N),                 # sendMedicamentosFraccion
+    ('codigo_transaccion', 14, A),
+]
+    
+             
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
     def capturar_errores_wrapper(self, *args, **kwargs):
