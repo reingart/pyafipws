@@ -89,7 +89,7 @@ TRANSACCIONES = [
     ('_nombre', 200, A),
     ('_d_evento', 100, A),
     ('_gln_origen', 13, A),
-    ('_razon_social_origen', 
+    ('_razon_social_origen', 200, A), 
     ('_gln_destino', 13, A),
     ('_razon_social_destino', 200, A), 
     ('_n_remito', 20, A),
