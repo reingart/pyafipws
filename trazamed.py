@@ -757,14 +757,22 @@ def main():
             print "||"
     else:
         if not medicamentos:
-            ws.SendMedicamentos(*sys.argv[1:])
-            print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
-                    ws.Resultado,
-                    ws.CodigoTransaccion,
-                    '|'.join(ws.Errores),
-                    )
-        else:
-            usuario, password = sys.argv[-2:]
+            if len(sys.argv)>16:
+                ws.SendMedicamentos(*sys.argv[1:])
+                print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+                        ws.Resultado,
+                        ws.CodigoTransaccion,
+                        '|'.join(ws.Errores),
+                        )
+            else:
+                print "ERROR: no se indicaron todos los parámetros requeridos"
+        elif medicamentos:
+            try:
+                usuario, password = [argv for argv in sys.argv 
+                                     if not argv.startswith("--")][-2:]
+            except:
+                print "ADVERTENCIA: no se indico parámetros usuario y passoword"
+                usuario = password = "pruebasws"
             for i, med in enumerate(medicamentos):
                 print "Procesando registro", i
                 del med['codigo_transaccion']
@@ -788,7 +796,9 @@ def main():
                     ws.CodigoTransaccion,
                     '|'.join(ws.Errores),
                     )
-        
+        else:
+            print "ERROR: no se especificaron medicamentos a informar"
+            
     if ws.Excepcion:
         print ws.Traceback
 
