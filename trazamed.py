@@ -30,7 +30,7 @@ from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf
 
 HOMO = False
 TYPELIB = False
@@ -606,6 +606,23 @@ def main():
                 ('Errores', ERRORES, errores),
                ]
 
+    if '--formato' in sys.argv:
+        print "Formato:"
+        for msg, formato, lista in formatos:
+            comienzo = 1
+            print "=== %s ===" % msg
+            print "|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (  
+                "Nombre", "Tipo", "Long.", "Pos(txt)", "Campo(dbf)")
+            claves = []
+            for fmt in formato:
+                clave, longitud, tipo = fmt[0:3]
+                clave_dbf = dar_nombre_campo_dbf(clave, claves)
+                claves.append(clave_dbf)
+                print "|| %-25s || %-12s || %5d ||   %4d   || %-10s ||" % (
+                    clave, tipo, longitud, comienzo, clave_dbf)
+                comienzo += longitud
+        sys.exit(0)
+        
     if '--cargar' in sys.argv:
         if '--dbf' in sys.argv:
             leer_dbf(formatos[:1], {})        
