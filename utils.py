@@ -284,6 +284,35 @@ def dar_nombre_campo_dbf(clave, claves):
     return nombre.lower()
 
 
+def verifica(ver_list, res_dict):
+    "Verificar que dos diccionarios sean iguales, devuelve lista de diferencias"
+    difs = []
+    for k, v in ver_list.items():
+        if isinstance(v, list):
+            if v and not k in res_dict and v:
+                difs.append("falta tag %s: %s %s" % (k, repr(v), repr(res_dict.get(k))))
+            elif len(res_dict.get(k, []))!=len(v or []):
+                difs.append("tag %s len !=: %s %s" % (k, repr(v), repr(res_dict.get(k))))
+            else:
+                for i, vl in enumerate(v):
+                    verifica(vl, res_dict[k][i])
+        elif isinstance(v, dict):
+            verifica(v, res_dict.get(k, {}))
+        elif res_dict.get(k) is None or v is None:
+            if v=="":
+                v = None
+            r = res_dict.get(k)
+            if r=="":
+                r = None
+            if not (r is None and v is None):
+                difs.append("%s: nil %s!=%s" % (k, repr(v), repr(r)))
+        elif unicode(res_dict.get(k)) != unicode(v):
+            difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
+        else:
+            pass
+            #print "%s: %s==%s" % (k, repr(v), repr(res_dict[k]))
+    return difs
+    
 
 if __name__ == "__main__":
     try:
