@@ -589,7 +589,30 @@ def main():
         WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService"
         print "Usando WSDL:", WSDL
         sys.argv.pop(0)
-    
+
+    # Inicializo las variables y estructuras para el archivo de intercambio:
+    medicamentos = []
+    transacciones = []
+    formatos = [('Medicamentos', MEDICAMENTOS, medicamentos), 
+                ('Transacciones', TRANSACCIONES, transacciones),
+                #('Errores', ERRORES, errores),
+               ]
+
+    if '--cargar' in sys.argv:
+        if '--dbf' in sys.argv:
+            leer_dbf(formatos[:1], {})        
+        elif '--json' in sys.argv:
+            for formato in formatos[:1]:
+                d = json.load(formato[0].lower() + ".json")
+                formato[2].extend(d)
+        else:
+            for formato in formatos[:1]:
+                archivo = open(formato[0].lower() + ".txt", "r")
+                for linea in archivo:
+                    d = leer(linea, formato[1])
+                    formato[2].append(d)
+                archivo.close()
+        
     ws.Conectar("", WSDL)
     
     if ws.Excepcion:
@@ -597,13 +620,32 @@ def main():
         print ws.Traceback
         sys.exit(-1)
     
-    #print ws.client.services
-    #op = ws.client.get_operation("sendMedicamentos")
-    #import pdb;pdb.set_trace()
+    # Datos de pruebas:
+    
     if '--test' in sys.argv:
-        ws.SetParametro('nro_asociado', "9999999999999")
-        ws.SendMedicamentos(
-            usuario='pruebasws', password='pruebasws',
+        medicamentos.append(dict(
+            f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
+            h_evento=datetime.datetime.now().strftime("%H:%M"), 
+            gln_origen="9999999999918", gln_destino="glnws", 
+            n_remito="1234", n_factura="1234", 
+            vencimiento=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"), 
+            gtin="GTIN1", lote=datetime.datetime.now().strftime("%Y"),
+            numero_serial=int(time.time()), 
+            id_obra_social=None, id_evento=134,
+            cuit_origen="20267565393", cuit_destino="20267565393", 
+            apellido="Reingart", nombres="Mariano",
+            tipo_docmento="96", n_documento="26756539", sexo="M",
+            direccion="Saraza", numero="1234", piso="", depto="", 
+            localidad="Hurlingham", provincia="Buenos Aires",
+            n_postal="1688", fecha_nacimiento="01/01/2000", 
+            telefono="5555-5555", 
+            nro_asociado="9999999999999",
+            cantidad=None, 
+            desde_numero_serial=None, hasta_numero_serial=None, 
+            codigo_transaccion=None, 
+        ))            
+    if '--testfraccion' in sys.argv:
+        medicamentos.append(dict(
             f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
             h_evento=datetime.datetime.now().strftime("%H:%M"), 
             gln_origen="9999999999918", gln_destino="glnws", 
@@ -619,39 +661,13 @@ def main():
             localidad="Hurlingham", provincia="Buenos Aires",
             n_postal="1688", fecha_nacimiento="01/01/2000", 
             telefono="5555-5555",
-            )
-        print "Resultado", ws.Resultado
-        print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Excepciones", ws.Excepcion
-        print "Erroes", ws.Errores
-    if '--testfraccion' in sys.argv:
-        ws.SetParametro('nro_asociado', "9999999999999")
-        ws.SetParametro('cantidad', 5)
-        ws.SendMedicamentosFraccion(
-            usuario='pruebasws', password='pruebasws',
-            f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
-            h_evento=datetime.datetime.now().strftime("%H:%M"), 
-            gln_origen="9999999999918", gln_destino="glnws", 
-            n_remito="1234", n_factura="1234", 
-            vencimiento=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"), 
-            gtin="GTIN1", lote=datetime.datetime.now().strftime("%Y"),
-            numero_serial=int(time.time()), 
-            id_obra_social=None, id_evento=134,
-            cuit_origen="20267565393", cuit_destino="20267565393", 
-            apellido="Reingart", nombres="Mariano",
-            tipo_docmento="96", n_documento="26756539", sexo="M",
-            direccion="Saraza", numero="1234", piso="", depto="", 
-            localidad="Hurlingham", provincia="Buenos Aires",
-            n_postal="1688", fecha_nacimiento="01/01/2000", 
-            telefono="5555-5555",)
-        print "Resultado", ws.Resultado
-        print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Erroes", ws.Errores
-    elif '--testdh' in sys.argv:
-        print "Informando medicamentos..."
-        ws.SetParametro('nro_asociado', "1234")
-        ws.SendMedicamentosDHSerie(
-            usuario='pruebasws', password='pruebasws',
+            nro_asociado="9999999999999",
+            cantidad=5,
+            desde_numero_serial=None, hasta_numero_serial=None, 
+            codigo_transaccion=None,
+        ))
+    if '--testdh' in sys.argv:
+        medicamentos.append(dict(
             f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
             h_evento=datetime.datetime.now().strftime("%H:%M"), 
             gln_origen="9999999999918", gln_destino="glnws", 
@@ -660,19 +676,14 @@ def main():
             gtin="GTIN1", lote=datetime.datetime.now().strftime("%Y"),
             desde_numero_serial=int(time.time())-1, hasta_numero_serial=int(time.time())+1, 
             id_obra_social=None, id_evento=134,
-            )
-        print "Resultado", ws.Resultado
-        print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Erroes", ws.Errores
-        codigo_transaccion = ws.CodigoTransaccion
-        print "Cancelando..."
-        ws.SendCancelacTransacc(
-            usuario='pruebasws', password='pruebasws',
-            codigo_transaccion=codigo_transaccion)
-        print "Resultado", ws.Resultado
-        print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Errores", ws.Errores
-    elif '--cancela' in sys.argv:
+            nro_asociado="1234",
+            cantidad=None, numero_serial=None,
+            codigo_transaccion=None,
+        ))
+
+    # Opciones principales:
+    
+    if '--cancela' in sys.argv:
         ws.SendCancelacTransacc(*sys.argv[sys.argv.index("--cancela")+1:])
     elif '--confirma' in sys.argv:
         if '--loadxml' in sys.argv:
@@ -723,14 +734,55 @@ def main():
                 print "||", ws.GetParametro(clave),         # imprimo cada fila
             print "||"
     else:
-        ws.SendMedicamentos(*sys.argv[1:])
-    print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
-            ws.Resultado,
-            ws.CodigoTransaccion,
-            '|'.join(ws.Errores),
-            )
+        if not medicamentos:
+            ws.SendMedicamentos(*sys.argv[1:])
+            print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+                    ws.Resultado,
+                    ws.CodigoTransaccion,
+                    '|'.join(ws.Errores),
+                    )
+        else:
+            usuario, password = sys.argv[-2:]
+            for i, med in enumerate(medicamentos):
+                print "Procesando registro", i
+                del med['codigo_transaccion']
+                if med.get("cantidad"):
+                    del med["desde_numero_serial"]
+                    del med["hasta_numero_serial"]
+                    ws.SendMedicamentosFraccion(usuario, password, **med)
+                elif med.get("desde_numero_serial"):
+                    del med["cantidad"]
+                    del med["numero_serial"]
+                    ws.SendMedicamentosDHSerie(usuario, password, **med)
+                else:
+                    del med["cantidad"]
+                    del med["desde_numero_serial"]
+                    del med["hasta_numero_serial"]
+                    ws.SendMedicamentos(usuario, password, **med)
+                med['codigo_transaccion'] = ws.CodigoTransaccion
+                print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+                    ws.Resultado,
+                    ws.CodigoTransaccion,
+                    '|'.join(ws.Errores),
+                    )
+        
     if ws.Excepcion:
         print ws.Traceback
+
+    if '--grabar' in sys.argv:
+        if '--dbf' in sys.argv:
+            guardar_dbf(formatos, True, {})        
+        elif '--json' in sys.argv:
+            for formato in formatos:
+                archivo = formato[0].lower() + ".json"
+                json.dump(formato[2], archivo, sort_keys=True, indent=4)
+        else:
+            for formato in formatos:
+                archivo = open(formato[0].lower() + ".txt", "w")
+                for it in formato[2]:
+                    archivo.write(escribir(it, formato[1]))
+            archivo.close()
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
