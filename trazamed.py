@@ -610,11 +610,11 @@ def main():
         if '--dbf' in sys.argv:
             leer_dbf(formatos[:1], {})        
         elif '--json' in sys.argv:
-            archivo = open(formato[0].lower() + ".json", "r")
             for formato in formatos[:1]:
+                archivo = open(formato[0].lower() + ".json", "r")
                 d = json.load(archivo)
                 formato[2].extend(d)
-            archivo.close()
+                archivo.close()
         else:
             for formato in formatos[:1]:
                 archivo = open(formato[0].lower() + ".txt", "r")
