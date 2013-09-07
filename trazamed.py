@@ -76,7 +76,27 @@ MEDICAMENTOS = [
     ('cantidad', 3, N),                 # sendMedicamentosFraccion
     ('codigo_transaccion', 14, A),
 ]
-    
+
+# Formato para TransaccionPlainWS (getTransaccionesNoConfirmadas)
+TRANSACCIONES = [
+    ('_id_transaccion', 14, A), 
+    ('_id_transaccion_global', 14, A),
+    ('_f_evento', 10, A),
+    ('_f_transaccion', 16, A),          # formato DD/MM/AAAA HH:MM
+    ('_gtin', 14, A),
+    ('_lote', 20, A), 
+    ('_numero_serial', 20, A),
+    ('_nombre', 200, A),
+    ('_d_evento', 100, A),
+    ('_gln_origen', 13, A),
+    ('_razon_social_origen', 
+    ('_gln_destino', 13, A),
+    ('_razon_social_destino', 200, A), 
+    ('_n_remito', 20, A),
+    ('_n_factura', 20, A),
+    ('_vencimiento', 10, A),
+]
+
              
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
