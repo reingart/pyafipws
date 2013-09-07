@@ -41,7 +41,6 @@ LOCATION = "https://servicios.pami.org.ar/trazamed.WebService"
 
 # Formato de MedicamentosDTO, MedicamentosDTODHSerie, MedicamentosDTOFraccion  
 MEDICAMENTOS = [
-    ('tipo_reg', 1, A),                 # 0: encabezado
     ('f_evento', 10, A),                # formato DD/MM/AAAA
     ('h_evento', 5, A),                 # formato HH:MM
     ('gln_origen', 13, A),
@@ -55,7 +54,7 @@ MEDICAMENTOS = [
     ('desde_numero_serial', 20, A),     # sendMedicamentosDHSerie
     ('hasta_numero_serial', 20, A),     # sendMedicamentosDHSerie
     ('id_obra_social', 9, N),
-    ('id_evento', 2, N),
+    ('id_evento', 3, N),
     ('cuit_origen', 11, A),
     ('cuit_destino', 11, A),
     ('apellido', 50, A),
@@ -253,7 +252,7 @@ class TrazaMed:
                          n_remito, n_factura, vencimiento, gtin, lote,
                          numero_serial, id_obra_social, id_evento,
                          cuit_origen='', cuit_destino='', apellido='', nombres='',
-                         tipo_docmento='', n_documento='', sexo='',
+                         tipo_documento='', n_documento='', sexo='',
                          direccion='', numero='', piso='', depto='', localidad='', provincia='',
                          n_postal='', fecha_nacimiento='', telefono='',
                          nro_asociado=None,
@@ -276,7 +275,7 @@ class TrazaMed:
                     'cuit_destino': cuit_destino, 
                     'apellido': apellido, 
                     'nombres': nombres, 
-                    'tipo_docmento': tipo_docmento, 
+                    'tipo_documento': tipo_documento, 
                     'n_documento': n_documento, 
                     'sexo': sexo, 
                     'direccion': direccion, 
@@ -311,7 +310,7 @@ class TrazaMed:
                          n_remito, n_factura, vencimiento, gtin, lote,
                          numero_serial, id_obra_social, id_evento,
                          cuit_origen='', cuit_destino='', apellido='', nombres='',
-                         tipo_docmento='', n_documento='', sexo='',
+                         tipo_documento='', n_documento='', sexo='',
                          direccion='', numero='', piso='', depto='', localidad='', provincia='',
                          n_postal='', fecha_nacimiento='', telefono='',
                          nro_asociado=None, cantidad=None,
@@ -334,7 +333,7 @@ class TrazaMed:
                     'cuit_destino': cuit_destino, 
                     'apellido': apellido, 
                     'nombres': nombres, 
-                    'tipo_docmento': tipo_docmento, 
+                    'tipo_documento': tipo_documento, 
                     'n_documento': n_documento, 
                     'sexo': sexo, 
                     'direccion': direccion, 
@@ -371,7 +370,7 @@ class TrazaMed:
                          desde_numero_serial, hasta_numero_serial,
                          id_obra_social, id_evento,
                          cuit_origen='', cuit_destino='', apellido='', nombres='',
-                         tipo_docmento='', n_documento='', sexo='',
+                         tipo_documento='', n_documento='', sexo='',
                          direccion='', numero='', piso='', depto='', localidad='', provincia='',
                          n_postal='', fecha_nacimiento='', telefono='',
                          nro_asociado=None,
@@ -395,7 +394,7 @@ class TrazaMed:
                     'cuit_destino': cuit_destino, 
                     'apellido': apellido, 
                     'nombres': nombres, 
-                    'tipo_docmento': tipo_docmento, 
+                    'tipo_documento': tipo_documento, 
                     'n_documento': n_documento, 
                     'sexo': sexo, 
                     'direccion': direccion, 
@@ -634,7 +633,7 @@ def main():
             id_obra_social=None, id_evento=134,
             cuit_origen="20267565393", cuit_destino="20267565393", 
             apellido="Reingart", nombres="Mariano",
-            tipo_docmento="96", n_documento="26756539", sexo="M",
+            tipo_documento="96", n_documento="26756539", sexo="M",
             direccion="Saraza", numero="1234", piso="", depto="", 
             localidad="Hurlingham", provincia="Buenos Aires",
             n_postal="1688", fecha_nacimiento="01/01/2000", 
@@ -656,7 +655,7 @@ def main():
             id_obra_social=None, id_evento=134,
             cuit_origen="20267565393", cuit_destino="20267565393", 
             apellido="Reingart", nombres="Mariano",
-            tipo_docmento="96", n_documento="26756539", sexo="M",
+            tipo_documento="96", n_documento="26756539", sexo="M",
             direccion="Saraza", numero="1234", piso="", depto="", 
             localidad="Hurlingham", provincia="Buenos Aires",
             n_postal="1688", fecha_nacimiento="01/01/2000", 
