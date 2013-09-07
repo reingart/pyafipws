@@ -57,17 +57,19 @@ class TestMTX(unittest.TestCase):
         print "DbServerStatus", wsmtxca.DbServerStatus
         print "AuthServerStatus", wsmtxca.AuthServerStatus
     
-    def test_autorizar_comprobante(self):
+    def test_autorizar_comprobante(self, cbte_nro=None):
         "Prueba de autorización de un comprobante (obtención de CAE)"
         wsmtxca = self.wsmtxca
         
         tipo_cbte = 1
         punto_vta = 4000
-        cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+        if not cbte_nro:
+            # si no me especifícan nro de comprobante, busco el próximo
+            cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+            cbte_nro = long(cbte_nro) + 1
         fecha = datetime.datetime.now().strftime("%Y-%m-%d")
         concepto = 3
         tipo_doc = 80; nro_doc = "30000000007"
-        cbte_nro = long(cbte_nro) + 1
         cbt_desde = cbte_nro; cbt_hasta = cbt_desde
         imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
         imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
@@ -138,6 +140,23 @@ class TestMTX(unittest.TestCase):
         self.assertEqual(wsmtxca.ObtenerTagXml('arrayItems', 0, 'item', 'unidadesMtx'), '123456')
 
 
+    def test_reproceso(self):
+        "Prueba de autorización de un comprobante (obtención de CAE)"
+        wsmtxca = self.wsmtxca
+        # obtengo el próximo número de comprobante
+        tipo_cbte = 1
+        punto_vta = 4000
+        nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+        cbte_nro = long(nro) + 1
+        # obtengo CAE
+        wsmtxca.Reprocesar = True
+        self.test_autorizar_comprobante(cbte_nro)
+        self.assertEqual(wsmtxca.Reproceso, "")
+        # intento reprocesar:
+        self.test_autorizar_comprobante(cbte_nro)
+        self.assertEqual(wsmtxca.Reproceso, "S")
+        
+        
 if __name__ == '__main__':
     unittest.main()
 
