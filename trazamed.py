@@ -610,9 +610,11 @@ def main():
         if '--dbf' in sys.argv:
             leer_dbf(formatos[:1], {})        
         elif '--json' in sys.argv:
+            archivo = open(formato[0].lower() + ".json", "r")
             for formato in formatos[:1]:
-                d = json.load(formato[0].lower() + ".json")
+                d = json.load(archivo)
                 formato[2].extend(d)
+            archivo.close()
         else:
             for formato in formatos[:1]:
                 archivo = open(formato[0].lower() + ".txt", "r")
@@ -726,14 +728,9 @@ def main():
         print "HayError", ws.HayError
         #print "TransaccionPlainWS", ws.TransaccionPlainWS
         # parametros comunes de salida (columnas de la tabla):
-        claves = ['_gtin', '_lote', '_numero_serial',
-                  '_nombre',
-                  '_id_transaccion', '_estado', '_f_transaccion', '_f_evento',
-                  '_d_evento',
-                  '_gln_origen', '_gln_destino',
-                  '_razon_social_origen', '_razon_social_destino',
-                  '_n_remito', '_n_factura',
-                  ]
+        claves = [k for k, v, l in TRANSACCIONES]
+        # extiendo la lista de resultado para el archivo de intercambio:
+        transacciones.extend(ws.TransaccionPlainWS)
         # encabezado de la tabla:
         print "||", "||".join(["%s" % clave for clave in claves]), "||"
         # recorro los datos devueltos (TransaccionPlainWS):
@@ -783,8 +780,9 @@ def main():
             guardar_dbf(formatos, True, {})        
         elif '--json' in sys.argv:
             for formato in formatos:
-                archivo = formato[0].lower() + ".json"
+                archivo = open(formato[0].lower() + ".json", "w")
                 json.dump(formato[2], archivo, sort_keys=True, indent=4)
+                archivo.close()
         else:
             for formato in formatos:
                 archivo = open(formato[0].lower() + ".txt", "w")
