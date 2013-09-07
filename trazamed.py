@@ -96,6 +96,12 @@ TRANSACCIONES = [
     ('_vencimiento', 10, A),
 ]
 
+# Formato para Errores
+ERRORES = [
+    ('_c_error', 4, A),                 # código
+    ('_d_error', 250, A),               # descripción
+    ]
+
              
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -103,7 +109,8 @@ def inicializar_y_capturar_excepciones(func):
         try:
             # inicializo (limpio variables)
             self.Resultado = self.CodigoTransaccion = ""
-            self.Errores = []
+            self.Errores = []   # lista de strings para la interfaz
+            self.errores = []   # lista de diccionarios (uso interno)
             self.CantPaginas = self.HayError = None
             self.TransaccionPlainWS = []
             self.Traceback = self.Excepcion = ""
@@ -177,6 +184,7 @@ class TrazaMed:
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
+        self.errores = ret.get('errores', [])
         self.Errores = ["%s: %s" % (it['_c_error'], it['_d_error'])
                         for it in ret.get('errores', [])]
         self.Resultado = ret.get('resultado')
@@ -592,9 +600,10 @@ def main():
     # Inicializo las variables y estructuras para el archivo de intercambio:
     medicamentos = []
     transacciones = []
+    errores = []
     formatos = [('Medicamentos', MEDICAMENTOS, medicamentos), 
                 ('Transacciones', TRANSACCIONES, transacciones),
-                #('Errores', ERRORES, errores),
+                ('Errores', ERRORES, errores),
                ]
 
     if '--cargar' in sys.argv:
@@ -759,6 +768,7 @@ def main():
                     del med["hasta_numero_serial"]
                     ws.SendMedicamentos(usuario, password, **med)
                 med['codigo_transaccion'] = ws.CodigoTransaccion
+                errores.extend(ws.errores)
                 print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                     ws.Resultado,
                     ws.CodigoTransaccion,
