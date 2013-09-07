@@ -27,6 +27,7 @@ import sys
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from cStringIO import StringIO
+from utils import verifica
 
 HOMO = True
 
@@ -356,6 +357,23 @@ class WSMTXCA:
             comprobanteCAERequest = fact,
             )
         
+        # Reprocesar en caso de error (recuperar CAE emitido anteriormente)
+        if self.Reprocesar and ('arrayErrores' in ret):
+            for error in ret['arrayErrores']:
+                err_code = error['codigoDescripcion']['codigo']
+                if ret['resultado'] == 'R' and err_code == 102:
+                    # guardo los mensajes xml originales
+                    xml_request = self.client.xml_request
+                    xml_response = self.client.xml_response
+                    cae = self.ConsultarComprobante(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
+                    if cae and self.EmisionTipo=='CAE':
+                        self.Reproceso = 'S'
+                        return cae
+                    self.Reproceso = 'N'
+                    # reestablesco los mensajes xml originales
+                    self.client.xml_request = xml_request
+                    self.client.xml_response = xml_response
+                    
         self.Resultado = ret['resultado'] # u'A'
         self.Errores = []
         if ret['resultado'] in ("A", "O"):
@@ -389,7 +407,7 @@ class WSMTXCA:
         )
         
         self.__analizar_errores(ret)
-    
+                    
         if 'CAEAResponse' in ret:
             res = ret['CAEAResponse']
             self.CAEA = res['CAEA']
@@ -603,7 +621,7 @@ class WSMTXCA:
     CompUltimoAutorizado = ConsultarUltimoComprobanteAutorizado
 
     @inicializar_y_capturar_excepciones
-    def ConsultarComprobante(self, tipo_cbte, punto_vta, cbte_nro):
+    def ConsultarComprobante(self, tipo_cbte, punto_vta, cbte_nro, reproceso=False):
         "Recuperar los datos completos de un comprobante ya autorizado"
         ret = self.client.consultarComprobante(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
@@ -613,8 +631,77 @@ class WSMTXCA:
                 'numeroComprobante': cbte_nro,
                 },
             )
+        # diferencias si hay reproceso:
+        difs = None
+        # analizo el resultado:
         if 'comprobante' in ret:
                 cbteresp = ret['comprobante']
+                if reproceso:
+                    # verifico los campos registrados coincidan con los enviados:
+                    f = self.factura
+                    verificaciones = {
+                        'codigoTipoComprobante': f['tipo_cbte'],
+                        'numeroPuntoVenta': f['punto_vta'],
+                        'codigoConcepto': f['concepto'],
+                        'codigoTipoDocumento': f['tipo_doc'],
+                        'numeroDocumento': f['nro_doc'],
+                        'CbteDesde': f['cbt_desde'],
+                        'CbteHasta': f['cbt_hasta'],
+                        'fechaEmision': f['fecha_cbte'],
+                        'importeTotal': float(f['imp_total']),
+                        'importeNoGravado': float(f['imp_tot_conc']),
+                        'importeGravado': float(f['imp_neto']),
+                        'importeExento': float(f['imp_op_ex']),
+                        'importeOtrosTributos': f['imp_trib'] and float(f['imp_trib']) or 0.0,
+                        'importeSubtotal': f['imp_subtotal'],
+                        'FchServDesde': f.get('fecha_serv_desde'),
+                        'FchServHasta': f.get('fecha_serv_hasta'),
+                        'FchVtoPago': f.get('fecha_venc_pago'),
+                        'FchServDesde': f.get('fecha_serv_desde'),
+                        'FchServHasta': f.get('fecha_serv_hasta'),
+                        'FchVtoPago': f['fecha_venc_pago'],
+                        'codigoMoneda': f['moneda_id'],
+                        'cotizacionMoneda': float(f['moneda_ctz']),
+                        'arrayItems': [
+                            {'item': {
+                                'unidadesMtx': it['u_mtx'],
+                                'codigoMtx': it['cod_mtx'],
+                                'codigo': it['codigo'],                
+                                'descripcion': it['ds'],
+                                'cantidad': it['qty'],
+                                'codigoUnidadMedida': it['umed'],
+                                'precioUnitario': it['precio'],
+                                #'importeBonificacion': it['bonif'],
+                                'codigoCondicionIVA': it['iva_id'],
+                                'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
+                                'importeItem': it['imp_subtotal'],
+                                }}
+                            for it in f['detalles']],
+                        #'arrayCbtesAsoc': [
+                        #    {'CbteAsoc': {
+                        #        'Tipo': cbte_asoc['tipo'],
+                        #        'PtoVta': cbte_asoc['pto_vta'], 
+                        #        'Nro': cbte_asoc['nro']}}
+                        #    for cbte_asoc in f['cbtes_asoc']],
+                        'arrayOtrosTributos': [
+                            {'otroTributo': {
+                                'codigo': tributo['tributo_id'], 
+                                'descripcion': tributo['desc'],
+                                'baseImponible': float(tributo['base_imp']),
+                                'importe': float(tributo['importe']),
+                                }}
+                            for tributo in f['tributos']],
+                        'arraySubtotalesIVA': [ 
+                            {'subtotalIVA': {
+                                'codigo': iva['iva_id'],
+                                'importe': float(iva['importe']),
+                                }}
+                            for iva in f['iva']],
+                        }
+                    difs = verifica(verificaciones, cbteresp)
+                    if difs:
+                        print "Diferencias:", difs
+                        self.__log("Diferencias: %s" % difs)
                 self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
                 self.CbteNro = cbteresp['numeroComprobante'] # 1L
                 self.PuntoVenta = cbteresp['numeroPuntoVenta'] # 4000
@@ -623,7 +710,8 @@ class WSMTXCA:
                 self.CAE = str(cbteresp['codigoAutorizacion']) # 60423794871430L
                 self.EmisionTipo =  cbteresp['codigoTipoAutorizacion']=='A' and 'CAEA' or 'CAE'
         self.__analizar_errores(ret)
-        return self.CAE
+        if not difs:
+            return self.CAE
 
 
     @inicializar_y_capturar_excepciones
