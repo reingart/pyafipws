@@ -368,6 +368,7 @@ class WSMTXCA:
                     cae = self.ConsultarComprobante(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
                     if cae and self.EmisionTipo=='CAE':
                         self.Reproceso = 'S'
+                        self.Resultado = 'A'  # verificar O
                         return cae
                     self.Reproceso = 'N'
                     # reestablesco los mensajes xml originales
