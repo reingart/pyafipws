@@ -123,14 +123,27 @@ class TestFE(unittest.TestCase):
         # observación "... no se encuentra registrado en los padrones de AFIP.":
         self.assertEqual(wsfev1.ObtenerTagXml('Obs', 0, 'Code'), '10017')
         
-        cae = wsfev1.CAE
 
+    def test_consulta(self):
+        "Prueba de obtener los datos de un comprobante autorizado"
+        wsfev1 = self.wsfev1        
+        # autorizo un comprobante:
+        tipo_cbte = 1
+        self.test_autorizar_comprobante(tipo_cbte)
+        # obtengo datos para comprobar
+        cae = wsfev1.CAE
+        wsfev1.AnalizarXml("XmlRequest")
+        imp_total = float(wsfev1.ObtenerTagXml('ImpTotal'))
+        concepto = int(wsfev1.ObtenerTagXml('Concepto'))
+        punto_vta = wsfev1.PuntoVenta
+        cbte_nro = wsfev1.CbteNro
+        
         # llamo al webservice para consultar y validar manualmente el CAE:        
         wsfev1.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
         
         self.assertEqual(wsfev1.CAE, cae) 
         self.assertEqual(wsfev1.CbteNro, cbte_nro) 
-        self.assertEqual(wsfev1.ImpTotal, float(imp_total))
+        self.assertEqual(wsfev1.ImpTotal, imp_total)
 
         wsfev1.AnalizarXml("XmlResponse")
         self.assertEqual(wsfev1.ObtenerTagXml('CodAutorizacion'), str(wsfev1.CAE))
