@@ -58,11 +58,11 @@ class TestMTX(unittest.TestCase):
         print "DbServerStatus", wsmtxca.DbServerStatus
         print "AuthServerStatus", wsmtxca.AuthServerStatus
     
-    def test_autorizar_comprobante(self, cbte_nro=None, servicios=True):
+    def test_autorizar_comprobante(self, tipo_cbte=1, cbte_nro=None, servicios=True):
         "Prueba de autorización de un comprobante (obtención de CAE)"
         wsmtxca = self.wsmtxca
         
-        tipo_cbte = 1
+        # datos generales del comprobante:
         punto_vta = 4000
         if not cbte_nro:
             # si no me especifícan nro de comprobante, busco el próximo
@@ -91,11 +91,14 @@ class TestMTX(unittest.TestCase):
             fecha_serv_desde, fecha_serv_hasta, #--
             moneda_id, moneda_ctz, obs)
         
-        #tipo = 19
-        #pto_vta = 2
-        #nro = 1234
-        #wsmtxca.AgregarCmpAsoc(tipo, pto_vta, nro)
+        # agrego un comprobante asociado (solo notas de crédito / débito)
+        if tipo_cbte in (2, 3):
+            tipo = 1
+            pv = 2
+            nro = 1234
+            wsmtxca.AgregarCmpAsoc(tipo, pv, nro)
         
+        # agrego otros tributos:
         tributo_id = 99
         desc = 'Impuesto Municipal Matanza'
         base_imp = "100.00"
@@ -103,11 +106,13 @@ class TestMTX(unittest.TestCase):
         importe = "1.00"
         wsmtxca.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
+        # agrego el subtotal por tasa de IVA:
         iva_id = 5 # 21%
         base_im = 100
         importe = 21
         wsmtxca.AgregarIva(iva_id, base_imp, importe)
         
+        # agrego un artículo:
         u_mtx = 123456
         cod_mtx = 1234567890123
         codigo = "P0001"
@@ -122,9 +127,11 @@ class TestMTX(unittest.TestCase):
         wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                     iva_id, imp_iva, imp_subtotal)
         
+        # agrego bonificación general
         wsmtxca.AgregarItem(None, None, None, 'bonificacion', 0, 99, 1, None, 
                     5, -21, -121)
         
+        # llamo al websevice para obtener el CAE:
         wsmtxca.AutorizarComprobante()
         
         self.assertEqual(wsmtxca.Resultado, "A")    # Aprobado!
@@ -133,7 +140,8 @@ class TestMTX(unittest.TestCase):
         self.assertEqual(len(wsmtxca.Vencimiento), len("2013-09-07")) 
         
         cae = wsmtxca.CAE
-        
+
+        # llamo al webservice para consultar y validar manualmente el CAE:        
         wsmtxca.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
         
         self.assertEqual(wsmtxca.CAE, cae) 
@@ -147,7 +155,7 @@ class TestMTX(unittest.TestCase):
 
 
     def test_reproceso_servicios(self):
-        "Prueba de autorización de un comprobante (obtención de CAE)"
+        "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsmtxca = self.wsmtxca
         # obtengo el próximo número de comprobante
         tipo_cbte = 1
@@ -156,14 +164,14 @@ class TestMTX(unittest.TestCase):
         cbte_nro = long(nro) + 1
         # obtengo CAE
         wsmtxca.Reprocesar = True
-        self.test_autorizar_comprobante(cbte_nro)
+        self.test_autorizar_comprobante(tipo_cbte, cbte_nro)
         self.assertEqual(wsmtxca.Reproceso, "")
         # intento reprocesar:
-        self.test_autorizar_comprobante(cbte_nro)
+        self.test_autorizar_comprobante(tipo_cbte, cbte_nro)
         self.assertEqual(wsmtxca.Reproceso, "S")
 
     def test_reproceso_productos(self):
-        "Prueba de autorización de un comprobante (obtención de CAE)"
+        "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsmtxca = self.wsmtxca
         # obtengo el próximo número de comprobante
         tipo_cbte = 1
@@ -172,10 +180,27 @@ class TestMTX(unittest.TestCase):
         cbte_nro = long(nro) + 1
         # obtengo CAE
         wsmtxca.Reprocesar = True
-        self.test_autorizar_comprobante(cbte_nro, servicios=False)
+        self.test_autorizar_comprobante(tipo_cbte, cbte_nro, servicios=False)
         self.assertEqual(wsmtxca.Reproceso, "")
         # intento reprocesar:
-        self.test_autorizar_comprobante(cbte_nro, servicios=False)
+        self.test_autorizar_comprobante(tipo_cbte, cbte_nro, servicios=False)
+        self.assertEqual(wsmtxca.Reproceso, "S")
+
+    def test_reproceso_nota_debito(self):
+        "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
+        # N/D con comprobantes asociados
+        wsmtxca = self.wsmtxca
+        # obtengo el próximo número de comprobante
+        tipo_cbte = 2
+        punto_vta = 4000
+        nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+        cbte_nro = long(nro) + 1
+        # obtengo CAE
+        wsmtxca.Reprocesar = True
+        self.test_autorizar_comprobante(tipo_cbte, cbte_nro, servicios=False)
+        self.assertEqual(wsmtxca.Reproceso, "")
+        # intento reprocesar:
+        self.test_autorizar_comprobante(tipo_cbte, cbte_nro, servicios=False)
         self.assertEqual(wsmtxca.Reproceso, "S")
         
         
