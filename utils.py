@@ -284,9 +284,8 @@ def dar_nombre_campo_dbf(clave, claves):
     return nombre.lower()
 
 
-def verifica(ver_list, res_dict):
-    "Verificar que dos diccionarios sean iguales, devuelve lista de diferencias"
-    difs = []
+def verifica(ver_list, res_dict, difs):
+    "Verificar que dos diccionarios sean iguales, actualiza lista diferencias"
     for k, v in ver_list.items():
         if isinstance(v, list):
             # verifico que ambas listas tengan la misma cantidad de elementos:
@@ -297,10 +296,10 @@ def verifica(ver_list, res_dict):
             else:
                 # comparo los elementos uno a uno:
                 for i, vl in enumerate(v):
-                    verifica(vl, res_dict[k][i])
+                    verifica(vl, res_dict[k][i], difs)
         elif isinstance(v, dict):
             # comparo recursivamente los elementos:
-            verifica(v, res_dict.get(k, {}))
+            verifica(v, res_dict.get(k, {}), difs)
         elif res_dict.get(k) is None or v is None:
             # alguno de los dos es nulo, verifico si ambos lo son o faltan
             if v=="":
@@ -320,7 +319,6 @@ def verifica(ver_list, res_dict):
         else:
             pass
             #print "%s: %s==%s" % (k, repr(v), repr(res_dict[k]))
-    return difs
     
 
 if __name__ == "__main__":
