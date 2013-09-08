@@ -633,7 +633,7 @@ class WSMTXCA:
                 },
             )
         # diferencias si hay reproceso:
-        difs = None
+        difs = []
         # analizo el resultado:
         if 'comprobante' in ret:
                 cbteresp = ret['comprobante']
@@ -666,37 +666,37 @@ class WSMTXCA:
                                 'codigoMtx': it['cod_mtx'],
                                 'codigo': it['codigo'],                
                                 'descripcion': it['ds'],
-                                'cantidad': it['qty'],
+                                'cantidad': it['qty'] and decimal.Decimal(it['qty']),
                                 'codigoUnidadMedida': it['umed'],
-                                'precioUnitario': it['precio'],
+                                'precioUnitario': it['precio'] and decimal.Decimal(it['precio']) or None,
                                 #'importeBonificacion': it['bonif'],
-                                'codigoCondicionIVA': it['iva_id'],
-                                'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
-                                'importeItem': it['imp_subtotal'],
+                                'codigoCondicionIVA': decimal.Decimal(it['iva_id']),
+                                'importeIVA': decimal.Decimal(it['imp_iva']) if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
+                                'importeItem': decimal.Decimal(it['imp_subtotal']),
                                 }}
                             for it in f['detalles']],
-                        #'arrayCbtesAsoc': [
-                        #    {'CbteAsoc': {
-                        #        'Tipo': cbte_asoc['tipo'],
-                        #        'PtoVta': cbte_asoc['pto_vta'], 
-                        #        'Nro': cbte_asoc['nro']}}
-                        #    for cbte_asoc in f['cbtes_asoc']],
+                        'arrayComprobantesAsociados': [
+                            {'comprobanteAsociado': {
+                                'codigoTipoComprobante': cbte_asoc['tipo'],
+                                'numeroPuntoVenta': cbte_asoc['pto_vta'], 
+                                'numeroComprobante': cbte_asoc['nro']}}
+                            for cbte_asoc in f['cbtes_asoc']],
                         'arrayOtrosTributos': [
                             {'otroTributo': {
                                 'codigo': tributo['tributo_id'], 
                                 'descripcion': tributo['desc'],
-                                'baseImponible': float(tributo['base_imp']),
-                                'importe': float(tributo['importe']),
+                                'baseImponible': decimal.Decimal(tributo['base_imp']),
+                                'importe': decimal.Decimal(tributo['importe']),
                                 }}
                             for tributo in f['tributos']],
                         'arraySubtotalesIVA': [ 
                             {'subtotalIVA': {
                                 'codigo': iva['iva_id'],
-                                'importe': float(iva['importe']),
+                                'importe': decimal.Decimal(iva['importe']),
                                 }}
                             for iva in f['iva']],
                         }
-                    difs = verifica(verificaciones, cbteresp)
+                    verifica(verificaciones, cbteresp, difs)
                     if difs:
                         print "Diferencias:", difs
                         self.__log("Diferencias: %s" % difs)
