@@ -44,6 +44,7 @@ wsaa.LoginCMS(cms)
 class TestMTX(unittest.TestCase):
 
     def setUp(self):
+        sys.argv.append("--trace")                  # TODO: use logging
         self.wsmtxca = wsmtxca = WSMTXCA()
         wsmtxca.Cuit = CUIT
         wsmtxca.Token = wsaa.Token
@@ -57,7 +58,7 @@ class TestMTX(unittest.TestCase):
         print "DbServerStatus", wsmtxca.DbServerStatus
         print "AuthServerStatus", wsmtxca.AuthServerStatus
     
-    def test_autorizar_comprobante(self, cbte_nro=None):
+    def test_autorizar_comprobante(self, cbte_nro=None, servicios=True):
         "Prueba de autorización de un comprobante (obtención de CAE)"
         wsmtxca = self.wsmtxca
         
@@ -68,14 +69,19 @@ class TestMTX(unittest.TestCase):
             cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             cbte_nro = long(cbte_nro) + 1
         fecha = datetime.datetime.now().strftime("%Y-%m-%d")
-        concepto = 3
         tipo_doc = 80; nro_doc = "30000000007"
         cbt_desde = cbte_nro; cbt_hasta = cbt_desde
         imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
         imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
-        fecha_cbte = fecha; fecha_venc_pago = fecha
+        fecha_cbte = fecha
         # Fechas del período del servicio facturado (solo si concepto = 1?)
-        fecha_serv_desde = fecha; fecha_serv_hasta = fecha
+        if servicios:
+            concepto = 3
+            fecha_venc_pago = fecha
+            fecha_serv_desde = fecha; fecha_serv_hasta = fecha
+        else:
+            concepto = 1
+            fecha_venc_pago = fecha_serv_desde = fecha_serv_hasta = None
         moneda_id = 'PES'; moneda_ctz = '1.000'
         obs = "Observaciones Comerciales, libre"
 
@@ -140,7 +146,7 @@ class TestMTX(unittest.TestCase):
         self.assertEqual(wsmtxca.ObtenerTagXml('arrayItems', 0, 'item', 'unidadesMtx'), '123456')
 
 
-    def test_reproceso(self):
+    def test_reproceso_servicios(self):
         "Prueba de autorización de un comprobante (obtención de CAE)"
         wsmtxca = self.wsmtxca
         # obtengo el próximo número de comprobante
@@ -154,6 +160,22 @@ class TestMTX(unittest.TestCase):
         self.assertEqual(wsmtxca.Reproceso, "")
         # intento reprocesar:
         self.test_autorizar_comprobante(cbte_nro)
+        self.assertEqual(wsmtxca.Reproceso, "S")
+
+    def test_reproceso_productos(self):
+        "Prueba de autorización de un comprobante (obtención de CAE)"
+        wsmtxca = self.wsmtxca
+        # obtengo el próximo número de comprobante
+        tipo_cbte = 1
+        punto_vta = 4000
+        nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+        cbte_nro = long(nro) + 1
+        # obtengo CAE
+        wsmtxca.Reprocesar = True
+        self.test_autorizar_comprobante(cbte_nro, servicios=False)
+        self.assertEqual(wsmtxca.Reproceso, "")
+        # intento reprocesar:
+        self.test_autorizar_comprobante(cbte_nro, servicios=False)
         self.assertEqual(wsmtxca.Reproceso, "S")
         
         
