@@ -289,16 +289,20 @@ def verifica(ver_list, res_dict):
     difs = []
     for k, v in ver_list.items():
         if isinstance(v, list):
+            # verifico que ambas listas tengan la misma cantidad de elementos:
             if v and not k in res_dict and v:
                 difs.append("falta tag %s: %s %s" % (k, repr(v), repr(res_dict.get(k))))
             elif len(res_dict.get(k, []))!=len(v or []):
                 difs.append("tag %s len !=: %s %s" % (k, repr(v), repr(res_dict.get(k))))
             else:
+                # comparo los elementos uno a uno:
                 for i, vl in enumerate(v):
                     verifica(vl, res_dict[k][i])
         elif isinstance(v, dict):
+            # comparo recursivamente los elementos:
             verifica(v, res_dict.get(k, {}))
         elif res_dict.get(k) is None or v is None:
+            # alguno de los dos es nulo, verifico si ambos lo son o faltan
             if v=="":
                 v = None
             r = res_dict.get(k)
@@ -306,8 +310,13 @@ def verifica(ver_list, res_dict):
                 r = None
             if not (r is None and v is None):
                 difs.append("%s: nil %s!=%s" % (k, repr(v), repr(r)))
+        elif type(res_dict.get(k)) == type(v):
+            # tipos iguales, los comparo directamente
+            if res_dict.get(k) != v:
+                difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))                 
         elif unicode(res_dict.get(k)) != unicode(v):
-            difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
+            # tipos diferentes, comparo la representación  
+            difs.append("%s: str %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
         else:
             pass
             #print "%s: %s==%s" % (k, repr(v), repr(res_dict[k]))
