@@ -294,9 +294,11 @@ def verifica(ver_list, res_dict, difs):
             elif len(res_dict.get(k, []))!=len(v or []):
                 difs.append("tag %s len !=: %s %s" % (k, repr(v), repr(res_dict.get(k))))
             else:
+                # ordeno las listas para poder compararlas si vienen mezcladas
+                rl = sorted(res_dict.get(k, []))
                 # comparo los elementos uno a uno:
-                for i, vl in enumerate(v):
-                    verifica(vl, res_dict[k][i], difs)
+                for i, vl in enumerate(sorted(v)):
+                    verifica(vl, rl[i], difs)
         elif isinstance(v, dict):
             # comparo recursivamente los elementos:
             verifica(v, res_dict.get(k, {}), difs)
