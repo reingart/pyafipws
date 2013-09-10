@@ -189,6 +189,31 @@ class TestTZM(unittest.TestCase):
         else:
             self.fail("no se devolvieron transacciones para confirmar!")    
         
+
+    def test_alertar(self):
+        "Prueba para alertar (rechazar) una transaccion no confirmada"
+        ws = self.ws
+        # obtengo las transacciones pendientes para confirmar:
+        ws.GetTransaccionesNoConfirmadas(
+            usuario='pruebasws', password='pruebasws',
+            id_medicamento="GTIN1", 
+            )
+        # no debería haber error:
+        self.assertFalse(ws.HayError)
+        # 
+        while ws.LeerTransaccion():
+            _id_transaccion = ws.GetParametro('_id_transaccion')
+            # alerto la transacción:
+            ws.SendAlertaTransacc(
+                usuario='pruebasws', password='pruebasws',
+                p_ids_transac_ws=_id_transaccion, 
+                )
+            # verifico que se haya confirmado correctamente:
+            self.assertTrue(ws.Resultado)
+            # salgo del ciclo (solo alerto una transacción)
+            break
+        else:
+            self.fail("no se devolvieron transacciones para alertar!")    
         
 if __name__ == '__main__':
     unittest.main()
