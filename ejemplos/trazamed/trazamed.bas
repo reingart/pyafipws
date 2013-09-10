@@ -190,5 +190,66 @@ Sub Main()
         Next
     End If
     
+    ' ----------------------------------------------------------------------
+    
+    ' Consulto las transacciones propias alertadas por el eslabón posterior:
+    
+    ' llamo al webservice para realizar la consulta:
+    ok = TrazaMed.GetEnviosPropiosAlertados(usuario, password, _
+        p_id_transaccion_global, id_agente_informador, _
+        id_agente_origen, id_agente_destino, id_medicamento, _
+        id_evento, fecha_desde_op, fecha_hasta_op, _
+        fecha_desde_t, fecha_hasta_t, _
+        fecha_desde_v, fecha_hasta_v, _
+        n_remito, n_factura)
+    If ok Then
+    ' recorro las transacciones devueltas (TransaccionPlainWS)
+        Do While TrazaMed.LeerTransaccion:
+            If MsgBox("GTIN:" & TrazaMed.GetParametro("_gtin") & vbCrLf & _
+                    "Estado: " & TrazaMed.GetParametro("_estado") & vbCrLf & _
+                    "CodigoTransaccion: " & TrazaMed.GetParametro("_id_transaccion"), _
+                    vbInformation + vbOKCancel, "GetEnviosPropiosAlertados") = vbCancel Then
+                Exit Do
+            End If
+            Debug.Print TrazaMed.GetParametro("_f_evento")
+            Debug.Print TrazaMed.GetParametro("_f_transaccion")
+            Debug.Print TrazaMed.GetParametro("_estado")
+            Debug.Print TrazaMed.GetParametro("_lote")
+            Debug.Print TrazaMed.GetParametro("_numero_serial")
+            Debug.Print TrazaMed.GetParametro("_razon_social_destino")
+            Debug.Print TrazaMed.GetParametro("_gln_destino")
+            Debug.Print TrazaMed.GetParametro("_d_evento")
+            Debug.Print TrazaMed.GetParametro("_razon_social_origen")
+            Debug.Print TrazaMed.GetParametro("_gln_origen")
+            Debug.Print TrazaMed.GetParametro("_nombre")
+            Debug.Print TrazaMed.GetParametro("_gtin")
+            Debug.Print TrazaMed.GetParametro("_id_transaccion")
+            Debug.Print TrazaMed.GetParametro("_n_factura")
+            Debug.Print TrazaMed.GetParametro("_n_remito")
+        Loop
+    Else
+        MsgBox TrazaMed.Traceback, vbCritical, TrazaMed.Excepcion
+    End If
+    
+    ' cancelación parcial de una transacción
+    
+    codigo_transaccion = "23312897"
+    numero_serial = "13788431940"
+    gtin_medicamento = "GTIN1"
+    ok = TrazaMed.SendCancelacTransaccParcial( _
+                                              usuario, password, _
+                                              codigo_transaccion, _
+                                              gtin_medicamento, _
+                                              numero_serial)
+     ' por el momento ANMAT devuelve error en pruebas:
+     If ok Then
+        Debug.Assert TrazaMed.Resultado
+        For Each er In TrazaMed.Errores
+            Debug.Print er
+            MsgBox er, vbExclamation, "Error en SendCancelacTransaccParcial"
+        Next
+    Else
+        MsgBox TrazaMed.Traceback, vbCritical, TrazaMed.Excepcion
+    End If
     
 End Sub
