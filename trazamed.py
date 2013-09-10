@@ -844,11 +844,6 @@ def main():
         if not medicamentos:
             if len(sys.argv)>16:
                 ws.SendMedicamentos(*sys.argv[1:])
-                print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
-                        ws.Resultado,
-                        ws.CodigoTransaccion,
-                        '|'.join(ws.Errores),
-                        )
             else:
                 print "ERROR: no se indicaron todos los parámetros requeridos"
         elif medicamentos:
@@ -884,6 +879,13 @@ def main():
         else:
             print "ERROR: no se especificaron medicamentos a informar"
             
+    if not medicamentos:
+        print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+                ws.Resultado,
+                ws.CodigoTransaccion,
+                '|'.join(ws.Errores),
+                )
+
     if ws.Excepcion:
         print ws.Traceback
 
