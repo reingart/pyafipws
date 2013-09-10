@@ -111,6 +111,20 @@ class TestTZM(unittest.TestCase):
         self.assertIsInstance(ws.CodigoTransaccion, basestring)
         self.assertEqual(len(ws.CodigoTransaccion), len("23312897")) 
 
+    def test_cancela_parcial(self):
+        "Prueba de cancelación parcial"
+        ws = self.ws
+        ws.SendCancelacTransaccParcial(
+            usuario='pruebasws', password='pruebasws',
+            codigo_transaccion="23312897", 
+            gtin_medicamento="GTIN1", 
+            numero_serial="13788431940")
+        # por el momento ANMAT devuelve error en pruebas:
+        self.assertFalse(ws.Resultado)
+        # verificar error "3: Transaccion NO encontrada, NO se puede anular."
+        self.assertEqual(ws.Errores[0][:2], "3:")
+        
+
 if __name__ == '__main__':
     unittest.main()
 
