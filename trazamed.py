@@ -874,7 +874,7 @@ def main():
                 print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                     ws.Resultado,
                     ws.CodigoTransaccion,
-                    '|'.join(ws.Errores),
+                    '|'.join(ws.Errores or []),
                     )
         else:
             print "ERROR: no se especificaron medicamentos a informar"
@@ -883,7 +883,7 @@ def main():
         print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                 ws.Resultado,
                 ws.CodigoTransaccion,
-                '|'.join(ws.Errores),
+                '|'.join(ws.Errores or []),
                 )
 
     if ws.Excepcion:
