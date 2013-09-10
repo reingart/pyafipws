@@ -158,6 +158,37 @@ class TestTZM(unittest.TestCase):
                 self.assertIsNot(valor, None)
         self.assert_(q)    
 
+
+    def test_confirmar(self):
+        "Prueba para confirmar las transacciones no confirmadas"
+        ws = self.ws
+        # obtengo las transacciones pendientes para confirmar:
+        ws.GetTransaccionesNoConfirmadas(
+            usuario='pruebasws', password='pruebasws',
+            id_medicamento="GTIN1", 
+            )
+        # no debería haber error:
+        self.assertFalse(ws.HayError)
+        # 
+        while ws.LeerTransaccion():
+            _id_transaccion = ws.GetParametro('_id_transaccion')
+            _f_operacion = datetime.datetime.now().strftime("%d/%m/%Y")
+            # confirmo la transacción:
+            ws.SendConfirmaTransacc(
+                usuario='pruebasws', password='pruebasws',
+                p_ids_transac=_id_transaccion, 
+                f_operacion=_f_operacion,
+                )
+            # verifico que se haya confirmado correctamente:
+            self.assertTrue(ws.Resultado)
+            # verifico que haya devuelto id_transac_asociada:
+            self.assertIsInstance(ws.CodigoTransaccion, basestring)
+            self.assertEqual(len(ws.CodigoTransaccion), len("23312897"))
+            # salgo del ciclo (solo confirmo una transacción)
+            break
+        else:
+            self.fail("no se devolvieron transacciones para confirmar!")    
+        
         
 if __name__ == '__main__':
     unittest.main()
