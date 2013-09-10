@@ -123,8 +123,24 @@ class TestTZM(unittest.TestCase):
         self.assertFalse(ws.Resultado)
         # verificar error "3: Transaccion NO encontrada, NO se puede anular."
         self.assertEqual(ws.Errores[0][:2], "3:")
-        
 
+    def test_consultar(self):
+        "Prueba para obtener las transacciones no confirmadas"
+        ws = self.ws
+        ws.GetTransaccionesNoConfirmadas(
+            usuario='pruebasws', password='pruebasws',
+            id_medicamento="GTIN1", 
+            )
+        
+        self.assertFalse(ws.HayError)
+        q = 0
+        while ws.LeerTransaccion():
+            q += 1
+            for clave in '_id_transaccion', '_gtin', '_lote', '_numero_serial':
+                valor = ws.GetParametro(clave)
+                self.assertIsNot(valor, None)
+        self.assert_(q)    
+        
 if __name__ == '__main__':
     unittest.main()
 
