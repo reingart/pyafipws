@@ -140,7 +140,7 @@ def inicializar_y_capturar_excepciones(func):
 class TrazaMed:
     "Interfaz para el WebService de Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP"
     _public_methods_ = ['SendMedicamentos',
-                        'SendCancelacTransacc',
+                        'SendCancelacTransacc', 'SendCancelacTransaccParcial',
                         'SendMedicamentosDHSerie',
                         'SendMedicamentosFraccion',
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
@@ -439,6 +439,25 @@ class TrazaMed:
             arg0=codigo_transaccion, 
             arg1=usuario, 
             arg2=password,
+        )
+
+        ret = res['return']
+        
+        self.CodigoTransaccion = ret['codigoTransaccion']
+        self.__analizar_errores(ret)
+
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def SendCancelacTransaccParcial(self, usuario, password, codigo_transaccion,
+                                    gtin_medicamento=None, numero_serial=None):
+        " Realiza la cancelación parcial de una transacción"
+        res = self.client.sendCancelacTransaccParcial(
+            arg0=codigo_transaccion, 
+            arg1=usuario, 
+            arg2=password,
+            arg3=gtin_medicamento,
+            arg4=numero_serial,
         )
 
         ret = res['return']
@@ -771,6 +790,8 @@ def main():
     
     if '--cancela' in sys.argv:
         ws.SendCancelacTransacc(*sys.argv[sys.argv.index("--cancela")+1:])
+    elif '--cancela_parcial' in sys.argv:
+        ws.SendCancelacTransaccParcial(*sys.argv[sys.argv.index("--cancela_parcial")+1:])
     elif '--confirma' in sys.argv:
         if '--loadxml' in sys.argv:
             ws.LoadTestXML("trazamed_confirma.xml")  # cargo respuesta
