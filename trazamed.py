@@ -16,7 +16,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11a"
+__version__ = "1.12a"
 
 import os
 import socket
@@ -32,7 +32,7 @@ from cStringIO import StringIO
 # importo funciones compartidas:
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf
 
-HOMO = False
+HOMO = True
 TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazamed.WebService?wsdl"
@@ -145,6 +145,7 @@ class TrazaMed:
                         'SendMedicamentosFraccion',
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
                         'GetTransaccionesNoConfirmadas',
+                        'GetEnviosPropiosAlertados',
                         'Conectar', 'LeerError', 'LeerTransaccion',
                         'SetUsername', 
                         'SetParametro', 'GetParametro',
@@ -556,6 +557,63 @@ class TrazaMed:
         else:
             return ""
 
+    @inicializar_y_capturar_excepciones
+    def GetEnviosPropiosAlertados(self, usuario, password, 
+                p_id_transaccion_global=None, id_agente_informador=None, 
+                id_agente_origen=None, id_agente_destino=None, 
+                id_medicamento=None, id_evento=None, 
+                fecha_desde_op=None, fecha_hasta_op=None, 
+                fecha_desde_t=None, fecha_hasta_t=None, 
+                fecha_desde_v=None, fecha_hasta_v=None, 
+                n_remito=None, n_factura=None,
+                ):
+        "Obtiene las distribuciones y envíos propios que han sido alertados"
+
+        # preparo los parametros de entrada opcionales:
+        kwargs = {}
+        if p_id_transaccion_global is not None:
+            kwargs['arg2'] = p_id_transaccion_global
+        if id_agente_informador is not None:
+            kwargs['arg3'] = id_agente_informador
+        if id_agente_origen is not None:
+            kwargs['arg4'] = id_agente_origen
+        if id_agente_destino is not None: 
+            kwargs['arg5'] = id_agente_destino
+        if id_medicamento is not None: 
+            kwargs['arg6'] = id_medicamento
+        if id_evento is not None: 
+            kwargs['arg7'] = id_evento
+        if fecha_desde_op is not None: 
+            kwargs['arg8'] = fecha_desde_op
+        if fecha_hasta_op is not None: 
+            kwargs['arg9'] = fecha_hasta_op
+        if fecha_desde_t is not None: 
+            kwargs['arg10'] = fecha_desde_t
+        if fecha_hasta_t is not None: 
+            kwargs['arg11'] = fecha_hasta_t
+        if fecha_desde_v is not None: 
+            kwargs['arg12'] = fecha_desde_v
+        if fecha_hasta_v is not None: 
+            kwargs['arg13'] = fecha_hasta_v
+        if n_remito is not None: 
+            kwargs['arg14'] = n_remito
+        if n_factura is not None: 
+            kwargs['arg15'] = n_factura
+
+        # llamo al webservice
+        res = self.client.getEnviosPropiosAlertados(
+            arg0=usuario, 
+            arg1=password,
+            **kwargs
+        )
+        ret = res['return']
+        if ret:
+            self.__analizar_errores(ret)
+            self.CantPaginas = ret.get('cantPaginas')
+            self.HayError = ret.get('hay_error')
+            self.TransaccionPlainWS = [it for it in ret.get('list', [])]
+        return True
+
     def SetUsername(self, username):
         "Establezco el nombre de usuario"        
         self.Username = username
@@ -724,7 +782,12 @@ def main():
     elif '--alerta' in sys.argv:
         ws.SendAlertaTransacc(*sys.argv[sys.argv.index("--alerta")+1:])
     elif '--consulta' in sys.argv:
-        ws.GetTransaccionesNoConfirmadas(
+        if '--alertados' in sys.argv:
+            ws.GetEnviosPropiosAlertados(
+                                *sys.argv[sys.argv.index("--alertados")+1:]
+                                )
+        else:
+            ws.GetTransaccionesNoConfirmadas(
                                 *sys.argv[sys.argv.index("--consulta")+1:]
                                 #usuario="pruebasws", password="pruebasws", 
                                 #p_id_transaccion_global="1234", 
