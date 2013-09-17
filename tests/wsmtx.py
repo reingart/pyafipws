@@ -58,7 +58,7 @@ class TestMTX(unittest.TestCase):
         print "DbServerStatus", wsmtxca.DbServerStatus
         print "AuthServerStatus", wsmtxca.AuthServerStatus
     
-    def test_autorizar_comprobante(self, tipo_cbte=1, cbte_nro=None, servicios=True):
+    def test_autorizar_comprobante(self, tipo_cbte=1, cbte_nro=None, servicios=True, tributos=True):
         "Prueba de autorización de un comprobante (obtención de CAE)"
         wsmtxca = self.wsmtxca
         
@@ -71,8 +71,16 @@ class TestMTX(unittest.TestCase):
         fecha = datetime.datetime.now().strftime("%Y-%m-%d")
         tipo_doc = 80; nro_doc = "30000000007"
         cbt_desde = cbte_nro; cbt_hasta = cbt_desde
-        imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
-        imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
+        imp_tot_conc = "0.00" 
+        imp_neto = "100.00"
+        if tributos:
+            imp_total = "123.00"
+            imp_trib = "2.00"
+        else:
+            imp_total = "121.00"
+            imp_trib = "0.00"        
+        imp_op_ex = "0.00"; 
+        imp_subtotal = "100.00"
         fecha_cbte = fecha
         # Fechas del período del servicio facturado (solo si concepto = 1?)
         if servicios:
@@ -98,17 +106,26 @@ class TestMTX(unittest.TestCase):
             nro = 1234
             wsmtxca.AgregarCmpAsoc(tipo, pv, nro)
         
-        # agrego otros tributos:
-        tributo_id = 99
-        desc = 'Impuesto Municipal Matanza'
-        base_imp = "100.00"
-        alic = "1.00"
-        importe = "1.00"
-        wsmtxca.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+        if tributos:
+            # agrego otros tributos:
+            tributo_id = 99
+            desc = 'Impuesto Municipal Matanza'
+            base_imp = "100.00"
+            alic = "1.00"
+            importe = "1.00"
+            wsmtxca.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+
+            # agrego otros tributos:
+            tributo_id = 1
+            desc = 'Impuestos Internos'
+            base_imp = "100.00"
+            alic = "1.00"
+            importe = "1.00"
+            wsmtxca.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
         # agrego el subtotal por tasa de IVA:
         iva_id = 5 # 21%
-        base_im = 100
+        base_imp = "100.00"
         importe = 21
         wsmtxca.AgregarIva(iva_id, base_imp, importe)
         
@@ -202,6 +219,23 @@ class TestMTX(unittest.TestCase):
         # intento reprocesar:
         self.test_autorizar_comprobante(tipo_cbte, cbte_nro, servicios=False)
         self.assertEqual(wsmtxca.Reproceso, "S")
+
+    def test_reproceso_sin_tributos(self):
+        "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
+        wsmtxca = self.wsmtxca
+        # obtengo el próximo número de comprobante
+        tipo_cbte = 1
+        punto_vta = 4000
+        nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+        cbte_nro = long(nro) + 1
+        # obtengo CAE (sin tributos)
+        wsmtxca.Reprocesar = True
+        self.test_autorizar_comprobante(tipo_cbte, cbte_nro, tributos=False)
+        self.assertEqual(wsmtxca.Reproceso, "")
+        # intento reprocesar:
+        self.test_autorizar_comprobante(tipo_cbte, cbte_nro, tributos=False)
+        self.assertEqual(wsmtxca.Reproceso, "S")
+
         
         
 if __name__ == '__main__':

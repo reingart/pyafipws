@@ -29,7 +29,7 @@ from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_p
 from cStringIO import StringIO
 from utils import verifica
 
-HOMO = True
+HOMO = False
 
 WSDL="https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
@@ -653,7 +653,7 @@ class WSMTXCA:
                         'importeNoGravado': decimal.Decimal(f['imp_tot_conc']),
                         'importeGravado': decimal.Decimal(f['imp_neto']),
                         'importeExento': decimal.Decimal(f['imp_op_ex']),
-                        'importeOtrosTributos': f['imp_trib'] and decimal.Decimal(f['imp_trib']) or 0.0,
+                        'importeOtrosTributos': f['tributos'] and decimal.Decimal(f['imp_trib']) or None,
                         'importeSubtotal': f['imp_subtotal'],
                         'fechaServicioDesde': f.get('fecha_serv_desde'),
                         'fechaServicioHasta': f.get('fecha_serv_hasta'),
