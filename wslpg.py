@@ -568,6 +568,9 @@ class WSLPG:
                            campania=None, fecha_cierre=None, 
                            peso_neto_total_certificado=None, **kwargs):
         "Agrego el certificado a la liquidación"
+        # limpio campos opcionales:
+        if not peso_neto_total_certificado:
+            peso_neto_total_certificado = None  # 0 no es válido
         self.liquidacion['certificados'].append(
                     dict(certificado=dict(
                         tipoCertificadoDeposito=tipo_certificado_deposito,
