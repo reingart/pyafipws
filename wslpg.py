@@ -969,11 +969,15 @@ class WSLPG:
         "Ajustar Liquidación Primaria de Granos"
         
         # limpiar estructuras no utilizadas (si no hay deducciones / retenciones)
-        for ajuste in (self.ajuste['ajusteDebito'], self.ajuste['ajusteCredito']):
-            if not ajuste['deducciones']:
-                del ajuste['deducciones']
-            if not ajuste['retenciones']:
-                del ajuste['retenciones']
+        for k in ('ajusteDebito', 'ajusteCredito'):
+            if not any(self.ajuste[k].values()):
+                del self.ajuste[k]
+            else:
+                if not self.ajuste[k]['deducciones']:
+                    del self.ajuste[k]['deducciones']
+                if not self.ajuste[k]['retenciones']:
+                    del self.ajuste[k]['retenciones']
+
         # llamar al webservice:
         ret = self.client.liquidacionAjustarUnificado(
                         auth={
