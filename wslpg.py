@@ -968,12 +968,20 @@ class WSLPG:
     def AjustarLiquidacionUnificado(self):
         "Ajustar Liquidación Primaria de Granos"
         
+        # limpiar estructuras no utilizadas (si no hay deducciones / retenciones)
+        for ajuste in (self.ajuste['ajusteDebito'], self.ajuste['ajusteCredito']):
+            if not ajuste['deducciones']:
+                del ajuste['deducciones']
+            if not ajuste['retenciones']:
+                del ajuste['retenciones']
+        # llamar al webservice:
         ret = self.client.liquidacionAjustarUnificado(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         **self.ajuste
                         )
+        # analizar el resultado:
         ret = ret['ajusteUnifReturn']
         self.__analizar_errores(ret)
         if 'ajusteUnificado' in ret:
