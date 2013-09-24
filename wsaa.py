@@ -19,12 +19,17 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.05a"
+__version__ = "2.06a"
 
 import datetime,email,os,sys,traceback
 from php import date
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-from M2Crypto import BIO, Rand, SMIME, SSL
+try:
+    from M2Crypto import BIO, Rand, SMIME, SSL
+except ImportError:
+    BIO = Rand = SMIME = SSL = None
+    from subprocess import Popen, PIPE
+    from base64 import b64encode
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"  # El WSDL correspondiente al WSAA 
@@ -42,8 +47,8 @@ SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL
 # Verificación del web server remoto
 CACERT = "afip_ca_info.crt" # WSAA CA Cert
 
-HOMO = True
-TYPELIB = False
+HOMO = False
+TYPELIB = True
 
 # No debería ser necesario modificar nada despues de esta linea
 
@@ -66,30 +71,41 @@ def create_tra(service=SERVICE,ttl=2400):
 def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
 
-    # Firmar el texto (tra)
-    buf = BIO.MemoryBuffer(tra)             # Crear un buffer desde el texto
-    #Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
-    s = SMIME.SMIME()                       # Instanciar un SMIME
-    if privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
-        key_bio = BIO.MemoryBuffer(privatekey)
-        crt_bio = BIO.MemoryBuffer(cert)
-        s.load_key_bio(key_bio, crt_bio)        # Cargar certificados (buffer)
-    elif os.path.exists(privatekey) and os.path.exists(cert):
-        s.load_key(privatekey, cert)            # Cargar certificados (archivo)
+    if BIO:
+        # Firmar el texto (tra) usando m2crypto (openssl bindings para python)
+        buf = BIO.MemoryBuffer(tra)             # Crear un buffer desde el texto
+        #Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
+        s = SMIME.SMIME()                       # Instanciar un SMIME
+        if privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
+            key_bio = BIO.MemoryBuffer(privatekey)
+            crt_bio = BIO.MemoryBuffer(cert)
+            s.load_key_bio(key_bio, crt_bio)        # Cargar certificados (buffer)
+        elif os.path.exists(privatekey) and os.path.exists(cert):
+            s.load_key(privatekey, cert)            # Cargar certificados (archivo)
+        else:
+            raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
+        p7 = s.sign(buf,0)                      # Firmar el buffer
+        out = BIO.MemoryBuffer()                # Crear un buffer para la salida 
+        s.write(out, p7)                        # Generar p7 en formato mail
+        #Rand.save_file('randpool.dat')         # Guardar el estado del PRNG's
+
+        # extraer el cuerpo del mensaje (parte firmada)
+        msg = email.message_from_string(out.read())
+        for part in msg.walk():
+            filename = part.get_filename()
+            if filename == "smime.p7m":                 # es la parte firmada?
+                return part.get_payload(decode=False)   # devolver CMS
     else:
-        raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
-    p7 = s.sign(buf,0)                      # Firmar el buffer
-    out = BIO.MemoryBuffer()                # Crear un buffer para la salida 
-    s.write(out, p7)                        # Generar p7 en formato mail
-    #Rand.save_file('randpool.dat')         # Guardar el estado del PRNG's
+        # Firmar el texto (tra) usando OPENSSL directamente
+        out = Popen(["openssl", "smime", "-sign", 
+                     "-signer", cert, "-inkey", privatekey,
+                     "-outform","DER", 
+                     "-out", "cms.bin" , "-nodetach"], 
+                    stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
+        out = open("cms.bin","rb").read()
+        return b64encode(out)
 
-    # extraer el cuerpo del mensaje (parte firmada)
-    msg = email.message_from_string(out.read())
-    for part in msg.walk():
-        filename = part.get_filename()
-        if filename == "smime.p7m":                 # es la parte firmada?
-            return part.get_payload(decode=False)   # devolver CMS
-
+                
 def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
     "Llamar web service con CMS para obtener ticket de autorización (TA)"
 
