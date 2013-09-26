@@ -32,6 +32,15 @@ int main(int argc, char *argv[]) {
         tra = (*lpFunc)("wsfe", (long)3600);
         printf("TRA: %s\n", tra);
         /* libero la memoria alojada por el string devuelto */
+    }
+    /* obtengo los punteros a las funciones exportadas en la librería */
+    lpFunc = GetProcAddress(hPyAfipWsDll , "WSAA_SignTRA");
+    if (lpFunc != (FARPROC) NULL) {
+        /* llamo al método de la DLL para obtener el requerimiento firmado */
+        cms = (*lpFunc)(tra, "reingart.crt", "reingart.key");
+        printf("CMS: %s\n", cms);
+        /* libero la memoria alojada por el string devuelto */
+        (*lpFree)(cms);
         (*lpFree)(tra);
     }
   }
