@@ -99,10 +99,8 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY):
         # Firmar el texto (tra) usando OPENSSL directamente
         out = Popen(["openssl", "smime", "-sign", 
                      "-signer", cert, "-inkey", privatekey,
-                     "-outform","DER", 
-                     "-out", "cms.bin" , "-nodetach"], 
+                     "-outform","DER", "-nodetach"], 
                     stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
-        out = open("cms.bin","rb").read()
         return b64encode(out)
 
                 
