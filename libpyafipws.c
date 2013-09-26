@@ -274,6 +274,7 @@ EXPORT bool STDCALL PYAFIPWS_Set(void * object, char * name, char * value) {
 
 /* deallocation function for libpyafipws string values */
 EXPORT void STDCALL PYAFIPWS_Free(BSTR psz) {
+    if (psz != (BSTR) NULL)
     #ifdef WIN32
         SysFreeString(psz);
     #else
