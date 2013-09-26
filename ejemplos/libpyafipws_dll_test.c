@@ -14,7 +14,7 @@
 #include <windows.h>
 
 int main(int argc, char *argv[]) {
-  BSTR tra, cms, ta, ret;
+  BSTR tra=NULL, cms=NULL, ta=NULL, ret;
   void *wsfev1;
   bool ok;
   long nro;
@@ -35,14 +35,23 @@ int main(int argc, char *argv[]) {
     }
     /* obtengo los punteros a las funciones exportadas en la librería */
     lpFunc = GetProcAddress(hPyAfipWsDll , "WSAA_SignTRA");
-    if (lpFunc != (FARPROC) NULL) {
+    if ((lpFunc != (FARPROC) NULL) && tra) {
         /* llamo al método de la DLL para obtener el requerimiento firmado */
         cms = (*lpFunc)(tra, "reingart.crt", "reingart.key");
         printf("CMS: %s\n", cms);
         /* libero la memoria alojada por el string devuelto */
-        (*lpFree)(cms);
-        (*lpFree)(tra);
     }
+    /* obtengo los punteros a las funciones exportadas en la librería */
+    lpFunc = GetProcAddress(hPyAfipWsDll , "WSAA_LoginCMS");
+    if ((lpFunc != (FARPROC) NULL) && cms) {
+        /* llamo al método de la DLL para obtener el ticket de acceso via ws */
+        cms = (*lpFunc)(cms);
+        printf("TA: %s\n", cms);
+    }
+    /* libero la memoria alojada por el string devuelto */
+    (*lpFree)(cms);
+    (*lpFree)(tra);
+    (*lpFree)(ta);
   }
   FreeLibrary(hPyAfipWsDll);
 }
