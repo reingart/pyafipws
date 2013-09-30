@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.09c"
+__version__ = "1.09d"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -973,8 +973,10 @@ if __name__ == '__main__':
         if "--consultar" in sys.argv:
             wsctg.LanzarExcepciones = True
             wsctg.ConsultarCTG(fecha_emision_desde="01/04/2012")
+            print "Numero CTG - Carta de Porte - Imprime Constancia - Estado"
             while wsctg.LeerDatosCTG():
-                print "numero CTG: ", wsctg.NumeroCTG
+                print wsctg.NumeroCTG, wsctg.CartaPorte,
+                print wsctg.ImprimeConstancia, wsctg.Estado, wsctg.FechaHora
 
         if '--consultar_excel' in sys.argv:
             archivo = raw_input("Archivo a generar (planilla.xls): ") or \
