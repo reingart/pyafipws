@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07c"
+__version__ = "1.07d"
 
 DEBUG = False
 HOMO = True
@@ -732,7 +732,11 @@ class FEPDF:
 
     def GenerarPDF(self, archivo=""):
         "Generar archivo de salida en formato PDF"
-        self.template.render(archivo)
+        if not archivo:
+            dest = "S"  # devolver buffer (string)
+        else:
+            dest = "F"  # guardar en archivo
+        return self.template.render(archivo, dest)
 
     def MostrarPDF(self, archivo, imprimir=False):
         if sys.platform=="linux2":
