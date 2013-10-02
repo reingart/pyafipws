@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09b"
+__version__ = "1.09c"
 
 import datetime
 import decimal
@@ -85,7 +85,7 @@ class WSMTXCA:
     "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 
-                        'AutorizarComprobante', 
+                        'AutorizarComprobante', 'CAESolicitar', 
                         'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
                         'InformarComprobanteCAEA', 
                         'InformarCAEANoUtilizado', 'InformarCAEANoUtilizadoPtoVta',
@@ -396,6 +396,16 @@ class WSMTXCA:
         if 'evento' in ret:
             self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
         return self.CAE
+    
+    @inicializar_y_capturar_excepciones
+    def CAESolicitar(self):
+        try:
+            cae = self.AutorizarComprobante() or ''
+            self.Excepcion = "OK!"
+        except:
+            cae = "ERR"
+        finally:
+            return cae
 
     @inicializar_y_capturar_excepciones
     def SolicitarCAEA(self, periodo, orden):
