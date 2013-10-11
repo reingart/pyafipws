@@ -48,7 +48,7 @@ SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL
 CACERT = "afip_ca_info.crt" # WSAA CA Cert
 
 HOMO = False
-TYPELIB = True
+TYPELIB = False
 
 # No debería ser necesario modificar nada despues de esta linea
 
