@@ -2724,46 +2724,61 @@ if __name__ == '__main__':
             conf_liq = dict(config.items('LIQUIDACION'))
             conf_pdf = dict(config.items('PDF'))
         
-            # cargo el formato CSV por defecto (liquidacion....csv)
-            wslpg.CargarFormatoPDF(conf_liq.get("formato"))
-            
             # establezco formatos (cantidad de decimales) según configuración:
             wslpg.FmtCantidad = conf_liq.get("fmt_cantidad", "0.2")
             wslpg.FmtPrecio = conf_liq.get("fmt_precio", "0.2")
 
-            # datos fijos (configuracion):
-            for k, v in conf_pdf.items():
-                wslpg.AgregarDatoPDF(k, v)
+            # determino el formato según el tipo de liquidación y datos
+            if '--ajuste' not in sys.argv:
+                # liquidación estándar
+                formatos = ['formato']
+                copias = int(conf_liq.get("copias", 3))
+            else:
+                # ajustes (páginas distintas), revisar si hay debitos/creditos:
+                formatos = ['formato_ajuste_base']
+                copias = 1
+                if liq['ajustedebito']:
+                    formatos.append('formato_ajuste_debcred')
+                if liq['ajustecredito']:
+                    formatos.append('formato_ajuste_debcred')
 
-            # datos adicionales (tipo de registro 9):
-            for dato in liq.get('datos', []):
-                wslpg.AgregarDatoPDF(dato['campo'], dato['valor'])
-                if DEBUG: print "DATO", dato['campo'], dato['valor']
+            for formato in formatos:                
+                # cargo el formato CSV por defecto (liquidacion....csv)
+                wslpg.CargarFormatoPDF(conf_liq.get(formato))
+                
+                # datos fijos (configuracion):
+                for k, v in conf_pdf.items():
+                    wslpg.AgregarDatoPDF(k, v)
+
+                # datos adicionales (tipo de registro 9):
+                for dato in liq.get('datos', []):
+                    wslpg.AgregarDatoPDF(dato['campo'], dato['valor'])
+                    if DEBUG: print "DATO", dato['campo'], dato['valor']
 
 
-            wslpg.CrearPlantillaPDF(papel=conf_liq.get("papel", "legal"), 
-                                 orientacion=conf_liq.get("orientacion", "portrait"))
-            wslpg.ProcesarPlantillaPDF(num_copias=int(conf_liq.get("copias", 3)),
-                                    lineas_max=int(conf_liq.get("lineas_max", 24)),
-                                    qty_pos=conf_liq.get("cant_pos") or 'izq')
-            if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
+                wslpg.CrearPlantillaPDF(papel=conf_liq.get("papel", "legal"), 
+                                     orientacion=conf_liq.get("orientacion", "portrait"))
+                wslpg.ProcesarPlantillaPDF(num_copias=copias,
+                                        lineas_max=int(conf_liq.get("lineas_max", 24)),
+                                        qty_pos=conf_liq.get("cant_pos") or 'izq')
+                if wslpg.Excepcion:
+                    print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                    if DEBUG: print >> sys.stderr, wslpg.Traceback
 
-            salida = conf_liq.get("salida", "")
+                salida = conf_liq.get("salida", "")
 
-            # genero el nombre de archivo según datos de factura
-            d = os.path.join(conf_liq.get('directorio', "."), 
-                             liq['fecha_liquidacion'].replace("-", "_"))
-            if not os.path.isdir(d):
-                if DEBUG: print "Creando directorio!", d 
-                os.makedirs(d)
-            fs = conf_liq.get('archivo','pto_emision,nro_orden').split(",")
-            fn = u'_'.join([unicode(liq.get(ff,ff)) for ff in fs])
-            fn = fn.encode('ascii', 'replace').replace('?','_')
-            salida = os.path.join(d, "%s.pdf" % fn)
-            wslpg.GenerarPDF(archivo=salida)
-            print "Generando PDF", salida
+                # genero el nombre de archivo según datos de factura
+                d = os.path.join(conf_liq.get('directorio', "."), 
+                                 liq['fecha_liquidacion'].replace("-", "_"))
+                if not os.path.isdir(d):
+                    if DEBUG: print "Creando directorio!", d 
+                    os.makedirs(d)
+                fs = conf_liq.get('archivo','pto_emision,nro_orden').split(",")
+                fn = u'_'.join([unicode(liq.get(ff,ff)) for ff in fs])
+                fn = fn.encode('ascii', 'replace').replace('?','_')
+                salida = os.path.join(d, "%s.pdf" % fn)
+                wslpg.GenerarPDF(archivo=salida)
+                print "Generando PDF", salida
             if '--mostrar' in sys.argv:
                 wslpg.MostrarPDF(archivo=salida,
                                  imprimir='--imprimir' in sys.argv)
