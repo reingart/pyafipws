@@ -1753,7 +1753,8 @@ class WSLPG:
                 f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
                 f.set("tipo_operacion", datos.TIPOS_OP[int(liq['cod_tipo_operacion'])])
                 f.set("actividad", datos.ACTIVIDADES.get(int(liq['nro_act_comprador']), ""))
-                f.set("grano", datos.GRANOS[int(liq['cod_grano'])])
+                if 'cod_grano' in liq and liq['cod_grano']:
+                    f.set("grano", datos.GRANOS[int(liq['cod_grano'])])
                 cod_puerto = int(liq['cod_puerto'])
                 if cod_puerto in datos.PUERTOS:
                     f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
