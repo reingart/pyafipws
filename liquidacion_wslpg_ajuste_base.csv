@@ -1,0 +1,81 @@
+'Fondo';'I';12.50;12.50;208.50;295.50;'Arial';0;0;0;0;0;0;'I';'liquidacion_wslpg_ajuste_base.png';-3
+'actividad';'T';90.50;37.10;198.90;42.50;'Arial';9;False;False;False;0;16777215;'L';'actividad';0
+'actividad.L';'T';73.10;36.80;90.30;42.60;'Arial';9;False;False;False;0;16777215;'L';'Actividad:';0
+'actua_corredor';'T';50.20;92.90;57.40;97.00;'Arial';9;False;False;False;0;16777215;'L';'N';0
+'anulado';'T';172.70;19.50;203.00;25.30;'Arial';9;False;False;False;0;16777215;'R';'';0
+'art_27';'T';19.00;86.90;198.30;91.00;'Arial';9;False;False;False;0;16777215;'L';'Art. 27 inc. ..........';0
+'certificados_deposito';'T';19.60;135.90;198.80;140.00;'Arial';9;False;False;False;0;16777215;'L';'';0
+'cod_tipo_operacion';'T';51.20;32.70;59.80;38.50;'Arial';9;False;False;False;0;16777215;'L';'op.';0
+'coe';'T';31.40;41.10;70.90;46.90;'Arial';9;False;False;False;0;16777215;'L';'COE';0
+'coe_relacionados';'T';120.70;105.20;198.00;109.30;'Arial';9;False;False;False;0;16777215;'L';'coe_relacionados';0
+'coe_relacionados.L';'T';87.60;105.20;119.00;109.30;'Arial';9;True;False;False;0;16777215;'L';'Coes Relacionados:';0
+'comprador';'T';23.70;48.40;100.20;54.20;'Arial';11;True;False;False;0;16777215;'C';'COMPRADOR:';0
+'comprador';'T';22.30;287.60;98.80;293.40;'Arial';11;True;False;False;0;16777215;'C';'COMPRADOR:';0
+'constancia';'T';18.10;262.80;197.40;266.90;'Arial';9;False;False;False;0;16777215;'L';'';0
+'cont_proteico';'T';116.40;129.80;135.30;133.90;'Arial';9;False;False;False;0;16777215;'C';'c_prot.';0
+'copia';'T';172.70;25.10;203.00;30.90;'Arial';9;False;False;False;0;16777215;'R';'copia';0
+'cuit_comprador';'T';41.50;70.70;99.80;76.50;'Arial';9;False;False;False;0;16777215;'L';'cuit_comprador';0
+'cuit_corredor';'T';167.80;92.70;198.50;96.80;'Arial';9;False;False;False;0;16777215;'L';'';0
+'cuit_vendedor';'T';139.30;70.80;198.30;76.60;'Arial';9;False;False;False;0;16777215;'L';'cuit_vendedor';0
+'datos_adicionales1';'T';18.10;266.80;204.80;270.90;'Arial';9;False;False;False;0;16777215;'L';'';0
+'datos_adicionales2';'T';18.10;270.80;204.80;274.90;'Arial';9;False;False;False;0;16777215;'L';'';0
+'datos_adicionales3';'T';18.10;274.80;204.80;278.90;'Arial';9;False;False;False;0;16777215;'L';'';0
+'datos_adicionales4';'T';18.10;278.80;204.80;282.90;'Arial';9;False;False;False;0;16777215;'L';'';0
+'datos_adicionales5';'T';18.10;282.80;204.80;286.90;'Arial';9;False;False;False;0;16777215;'L';'';0
+'domicilio1_comprador';'T';41.50;59.00;99.80;64.80;'Arial';9;False;False;False;0;16777215;'L';'domicilio1_comprador';0
+'domicilio1_vendedor';'T';139.30;58.90;198.30;64.70;'Arial';9;False;False;False;0;16777215;'L';'domicilio1_vendedor';0
+'domicilio2_comprador';'T';41.50;62.90;99.80;68.70;'Arial';9;False;False;False;0;16777215;'L';'domicilio2_comprador';0
+'domicilio2_vendedor';'T';139.30;62.80;198.30;68.60;'Arial';9;False;False;False;0;16777215;'L';'domicilio2_vendedor';0
+'domicilio_corredor';'T';87.60;98.70;147.90;102.80;'Arial';9;False;False;False;0;16777215;'L';'';0
+'factor_ent';'T';101.80;129.70;113.10;133.80;'Arial';9;False;False;False;0;16777215;'R';'fact.';0
+'fecha_liq.L';'T';151.70;41.80;180.80;45.90;'Arial';9;False;False;False;0;16777215;'L';'Fecha Liquidaci\xf3n:';0
+'fecha_liquidacion';'T';178.10;41.70;202.40;45.80;'Arial';9;False;False;False;0;16777215;'R';'fecha_liq.';0
+'forma_pago';'T';18.40;161.30;197.70;165.40;'Arial';9;False;False;False;0;16777215;'L';'';0
+'formulario';'T';117.50;25.10;171.50;30.90;'Arial';12;True;False;False;0;16777215;'L';'"Formulario 1116 B" (plantilla de muestra)';0
+'iva_comprador';'T';41.50;74.70;99.70;80.50;'Arial';9;False;False;False;0;16777215;'L';'iva_comprador';0
+'iva_deducciones';'T';53.80;189.70;82.20;193.80;'Arial';9;False;False;False;0;16777215;'R';'iva_deducciones';0
+'iva_vendedor';'T';139.30;75.00;198.40;80.80;'Arial';9;False;False;False;0;16777215;'L';'iva_vendedor';0
+'leyenda_coe_nro';'T';18.90;105.30;50.30;109.40;'Arial';9;True;False;False;0;16777215;'L';'';0
+'localidad_comprador';'T';41.50;66.90;99.70;72.70;'Arial';9;False;False;False;0;16777215;'L';'localidad_comprador';0
+'localidad_vendedor';'T';139.30;66.80;198.40;72.60;'Arial';9;False;False;False;0;16777215;'L';'localidad_vendedor';0
+'lugar_y_fecha';'T';117.70;13.40;203.30;19.20;'Arial';9;False;False;False;0;16777215;'R';'lugar y fecha';0
+'nombre_comprador';'T';41.50;54.70;99.70;60.50;'Arial';9;False;False;False;0;16777215;'L';'nombre_comprador';0
+'nombre_corredor';'T';87.60;92.70;147.90;96.80;'Arial';9;False;False;False;0;16777215;'L';'';0
+'nombre_vendedor';'T';139.30;54.80;198.40;60.60;'Arial';9;False;False;False;0;16777215;'L';'nombre_vendedor';0
+'nro_contrato_o_coe_ajustado';'T';51.30;105.20;82.00;109.30;'Arial';9;False;False;False;0;16777215;'L';'';0
+'nro_ing_bruto_comprador';'T';49.80;78.90;99.80;84.70;'Arial';9;False;False;False;0;16777215;'L';'nro_ing_bruto_comprador';0
+'nro_ing_bruto_vendedor';'T';148.30;79.00;198.30;84.80;'Arial';9;False;False;False;0;16777215;'L';'nro_ing_bruto_vendedor';0
+'nro_op_comercial';'T';58.80;36.90;71.30;42.70;'Arial';9;False;False;False;0;16777215;'L';'nro_op_comercial';0
+'nro_orden';'T';174.50;32.70;202.60;38.50;'Arial';9;False;False;False;0;16777215;'R';'nro_orden';0
+'nro_orden.L';'T';161.30;32.80;177.70;38.60;'Arial';9;False;False;False;0;16777215;'L';'N\xb0 Orden:';0
+'procedencia';'T';137.20;129.70;198.90;133.80;'Arial';9;False;False;False;0;16777215;'L';'procedencia';0
+'pto_emision';'T';151.90;32.70;161.10;38.50;'Arial';9;False;False;False;0;16777215;'R';'pto_emision';0
+'pto_emision.L';'T';124.10;32.70;152.20;38.50;'Arial';9;False;False;False;0;16777215;'L';'Punto de Emsion:';0
+'subtotal';'T';53.70;177.70;82.10;181.80;'Arial';9;False;False;False;0;16777215;'R';'subtotal';0
+'subtotal_deb_cred';'T';53.80;185.70;82.20;189.80;'Arial';9;False;False;False;0;16777215;'R';'subtotal_deb_cred';0
+'tipo_ajuste';'T';73.10;41.50;151.00;46.90;'Arial';9;True;False;False;0;16777215;'L';'tipo_ajuste';0
+'tipo_operacion';'T';58.70;32.80;128.00;38.60;'Arial';9;False;False;False;0;16777215;'L';'tipo_operacion';0
+'total_base_deducciones';'T';53.80;181.70;82.20;185.80;'Arial';9;False;False;False;0;16777215;'R';'total_base_deducciones';0
+'total_deduccion.L';'T';22.40;181.70;50.80;185.80;'Arial';9;False;False;False;0;16777215;'L';'Total deducciones:';0
+'total_deduccion.L_copy';'T';22.40;185.70;50.80;189.80;'Arial';9;False;False;False;0;16777215;'L';'Subtotal:';0
+'total_deduccion.L_copy_copy';'T';22.40;193.70;50.80;197.80;'Arial';9;False;False;False;0;16777215;'L';'IVA 10.5%:';0
+'total_deduccion.L_copy_copy';'T';22.40;189.70;50.80;193.80;'Arial';9;False;False;False;0;16777215;'L';'IVA de las Deducciones:';0
+'total_deduccion.L_copy_copy_copy';'T';22.40;197.70;50.80;201.80;'Arial';9;False;False;False;0;16777215;'L';'IVA 21%:';0
+'total_iva_10_5';'T';53.80;193.70;82.20;197.80;'Arial';9;False;False;False;0;16777215;'R';'total_iva_10_5';0
+'total_iva_21';'T';53.80;197.70;82.20;201.80;'Arial';9;False;False;False;0;16777215;'R';'total_iva_21';0
+'total_iva_rg_2300_07';'T';53.80;217.70;82.20;221.80;'Arial';9;False;False;False;0;16777215;'R';'total_iva_rg_2300_07';0
+'total_iva_rg_2300_07.L';'T';22.40;217.70;50.80;221.80;'Arial';9;False;False;False;0;16777215;'L';'Total IVA RG 2300/07:';0
+'total_neto_a_pagar';'T';53.80;213.70;82.20;217.80;'Arial';9;False;False;False;0;16777215;'R';'total_neto_a_pagar';0
+'total_neto_a_pagar.L_copy';'T';22.30;213.80;50.70;217.90;'Arial';9;False;False;False;0;16777215;'L';'Importe Neto:';0
+'total_operacion.L';'T';22.40;177.80;50.80;181.90;'Arial';9;False;False;False;0;16777215;'L';'Subtotal general:';0
+'total_otras_retenciones';'T';53.70;209.80;82.10;213.90;'Arial';9;False;False;False;0;16777215;'R';'total_otras_retenciones';0
+'total_otras_retenciones.L';'T';22.40;209.80;50.80;213.90;'Arial';9;False;False;False;0;16777215;'L';'Total Otras Retenciones:';0
+'total_pago_segun_condicion';'T';53.70;221.80;82.10;225.90;'Arial';9;False;False;False;0;16777215;'R';'total_pago_segun_condicion';0
+'total_pago_segun_condicion.L';'T';22.40;221.70;50.80;225.80;'Arial';9;False;False;False;0;16777215;'L';'Pago s/cond.:';0
+'total_retencion_afip.L';'T';22.30;201.70;50.70;205.80;'Arial';9;False;False;False;0;16777215;'L';'Ret Ganancias:';0
+'total_retencion_afip.L_copy';'T';22.30;205.70;50.70;209.80;'Arial';9;False;False;False;0;16777215;'L';'Ret. IVA:';0
+'total_retenciones_ganancias';'T';53.80;201.70;82.20;205.80;'Arial';9;False;False;False;0;16777215;'R';'total_retenciones_ganancias';0
+'total_retenciones_iva';'T';53.80;205.70;82.20;209.80;'Arial';9;False;False;False;0;16777215;'R';'total_retenciones_iva';0
+'valor_grado_ent';'T';78.50;129.60;101.20;133.70;'Arial';9;False;False;False;0;16777215;'C';'grado';0
+'vendedor';'T';122.00;48.70;198.50;54.50;'Arial';11;True;False;False;0;16777215;'C';'VENDEDOR:';0
+'vendedor';'T';121.80;287.90;198.30;293.70;'Arial';11;True;False;False;0;16777215;'C';'VENDEDOR:';0
