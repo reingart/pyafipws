@@ -81,7 +81,7 @@ from php import date
 import traceback
 import pprint
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-from pyfpdf_hg import Template
+from fpdf import Template
 import utils
 
 # importo funciones compartidas:
@@ -1603,7 +1603,10 @@ class WSLPG:
             self.AgregarCampoPDF("homo", 'T', 100, 250, 0, 0,
                               size=70, rotate=45, foreground=0x808080, 
                               priority=-1)
- 
+        
+        # cargo los elementos en la plantilla
+        self.template.load_elements(self.elements)
+        
         return True        
 
 
