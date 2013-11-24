@@ -1571,6 +1571,7 @@ class WSLPG:
             archivo = os.path.join(self.InstallDir, 
                                     "liquidacion_form_c1116b_wslpg.csv")
         if DEBUG: print "abriendo archivo ", archivo
+        # inicializo la lista de los elementos:
         self.elements = []
         for lno, linea in enumerate(open(archivo.encode('latin1')).readlines()):
             if DEBUG: print "procesando linea ", lno, linea
@@ -1593,6 +1594,16 @@ class WSLPG:
                 if DEBUG: print "NUEVO PATH:", args[14]          
 
             self.AgregarCampoPDF(*args)
+
+        self.AgregarCampoPDF("anulado", 'T', 150, 250, 0, 0, 
+              size=70, rotate=45, foreground=0x808080, 
+              priority=-1)
+
+        if HOMO:
+            self.AgregarCampoPDF("homo", 'T', 100, 250, 0, 0,
+                              size=70, rotate=45, foreground=0x808080, 
+                              priority=-1)
+ 
         return True        
 
 
@@ -1622,17 +1633,8 @@ class WSLPG:
     def CrearPlantillaPDF(self, papel="A4", orientacion="portrait"):
         "Iniciar la creación del archivo PDF"
         
-        self.AgregarCampoPDF("anulado", 'T', 150, 250, 0, 0, 
-              size=70, rotate=45, foreground=0x808080, 
-              priority=-1)
-
-        if HOMO:
-            self.AgregarCampoPDF("homo", 'T', 100, 250, 0, 0,
-                              size=70, rotate=45, foreground=0x808080, 
-                              priority=-1)
- 
         # genero el renderizador con propiedades del PDF
-        t = Template(elements=self.elements,
+        t = Template(
                  format=papel, orientation=orientacion,
                  title="F 1116 B/C %s" % (self.NroOrden),
                  author="CUIT %s" % self.Cuit,
@@ -2737,12 +2739,17 @@ if __name__ == '__main__':
                 # ajustes (páginas distintas), revisar si hay debitos/creditos:
                 formatos = ['formato_ajuste_base']
                 copias = 1
-                if liq['ajustedebito']:
+                if liq['ajuste_debito']:
                     formatos.append('formato_ajuste_debcred')
-                if liq['ajustecredito']:
+                if liq['ajuste_credito']:
                     formatos.append('formato_ajuste_debcred')
 
-            for formato in formatos:                
+            wslpg.CrearPlantillaPDF(
+                        papel=conf_liq.get("papel", "legal"), 
+                        orientacion=conf_liq.get("orientacion", "portrait"),
+                        )
+
+            for formato in formatos:
                 # cargo el formato CSV por defecto (liquidacion....csv)
                 wslpg.CargarFormatoPDF(conf_liq.get(formato))
                 
@@ -2755,9 +2762,6 @@ if __name__ == '__main__':
                     wslpg.AgregarDatoPDF(dato['campo'], dato['valor'])
                     if DEBUG: print "DATO", dato['campo'], dato['valor']
 
-
-                wslpg.CrearPlantillaPDF(papel=conf_liq.get("papel", "legal"), 
-                                     orientacion=conf_liq.get("orientacion", "portrait"))
                 wslpg.ProcesarPlantillaPDF(num_copias=copias,
                                         lineas_max=int(conf_liq.get("lineas_max", 24)),
                                         qty_pos=conf_liq.get("cant_pos") or 'izq')
