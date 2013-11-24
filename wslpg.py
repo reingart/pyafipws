@@ -174,6 +174,11 @@ ENCABEZADO = [
     
     ('datos_adicionales', 400, A), # max 400 desde WSLPGv1.2
 
+    # Campos agregados WSLPGv1.5 (ajustes):
+    ('iva_deducciones', 17, I, 2), # 17.2
+    ('subtotal_deb_cred', 17, I, 2), # 17.2
+    ('total_base_deducciones', 17, I, 2), # 17.2
+    
     ]
 
 CERTIFICADO = [
@@ -1069,6 +1074,10 @@ class WSLPG:
             self.params_out['cod_tipo_operacion'] = aut.get('codTipoOperacion')
             self.params_out['nro_contrato'] = aut.get('nroContrato')
             self.params_out['subtotal'] = self.Subtotal
+            import pdb; pdb.set_trace()
+            self.params_out['iva_deducciones'] = totunif.get('ivaDeducciones')
+            self.params_out['subtotal_deb_cred'] = totunif.get('subTotalDebCred')
+            self.params_out['total_base_deducciones'] = totunif.get('totalBaseDeducciones')
             self.params_out['total_iva_10_5'] = self.TotalIva105
             self.params_out['total_iva_21'] = self.TotalIva21
             self.params_out['total_retenciones_ganancias'] = self.TotalRetencionesGanancias
@@ -1846,6 +1855,7 @@ class WSLPG:
                 # cargo campos adicionales ([PDF] en .ini y AgregarDatoPDF)
                 for k,v in self.datos.items():
                     f.set(k, v)
+                
             return True
         except Exception, e:
             ex = utils.exception_info()
