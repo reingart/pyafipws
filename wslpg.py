@@ -1856,6 +1856,18 @@ class WSLPG:
                 for k,v in self.datos.items():
                     f.set(k, v)
                 
+                # Ajustes:
+                
+                if int(liq.get('coe_ajustado', 0)):
+                    f.set("leyenda_coe_nro", "COE Ajustado:")
+                    f.set("nro_contrato_o_coe_ajustado", liq['coe_ajustado'])
+                    f.set("coe_relacionados.L", "")
+                    f.set("coe_relacionados", "")
+                elif liq.get('nro_contrato'):
+                    f.set("leyenda_coe_nro", "Contrato Ajustado:")
+                    f.set("nro_contrato_o_coe_ajustado", liq['nro_contrato'])
+                    ##f.set("coe_relacionados", TODO)
+                    
             return True
         except Exception, e:
             ex = utils.exception_info()
