@@ -1859,10 +1859,10 @@ class WSLPG:
                 print self.Traceback
             return False
 
-    def GenerarPDF(self, archivo=""):
+    def GenerarPDF(self, archivo="", dest="F"):
         "Generar archivo de salida en formato PDF"
         try:
-            self.template.render(archivo)
+            self.template.render(archivo, dest=dest)
             return True
         except Exception, e:
             self.Excepcion = str(e)
@@ -2752,7 +2752,7 @@ if __name__ == '__main__':
                         orientacion=conf_liq.get("orientacion", "portrait"),
                         )
 
-            for formato in formatos:
+            for num_formato, formato in enumerate(formatos):
                 # cargo el formato CSV por defecto (liquidacion....csv)
                 wslpg.CargarFormatoPDF(conf_liq.get(formato))
                 
@@ -2784,8 +2784,12 @@ if __name__ == '__main__':
                 fn = u'_'.join([unicode(liq.get(ff,ff)) for ff in fs])
                 fn = fn.encode('ascii', 'replace').replace('?','_')
                 salida = os.path.join(d, "%s.pdf" % fn)
-                wslpg.GenerarPDF(archivo=salida)
-                print "Generando PDF", salida
+                if num_formato == len(formatos) - 1:
+                    dest = "F"  # si es el último, escribir archivo
+                else:
+                    dest = ""   # sino, no escribir archivo todavía
+                wslpg.GenerarPDF(archivo=salida, dest=dest)
+                print "Generando PDF", salida, dest
             if '--mostrar' in sys.argv:
                 wslpg.MostrarPDF(archivo=salida,
                                  imprimir='--imprimir' in sys.argv)
