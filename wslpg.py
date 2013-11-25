@@ -1662,11 +1662,16 @@ class WSLPG:
         self.datos[campo] = valor
         return True
 
-    def ProcesarPlantillaPDF(self, num_copias=1, lineas_max=24, qty_pos='izq'):
+    def ProcesarPlantillaPDF(self, num_copias=1, lineas_max=24, qty_pos='izq', 
+                                   clave=''):
         "Generar el PDF según la factura creada y plantilla cargada"
         try:
             f = self.template
             liq = self.params_out
+            # actualizo los campos según la clave (ajuste debitos / creditos)
+            if clave:
+                liq = liq.copy()
+                liq.update(liq[clave])
 
             if HOMO:
                 self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
@@ -1857,6 +1862,10 @@ class WSLPG:
                     f.set(k, v)
                 
                 # Ajustes:
+                
+                if clave:
+                    f.set('subtipo_ajuste', {'ajuste_debito': u'AJUSTE DÉBITO',
+                           'ajuste_credito': u'AJUSTE CRÉDITO'}[clave])
                 
                 if int(liq.get('coe_ajustado', 0)):
                     f.set("leyenda_coe_nro", "COE Ajustado:")
@@ -2759,23 +2768,23 @@ if __name__ == '__main__':
             # determino el formato según el tipo de liquidación y datos
             if '--ajuste' not in sys.argv:
                 # liquidación estándar
-                formatos = ['formato']
+                formatos = [('formato', '')]
                 copias = int(conf_liq.get("copias", 3))
             else:
                 # ajustes (páginas distintas), revisar si hay debitos/creditos:
-                formatos = ['formato_ajuste_base']
+                formatos = [('formato_ajuste_base', '')]
                 copias = 1
                 if liq['ajuste_debito']:
-                    formatos.append('formato_ajuste_debcred')
+                    formatos.append(('formato_ajuste_debcred', 'ajuste_debito' ))
                 if liq['ajuste_credito']:
-                    formatos.append('formato_ajuste_debcred')
+                    formatos.append(('formato_ajuste_debcred', 'ajuste_credito'))
 
             wslpg.CrearPlantillaPDF(
                         papel=conf_liq.get("papel", "legal"), 
                         orientacion=conf_liq.get("orientacion", "portrait"),
                         )
 
-            for num_formato, formato in enumerate(formatos):
+            for num_formato, (formato, clave) in enumerate(formatos):
                 # cargo el formato CSV por defecto (liquidacion....csv)
                 wslpg.CargarFormatoPDF(conf_liq.get(formato))
                 
@@ -2790,7 +2799,8 @@ if __name__ == '__main__':
 
                 wslpg.ProcesarPlantillaPDF(num_copias=copias,
                                         lineas_max=int(conf_liq.get("lineas_max", 24)),
-                                        qty_pos=conf_liq.get("cant_pos") or 'izq')
+                                        qty_pos=conf_liq.get("cant_pos") or 'izq',
+                                        clave=clave)
                 if wslpg.Excepcion:
                     print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
                     if DEBUG: print >> sys.stderr, wslpg.Traceback
