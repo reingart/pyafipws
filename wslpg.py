@@ -1085,6 +1085,7 @@ class WSLPG:
             self.TotalIva21 = totunif.get('iva21')
             self.TotalRetencionesGanancias = totunif.get('retencionesGanancias')
             self.TotalRetencionesIVA = totunif.get('retencionesIVA')
+            self.TotalOtrasRetenciones = totunif.get('importeOtrasRetenciones')
             self.TotalNetoAPagar = totunif.get('importeNeto')
             self.TotalIvaRg2300_07 = totunif.get('ivaRG2300_2007')
             self.TotalPagoSegunCondicion = totunif.get('pagoSCondicion')
@@ -1096,6 +1097,8 @@ class WSLPG:
             self.params_out['nro_orden'] = aut.get('nroOrden')
             self.params_out['cod_tipo_operacion'] = aut.get('codTipoOperacion')
             self.params_out['nro_contrato'] = aut.get('nroContrato')
+            self.params_out['nro_op_comercial'] = aut.get('nroOpComercial', "")
+
             
             # actualizo totales solo para ajuste base (liquidacion general) 
             if base:
@@ -1107,6 +1110,7 @@ class WSLPG:
                 self.params_out['total_iva_21'] = self.TotalIva21
                 self.params_out['total_retenciones_ganancias'] = self.TotalRetencionesGanancias
                 self.params_out['total_retenciones_iva'] = self.TotalRetencionesIVA
+                self.params_out['total_otras_retenciones'] = self.TotalOtrasRetenciones
                 self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
                 self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
                 self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
