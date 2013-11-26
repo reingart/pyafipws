@@ -1044,9 +1044,13 @@ class WSLPG:
             aut = ret['ajusteContrato']
             self.AnalizarAjuste(aut)
     
-    def AnalizarAjuste(self, aut):
+    def AnalizarAjuste(self, aut, liq=True):
         "Método interno para analizar la respuesta de AFIP (ajustes)"
         
+        # para compatibilidad con la generacion de PDF (completo datos)
+        if hasattr(self, "liquidacion") and self.liquidacion and liq:
+            self.AnalizarLiquidacion(aut=None, liq=self.liquidacion)
+            
         self.params_out['errores'] = self.errores
             
         # proceso la respuesta de autorizar, ajustar (y consultar):
@@ -1073,35 +1077,51 @@ class WSLPG:
             self.params_out['nro_orden'] = aut.get('nroOrden')
             self.params_out['cod_tipo_operacion'] = aut.get('codTipoOperacion')
             self.params_out['nro_contrato'] = aut.get('nroContrato')
-            self.params_out['subtotal'] = self.Subtotal
-            import pdb; pdb.set_trace()
-            self.params_out['iva_deducciones'] = totunif.get('ivaDeducciones')
-            self.params_out['subtotal_deb_cred'] = totunif.get('subTotalDebCred')
-            self.params_out['total_base_deducciones'] = totunif.get('totalBaseDeducciones')
-            self.params_out['total_iva_10_5'] = self.TotalIva105
-            self.params_out['total_iva_21'] = self.TotalIva21
-            self.params_out['total_retenciones_ganancias'] = self.TotalRetencionesGanancias
-            self.params_out['total_retenciones_iva'] = self.TotalRetencionesIVA
-            self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
-            self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
-            self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
             
-            # almaceno los datos de ajustes crédito y débito para usarlos luego
-            self.__ajuste_debito = aut['ajusteDebito']
-            self.__ajuste_credito = aut['ajusteCredito']
+            # actualizo totales solo para ajuste base (liquidacion general) 
+            if liq:
+                self.params_out['subtotal'] = self.Subtotal
+                self.params_out['iva_deducciones'] = totunif.get('ivaDeducciones')
+                self.params_out['subtotal_deb_cred'] = totunif.get('subTotalDebCred')
+                self.params_out['total_base_deducciones'] = totunif.get('totalBaseDeducciones')
+                self.params_out['total_iva_10_5'] = self.TotalIva105
+                self.params_out['total_iva_21'] = self.TotalIva21
+                self.params_out['total_retenciones_ganancias'] = self.TotalRetencionesGanancias
+                self.params_out['total_retenciones_iva'] = self.TotalRetencionesIVA
+                self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
+                self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
+                self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
+            
+                # almaceno los datos de ajustes crédito y débito para usarlos luego
+                self.__ajuste_base = aut
+                self.__ajuste_debito = aut['ajusteDebito']
+                self.__ajuste_credito = aut['ajusteCredito']
         else:
+            self.__ajuste_base = None
             self.__ajuste_debito = None
             self.__ajuste_credito = None
-
+        
+        
     @inicializar_y_capturar_excepciones
     def AnalizarAjusteDebito(self):
         "Método para analizar la respuesta de AFIP para Ajuste Debito"
-        self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=self.__ajuste_debito)
+        # para compatibilidad con la generacion de PDF (completo datos)
+        liq = {}
+        if hasattr(self, "liquidacion") and self.liquidacion:
+            liq.update(self.liquidacion)
+        liq.update(self.__ajuste_debito)
+        self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=liq)
+        self.AnalizarAjuste(self.__ajuste_base, liq=False)  # datos generales
 
     @inicializar_y_capturar_excepciones
     def AnalizarAjusteCredito(self):
         "Método para analizar la respuesta de AFIP para Ajuste Credito"
-        self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=self.__ajuste_credito)
+        liq = {}
+        if hasattr(self, "liquidacion") and self.liquidacion:
+            liq.update(self.liquidacion)
+        liq.update(self.__ajuste_credito)
+        self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=liq)
+        self.AnalizarAjuste(self.__ajuste_base, liq=False)  # datos generales
 
     @inicializar_y_capturar_excepciones
     def AsociarLiquidacionAContrato(self, coe=None, nro_contrato=None, 
@@ -1669,9 +1689,9 @@ class WSLPG:
             f = self.template
             liq = self.params_out
             # actualizo los campos según la clave (ajuste debitos / creditos)
-            if clave:
+            if clave and clave in liq:
                 liq = liq.copy()
-                liq.update(liq[clave])
+                liq.update(liq[clave])  # unificar con AnalizarAjusteCredito/Debito
 
             if HOMO:
                 self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
@@ -1697,8 +1717,10 @@ class WSLPG:
                                 valor = ""
                         elif 'peso' in campo:
                             valor = "%s Kg" % valor
-                        else:
+                        elif valor is not None and valor != "":
                             valor = "%d" % int(valor)
+                        else:
+                            valor = ""
                     elif fmt[1] == I:
                         valor = ("%%0.%df" % fmt[2]) % valor
                         if 'alic' in campo or 'comision' in campo:
@@ -1747,7 +1769,7 @@ class WSLPG:
                                       }.get(cod_tipo_ajuste, ''))
 
                 # limpio datos del corredor si no corresponden:
-                if liq['actua_corredor'] == 'N':
+                if liq.get('actua_corredor', 'N') == 'N':
                     if liq.get('cuit_corredor', None) == 0:
                         del liq['cuit_corredor']
                     
@@ -1763,25 +1785,29 @@ class WSLPG:
 
                 import wslpg_datos as datos
                 
-                campania = int(liq['campania_ppal'])
+                campania = int(liq.get('campania_ppal') or 0)
                 f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
                 f.set("tipo_operacion", datos.TIPOS_OP[int(liq['cod_tipo_operacion'])])
-                f.set("actividad", datos.ACTIVIDADES.get(int(liq['nro_act_comprador']), ""))
+                f.set("actividad", datos.ACTIVIDADES.get(int(liq.get('nro_act_comprador') or 0), ""))
                 if 'cod_grano' in liq and liq['cod_grano']:
-                    f.set("grano", datos.GRANOS[int(liq['cod_grano'])])
-                cod_puerto = int(liq['cod_puerto'])
+                    cod_grano = int(liq['cod_grano'])
+                else:
+                    cod_grano = int(self.datos.get('cod_grano', 0))
+                f.set("grano", datos.GRANOS[cod_grano])
+                cod_puerto = int(liq.get('cod_puerto', self.datos.get('cod_puerto')) or 0)
                 if cod_puerto in datos.PUERTOS:
                     f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
 
-                cod_grano = int(liq['cod_grano'])
-                cod_grado_ref = liq.get('cod_grado_ref', "")
+                cod_grado_ref = liq.get('cod_grado_ref', self.datos.get('cod_grado_ref'))
                 if cod_grado_ref in datos.GRADOS_REF:
                     f.set("des_grado_ref", datos.GRADOS_REF[cod_grado_ref])
                 else:
                     f.set("des_grado_ref", cod_grado_ref)
-                cod_grado_ent = liq['cod_grado_ent']
+                cod_grado_ent = liq.get('cod_grado_ent', self.datos.get('cod_grado_ent'))
                 if 'val_grado_ent' in liq and int(liq.get('val_grado_ent', 0)):
-                    val_grado_ent =  liq['val_grado_ent']
+                    val_grado_ent = liq['val_grado_ent']
+                elif 'val_grado_ent' in self.datos:
+                    val_grado_ent = self.datos.get('val_grado_ent')
                 elif cod_grano in datos.GRADO_ENT_VALOR: 
                     valores = datos.GRADO_ENT_VALOR[cod_grano]
                     if cod_grado_ent in valores:
@@ -1836,18 +1862,18 @@ class WSLPG:
                     f.set("formulario", u"Ajuste Unificado %s" % homo)
 
                 certs = []
-                for cert in liq['certificados']:
+                for cert in liq.get('certificados', []):
                     certs.append(u"%s Nº %s" % (
                         datos.TIPO_CERT_DEP[int(cert['tipo_certificado_deposito'])],
                         cert['nro_certificado_deposito']))
                 f.set("certificados_deposito", ', '.join(certs))
 
-                for i, deduccion in enumerate(liq['deducciones']):
+                for i, deduccion in enumerate(liq.get('deducciones', [])):
                     for k, v in deduccion.items():
                         v = formatear(k, v, fmt_deduccion)
                         f.set("deducciones_%s_%02d" % (k, i + 1), v)
 
-                for i, retencion in enumerate(liq['retenciones']):
+                for i, retencion in enumerate(liq.get('retenciones', [])):
                     for k, v in retencion.items():
                         v = formatear(k, v, fmt_retencion)
                         f.set("retenciones_%s_%02d" % (k, i + 1), v)
@@ -2402,6 +2428,8 @@ if __name__ == '__main__':
                 dic = dict(
                     pto_emision=55, nro_orden=0, coe_ajustado='330100023689',
                     cod_localidad_procedencia=5544, cod_prov_procedencia=12,
+                    cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
+                    cod_grano=31,   # no enviado a AFIP, pero usado para el PDF
                     certificados=[dict(
                        tipo_certificado_deposito=5,
                        nro_certificado_deposito=555501200729,
@@ -2473,6 +2501,8 @@ if __name__ == '__main__':
                          'precio_flete_tn': 1000,
                          'precio_ref_tn': 1000,
                          'val_grado_ent': 1.01})
+                    #del dic['ajuste_debito']['retenciones']
+                    #del dic['ajuste_credito']['retenciones']
                 escribir_archivo(dic, ENTRADA)
             
             dic = leer_archivo(ENTRADA)
