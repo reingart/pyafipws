@@ -1826,7 +1826,7 @@ class WSLPG:
                 if cod_puerto in datos.PUERTOS:
                     f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
 
-                cod_grado_ref = liq.get('cod_grado_ref', self.datos.get('cod_grado_ref'))
+                cod_grado_ref = liq.get('cod_grado_ref', self.datos.get('cod_grado_ref')) or ""
                 if cod_grado_ref in datos.GRADOS_REF:
                     f.set("des_grado_ref", datos.GRADOS_REF[cod_grado_ref])
                 else:
@@ -1844,7 +1844,8 @@ class WSLPG:
                         val_grado_ent = ""
                 else:
                     val_grado_ent = ""
-                f.set("valor_grado_ent", "%s %s" % (cod_grado_ent, val_grado_ent))
+                f.set("valor_grado_ent", "%s %s" % (cod_grado_ent or "", val_grado_ent or ""))
+                f.set("cont_proteico", liq.get('cont_proteico', self.datos.get('cont_proteico', "")))
                 
                 if liq.get('certificados'):
                     # uso la procedencia del certificado de depósito 
