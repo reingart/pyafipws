@@ -34,7 +34,7 @@ Sub Main()
 
     ' creo el ajuste base y agrego los datos de certificado:
     pto_emision = 55
-    nro_orden = nro_orden
+    nro_orden = 92
     coe_ajustado = "999999999"
     ok = WSLPG.SetParametro("cod_provincia", "1")
     ok = WSLPG.SetParametro("cod_localidad", "5")
@@ -153,7 +153,7 @@ Sub Main()
     
     ' consulto un ajuste por número de orden (ajusteXNroOrdenConsultar):
     pto_emision = 55
-    nro_orden = 90
+    nro_orden = 92
     nro_contrato = Null ' (puede omitirse)
     ok = WSLPG.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
         
