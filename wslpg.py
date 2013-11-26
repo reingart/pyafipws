@@ -673,7 +673,7 @@ class WSLPG:
         self.__analizar_errores(ret)
         self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
 
-    def AnalizarLiquidacion(self, aut, liq=None):
+    def AnalizarLiquidacion(self, aut, liq=None, ajuste=False):
         "Método interno para analizar la respuesta de AFIP"
         # proceso los datos básicos de la liquidación (devuelto por consultar):
         if liq:
@@ -712,6 +712,22 @@ class WSLPG:
                         cod_localidad_procedencia_sin_certificado=liq.get('codLocalidadProcedenciaSinCertificado'),
                         cod_prov_procedencia_sin_certificado=liq.get('codProvProcedenciaSinCertificado'),
                         certificados=[],
+                    )
+            if ajuste:
+                self.params_out.update(
+                        # ajustes:
+                        diferencia_peso_neto=liq.get('diferenciaPesoNeto'),
+                        diferencia_precio_operacion=liq.get('diferenciaPrecioOperacion'),
+                        cod_grado=liq.get('codGrado'),
+                        val_grado=liq.get('valGrado'),
+                        factor=liq.get('factor'),
+                        diferencia_precio_flete_tn=liq.get('diferenciaPrecioFleteTn'),
+                        concepto_importe_iva_0=liq.get('conceptoImporteIva0'),
+                        importe_ajustar_iva_0=liq.get('importeAjustarIva0'),
+                        concepto_importe_iva_105=liq.get('conceptoImporteIva105'),
+                        importe_ajustar_iva_105=liq.get('importeAjustarIva105'),
+                        concepto_importe_iva_21=liq.get('conceptoImporteIva21'),
+                        importe_ajustar_iva_21=liq.get('importeAjustarIva21'),
                     )
             if 'certificados' in liq:
                 for c in liq['certificados']:
@@ -918,6 +934,7 @@ class WSLPG:
             'conceptoImporteIva105': concepto_importe_iva_105,
             'importeAjustarIva105': importe_ajustar_iva_105,
             'conceptoImporteIva21': concepto_importe_iva_21,
+            'importeAjustarIva21': importe_ajustar_iva_21,
             'deducciones': [],
             'retenciones': [],
             }
@@ -960,6 +977,7 @@ class WSLPG:
             'conceptoImporteIva105': concepto_importe_iva_105,
             'importeAjustarIva105': importe_ajustar_iva_105,
             'conceptoImporteIva21': concepto_importe_iva_21,
+            'importeAjustarIva21': importe_ajustar_iva_21,
             'deducciones': [],
             'retenciones': [],
             }
@@ -1109,8 +1127,11 @@ class WSLPG:
         liq = {}
         if hasattr(self, "liquidacion") and self.liquidacion:
             liq.update(self.liquidacion)
+        if hasattr(self, "ajuste") and 'ajusteDebito' in self.ajuste:
+            liq.update(self.ajuste['ajusteDebito'])
+
         liq.update(self.__ajuste_debito)
-        self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=liq)
+        self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=liq, ajuste=True)
         self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
 
     @inicializar_y_capturar_excepciones
@@ -1119,8 +1140,10 @@ class WSLPG:
         liq = {}
         if hasattr(self, "liquidacion") and self.liquidacion:
             liq.update(self.liquidacion)
+        if hasattr(self, "ajuste") and 'ajusteCredito' in self.ajuste:
+            liq.update(self.ajuste['ajusteCredito'])
         liq.update(self.__ajuste_credito)
-        self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=liq)
+        self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=liq, ajuste=True)
         self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
 
     @inicializar_y_capturar_excepciones
