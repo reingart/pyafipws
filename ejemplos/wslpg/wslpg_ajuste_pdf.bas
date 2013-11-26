@@ -35,7 +35,7 @@ Sub Main()
     ' creo el ajuste base y agrego los datos de certificado:
     pto_emision = 55
     nro_orden = nro_orden
-    coe_ajustado = "330100013190"
+    coe_ajustado = "999999999"
     ok = WSLPG.SetParametro("cod_provincia", "1")
     ok = WSLPG.SetParametro("cod_localidad", "5")
     ok = WSLPG.CrearAjusteBase(pto_emision, nro_orden, coe_ajustado)
@@ -153,7 +153,7 @@ Sub Main()
     
     ' consulto un ajuste por número de orden (ajusteXNroOrdenConsultar):
     pto_emision = 55
-    nro_orden = 89
+    nro_orden = 90
     nro_contrato = Null ' (puede omitirse)
     ok = WSLPG.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
         
@@ -205,6 +205,9 @@ Sub Main()
         Debug.Assert ok
         CargarDatosPDF WSLPG
         ok = WSLPG.AnalizarAjusteDebito
+        If Not ok Then
+            MsgBox WSLPG.Traceback, vbExclamation, WSLPG.excepcion
+        End If
         ok = WSLPG.AgregarDatoPDF("fondo", WSLPG.InstallDir & "\liquidacion_wslpg_ajuste_debcred.png")
         ok = WSLPG.ProcesarPlantillaPDF(1, 0, 0, "ajuste_debito")
         If Not ok Then
