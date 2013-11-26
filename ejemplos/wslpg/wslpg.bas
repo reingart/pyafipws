@@ -219,7 +219,7 @@ Sub Main()
         End If
         
         ' GENERACIÓN DEL FORMULARIO C 1116 B EN PDF:
-    
+        ok = WSLPG.CrearPlantillaPDF("A4", "portrait")  ' IMPORTANTE: realizar como primer paso!
         ok = WSLPG.CargarFormatoPDF(WSLPG.InstallDir & "\liquidacion_form_c1116b_wslpg.csv")
         
         ' agrego datos fijos y campos adicionales
@@ -243,7 +243,6 @@ Sub Main()
         ok = WSLPG.AgregarDatoPDF("lugar_y_fecha", "")
     
         ' genero el PDF y lo muestro
-        ok = WSLPG.CrearPlantillaPDF("A4", "portrait")
         ok = WSLPG.ProcesarPlantillaPDF(2)
         If Not ok Then
             MsgBox WSLPG.Traceback, vbExclamation, WSLPG.Excepcion
