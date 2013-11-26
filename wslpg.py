@@ -1073,20 +1073,21 @@ class WSLPG:
             
         # proceso la respuesta de autorizar, ajustar (y consultar):
         if aut:
-            self.COE = str(aut['coe'])
+            # en caso de anulación o no ser ajuste, ahora no devuelve datos:
+            self.COE = str(aut.get('coe', ""))
             self.COEAjustado = aut.get('coeAjustado')
             self.NroContrato = aut.get('nroContrato')
-            self.Estado = aut['estado']
+            self.Estado = aut.get('estado', "")
 
-            totunif = aut["totalesUnificados"]
-            self.Subtotal = totunif['subTotalGeneral']
-            self.TotalIva105 = totunif['iva105']
-            self.TotalIva21 = totunif['iva21']
-            self.TotalRetencionesGanancias = totunif['retencionesGanancias']
-            self.TotalRetencionesIVA = totunif['retencionesIVA']
-            self.TotalNetoAPagar = totunif['importeNeto']
-            self.TotalIvaRg2300_07 = totunif['ivaRG2300_2007']
-            self.TotalPagoSegunCondicion = totunif['pagoSCondicion']
+            totunif = aut.get("totalesUnificados") or {}
+            self.Subtotal = totunif.get('subTotalGeneral')
+            self.TotalIva105 = totunif.get('iva105')
+            self.TotalIva21 = totunif.get('iva21')
+            self.TotalRetencionesGanancias = totunif.get('retencionesGanancias')
+            self.TotalRetencionesIVA = totunif.get('retencionesIVA')
+            self.TotalNetoAPagar = totunif.get('importeNeto')
+            self.TotalIvaRg2300_07 = totunif.get('ivaRG2300_2007')
+            self.TotalPagoSegunCondicion = totunif.get('pagoSCondicion')
             
             # actualizo parámetros de salida:
             self.params_out['coe'] = self.COE
@@ -1112,8 +1113,8 @@ class WSLPG:
             
                 # almaceno los datos de ajustes crédito y débito para usarlos luego
                 self.__ajuste_base = aut
-                self.__ajuste_debito = aut['ajusteDebito']
-                self.__ajuste_credito = aut['ajusteCredito']
+                self.__ajuste_debito = aut.get('ajusteDebito') or {}
+                self.__ajuste_credito = aut.get('ajusteCredito') or {}
         else:
             self.__ajuste_base = None
             self.__ajuste_debito = None
