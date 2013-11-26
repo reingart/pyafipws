@@ -258,5 +258,6 @@ Sub CargarDatosPDF(WSLPG As Object)
     ok = WSLPG.AgregarDatoPDF("precio_ref_tn", "$ 1000,00")
     ok = WSLPG.AgregarDatoPDF("precio_flete_tn", "$ 100,00")
     ok = WSLPG.AgregarDatoPDF("des_grado_ref", "G1")
+    ok = WSLPG.AgregarDatoPDF("alic_iva_operacion", "")
     
 End Sub
