@@ -95,7 +95,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = False
+HOMO = True
 
 # definición del formato del archivo de intercambio:
 
