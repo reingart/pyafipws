@@ -228,7 +228,7 @@ End Sub
 
 Sub CargarDatosPDF(WSLPG As Object)
     ' agrego datos fijos y campos adicionales
-    ok = WSLPG.AgregarDatoPDF("formulario", "Form. C 1116 B (prueba)")
+    ok = WSLPG.AgregarDatoPDF("formulario", "Ajuste Unificado (muestra)")
     ok = WSLPG.AgregarDatoPDF("nombre_comprador", "NOMBRE 1")
     ok = WSLPG.AgregarDatoPDF("domicilio1_comprador", "DOMICILIO 1")
     ok = WSLPG.AgregarDatoPDF("domicilio2_comprador", "DOMICILIO 1")
@@ -244,6 +244,7 @@ Sub CargarDatosPDF(WSLPG As Object)
     ok = WSLPG.AgregarDatoPDF("art_27", "Art. 27 inc. ...................")
     ok = WSLPG.AgregarDatoPDF("forma_pago", "Forma de Pago: 1234 pesos ..")
     ok = WSLPG.AgregarDatoPDF("constancia", "Por la presente dejo constancia...")
+    ok = WSLPG.AgregarDatoPDF("fecha_liquidacion", "26/11/2013")
     ok = WSLPG.AgregarDatoPDF("lugar_y_fecha", "LUGAR Y FECHA")
 
     ' completo datos no contemplados en la respuesta por AFIP:
@@ -254,5 +255,8 @@ Sub CargarDatosPDF(WSLPG As Object)
     ok = WSLPG.AgregarDatoPDF("cod_puerto", 14)
     ok = WSLPG.AgregarDatoPDF("cod_localidad_procedencia", 3)
     ok = WSLPG.AgregarDatoPDF("cod_prov_procedencia", 1)
+    ok = WSLPG.AgregarDatoPDF("precio_ref_tn", "$ 1000,00")
+    ok = WSLPG.AgregarDatoPDF("precio_flete_tn", "$ 100,00")
+    ok = WSLPG.AgregarDatoPDF("des_grado_ref", "G1")
     
 End Sub
