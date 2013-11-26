@@ -58,7 +58,7 @@ Sub Main()
     cod_localidad_procedencia = 3
     cod_prov_procedencia = 1
     campania = 1213
-    fecha_cierre = "2013-04-15"
+    fecha_cierre = "2013-01-13"
     peso_neto_total_certificado = 1000
     ok = WSLPG.AgregarCertificado(tipo_certificado_deposito, nro_certificado_deposito, peso_neto, cod_localidad_procedencia, cod_prov_procedencia, campania, fecha_cierre, peso_neto_total_certificado)
      
@@ -107,7 +107,7 @@ Sub Main()
     base_calculo = 1000
     alicuota = 10.5
 
-    ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, alicuota)
+    'ok = WSLPG.AgregarRetencion(codigo_concepto, detalle_aclaratorio, base_calculo, alicuota)
        
     ' creo el ajuste de débito (ver documentación AFIP)
     diferencia_peso_neto = 500
@@ -221,7 +221,7 @@ Sub Main()
     
     ' consulto un ajuste por número de orden (ajusteXNroOrdenConsultar):
     pto_emision = 55
-    nro_orden = 78
+    nro_orden = 92
     nro_contrato = Null ' (puede omitirse)
     ok = WSLPG.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
         
@@ -230,6 +230,7 @@ Sub Main()
         If WSLPG.ErrMsg <> "" Then
             Debug.Print "Errores", WSLPG.ErrMsg
             Debug.Print WSLPG.XmlRequest
+            Debug.Print WSLPG.XmlResponse
         End If
         
         Debug.Print "COE", WSLPG.COE
