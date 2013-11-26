@@ -1044,11 +1044,11 @@ class WSLPG:
             aut = ret['ajusteContrato']
             self.AnalizarAjuste(aut)
     
-    def AnalizarAjuste(self, aut, liq=True):
+    def AnalizarAjuste(self, aut, base=True):
         "Método interno para analizar la respuesta de AFIP (ajustes)"
         
         # para compatibilidad con la generacion de PDF (completo datos)
-        if hasattr(self, "liquidacion") and self.liquidacion and liq:
+        if hasattr(self, "liquidacion") and self.liquidacion and base:
             self.AnalizarLiquidacion(aut=None, liq=self.liquidacion)
             
         self.params_out['errores'] = self.errores
@@ -1079,7 +1079,7 @@ class WSLPG:
             self.params_out['nro_contrato'] = aut.get('nroContrato')
             
             # actualizo totales solo para ajuste base (liquidacion general) 
-            if liq:
+            if base:
                 self.params_out['subtotal'] = self.Subtotal
                 self.params_out['iva_deducciones'] = totunif.get('ivaDeducciones')
                 self.params_out['subtotal_deb_cred'] = totunif.get('subTotalDebCred')
@@ -1111,7 +1111,7 @@ class WSLPG:
             liq.update(self.liquidacion)
         liq.update(self.__ajuste_debito)
         self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=liq)
-        self.AnalizarAjuste(self.__ajuste_base, liq=False)  # datos generales
+        self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
 
     @inicializar_y_capturar_excepciones
     def AnalizarAjusteCredito(self):
@@ -1121,7 +1121,7 @@ class WSLPG:
             liq.update(self.liquidacion)
         liq.update(self.__ajuste_credito)
         self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=liq)
-        self.AnalizarAjuste(self.__ajuste_base, liq=False)  # datos generales
+        self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
 
     @inicializar_y_capturar_excepciones
     def AsociarLiquidacionAContrato(self, coe=None, nro_contrato=None, 
@@ -1793,7 +1793,7 @@ class WSLPG:
                     cod_grano = int(liq['cod_grano'])
                 else:
                     cod_grano = int(self.datos.get('cod_grano', 0))
-                f.set("grano", datos.GRANOS[cod_grano])
+                f.set("grano", datos.GRANOS.get(cod_grano, ""))
                 cod_puerto = int(liq.get('cod_puerto', self.datos.get('cod_puerto')) or 0)
                 if cod_puerto in datos.PUERTOS:
                     f.set("des_puerto_localidad", datos.PUERTOS[cod_puerto])
