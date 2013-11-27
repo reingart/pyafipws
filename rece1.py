@@ -144,7 +144,6 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         encabezado = encabezado[0]
     if '/json' in sys.argv:
         import json
-        print "entrada", entrada
         encabezado = json.load(entrada)[0]
         ivas = encabezado.get('ivas', [])
         tributos = encabezado.get('tributos', [])
@@ -187,6 +186,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         else:
             cae = ws.CAEARegInformativo()
             dic = ws.factura
+        dic.update(encabezado)         # preservar la estructura leida
         dic.update({
             'cae': cae and str(cae) or '',
             'fch_venc_cae': ws.Vencimiento and str(ws.Vencimiento) or '',
