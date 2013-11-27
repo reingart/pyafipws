@@ -142,6 +142,13 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs)]
         dic = leer_dbf(formatos, conf_dbf)
         encabezado = encabezado[0]
+    if '/json' in sys.argv:
+        import json
+        print "entrada", entrada
+        encabezado = json.load(entrada)[0]
+        ivas = encabezado.get('ivas', [])
+        tributos = encabezado.get('tributos', [])
+        cbtasocs = encabezado.get('cbtasocs', [])
     else:
         for linea in entrada:
             if str(linea[0])=='0':
@@ -194,20 +201,24 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
 
 def escribir_factura(dic, archivo, agrega=False):
-    dic['tipo_reg'] = 0
-    archivo.write(escribir(dic, ENCABEZADO))
-    if 'tributos' in dic:
-        for it in dic['tributos']:
-            it['tipo_reg'] = 1
-            archivo.write(escribir(it, TRIBUTO))
-    if 'iva' in dic:
-        for it in dic['iva']:
-            it['tipo_reg'] = 2
-            archivo.write(escribir(it, IVA))
-    if 'cbtes_asoc' in dic:
-        for it in dic['cbtes_asoc']:
-            it['tipo_reg'] = 3
-            archivo.write(escribir(it, CMP_ASOC))
+    if '/json' in sys.argv:
+        import json
+        json.dump([dic], archivo, sort_keys=True, indent=4)
+    else:
+        dic['tipo_reg'] = 0
+        archivo.write(escribir(dic, ENCABEZADO))
+        if 'tributos' in dic:
+            for it in dic['tributos']:
+                it['tipo_reg'] = 1
+                archivo.write(escribir(it, TRIBUTO))
+        if 'iva' in dic:
+            for it in dic['iva']:
+                it['tipo_reg'] = 2
+                archivo.write(escribir(it, IVA))
+        if 'cbtes_asoc' in dic:
+            for it in dic['cbtes_asoc']:
+                it['tipo_reg'] = 3
+                archivo.write(escribir(it, CMP_ASOC))
 
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic.get('tributos', [])), ('Iva', IVA, dic.get('iva', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', []))]
