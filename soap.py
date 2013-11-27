@@ -111,22 +111,22 @@ class SoapClient(object):
         "Analiza un objeto y devuelve su representación XML"
         ns = self.__soap_ns!='soapenv' # not add ns to childs in for soap1.1
         if isinstance(value, dict):  # serializar diccionario (<key>value</key>)
-            child = add_child and node.addChild(tag,ns=ns) or node
+            child = add_child and node.add_child(tag,ns=ns) or node
             for k,v in value.items():
                 self.parse(child, k, v)
         elif isinstance(value, tuple):  # serializar tupla(<key>value</key>)
-            child = add_child and node.addChild(tag,ns=ns) or node
+            child = add_child and node.add_child(tag,ns=ns) or node
             for k,v in value:
                 self.parse(getattr(node,tag), k, v)
         elif isinstance(value, list): # serializar listas
-            child=node.addChild(tag,ns=ns)
+            child=node.add_child(tag,ns=ns)
             for t in value:
                 self.parse(child,tag,t, False)
         elif isinstance(value, basestring): # no volver a convertir los strings y unicodes
-            node.addChild(tag,value,ns=ns)
+            node.add_child(tag,value,ns=ns)
         else: # el resto de los objetos se convierten a string
             if value is not None:
-                node.addChild(tag,str(value),ns=ns) # habria que agregar un método asXML?
+                node.add_child(tag,str(value),ns=ns) # habria que agregar un método asXML?
     
     def send(self, method, xml):
         "Envía el pedido SOAP por HTTP (llama al método con el xml como cuerpo)"
