@@ -117,7 +117,7 @@ CMP_ASOC = [
 
 def autenticar(cert, privatekey, url, proxy=None):
     "Obtener el TA"
-    TA = "TA.xml"
+    TA = os.path.join(os.path.dirname(cert), "TA.xml")
     ttl = 60*60*5
     if not os.path.exists(TA) or os.path.getmtime(TA)+(ttl)<time.time():
         import wsaa
