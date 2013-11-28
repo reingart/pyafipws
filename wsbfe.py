@@ -436,7 +436,7 @@ def main():
         f = FacturaBF()
         f.punto_vta = punto_vta
         f.cbte_nro = cbte_nro+1
-        f.imp_moneda_id = '010'
+        f.imp_moneda_id = 'PES'
         f.fecha_cbte = date('Ymd')
         it = ItemBF(ncm='7308.10.00', sec='', ds=u'prueba Anafe económico', qty=2.0, precio=100.0, bonif=0.0, iva_id=5)
         f.add_item(it)
