@@ -203,6 +203,8 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
             tabla = dbf.Table(filename)
 
         for d in l:
+            if isinstance(d, basestring):
+                continue
             r = {}
             claves = []
             for fmt in formato:
