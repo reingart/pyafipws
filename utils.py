@@ -321,7 +321,29 @@ def verifica(ver_list, res_dict, difs):
         else:
             pass
             #print "%s: %s==%s" % (k, repr(v), repr(res_dict[k]))
-    
+
+
+def safe_console():
+    if True or sys.stdout.encoding is None:
+        class SafeWriter:
+            def __init__(self, target):
+                self.target = target
+                self.encoding = 'utf-8'
+                self.errors = 'replace'
+                self.encode_to = 'latin-1'
+            def write(self, s):
+                self.target.write(self.intercept(s))        
+            def flush(self):
+                self.target.flush()
+            def intercept(self, s):
+                if not isinstance(s, unicode):
+                    s = s.decode(self.encode_to, self.errors)
+                return s.encode(self.encoding, self.errors)
+
+        sys.stdout = SafeWriter(sys.stdout)
+        #sys.stderr = SafeWriter(sys.stderr)
+        print "Encodign in %s" % locale.getpreferredencoding()    
+
 
 if __name__ == "__main__":
     try:
