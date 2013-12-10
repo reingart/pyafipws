@@ -198,7 +198,9 @@ def format_as_dict(format):
     return dict([(k[0], None) for k in format])
 
 
-def generar_encabezado(entrada):
+def leer_planilla(entrada):
+    "Convierte una planilla CSV a una lista de diccionarios [{'col': celda}]"
+    
     items = []
     csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=",")
     for row in csv_reader:
@@ -210,7 +212,10 @@ def generar_encabezado(entrada):
     # armar diccionario por cada linea
     items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
 
-    print items
+    return items
+
+
+def generar_encabezado(items):
 
     periodo = items[0]['fecha_cbte'][:6]
 
@@ -224,7 +229,7 @@ def generar_encabezado(entrada):
     for item in items:
         vals = format_as_dict(CAB_FAC_TIPO1)
         vals['fecha_anulacion'] = ''
-        for k in cols:
+        for k in item.keys():
             vals[k] = item[k]
             if k in totales:
                 totales[k] = totales[k] + Decimal(item[k])
@@ -257,17 +262,7 @@ def generar_encabezado(entrada):
     out.close()
 
 
-def generar_detalle(entrada):
-    items = []
-    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=",")
-    for row in csv_reader:
-        items.append(row)
-    if len(items) < 2:
-        dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
-    cols = [str(it).strip() for it in items[0]]
-
-    # armar diccionario por cada linea
-    items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
+def generar_detalle(items):
 
     periodo = items[0]['fecha_cbte'][:6]
 
@@ -282,7 +277,7 @@ def generar_detalle(entrada):
         vals['imp_ajuste'] = '0.00'
         vals['imp_total'] = '0.00'
         vals['imp_tot_conc'] = '0'
-        for k in cols:
+        for k in item.keys():
             vals[k] = item[k]
         vals['tipo_reg'] = '1'
         vals['ctl_fiscal'] = ' '
@@ -301,17 +296,7 @@ def generar_detalle(entrada):
     out.close()
 
 
-def generar_ventas(entrada):
-    items = []
-    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=",")
-    for row in csv_reader:
-        items.append(row)
-    if len(items) < 2:
-        dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
-    cols = [str(it).strip() for it in items[0]]
-
-    # armar diccionario por cada linea
-    items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
+def generar_ventas(items):
 
     periodo = items[0]['fecha_cbte'][:6]
 
@@ -325,7 +310,7 @@ def generar_ventas(entrada):
     for item in items:
         vals = format_as_dict(VENTAS_TIPO1)
         vals['fecha_anulacion'] = ''
-        for k in cols:
+        for k in item.keys():
             vals[k] = item[k]
             if k in totales:
                 totales[k] = totales[k] + Decimal(item[k])
@@ -383,12 +368,13 @@ if __name__ == '__main__':
                     csv.writerow(datos)
             f.close()
         else:
+            items = leer_planilla(entrada)
             print "Generando encabezado..."
-            generar_encabezado(entrada)
+            generar_encabezado(items)
             print "Generando detalle..."
-            generar_detalle(entrada)
+            generar_detalle(items)
             print "Generando ventas..."
-            generar_ventas(entrada)
+            generar_ventas(items)
         print "Hecho."
     except Exception, e:
         print "Error: por favor corriga los datos y vuelva a intentar:"
