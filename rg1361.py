@@ -1,5 +1,5 @@
 #!usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: latin1 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17"
+__version__ = "1.18"
 
 LICENCIA = """
 rg1361.py: Generador de archivos ventas para SIRED/SIAP RG1361/02
@@ -34,6 +34,8 @@ from decimal import Decimal
 import os
 import sys
 import traceback
+
+from utils import leer, escribir
 
 C = 1 # caracter alfabetico
 N = 2 # numerico
@@ -190,65 +192,7 @@ VENTAS_TIPO2 = [
     ('imp_internos', 15, I),
     ('relleno', 122, B),
     ]
-    
-def escribir(dic, formato):
-    linea = " " * sum([l for n, l, t in formato])
-    comienzo = 1
-    for (clave, longitud, tipo) in formato:
-        if clave.capitalize() in dic:
-            clave = clave.capitalize()
-        valor = str(dic.get(clave,""))
-        if tipo == N:
-            if valor is None or valor=='None':
-                valor = '0'
-            valor = ("%%0%dd" % longitud) % int(valor)
-        elif tipo == I:
-            if valor is None or valor=='None':
-                valor = "0.00"
-            if str(valor):
-                valor = ("%%0%dd" % longitud) % int(str(valor).replace(".",""))
-            else:
-                valor =''
-                #raise ValueError("Valor incorrecto para campo %s = %s" % (clave, valor))
-        if tipo == B:
-            valor = ' ' * longitud
-        else:
-            valor = ("%%-0%ds" % longitud) % valor
-        linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
-        comienzo += longitud
-    return linea + "\n"
 
-def leer(linea, formato):
-    dic = {}
-    comienzo = 1
-    for fmt in formato:    
-        clave, longitud, tipo = fmt[0:3]
-        dec = len(fmt)>3 and fmt[3] or 2
-        valor = linea[comienzo-1:comienzo-1+longitud].strip()
-        try:
-            if tipo == N:
-                if valor:
-                    valor = str(int(valor))
-                else:
-                    valor = '0'
-            elif tipo == I:
-                if valor:
-                    try:
-                        valor = valor.strip(" ")
-                        valor = float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
-                    except ValueError:
-                        raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
-                else:
-                    valor = 0.00
-            else:
-                valor = valor.decode("ascii","ignore")
-            dic[clave] = valor
-
-            comienzo += longitud
-        except Exception, e:
-            raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
-                clave, comienzo, valor, str(e)))
-    return dic
 
 def format_as_dict(format):
     return dict([(k[0], None) for k in format])
