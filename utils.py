@@ -129,7 +129,7 @@ def leer(linea, formato):
 
 def escribir(dic, formato):
     "Genera una cadena dado un formato y un diccionario de claves/valores"
-    linea = " " * 335
+    linea = " " * sum([fmt[1] for fmt in formato])
     comienzo = 1
     for fmt in formato:
         clave, longitud, tipo = fmt[0:3]
@@ -203,6 +203,8 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
             tabla = dbf.Table(filename)
 
         for d in l:
+            # si no es un diccionario, ignorar ya que seguramente va en otra 
+            # tabla (por ej. retenciones tiene su propio formato)
             if isinstance(d, basestring):
                 continue
             r = {}
