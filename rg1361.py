@@ -297,7 +297,7 @@ def generar_detalle(items):
     
     # recorro las facturas y detalles de artículos vendidos:
     for item in items:
-        for it in item.get('items', [{}]):
+        for it in item.get('detalles', [{}]):
             vals = format_as_dict(DETALLE)
             # datos generales de la factura:
             vals['tipo_reg'] = '1'
@@ -305,7 +305,7 @@ def generar_detalle(items):
                 vals[k] = item[k]
             vals['cbte_nro_reg'] = item['cbt_numero']  # no hay varias hojas
             vals['ctl_fiscal'] = item.get('ctl_fiscal', ' ')  # C para controlador
-            vals['anulacion'] = it.get('anulacion', ' ')
+            vals['anulacion'] = item.get('anulacion', ' ')
             # datos del artículo:
             vals['qty'] = it.get('qty', '1')  # cantidad
             vals['pro_umed'] = it.get('umed', '07')  # unidad de medida
@@ -351,39 +351,69 @@ def generar_ventas(items):
     out = open("VENTAS_%s.txt" % periodo, "w")
     totales = format_as_dict(VENTAS_TIPO2)
     totales['periodo'] = periodo
-    for key in ('imp_total', 'imp_tot_conc', 'imp_neto', 'impto_liq', 'impto_liq_rni', 
-                'imp_op_ex', 'impto_perc', 'imp_iibb', 'impto_perc_mun', 'imp_internos'):
+    for key in IMPORTES:
         totales[key] = Decimal(0)
     
+    # recorro las facturas e itero sobre los subtotales por alicuota de IVA:
     for item in items:
-        vals = format_as_dict(VENTAS_TIPO1)
-        vals['fecha_anulacion'] = ''
-        for k in item.keys():
-            vals[k] = item[k]
-            if k in totales:
-                totales[k] = totales[k] + Decimal(item[k])
-        vals['tipo_reg'] = '1'
-        vals['ctl_fiscal'] = ' '
-        vals['cbte_nro_reg'] = vals['cbt_numero']
-        vals['cant_hojas'] = '01'
-        vals['transporte'] = '0'
-        vals['categoria'] = categorias[item['categoria'].lower()]
-        if vals['imp_moneda_id'] is None:
-            vals['imp_moneda_id'] = 'PES'
-            vals['imp_moneda_ctz'] = '1.000'
+        ivas = item.get("ivas", [{}])
+        for i, iva in enumerate(ivas):
+            vals = format_as_dict(VENTAS_TIPO1)
+            # datos generales de la factura:
+            vals['tipo_reg'] = '1'
+            # copio los campos que no varían para las distintas alicuotas de IVA
+            for k, l, t in VENTAS_TIPO1[1:10] + VENTAS_TIPO1[21:30]:
+                vals[k] = item.get(k)
+            vals['fecha_anulacion'] = ''
+            vals['ctl_fiscal'] = item.get('ctl_fiscal', ' ')  # C para controlador
+            vals['anulacion'] = item.get('anulacion', ' ')
+            vals['cbte_nro_reg'] = item['cbt_numero']
+            vals['cant_hojas'] = '01'
+            vals['transporte'] = '0'
+            vals['categoria'] = categorias[item['categoria'].lower()]
+            if vals['imp_moneda_id'] is None:
+                vals['imp_moneda_id'] = 'PES'
+                vals['imp_moneda_ctz'] = '1.000'
+            # subtotales por alícuota de IVA
+            if 'iva_id' in iva:
+                # mapear alicuota de iva según código usado en MTX
+                iva_id = int(iva['iva_id'])
+                if iva_id == 1:
+                    vals['imp_tot_conc'] = iva['base_imp']
+                    alicuota = None
+                elif iva_id == 2:
+                    vals['imp_op_ex'] = iva['base_imp']
+                    alicuota = None
+                else:
+                    alicuota = {3: "0.00", 4: "10.5", 5: "21", 6: "27"}[iva_id]
+                    vals['imp_neto'] = iva['base_imp']
+                    vals['impto_liq'] = iva['importe']
+                vals['alicuota_iva'] = alicuota or '0.00'
+            else:
+                # tomar datos generales: 
+                vals['alicuota_iva'] = (Decimal(item['imp_total'])/Decimal(item['imp_neto']) - 1) * 100
+                vals['alicuotas_iva'] = '01'
+                if float(item['impto_liq']) == 0:
+                    vals['codigo_operacion'] = 'E'
+                else:
+                    vals['codigo_operacion'] = ' '
+                if vals['imp_tot_conc'] is None:
+                    vals['imp_tot_conc'] = '0'
 
-        vals['alicuota_iva'] = (Decimal(vals['imp_total'])/Decimal(vals['imp_neto']) - 1) * 100
-        vals['alicuotas_iva'] = '01'
-        if float(vals['impto_liq']) == 0:
-            vals['codigo_operacion'] = 'E'
-        else:
-            vals['codigo_operacion'] = ' '
-        if vals['imp_tot_conc'] is None:
-            vals['imp_tot_conc'] = '0'
+            # acumulo los totales para el registro tipo 2
+            for k in IMPORTES:
+                totales[k] = totales[k] + Decimal(vals[k] or 0)
 
-        s = escribir(vals, VENTAS_TIPO1)
-        print "linea", s
-        out.write(s)
+            # otros impuestos (TODO: recorrer tributos) solo ultimo registro:
+            if len(ivas) == i-1:
+                for k in ('impto_perc', 'imp_iibb', 'impto_perc_mun', 'imp_internos'):
+                    if k in item:
+                        vals[k] = item[k]
+                        totales[k] = totales[k] + Decimal(vals[k] or 0)
+
+            s = escribir(vals, VENTAS_TIPO1)
+            print "linea", s
+            out.write(s)
         
     totales['tipo_reg'] = '2'
     totales['cant_reg_tipo_1'] = str(len(items))
