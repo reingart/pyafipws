@@ -158,12 +158,17 @@ def escribir(dic, formato):
     return linea + "\n"
 
 
+# Tipos de datos (código RG1361)
+
+
+N = 'Numerico'      # 2
+A = 'Alfanumerico'  # 3
+I = 'Importe'       # 4
+C = A               # 1 (caracter alfabetico)
+B = A               # 9 (blanco)
+
+
 # Funciones para manejo de tablas en DBF
-
-
-N = 'Numerico'
-A = 'Alfanumerico'
-I = 'Importe'
 
 
 def guardar_dbf(formatos, agrega=False, conf_dbf=None):

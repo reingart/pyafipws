@@ -35,13 +35,7 @@ import os
 import sys
 import traceback
 
-from utils import leer, escribir
-
-C = 1 # caracter alfabetico
-N = 2 # numerico
-A = 3 # alfanumerico
-I = 4 # importes
-B = 9 # blanco
+from utils import leer, escribir, C, N, A, I, B
 
 CUIT = '20267565393'
 
