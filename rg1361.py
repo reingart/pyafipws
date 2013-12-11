@@ -138,7 +138,8 @@ DETALLE = [
     ('alicuota_iva', 4, I),
     ('gravado', 1, C),
     ('anulacion', 1, C),
-    ('diseño_libre', 75-0, B),
+    ('codigo', 50, A),
+    ('ds', 150, A),
     ]
 
 VENTAS_TIPO1 = [
