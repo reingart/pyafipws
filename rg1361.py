@@ -209,7 +209,7 @@ def leer_planilla(entrada):
     for row in csv_reader:
         items.append(row)
     if len(items) < 2:
-        dialog.alertDialog(self, 'El archivo no tiene datos válidos', 'Advertencia')
+        raise RuntimeError('El archivo no tiene datos válidos', 'Advertencia')
     cols = [str(it).strip() for it in items[0]]
 
     # armar diccionario por cada linea
@@ -270,14 +270,12 @@ def generar_encabezado(items):
         if vals['imp_tot_conc'] is None:
             vals['imp_tot_conc'] = '0'
         s = escribir(vals, CAB_FAC_TIPO1)
-        print "linea", s
         out.write(s)
         
     totales['tipo_reg'] = '2'
     totales['cant_reg_tipo_1'] = str(len(items))
     totales['cuit'] = CUIT
     s = escribir(totales, CAB_FAC_TIPO2)
-    print "print totales", s
     out.write(s)
     out.close()
 
@@ -331,7 +329,6 @@ def generar_detalle(items):
             vals['codigo'] = it.get('codigo', '')
             vals['ds'] = it.get('ds', '')
             s = escribir(vals, DETALLE)
-            print "linea", s
             out.write(s)
         
     out.close()
@@ -406,14 +403,12 @@ def generar_ventas(items):
                         totales[k] = totales[k] + Decimal(vals[k] or 0)
 
             s = escribir(vals, VENTAS_TIPO1)
-            print "linea", s
             out.write(s)
         
     totales['tipo_reg'] = '2'
     totales['cant_reg_tipo_1'] = str(len(items))
     totales['cuit'] = CUIT
     s = escribir(totales, VENTAS_TIPO2)
-    print "totales", s
     out.write(s)
     out.close()
 
@@ -462,5 +457,6 @@ if __name__ == '__main__':
         import traceback
         traceback.print_exc(file=f)
         f.close()
-    raw_input("presione enter para continuar...")
+    if '--debug' in sys.argv:
+        raw_input("presione enter para continuar...")
     ##sys.stdout.close()
