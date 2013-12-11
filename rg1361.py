@@ -45,6 +45,9 @@ B = 9 # blanco
 
 CUIT = '20267565393'
 
+# ESPECIFICACIONES TECNICAS - ANEXO II RESOLUCION GENERAL N°1361
+# http://www.afip.gov.ar/afip/resol136102_Anexo_II.html
+
 categorias = {"responsable inscripto": "01", # IVA Responsable Inscripto
               "responsable no inscripto": "02", # IVA Responsable no Inscripto
               "no responsable": "03", # IVA no Responsable
@@ -232,6 +235,7 @@ def grabar_json(salida):
 
 
 def generar_encabezado(items):
+    "Crear archivo de cabecera de facturas emitidas"
 
     periodo = items[0]['fecha_cbte'][:6]
 
@@ -279,7 +283,8 @@ def generar_encabezado(items):
 
 
 def generar_detalle(items):
-
+    "Crear archivo de detalle de facturas emitidas"
+    
     periodo = items[0]['fecha_cbte'][:6]
 
     out = open("DETALLE_%s.txt" % periodo, "w")
@@ -313,7 +318,8 @@ def generar_detalle(items):
 
 
 def generar_ventas(items):
-
+    "Crear archivos de ventas (registros tipo 1 y tipo 2 totales)"
+    
     periodo = items[0]['fecha_cbte'][:6]
 
     out = open("VENTAS_%s.txt" % periodo, "w")
