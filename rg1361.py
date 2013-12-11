@@ -100,6 +100,11 @@ CAB_FAC_TIPO1 = [
     ('fecha_anulacion', 8, A),
     ]
 
+# campos especiales del encabezado:
+IMPORTES = ('imp_total', 'imp_tot_conc', 'imp_neto', 'impto_liq', 
+            'impto_liq_rni', 'imp_op_ex', 'impto_perc', 'imp_iibb', 
+            'impto_perc_mun', 'imp_internos')
+
 # total
 CAB_FAC_TIPO2 = [
     ('tipo_reg', 1, N),
@@ -243,8 +248,7 @@ def generar_encabezado(items):
     out = open("CABECERA_%s.txt" % periodo, "w")
     totales = format_as_dict(CAB_FAC_TIPO2)
     totales['periodo'] = periodo
-    for key in ('imp_total', 'imp_tot_conc', 'imp_neto', 'impto_liq', 'impto_liq_rni', 
-                'imp_op_ex', 'impto_perc', 'imp_iibb', 'impto_perc_mun', 'imp_internos'):
+    for key in IMPORTES:
         totales[key] = Decimal(0)
     
     for item in items:
@@ -255,7 +259,7 @@ def generar_encabezado(items):
             if k in totales:
                 totales[k] = totales[k] + Decimal(item[k])
         vals['tipo_reg'] = '1'
-        vals['ctl_fiscal'] = ' '
+        vals['ctl_fiscal'] = item.get('ctl_fiscal', ' ')  # C para controlador
         vals['cbte_nro_reg'] = vals['cbt_numero']
         vals['cant_hojas'] = '01'
         vals['transporte'] = '0'
@@ -263,11 +267,12 @@ def generar_encabezado(items):
         if vals['imp_moneda_id'] is None:
             vals['imp_moneda_id'] = 'PES'
             vals['imp_moneda_ctz'] = '1.000'
-        vals['alicuotas_iva'] = '01'
-        if float(vals['impto_liq']) == 0:
-            vals['codigo_operacion'] = 'E'
-        else:
-            vals['codigo_operacion'] = ' '
+        vals['alicuotas_iva'] = max(len(item.get('ivas', [])), 1)
+        if vals['codigo_operacion'] is None:
+            if int(item['tipo_cbte']) in (19, 20, 21):
+                vals['codigo_operacion'] = 'E'                
+            else:
+                vals['codigo_operacion'] = ' '
         if vals['imp_tot_conc'] is None:
             vals['imp_tot_conc'] = '0'
         s = escribir(vals, CAB_FAC_TIPO1)
