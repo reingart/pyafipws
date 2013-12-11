@@ -295,30 +295,50 @@ def generar_detalle(items):
 
     out = open("DETALLE_%s.txt" % periodo, "w")
     
+    # recorro las facturas y detalles de artículos vendidos:
     for item in items:
-        vals = format_as_dict(DETALLE)
-        vals['qty'] = '1'
-        vals['pro_umed'] = '07' # unidad
-        vals['pro_precio_uni'] = item['imp_neto']
-        vals['imp_bonif'] = '0.00'
-        vals['imp_ajuste'] = '0.00'
-        vals['imp_total'] = '0.00'
-        vals['imp_tot_conc'] = '0'
-        for k in item.keys():
-            vals[k] = item[k]
-        vals['tipo_reg'] = '1'
-        vals['ctl_fiscal'] = ' '
-        vals['cbte_nro_reg'] = vals['cbt_numero']        
-        vals['anulacion'] = ' '
-        vals['alicuota_iva'] = (Decimal(vals['imp_total'])/Decimal(vals['imp_neto']) - 1) * 100
-        if float(vals['impto_liq']) == 0:
-            vals['gravado'] = 'E'
-        else:
-            vals['gravado'] = 'G'
-
-        s = escribir(vals, DETALLE)
-        print "linea", s
-        out.write(s)
+        for it in item.get('items', [{}]):
+            vals = format_as_dict(DETALLE)
+            # datos generales de la factura:
+            vals['tipo_reg'] = '1'
+            for k in ('tipo_cbte', 'fecha_cbte', 'punto_vta', 'cbt_numero'):
+                vals[k] = item[k]
+            vals['cbte_nro_reg'] = item['cbt_numero']  # no hay varias hojas
+            vals['ctl_fiscal'] = item.get('ctl_fiscal', ' ')  # C para controlador
+            vals['anulacion'] = it.get('anulacion', ' ')
+            # datos del artículo:
+            vals['qty'] = it.get('qty', '1')  # cantidad
+            vals['pro_umed'] = it.get('umed', '07')  # unidad de medida
+            vals['pro_precio_uni'] = it.get('precio', item['imp_neto'])
+            vals['imp_bonif'] = it.get('bonif', '0.00')
+            vals['imp_ajuste'] = it.get('ajuste', '0.00')
+            vals['imp_total'] = it.get('importe', '0.00')
+            # iva
+            if 'iva_id' in it:
+                # mapear alicuota de iva según código usado en MTX
+                iva_id = int(it['iva_id'])
+                if iva_id in (1, 2):
+                    alicuota = None
+                else:
+                    alicuota = {3: "0.00", 4: "10.5", 5: "21", 6: "27"}[iva_id]
+                if alicuota is None:
+                    vals['gravado'] = 'E'
+                else:
+                    vals['gravado'] = 'G'
+                vals['alicuota_iva'] = alicuota or '0.00'
+            else:
+                # tomar datos generales:
+                vals['alicuota_iva'] = (Decimal(item['imp_total'])/Decimal(item['imp_neto']) - 1) * 100
+                if float(item['impto_liq']) == 0:
+                    vals['gravado'] = 'E'
+                else:
+                    vals['gravado'] = 'G'
+            # diseño libre: código de barras y descripción:
+            vals['codigo'] = it.get('codigo', '')
+            vals['ds'] = it.get('ds', '')
+            s = escribir(vals, DETALLE)
+            print "linea", s
+            out.write(s)
         
     out.close()
 
