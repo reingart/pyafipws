@@ -215,6 +215,22 @@ def leer_planilla(entrada):
     return items
 
 
+def leer_json(entrada):
+    "Carga los datos de json [{'col': celda}]"
+        
+    import json
+    items = json.load(open(entrada))
+
+    return items
+
+
+def grabar_json(salida):
+    "Guarda los datos json"
+    
+    import json
+    json.dump(items, open("rg1361.json", "w"), sort_keys=True, indent=4)
+
+
 def generar_encabezado(items):
 
     periodo = items[0]['fecha_cbte'][:6]
@@ -368,15 +384,22 @@ if __name__ == '__main__':
                     csv.writerow(datos)
             f.close()
         else:
-            items = leer_planilla(entrada)
+            if '--json' in sys.argv:
+                items = leer_json(entrada)
+            else:
+                items = leer_planilla(entrada)
             print "Generando encabezado..."
             generar_encabezado(items)
             print "Generando detalle..."
             generar_detalle(items)
             print "Generando ventas..."
             generar_ventas(items)
+            if '--json' in sys.argv:
+                grabar_json(entrada)
         print "Hecho."
     except Exception, e:
+        if '--debug' in sys.argv:
+            raise
         print "Error: por favor corriga los datos y vuelva a intentar:"
         print str(e)
         f = open("traceback.txt", "w+")
