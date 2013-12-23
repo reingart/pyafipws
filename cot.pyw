@@ -74,6 +74,9 @@ gui.ListView(name=u'archivos', height='99', left='21', top='70', width='356',
              onitemselected="print ('sel %s' % event.target.get_selected_items())", )
 gui.ListColumn(name=u'txt', text='Archivo TXT', width=200, parent=u'archivos', )
 gui.ListColumn(name=u'xml', text='Archivo XML', parent=u'archivos', )
+gui.ListColumn(name=u'cuit', text='CUIT Empresa', parent=u'archivos', )
+gui.ListColumn(name=u'nro', text=u'N° Comprobante', parent=u'archivos', )
+gui.ListColumn(name=u'md5', text=u'Código Integridad', parent=u'archivos', )
 gui.ListView(id=309, name=u'errores', height='99', left='20', top='250', 
              width='356', bgcolor=u'#FFFFFF', fgcolor=u'#3C3C3C', 
              item_count=0, parent='mywin', sort_column=-1, 
@@ -107,14 +110,15 @@ cot.Conectar("", trace=True)
 
 def cargar_archivo(evt):
     item = evt.target.get_selected_items()[0]
-    lv = mywin['remitos']
-    print item
     cot.PresentarRemito(item['txt'], testing=item['xml'])
     print cot.Excepcion, cot.Traceback
-    print "CUIT Empresa:", cot.CuitEmpresa
-    print "Numero Comprobante:", cot.NumeroComprobante
-    print "Nombre Archivo:", cot.NombreArchivo
-    print "Codigo Integridad:", cot.CodigoIntegridad
+    
+    item['cuit'] = cot.CuitEmpresa
+    item['nro'] = cot.NumeroComprobante
+    item['md5'] = cot.CodigoIntegridad
+    #assert item['txt'] == cot.NombreArchivo
+
+    lv = mywin['remitos']
 
     while cot.LeerValidacionRemito():
         print "Numero Unico:", cot.NumeroUnico
