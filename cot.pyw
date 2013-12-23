@@ -23,7 +23,7 @@ import gui
 
 # importar el módulo principal de pyafipws para remito electrónico:
 
-import cot
+from cot import COT
 
 # --- here goes your event handlers ---
 
@@ -99,9 +99,33 @@ for fn in os.listdir("."):
 
 # asignar controladores 
 
+cot = COT()
+
+cot.Usuario = ""
+cot.Password = ""
+cot.Conectar("", trace=True)
+
+def cargar_archivo(evt):
+    item = evt.target.get_selected_items()[0]
+    lv = mywin['remitos']
+    print item
+    cot.PresentarRemito(item['txt'], testing=item['xml'])
+    print cot.Excepcion, cot.Traceback
+    print "CUIT Empresa:", cot.CuitEmpresa
+    print "Numero Comprobante:", cot.NumeroComprobante
+    print "Nombre Archivo:", cot.NombreArchivo
+    print "Codigo Integridad:", cot.CodigoIntegridad
+
+    while cot.LeerValidacionRemito():
+        print "Numero Unico:", cot.NumeroUnico
+        print "Procesado:", cot.Procesado
+        while cot.LeerErrorValidacion():
+            print "Error Validacion:", "|", cot.CodigoError, "|", cot.MensajeError
+
+lv.onitemselected = cargar_archivo 
 
 if __name__ == "__main__":
     mywin.show()
-    mywin.title = "%s - %s" % (mywin.title, cot.__version__)
+    mywin.title = "%s - %s" % (mywin.title, cot.Version)
     mywin['statusbar'].text = "" 
     gui.main_loop()
