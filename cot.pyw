@@ -31,7 +31,7 @@ from cot import COT
 # --- gui2py designer generated code starts ---
 
 gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA', 
-           resizable=True, height='423px', left='180', top='24', 
+           resizable=True, height='450px', left='180', top='24', 
            width='389px', bgcolor=u'#E0E0E0', fgcolor=u'#4C4C4C')
 gui.TextBox(name='txtTest', left='100', top='10', width='105', parent='mywin', 
             value=u'20267565393', )
@@ -39,9 +39,9 @@ gui.TextBox(id=329, name='txtTest_329', password=True, left='300', top='10',
             width='75', parent='mywin', value=u'24567', )
 gui.Line(name='line_25_556', height='3', left='24', top='390', width='349', 
          parent='mywin', )
-gui.Button(label=u'click me!', name=u'btnAutorizar', left='110', top='394', 
+gui.Button(label=u'Procesar', name=u'procesar', left='110', top='394', 
            width='85', default=True, fgcolor=u'#4C4C4C', parent='mywin', )
-gui.Button(label=u'Quit', name='btnClose', left='210', top='394', width='85', 
+gui.Button(label=u'Salir', name='salir', left='210', top='394', width='85', 
            parent='mywin', onclick='exit()', )
 gui.ComboBox(name=u'url', 
              text=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
@@ -63,15 +63,13 @@ gui.Label(id=228, name='lblTest_228', height='17', left='30', top='41',
           width='32', parent='mywin', text=u'URL:', )
 gui.ListView(id=213, name=u'remitos', height='74', left='20', top='171', 
              width='356', bgcolor=u'#FFFFFF', fgcolor=u'#3C3C3C', 
-             item_count=0, parent='mywin', sort_column=0, 
-             onitemselected="print ('sel %s' % event.target.get_selected_items())", )
-gui.ListColumn(name=u'nro', text=u'N\xb0 \xdanico', width=250, 
+             item_count=0, parent='mywin', sort_column=0, )
+gui.ListColumn(name=u'nro', text=u'N\xb0 \xdanico Remito', width=250, 
                parent=u'remitos', )
 gui.ListColumn(name=u'proc', text=u'Procesado', parent=u'remitos', )
 gui.ListView(name=u'archivos', height='99', left='21', top='70', width='356', 
              bgcolor=u'#FFFFFF', fgcolor=u'#3C3C3C', item_count=0, 
-             parent='mywin', sort_column=1, 
-             onitemselected="print ('sel %s' % event.target.get_selected_items())", )
+             parent='mywin', sort_column=1,  )
 gui.ListColumn(name=u'txt', text='Archivo TXT', width=200, parent=u'archivos', )
 gui.ListColumn(name=u'xml', text='Archivo XML', parent=u'archivos', )
 gui.ListColumn(name=u'cuit', text='CUIT Empresa', parent=u'archivos', )
@@ -79,11 +77,10 @@ gui.ListColumn(name=u'nro', text=u'N° Comprobante', parent=u'archivos', )
 gui.ListColumn(name=u'md5', text=u'Código Integridad', parent=u'archivos', )
 gui.ListView(id=309, name=u'errores', height='99', left='20', top='250', 
              width='356', bgcolor=u'#FFFFFF', fgcolor=u'#3C3C3C', 
-             item_count=0, parent='mywin', sort_column=-1, 
-             onitemselected="print ('sel %s' % event.target.get_selected_items())", )
+             item_count=0, parent='mywin', sort_column=-1,  )
 gui.ListColumn(name=u'codigo', text=u'C\xf3digo', width=100, 
                parent=u'errores', )
-gui.ListColumn(name=u'descripcion', text=u'Descripci\xf3n', parent=u'errores', )
+gui.ListColumn(name=u'descripcion', text=u'Descripci\xf3n Error', parent=u'errores', width=-1)
 
 # --- gui2py designer generated code ends ---
 
