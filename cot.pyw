@@ -109,20 +109,25 @@ cot.Password = ""
 cot.Conectar("", trace=True)
 
 def cargar_archivo(evt):
+    # obtengo y proceso el archivo seleccionado:
     item = evt.target.get_selected_items()[0]
     cot.PresentarRemito(item['txt'], testing=item['xml'])
+
     print cot.Excepcion, cot.Traceback
-    
+    # actualizo los datos devueltos en el listado    
     item['cuit'] = cot.CuitEmpresa
     item['nro'] = cot.NumeroComprobante
     item['md5'] = cot.CodigoIntegridad
     #assert item['txt'] == cot.NombreArchivo
 
-    lv = mywin['remitos']
-
+    # limpio, enumero y agrego los remitos para el archivo seleccionado: 
+    remitos = mywin['remitos']
+    remitos.items = []
+    i = 0
     while cot.LeerValidacionRemito():
-        print "Numero Unico:", cot.NumeroUnico
-        print "Procesado:", cot.Procesado
+        print "REMITO", i
+        remitos.items[i] = {'nro': cot.NumeroUnico, 'proc': cot.Procesado}
+        i += 1
         while cot.LeerErrorValidacion():
             print "Error Validacion:", "|", cot.CodigoError, "|", cot.MensajeError
 
