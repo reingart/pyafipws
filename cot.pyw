@@ -122,16 +122,32 @@ def cargar_archivo(evt):
 
     # limpio, enumero y agrego los remitos para el archivo seleccionado: 
     remitos = mywin['remitos']
+    mywin['errores'].items = []
     remitos.items = []
     i = 0
     while cot.LeerValidacionRemito():
         print "REMITO", i
-        remitos.items[i] = {'nro': cot.NumeroUnico, 'proc': cot.Procesado}
+        errores = []
+        remitos.items[i] = {'nro': cot.NumeroUnico, 'proc': cot.Procesado,
+                            'errores': errores}
         i += 1
         while cot.LeerErrorValidacion():
             print "Error Validacion:", "|", cot.CodigoError, "|", cot.MensajeError
+            errores.append({'codigo': cot.CodigoError,
+                            'descripcion': cot.MensajeError})
 
-lv.onitemselected = cargar_archivo 
+def cargar_errores(evt):
+    # obtengo el remito seleccionado:
+    item = evt.target.get_selected_items()[0]
+    # limpio, enumero y agrego los errores para el remito seleccionado: 
+    errores = mywin['errores']
+    errores.items = []
+    for i, error in enumerate(item['errores']):
+        print i, error
+        errores.items[i] = error
+
+mywin['archivos'].onitemselected = cargar_archivo 
+mywin['remitos'].onitemselected = cargar_errores
 
 if __name__ == "__main__":
     mywin.show()
