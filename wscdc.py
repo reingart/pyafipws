@@ -29,8 +29,7 @@ HOMO = False
 
 class WSCDC(BaseWS):
     "Interfaz para el WebService de Constatación de Comprobantes"
-    _public_methods_ = ['Conectar',
-                        'AnalizarXml', 'ObtenerTagXml', 'Expirado',
+    _public_methods_ = ['Conectar', 'AnalizarXml', 'ObtenerTagXml', 
                         'ConstatarComprobante', 'Dummy',
                         'ConsultarModalidadComprobantes',
                         'ConsultarTipoComprobantes',
@@ -39,13 +38,13 @@ class WSCDC(BaseWS):
     _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 
                       'InstallDir', 'Traceback', 'Excepcion',
-                      'SoapFault', 'LanzarExcepciones',
                       'Resultado', 'FchProceso', 'Observaciones', 'Obs',
                       'FechaCbte', 'CbteNro', 'PuntoVenta', 'ImpTotal', 
                       'EmisionTipo', 'CAE', 'CAEA', 'CAI',
                       'DocTipo', 'DocNro',
+                      'SoapFault', 'LanzarExcepciones',
                     ]
-    _readonly_attrs_ = _public_attrs_[:-1]
+    _readonly_attrs_ = _public_attrs_[2:-1]
     _reg_progid_ = "WSCDC"
     _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
 
