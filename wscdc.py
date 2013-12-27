@@ -12,6 +12,9 @@
 
 "Módulo para utilizar el servicio web Constatación de Comprobantes de AFIP"
 
+# Información adicional y documentación:
+# http://www.sistemasagiles.com.ar/trac/wiki/ConstatacionComprobantes
+
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
