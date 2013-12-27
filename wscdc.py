@@ -66,6 +66,15 @@ class WSCDC(BaseWS):
         result = response['ComprobantesModalidadConsultarResult']
         return [(u"\t%(Cod)s\t%(Desc)s\t" % p['FacModTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
+
+    def ConsultarTipoComprobantes(self, sep="|"):
+        "Recuperador de valores referenciales de códigos de Tipos de comprobante"
+        response = self.client.ComprobantesTipoConsultar(
+                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+                    )
+        result = response['ComprobantesTipoConsultarResult']
+        return [(u"\t%(Id)s\t%(Desc)s\t" % p['CbteTipo']).replace("\t", sep)
+                 for p in result['ResultGet']]
         
         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -120,6 +129,8 @@ def main():
 
         print "=== Modalidad Comprobantes ==="
         print u'\n'.join(wscdc.ConsultarModalidadComprobantes("||"))
+        print "=== Tipo Comprobantes ==="
+        print u'\n'.join(wscdc.ConsultarTipoComprobantes("||"))
         
         
 if __name__=="__main__":
