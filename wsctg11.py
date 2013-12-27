@@ -17,7 +17,7 @@ del web service WSCTG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.09d"
+__version__ = "1.10a"
 
 LICENCIA = """
 wsctg11.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -64,11 +64,11 @@ Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
 import os, sys, time, base64
 from php import date
 import traceback
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
+from pysimplesoap.client import SoapFault
 import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
@@ -76,7 +76,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsctg.ini"
-HOMO = True
+HOMO = False
 
 # definición del formato del archivo de intercambio:
 
@@ -113,47 +113,8 @@ ENCABEZADO = [
     ]        
 
 
-def inicializar_y_capturar_excepciones(func):
-    "Decorador para inicializar y capturar errores"
-    def capturar_errores_wrapper(self, *args, **kwargs):
-        try:
-            # inicializo (limpio variables)
-            self.NumeroCTG = self.CartaPorte = ""
-            self.FechaHora = self.CodigoOperacion = ""
-            self.VigenciaDesde = self.VigenciaHasta = ""
-            self.ErrMsg = self.ErrCode = ""
-            self.Errores = self.Controles = []
-            self.DatosCTG = None
-            self.CodigoTransaccion = self.Observaciones = ''
-            self.TarifaReferencia = None
-            self.Excepcion = self.Traceback = ""
-            # llamo a la función (con reintentos)
-            return func(self, *args, **kwargs)
-        except SoapFault, e:
-            # guardo destalle de la excepción SOAP
-            self.ErrCode = unicode(e.faultcode)
-            self.ErrMsg = unicode(e.faultstring)
-            self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
-            if self.LanzarExcepciones:
-                raise
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            try:
-                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            except:
-                self.Excepcion = u"<no disponible>"
-            if self.LanzarExcepciones:
-                raise
-        finally:
-            # guardo datos de depuración
-            if self.client:
-                self.XmlRequest = self.client.xml_request
-                self.XmlResponse = self.client.xml_response
-    return capturar_errores_wrapper
 
-
-class WSCTG11:
+class WSCTG11(BaseWS):
     "Interfaz para el WebService de Código de Trazabilidad de Granos"    
     _public_methods_ = ['Conectar', 'Dummy',
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
@@ -180,34 +141,22 @@ class WSCTG11:
     _reg_progid_ = "WSCTG11"
     _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
 
-    def __init__(self):
-        self.Token = self.Sign = self.Cuit = None
+    # Variables globales para BaseWS:
+    HOMO = HOMO
+    WSDL = WSDL
+    LanzarExcepciones = False
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+
+    def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.XmlRequest = ''
-        self.XmlResponse = ''
-        self.LanzarExcepciones = False
-        self.InstallDir = INSTALL_DIR
         self.CodError = self.DescError = ''
-        self.client = None
-        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
-        self.NumeroCTG = ''
+        self.NumeroCTG = self.CartaPorte = ""
         self.CodigoTransaccion = self.Observaciones = ''
-        self.Excepcion = self.Traceback = ""
-            
-    @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy=""):
-        "Establecer la conexión a los servidores de la AFIP"
-        if HOMO or not url: url = WSDL
-        if not cache or HOMO:
-            # use 'cache' from installation base directory 
-            cache = os.path.join(self.InstallDir, 'cache')
-        proxy_dict = parse_proxy(proxy)
-        self.client = SoapClient(url,
-            wsdl=url, cache=cache,
-            trace='--trace' in sys.argv, 
-            ns='ctg', soap_ns='soapenv',
-            exceptions=True, proxy=proxy_dict)
-        return True
+        self.FechaHora = self.CodigoOperacion = ""
+        self.VigenciaDesde = self.VigenciaHasta = ""
+        self.Controles = []
+        self.DatosCTG = self.TarifaReferencia = None
+        self.CodigoTransaccion = self.Observaciones = ''
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -570,41 +519,6 @@ class WSCTG11:
                      it['cosecha']['descripcion']) 
                for it in array]
 
-    @property
-    def xml_request(self):
-        return self.XmlRequest
-
-    @property
-    def xml_response(self):
-        return self.XmlResponse
-
-    def AnalizarXml(self, xml=""):
-        "Analiza un mensaje XML (por defecto la respuesta)"
-        try:
-            if not xml or xml=='XmlResponse':
-                xml = self.XmlResponse 
-            elif xml=='XmlRequest':
-                xml = self.XmlRequest 
-            self.xml = SimpleXMLElement(xml)
-            return True
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
-            return False
-
-    def ObtenerTagXml(self, *tags):
-        "Busca en el Xml analizado y devuelve el tag solicitado"
-        # convierto el xml a un objeto
-        try:
-            if self.xml:
-                xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
-                for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
-                # vuelvo a convertir a string el objeto xml encontrado
-                return str(xml)
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
-
 
 def leer_archivo(nombre_archivo):
     archivo = open(nombre_archivo, "r")
@@ -670,7 +584,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSCTG11.InstallDir = os.path.dirname(os.path.abspath(basepath))
 
 
 if __name__ == '__main__':
@@ -750,16 +664,12 @@ if __name__ == '__main__':
             ta_string = wsaa.call_wsaa(cms, wsaa_url)
             open(TA,"w").write(ta_string)
         ta_string=open(TA).read()
-        ta = SimpleXMLElement(ta_string)
-        token = str(ta.credentials.token)
-        sign = str(ta.credentials.sign)
         # fin TA
 
         # cliente soap del web service
         wsctg = WSCTG11()
-        wsctg.Conectar(url=wsctg_url)
-        wsctg.Token = token
-        wsctg.Sign = sign
+        wsctg.Conectar(wsdl=wsctg_url)
+        wsctg.SetTicketAcceso(ta_string)
         wsctg.Cuit = CUIT
         
         if '--dummy' in sys.argv:
@@ -834,7 +744,7 @@ if __name__ == '__main__':
                 cuit_canjeador=0, #30660685908, 
                 cuit_destino=20061341677, cuit_destinatario=20267565393, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
-                codigo_cosecha='0910', peso_neto_carga=1000, 
+                codigo_cosecha='1314', peso_neto_carga=1000, 
                 km_recorridos=1234,
                 ##numero_ctg="43816783", transaccion='10000001681', 
                 observaciones='', establecimiento=1,
