@@ -902,7 +902,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSMTXCA.InstallDir = os.path.dirname(os.path.abspath(basepath))
 
 if __name__ == '__main__':
 

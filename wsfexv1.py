@@ -426,7 +426,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSFEXv1.InstallDir = os.path.dirname(os.path.abspath(basepath))
 
 
 def p_assert_eq(a,b):

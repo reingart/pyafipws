@@ -23,7 +23,8 @@ __version__ = "2.06a"
 
 import datetime,email,os,sys,traceback
 from php import date
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
+from pysimplesoap.client import SimpleXMLElement
+from utils import inicializar_y_capturar_excepciones, BaseWS
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
 except ImportError:
@@ -120,7 +121,7 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
         raise
 
 
-class WSAA:
+class WSAA(BaseWS):
     "Interfaz para el WebService de Autenticación y Autorización"
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
                         'AnalizarXml', 'ObtenerTagXml', 'Expirado',
@@ -139,97 +140,33 @@ class WSAA:
         _typelib_version_ = 2, 4
         _com_interfaces_ = ['IWSAA']
 
+    # Variables globales para BaseWS:
+    HOMO = HOMO
+    WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
-    def __init__(self):
-        self.Token = self.Sign = None
-        self.InstallDir = INSTALL_DIR
-        self.Excepcion = self.Traceback = ""
-        self.LanzarExcepciones = True
-        self.XmlRequest = self.XmlResponse = ""
-        self.xml = None
-
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
-        # cliente soap del web service
-        try:
-            if wrapper:
-                Http = set_http_wrapper(wrapper)
-                self.Version = WSAA.Version + " " + Http._wrapper_version
-            if not isinstance(proxy,dict):
-                proxy_dict = parse_proxy(proxy)
-            else:
-                proxy_dict = proxy
-            if HOMO or not wsdl:
-                wsdl = WSDL
-            if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
-                wsdl += "?wsdl"
-            if not cache or HOMO:
-                # use 'cache' from installation base directory 
-                cache = os.path.join(self.InstallDir, 'cache')
-            self.client = SoapClient(
-                wsdl = wsdl,        
-                cache = cache,
-                proxy = proxy_dict,
-                cacert = cacert,
-                trace = "--trace" in sys.argv)
-            return True
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            if self.LanzarExcepciones:
-                raise
-        return False
-
+    @inicializar_y_capturar_excepciones
     def CreateTRA(self, service="wsfe", ttl=2400):
         "Crear un Ticket de Requerimiento de Acceso (TRA)"
-        try:
-            return create_tra(service,ttl)
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            if self.LanzarExcepciones:
-                raise
-        return ""
+        return create_tra(service,ttl)
         
+    @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey):
         "Firmar el TRA y devolver CMS"
-        try:
-            return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'))
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            if self.LanzarExcepciones:
-                raise
-        return ""
+        return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'))
 
+    @inicializar_y_capturar_excepciones
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
-        self.xml = None # limpio xml anterior
-        try:
-            self.Excepcion = self.Traceback = ""
-            self.Token = self.Sign = ""
-            results = self.client.loginCms(in0=str(cms))
-            ta_xml = results['loginCmsReturn'].encode("utf-8")
-            self.xml = ta = SimpleXMLElement(ta_xml)
-            self.Token = str(ta.credentials.token)
-            self.Sign = str(ta.credentials.sign)
-            self.ExpirationTime = str(ta.header.expirationTime)
-            return ta_xml
-        except SoapFault,e:
-            self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            if self.LanzarExcepciones:
-                raise
-        finally:
-            self.XmlRequest = self.client.xml_request
-            self.XmlResponse = self.client.xml_response
-        return ""
+        self.Excepcion = self.Traceback = ""
+        self.Token = self.Sign = ""
+        results = self.client.loginCms(in0=str(cms))
+        ta_xml = results['loginCmsReturn'].encode("utf-8")
+        self.xml = ta = SimpleXMLElement(ta_xml)
+        self.Token = str(ta.credentials.token)
+        self.Sign = str(ta.credentials.sign)
+        self.ExpirationTime = str(ta.header.expirationTime)
+        return ta_xml
             
     def CallWSAA(self, cms, url="", proxy=None):
         "Obtener ticket de autorización (TA) -version retrocompatible-"
@@ -239,43 +176,14 @@ class WSAA:
             raise RuntimeError(self.Excepcion)
         return ta_xml
 
-    def AnalizarXml(self, xml=""):
-        "Analiza un mensaje XML (por defecto el ticket de acceso)"
-        try:
-            if not xml or xml=='XmlResponse':
-                xml = self.XmlResponse 
-            elif xml=='XmlRequest':
-                xml = self.XmlRequest 
-            self.xml = SimpleXMLElement(xml)
-            return True
-        except Exception, e:
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            return False
-
-    def ObtenerTagXml(self, *tags):
-        "Busca en el Xml analizado y devuelve el tag solicitado"
-        # convierto el xml a un objeto
-        try:
-            if self.xml:
-                xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
-                for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
-                # vuelvo a convertir a string el objeto xml encontrado
-                return str(xml)
-        except Exception, e:
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-
+    @inicializar_y_capturar_excepciones
     def Expirado(self, fecha=None):
         "Comprueba la fecha de expiración, devuelve si ha expirado"
-        try:
-            if not fecha:
-                fecha = self.ObtenerTagXml('expirationTime')
-            now = datetime.datetime.now()
-            d = datetime.datetime.strptime(fecha[:19], '%Y-%m-%dT%H:%M:%S')
-            return now > d
-        except Exception, e:
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+        if not fecha:
+            fecha = self.ObtenerTagXml('expirationTime')
+        now = datetime.datetime.now()
+        d = datetime.datetime.strptime(fecha[:19], '%Y-%m-%dT%H:%M:%S')
+        return now > d
         
         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -286,7 +194,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSAA.InstallDir = os.path.dirname(os.path.abspath(basepath))
 
 if hasattr(sys, 'frozen'):
     # we are running as py2exe-packed executable

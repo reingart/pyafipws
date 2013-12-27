@@ -50,15 +50,6 @@ class WSCDC(BaseWS):
     WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
-    def __init__(self):
-        self.Token = self.Sign = None
-        self.InstallDir = INSTALL_DIR
-        self.Excepcion = self.Traceback = ""
-        self.LanzarExcepciones = True
-        self.XmlRequest = self.XmlResponse = ""
-        self.reintentos = 0
-        self.xml = self.client = self.Log = None
-
     def Dummy(self):
         "Método Dummy para verificación de funcionamiento de infraestructura"
         result = self.client.ComprobanteDummy()['ComprobanteDummyResult']
@@ -77,7 +68,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSCDC.InstallDir = os.path.dirname(os.path.abspath(basepath))
 
 if hasattr(sys, 'frozen'):
     # we are running as py2exe-packed executable

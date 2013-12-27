@@ -155,6 +155,14 @@ def inicializar_y_capturar_excepciones(func):
 class BaseWS:
     "Infraestructura basica para interfaces webservices de AFIP"
 
+    def __init__(self, reintentos=1):
+        self.Token = self.Sign = None
+        self.Excepcion = self.Traceback = ""
+        self.LanzarExcepciones = True
+        self.XmlRequest = self.XmlResponse = ""
+        self.reintentos = reintentos
+        self.xml = self.client = self.Log = None
+
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
         "Conectar cliente soap del web service"
         # analizar transporte y servidor proxy:
@@ -223,7 +231,7 @@ class BaseWS:
         return self.XmlResponse
 
     def AnalizarXml(self, xml=""):
-        "Analiza un mensaje XML (por defecto la respuesta)"
+        "Analiza un mensaje XML (por defecto el ticket de acceso)"
         try:
             if not xml or xml=='XmlResponse':
                 xml = self.XmlResponse 
@@ -232,7 +240,7 @@ class BaseWS:
             self.xml = SimpleXMLElement(xml)
             return True
         except Exception, e:
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             return False
 
     def ObtenerTagXml(self, *tags):
@@ -247,7 +255,7 @@ class BaseWS:
                 # vuelvo a convertir a string el objeto xml encontrado
                 return str(xml)
         except Exception, e:
-            self.Excepcion = u"%s" % (e)
+            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
 
     def SetParametros(self, cuit, token, sign):
         "Establece un parámetro general"
