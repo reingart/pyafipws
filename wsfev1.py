@@ -85,12 +85,10 @@ class WSFEv1(BaseWS):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.CAEA = self.Vencimiento = ''
-        self.CbteNro = self.FechaCbte = ImpTotal = None
-        self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
-        self.CAEA = ""
-        self.Periodo = self.Orden = ""
-        self.FchVigDesde = self.FchVigHasta = ""
-        self.FchTopeInf = self.FchProceso = ""
+        self.CbteNro = self.CbtDesde = self.CbtHasta = self.PuntoVenta = None
+        self.ImpTotal = self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
+        self.EmisionTipo = self.Periodo = self.Orden = ""
+        self.FechaCbte = self.FchVigDesde = self.FchVigHasta = self.FchTopeInf = self.FchProceso = ""
         
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
