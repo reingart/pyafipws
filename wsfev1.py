@@ -17,17 +17,13 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.13c"
+__version__ = "1.14a"
 
 import datetime
 import decimal
 import os
-import socket
 import sys
-import traceback
-from cStringIO import StringIO
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-from utils import verifica, inicializar_y_capturar_excepciones
+from utils import verifica, inicializar_y_capturar_excepciones, BaseWS
 
 HOMO = False                    # solo homologación
 TYPELIB = False                 # usar librería de tipos (TLB)
@@ -38,7 +34,7 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 #WSDL = "file:///home/reingart/tmp/service.asmx.xml"
 
 
-class WSFEv1:
+class WSFEv1(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Version 1"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc',
@@ -76,6 +72,9 @@ class WSFEv1:
         _com_interfaces_ = ['IWSFEv1']
         ##_reg_class_spec_ = "wsfev1.WSFEv1"
         
+    # Variables globales para BaseWS:
+    HOMO = HOMO
+    WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
     def __init__(self, reintentos=5):
@@ -118,52 +117,6 @@ class WSFEv1:
         if 'Events' in ret:
             events = ret['Events']
             self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
-
-    def __log(self, msg):
-        if not isinstance(msg, unicode):
-            msg = unicode(msg, 'utf8', 'ignore')
-        if not self.Log:
-            self.Log = StringIO()
-        self.Log.write(msg)
-        self.Log.write('\n\r')
-       
-    def DebugLog(self):
-        "Devolver y limpiar la bitácora de depuración"
-        if self.Log:
-            msg = self.Log.getvalue()
-            # limpiar log
-            self.Log.close()
-            self.Log = None
-        else:
-            msg = u''
-        return msg    
-
-    @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
-        # cliente soap del web service
-        if wrapper:
-            Http = set_http_wrapper(wrapper)
-            self.Version = WSFEv1.Version + " " + Http._wrapper_version
-        if isinstance(proxy, dict):
-            proxy_dict = proxy
-        else:
-            proxy_dict = parse_proxy(proxy)
-        if HOMO or not wsdl:
-            wsdl = WSDL
-        if not wsdl.endswith("?WSDL") and wsdl.startswith("http"):
-            wsdl += "?WSDL"
-        if not cache or HOMO:
-            # use 'cache' from installation base directory 
-            cache = os.path.join(self.InstallDir, 'cache')
-        self.__log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
-        self.client = SoapClient(
-            wsdl = wsdl,        
-            cache = cache,
-            proxy = proxy_dict,
-            cacert = cacert,
-            timeout = timeout,
-            trace = "--trace" in sys.argv)
-        return True
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
@@ -405,7 +358,7 @@ class WSFEv1:
                 verifica(verificaciones, resultget, difs)
                 if difs:
                     print "Diferencias:", difs
-                    self.__log("Diferencias: %s" % difs)
+                    self.log("Diferencias: %s" % difs)
             self.FechaCbte = resultget['CbteFch'] #.strftime("%Y/%m/%d")
             self.CbteNro = resultget['CbteHasta'] # 1L
             self.PuntoVenta = resultget['PtoVta'] # 4000
@@ -778,55 +731,6 @@ class WSFEv1:
         return [(u"%(Nro)s\tEmisionTipo:%(EmisionTipo)s\tBloqueado:%(Bloqueado)s\tFchBaja:%(FchBaja)s" % p['PtoVenta']).replace("\t", sep)
                  for p in res.get('ResultGet', [])]
 
-    @property
-    def xml_request(self):
-        return self.XmlRequest
-
-    @property
-    def xml_response(self):
-        return self.XmlResponse
-
-    def AnalizarXml(self, xml=""):
-        "Analiza un mensaje XML (por defecto la respuesta)"
-        try:
-            if not xml or xml=='XmlResponse':
-                xml = self.XmlResponse 
-            elif xml=='XmlRequest':
-                xml = self.XmlRequest 
-            self.xml = SimpleXMLElement(xml)
-            return True
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
-            return False
-
-    def ObtenerTagXml(self, *tags):
-        "Busca en el Xml analizado y devuelve el tag solicitado"
-        # convierto el xml a un objeto
-        try:
-            if self.xml:
-                xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
-                for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
-                # vuelvo a convertir a string el objeto xml encontrado
-                return str(xml)
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
-
-    def SetParametros(self, cuit, token, sign):
-        "Establece un parámetro general"
-        self.Token = token
-        self.Sign = sign
-        self.Cuit = cuit
-        return True
-
-    def SetTicketAcceso(self, ta_string):
-        "Establecer el token y sign desde un ticket de acceso XML"
-        ta = SimpleXMLElement(ta_string)
-        self.Token = str(ta.credentials.token)
-        self.Sign = str(ta.credentials.sign)
-        return True
-
         
 def p_assert_eq(a,b):
     print a, a==b and '==' or '!=', b
@@ -877,7 +781,6 @@ def main():
         ta_string = wsaa.call_wsaa(cms, url)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
-    ta = SimpleXMLElement(ta_string)
     # fin TA
 
     if '--cuit' in sys.argv:
@@ -886,9 +789,8 @@ def main():
         cuit = "20267565393"
 
     #wsfev1.Cuit = cuit
-    token = str(ta.credentials.token)
-    sign = str(ta.credentials.sign)
-    wsfev1.SetParametros(cuit, token, sign)
+    wsfev1.SetTicketAcceso(ta_string)
+    wsfev1.Cuit = cuit
     
     if "--prueba" in sys.argv:
         print wsfev1.client.help("FECAESolicitar").encode("latin1")

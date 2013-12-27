@@ -17,24 +17,20 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09c"
+__version__ = "1.10a"
 
 import datetime
 import decimal
 import os
-import socket
 import sys
-import traceback
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-from cStringIO import StringIO
-from utils import verifica, inicializar_y_capturar_excepciones
+from utils import verifica, inicializar_y_capturar_excepciones, BaseWS
 
 HOMO = False
 LANZAR_EXCEPCIONES = True
 WSDL="https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
     
-class WSMTXCA:
+class WSMTXCA(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 
@@ -69,6 +65,9 @@ class WSMTXCA:
     _reg_progid_ = "WSMTXCA"
     _reg_clsid_ = "{8128E6AB-FB22-4952-8EA6-BD41C29B17CA}"
 
+    # Variables globales para BaseWS:
+    HOMO = HOMO
+    WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
     def __init__(self, reintentos=1):
@@ -88,8 +87,11 @@ class WSMTXCA:
         self.ErrCode = self.ErrMsg = self.Traceback = self.Excepcion = ""
         self.EmisionTipo = '' 
         self.Reprocesar = self.Reproceso = '' # no implementado
-        self.LanzarExcepciones = LANZAR_EXCEPCIONES
         self.Log = None
+        # Variables globales para BaseWS:
+        self.LanzarExcepciones = LANZAR_EXCEPCIONES
+        self.HOMO = HOMO
+        self.WSDL = WSDL
         self.InstallDir = INSTALL_DIR
         self.reintentos = reintentos
 
@@ -103,48 +105,6 @@ class WSMTXCA:
                     error['codigoDescripcion']['descripcion'],
                     ))
             self.ErrMsg = '\n'.join(self.Errores)
-                   
-    def __log(self, msg):
-        if not isinstance(msg, unicode):
-            msg = unicode(msg, 'utf8', 'ignore')
-        if not self.Log:
-            self.Log = StringIO()
-        self.Log.write(msg)
-        self.Log.write('\n\r')
-
-    def DebugLog(self):
-        "Devolver y limpiar la bitácora de depuración"
-        if self.Log:
-            msg = self.Log.getvalue()
-            # limpiar log
-            self.Log.close()
-            self.Log = None
-        else:
-            msg = u''
-        return msg    
-
-    @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None):
-        # cliente soap del web service
-        if wrapper:
-            Http = set_http_wrapper(wrapper)
-            self.Version = WSMTXCA.Version + " " + Http._wrapper_version
-        proxy_dict = parse_proxy(proxy)
-        if HOMO or not wsdl:
-            wsdl = WSDL
-        if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
-            wsdl += "?wsdl"
-        if not cache or HOMO:
-            # use 'cache' from installation base directory 
-            cache = os.path.join(self.InstallDir, 'cache')
-        self.__log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
-        self.client = SoapClient(
-            wsdl = wsdl,        
-            cache = cache,
-            proxy = proxy_dict,
-            ns='ser',
-            trace = "--trace" in sys.argv)
-        return True
 
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
@@ -664,7 +624,7 @@ class WSMTXCA:
                     verifica(verificaciones, cbteresp, difs)
                     if difs:
                         print "Diferencias:", difs
-                        self.__log("Diferencias: %s" % difs)
+                        self.log("Diferencias: %s" % difs)
                 self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
                 self.CbteNro = cbteresp['numeroComprobante'] # 1L
                 self.PuntoVenta = cbteresp['numeroPuntoVenta'] # 4000
@@ -777,40 +737,6 @@ class WSMTXCA:
         return [" ".join([("%s=%s" % (k, v)) for k, v in p['puntoVenta'].items()])
                  for p in ret['arrayPuntosVenta']]
 
-    @property
-    def xml_request(self):
-        return self.XmlRequest
-
-    @property
-    def xml_response(self):
-        return self.XmlResponse
-
-    def AnalizarXml(self, xml=""):
-        "Analiza un mensaje XML (por defecto la respuesta)"
-        try:
-            if not xml or xml=='XmlResponse':
-                xml = self.XmlResponse 
-            elif xml=='XmlRequest':
-                xml = self.XmlRequest 
-            self.xml = SimpleXMLElement(xml)
-            return True
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
-            return False
-
-    def ObtenerTagXml(self, *tags):
-        "Busca en el Xml analizado y devuelve el tag solicitado"
-        # convierto el xml a un objeto
-        try:
-            if self.xml:
-                xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
-                for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
-                # vuelvo a convertir a string el objeto xml encontrado
-                return str(xml)
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
 
 
 def main():
@@ -828,13 +754,11 @@ def main():
         ta_string = wsaa.call_wsaa(cms, trace='--trace' in sys.argv)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
-    ta = SimpleXMLElement(ta_string)
     # fin TA
 
     wsmtxca = WSMTXCA()
+    wsmtxca.SetTicketAcceso(ta_string)
     wsmtxca.Cuit = "20267565393"
-    wsmtxca.Token = str(ta.credentials.token)
-    wsmtxca.Sign = str(ta.credentials.sign)
 
     wsmtxca.Conectar()
     

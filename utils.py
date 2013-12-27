@@ -17,11 +17,13 @@ __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 
 import inspect
+import socket
 import sys
 import os
 import traceback
+from cStringIO import StringIO
 
-from pysimplesoap.client import SoapFault
+from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 try:
     import dbf
@@ -149,6 +151,117 @@ def inicializar_y_capturar_excepciones(func):
                 self.XmlResponse = self.client.xml_response
     return capturar_errores_wrapper
 
+
+class BaseWS:
+    "Infraestructura basica para interfaces webservices de AFIP"
+
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
+        "Conectar cliente soap del web service"
+        # analizar transporte y servidor proxy:
+        if wrapper:
+            Http = set_http_wrapper(wrapper)
+            self.Version = self.Version + " " + Http._wrapper_version
+        if isinstance(proxy, dict):
+            proxy_dict = proxy
+        else:
+            proxy_dict = parse_proxy(proxy)
+        if self.HOMO or not wsdl:
+            wsdl = self.WSDL
+        # agregar sufijo para descargar descripción del servicio ?WSDL o ?wsdl
+        if not wsdl.endswith(self.WSDL[-5:]) and wsdl.startswith("http"):
+            wsdl += self.WSDL[-5:]
+        if not cache or self.HOMO:
+            # use 'cache' from installation base directory 
+            cache = os.path.join(self.InstallDir, 'cache')
+        self.log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
+        # analizar espacio de nombres (axis vs .net):
+        ns = 'ser' if self.WSDL[-5:] == "?wsdl" else None
+        self.client = SoapClient(
+            wsdl = wsdl,        
+            cache = cache,
+            proxy = proxy_dict,
+            cacert = cacert,
+            timeout = timeout,
+            ns = ns,
+            trace = "--trace" in sys.argv)
+        return True
+
+    def log(self, msg):
+        "Dejar mensaje en bitacora de depuración (método interno)"
+        if not isinstance(msg, unicode):
+            msg = unicode(msg, 'utf8', 'ignore')
+        if not self.Log:
+            self.Log = StringIO()
+        self.Log.write(msg)
+        self.Log.write('\n\r')
+
+    def DebugLog(self):
+        "Devolver y limpiar la bitácora de depuración"
+        if self.Log:
+            msg = self.Log.getvalue()
+            # limpiar log
+            self.Log.close()
+            self.Log = None
+        else:
+            msg = u''
+        return msg    
+
+    def LoadTestXML(self, xml):
+        class DummyHTTP:
+            def __init__(self, xml_response):
+                self.xml_response = xml_response
+            def request(self, location, method, body, headers):
+                return {}, self.xml_response
+        self.client.http = DummyHTTP(xml)
+
+    @property
+    def xml_request(self):
+        return self.XmlRequest
+
+    @property
+    def xml_response(self):
+        return self.XmlResponse
+
+    def AnalizarXml(self, xml=""):
+        "Analiza un mensaje XML (por defecto la respuesta)"
+        try:
+            if not xml or xml=='XmlResponse':
+                xml = self.XmlResponse 
+            elif xml=='XmlRequest':
+                xml = self.XmlRequest 
+            self.xml = SimpleXMLElement(xml)
+            return True
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+            return False
+
+    def ObtenerTagXml(self, *tags):
+        "Busca en el Xml analizado y devuelve el tag solicitado"
+        # convierto el xml a un objeto
+        try:
+            if self.xml:
+                xml = self.xml
+                # por cada tag, lo busco segun su nombre o posición
+                for tag in tags:
+                    xml = xml(tag) # atajo a getitem y getattr
+                # vuelvo a convertir a string el objeto xml encontrado
+                return str(xml)
+        except Exception, e:
+            self.Excepcion = u"%s" % (e)
+
+    def SetParametros(self, cuit, token, sign):
+        "Establece un parámetro general"
+        self.Token = token
+        self.Sign = sign
+        self.Cuit = cuit
+        return True
+
+    def SetTicketAcceso(self, ta_string):
+        "Establecer el token y sign desde un ticket de acceso XML"
+        ta = SimpleXMLElement(ta_string)
+        self.Token = str(ta.credentials.token)
+        self.Sign = str(ta.credentials.sign)
+        return True
 
 # Funciones para manejo de archivos de texto de campos de ancho fijo:
 

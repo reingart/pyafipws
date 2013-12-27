@@ -17,8 +17,8 @@ __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.01a"
 
-import sys, os, traceback
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
+import sys, os
+from utils import inicializar_y_capturar_excepciones, BaseWS
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL" 
@@ -27,7 +27,7 @@ HOMO = False
 # No debería ser necesario modificar nada despues de esta linea
 
 
-class WSCDC:
+class WSCDC(BaseWS):
     "Interfaz para el WebService de Constatación de Comprobantes"
     _public_methods_ = ['Conectar',
                         'AnalizarXml', 'ObtenerTagXml', 'Expirado',
@@ -45,46 +45,19 @@ class WSCDC:
     _reg_progid_ = "WSCDC"
     _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
 
+    # Variables globales para BaseWS:
+    HOMO = HOMO
+    WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
-    
+
     def __init__(self):
         self.Token = self.Sign = None
         self.InstallDir = INSTALL_DIR
         self.Excepcion = self.Traceback = ""
         self.LanzarExcepciones = True
         self.XmlRequest = self.XmlResponse = ""
-        self.xml = None
-
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
-        # cliente soap del web service
-        try:
-            if wrapper:
-                Http = set_http_wrapper(wrapper)
-                self.Version = WSAA.Version + " " + Http._wrapper_version
-            if not isinstance(proxy,dict):
-                proxy_dict = parse_proxy(proxy)
-            else:
-                proxy_dict = proxy
-            if HOMO or not wsdl:
-                wsdl = WSDL
-            if not cache or HOMO:
-                # use 'cache' from installation base directory 
-                cache = os.path.join(self.InstallDir, 'cache')
-            self.client = SoapClient(
-                wsdl = wsdl,        
-                cache = cache,
-                proxy = proxy_dict,
-                cacert = cacert,
-                trace = "--trace" in sys.argv)
-            return True
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            if self.LanzarExcepciones:
-                raise
-        return False
-
+        self.reintentos = 0
+        self.xml = self.client = self.Log = None
 
     def Dummy(self):
         "Método Dummy para verificación de funcionamiento de infraestructura"
@@ -94,44 +67,6 @@ class WSCDC:
         self.AuthServerStatus = result['AuthServer']
         return True
 
-
-    def AnalizarXml(self, xml=""):
-        "Analiza un mensaje XML (por defecto el ticket de acceso)"
-        try:
-            if not xml or xml=='XmlResponse':
-                xml = self.XmlResponse 
-            elif xml=='XmlRequest':
-                xml = self.XmlRequest 
-            self.xml = SimpleXMLElement(xml)
-            return True
-        except Exception, e:
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            return False
-
-    def ObtenerTagXml(self, *tags):
-        "Busca en el Xml analizado y devuelve el tag solicitado"
-        # convierto el xml a un objeto
-        try:
-            if self.xml:
-                xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
-                for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
-                # vuelvo a convertir a string el objeto xml encontrado
-                return str(xml)
-        except Exception, e:
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-
-    def Expirado(self, fecha=None):
-        "Comprueba la fecha de expiración, devuelve si ha expirado"
-        try:
-            if not fecha:
-                fecha = self.ObtenerTagXml('expirationTime')
-            now = datetime.datetime.now()
-            d = datetime.datetime.strptime(fecha[:19], '%Y-%m-%dT%H:%M:%S')
-            return now > d
-        except Exception, e:
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
         
         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)

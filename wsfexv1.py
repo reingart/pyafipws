@@ -17,24 +17,20 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.06a"
 
 import datetime
 import decimal
 import os
-import socket
 import sys
-import traceback
-from cStringIO import StringIO
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-from utils import inicializar_y_capturar_excepciones
+from utils import inicializar_y_capturar_excepciones, BaseWS
 
 HOMO = True
 LANZAR_EXCEPCIONES = True      # valor por defecto: True
 WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 
 
-class WSFEXv1:
+class WSFEXv1(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Exportación Versión 1"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
                         'AgregarPermiso', 'AgregarCmpAsoc',
@@ -42,11 +38,11 @@ class WSFEXv1:
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT',
                         'GetParamCtz', 'LoadTestXML',
-                        'AnalizarXml', 'ObtenerTagXml',
+                        'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version', 'DebugLog', 
+        'XmlRequest', 'XmlResponse', 'Version',
         'Resultado', 'Obs', 'Reproceso',
         'CAE','Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg', 'FchVencCAE',
         'Excepcion', 'LanzarExcepciones', 'Traceback', "InstallDir",
@@ -55,6 +51,9 @@ class WSFEXv1:
     _reg_progid_ = "WSFEXv1"
     _reg_clsid_ = "{8106F039-D132-4F87-8AFE-ADE47B5503D4}"
 
+    # Variables globales para BaseWS:
+    HOMO = HOMO
+    WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
     def __init__(self):
@@ -72,7 +71,7 @@ class WSFEXv1:
         self.LanzarExcepciones = LANZAR_EXCEPCIONES
         self.Traceback = self.Excepcion = ""
         self.InstallDir = INSTALL_DIR
-        self.DebugLog = ""
+        self.Log = ""
         self.FchVencCAE = ""              # retrocompatibilidad
         self.reintentos = 1               # usado en el decorador de errores
 
@@ -91,42 +90,6 @@ class WSFEXv1:
         if 'FEXEvents' in ret:
             events = [ret['FEXEvents']]
             self.Eventos = ['%s: %s' % (evt['EventCode'], evt.get('EventMsg',"")) for evt in events]
-
-    @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
-        # cliente soap del web service
-        if wrapper:
-            Http = set_http_wrapper(wrapper)
-            self.Version = WSFEXv1.Version + " " + Http._wrapper_version
-        if isinstance(proxy, dict):
-            proxy_dict = proxy
-        else:
-            proxy_dict = parse_proxy(proxy)
-        if HOMO or not wsdl:
-            wsdl = WSDL
-        elif wsdl and wsdl.endswith("?wsdl"):
-            wsdl = wsdl[:-5]
-        if not wsdl.endswith("?WSDL") and wsdl.startswith("http"):
-            wsdl += "?WSDL"
-        if not cache or HOMO:
-            # use 'cache' from installation base directory 
-            cache = os.path.join(self.InstallDir, 'cache')
-        self.DebugLog += "Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict)
-        self.client = SoapClient(
-            wsdl = wsdl,        
-            cache = cache,
-            proxy = proxy_dict,
-            cacert = cacert,
-            trace = "--trace" in sys.argv)
-        return True
-
-    def LoadTestXML(self, xml):
-        class DummyHTTP:
-            def __init__(self, xml_response):
-                self.xml_response = xml_response
-            def request(self, location, method, body, headers):
-                return {}, self.xml_response
-        self.client.http = DummyHTTP(xml)
         
     def CrearFactura(self, tipo_cbte=19, punto_vta=1, cbte_nro=0, fecha_cbte=None,
             imp_total=0.0, tipo_expo=1, permiso_existente="N", pais_dst_cmp=None,
@@ -432,40 +395,6 @@ class WSFEXv1:
             ctz = ''
         return ctz
     
-    @property
-    def xml_request(self):
-        return self.XmlRequest
-
-    @property
-    def xml_response(self):
-        return self.XmlResponse
-
-    def AnalizarXml(self, xml=""):
-        "Analiza un mensaje XML (por defecto la respuesta)"
-        try:
-            if not xml or xml=='XmlResponse':
-                xml = self.XmlResponse 
-            elif xml=='XmlRequest':
-                xml = self.XmlRequest 
-            self.xml = SimpleXMLElement(xml)
-            return True
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
-            return False
-
-    def ObtenerTagXml(self, *tags):
-        "Busca en el Xml analizado y devuelve el tag solicitado"
-        # convierto el xml a un objeto
-        try:
-            if self.xml:
-                xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
-                for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
-                # vuelvo a convertir a string el objeto xml encontrado
-                return str(xml)
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
 
 
 class WSFEX(WSFEXv1):
