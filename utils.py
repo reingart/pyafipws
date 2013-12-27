@@ -105,7 +105,11 @@ def inicializar_y_capturar_excepciones(func):
             self.ErrMsg = ""
             # limpio variables especificas del webservice:
             self.inicializar()
-
+            # actualizo los parámetros
+            kwargs.update(self.params_in)
+            # limpio los parámetros
+            self.params_in = {}
+            self.params_out = {}
             # llamo a la función (con reintentos)
             retry = self.reintentos
             while retry:
@@ -150,6 +154,7 @@ class BaseWS:
     def __init__(self, reintentos=1):
         self.reintentos = reintentos
         self.xml = self.client = self.Log = None
+        self.params_in = {}
         self.inicializar()
     
     def inicializar(self):
@@ -187,6 +192,7 @@ class BaseWS:
             timeout = timeout,
             ns = ns,
             trace = "--trace" in sys.argv)
+        self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
         return True
 
     def log(self, msg):
@@ -265,6 +271,35 @@ class BaseWS:
         self.Token = str(ta.credentials.token)
         self.Sign = str(ta.credentials.sign)
         return True
+
+    def SetParametro(self, clave, valor):
+        "Establece un parámetro de entrada (a usarse en llamada posterior)"
+        # útil para parámetros de entrada (por ej. VFP9 no soporta más de 27)
+        self.params_in[str(clave)] = valor
+        return True
+
+    def GetParametro(self, clave, clave1=None, clave2=None):
+        "Devuelve un parámetro de salida (establecido por llamada anterior)"
+        # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
+        valor = self.params_out.get(clave)
+        # busco datos "anidados" (listas / diccionarios)
+        if clave1 is not None and valor is not None:
+            if isinstance(clave1, basestring) and clave1.isdigit():
+                clave1 = int(clave1)
+            try:
+                valor = valor[clave1]
+            except (KeyError, IndexError):
+                valor = None
+        if clave2 is not None and valor is not None:
+            try:
+                valor = valor.get(clave2)
+            except KeyError:
+                valor = None
+        if valor is not None:
+            return str(valor)
+        else:
+            return ""
+
 
 # Funciones para manejo de archivos de texto de campos de ancho fijo:
 

@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.14a"
+__version__ = "1.15a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -80,12 +80,13 @@ import decimal, datetime
 from php import date
 import traceback
 import pprint
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
+from pysimplesoap.client import SoapFault
 from fpdf import Template
 import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones
+
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
@@ -95,7 +96,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = True
+HOMO = False
 
 # definición del formato del archivo de intercambio:
 
@@ -271,62 +272,7 @@ DATO = [
     ]
 
 
-def inicializar_y_capturar_excepciones(func):
-    "Decorador para inicializar y capturar errores"
-    def capturar_errores_wrapper(self, *args, **kwargs):
-        try:
-            # inicializo (limpio variables)
-            self.COE = self.COEAjustado = NroContrato = ""
-            self.Excepcion = self.Traceback = ""
-            self.ErrMsg = self.ErrCode = ""
-            self.Errores = []
-            self.Estado = self.Resultado = self.NroOrden = self.NroContrato = ''
-            self.TotalDeduccion = ""
-            self.TotalRetencion = ""
-            self.TotalRetencionAfip = ""
-            self.TotalOtrasRetenciones = ""
-            self.TotalNetoAPagar = ""
-            self.TotalIvaRg2300_07 = ""
-            self.TotalPagoSegunCondicion = ""
-            self.Subtotal = self.TotalIva105 = self.TotalIva21 = ""
-            self.TotalRetencionesGanancias = self.TotalRetencionesIVA = ""
-            # actualizo los parámetros
-            kwargs.update(self.params_in)
-            # limpio los parámetros
-            self.params_in = {}
-            self.params_out = {}
-            # llamo a la función
-            func(self, *args, **kwargs)
-            return True
-        except SoapFault, e:
-            # guardo destalle de la excepción SOAP
-            self.ErrCode = unicode(e.faultcode)
-            self.ErrMsg = unicode(e.faultstring)
-            self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
-            if self.LanzarExcepciones:
-                raise
-            else:
-                return False
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            try:
-                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            except:
-                self.Excepcion = u"<no disponible>"
-            if self.LanzarExcepciones:
-                raise
-            else:
-                return False
-        finally:
-            # guardo datos de depuración
-            if self.client:
-                self.XmlRequest = self.client.xml_request
-                self.XmlResponse = self.client.xml_response
-    return capturar_errores_wrapper
-
-
-class WSLPG:
+class WSLPG(BaseWS):
     "Interfaz para el WebService de Liquidación Primaria de Granos"    
     _public_methods_ = ['Conectar', 'Dummy', 'LoadTestXML',
                         'AutorizarLiquidacion', 
@@ -377,41 +323,34 @@ class WSLPG:
     _reg_progid_ = "WSLPG"
     _reg_clsid_ = "{9D21C513-21A6-413C-8592-047357692608}"
 
-    def __init__(self):
-        self.Token = self.Sign = self.Cuit = None
+    # Variables globales para BaseWS:
+    HOMO = HOMO
+    WSDL = WSDL
+    LanzarExcepciones = False
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+
+    def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.XmlRequest = ''
-        self.XmlResponse = ''
-        self.LanzarExcepciones = False
-        self.InstallDir = INSTALL_DIR
-        self.ErrCode = self.ErrMsg = ''
-        self.Errores = self.errores = []
-        self.client = None
-        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
-        self.COE = ''
-        self.Estado = self.Resultado = self.NroOrden = ''
-        self.params_in = {}
-        self.params_out = {}
+        self.errores = []
+        self.COE = self.COEAjustado = NroContrato = ""
+        self.Estado = self.Resultado = self.NroOrden = self.NroContrato = ''
+        self.TotalDeduccion = ""
+        self.TotalRetencion = ""
+        self.TotalRetencionAfip = ""
+        self.TotalOtrasRetenciones = ""
+        self.TotalNetoAPagar = ""
+        self.TotalIvaRg2300_07 = ""
+        self.TotalPagoSegunCondicion = ""
+        self.Subtotal = self.TotalIva105 = self.TotalIva21 = ""
+        self.TotalRetencionesGanancias = self.TotalRetencionesIVA = ""
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=""):
+    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert="", timeout=None):
         "Establecer la conexión a los servidores de la AFIP"
-        if HOMO or not url: url = WSDL
-        if wrapper:
-            Http = set_http_wrapper(wrapper)
-            self.Version = self.Version + " " + Http._wrapper_version
-        if not cache or HOMO:
-            # use 'cache' from installation base directory 
-            cache = os.path.join(self.InstallDir, 'cache')
-        proxy_dict = parse_proxy(proxy)
-        self.client = SoapClient(url,
-            wsdl=url, cache=cache,
-            trace='--trace' in sys.argv, 
-            ns='wslpg', #soap_ns='soapenv',
-            cacert = cacert, #server="",
-            exceptions=True, proxy=proxy_dict)
-       
+        # llamo al constructor heredado:
+        BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
+        
         # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
         location = self.client.services['LpgService']['ports']['LpgEndPoint']['location']
         if location.startswith("http://"):
@@ -423,9 +362,9 @@ class WSLPG:
         try:
             # intento abrir el diccionario persistente de localidades
             import wslpg_datos
-            localidades_db = os.path.join(cache, "localidades.dat")
+            localidades_db = os.path.join(self.cache, "localidades.dat")
             # verificar que puede escribir en el dir, sino abrir solo lectura
-            flag = os.access(cache, os.W_OK) and 'c' or 'r'
+            flag = os.access(self.cache, os.W_OK) and 'c' or 'r'
             wslpg_datos.LOCALIDADES = shelve.open(localidades_db, flag=flag)
             if DEBUG: print "Localidades en BD:", len(wslpg_datos.LOCALIDADES)
             self.Traceback = "Localidades en BD: %s" % len(wslpg_datos.LOCALIDADES)
@@ -1267,6 +1206,7 @@ class WSLPG:
         ret = ret['liqUltNroOrdenReturn']
         self.__analizar_errores(ret)
         self.NroOrden = ret['nroOrden']
+        return True
 
     @inicializar_y_capturar_excepciones
     def LeerDatosLiquidacion(self, pop=True):
@@ -1547,76 +1487,6 @@ class WSLPG:
                              it['codigoDescripcion']['descripcion']) 
                            for it in array])
         return ops
-
-    @property
-    def xml_request(self):
-        return self.XmlRequest
-
-    @property
-    def xml_response(self):
-        return self.XmlResponse
-
-    def AnalizarXml(self, xml=""):
-        "Analiza un mensaje XML (por defecto la respuesta)"
-        try:
-            if not xml or xml=='XmlResponse':
-                xml = self.XmlResponse 
-            elif xml=='XmlRequest':
-                xml = self.XmlRequest 
-            self.xml = SimpleXMLElement(xml)
-            return True
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
-            return False
-
-    def ObtenerTagXml(self, *tags):
-        "Busca en el Xml analizado y devuelve el tag solicitado"
-        # convierto el xml a un objeto
-        try:
-            if self.xml:
-                xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
-                for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
-                # vuelvo a convertir a string el objeto xml encontrado
-                return str(xml)
-        except Exception, e:
-            self.Excepcion = u"%s" % (e)
-
-    def LoadTestXML(self, xml_file):
-        "Cargar una respuesta predeterminada de pruebas (emulación del ws)"
-        # cargo el ejemplo de AFIP (emulando respuesta del webservice)
-        from pysimplesoap.transport import DummyTransport as DummyHTTP 
-        xml = open(os.path.join(INSTALL_DIR, xml_file)).read()
-        self.client.http = DummyHTTP(xml)
-
-    def SetParametro(self, clave, valor):
-        "Establece un parámetro de entrada (a usarse en llamada posterior)"
-        # útil para parámetros de entrada (por ej. VFP9 no soporta más de 27)
-        self.params_in[str(clave)] = valor
-        return True
-
-    def GetParametro(self, clave, clave1=None, clave2=None):
-        "Devuelve un parámetro de salida (establecido por llamada anterior)"
-        # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
-        valor = self.params_out.get(clave)
-        # busco datos "anidados" (listas / diccionarios)
-        if clave1 is not None and valor is not None:
-            if isinstance(clave1, basestring) and clave1.isdigit():
-                clave1 = int(clave1)
-            try:
-                valor = valor[clave1]
-            except (KeyError, IndexError):
-                valor = None
-        if clave2 is not None and valor is not None:
-            try:
-                valor = valor.get(clave2)
-            except KeyError:
-                valor = None
-        if valor is not None:
-            return str(valor)
-        else:
-            return ""
 
 
     # Funciones para generar PDF:
@@ -2097,7 +1967,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSLPG.InstallDir = os.path.dirname(os.path.abspath(basepath))
 
 
 if __name__ == '__main__':
@@ -2212,21 +2082,13 @@ if __name__ == '__main__':
             open(TA,"w").write(ta_string)
         # leo el TA del archivo, extraigo token y sign:
         ta_string=open(TA).read()
-        if ta_string:
-            ta = SimpleXMLElement(ta_string)
-            token = str(ta.credentials.token)
-            sign = str(ta.credentials.sign)
-        else:
-            token = ""
-            sign = ""
         # fin TA
 
         # cliente soap del web service
         wslpg = WSLPG()
         wslpg.LanzarExcepciones = True
         wslpg.Conectar(url=WSLPG_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
-        wslpg.Token = token
-        wslpg.Sign = sign
+        wslpg.SetTicketAcceso(ta_string)
         wslpg.Cuit = CUIT
 
         if '--dummy' in sys.argv:
