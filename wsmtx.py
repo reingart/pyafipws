@@ -27,59 +27,12 @@ import sys
 import traceback
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 from cStringIO import StringIO
-from utils import verifica
+from utils import verifica, inicializar_y_capturar_excepciones
 
 HOMO = False
-
+LANZAR_EXCEPCIONES = True
 WSDL="https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
-def inicializar_y_capturar_excepciones(func):
-    "Decorador para inicializar y capturar errores"
-    def capturar_errores_wrapper(self, *args, **kwargs):
-        try:
-            # inicializo (limpio variables)
-            self.Resultado = self.CAE = self.Vencimiento = ""
-            self.Evento = self.Obs = ""
-            self.FechaCbte = self.CbteNro = self.PuntoVenta = self.ImpTotal = None
-            self.Errores = []
-            self.Observaciones = []
-            self.Traceback = self.Excepcion = ""
-            self.ErrCode = ""
-            self.ErrMsg = ""
-            self.CAEA = ""
-            self.Periodo = self.Orden = ""
-            self.FchVigDesde = self.FchVigHasta = ""
-            self.FchTopeInf = self.FchProceso = ""
-
-            # llamo a la función (con reintentos)
-            retry = 5
-            while retry:
-                try:
-                    retry -= 1
-                    return func(self, *args, **kwargs)
-                except socket.error, e:
-                    if e[0] != 10054:
-                        # solo reintentar si el error es de conexión
-                        # (10054, 'Connection reset by peer')
-                        raise
-        
-        except SoapFault, e:
-            # guardo destalle de la excepción SOAP
-            self.ErrCode = unicode(e.faultcode)
-            self.ErrMsg = unicode(e.faultstring)
-            self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
-            raise
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            self.Excepcion = u"%s" % (e)
-            raise
-        finally:
-            # guardo datos de depuración
-            if self.client:
-                self.XmlRequest = self.client.xml_request
-                self.XmlResponse = self.client.xml_response
-    return capturar_errores_wrapper
     
 class WSMTXCA:
     "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
@@ -118,7 +71,7 @@ class WSMTXCA:
 
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
     
-    def __init__(self):
+    def __init__(self, reintentos=1):
         self.Token = self.Sign = self.Cuit = None
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.XmlRequest = ''
@@ -135,8 +88,10 @@ class WSMTXCA:
         self.ErrCode = self.ErrMsg = self.Traceback = self.Excepcion = ""
         self.EmisionTipo = '' 
         self.Reprocesar = self.Reproceso = '' # no implementado
+        self.LanzarExcepciones = LANZAR_EXCEPCIONES
         self.Log = None
         self.InstallDir = INSTALL_DIR
+        self.reintentos = reintentos
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"

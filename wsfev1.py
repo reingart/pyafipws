@@ -27,72 +27,15 @@ import sys
 import traceback
 from cStringIO import StringIO
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-from utils import verifica
+from utils import verifica, inicializar_y_capturar_excepciones
 
-HOMO = True                     # solo homologación
+HOMO = False                    # solo homologación
 TYPELIB = False                 # usar librería de tipos (TLB)
 LANZAR_EXCEPCIONES = False      # valor por defecto: True
 
 #WSDL = "https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
 WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 #WSDL = "file:///home/reingart/tmp/service.asmx.xml"
-
-
-def inicializar_y_capturar_excepciones(func):
-    "Decorador para inicializar y capturar errores"
-    def capturar_errores_wrapper(self, *args, **kwargs):
-        try:
-            # inicializo (limpio variables)
-            self.Resultado = self.CAE = self.CAEA = self.Vencimiento = ""
-            self.Evento = self.Obs = ""
-            self.FechaCbte = self.CbteNro = self.PuntoVenta = self.ImpTotal = None
-            self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
-            self.CbtDesde = self.CbtHasta = self.FechaCbte = None
-            self.Reproceso = self.EmisionTipo = ''
-            self.Errores = []
-            self.Observaciones = []
-            self.Eventos = []
-            self.Traceback = self.Excepcion = ""
-            self.ErrCode = ""
-            self.ErrMsg = ""
-            self.CAEA = ""
-
-            # llamo a la función (con reintentos)
-            retry = self.reintentos
-            while retry:
-                try:
-                    retry -= 1
-                    return func(self, *args, **kwargs)
-                except socket.error, e:
-                    if e[0] != 10054:
-                        # solo reintentar si el error es de conexión
-                        # (10054, 'Connection reset by peer')
-                        raise
-
-        except SoapFault, e:
-            # guardo destalle de la excepción SOAP
-            self.ErrCode = unicode(e.faultcode)
-            self.ErrMsg = unicode(e.faultstring)
-            self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
-            if self.LanzarExcepciones:
-                raise
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            try:
-                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            except:
-                self.Excepcion = u"<no disponible>"
-            if self.LanzarExcepciones:
-                raise
-            else:
-                self.ErrMsg = self.Excepcion
-        finally:
-            # guardo datos de depuración
-            if self.client:
-                self.XmlRequest = self.client.xml_request
-                self.XmlResponse = self.client.xml_response
-    return capturar_errores_wrapper
 
 
 class WSFEv1:
