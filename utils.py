@@ -101,8 +101,7 @@ def inicializar_y_capturar_excepciones(func):
             self.Observaciones = []
             self.Eventos = []
             self.Traceback = self.Excepcion = ""
-            self.ErrCode = ""
-            self.ErrMsg = ""
+            self.ErrCode = self.ErrMsg = self.Obs = ""
             # limpio variables especificas del webservice:
             self.inicializar()
             # actualizo los parámetros
