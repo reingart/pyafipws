@@ -18,11 +18,13 @@ __license__ = "GPL 3.0"
 __version__ = "1.01a"
 
 import sys, os, time
+from ConfigParser import SafeConfigParser
 from utils import inicializar_y_capturar_excepciones, BaseWS
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL" 
 HOMO = False
+CONFIG_FILE = "rece.ini"
 
 # No debería ser necesario modificar nada despues de esta linea
 
@@ -183,8 +185,23 @@ if hasattr(sys, 'frozen'):
 
 
 def main():
+    "Funcion principal para utilizar la interfaz por linea de comando"
+    
+    # leer configuracion
+    global CONFIG_FILE
+    if len(sys.argv)>1 and sys.argv[1][0] not in "-/":
+        CONFIG_FILE = sys.argv.pop(1)
+    config = SafeConfigParser()
+    config.read(CONFIG_FILE)
+    crt = config.get('WSAA', 'CERT')
+    key = config.get('WSAA', 'PRIVATEKEY')
+    cuit = config.get('WSCDC', 'CUIT')
+    url_wsaa = config.get('WSAA', 'URL') if config.has_option('WSAA','URL') else ""
+    url_wscdc = config.get('WSCDC', 'URL') if config.has_option('WSCDC','URL') else ""
+
+    # instanciar la interfaz con el webservice
     wscdc = WSCDC()
-    ok = wscdc.Conectar()
+    ok = wscdc.Conectar("", url_wscdc)
     
     if "--dummy" in sys.argv:
         #print wscdc.client.help("ComprobanteDummy")
@@ -199,18 +216,13 @@ def main():
     if 'wsaa' in sys.argv or not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
         import wsaa
         tra = wsaa.create_tra(service="wscdc")
-        cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
-        url = "" # "https://wsaa.afip.gov.ar/ws/services/LoginCms"
-        ta_string = wsaa.call_wsaa(cms, url)
+        cms = wsaa.sign_tra(tra, crt, key)
+        ta_string = wsaa.call_wsaa(cms, url_wsaa)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
     # fin TA
 
     wscdc.SetTicketAcceso(ta_string)
-    if '--cuit' in sys.argv:
-        cuit = sys.argv[sys.argv.index("--cuit")+1]
-    else:
-        cuit = "20267565393"
     wscdc.Cuit = cuit
 
     if "--constatar" in sys.argv:
