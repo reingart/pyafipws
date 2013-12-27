@@ -76,7 +76,15 @@ class WSCDC(BaseWS):
         return [(u"\t%(Id)s\t%(Desc)s\t" % p['CbteTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
         
-        
+    def ConsultarTipoDocumentos(self, sep="|"):
+        "Recuperador de valores referenciales de códigos de Tipos de Documentos"
+        response = self.client.DocumentosTipoConsultar(
+                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+                    )
+        result = response['DocumentosTipoConsultarResult']
+        return [(u"\t%(Id)s\t%(Desc)s\t" % p['DocTipo']).replace("\t", sep)
+                 for p in result['ResultGet']]
+                         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
@@ -131,6 +139,8 @@ def main():
         print u'\n'.join(wscdc.ConsultarModalidadComprobantes("||"))
         print "=== Tipo Comprobantes ==="
         print u'\n'.join(wscdc.ConsultarTipoComprobantes("||"))
+        print "=== Tipo Documentos ==="
+        print u'\n'.join(wscdc.ConsultarTipoDocumentos("||"))
         
         
 if __name__=="__main__":
