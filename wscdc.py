@@ -213,23 +213,28 @@ def main():
         cuit = "20267565393"
     wscdc.Cuit = cuit
 
-    if "--prueba" in sys.argv:
-        cbte_modo = "CAE"
-        cuit_emisor = "20267565393"
-        pto_vta = 1
-        cbte_tipo = 1
-        cbte_nro = 3704
-        cbte_fch = "20131203"
-        imp_total = "121.0"
-        cod_autorizacion = "63493178045912" 
-        doc_tipo_receptor = 80 
-        doc_nro_receptor = "30540088213"
-        wscdc.ConstatarComprobante(cbte_modo, cuit_emisor, pto_vta, cbte_tipo, 
-                             cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
-                             doc_tipo_receptor, doc_nro_receptor)
+    if "--constatar" in sys.argv:
+        if "--prueba" in sys.argv:
+            cbte_modo = "CAE"
+            cuit_emisor = "20267565393"
+            pto_vta = 4002
+            cbte_tipo = 1
+            cbte_nro = 109
+            cbte_fch = "20131227"
+            imp_total = "121.0"
+            cod_autorizacion = "63523178385550" 
+            doc_tipo_receptor = 80 
+            doc_nro_receptor = "30628789661"
+            wscdc.ConstatarComprobante(cbte_modo, cuit_emisor, pto_vta, cbte_tipo, 
+                                 cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
+                                 doc_tipo_receptor, doc_nro_receptor)
+        else:
+            # usar los datos pasados por linea de comandos:
+            wscdc.ConstatarComprobante(*sys.argv[sys.argv.index("--constatar")+1:])
+        
         print "Resultado:", wscdc.Resultado
         print "Mensaje de Error:", wscdc.ErrMsg
-        print "Observaciones:", wscdc.Obs
+        print "Observaciones:", wscdc.Obs    
 
     if "--params" in sys.argv:
 
