@@ -97,22 +97,14 @@ def inicializar_y_capturar_excepciones(func):
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
             # inicializo (limpio variables)
-            self.Resultado = self.CAE = self.CAEA = self.Vencimiento = ""
-            self.Evento = self.Obs = ""
-            self.FechaCbte = self.CbteNro = self.PuntoVenta = self.ImpTotal = None
-            self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
-            self.CbtDesde = self.CbtHasta = self.FechaCbte = None
-            self.Reproceso = self.EmisionTipo = ''
             self.Errores = []
             self.Observaciones = []
             self.Eventos = []
             self.Traceback = self.Excepcion = ""
             self.ErrCode = ""
             self.ErrMsg = ""
-            self.CAEA = ""
-            self.Periodo = self.Orden = ""
-            self.FchVigDesde = self.FchVigHasta = ""
-            self.FchTopeInf = self.FchProceso = ""
+            # limpio variables especificas del webservice:
+            self.inicializar()
 
             # llamo a la función (con reintentos)
             retry = self.reintentos
@@ -156,12 +148,15 @@ class BaseWS:
     "Infraestructura basica para interfaces webservices de AFIP"
 
     def __init__(self, reintentos=1):
+        self.reintentos = reintentos
+        self.xml = self.client = self.Log = None
+        self.inicializar()
+    
+    def inicializar(self):
         self.Token = self.Sign = None
         self.Excepcion = self.Traceback = ""
         self.LanzarExcepciones = True
         self.XmlRequest = self.XmlResponse = ""
-        self.reintentos = reintentos
-        self.xml = self.client = self.Log = None
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
         "Conectar cliente soap del web service"

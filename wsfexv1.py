@@ -55,31 +55,21 @@ class WSFEXv1(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    factura = None
 
-    def __init__(self):
-        self.Token = self.Sign = self.Cuit = None
+    def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.XmlRequest = ''
-        self.XmlResponse = ''
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
-        self.client = None
-        self.Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
-        self.factura = None
         self.CbteNro = self.FechaCbte = self.PuntoVenta = self.ImpTotal = None
-        self.ErrCode = self.ErrMsg = None
         self.LanzarExcepciones = LANZAR_EXCEPCIONES
-        self.Traceback = self.Excepcion = ""
         self.InstallDir = INSTALL_DIR
-        self.Log = ""
         self.FchVencCAE = ""              # retrocompatibilidad
-        self.reintentos = 1               # usado en el decorador de errores
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
         if 'FEXErr' in ret:
             errores = [ret['FEXErr']]
-            self.Errores = []
             for error in errores:
                 self.Errores.append("%s: %s" % (
                     error['ErrCode'],
@@ -569,7 +559,6 @@ if __name__ == "__main__":
                 print wsfexv1.ErrMsg
                 print wsfexv1.Excepcion
                 print wsfexv1.Traceback
-                import pdb; pdb.set_trace()
                 raise
 
         if "--get" in sys.argv:

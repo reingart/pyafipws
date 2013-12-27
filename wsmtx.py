@@ -69,31 +69,21 @@ class WSMTXCA(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
-    
-    def __init__(self, reintentos=1):
-        self.Token = self.Sign = self.Cuit = None
+    Reprocesar = False  # no recuperar automaticamente CAE emitidos
+    LanzarExcepciones = LANZAR_EXCEPCIONES
+    factura = None
+
+    def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.XmlRequest = ''
-        self.XmlResponse = ''
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
         self.CAEA = None
         self.Periodo = self.Orden = ""
         self.FchVigDesde = self.FchVigHasta = ""
         self.FchTopeInf = self.FchProceso = ""
-        self.client = None
-        self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
-        self.ErrCode = self.ErrMsg = self.Traceback = self.Excepcion = ""
         self.EmisionTipo = '' 
-        self.Reprocesar = self.Reproceso = '' # no implementado
-        self.Log = None
-        # Variables globales para BaseWS:
-        self.LanzarExcepciones = LANZAR_EXCEPCIONES
-        self.HOMO = HOMO
-        self.WSDL = WSDL
-        self.InstallDir = INSTALL_DIR
-        self.reintentos = reintentos
+        self.Reproceso = '' # no implementado
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -291,7 +281,6 @@ class WSMTXCA(BaseWS):
                     self.client.xml_response = xml_response
                     
         self.Resultado = ret['resultado'] # u'A'
-        self.Errores = []
         if ret['resultado'] in ("A", "O"):
             cbteresp = ret['comprobanteResponse']
             self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
@@ -502,7 +491,6 @@ class WSMTXCA(BaseWS):
             CAEA=caea,
             )
         self.Resultado = ret['resultado'] # u'A'
-        self.Errores = []
         if ret['resultado'] in ("A", "O"):
             self.FchProceso = ret['fechaProceso'].strftime("%Y-%m-%d")
             self.CAEA = str(ret['CAEA']) # 60423794871430L
@@ -520,7 +508,6 @@ class WSMTXCA(BaseWS):
             numeroPuntoVenta=punto_vta,
             )
         self.Resultado = ret['resultado'] # u'A'
-        self.Errores = []
         if ret['resultado'] in ("A", "O"):
             self.FchProceso = ret['fechaProceso'].strftime("%Y-%m-%d")
             self.CAEA = str(ret['CAEA']) # 60423794871430L

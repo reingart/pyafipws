@@ -76,37 +76,25 @@ class WSFEv1(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Reprocesar = True   # recuperar automaticamente CAE emitidos
+    LanzarExcepciones = LANZAR_EXCEPCIONES
+    factura = None
     
-    def __init__(self, reintentos=5):
-        self.Token = self.Sign = self.Cuit = None
+    def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.XmlRequest = ''
-        self.XmlResponse = ''
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.CAEA = self.Vencimiento = ''
-        self.client = None
-        self.factura = None
         self.CbteNro = self.FechaCbte = ImpTotal = None
         self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
-        self.Traceback = ""
         self.CAEA = ""
         self.Periodo = self.Orden = ""
         self.FchVigDesde = self.FchVigHasta = ""
         self.FchTopeInf = self.FchProceso = ""
-        self.Log = None
-        self.InstallDir = INSTALL_DIR
-        self.Reprocesar = True # recuperar automaticamente CAE emitidos
-        self.LanzarExcepciones = LANZAR_EXCEPCIONES
-        self.Traceback = self.Excepcion = ""
-        self.XmlRequest = self.XmlResponse = ""
-        self.xml = None
-        self.reintentos = reintentos
         
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
         if 'Errors' in ret:
             errores = ret['Errors']
-            self.Errores = []
             for error in errores:
                 self.Errores.append("%s: %s" % (
                     error['Err']['Code'],
