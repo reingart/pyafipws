@@ -50,41 +50,62 @@ class WSCDC(BaseWS):
     WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
+    def __analizar_errores(self, ret):
+        "Comprueba y extrae errores si existen en la respuesta XML"
+        if 'Errors' in ret:
+            errores = ret['Errors']
+            for error in errores:
+                self.Errores.append("%s: %s" % (
+                    error['Err']['Code'],
+                    error['Err']['Msg'],
+                    ))
+            self.ErrCode = ' '.join([str(error['Err']['Code']) for error in errores])
+            self.ErrMsg = '\n'.join(self.Errores)
+
+    @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Método Dummy para verificación de funcionamiento de infraestructura"
         result = self.client.ComprobanteDummy()['ComprobanteDummyResult']
         self.AppServerStatus = result['AppServer']
         self.DbServerStatus = result['DbServer']
         self.AuthServerStatus = result['AuthServer']
+        self.__analizar_errores(result)
         return True
 
+    @inicializar_y_capturar_excepciones
     def ConsultarModalidadComprobantes(self, sep="|"):
         "Recuperador de modalidades de autorización de comprobantes"
         response = self.client.ComprobantesModalidadConsultar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
                     )
         result = response['ComprobantesModalidadConsultarResult']
+        self.__analizar_errores(result)
         return [(u"\t%(Cod)s\t%(Desc)s\t" % p['FacModTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarTipoComprobantes(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de comprobante"
         response = self.client.ComprobantesTipoConsultar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
                     )
         result = response['ComprobantesTipoConsultarResult']
+        self.__analizar_errores(result)
         return [(u"\t%(Id)s\t%(Desc)s\t" % p['CbteTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
         
+    @inicializar_y_capturar_excepciones
     def ConsultarTipoDocumentos(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de Documentos"
         response = self.client.DocumentosTipoConsultar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
                     )
         result = response['DocumentosTipoConsultarResult']
+        self.__analizar_errores(result)
         return [(u"\t%(Id)s\t%(Desc)s\t" % p['DocTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
                          
+    @inicializar_y_capturar_excepciones
     def ConsultarTipoOpcionales(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de datos Opcionales"
         response = self.client.OpcionalesTipoConsultar(
@@ -92,6 +113,7 @@ class WSCDC(BaseWS):
                     )
         result = response['OpcionalesTipoConsultarResult']
         res = result['ResultGet'] if 'ResultGet' in result else []
+        self.__analizar_errores(result)
         return [(u"\t%(Id)s\t%(Desc)s\t" % p['OpcionalTipo']).replace("\t", sep)
                  for p in res]
 
@@ -154,7 +176,7 @@ def main():
         print u'\n'.join(wscdc.ConsultarTipoDocumentos("||"))
         print "=== Tipo Opcionales ==="
         print u'\n'.join(wscdc.ConsultarTipoOpcionales("||"))
-        
+        print "Mensaje de Error:", wscdc.ErrMsg
         
 if __name__=="__main__":
     
