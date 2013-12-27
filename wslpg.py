@@ -330,6 +330,7 @@ class WSLPG(BaseWS):
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
     def inicializar(self):
+        BaseWS.inicializar(self)
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.errores = []
         self.COE = self.COEAjustado = NroContrato = ""

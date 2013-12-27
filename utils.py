@@ -156,14 +156,14 @@ class BaseWS:
         self.xml = self.client = self.Log = None
         self.params_in = {}
         self.inicializar()
+        self.Token = self.Sign = None
+        self.LanzarExcepciones = True
     
     def inicializar(self):
-        self.Token = self.Sign = None
         self.Excepcion = self.Traceback = ""
-        self.LanzarExcepciones = True
         self.XmlRequest = self.XmlResponse = ""
 
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30, soap_server=None):
         "Conectar cliente soap del web service"
         # analizar transporte y servidor proxy:
         if wrapper:
@@ -190,7 +190,7 @@ class BaseWS:
             proxy = proxy_dict,
             cacert = cacert,
             timeout = timeout,
-            ns = ns,
+            ns = ns, soap_server = soap_server, 
             trace = "--trace" in sys.argv)
         self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
         return True
@@ -297,6 +297,16 @@ class BaseWS:
                 valor = None
         if valor is not None:
             return str(valor)
+        else:
+            return ""
+
+    def LeerError(self):
+        "Recorro los errores devueltos y devuelvo el primero si existe"
+        
+        if self.Errores:
+            # extraigo el primer item
+            er = self.Errores.pop(0)
+            return er
         else:
             return ""
 

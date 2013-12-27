@@ -74,6 +74,7 @@ class WSMTXCA(BaseWS):
     factura = None
 
     def inicializar(self):
+        BaseWS.inicializar(self)
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
