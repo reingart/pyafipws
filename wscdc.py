@@ -85,6 +85,17 @@ class WSCDC(BaseWS):
         return [(u"\t%(Id)s\t%(Desc)s\t" % p['DocTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
                          
+    def ConsultarTipoOpcionales(self, sep="|"):
+        "Recuperador de valores referenciales de códigos de Tipos de datos Opcionales"
+        response = self.client.OpcionalesTipoConsultar(
+                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+                    )
+        result = response['OpcionalesTipoConsultarResult']
+        res = result['ResultGet'] if 'ResultGet' in result else []
+        return [(u"\t%(Id)s\t%(Desc)s\t" % p['OpcionalTipo']).replace("\t", sep)
+                 for p in res]
+
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
@@ -141,6 +152,8 @@ def main():
         print u'\n'.join(wscdc.ConsultarTipoComprobantes("||"))
         print "=== Tipo Documentos ==="
         print u'\n'.join(wscdc.ConsultarTipoDocumentos("||"))
+        print "=== Tipo Opcionales ==="
+        print u'\n'.join(wscdc.ConsultarTipoOpcionales("||"))
         
         
 if __name__=="__main__":
