@@ -113,14 +113,15 @@ class WSCDC(BaseWS):
             self.EmisionTipo = resp['CbteModo']
             self.DocTipo = resp.get('DocTipoReceptor', '')
             self.DocNro = resp.get('DocNroReceptor', '')
-            cod_aut = str(result['CodAutorizacion']) if 'CodAutorizacion' in result else ''# 60423794871430L
+            cod_aut = str(resp.get('CodAutorizacion', "")) # 60423794871430L
             if self.EmisionTipo == 'CAE':
                 self.CAE = cod_aut
             elif self.EmisionTipo == 'CAEA':
                 self.CAEA = cod_aut
             elif self.EmisionTipo == 'CAI':
                 self.CAI = cod_aut
-                            
+        return True
+        
     @inicializar_y_capturar_excepciones
     def ConsultarModalidadComprobantes(self, sep="|"):
         "Recuperador de modalidades de autorización de comprobantes"
