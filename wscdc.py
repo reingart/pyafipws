@@ -17,7 +17,7 @@ __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.01a"
 
-import sys, os
+import sys, os, time
 from utils import inicializar_y_capturar_excepciones, BaseWS
 
 # Constantes (si se usa el script de linea de comandos)
@@ -32,9 +32,9 @@ class WSCDC(BaseWS):
     _public_methods_ = ['Conectar',
                         'AnalizarXml', 'ObtenerTagXml', 'Expirado',
                         'Constatar', 'Dummy',
-                        'ComprobantesModalidadConsultar',
-                        'ComprobantesTipoConsultar',
-                        'DocumentosTipoConsultar', 'OpcionalesTipoConsultar',                        
+                        'ConsultarModalidadComprobantes',
+                        'ConsultarTipoComprobantes',
+                        'ConsultarTipoDocumentos', 'ConsultarTipoOpcionales',                        
                         ]
     _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 
@@ -58,6 +58,14 @@ class WSCDC(BaseWS):
         self.AuthServerStatus = result['AuthServer']
         return True
 
+    def ConsultarModalidadComprobantes(self, sep="|"):
+        "Recuperador de modalidades de autorización de comprobantes"
+        response = self.client.ComprobantesModalidadConsultar(
+                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+                    )
+        result = response['ComprobantesModalidadConsultarResult']
+        return [(u"\t%(Cod)s\t%(Desc)s\t" % p['FacModTipo']).replace("\t", sep)
+                 for p in result['ResultGet']]
         
         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -99,12 +107,21 @@ def main():
         ta_string = wsaa.call_wsaa(cms, url)
         open(TA,"w").write(ta_string)
     ta_string=open(TA).read()
-    ta = SimpleXMLElement(ta_string)
     # fin TA
-    wscdc.Token = str(ta.credentials.token)
-    wscdc.Sign = str(ta.credentials.sign)
 
+    wscdc.SetTicketAcceso(ta_string)
+    if '--cuit' in sys.argv:
+        cuit = sys.argv[sys.argv.index("--cuit")+1]
+    else:
+        cuit = "20267565393"
+    wscdc.Cuit = cuit
 
+    if "--params" in sys.argv:
+
+        print "=== Modalidad Comprobantes ==="
+        print u'\n'.join(wscdc.ConsultarModalidadComprobantes("||"))
+        
+        
 if __name__=="__main__":
     
     if '--register' in sys.argv or '--unregister' in sys.argv:
