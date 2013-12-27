@@ -31,7 +31,7 @@ class WSCDC(BaseWS):
     "Interfaz para el WebService de Constatación de Comprobantes"
     _public_methods_ = ['Conectar',
                         'AnalizarXml', 'ObtenerTagXml', 'Expirado',
-                        'Constatar', 'Dummy',
+                        'ConstatarComprobante', 'Dummy',
                         'ConsultarModalidadComprobantes',
                         'ConsultarTipoComprobantes',
                         'ConsultarTipoDocumentos', 'ConsultarTipoOpcionales',                        
@@ -40,6 +40,10 @@ class WSCDC(BaseWS):
                       'XmlRequest', 'XmlResponse', 
                       'InstallDir', 'Traceback', 'Excepcion',
                       'SoapFault', 'LanzarExcepciones',
+                      'Resultado', 'FchProceso', 'Observaciones', 'Obs',
+                      'FechaCbte', 'CbteNro', 'PuntoVenta', 'ImpTotal', 
+                      'EmisionTipo', 'CAE', 'CAEA', 'CAI',
+                      'DocTipo', 'DocNro',
                     ]
     _readonly_attrs_ = _public_attrs_[:-1]
     _reg_progid_ = "WSCDC"
@@ -72,6 +76,50 @@ class WSCDC(BaseWS):
         self.__analizar_errores(result)
         return True
 
+    @inicializar_y_capturar_excepciones
+    def ConstatarComprobante(self, cbte_modo, cuit_emisor, pto_vta, cbte_tipo, 
+                             cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
+                             doc_tipo_receptor=None, doc_nro_receptor=None):
+        "Método de Constatación de Comprobantes"
+        response = self.client.ComprobanteConstatar(
+                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+                    CmpReq={
+                        'CbteModo': cbte_modo,
+                        'CuitEmisor': cuit_emisor,
+                        'PtoVta': pto_vta,
+                        'CbteTipo': cbte_tipo,
+                        'CbteNro': cbte_nro,
+                        'CbteFch': cbte_fch,
+                        'ImpTotal': imp_total,
+                        'CodAutorizacion': cod_autorizacion,
+                        'DocTipoReceptor': doc_tipo_receptor,
+                        'DocNroReceptor': doc_nro_receptor,
+                        }
+                    )
+        result = response['ComprobanteConstatarResult']
+        self.__analizar_errores(result)
+        if 'CmpResp' in result:
+            resp = result['CmpResp']
+            self.Resultado = result['Resultado']
+            self.FchProceso = result['FchProceso']
+            for obs in result.get('Observaciones', []):
+                self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+            self.Obs = '\n'.join(self.Observaciones)
+            self.FechaCbte = resp.get('CbteFch', "") #.strftime("%Y/%m/%d")
+            self.CbteNro = resp.get('CbteNro', 0) # 1L
+            self.PuntoVenta = resp.get('PtoVta', 0) # 4000
+            self.ImpTotal = str(resp['ImpTotal'])
+            self.EmisionTipo = resp['CbteModo']
+            self.DocTipo = resp.get('DocTipoReceptor', '')
+            self.DocNro = resp.get('DocNroReceptor', '')
+            cod_aut = str(result['CodAutorizacion']) if 'CodAutorizacion' in result else ''# 60423794871430L
+            if self.EmisionTipo == 'CAE':
+                self.CAE = cod_aut
+            elif self.EmisionTipo == 'CAEA':
+                self.CAEA = cod_aut
+            elif self.EmisionTipo == 'CAI':
+                self.CAI = cod_aut
+                            
     @inicializar_y_capturar_excepciones
     def ConsultarModalidadComprobantes(self, sep="|"):
         "Recuperador de modalidades de autorización de comprobantes"
@@ -165,6 +213,24 @@ def main():
     else:
         cuit = "20267565393"
     wscdc.Cuit = cuit
+
+    if "--prueba" in sys.argv:
+        cbte_modo = "CAE"
+        cuit_emisor = "20267565393"
+        pto_vta = 1
+        cbte_tipo = 1
+        cbte_nro = 3704
+        cbte_fch = "20131203"
+        imp_total = "121.0"
+        cod_autorizacion = "63493178045912" 
+        doc_tipo_receptor = 80 
+        doc_nro_receptor = "30540088213"
+        wscdc.ConstatarComprobante(cbte_modo, cuit_emisor, pto_vta, cbte_tipo, 
+                             cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
+                             doc_tipo_receptor, doc_nro_receptor)
+        print "Resultado:", wscdc.Resultado
+        print "Mensaje de Error:", wscdc.ErrMsg
+        print "Observaciones:", wscdc.Obs
 
     if "--params" in sys.argv:
 
