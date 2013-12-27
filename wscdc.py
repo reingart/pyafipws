@@ -100,7 +100,7 @@ class WSCDC(BaseWS):
         if 'CmpResp' in result:
             resp = result['CmpResp']
             self.Resultado = result['Resultado']
-            self.FchProceso = result['FchProceso']
+            self.FchProceso = result.get('FchProceso', "")
             for obs in result.get('Observaciones', []):
                 self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
             self.Obs = '\n'.join(self.Observaciones)
