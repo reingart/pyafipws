@@ -19,9 +19,9 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.06a"
+__version__ = "2.07a"
 
-import datetime,email,os,sys,traceback
+import hashlib, datetime, email, os, sys, time, traceback
 from php import date
 from pysimplesoap.client import SimpleXMLElement
 from utils import inicializar_y_capturar_excepciones, BaseWS
@@ -50,6 +50,8 @@ CACERT = "afip_ca_info.crt" # WSAA CA Cert
 
 HOMO = False
 TYPELIB = False
+DEFAULT_TTL = 60*60*5       # five hours
+DEBUG = False
 
 # No debería ser necesario modificar nada despues de esta linea
 
@@ -124,7 +126,7 @@ def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
 class WSAA(BaseWS):
     "Interfaz para el WebService de Autenticación y Autorización"
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
-                        'AnalizarXml', 'ObtenerTagXml', 'Expirado',
+                        'AnalizarXml', 'ObtenerTagXml', 'Expirado', 'Autenticar',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 
@@ -183,6 +185,64 @@ class WSAA(BaseWS):
         d = datetime.datetime.strptime(fecha[:19], '%Y-%m-%dT%H:%M:%S')
         return now > d
         
+
+    def Autenticar(self, service, crt, key, wsdl=None, proxy=None, cache=None):
+        "Método unificado para obtener el ticket de acceso (cacheado)"
+
+        self.LanzarExcepciones = True
+        # sanity check: verificar las credenciales
+        for filename in (crt, key):
+            if not os.access(filename,os.R_OK):
+                sys.exit("Imposible abrir %s\n" % filename)
+        # creo el nombre para almacenar el TA ... 
+        fn = "TA-%s.xml" % hashlib.md5(service + crt + key).hexdigest()
+        if cache:
+            fn = os.path.join(cache, fn)
+        else:
+            fn = os.path.join(self.InstallDir, "cache", fn)
+
+        try:
+            # leer el ticket de acceso (si fue previamente solicitado)
+            if not os.path.exists(fn) or \
+               os.path.getmtime(fn) + (DEFAULT_TTL) < time.time():    
+                # ticket de acceso (TA) vencido, crear un nuevo req. (TRA) 
+                if DEBUG: print "Creando TRA..."
+                tra = self.CreateTRA(service=service, ttl=DEFAULT_TTL)
+                # firmarlo criptográficamente
+                if DEBUG: print "Frimando TRA..."
+                cms = self.SignTRA(tra, crt, key)
+                # concectar con el servicio web:
+                if DEBUG: print "Conectando a WSAA..."
+                self.Conectar(cache, wsdl, proxy)
+                # llamar al método remoto para solicitar el TA
+                if DEBUG: print "Llamando WSAA..."
+                ta = self.LoginCMS(cms)
+                if not ta:
+                    raise RuntimeError("Ticket de acceso vacio")
+                # grabar el ticket de acceso para poder reutilizarlo luego
+                if DEBUG: print "Grabando TA en %s..." % fn
+                open(fn, "w").write(ta)                   
+            else:
+                # leer el ticket de acceso del archivo en cache
+                if DEBUG: print "Leyendo TA de %s..." % fn
+                ta = open(fn, "r").read()
+            # analizar el ticket de acceso y extraer los datos relevantes 
+            self.AnalizarXml(xml=ta)
+            self.Token = self.ObtenerTagXml("token")
+            self.Sign = self.ObtenerTagXml("sign")
+        except:
+            ta = ""
+            if self.Excepcion:
+                # get the exception already parsed by the helper
+                err_msg = self.Excepcion
+            else:
+                # avoid encoding problem when reporting exceptions to the user:
+                err_msg = traceback.format_exception_only(sys.exc_type, 
+                                                          sys.exc_value)[0]
+            if self.LanzarExcepciones:
+                raise
+        return ta
+    
         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
@@ -231,66 +291,30 @@ if __name__=="__main__":
         # Leer argumentos desde la linea de comando (si no viene tomar default)
         args = [arg for arg in sys.argv if arg.startswith("--")]
         argv = [arg for arg in sys.argv if not arg.startswith("--")]
-        cert = len(argv)>1 and argv[1] or CERT
-        privatekey = len(argv)>2 and argv[2] or PRIVATEKEY
+        crt = len(argv)>1 and argv[1] or CERT
+        key = len(argv)>2 and argv[2] or PRIVATEKEY
         service = len(argv)>3 and argv[3] or "wsfe"
         ttl = len(argv)>4 and int(argv[4]) or 36000
         url = len(argv)>5 and argv[5] or WSAAURL
         wrapper = len(argv)>6 and argv[6] or None
         cacert = len(argv)>7 and argv[7] or CACERT
+        DEBUG = "--debug" in args
 
-        print "Usando CERT=%s PRIVATEKEY=%s URL=%s SERVICE=%s TTL=%s" % (cert,privatekey,url,service, ttl)
+        print "Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl)
 
         # creo el objeto para comunicarme con el ws
         wsaa = WSAA()
         wsaa.LanzarExcepciones = True
         
         if '--proxy' in args:
-            proxy = parse_proxy(sys.argv[sys.argv.index("--proxy")+1])
+            proxy = sys.argv[sys.argv.index("--proxy")+1]
             print "Usando PROXY:", proxy
         else:
             proxy = None
 
-        for filename in (cert,privatekey):
-            if not os.access(filename,os.R_OK):
-                sys.exit("Imposible abrir %s\n" % filename)
-        print "Creando TRA..."
-        tra = create_tra(service,ttl)
-        if '--trace' in args:
-            print "-" * 78
-            print tra
-            print "-" * 78
-        #open("TRA.xml","w").write(tra)
-        print "Frimando TRA..."
-        cms = sign_tra(tra,cert,privatekey)
-        #open("TRA.tmp","w").write(cms)
-        #cms = open("TRA.tmp").read()
-        print "Conectando a WSAA"
-        wrapper = wrapper # "pycurl" o "httplib2" o "urrlib2"
-        cacert = cacert # "geotrust.crt" o "thawte.crt"
-        wsaa.Conectar("", url, proxy, wrapper, cacert)
-        print wsaa.Version
-        if wrapper!='pycurl' or not cacert: 
-            print "NO SE VERIFICA CERTIFICADO CA!"
-        else:
-            print "Verificando CA: ", cacert
-        print "Llamando WSAA..."
-        ta = wsaa.LoginCMS(cms)
-        if wsaa.Excepcion:
-            sys.exit("Falla SOAP: %s\n" % wsaa.Excepcion)
-        if ta=='':
-            sys.exit("No se generó TA.xml\n")
-        try:
-            if ta is not None:
-                open("TA.xml","w").write(ta)
-                print "El archivo TA.xml se ha generado correctamente."
-        except Exception, e:
-            if "--debug" in args:
-                raise
-            else:
-                sys.exit("Error escribiendo TA.xml: %s\n")
+        ta = wsaa.Autenticar(service, crt, key, url, proxy)
 
-        if "--debug" in args:
+        if DEBUG:
             print "Source:", wsaa.ObtenerTagXml('source')
             print "UniqueID Time:", wsaa.ObtenerTagXml('uniqueId')
             print "Generation Time:", wsaa.ObtenerTagXml('generationTime')
