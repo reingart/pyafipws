@@ -190,18 +190,18 @@ class WSAA(BaseWS):
         "Método unificado para obtener el ticket de acceso (cacheado)"
 
         self.LanzarExcepciones = True
-        # sanity check: verificar las credenciales
-        for filename in (crt, key):
-            if not os.access(filename,os.R_OK):
-                sys.exit("Imposible abrir %s\n" % filename)
-        # creo el nombre para almacenar el TA ... 
-        fn = "TA-%s.xml" % hashlib.md5(service + crt + key).hexdigest()
-        if cache:
-            fn = os.path.join(cache, fn)
-        else:
-            fn = os.path.join(self.InstallDir, "cache", fn)
-
         try:
+            # sanity check: verificar las credenciales
+            for filename in (crt, key):
+                if not os.access(filename,os.R_OK):
+                    raise RuntimeError("Imposible abrir %s\n" % filename)
+            # creo el nombre para almacenar el TA ... 
+            fn = "TA-%s.xml" % hashlib.md5(service + crt + key).hexdigest()
+            if cache:
+                fn = os.path.join(cache, fn)
+            else:
+                fn = os.path.join(self.InstallDir, "cache", fn)
+
             # leer el ticket de acceso (si fue previamente solicitado)
             if not os.path.exists(fn) or \
                os.path.getmtime(fn) + (DEFAULT_TTL) < time.time():    
@@ -232,14 +232,12 @@ class WSAA(BaseWS):
             self.Sign = self.ObtenerTagXml("sign")
         except:
             ta = ""
-            if self.Excepcion:
-                # get the exception already parsed by the helper
-                err_msg = self.Excepcion
-            else:
+            if not self.Excepcion:
                 # avoid encoding problem when reporting exceptions to the user:
-                err_msg = traceback.format_exception_only(sys.exc_type, 
+                self.Excepcion = traceback.format_exception_only(sys.exc_type, 
                                                           sys.exc_value)[0]
-            if self.LanzarExcepciones:
+                self.Traceback = ""
+            if DEBUG:
                 raise
         return ta
     
