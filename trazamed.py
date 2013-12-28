@@ -16,7 +16,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12a"
+__version__ = "1.13a"
 
 import os
 import socket
@@ -30,7 +30,7 @@ from pysimplesoap.simplexml import SimpleXMLElement
 from cStringIO import StringIO
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf, get_install_dir, BaseWS, inicializar_y_capturar_excepciones
 
 HOMO = True
 TYPELIB = False
@@ -102,42 +102,8 @@ ERRORES = [
     ('_d_error', 250, A),               # descripción
     ]
 
-             
-def inicializar_y_capturar_excepciones(func):
-    "Decorador para inicializar y capturar errores"
-    def capturar_errores_wrapper(self, *args, **kwargs):
-        try:
-            # inicializo (limpio variables)
-            self.Resultado = self.CodigoTransaccion = ""
-            self.Errores = []   # lista de strings para la interfaz
-            self.errores = []   # lista de diccionarios (uso interno)
-            self.CantPaginas = self.HayError = None
-            self.TransaccionPlainWS = []
-            self.Traceback = self.Excepcion = ""
-            
-            if self.client is None:
-                raise RuntimeError("Debe llamar a Conectar")
 
-            # llamo a la función (sin reintentos)
-            return func(self, *args, **kwargs)
-
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            try:
-                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            except:
-                self.Excepcion = u"<no disponible>"
-            return False
-        finally:
-            # guardo datos de depuración
-            if self.client:
-                self.XmlRequest = self.client.xml_request
-                self.XmlResponse = self.client.xml_response
-    return capturar_errores_wrapper
-
-
-class TrazaMed:
+class TrazaMed(BaseWS):
     "Interfaz para el WebService de Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP"
     _public_methods_ = ['SendMedicamentos',
                         'SendCancelacTransacc', 'SendCancelacTransaccParcial',
@@ -168,20 +134,24 @@ class TrazaMed:
         _typelib_version_ = 1, 4
         _com_interfaces_ = ['ITrazaMed']
 
+    # Variables globales para BaseWS:
+    HOMO = HOMO
+    WSDL = WSDL
     Version = "%s %s %s" % (__version__, HOMO and 'Homologación' or '', 
                             pysimplesoap.client.__version__)
 
-    def __init__(self):
+    def __init__(self, reintentos=1):
         self.Username = self.Password = None
+        self.TransaccionPlainWS = []
+        BaseWS.__init__(self, reintentos)
+
+    def inicializar(self):
+        BaseWS.inicializar(self)
         self.CodigoTransaccion = self.Errores = self.Resultado = None
-        self.XmlRequest = ''
-        self.XmlResponse = ''
         self.Resultado = ''
-        self.client = None
-        self.Traceback = self.Excepcion = ""
-        self.Log = None
-        self.InstallDir = INSTALL_DIR
-        self.params = {}
+        self.Errores = []   # lista de strings para la interfaz
+        self.errores = []   # lista de diccionarios (uso interno)
+        self.CantPaginas = self.HayError = None
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -190,37 +160,13 @@ class TrazaMed:
                         for it in ret.get('errores', [])]
         self.Resultado = ret.get('resultado')
 
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None):
-        # cliente soap del web service
-        try:
-            if wrapper:
-                Http = set_http_wrapper(wrapper)
-                self.Version = TrazaMed.Version + " " + Http._wrapper_version
-            proxy_dict = parse_proxy(proxy)
-            if HOMO or not wsdl:
-                wsdl = WSDL
-                location = LOCATION
-            if not wsdl.endswith("?wsdl") and wsdl.startswith("http"):
-                location = wsdl
-                wsdl += "?wsdl"
-            elif wsdl.endswith("?wsdl"):
-                location = wsdl[:-5]
-            if not cache or HOMO:
-                # use 'cache' from installation base directory 
-                cache = os.path.join(self.InstallDir, 'cache')
-            if "--trace" in sys.argv:
-                print "Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict)
-            self.client = SoapClient(
-                wsdl = wsdl,        
-                cache = cache,
-                proxy = proxy_dict,
-                ns="tzmed",
-                cacert=cacert,
-                soap_ns="soapenv",
-                soap_server="jetty",
-                trace = "--trace" in sys.argv)
-                
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=None):
+        # Conecto usando el método estandard:
+        ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
+                              soap_server="jetty")
+        if ok:
             # corrijo ubicación del servidor (localhost:9050 en el WSDL)
+            location = self.wsdl[:-5]
             if 'IWebServiceService' in self.client.services:
                 ws = self.client.services['IWebServiceService']  # version 1
             else:
@@ -234,26 +180,7 @@ class TrazaMed:
                     'wsse:Password': self.Password,
                     }
                 }
-            return True
-        except:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            try:
-                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
-            except:
-                self.Excepcion = u"<no disponible>"
-            return False
-
-    def SetParametro(self, clave, valor):
-        "Establece un parámetro general (usarse en llamadas posteriores)"
-        # útil para parámetros de entrada (por ej. VFP9 no soporta más de 27)
-        self.params[clave] = valor
-        return True
-
-    def GetParametro(self, clave):
-        "Devuelve un parámetro general (establecido por llamadas anteriores)"
-        # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
-        return self.params.get(clave)
+        return ok
         
     @inicializar_y_capturar_excepciones
     def SendMedicamentos(self, usuario, password, 
@@ -298,8 +225,6 @@ class TrazaMed:
                     'telefono': telefono,
                     'nro_asociado': nro_asociado,
                     }
-        # actualizo con parámetros generales:
-        params.update(self.params)
         res = self.client.sendMedicamentos(
             arg0=params,
             arg1=usuario, 
@@ -357,8 +282,6 @@ class TrazaMed:
                     'nro_asociado': nro_asociado,
                     'cantidad': cantidad,
                     }
-        # actualizo con parámetros generales:
-        params.update(self.params)
         res = self.client.sendMedicamentosFraccion(
             arg0=params,                    
             arg1=usuario, 
@@ -417,8 +340,6 @@ class TrazaMed:
                     'telefono': telefono,
                     'nro_asociado': nro_asociado,
                     }
-        # actualizo con parámetros generales:
-        params.update(self.params)
         res = self.client.sendMedicamentosDHSerie(
             arg0=params,
             arg1=usuario, 
@@ -559,11 +480,11 @@ class TrazaMed:
         
         if self.TransaccionPlainWS:
             # extraigo el primer item
-            self.params = self.TransaccionPlainWS.pop(0)
+            self.params_out = self.TransaccionPlainWS.pop(0)
             return True
         else:
             # limpio los parámetros
-            self.params = {}
+            self.params_out = {}
             return False
 
     def LeerError(self):
@@ -649,12 +570,6 @@ class TrazaMed:
         "Devuelvo el resultado"        
         return self.Resultado
 
-    def LoadTestXML(self, xml_file):
-        "Cargar una respuesta predeterminada de pruebas (emulación del ws)"
-        # cargo el ejemplo de AFIP (emulando respuesta del webservice)
-        from pysimplesoap.transport import DummyTransport as DummyHTTP 
-        xml = open(os.path.join(INSTALL_DIR, xml_file)).read()
-        self.client.http = DummyHTTP(xml)
 
 
 def main():
@@ -906,14 +821,7 @@ def main():
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
-    basepath = __file__
-elif sys.frozen=='dll':
-    import win32api
-    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-else:
-    basepath = sys.executable
-INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = TrazaMed.InstallDir = get_install_dir()
 
 
 if __name__ == '__main__':
