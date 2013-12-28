@@ -298,7 +298,7 @@ if __name__=="__main__":
         cacert = len(argv)>7 and argv[7] or CACERT
         DEBUG = "--debug" in args
 
-        print "Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl)
+        print >> sys.stderr, "Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl)
 
         # creo el objeto para comunicarme con el ws
         wsaa = WSAA()
@@ -306,11 +306,18 @@ if __name__=="__main__":
         
         if '--proxy' in args:
             proxy = sys.argv[sys.argv.index("--proxy")+1]
-            print "Usando PROXY:", proxy
+            print >> sys.stderr, "Usando PROXY:", proxy
         else:
             proxy = None
 
         ta = wsaa.Autenticar(service, crt, key, url, proxy)
+        if not ta:
+            if DEBUG:
+                print >> sys.stderr, wsaa.Traceback
+            sys.exit(u"Excepcion: %s" % wsaa.Excepcion)
+                
+        else:
+            print ta
 
         if DEBUG:
             print "Source:", wsaa.ObtenerTagXml('source')
