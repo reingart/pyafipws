@@ -33,8 +33,8 @@ from utils import BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 HOMO = False
 TYPELIB = False
 
-WSDL = "https://trazabilidad.pami.org.ar:59050/trazarenpre.WebServiceSDRN?wsdl"
-LOCATION = "https://trazabilidad.pami.org.ar:59050/trazarenpre.WebServiceSDRN?wsdl"
+WSDL = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
+LOCATION = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
          
 
 class TrazaRenpre(BaseWS):
