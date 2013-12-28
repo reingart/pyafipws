@@ -24,7 +24,7 @@ __version__ = "2.07a"
 import hashlib, datetime, email, os, sys, time, traceback
 from php import date
 from pysimplesoap.client import SimpleXMLElement
-from utils import inicializar_y_capturar_excepciones, BaseWS
+from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
 except ImportError:
@@ -48,7 +48,7 @@ SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL
 # Verificación del web server remoto
 CACERT = "afip_ca_info.crt" # WSAA CA Cert
 
-HOMO = False
+HOMO = True
 TYPELIB = False
 DEFAULT_TTL = 60*60*5       # five hours
 DEBUG = False
@@ -243,20 +243,8 @@ class WSAA(BaseWS):
     
         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
-    basepath = __file__
-elif sys.frozen=='dll':
-    import win32api
-    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-else:
-    basepath = sys.executable
-INSTALL_DIR = WSAA.InstallDir = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSAA.InstallDir = get_install_dir()
 
-if hasattr(sys, 'frozen'):
-    # we are running as py2exe-packed executable
-    import pythoncom
-    pythoncom.frozen = 1
-    sys.argv[0] = sys.executable
 
 if __name__=="__main__":
     

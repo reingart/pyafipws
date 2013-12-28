@@ -23,7 +23,7 @@ import datetime
 import decimal
 import os
 import sys
-from utils import inicializar_y_capturar_excepciones, BaseWS
+from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = True
 LANZAR_EXCEPCIONES = True      # valor por defecto: True
@@ -410,14 +410,7 @@ class WSFEX(WSFEXv1):
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
-    basepath = __file__
-elif sys.frozen=='dll':
-    import win32api
-    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-else:
-    basepath = sys.executable
-INSTALL_DIR = WSFEXv1.InstallDir = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSFEXv1.InstallDir = get_install_dir()
 
 
 def p_assert_eq(a,b):

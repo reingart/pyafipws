@@ -575,7 +575,26 @@ def safe_console():
         print "Encodign in %s" % locale.getpreferredencoding()    
 
 
+def get_install_dir():
+    if not hasattr(sys, "frozen"): 
+        basepath = __file__
+    elif sys.frozen=='dll':
+        import win32api
+        basepath = win32api.GetModuleFileName(sys.frozendllhandle)
+    else:
+        basepath = sys.executable
+
+    if hasattr(sys, "frozen"): 
+        # we are running as py2exe-packed executable
+        import pythoncom
+        pythoncom.frozen = 1
+        sys.argv[0] = sys.executable
+
+    return os.path.dirname(os.path.abspath(basepath))
+
+        
 if __name__ == "__main__":
+    print get_install_dir()
     try:
         1/0
     except:
@@ -584,4 +603,5 @@ if __name__ == "__main__":
         assert ex['name'] == "ZeroDivisionError"
         assert ex['lineno'] == 73
         assert ex['tb']
+
 

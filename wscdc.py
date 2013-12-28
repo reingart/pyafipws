@@ -22,11 +22,11 @@ __version__ = "1.01a"
 
 import sys, os, time
 from ConfigParser import SafeConfigParser
-from utils import inicializar_y_capturar_excepciones, BaseWS
+from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL" 
-HOMO = False
+HOMO = True
 CONFIG_FILE = "rece.ini"
 
 # No debería ser necesario modificar nada despues de esta linea
@@ -180,20 +180,7 @@ class WSCDC(BaseWS):
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
-    basepath = __file__
-elif sys.frozen=='dll':
-    import win32api
-    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-else:
-    basepath = sys.executable
-INSTALL_DIR = WSCDC.InstallDir = os.path.dirname(os.path.abspath(basepath))
-
-if hasattr(sys, 'frozen'):
-    # we are running as py2exe-packed executable
-    import pythoncom
-    pythoncom.frozen = 1
-    sys.argv[0] = sys.executable
+INSTALL_DIR = WSCDC.InstallDir = get_install_dir()
 
 
 def main():

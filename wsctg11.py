@@ -68,7 +68,7 @@ from pysimplesoap.client import SoapFault
 import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl"
@@ -584,7 +584,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = WSCTG11.InstallDir = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSCTG11.InstallDir = get_install_dir()
 
 
 if __name__ == '__main__':

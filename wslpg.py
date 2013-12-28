@@ -85,8 +85,7 @@ from fpdf import Template
 import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones
-
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
@@ -1961,14 +1960,7 @@ def leer_archivo(nombre_archivo):
     
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
-    basepath = __file__
-elif sys.frozen=='dll':
-    import win32api
-    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-else:
-    basepath = sys.executable
-INSTALL_DIR = WSLPG.InstallDir = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = WSLPG.InstallDir = get_install_dir()
 
 
 if __name__ == '__main__':
