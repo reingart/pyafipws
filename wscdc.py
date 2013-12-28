@@ -215,18 +215,10 @@ def main():
         print "AuthServerStatus", wscdc.AuthServerStatus
         sys.exit(0)
 
-    # obteniendo el TA
-    TA = "TA-wscdc.xml"
-    if 'wsaa' in sys.argv or not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
-        import wsaa
-        tra = wsaa.create_tra(service="wscdc")
-        cms = wsaa.sign_tra(tra, crt, key)
-        ta_string = wsaa.call_wsaa(cms, url_wsaa)
-        open(TA,"w").write(ta_string)
-    ta_string=open(TA).read()
-    # fin TA
-
-    wscdc.SetTicketAcceso(ta_string)
+    # Gestionar credenciales de acceso con AFIP:
+    from wsaa import WSAA
+    ta = WSAA().Autenticar("wscdc", crt, key, url_wsaa)
+    wscdc.SetTicketAcceso(ta)
     wscdc.Cuit = cuit
 
     if "--constatar" in sys.argv:
