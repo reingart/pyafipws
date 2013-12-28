@@ -40,16 +40,17 @@ class WSCDC(BaseWS):
                         'ConsultarTipoComprobantes',
                         'ConsultarTipoDocumentos', 'ConsultarTipoOpcionales',                        
                         ]
-    _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
-                      'XmlRequest', 'XmlResponse', 
-                      'InstallDir', 'Traceback', 'Excepcion',
+    _public_attrs_ = ['Token', 'Sign', 'Cuit', 'ExpirationTime', 'Version', 
+                      'XmlRequest', 'XmlResponse', 'Observaciones', 'Errores',
+                      'InstallDir', 'Traceback', 'Excepcion', 'ErrMsg', 'Obs',
+                      'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
                       'Resultado', 'FchProceso', 'Observaciones', 'Obs',
                       'FechaCbte', 'CbteNro', 'PuntoVenta', 'ImpTotal', 
                       'EmisionTipo', 'CAE', 'CAEA', 'CAI',
                       'DocTipo', 'DocNro',
                       'SoapFault', 'LanzarExcepciones',
                     ]
-    _readonly_attrs_ = _public_attrs_[2:-1]
+    _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "WSCDC"
     _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
 
@@ -57,6 +58,13 @@ class WSCDC(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+
+    def inicializar(self):
+        BaseWS.inicializar(self)
+        self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
+        self.Resultado = self.EmisionTipo = "" 
+        self.CAI = self.CAE = self.CAEA = self.Vencimiento = ''
+        self.CbteNro = self.PuntoVenta = self.ImpTotal = None
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
