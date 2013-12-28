@@ -142,7 +142,7 @@ class TrazaRenpre(BaseWS):
     @inicializar_y_capturar_excepciones
     def SendCancelacTransacc(self, usuario, password, codigo_transaccion):
         " Realiza la cancelación de una transacción"
-        res = self.client.sendCancelacTransacc(
+        res = self.client.sendCancelaTransac(
             arg0=codigo_transaccion, 
             arg1=usuario, 
             arg2=password,
