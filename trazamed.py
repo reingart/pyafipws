@@ -13,6 +13,9 @@
 """Módulo para Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP Disp. 3683/11
 según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 
+# Información adicional y documentación:
+# http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
+
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
