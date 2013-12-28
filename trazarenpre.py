@@ -26,7 +26,7 @@ import sys
 import datetime, time
 import pysimplesoap.client
 from pysimplesoap.client import SoapFault
-from utils import BaseWS, inicializar_y_capturar_excepciones
+from utils import BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 HOMO = False
 TYPELIB = False
@@ -63,9 +63,12 @@ class TrazaRenpre(BaseWS):
     Version = "%s %s %s" % (__version__, HOMO and 'Homologación' or '', 
                             pysimplesoap.client.__version__)
 
+    def __init__(self, reintentos=1):
+        self.Username = self.Password = None
+        BaseWS.__init__(self, reintentos)
+
     def inicializar(self):
         BaseWS.inicializar(self)
-        self.Username = self.Password = None
         self.CodigoTransaccion = self.Errores = self.Resultado = None
 
     def __analizar_errores(self, ret):
@@ -76,16 +79,17 @@ class TrazaRenpre(BaseWS):
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=None):
         # Conecto usando el método estandard:
-        BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
-                              soap_server="jetty")
-        # Establecer credenciales de seguridad:
-        self.client['wsse:Security'] = {
-            'wsse:UsernameToken': {
-                'wsse:Username': self.Username,
-                'wsse:Password': self.Password,
+        ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
+                             soap_server="jetty")
+        if ok:
+            # Establecer credenciales de seguridad:
+            self.client['wsse:Security'] = {
+                'wsse:UsernameToken': {
+                    'wsse:Username': self.Username,
+                    'wsse:Password': self.Password,
+                    }
                 }
-            }
-        return True
+        return ok
         
     @inicializar_y_capturar_excepciones
     def SaveTransacciones(self, usuario, password, 
@@ -253,14 +257,7 @@ def main():
         print ws.Traceback
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
-    basepath = __file__
-elif sys.frozen=='dll':
-    import win32api
-    basepath = win32api.GetModuleFileName(sys.frozendllhandle)
-else:
-    basepath = sys.executable
-INSTALL_DIR = TrazaRenpre.InstallDir = os.path.dirname(os.path.abspath(basepath))
+INSTALL_DIR = TrazaRenpre.InstallDir = get_install_dir()
 
 
 if __name__ == '__main__':
