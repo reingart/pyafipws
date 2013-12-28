@@ -164,36 +164,45 @@ class BaseWS:
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30, soap_server=None):
         "Conectar cliente soap del web service"
-        # analizar transporte y servidor proxy:
-        if wrapper:
-            Http = set_http_wrapper(wrapper)
-            self.Version = self.Version + " " + Http._wrapper_version
-        if isinstance(proxy, dict):
-            proxy_dict = proxy
-        else:
-            proxy_dict = parse_proxy(proxy)
-        if self.HOMO or not wsdl:
-            wsdl = self.WSDL
-        # agregar sufijo para descargar descripción del servicio ?WSDL o ?wsdl
-        if not wsdl.endswith(self.WSDL[-5:]) and wsdl.startswith("http"):
-            wsdl += self.WSDL[-5:]
-        if not cache or self.HOMO:
-            # use 'cache' from installation base directory 
-            cache = os.path.join(self.InstallDir, 'cache')
-        self.log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
-        # analizar espacio de nombres (axis vs .net):
-        ns = 'ser' if self.WSDL[-5:] == "?wsdl" else None
-        self.client = SoapClient(
-            wsdl = wsdl,        
-            cache = cache,
-            proxy = proxy_dict,
-            cacert = cacert,
-            timeout = timeout,
-            ns = ns, soap_server = soap_server, 
-            trace = "--trace" in sys.argv)
-        self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
-        self.wsdl = wsdl    # utilizado por TrazaMed (para corregir el location)
-        return True
+        try:
+            # analizar transporte y servidor proxy:
+            if wrapper:
+                Http = set_http_wrapper(wrapper)
+                self.Version = self.Version + " " + Http._wrapper_version
+            if isinstance(proxy, dict):
+                proxy_dict = proxy
+            else:
+                proxy_dict = parse_proxy(proxy)
+            if self.HOMO or not wsdl:
+                wsdl = self.WSDL
+            # agregar sufijo para descargar descripción del servicio ?WSDL o ?wsdl
+            if not wsdl.endswith(self.WSDL[-5:]) and wsdl.startswith("http"):
+                wsdl += self.WSDL[-5:]
+            if not cache or self.HOMO:
+                # use 'cache' from installation base directory 
+                cache = os.path.join(self.InstallDir, 'cache')
+            self.log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
+            # analizar espacio de nombres (axis vs .net):
+            ns = 'ser' if self.WSDL[-5:] == "?wsdl" else None
+            self.client = SoapClient(
+                wsdl = wsdl,        
+                cache = cache,
+                proxy = proxy_dict,
+                cacert = cacert,
+                timeout = timeout,
+                ns = ns, soap_server = soap_server, 
+                trace = "--trace" in sys.argv)
+            self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
+            self.wsdl = wsdl    # utilizado por TrazaMed (para corregir el location)
+            return True
+        except:
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            try:
+                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+            except:
+                self.Excepcion = u"<no disponible>"
+            return False
 
     def log(self, msg):
         "Dejar mensaje en bitacora de depuración (método interno)"
