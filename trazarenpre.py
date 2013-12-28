@@ -33,10 +33,8 @@ from utils import BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 HOMO = False
 TYPELIB = False
 
-#https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl
-WSDL = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
-LOCATION = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
-#WSDL = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
+WSDL = "https://trazabilidad.pami.org.ar:59050/trazarenpre.WebServiceSDRN?wsdl"
+LOCATION = "https://trazabilidad.pami.org.ar:59050/trazarenpre.WebServiceSDRN?wsdl"
          
 
 class TrazaRenpre(BaseWS):
@@ -57,7 +55,7 @@ class TrazaRenpre(BaseWS):
         ]
 
     _reg_progid_ = "TrazaRenpre"
-    _reg_clsid_ = "{8472867A-AE6F-487F-8554-C2C896CFFC3E}"
+    _reg_clsid_ = "{461298DB-0531-47CA-B3D9-B36FE6967209}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -214,7 +212,7 @@ def main():
     ws.Password = 'testwservicepsw'
     
     if '--prod' in sys.argv and not HOMO:
-        WSDL = "https://servicios.pami.org.ar/trazamed.WebServiceSDRN"
+        WSDL = "https://servicios.pami.org.ar/trazarenpre.WebServiceSDRN"
         print "Usando WSDL:", WSDL
         sys.argv.pop(0)
     
@@ -273,12 +271,12 @@ if __name__ == '__main__':
     if '--register' in sys.argv or '--unregister' in sys.argv:
         import pythoncom
         import win32com.server.register
-        win32com.server.register.UseCommandLine(TrazaMed)
+        win32com.server.register.UseCommandLine(TrazaRenpre)
     elif "/Automate" in sys.argv:
         # MS seems to like /automate to run the class factories.
         import win32com.server.localserver
         #win32com.server.localserver.main()
         # start the server.
-        win32com.server.localserver.serve([TrazaMed._reg_clsid_])
+        win32com.server.localserver.serve([TrazaRenpre._reg_clsid_])
     else:
         main()
