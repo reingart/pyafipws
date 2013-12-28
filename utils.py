@@ -192,6 +192,7 @@ class BaseWS:
             ns = ns, soap_server = soap_server, 
             trace = "--trace" in sys.argv)
         self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
+        self.wsdl = wsdl    # utilizado por TrazaMed (para corregir el location)
         return True
 
     def log(self, msg):
@@ -215,6 +216,10 @@ class BaseWS:
         return msg    
 
     def LoadTestXML(self, xml):
+        "Cargar un archivo de pruebas con la respuesta simulada (depuración)"
+        # si el parametro es un nombre de archivo, cargar el contenido:
+        if os.path.exists(xml):
+            xml = open(xml).read()
         class DummyHTTP:
             def __init__(self, xml_response):
                 self.xml_response = xml_response
