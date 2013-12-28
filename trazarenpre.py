@@ -10,8 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP Disp. 3683/11
-según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
+"Módulo para Trazabilidad de Precursores Químicos RENPRE Resolución 900/12"
 
 # Información adicional y documentación:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadPrecursoresQuimicos
