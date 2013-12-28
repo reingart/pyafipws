@@ -90,7 +90,8 @@ notistalled:
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "UninstallString" "$INSTDIR\Uninst.exe"
     WriteUninstaller "Uninst.exe"
     ;To Register a DLL
-    %(register_com_servers)s
+    %(register_com_servers_dll)s
+    %(register_com_servers_exe)s
     IfFileExists $INSTDIR\\pyrece.exe 0 +3
         ;create start-menu items
         CreateDirectory "$SMPROGRAMS\%(name)s"
@@ -102,7 +103,8 @@ SectionEnd
 
 Section "Uninstall"
     ;To Unregister a DLL
-    %(unregister_com_servers)s
+    %(unregister_com_servers_dll)s
+    %(unregister_com_servers_exe)s
     ;Delete Files
 
     ;Delete Uninstaller And Unistall Registry Entries
@@ -140,11 +142,17 @@ FunctionEnd
 
 """
 
-register_com_server = """\
+register_com_server_dll = """\
     RegDLL "$INSTDIR\%s"
 """
-unregister_com_server= """\
+register_com_server_exe = """\
+    ExecWait '%s /register' 
+"""
+unregister_com_server_dll = """\
     UnRegDLL "$INSTDIR\%s"
+"""
+unregister_com_server_exe = """\
+    ExecWait '%s /unregister' 
 """
 
 class build_installer(py2exe):
@@ -194,7 +202,8 @@ class NSISScript:
         self.url = metadata.get_url()
         self.windows_exe_files = [self.chop(p) for p in windows_exe_files]
         self.lib_files = [self.chop(p) for p in lib_files]
-        self.comserver_files = [self.chop(p) for p in comserver_files if p.lower().endswith(".dll")]
+        self.comserver_files_exe = [self.chop(p) for p in comserver_files if p.lower().endswith(".exe")]
+        self.comserver_files_dll = [self.chop(p) for p in comserver_files if p.lower().endswith(".dll")]
 
     def chop(self, pathname):
         #print pathname, self.dist_dir
@@ -218,8 +227,10 @@ class NSISScript:
             'install_dir': self.name,
             'reg_key': self.name,
             'out_file': "instalador-%s-%s.exe" % (self.name, self.version),
-            'register_com_servers': ''.join([register_com_server % comserver for comserver in self.comserver_files]),
-            'unregister_com_servers': ''.join([unregister_com_server % comserver for comserver in self.comserver_files]),
+            'register_com_servers_exe': ''.join([register_com_server_exe % comserver for comserver in self.comserver_files_exe]),
+            'register_com_servers_dll': ''.join([register_com_server_dll % comserver for comserver in self.comserver_files_dll]),
+            'unregister_com_servers_exe': ''.join([unregister_com_server_exe % comserver for comserver in self.comserver_files_exe]),
+            'unregister_com_servers_dll': ''.join([unregister_com_server_dll % comserver for comserver in self.comserver_files_dll]),
         })
 
     def compile(self, pathname="base.nsi"):
