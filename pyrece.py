@@ -208,14 +208,14 @@ class PyRece(gui.Controller):
     def error(self, code, text):
         ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
         self.log(''.join(ex))
-        dialog.alertDialog(self, text, 'Error %s' % code)
+        gui.alert(text, 'Error %s' % code)
 
     def verifica_ws(self):
         if not self.ws:
-            dialog.alertDialog(self, "Debe seleccionar el webservice a utilizar!", 'Advertencia')
+            gui.alert("Debe seleccionar el webservice a utilizar!", 'Advertencia')
             raise RuntimeError()
         if not self.token or not self.sign:
-            dialog.alertDialog(self, "Debe autenticarse con AFIP!", 'Advertencia')
+            gui.alert("Debe autenticarse con AFIP!", 'Advertencia')
             raise RuntimeError()
 
     def on_btnMarcarTodo_mouseClick(self, event):
@@ -238,19 +238,20 @@ class PyRece(gui.Controller):
             else:
                 msg = "%s no soportado" % self.webservice
                 location = ""
-            dialog.alertDialog(self, msg, location)
+            gui.alert(msg, location)
         except Exception, e:
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
     def on_menuConsultasLastCBTE_select(self, event):
         ##self.verifica_ws()
-        result = dialog.singleChoiceDialog(self, "Tipo de comprobante",
-            u"Consulta Último Nro. Comprobante", 
-                [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])])
+        options = [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])]
+        result = gui.single_choice(options, "Tipo de comprobante",
+                                   u"Consulta Último Nro. Comprobante", 
+                )
         if not result.accepted:
             return
         tipocbte = [k for k,v in self.tipos.items() if v==result.selection][0]
-        result = dialog.textEntryDialog(self, u"Punto de venta",
+        result = gui.prompt(u"Punto de venta",
             u"Consulta Último Nro. Comprobante", '2')
         if not result.accepted:
             return
@@ -265,7 +266,7 @@ class PyRece(gui.Controller):
             elif  self.webservice=="wsfexv1":
                 ultcmp = "%s (wsfexv1)" % self.ws.GetLastCMP(tipocbte, ptovta) 
             
-            dialog.alertDialog(self, u"Último comprobante: %s\n" 
+            gui.alert(u"Último comprobante: %s\n" 
                 u"Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, self.tipos[tipocbte], 
                     tipocbte, ptovta), u'Consulta Último Nro. Comprobante')
         except SoapFault,e:
@@ -279,18 +280,19 @@ class PyRece(gui.Controller):
 
     def on_menuConsultasGetCAE_select(self, event):
         self.verifica_ws()
-        result = dialog.singleChoiceDialog(self, "Tipo de comprobante",
+        options = [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])]
+        result = gui.single_choice(options, "Tipo de comprobante",
             u"Consulta Comprobante", 
-                [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])])
+                )
         if not result.accepted:
             return
         tipocbte = [k for k,v in self.tipos.items() if v==result.selection][0]
-        result = dialog.textEntryDialog(self, u"Punto de venta",
+        result = gui.prompt(u"Punto de venta",
             u"Consulta Comprobante", '2')
         if not result.accepted:
             return
         ptovta = result.text
-        result = dialog.textEntryDialog(self, u"Nº de comprobante",
+        result = gui.prompt(u"Nº de comprobante",
             u"Consulta Comprobante", '2')
         if not result.accepted:
             return
@@ -317,7 +319,7 @@ class PyRece(gui.Controller):
                 self.log('CbteNro: %s' % self.ws.CbteNro)
                 self.log('ImpTotal: %s' % self.ws.ImpTotal)
                     
-            dialog.alertDialog(self, u"CAE: %s\n" 
+            gui.alert(u"CAE: %s\n" 
                 u"Tipo: %s (%s)\nPunto de Venta: %s\nNumero: %s\nFecha: %s" % (
                     cae, self.tipos[tipocbte],
                     tipocbte, ptovta, nrocbte, self.ws.FechaCbte), 
@@ -344,7 +346,7 @@ class PyRece(gui.Controller):
                 ultnro = self.ws.GetLastID()
             else: 
                 ultnro = None
-            dialog.alertDialog(self, u"Último ID (máximo): %s" % (ultnro), 
+            gui.alert(u"Último ID (máximo): %s" % (ultnro), 
                 u'Consulta Último ID')
         except SoapFault,e:
             self.log(self.client.xml_request)
@@ -358,11 +360,11 @@ class PyRece(gui.Controller):
 
     def on_menuAyudaAcercaDe_select(self, event):
         text = ACERCA_DE
-        dialog.alertDialog(self, text, u'Acerca de PyRece Versión %s' % __version__)
+        gui.alert(text, u'Acerca de PyRece Versión %s' % __version__)
 
     def on_menuAyudaInstructivo_select(self, event):
         text = INSTRUCTIVO
-        dialog.alertDialog(self, text, u'Instructivo de PyRece')
+        gui.alert(text, u'Instructivo de PyRece')
 
     def on_menuAyudaLimpiar_select(self, event):
         self.components.txtEstado.text = ""
@@ -413,7 +415,7 @@ class PyRece(gui.Controller):
                 self.ws.Cuit = cuit
                 service = "wsfex"
             else:
-                dialog.alertDialog(self, 'Debe seleccionar servicio web!', 'Advertencia')
+                gui.alert('Debe seleccionar servicio web!', 'Advertencia')
                 return
 
             self.log("Creando TRA %s ..." % service)
@@ -440,9 +442,9 @@ class PyRece(gui.Controller):
                 self.ws.Sign = self.sign
 
             if xml:
-                dialog.alertDialog(self, 'Autenticado OK!', 'Advertencia')
+                gui.alert('Autenticado OK!', 'Advertencia')
             else:
-                dialog.alertDialog(self, u'Respuesta: %s' % ws.XmlResponse, u'No se pudo autenticar: %s' % ws.Excepcion)
+                gui.alert(u'Respuesta: %s' % ws.XmlResponse, u'No se pudo autenticar: %s' % ws.Excepcion)
         except SoapFault,e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
         except Exception, e:
@@ -457,7 +459,7 @@ class PyRece(gui.Controller):
         if entrada.endswith("xml"):
             wildcard.sort(reverse=True)
 
-        result = dialog.fileDialog(self, 'Abrir', '', filename, '|'.join(wildcard))
+        result = gui.select_file('Abrir', '', filename, '|'.join(wildcard))
         if not result.accepted:
             return
         self.paths = result.paths
@@ -491,7 +493,7 @@ class PyRece(gui.Controller):
                 else:
                     self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
             if len(items) < 2:
-                dialog.alertDialog(self, u'El archivo no tiene datos válidos', 'Advertencia')
+                gui.alert(u'El archivo no tiene datos válidos', 'Advertencia')
             cols = items and [str(it).strip() for it in items[0]] or []
             if DEBUG: print "Cols",cols
             # armar diccionario por cada linea
@@ -513,7 +515,7 @@ class PyRece(gui.Controller):
                 path = self.paths[0]
             else:
                 path = salida
-            result = dialog.saveFileDialog(self, title='Guardar', filename=path, 
+            result = gui.save_file(title='Guardar', filename=path, 
                 wildcard='|'.join(wildcard))
             if not result.accepted:
                 return
@@ -544,7 +546,7 @@ class PyRece(gui.Controller):
                     formato_json.escribir(regs, fn)
                 else:
                     self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
-            dialog.alertDialog(self, u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
+            gui.alert(u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
         except Exception, e:
             self.error(u'Excepción',unicode(e))
 
@@ -639,9 +641,9 @@ class PyRece(gui.Controller):
                         'err_msg': self.ws.ErrMsg.encode("latin1"),
                         })
                     if self.ws.ErrMsg:
-                        dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
+                        gui.alert(self.ws.ErrMsg, "Error AFIP")
                     if self.ws.Obs and self.ws.Obs!='00':
-                        dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
+                        gui.alert(self.ws.Obs, u"Observación AFIP")
 
                 elif self.webservice == 'wsfexv1':
                     kargs['cbte_nro'] = kargs ['cbt_numero']
@@ -696,9 +698,9 @@ class PyRece(gui.Controller):
                         'err_msg': self.ws.ErrMsg.encode("latin1"),
                         })
                     if self.ws.ErrMsg:
-                        dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
+                        gui.alert(self.ws.ErrMsg, "Error AFIP")
                     if self.ws.Obs and self.ws.Obs!='00':
-                        dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
+                        gui.alert(self.ws.Obs, u"Observación AFIP")
                         
                 # actuaizo la factura
                 for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
@@ -715,7 +717,7 @@ class PyRece(gui.Controller):
             self.items = self.items 
             self.set_selected_items(selected)
             self.progreso(len(self.items))
-            dialog.alertDialog(self, u'Proceso finalizado, procesadas %d\n\n'
+            gui.alert(u'Proceso finalizado, procesadas %d\n\n'
                     'Aceptadas: %d\n'
                     'Rechazadas: %d' % (procesadas, ok, rechazadas), 
                     u'Autorización')
@@ -822,10 +824,10 @@ class PyRece(gui.Controller):
                 kargs['fecha_cbte'] = '20110802'
                 kargs['fecha_venc_pago'] = '20110831'
 
-            if dialog.messageDialog(self, "Confirma Lote:\n"
+            if gui.confirm("Confirma Lote:\n"
                 "Tipo: %(tipo_cbte)s Desde: %(cbt_desde)s Hasta %(cbt_hasta)s\n"
                 "Neto: %(imp_neto)s IVA: %(imp_iva)s Trib.: %(imp_trib)s Total: %(imp_total)s" 
-                % kargs, "Autorizar lote:").accepted:
+                % kargs, "Autorizar lote:"):
 
                 if self.webservice == 'wsfev1':
                     encabezado = {}
@@ -878,9 +880,9 @@ class PyRece(gui.Controller):
                         'err_msg': self.ws.ErrMsg.encode("latin1"),
                         })
                     if self.ws.ErrMsg:
-                        dialog.alertDialog(self, self.ws.ErrMsg, "Error AFIP")
+                        gui.alert(self.ws.ErrMsg, "Error AFIP")
                     if self.ws.Obs and self.ws.Obs!='00':
-                        dialog.alertDialog(self, self.ws.Obs, u"Observación AFIP")
+                        gui.alert(self.ws.Obs, u"Observación AFIP")
             
                 for i, item in self.get_selected_items():
                     for key in ('id', 'cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
@@ -894,7 +896,7 @@ class PyRece(gui.Controller):
 
                 self.items = self.items # refrescar, ver de corregir
                 self.progreso(len(self.items))
-                dialog.alertDialog(self, 'Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
+                gui.alert('Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
                 self.grabar()
         except SoapFault,e:
             self.log(self.client.xml_request)
@@ -933,7 +935,7 @@ class PyRece(gui.Controller):
                     no += 1
                 self.progreso(i)
             self.progreso(len(self.items))
-            dialog.alertDialog(self, 'Proceso finalizado OK!\n\nEnviados: %d\nNo enviados: %d' % (ok, no), 'Envio de Email')
+            gui.alert('Proceso finalizado OK!\n\nEnviados: %d\nNo enviados: %d' % (ok, no), 'Envio de Email')
         except Exception, e:
             self.error(u'Excepción',unicode(e))
             
