@@ -15,14 +15,14 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25f"
+__version__ = "1.26a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
 import os
 import sys
 import wx
-from PythonCard import dialog, model
+import gui
 import traceback
 from ConfigParser import SafeConfigParser
 import wsaa, wsfe, wsfev1, wsfexv1
@@ -94,7 +94,7 @@ def digito_verificador_modulo10(codigo):
     return str(digito)
 
     
-class PyRece(model.Background):
+class PyRece(gui.Controller):
 
     def on_initialize(self, event):
         self.cols = []
@@ -1105,5 +1105,5 @@ if __name__ == '__main__':
     else:
         proxy_dict = {}
        
-    app = model.Application(PyRece)
-    app.MainLoop()
+    c = PyRece()
+    gui.main_loop()
