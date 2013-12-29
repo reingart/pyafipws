@@ -25,7 +25,7 @@ import traceback
 from ConfigParser import SafeConfigParser
 
 # revisar la instalación de pyafip.ws:
-import wsaa, wsfexv1
+import wsfexv1
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
@@ -186,21 +186,6 @@ def escribir(dic, formato):
                 clave, comienzo, valor, str(e)))
     return linea + "\n"
 
-def autenticar(cert, privatekey, url):
-    "Obtener el TA"
-    TA = "TA.xml"
-    ttl = 60*60*5
-    if not os.path.exists(TA) or os.path.getmtime(TA)+(ttl)<time.time():
-        import wsaa
-        tra = wsaa.create_tra(service="wsfex",ttl=ttl)
-        cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
-        ta_string = wsaa.call_wsaa(cms,wsaa_url,trace=DEBUG)
-        open(TA,"w").write(ta_string)
-    ta_string=open(TA).read()
-    ta = SimpleXMLElement(ta_string)
-    token = str(ta.credentials.token)
-    sign = str(ta.credentials.sign)
-    return token, sign
 
 def autorizar(ws, entrada, salida):
     # recupero el último número de transacción
@@ -325,7 +310,7 @@ if __name__ == "__main__":
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')
     else:
-        wsaa_url = wsaa.WSAAURL
+        wsaa_url = None
     if config.has_option('WSFEXv1','URL') and not HOMO:
         wsfexv1_url = config.get('WSFEXv1','URL')
     else:
@@ -370,11 +355,14 @@ if __name__ == "__main__":
                     comienzo += longitud
             sys.exit(0)
 
-        # TODO: esto habría que guardarlo en un archivo y no tener que autenticar cada vez
-        token, sign = autenticar(cert, privatekey, wsaa_url)
-        ws.Token = token
-        ws.Sign = sign
-
+        # obteniendo el TA
+        from wsaa import WSAA
+        wsaa = WSAA()
+        ta = wsaa.Autenticar("wsfex", cert, privatekey, wsaa_url)
+        if not ta:
+            sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
+        ws.SetTicketAcceso(ta)
+        
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             f_entrada = open(entrada,"w")

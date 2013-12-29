@@ -25,7 +25,7 @@ import traceback
 from ConfigParser import SafeConfigParser
 
 # revisar la instalación de pyafip.ws:
-import wsaa, wsfev1
+import wsfev1
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
 
@@ -114,22 +114,6 @@ CMP_ASOC = [
     ]
 
 
-
-def autenticar(cert, privatekey, url, proxy=None):
-    "Obtener el TA"
-    TA = os.path.join(os.path.dirname(cert), "TA.xml")
-    ttl = 60*60*5
-    if not os.path.exists(TA) or os.path.getmtime(TA)+(ttl)<time.time():
-        import wsaa
-        tra = wsaa.create_tra(service="wsfe",ttl=ttl)
-        cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
-        ta_string = wsaa.call_wsaa(cms,wsaa_url,trace=DEBUG, proxy=proxy)
-        open(TA,"w").write(ta_string)
-    ta_string=open(TA).read()
-    ta = SimpleXMLElement(ta_string)
-    token = str(ta.credentials.token)
-    sign = str(ta.credentials.sign)
-    return token, sign
 
 def autorizar(ws, entrada, salida, informar_caea=False):
     tributos = []
@@ -275,7 +259,7 @@ if __name__ == "__main__":
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')
     else:
-        wsaa_url = wsaa.WSAAURL
+        wsaa_url = None
     if config.has_option('WSFEv1','URL') and not HOMO:
         wsfev1_url = config.get('WSFEv1','URL')
     else:
@@ -344,10 +328,14 @@ if __name__ == "__main__":
                     comienzo += longitud
             sys.exit(0)
 
-        token, sign = autenticar(cert, privatekey, wsaa_url, proxy=proxy_dict)
-        ws.Token = token
-        ws.Sign = sign
-        
+        # obteniendo el TA
+        from wsaa import WSAA
+        wsaa = WSAA()
+        ta = wsaa.Autenticar("wsfe", cert, privatekey, wsaa_url, proxy=proxy_dict)
+        if not ta:
+            sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
+        ws.SetTicketAcceso(ta)
+                    
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             tipo_cbte = 1

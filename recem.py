@@ -25,7 +25,7 @@ import traceback
 from ConfigParser import SafeConfigParser
 
 # revisar la instalación de pyafip.ws:
-import wsaa, wsmtx
+import wsmtx
 from php import SimpleXMLElement, SoapClient, SoapFault, date
 
 
@@ -218,21 +218,6 @@ def escribir(dic, formato):
                 clave, comienzo, valor, str(e)))
     return linea + "\n"
 
-def autenticar(cert, privatekey, url):
-    "Obtener el TA"
-    TA = "TA-wsmtx.xml"
-    ttl = 60*60*5
-    if not os.path.exists(TA) or os.path.getmtime(TA)+(ttl)<time.time():
-        import wsaa
-        tra = wsaa.create_tra(service="wsmtxca",ttl=ttl)
-        cms = wsaa.sign_tra(str(tra),str(cert),str(privatekey))
-        ta_string = wsaa.call_wsaa(cms,wsaa_url,trace=DEBUG)
-        open(TA,"w").write(ta_string)
-    ta_string=open(TA).read()
-    ta = SimpleXMLElement(ta_string)
-    token = str(ta.credentials.token)
-    sign = str(ta.credentials.sign)
-    return token, sign
 
 def autorizar(ws, entrada, salida, informar_caea=False):
     tributos = []
@@ -452,7 +437,7 @@ if __name__ == "__main__":
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')
     else:
-        wsaa_url = wsaa.WSAAURL
+        wsaa_url = None
     if config.has_option('WSMTXCA','URL') and not HOMO:
         wsmtxca_url = config.get('WSMTXCA','URL')
     else:
@@ -511,10 +496,14 @@ if __name__ == "__main__":
                     comienzo += longitud
             sys.exit(0)
 
-        token, sign = autenticar(cert, privatekey, wsaa_url)
-        ws.Token = token
-        ws.Sign = sign
-        
+        # obteniendo el TA
+        from wsaa import WSAA
+        wsaa = WSAA()
+        ta = wsaa.Autenticar("wsmtxca", cert, privatekey, wsaa_url)
+        if not ta:
+            sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
+        ws.SetTicketAcceso(ta)
+                
         if '/puntosventa' in sys.argv:
             print "Consultando puntos de venta CAE..."
             print '\n'.join(ws.ConsultarPuntosVentaCAE())
