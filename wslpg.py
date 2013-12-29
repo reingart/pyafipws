@@ -2044,8 +2044,11 @@ if __name__ == '__main__':
             print "WRAPPER", WRAPPER
         # obteniendo el TA
         from wsaa import WSAA
-        ta = WSAA().Autenticar("wslpg", CERT, PRIVATEKEY, wsdl=WSAA_URL, 
+        wsaa = WSAA()
+        ta = wsaa.Autenticar("wslpg", CERT, PRIVATEKEY, wsdl=WSAA_URL, 
                                proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
+        if not ta:
+            sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
 
         # cliente soap del web service
         wslpg = WSLPG()
