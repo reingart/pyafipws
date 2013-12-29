@@ -436,18 +436,10 @@ if __name__ == "__main__":
         wsfexv1 = WSFEXv1()
         # Setear token y sing de autorización (pasos previos)
 
-        # obteniendo el TA
+        # obteniendo el TA para pruebas
         from wsaa import WSAA
-        wsaa = WSAA()
-        tra = wsaa.CreateTRA(service="wsfex")
-        cms = wsaa.SignTRA(tra,"reingart.crt","reingart.key")
-        url = "" # "https://wsaa.afip.gov.ar/ws/services/LoginCms"
-        wsaa.Conectar("", url)
-        ta = wsaa.LoginCMS(cms)
-        # fin TA
-
-        wsfexv1.Token = wsaa.Token
-        wsfexv1.Sign = wsaa.Sign
+        ta = WSAA().Autenticar("wsfex", "reingart.crt", "reingart.key")
+        wsfexv1.SetTicketAcceso(ta)
 
         # CUIT del emisor (debe estar registrado en la AFIP)
         wsfexv1.Cuit = "20267565393"

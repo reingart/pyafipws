@@ -2043,45 +2043,15 @@ if __name__ == '__main__':
             print "CACERT", CACERT
             print "WRAPPER", WRAPPER
         # obteniendo el TA
-        TA = "wslpg-ta.xml"
-        # verifico que el TA exista, no esté vacio, no haya expirado (5hs)
-        # y que no haya sido tramitado antes de la ult. modificación del .ini
-        if (not os.path.exists(TA) or os.path.getsize(TA) == 0  
-            or os.path.getmtime(TA)+(60*60*5) < time.time() 
-            or os.path.getmtime(CONFIG_FILE) > os.path.getmtime(TA)):
-            # Tramito un nuevo Ticket de Acceso:
-            wsaa = WSAA()
-            wsaa.LanzarExcepciones = False
-            tra = wsaa.CreateTRA(service="wslpg")
-            if DEBUG:
-                print tra
-            cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
-            if wsaa.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsaa.Excepcion
-                if DEBUG: print >> sys.stderr, wsaa.Traceback
-                sys.exit(6)
-            try:
-                wsaa.Conectar(wsdl=WSAA_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
-                ta_string = wsaa.LoginCMS(cms)
-                if wsaa.Excepcion:
-                    print >> sys.stderr, "EXCEPCION:", wsaa.Excepcion
-                    if DEBUG: print >> sys.stderr, wsaa.Traceback
-                    sys.exit(6)
-            except Exception, e:
-                print >> sys.stderr, e
-                ta_string = ""
-                sys.exit(7)
-            # guardo el TA en el archivo
-            open(TA,"w").write(ta_string)
-        # leo el TA del archivo, extraigo token y sign:
-        ta_string=open(TA).read()
-        # fin TA
+        from wsaa import WSAA
+        ta = WSAA().Autenticar("wslpg", CERT, PRIVATEKEY, wsdl=WSAA_URL, 
+                               proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
 
         # cliente soap del web service
         wslpg = WSLPG()
         wslpg.LanzarExcepciones = True
         wslpg.Conectar(url=WSLPG_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
-        wslpg.SetTicketAcceso(ta_string)
+        wslpg.SetTicketAcceso(ta)
         wslpg.Cuit = CUIT
 
         if '--dummy' in sys.argv:

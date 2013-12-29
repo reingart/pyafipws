@@ -733,19 +733,12 @@ def main():
 
     DEBUG = '--debug' in sys.argv
 
-    # obteniendo el TA
-    TA = "TA-wsmtxca.xml"
-    if 'wsaa' in sys.argv or not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
-        import wsaa
-        tra = wsaa.create_tra(service="wsmtxca")
-        cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
-        ta_string = wsaa.call_wsaa(cms, trace='--trace' in sys.argv)
-        open(TA,"w").write(ta_string)
-    ta_string=open(TA).read()
-    # fin TA
+    # obteniendo el TA para pruebas
+    from wsaa import WSAA
+    ta = WSAA().Autenticar("wsmtxca", "reingart.crt", "reingart.key")
 
     wsmtxca = WSMTXCA()
-    wsmtxca.SetTicketAcceso(ta_string)
+    wsmtxca.SetTicketAcceso(ta)
     wsmtxca.Cuit = "20267565393"
 
     wsmtxca.Conectar()

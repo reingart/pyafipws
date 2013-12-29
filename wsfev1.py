@@ -758,26 +758,11 @@ def main():
         sys.exit(0)
 
 
-    # obteniendo el TA
-    TA = "TA-wsfe.xml"
-    if 'wsaa' in sys.argv or not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
-        import wsaa
-        tra = wsaa.create_tra(service="wsfe")
-        cms = wsaa.sign_tra(tra,"reingart.crt","reingart.key")
-        url = "" # "https://wsaa.afip.gov.ar/ws/services/LoginCms"
-        ta_string = wsaa.call_wsaa(cms, url)
-        open(TA,"w").write(ta_string)
-    ta_string=open(TA).read()
-    # fin TA
-
-    if '--cuit' in sys.argv:
-        cuit = sys.argv[sys.argv.index("--cuit")+1]
-    else:
-        cuit = "20267565393"
-
-    #wsfev1.Cuit = cuit
-    wsfev1.SetTicketAcceso(ta_string)
-    wsfev1.Cuit = cuit
+    # obteniendo el TA para pruebas
+    from wsaa import WSAA
+    ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key")
+    wsfev1.SetTicketAcceso(ta)
+    wsfev1.Cuit = "20267565393"
     
     if "--prueba" in sys.argv:
         print wsfev1.client.help("FECAESolicitar").encode("latin1")

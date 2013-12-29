@@ -458,7 +458,7 @@ class WSCTG11(BaseWS):
                             ))['consultarProvinciasResponse']
         self.__analizar_errores(ret)
         array = ret.get('arrayProvincias', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % s
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['provincia']['codigo'], 
                      it['provincia']['descripcion']) 
                for it in array]
@@ -613,8 +613,6 @@ if __name__ == '__main__':
     import csv
     from ConfigParser import SafeConfigParser
 
-    import wsaa
-
     try:
     
         if "--version" in sys.argv:
@@ -637,7 +635,7 @@ if __name__ == '__main__':
         if config.has_option('WSAA','URL') and not HOMO:
             wsaa_url = config.get('WSAA','URL')
         else:
-            wsaa_url = wsaa.WSAAURL
+            wsaa_url = None
         if config.has_option('WSCTG','URL') and not HOMO:
             wsctg_url = config.get('WSCTG','URL')
         else:
@@ -656,20 +654,15 @@ if __name__ == '__main__':
             print "Usando Configuración:"
             print "wsaa_url:", wsaa_url
             print "wsctg_url:", wsctg_url
+
         # obteniendo el TA
-        TA = "ctg-ta.xml"
-        if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
-            tra = wsaa.create_tra(service="wsctg")
-            cms = wsaa.sign_tra(tra,CERT,PRIVATEKEY)
-            ta_string = wsaa.call_wsaa(cms, wsaa_url)
-            open(TA,"w").write(ta_string)
-        ta_string=open(TA).read()
-        # fin TA
+        from wsaa import WSAA
+        ta = WSAA().Autenticar("wsctg", CERT, PRIVATEKEY, wsaa_url)
 
         # cliente soap del web service
         wsctg = WSCTG11()
         wsctg.Conectar(wsdl=wsctg_url)
-        wsctg.SetTicketAcceso(ta_string)
+        wsctg.SetTicketAcceso(ta)
         wsctg.Cuit = CUIT
         
         if '--dummy' in sys.argv:
