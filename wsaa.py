@@ -213,7 +213,9 @@ class WSAA(BaseWS):
                 cms = self.SignTRA(tra, crt, key)
                 # concectar con el servicio web:
                 if DEBUG: print "Conectando a WSAA..."
-                self.Conectar(cache, wsdl, proxy, wrapper, cacert)
+                ok = self.Conectar(cache, wsdl, proxy, wrapper, cacert)
+                if not ok or self.Excepcion:
+                    raise RuntimeError(u"Fallo la conexión: %s" % self.Excepcion)
                 # llamar al método remoto para solicitar el TA
                 if DEBUG: print "Llamando WSAA..."
                 ta = self.LoginCMS(cms)
@@ -221,7 +223,10 @@ class WSAA(BaseWS):
                     raise RuntimeError("Ticket de acceso vacio")
                 # grabar el ticket de acceso para poder reutilizarlo luego
                 if DEBUG: print "Grabando TA en %s..." % fn
-                open(fn, "w").write(ta)                   
+                try:
+                    open(fn, "w").write(ta)
+                except IOError as e:
+                    self.Excepcion = u"Imposible grabar ticket de accesso: %s" % fn                
             else:
                 # leer el ticket de acceso del archivo en cache
                 if DEBUG: print "Leyendo TA de %s..." % fn
@@ -306,6 +311,9 @@ if __name__=="__main__":
                 
         else:
             print ta
+        
+        if wsaa.Excepcion:
+            print >> sys.stderr, wsaa.Excepcion
 
         if DEBUG:
             print "Source:", wsaa.ObtenerTagXml('source')
