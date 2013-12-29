@@ -349,30 +349,30 @@ class WSLPG(BaseWS):
     def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert="", timeout=None):
         "Establecer la conexión a los servidores de la AFIP"
         # llamo al constructor heredado:
-        BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
-        
-        # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
-        location = self.client.services['LpgService']['ports']['LpgEndPoint']['location']
-        if location.startswith("http://"):
-            print "Corrigiendo WSDL ...", location,
-            location = location.replace("http://", "https://").replace(":80", ":443")
-            self.client.services['LpgService']['ports']['LpgEndPoint']['location'] = location
-            print location
-        
-        try:
-            # intento abrir el diccionario persistente de localidades
-            import wslpg_datos
-            localidades_db = os.path.join(self.cache, "localidades.dat")
-            # verificar que puede escribir en el dir, sino abrir solo lectura
-            flag = os.access(self.cache, os.W_OK) and 'c' or 'r'
-            wslpg_datos.LOCALIDADES = shelve.open(localidades_db, flag=flag)
-            if DEBUG: print "Localidades en BD:", len(wslpg_datos.LOCALIDADES)
-            self.Traceback = "Localidades en BD: %s" % len(wslpg_datos.LOCALIDADES)
-        except Exception, e:
-            print "ADVERTENCIA: No se pudo abrir la bbdd de localidades:", e
-            self.Excepcion = str(e)
+        ok = BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
+        if ok:        
+            # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
+            location = self.client.services['LpgService']['ports']['LpgEndPoint']['location']
+            if location.startswith("http://"):
+                print "Corrigiendo WSDL ...", location,
+                location = location.replace("http://", "https://").replace(":80", ":443")
+                self.client.services['LpgService']['ports']['LpgEndPoint']['location'] = location
+                print location
             
-        return True
+            try:
+                # intento abrir el diccionario persistente de localidades
+                import wslpg_datos
+                localidades_db = os.path.join(self.cache, "localidades.dat")
+                # verificar que puede escribir en el dir, sino abrir solo lectura
+                flag = os.access(self.cache, os.W_OK) and 'c' or 'r'
+                wslpg_datos.LOCALIDADES = shelve.open(localidades_db, flag=flag)
+                if DEBUG: print "Localidades en BD:", len(wslpg_datos.LOCALIDADES)
+                self.Traceback = "Localidades en BD: %s" % len(wslpg_datos.LOCALIDADES)
+            except Exception, e:
+                print "ADVERTENCIA: No se pudo abrir la bbdd de localidades:", e
+                self.Excepcion = str(e)
+            
+        return ok
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
