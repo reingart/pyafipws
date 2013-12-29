@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.07a"
+__version__ = "2.07b"
 
 import hashlib, datetime, email, os, sys, time, traceback
 from php import date
@@ -186,7 +186,7 @@ class WSAA(BaseWS):
         return now > d
         
 
-    def Autenticar(self, service, crt, key, wsdl=None, proxy=None, cache=None):
+    def Autenticar(self, service, crt, key, wsdl=None, proxy=None, wrapper=None, cacert=None, cache=None):
         "Método unificado para obtener el ticket de acceso (cacheado)"
 
         self.LanzarExcepciones = True
@@ -213,7 +213,7 @@ class WSAA(BaseWS):
                 cms = self.SignTRA(tra, crt, key)
                 # concectar con el servicio web:
                 if DEBUG: print "Conectando a WSAA..."
-                self.Conectar(cache, wsdl, proxy)
+                self.Conectar(cache, wsdl, proxy, wrapper, cacert)
                 # llamar al método remoto para solicitar el TA
                 if DEBUG: print "Llamando WSAA..."
                 ta = self.LoginCMS(cms)
@@ -298,7 +298,7 @@ if __name__=="__main__":
         else:
             proxy = None
 
-        ta = wsaa.Autenticar(service, crt, key, url, proxy)
+        ta = wsaa.Autenticar(service, crt, key, url, proxy, wrapper, cacert)
         if not ta:
             if DEBUG:
                 print >> sys.stderr, wsaa.Traceback
