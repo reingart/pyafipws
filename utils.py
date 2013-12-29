@@ -278,12 +278,16 @@ class BaseWS:
         self.Cuit = cuit
         return True
 
+    @inicializar_y_capturar_excepciones
     def SetTicketAcceso(self, ta_string):
         "Establecer el token y sign desde un ticket de acceso XML"
-        ta = SimpleXMLElement(ta_string)
-        self.Token = str(ta.credentials.token)
-        self.Sign = str(ta.credentials.sign)
-        return True
+        if ta_string:
+            ta = SimpleXMLElement(ta_string)
+            self.Token = str(ta.credentials.token)
+            self.Sign = str(ta.credentials.sign)
+            return True
+        else:
+            raise RuntimeError("Ticket de Acceso vacio!")
 
     def SetParametro(self, clave, valor):
         "Establece un parámetro de entrada (a usarse en llamada posterior)"
