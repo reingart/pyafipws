@@ -195,7 +195,7 @@ class WSAA(BaseWS):
             for filename in (crt, key):
                 if not os.access(filename,os.R_OK):
                     raise RuntimeError("Imposible abrir %s\n" % filename)
-            # creo el nombre para almacenar el TA ... 
+            # creo el nombre para el archivo del TA (según credenciales y ws) 
             fn = "TA-%s.xml" % hashlib.md5(service + crt + key).hexdigest()
             if cache:
                 fn = os.path.join(cache, fn)
@@ -203,7 +203,7 @@ class WSAA(BaseWS):
                 fn = os.path.join(self.InstallDir, "cache", fn)
 
             # leer el ticket de acceso (si fue previamente solicitado)
-            if not os.path.exists(fn) or \
+            if not os.path.exists(fn) or os.path.getsize(TA) == 0 or \
                os.path.getmtime(fn) + (DEFAULT_TTL) < time.time():    
                 # ticket de acceso (TA) vencido, crear un nuevo req. (TRA) 
                 if DEBUG: print "Creando TRA..."
