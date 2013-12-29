@@ -548,12 +548,6 @@ class PyRece(gui.Controller):
         except Exception, e:
             self.error(u'Excepción',unicode(e))
 
-    def on_menuArchivoDiseniador_select(self, event):
-        # TODO: no funciona porque PythonCard aparentemente no importa el mismo namespace de wx
-        from pyfpdf_hg.designer import AppFrame
-        frame = AppFrame()
-        frame.Show(1)
-
     def on_btnAutorizar_mouseClick(self, event):
         self.verifica_ws()
         try:
@@ -920,10 +914,6 @@ class PyRece(gui.Controller):
         except Exception, e:
             print e
             self.error(u'Excepción', unicode(str(e), 'latin1', 'ignore'))
-
-    def on_btnGenerar_mouseClick(self, event):
-        for item in self.items:
-            archivo = self.generar_factura(item)
 
     def on_btnEnviar_mouseClick(self, event):
         try:
