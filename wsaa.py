@@ -203,7 +203,7 @@ class WSAA(BaseWS):
                 fn = os.path.join(self.InstallDir, "cache", fn)
 
             # leer el ticket de acceso (si fue previamente solicitado)
-            if not os.path.exists(fn) or os.path.getsize(TA) == 0 or \
+            if not os.path.exists(fn) or os.path.getsize(fn) == 0 or \
                os.path.getmtime(fn) + (DEFAULT_TTL) < time.time():    
                 # ticket de acceso (TA) vencido, crear un nuevo req. (TRA) 
                 if DEBUG: print "Creando TRA..."
