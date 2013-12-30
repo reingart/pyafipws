@@ -33,6 +33,7 @@
                   'pos': (20, 243),
                   'size': (534, 212),
                   'type': 'TextBox',
+                  'multiline': True,
                   'value': u'\n'},
                  {'name': 'lblProgreso',
                   'pos': (20, 194),
