@@ -137,11 +137,13 @@ class PyRece(gui.Controller):
 
         
         # deshabilito ordenar
-        self.components.lvwListado.GetColumnSorter = lambda: lambda x,y: 0
+        ##self.components.lvwListado.GetColumnSorter = lambda: lambda x,y: 0
 
     def set_cols(self, cols):
         self.__cols = cols
-        self.components.lvwListado.columnHeadings = [col.replace("_"," ").title() for col in cols]
+        lv = self.components.lvwListado
+        for col in cols:
+            ch = gui.ListColumn(lv, name=col, text=col.replace("_"," ").title(), align="left")
     def get_cols(self):
         return self.__cols
     cols = property(get_cols, set_cols)
@@ -502,6 +504,7 @@ class PyRece(gui.Controller):
             self.items = items
         except Exception,e:
                 self.error(u'Excepción',unicode(e))
+                ##raise
 
     def on_menuArchivoGuardar_select(self, event):
             filename = entrada
