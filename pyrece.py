@@ -167,15 +167,12 @@ class PyRece(gui.Controller):
     items = property(get_items, set_items)
 
     def get_selected_items(self):
-        itemidx = -1
-        itemidx = self.components.lvwListado.GetNextItem(itemidx, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        while itemidx >= 0:
-            yield itemidx, self.__items[itemidx]
-            itemidx = self.components.lvwListado.GetNextItem(itemidx, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
+        for it in self.components.lvwListado.get_selected_items():
+            yield it.index, it
 
     def set_selected_items(self, selected):
-        for itemidx in selected:
-            self.components.lvwListado.Select(itemidx, on=True)
+        for it in selected:
+            it.selected = True
 
     def set_paths(self, paths):
         self.__paths = paths
@@ -204,6 +201,7 @@ class PyRece(gui.Controller):
                 
     def progreso(self, value):
         if self.items:
+            import pdb; pdb.set_trace()
             per = (value+1)/float(len(self.items))*100
             self.components.pbProgreso.value = per
             wx.SafeYield()
@@ -563,7 +561,7 @@ class PyRece(gui.Controller):
             selected = []
             for i, item in self.get_selected_items():
                 kargs = item.copy()
-                selected.append(i)
+                selected.append(item)
                 kargs['cbt_desde'] = kargs['cbt_hasta'] = kargs ['cbt_numero']
                 for key in kargs:
                     if isinstance(kargs[key], basestring):
@@ -709,7 +707,7 @@ class PyRece(gui.Controller):
                 for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
                     if kargs.get(k):
                         item[k] = kargs[k]
-                self.items[i] = item
+                #self.items[i] = item
                 self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 procesadas += 1
                 if kargs['resultado'] == "R":
