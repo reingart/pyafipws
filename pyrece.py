@@ -725,7 +725,7 @@ class PyRece(gui.Controller):
                     'Rechazadas: %d' % (procesadas, ok, rechazadas), 
                     u'Autorización')
             self.grabar()
-        except (SoapFault, wsfev1.SoapFault),e:
+        except SoapFault, e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
         except wsfe.WSFEError,e:
             self.error(e.code, e.msg.encode("ascii","ignore"))
