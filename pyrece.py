@@ -187,6 +187,7 @@ class PyRece(gui.Controller):
     def log(self, msg):
         if not isinstance(msg, unicode):
             msg = unicode(msg, "latin1","ignore")
+        print "LOG", msg
         self.components.txtEstado.text = msg + u"\n" + self.components.txtEstado.text
         wx.SafeYield()
         f = None
@@ -375,17 +376,17 @@ class PyRece(gui.Controller):
         self.verifica_ws()
         self.components.txtEstado.text = u"XmlRequest:\n%s\n\nXmlResponse:\n%s" % (
             self.ws.xml_request, self.ws.xml_response)
-        self.size = (592, 517)
+        self.component.size = (592, 517)
 
     def on_menuAyudaVerEstado_select(self, event):
-        if self.size[1]<517:
-            self.size = (592, 517)
+        if self.component.size[1]<517:
+            self.component.size = (592, 517)
         else:
-            self.size = (592, 265)
+            self.component.size = (592, 265)
     
     def on_menuAyudaVerConfiguracion_select(self, event):
         self.components.txtEstado.text = open(CONFIG_FILE).read()
-        self.size = (592, 517)
+        self.component.size = (592, 517)
         
     def on_cboWebservice_select(self, event):
         self.webservice = self.components.cboWebservice.stringSelection
@@ -403,7 +404,6 @@ class PyRece(gui.Controller):
 
     def on_btnAutenticar_mouseClick(self, event):
         try:
-
             if self.webservice in ('wsfe', ):
                 service = "wsfe"
             elif self.webservice in ('wsfev1', ):
