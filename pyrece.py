@@ -250,14 +250,14 @@ class PyRece(gui.Controller):
         result = gui.single_choice(options, "Tipo de comprobante",
                                    u"Consulta Último Nro. Comprobante", 
                 )
-        if not result.accepted:
+        if not result:
             return
-        tipocbte = [k for k,v in self.tipos.items() if v==result.selection][0]
+        tipocbte = [k for k,v in self.tipos.items() if v==result][0]
         result = gui.prompt(u"Punto de venta",
             u"Consulta Último Nro. Comprobante", '2')
-        if not result.accepted:
+        if not result:
             return
-        ptovta = result.text
+        ptovta = result
 
         try:
             if self.webservice=="wsfe":
@@ -286,19 +286,19 @@ class PyRece(gui.Controller):
         result = gui.single_choice(options, "Tipo de comprobante",
             u"Consulta Comprobante", 
                 )
-        if not result.accepted:
+        if not result:
             return
-        tipocbte = [k for k,v in self.tipos.items() if v==result.selection][0]
+        tipocbte = [k for k,v in self.tipos.items() if v==result][0]
         result = gui.prompt(u"Punto de venta",
             u"Consulta Comprobante", '2')
-        if not result.accepted:
+        if not result:
             return
-        ptovta = result.text
+        ptovta = result
         result = gui.prompt(u"Nº de comprobante",
             u"Consulta Comprobante", '2')
-        if not result.accepted:
+        if not result:
             return
-        nrocbte = result.text
+        nrocbte = result
 
         try:
             if self.webservice=="wsfe":
@@ -462,9 +462,9 @@ class PyRece(gui.Controller):
             wildcard.sort(reverse=True)
 
         result = gui.select_file('Abrir', '', filename, '|'.join(wildcard))
-        if not result.accepted:
+        if not result:
             return
-        self.paths = result.paths
+        self.paths = result
 
     def on_menuArchivoAbrir_select(self, event):
         self.examinar()
@@ -520,9 +520,9 @@ class PyRece(gui.Controller):
                 path = salida
             result = gui.save_file(title='Guardar', filename=path, 
                 wildcard='|'.join(wildcard))
-            if not result.accepted:
+            if not result:
                 return
-            fn = result.paths[0]
+            fn = result[0]
             self.grabar(fn)
             
 
