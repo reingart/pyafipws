@@ -155,7 +155,7 @@ class BaseWS:
         self.xml = self.client = self.Log = None
         self.params_in = {}
         self.inicializar()
-        self.Token = self.Sign = None
+        self.Token = self.Sign = ""
         self.LanzarExcepciones = True
     
     def inicializar(self):
