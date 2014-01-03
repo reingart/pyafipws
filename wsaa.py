@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.07b"
+__version__ = "2.07c"
 
 import hashlib, datetime, email, os, sys, time, traceback
 from php import date
@@ -225,7 +225,7 @@ class WSAA(BaseWS):
                 if DEBUG: print "Grabando TA en %s..." % fn
                 try:
                     open(fn, "w").write(ta)
-                except IOError as e:
+                except IOError, e:
                     self.Excepcion = u"Imposible grabar ticket de accesso: %s" % fn                
             else:
                 # leer el ticket de acceso del archivo en cache
