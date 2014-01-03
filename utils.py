@@ -202,6 +202,8 @@ class BaseWS:
                 self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
             except:
                 self.Excepcion = u"<no disponible>"
+            if self.LanzarExcepciones:
+                raise
             return False
 
     def log(self, msg):

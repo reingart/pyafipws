@@ -186,7 +186,7 @@ class WSAA(BaseWS):
         return now > d
         
 
-    def Autenticar(self, service, crt, key, wsdl=None, proxy=None, wrapper=None, cacert=None, cache=None):
+    def Autenticar(self, service, crt, key, wsdl=None, proxy=None, wrapper=None, cacert=None, cache=None, debug=False):
         "Método unificado para obtener el ticket de acceso (cacheado)"
 
         self.LanzarExcepciones = True
@@ -220,7 +220,7 @@ class WSAA(BaseWS):
                 if DEBUG: print "Llamando WSAA..."
                 ta = self.LoginCMS(cms)
                 if not ta:
-                    raise RuntimeError("Ticket de acceso vacio")
+                    raise RuntimeError("Ticket de acceso vacio: %s" % WSAA.Excepcion)
                 # grabar el ticket de acceso para poder reutilizarlo luego
                 if DEBUG: print "Grabando TA en %s..." % fn
                 try:
@@ -242,7 +242,7 @@ class WSAA(BaseWS):
                 self.Excepcion = traceback.format_exception_only(sys.exc_type, 
                                                           sys.exc_value)[0]
                 self.Traceback = ""
-            if DEBUG:
+            if DEBUG or debug:
                 raise
         return ta
     
