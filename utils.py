@@ -346,14 +346,14 @@ def leer(linea, formato):
                 valor = None        # nulo
             elif tipo == N:
                 if valor:
-                    valor = int(valor)
+                    valor = long(valor)
                 else:
                     valor = 0
             elif tipo == I:
                 if valor:
                     try:
                         valor = valor.strip(" ")
-                        valor = float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
+                        valor = float(("%%s.%%0%sd" % dec) % (long(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
                     except ValueError:
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
@@ -386,9 +386,9 @@ def escribir(dic, formato):
             else:
                 valor = str(s)
             if tipo == N and valor and valor!="NULL":
-                valor = ("%%0%dd" % longitud) % int(valor)
+                valor = ("%%0%dd" % longitud) % long(valor)
             elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % int(float(valor)*(10**dec))
+                valor = ("%%0%dd" % longitud) % long(float(valor)*(10**dec))
             else:
                 valor = ("%%-0%ds" % longitud) % valor
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
