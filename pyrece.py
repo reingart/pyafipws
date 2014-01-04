@@ -458,10 +458,10 @@ class PyRece(gui.Controller):
         if entrada.endswith("xml"):
             wildcard.sort(reverse=True)
 
-        result = gui.select_file('Abrir', '', filename, '|'.join(wildcard))
+        result = gui.open_file('Abrir', '', filename, '|'.join(wildcard))
         if not result:
             return
-        self.paths = result
+        self.paths = [result]
 
     def on_menuArchivoAbrir_select(self, event):
         self.examinar()
@@ -490,7 +490,7 @@ class PyRece(gui.Controller):
                     regs = formato_json.leer(fn)
                     items.extend(formato_csv.aplanar(regs))
                 else:
-                    self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
+                    self.error(u'Formato de archivo desconocido: %s', unicode(fn))
             if len(items) < 2:
                 gui.alert(u'El archivo no tiene datos válidos', 'Advertencia')
             cols = items and [str(it).strip() for it in items[0]] or []
