@@ -142,6 +142,9 @@ class PyRece(gui.Controller):
     def set_cols(self, cols):
         self.__cols = cols
         lv = self.components.lvwListado
+        # remove old columns:
+        lv.clear_all()
+        # insert new columns
         for col in cols:
             ch = gui.ListColumn(lv, name=col, text=col.replace("_"," ").title(), align="left")
     def get_cols(self):
