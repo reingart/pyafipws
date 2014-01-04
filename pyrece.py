@@ -201,7 +201,6 @@ class PyRece(gui.Controller):
                 
     def progreso(self, value):
         if self.items:
-            import pdb; pdb.set_trace()
             per = (value+1)/float(len(self.items))*100
             self.components.pbProgreso.value = per
             wx.SafeYield()
@@ -717,7 +716,7 @@ class PyRece(gui.Controller):
                 self.progreso(i)
             self.items = self.items 
             self.set_selected_items(selected)
-            self.progreso(len(self.items))
+            self.progreso(len(self.items) - 1)
             gui.alert(u'Proceso finalizado, procesadas %d\n\n'
                     'Aceptadas: %d\n'
                     'Rechazadas: %d' % (procesadas, ok, rechazadas), 
