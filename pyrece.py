@@ -17,6 +17,10 @@ __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.26a"
 
+import wxversion
+wxversion.select("2.8")
+import wx
+
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -107,7 +111,7 @@ class PyRece(gui.Controller):
         if entrada and os.path.exists(entrada):
             self.cargar()
         
-        self.components.cboWebservice.stringSelection = DEFAULT_WEBSERVICE
+        self.components.cboWebservice.string_selection = DEFAULT_WEBSERVICE
         self.on_cboWebservice_select(event)
         
         self.tipos = {
@@ -180,7 +184,7 @@ class PyRece(gui.Controller):
 
     def set_paths(self, paths):
         self.__paths = paths
-        self.components.txtArchivo.text = ', '.join([fn for fn in paths])
+        self.components.txtArchivo.value = ', '.join([fn for fn in paths])
     def get_paths(self):
         return self.__paths
     paths = property(get_paths, set_paths)
@@ -189,7 +193,7 @@ class PyRece(gui.Controller):
         if not isinstance(msg, unicode):
             msg = unicode(msg, "latin1","ignore")
         print "LOG", msg
-        self.components.txtEstado.text = msg + u"\n" + self.components.txtEstado.text
+        self.components.txtEstado.value = msg + u"\n" + self.components.txtEstado.value
         wx.SafeYield()
         f = None
         try:
@@ -371,11 +375,11 @@ class PyRece(gui.Controller):
         gui.alert(text, u'Instructivo de PyRece')
 
     def on_menuAyudaLimpiar_select(self, event):
-        self.components.txtEstado.text = ""
+        self.components.txtEstado.value = ""
 
     def on_menuAyudaMensajesXML_select(self, event):
         self.verifica_ws()
-        self.components.txtEstado.text = u"XmlRequest:\n%s\n\nXmlResponse:\n%s" % (
+        self.components.txtEstado.value = u"XmlRequest:\n%s\n\nXmlResponse:\n%s" % (
             self.ws.xml_request, self.ws.xml_response)
         self.component.size = (592, 517)
 
@@ -386,11 +390,11 @@ class PyRece(gui.Controller):
             self.component.size = (592, 265)
     
     def on_menuAyudaVerConfiguracion_select(self, event):
-        self.components.txtEstado.text = open(CONFIG_FILE).read()
+        self.components.txtEstado.value = open(CONFIG_FILE).read()
         self.component.size = (592, 517)
         
     def on_cboWebservice_select(self, event):
-        self.webservice = self.components.cboWebservice.stringSelection
+        self.webservice = self.components.cboWebservice.string_selection
         self.ws = None
         self.token = None
         self.sign = None
