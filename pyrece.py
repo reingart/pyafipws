@@ -17,6 +17,7 @@ __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.26a"
 
+
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
 import os
@@ -709,7 +710,7 @@ class PyRece(gui.Controller):
                 for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
                     if kargs.get(k):
                         item[k] = kargs[k]
-                #self.items[i] = item
+                self.items[i] = item
                 self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 procesadas += 1
                 if kargs['resultado'] == "R":
