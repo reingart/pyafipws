@@ -101,7 +101,7 @@ def digito_verificador_modulo10(codigo):
     
 class PyRece(gui.Controller):
 
-    def on_initialize(self, event):
+    def on_load(self, event):
         self.cols = []
         self.items = []
         self.paths = [entrada]
@@ -112,7 +112,7 @@ class PyRece(gui.Controller):
             self.cargar()
         
         self.components.cboWebservice.string_selection = DEFAULT_WEBSERVICE
-        self.on_cboWebservice_select(event)
+        self.on_cboWebservice_click(event)
         
         self.tipos = {
             1:u"Factura A",
@@ -226,11 +226,11 @@ class PyRece(gui.Controller):
             gui.alert("Debe autenticarse con AFIP!", 'Advertencia')
             raise RuntimeError()
 
-    def on_btnMarcarTodo_mouseClick(self, event):
+    def on_btnMarcarTodo_click(self, event):
         for i in range(len(self.__items)):
             self.components.lvwListado.SetSelection(i)
 
-    def on_menuConsultasDummy_select(self, event):
+    def on_menuConsultasDummy_click(self, event):
         ##self.verifica_ws()
         try:
             if self.webservice=="wsfe":
@@ -250,7 +250,7 @@ class PyRece(gui.Controller):
         except Exception, e:
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
-    def on_menuConsultasLastCBTE_select(self, event):
+    def on_menuConsultasLastCBTE_click(self, event):
         ##self.verifica_ws()
         options = [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])]
         result = gui.single_choice(options, "Tipo de comprobante",
@@ -286,7 +286,7 @@ class PyRece(gui.Controller):
         except Exception, e:
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
-    def on_menuConsultasGetCAE_select(self, event):
+    def on_menuConsultasGetCAE_click(self, event):
         self.verifica_ws()
         options = [v for k,v in sorted([(k,v) for k,v in self.tipos.items()])]
         result = gui.single_choice(options, "Tipo de comprobante",
@@ -343,7 +343,7 @@ class PyRece(gui.Controller):
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
 
-    def on_menuConsultasLastID_select(self, event):
+    def on_menuConsultasLastID_click(self, event):
         ##self.verifica_ws()
         try:
             if self.webservice=="wsfe":
@@ -366,34 +366,34 @@ class PyRece(gui.Controller):
             self.error(u'Excepción',unicode(e))
 
 
-    def on_menuAyudaAcercaDe_select(self, event):
+    def on_menuAyudaAcercaDe_click(self, event):
         text = ACERCA_DE
         gui.alert(text, u'Acerca de PyRece Versión %s' % __version__)
 
-    def on_menuAyudaInstructivo_select(self, event):
+    def on_menuAyudaInstructivo_click(self, event):
         text = INSTRUCTIVO
         gui.alert(text, u'Instructivo de PyRece')
 
-    def on_menuAyudaLimpiar_select(self, event):
+    def on_menuAyudaLimpiar_click(self, event):
         self.components.txtEstado.value = ""
 
-    def on_menuAyudaMensajesXML_select(self, event):
+    def on_menuAyudaMensajesXML_click(self, event):
         self.verifica_ws()
         self.components.txtEstado.value = u"XmlRequest:\n%s\n\nXmlResponse:\n%s" % (
             self.ws.xml_request, self.ws.xml_response)
         self.component.size = (592, 517)
 
-    def on_menuAyudaVerEstado_select(self, event):
+    def on_menuAyudaVerEstado_click(self, event):
         if self.component.size[1]<517:
             self.component.size = (592, 517)
         else:
             self.component.size = (592, 265)
     
-    def on_menuAyudaVerConfiguracion_select(self, event):
+    def on_menuAyudaVerConfiguracion_click(self, event):
         self.components.txtEstado.value = open(CONFIG_FILE).read()
         self.component.size = (592, 517)
         
-    def on_cboWebservice_select(self, event):
+    def on_cboWebservice_click(self, event):
         self.webservice = self.components.cboWebservice.string_selection
         self.ws = None
         self.token = None
@@ -407,7 +407,7 @@ class PyRece(gui.Controller):
         elif self.webservice == "wsfexv1":
             self.ws = wsfexv1.WSFEXv1()
 
-    def on_btnAutenticar_mouseClick(self, event):
+    def on_btnAutenticar_click(self, event):
         try:
             if self.webservice in ('wsfe', ):
                 service = "wsfe"
@@ -471,11 +471,11 @@ class PyRece(gui.Controller):
             return
         self.paths = [result]
 
-    def on_menuArchivoAbrir_select(self, event):
+    def on_menuArchivoAbrir_click(self, event):
         self.examinar()
         self.cargar()
 
-    def on_menuArchivoCargar_select(self, event):
+    def on_menuArchivoCargar_click(self, event):
         self.cargar()
         
     def cargar(self):
@@ -511,7 +511,7 @@ class PyRece(gui.Controller):
                 self.error(u'Excepción',unicode(e))
                 ##raise
 
-    def on_menuArchivoGuardar_select(self, event):
+    def on_menuArchivoGuardar_click(self, event):
             filename = entrada
             wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
                         "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
@@ -558,7 +558,7 @@ class PyRece(gui.Controller):
         except Exception, e:
             self.error(u'Excepción',unicode(e))
 
-    def on_btnAutorizar_mouseClick(self, event):
+    def on_btnAutorizar_click(self, event):
         self.verifica_ws()
         try:
             ok = procesadas = rechazadas = 0
@@ -744,7 +744,7 @@ class PyRece(gui.Controller):
                     print self.ws.XmlRequest
                     print self.ws.XmlResponse
 
-    def on_btnAutorizarLote_mouseClick(self, event):
+    def on_btnAutorizarLote_click(self, event):
         self.verifica_ws()
         if not self.items: return
         try:
@@ -915,7 +915,7 @@ class PyRece(gui.Controller):
         except Exception, e:
             self.error(u'Excepción',unicode(e))
 
-    def on_btnPrevisualizar_mouseClick(self, event):
+    def on_btnPrevisualizar_click(self, event):
         try:
             j = 0
             for i, item in self.get_selected_items():
@@ -925,7 +925,7 @@ class PyRece(gui.Controller):
             print e
             self.error(u'Excepción', unicode(str(e), 'latin1', 'ignore'))
 
-    def on_btnEnviar_mouseClick(self, event):
+    def on_btnEnviar_click(self, event):
         try:
             ok = no = 0
             self.progreso(0)
