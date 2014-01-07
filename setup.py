@@ -21,6 +21,7 @@ import sys
 import pyafipws
 import wsaa
 import wsfev1, rece1
+import wsfexv1, recex1
 import wsmtx, recem
 
 # parametros para setup:
@@ -33,7 +34,7 @@ long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"
              "ARBA (Remito Electrónico)")
 
 data_files = [
-    (".", ["licencia.txt", "geotrust.crt"]),
+    (".", ["licencia.txt", "rece.ini.dist", "geotrust.crt"]),
     ("cache", glob.glob("cache/*")),
     ]
 
@@ -99,6 +100,15 @@ if 'py2exe' in sys.argv:
             ]             
         if wsfev1.TYPELIB:
             data_files.append((".", ["wsfev1.tlb"]))
+
+    if 'wsfexv1' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsfexv1, modules="wsfexv1", create_exe=True, create_dll=True)
+            ]
+        kwargs['console'] += [
+            Target(module=wsfexv1, script='wsfexv1.py', dest_base="wsfexv1_cli"), 
+            Target(module=recex1, script='recex1.py'), 
+            ]
     
     if 'wsmtx' in globals():
         kwargs['com_server'] += [
