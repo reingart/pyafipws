@@ -31,7 +31,10 @@ opts = {
     }}
 
 data_files = [
-    (".", ["licencia.txt"]),
+    (".", ["licencia.txt", 
+           "TB_20111111112_000000_20080124_000001.txt", "TB_20111111112_000000_20080124_000001.xml",
+		   "TB_20111111112_000000_20101229_000001.txt", "TB_20111111112_000000_20101229_000001.xml",
+		   ]),
     ]
 
 import cot
@@ -48,6 +51,8 @@ setup(
     license="GNU GPL v3",
     com_server = [Target(module=cot,modules="cot")],
     console=[Target(module=cot, script='cot.py', dest_base="cot_cli"), 
+             ],
+    windows=[Target(module=cot, script='cot.pyw', dest_base="cot_win"), 
              ],
     options=opts,
     data_files = data_files,
