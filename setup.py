@@ -25,6 +25,7 @@ import wsfexv1, recex1
 import wsmtx, recem
 import wsctg11
 import wslpg
+import wscoc
 
 # parametros para setup:
 kwargs = {}
@@ -150,7 +151,15 @@ if 'py2exe' in sys.argv:
            "liquidacion_wslpg_ajuste_debcred.csv",
            "liquidacion_wslpg_ajuste_debcred.png",
             ])
-        
+    
+    if 'wscoc' in globals():
+        kwargs['com_server'] += [
+            Target(module=wscoc,modules="wscoc"),
+            ]
+        kwargs['console'] += [
+            Target(module=wscoc, script='wscoc.py', dest_base="wscoc_cli"),
+            ]
+            
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
 
