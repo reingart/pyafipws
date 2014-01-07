@@ -27,6 +27,7 @@ import wsctg11
 import wslpg
 import wscoc
 import wscdc
+import cot
 
 # parametros para setup:
 kwargs = {}
@@ -168,6 +169,23 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wscdc, script='wscdc.py', dest_base="wscdc_cli"),
             ]
+
+    if 'cot' in globals():
+        kwargs['com_server'] += [
+            Target(module=cot,modules="cot")
+            ]
+        kwargs['console'] += [
+            Target(module=cot, script='cot.py', dest_base="cot_cli")
+            ]
+        kwargs['windows'] += [
+            Target(module=cot, script='cot.pyw', dest_base="cot_win"), 
+            ]
+        data_files.extend([
+            "TB_20111111112_000000_20080124_000001.txt", 
+            "TB_20111111112_000000_20080124_000001.xml",
+            "TB_20111111112_000000_20101229_000001.txt", 
+            "TB_20111111112_000000_20101229_000001.xml",
+            ])    
 
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
