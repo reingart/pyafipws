@@ -45,7 +45,12 @@ data_files = [
     (".", ["licencia.txt", "wslpg.ini", 
            "wslpg_aut_test.xml", "afip_ca_info.crt",
            "liquidacion_form_c1116b_wslpg.csv",
-           "liquidacion_form_c1116b_wslpg.png", ]),
+           "liquidacion_form_c1116b_wslpg.png",
+           "liquidacion_wslpg_ajuste_base.csv",
+           "liquidacion_wslpg_ajuste_base.png",
+           "liquidacion_wslpg_ajuste_debcred.csv",
+           "liquidacion_wslpg_ajuste_debcred.png",
+          ]),
 	("cache", glob.glob("cache/*")),
     ]
 
@@ -61,12 +66,12 @@ setup(
     author_email="reingart@gmail.com",
     url="http://www.sistemasagiles.com.ar",
     license="GNU GPL v3",
-    com_server = [Target(module=wsaa, modules='wsaa', create_exe=False, create_dll=True),
+    com_server = [Target(module=wsaa, modules='wsaa'),
                   Target(module=wslpg, modules="wslpg")],
     console=[Target(module=wslpg, script='wslpg.py', dest_base="wslpg_cli"), 
              Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")
              ],
-    windows=[Target(module=wsaa, script="wsaa.py", dest_base="wsaa")],
+    #windows=[Target(module=wsaa, script="wsaa.py", dest_base="wsaa")],
     options=opts,
     data_files = data_files,
     cmdclass = {"py2exe": build_installer}
