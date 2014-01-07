@@ -28,6 +28,7 @@ import wslpg
 import wscoc
 import wscdc
 import cot
+import trazamed
 
 # parametros para setup:
 kwargs = {}
@@ -186,6 +187,17 @@ if 'py2exe' in sys.argv:
             "TB_20111111112_000000_20101229_000001.txt", 
             "TB_20111111112_000000_20101229_000001.xml",
             ])    
+
+    if 'trazamed' in globals():
+        kwargs['com_server'] += [
+            Target(module=trazamed, modules="trazamed", create_exe=not trazamed.TYPELIB, create_dll=not trazamed.TYPELIB),
+            ]
+        kwargs['console'] += [
+            Target(module=trazamed, script='trazamed.py', dest_base="trazamed_cli"), 
+            ]
+        if wsaa.TYPELIB:
+            kwargs['windows'] += [Target(module=trazamed, script="trazamed.py", dest_base="trazamed")]
+            data_files.append((".", ["trazamed.tlb"]))
 
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
