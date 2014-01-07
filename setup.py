@@ -21,6 +21,7 @@ import sys
 import pyafipws
 import wsaa
 import wsfev1, rece1
+import wsmtx, recem
 
 # parametros para setup:
 kwargs = {}
@@ -90,7 +91,7 @@ if 'py2exe' in sys.argv:
 
     if 'wsfev1' in globals():
         kwargs['com_server'] += [
-            Target(module=wsfev1,modules="wsfev1", create_exe=True, create_dll=not wsfev1.TYPELIB)
+            Target(module=wsfev1, modules="wsfev1", create_exe=True, create_dll=not wsfev1.TYPELIB)
             ]
         kwargs['console'] += [
             Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
@@ -99,6 +100,15 @@ if 'py2exe' in sys.argv:
         if wsfev1.TYPELIB:
             data_files.append((".", ["wsfev1.tlb"]))
     
+    if 'wsmtx' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsmtx, modules="wsmtx", create_exe=True, create_dll=True)
+            ]
+        kwargs['console'] += [
+            Target(module=wsmtx, script='wsmtx.py', dest_base="wsmtx_cli"), 
+            Target(module=recem, script='recem.py'), 
+            ]             
+
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
 
