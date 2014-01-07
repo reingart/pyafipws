@@ -76,6 +76,7 @@ if 'py2exe' in sys.argv:
     desc = "Instalador PyAfipWs %s"
     kwargs['com_server'] = []
     kwargs['console'] = []
+    kwargs['windows'] = []
     
     # legacy webservices & utilities:
     if 'pyafipws' in globals():
@@ -84,21 +85,24 @@ if 'py2exe' in sys.argv:
 
     # new webservices:
     if 'wsaa' in globals():
-        kwargs['com_server'] += [Target(module=wsaa, modules='wsaa', create_exe=True, create_dll=True)]
+        kwargs['com_server'] += [Target(module=wsaa, modules='wsaa', create_exe=not wsaa.TYPELIB, create_dll=not wsaa.TYPELIB)]
         kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")]
         if wsaa.TYPELIB:
+            kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
             data_files.append((".", ["wsaa.tlb"]))
+            
         __version__ += (wsaa.HOMO and '-homo' or '-full')
 
     if 'wsfev1' in globals():
         kwargs['com_server'] += [
-            Target(module=wsfev1, modules="wsfev1", create_exe=True, create_dll=not wsfev1.TYPELIB)
+            Target(module=wsfev1, modules="wsfev1", create_exe=not wsfev1.TYPELIB, create_dll=not wsfev1.TYPELIB)
             ]
         kwargs['console'] += [
             Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
             Target(module=rece1, script='rece1.py'), 
             ]             
         if wsfev1.TYPELIB:
+            kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
             data_files.append((".", ["wsfev1.tlb"]))
 
     if 'wsfexv1' in globals():
