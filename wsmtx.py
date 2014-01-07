@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10a"
+__version__ = "1.10b"
 
 import datetime
 import decimal
@@ -189,10 +189,10 @@ class WSMTXCA(BaseWS):
                 'cod_mtx': cod_mtx,
                 'codigo': codigo,                
                 'ds': ds,
-                'qty': umed!=99 and qty or None,
+                'qty': qty if umed!=99 else None,
                 'umed': umed,
-                'precio': umed!=99 and precio or None,
-                'bonif': umed!=99 and bonif or None,
+                'precio': precio if umed!=99 else None,
+                'bonif': bonif if umed!=99 else None,
                 'iva_id': iva_id,
                 'imp_iva': imp_iva,
                 'imp_subtotal': imp_subtotal,
@@ -751,7 +751,7 @@ def main():
         print "AuthServerStatus", wsmtxca.AuthServerStatus
     
     if "--prueba" in sys.argv:
-        print wsmtxca.client.help("autorizarComprobante").encode("latin1")
+        ##print wsmtxca.client.help("autorizarComprobante").encode("latin1")
         try:
             tipo_cbte = 1
             punto_vta = 4000
@@ -808,6 +808,10 @@ def main():
             
             wsmtxca.AgregarItem(None, None, None, 'bonificacion', 0, 99, 1, None, 
                         5, -21, -121)
+
+            wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, 1, umed, 0, 0, iva_id, 0, 0)
+            
+            print wsmtxca.factura
             
             wsmtxca.AutorizarComprobante()
 
@@ -815,17 +819,22 @@ def main():
             print "CAE", wsmtxca.CAE
             print "Vencimiento", wsmtxca.Vencimiento
             
+            print wsmtxca.Excepcion
+            print wsmtxca.ErrMsg
+            
             cae = wsmtxca.CAE
             
-            wsmtxca.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
-            print "CAE consulta", wsmtxca.CAE, wsmtxca.CAE==cae 
-            print "NRO consulta", wsmtxca.CbteNro, wsmtxca.CbteNro==cbte_nro 
-            print "TOTAL consulta", wsmtxca.ImpTotal, wsmtxca.ImpTotal==imp_total
+            if cae:
+                
+                wsmtxca.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
+                print "CAE consulta", wsmtxca.CAE, wsmtxca.CAE==cae 
+                print "NRO consulta", wsmtxca.CbteNro, wsmtxca.CbteNro==cbte_nro 
+                print "TOTAL consulta", wsmtxca.ImpTotal, wsmtxca.ImpTotal==imp_total
 
-            wsmtxca.AnalizarXml("XmlResponse")
-            assert wsmtxca.ObtenerTagXml('codigoAutorizacion') == str(wsmtxca.CAE)
-            assert wsmtxca.ObtenerTagXml('codigoConcepto') == str(concepto)
-            assert wsmtxca.ObtenerTagXml('arrayItems', 0, 'item', 'unidadesMtx') == '123456'
+                wsmtxca.AnalizarXml("XmlResponse")
+                assert wsmtxca.ObtenerTagXml('codigoAutorizacion') == str(wsmtxca.CAE)
+                assert wsmtxca.ObtenerTagXml('codigoConcepto') == str(concepto)
+                assert wsmtxca.ObtenerTagXml('arrayItems', 0, 'item', 'unidadesMtx') == '123456'
 
 
         except:
