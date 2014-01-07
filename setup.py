@@ -26,6 +26,7 @@ import wsmtx, recem
 import wsctg11
 import wslpg
 import wscoc
+import wscdc
 
 # parametros para setup:
 kwargs = {}
@@ -159,7 +160,15 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wscoc, script='wscoc.py', dest_base="wscoc_cli"),
             ]
-            
+
+    if 'wscdc' in globals():
+        kwargs['com_server'] += [
+            Target(module=wscdc,modules="wscdc", create_exe=True, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=wscdc, script='wscdc.py', dest_base="wscdc_cli"),
+            ]
+
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
 
