@@ -20,6 +20,7 @@ import sys
 
 import pyafipws
 import wsaa
+import wsfev1, rece1
 
 # parametros para setup:
 kwargs = {}
@@ -43,6 +44,14 @@ if 'py2exe' in sys.argv:
 
     # includes for py2exe
     includes=['email.generator', 'email.iterators', 'email.message', 'email.utils']
+
+    # optional modules:
+    for mod in ['socks']:
+        try:
+            __import__(mod)
+            includes.append(mod)
+        except ImportError:
+            pass 
 
     # don't pull in all this MFC stuff used by the makepy UI.
     excludes=["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui"]
@@ -78,6 +87,17 @@ if 'py2exe' in sys.argv:
         if wsaa.TYPELIB:
             data_files.append((".", ["wsaa.tlb"]))
         __version__ += (wsaa.HOMO and '-homo' or '-full')
+
+    if 'wsfev1' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsfev1,modules="wsfev1", create_exe=True, create_dll=not wsfev1.TYPELIB)
+            ]
+        kwargs['console'] += [
+            Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
+            Target(module=rece1, script='rece1.py'), 
+            ]             
+        if wsfev1.TYPELIB:
+            data_files.append((".", ["wsfev1.tlb"]))
     
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
