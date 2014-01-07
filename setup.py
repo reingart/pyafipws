@@ -23,6 +23,7 @@ import wsaa
 import wsfev1, rece1
 import wsfexv1, recex1
 import wsmtx, recem
+import pyfepdf, pyemail, pyi25
 import wsctg11
 import wslpg
 import wscoc
@@ -52,7 +53,7 @@ if 'py2exe' in sys.argv:
     from nsis import build_installer, Target
 
     # includes for py2exe
-    includes=['email.generator', 'email.iterators', 'email.message', 'email.utils']
+    includes=['email.generator', 'email.iterators', 'email.message', 'email.utils',  'email.mime.text', 'email.mime.application', 'email.mime.multipart']
 
     # optional modules:
     # required modules for shelve support (not detected by py2exe by default):
@@ -131,6 +132,27 @@ if 'py2exe' in sys.argv:
             Target(module=recem, script='recem.py'), 
             ]             
     
+    if 'pyfepdf' in globals():
+        kwargs['com_server'] += [
+            Target(module=pyfepdf, modules="pyfepdf", create_exe=False, create_dll=True),
+            Target(module=pyemail, modules="pyemail", create_exe=False, create_dll=True),
+            Target(module=pyi25, modules="pyi25", create_exe=False, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=pyfepdf, script='pyfepdf.py', dest_base="pyfepdf"), 
+            Target(module=pyemail, script='pyemail.py', dest_base="pyemail"),
+            Target(module=pyi25, script='pyi25.py', dest_base="pyi25"),
+            ]
+        kwargs['windows'] += [
+            Target(module=pyfepdf, script="pyfepdf.py", dest_base="pyfepdf_com"),
+            Target(module=pyemail, script="pyemail.py", dest_base="pyemail_com"),
+            Target(module=pyi25, script="pyi25.py", dest_base="pyi25_com"),
+            'designer.py',
+            ]
+        data_files.extend([
+            "factura.csv", 'fpdf.png'
+            ])
+            
     if 'wsctg11' in globals():
         kwargs['com_server'] += [
             Target(module=wsctg11, modules="wsctg11"), 
