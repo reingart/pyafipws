@@ -23,6 +23,8 @@ import wsaa
 import wsfev1, rece1
 import wsfexv1, recex1
 import wsmtx, recem
+import wsctg11
+import wslpg
 
 # parametros para setup:
 kwargs = {}
@@ -34,7 +36,7 @@ long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"
              "ARBA (Remito Electrónico)")
 
 data_files = [
-    (".", ["licencia.txt", "rece.ini.dist", "geotrust.crt"]),
+    (".", ["licencia.txt", "rece.ini.dist", "geotrust.crt", "afip_ca_info.crt", ]),
     ("cache", glob.glob("cache/*")),
     ]
 
@@ -48,7 +50,8 @@ if 'py2exe' in sys.argv:
     includes=['email.generator', 'email.iterators', 'email.message', 'email.utils']
 
     # optional modules:
-    for mod in ['socks']:
+    # required modules for shelve support (not detected by py2exe by default):
+    for mod in ['socks', 'dbhash', 'gdbm', 'dbm', 'dumbdbm', 'anydbm']:
         try:
             __import__(mod)
             includes.append(mod)
@@ -122,7 +125,32 @@ if 'py2exe' in sys.argv:
             Target(module=wsmtx, script='wsmtx.py', dest_base="wsmtx_cli"), 
             Target(module=recem, script='recem.py'), 
             ]             
+    
+    if 'wsctg11' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsctg11, modules="wsctg11"), 
+            ]
+        kwargs['console'] += [
+            Target(module=wsctg11, script='wsctg11.py', dest_base="wsctg11_cli"),
+            ]
 
+    if 'wslpg' in globals():
+        kwargs['com_server'] += [
+            Target(module=wslpg, modules="wslpg"),
+            ]
+        kwargs['console'] += [
+            Target(module=wslpg, script='wslpg.py', dest_base="wslpg_cli"),
+            ]
+        data_files.extend([
+           "wslpg.ini", "wslpg_aut_test.xml",
+           "liquidacion_form_c1116b_wslpg.csv",
+           "liquidacion_form_c1116b_wslpg.png",
+           "liquidacion_wslpg_ajuste_base.csv",
+           "liquidacion_wslpg_ajuste_base.png",
+           "liquidacion_wslpg_ajuste_debcred.csv",
+           "liquidacion_wslpg_ajuste_debcred.png",
+            ])
+        
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
 
