@@ -17,11 +17,6 @@ __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.26a"
 
-import wxversion
-wxversion.select("2.8")
-import wx
-
-
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
 import os
