@@ -324,10 +324,12 @@ class FEPDF:
 
 
     @inicializar_y_capturar_excepciones
-    def CargarFormato(self, archivo=""):
+    def CargarFormato(self, archivo="factura.csv"):
         "Cargo el formato de campos a generar desde una planilla CSV"
-        if not archivo:
-            archivo = os.path.join(self.InstallDir, "factura.csv")
+
+        # si no encuentro archivo, lo busco en el directorio predeterminado:
+        if not os.path.exists(archivo):
+            archivo = os.path.join(self.InstallDir, "plantillas", os.path.basename(archivo))
         
         if DEBUG: print "abriendo archivo ", archivo
 
