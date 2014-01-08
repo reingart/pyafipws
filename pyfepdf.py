@@ -790,10 +790,10 @@ if __name__ == '__main__':
             
         if '--formato' in sys.argv:
             if '--dbf' in sys.argv:
-                import formato_dbf
+                from formatos import formato_dbf
                 formato_dbf.ayuda()
             else:
-                import formato_txt
+                from formatos import formato_txt
                 formato_txt.ayuda()
             sys.exit(0)
 
@@ -809,17 +809,17 @@ if __name__ == '__main__':
 
         if '--cargar' in sys.argv:
             if '--dbf' in sys.argv:
-                import formato_dbf
+                from formatos import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
                 if DEBUG: print "conf_dbf", conf_dbf
                 regs = formato_dbf.leer(conf_dbf)
             if '--json' in sys.argv:
-                import formato_json
+                from formatos import formato_json
                 entrada = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print "entrada", entrada
                 regs = formato_json.leer(entrada)
             else:
-                import formato_txt
+                from formatos import formato_txt
                 entrada = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print "entrada", entrada
                 regs = formato_txt.leer(entrada)
@@ -917,17 +917,17 @@ if __name__ == '__main__':
             reg['id'] = 0
             reg['err_code'] = 'OK'
             if '--dbf' in sys.argv:
-                import formato_dbf
+                from formatos import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
                 if DEBUG: print "conf_dbf", conf_dbf
                 regs = formato_dbf.escribir([reg], conf_dbf)
             elif '--json' in sys.argv:
-                import formato_json
+                from formatos import formato_json
                 archivo =  conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print "Escribiendo", archivo
                 regs = formato_json.escribir([reg], archivo)
             else:
-                import formato_txt
+                from formatos import formato_txt
                 archivo =  conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print "Escribiendo", archivo
                 regs = formato_txt.escribir([reg], archivo)

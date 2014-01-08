@@ -36,11 +36,7 @@ from smtplib import SMTP
 from pyfepdf import FEPDF
 
 # Formatos de archivos:
-import formato_xml
-import formato_csv
-import formato_dbf
-import formato_txt
-import formato_json
+from formatos import formato_xml, formato_csv, formato_dbf, formato_txt, formato_json
 
 HOMO = False
 DEBUG = '--debug' in sys.argv
