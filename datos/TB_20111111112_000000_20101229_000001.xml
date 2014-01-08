@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" ?><TBCOMPROBANTE>
+  <cuitEmpresa>20111111112</cuitEmpresa>
+  <numeroComprobante>91248293</numeroComprobante>
+  <nombreArchivo>TB_20111111112_000000_20080124_000001.txt</nombreArchivo>
+  <codigoIntegridad>15cdd26deef17cb36465252fb5165087</codigoIntegridad>
+  <validacionesRemitos class="list">
+    <remito>
+      <numeroUnico>91 R999900068148</numeroUnico>
+      <procesado>NO</procesado>
+      <errores class="list">
+        <error>
+          <codigo>22</codigo>
+          <descripcion>El campo FECHA_SALIDA_TRANSPORTE es inválido o inexistente.</descripcion>
+        </error>
+        <error>
+          <codigo>85</codigo>
+          <descripcion>El campo ORIGEN_CUIT es inválido o inexistente.</descripcion>
+        </error>
+      </errores>
+    </remito>
+  </validacionesRemitos>
+</TBCOMPROBANTE>
