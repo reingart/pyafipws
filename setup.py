@@ -109,12 +109,14 @@ if 'py2exe' in sys.argv:
             Target(module=pyrece, script='pyrece.py'),
             'designer.py',
             ]
-        data_files.append((".", [
+        data_files += [
+            (".", [
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
-            "logo.png", 
-            "facturas.csv", "facturas.json", "facturas.txt",
-            ]))
+            ]), 
+            ("plantillas", ["plantillas/logo.png", ]),
+            ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", ])
+            ]
         data_files.append((".", pycard_resources))
 
 
@@ -175,9 +177,9 @@ if 'py2exe' in sys.argv:
             Target(module=pyi25, script="pyi25.py", dest_base="pyi25_com"),
             'designer.py',
             ]
-        data_files.extend([
-            "factura.csv", 'fpdf.png'
-            ])
+        data_files += [
+            ("plantillas", ["plantillas/factura.csv", 'plantillas/fpdf.png']),
+            ]
             
     if 'wsctg11' in globals():
         kwargs['com_server'] += [
@@ -194,15 +196,17 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wslpg, script='wslpg.py', dest_base="wslpg_cli"),
             ]
-        data_files.extend([
-           "wslpg.ini", "wslpg_aut_test.xml",
-           "liquidacion_form_c1116b_wslpg.csv",
-           "liquidacion_form_c1116b_wslpg.png",
-           "liquidacion_wslpg_ajuste_base.csv",
-           "liquidacion_wslpg_ajuste_base.png",
-           "liquidacion_wslpg_ajuste_debcred.csv",
-           "liquidacion_wslpg_ajuste_debcred.png",
-            ])
+        data_files += [
+            (".", ["wslpg.ini", "wslpg_aut_test.xml",]),
+            ("plantillas", [ 
+               "plantillas/liquidacion_form_c1116b_wslpg.csv",
+               "plantillas/liquidacion_form_c1116b_wslpg.png",
+               "plantillas/liquidacion_wslpg_ajuste_base.csv",
+               "plantillas/liquidacion_wslpg_ajuste_base.png",
+               "plantillas/liquidacion_wslpg_ajuste_debcred.csv",
+               "plantillas/liquidacion_wslpg_ajuste_debcred.png",
+                ]),
+            ]
     
     if 'wscoc' in globals():
         kwargs['com_server'] += [
@@ -230,12 +234,12 @@ if 'py2exe' in sys.argv:
         kwargs['windows'] += [
             Target(module=cot, script='cot.pyw', dest_base="cot_win"), 
             ]
-        data_files.extend([
-            "TB_20111111112_000000_20080124_000001.txt", 
-            "TB_20111111112_000000_20080124_000001.xml",
-            "TB_20111111112_000000_20101229_000001.txt", 
-            "TB_20111111112_000000_20101229_000001.xml",
-            ])    
+        data_files += [("datos", [
+            "datos/TB_20111111112_000000_20080124_000001.txt", 
+            "datos/TB_20111111112_000000_20080124_000001.xml",
+            "datos/TB_20111111112_000000_20101229_000001.txt", 
+            "datos/TB_20111111112_000000_20101229_000001.xml",
+            ])]
 
     if 'trazamed' in globals():
         kwargs['com_server'] += [
@@ -265,10 +269,10 @@ if 'py2exe' in sys.argv:
     if sys.version_info > (2, 7):
         # add MSVCP90.dll path for py2exe
         sys.path.append("C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\redist\\x86\\Microsoft.VC90.CRT")
-        data_files.extend([
+        data_files += [
             ("Microsoft.VC90.CRT", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*')),
             ("Microsoft.VC90.CRT", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest')),
-        ])
+            ]
 
 else:
     desc = "Paquete PyAfipWs %s"

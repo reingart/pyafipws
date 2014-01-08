@@ -1,0 +1,335 @@
+'CAE';'T';25.90;272.30;53.00;276.30;'Arial';10;1;0;0;0;0;'I';'61101021770094';0
+'CAE.L';'T';9.50;272.30;25.50;276.30;'Arial';10;1;0;0;0;0;'I';'C.A.E. N\xba';0
+'CAE.Vencimiento';'T';83.30;272.30;102.00;276.30;'Arial';10;1;0;0;0;0;'I';'31/12/2010';0
+'CAE.Vencimiento.L';'T';55.30;272.30;82.30;276.30;'Arial';10;1;0;0;0;0;'I';'Fecha Vto. CAE:';0
+'CUIT';'T';104.80;32.10;155.80;37.10;'Arial';10;0;0;0;0;0;'C';'';2
+'Cliente';'T';8.30;44.10;24.50;50.10;'Arial';10;0;0;0;0;0;'I';'Sr.(s):';0
+'Cliente.CUIT';'T';100.20;59.00;140.20;64.00;'Arial';10;0;0;0;0;65535;'I';None;0
+'Cliente.CUIT.L';'T';80.20;59.00;100.20;64.00;'Arial';10;0;0;0;0;0;'I';'CUIT:';0
+'Cliente.Domicilio';'T';25.70;49.00;139.80;55.00;'Arial';10;0;0;0;0;65535;'I';None;0
+'Cliente.Domicilio.L';'t';8.40;49.20;29.60;55.20;'Arial';10;0;0;0;0;0;'I';'Direcci\xf3n:';0
+'Cliente.IVA';'T';25.90;59.00;78.70;64.00;'Arial';10;0;0;0;0;0;'I';None;0
+'Cliente.IVA.L';'T';8.30;59.10;26.50;64.10;'Arial';10;0;0;0;0;0;'I';'IVA:';0
+'Cliente.Localidad';'T';26.00;53.60;78.60;59.60;'Arial';10;0;0;0;0;65535;'I';None;0
+'Cliente.Localidad.L';'T';8.20;53.60;27.20;59.60;'Arial';10;0;0;0;0;0;'I';'Localidad:';0
+'Cliente.Nombre';'T';45.00;44.00;115.80;50.00;'Arial';10;0;0;0;0;65535;'I';None;0
+'Cliente.Provincia';'T';99.20;54.00;140.20;60.00;'Arial';10;0;0;0;0;0;'I';None;0
+'Cliente.Provincia.L';'T';80.20;54.00;99.20;60.00;'Arial';10;0;0;0;0;0;'I';'Provincia:';0
+'CodigoBarras';'BC';9.40;276.10;101.50;282.70;'Interleaved 2of5 NT';0.75;0;0;0;0;0;'I';'200000000001000159053338016581200810081';3
+'CodigoBarrasLegible';'T';9.40;283.00;101.00;285.90;'Arial';6;0;0;0;0;0;'C';'3369345023901000161101021770094201103155';3
+'Comprobante.N\xba';'T';126.40;18.90;136.40;24.40;'Arial';14;1;0;0;0;0;'I';'N\xba: ';2
+'ComprobanteEx.L';'T';109.40;8.00;205.10;12.50;'Arial Black';13;0;0;0;0;0;'C';'FACTURA';2
+'Cuadro';'B';7.10;7.20;207.10;285.90;'Arial';0;0;0;0;0;0;'I';None;-3
+'CuadroX';'B';97.50;7.20;107.50;17.50;'Arial';0;1;0;0;0;0;'I';None;2
+'EMPRESA';'T';10.90;16.40;100.80;21.40;'Arial';12;1;0;0;0;0;'I';'';2
+'Fecha';'T';145.60;24.60;185.60;30.90;'Arial';12;0;0;0;0;65535;'I';None;0
+'Fecha.L';'T';126.40;24.80;143.70;30.70;'Arial';12;0;0;0;0;0;'I';'Fecha:';0
+'IIBB';'T';156.80;32.10;204.80;37.10;'Arial';10;0;0;0;0;0;'C';'';2
+'INICIO';'T';104.70;37.40;204.90;42.40;'Arial';10;0;0;0;0;0;'I';'';2
+'IVA';'T';8.90;37.20;100.80;42.20;'Arial';10;0;0;0;0;0;'I';'';2
+'IVA10.5';'T';185.30;273.30;206.40;278.00;'Arial';9;0;0;0;0;65535;'D';None;0
+'IVA10.5.L';'T';153.00;273.40;174.30;278.10;'Arial';9;0;0;0;0;0;'I';'I.V.A. 10,5%';0
+'IVA21';'T';185.20;268.20;206.30;272.90;'Arial';9;0;0;0;0;65535;'D';None;0
+'IVA21.L';'T';152.90;268.10;174.20;272.80;'Arial';9;0;0;0;0;0;'I';'I.V.A. 21%';0
+'LETRA';'T';97.40;10.40;107.40;12.40;'Arial';16;1;0;0;0;0;'C';'X';2
+'Linea.Cantidad';'L';162.80;72.40;162.80;234.60;None;0;0;0;0;0;0;'I';None;3
+'Linea.Codigo';'L';32.70;72.40;32.70;234.70;None;0;0;0;0;0;0;'I';None;3
+'Linea.Descripcion';'L';146.45;72.60;146.45;234.90;None;0;0;0;0;0;0;'I';None;3
+'Linea.Descripcion_copy';'L';135.20;72.40;135.20;234.80;None;0;0;0;0;0;0;'I';None;3
+'Linea.Descripcion_copy_copy';'L';122.00;72.60;122.00;235.00;None;0;0;0;0;0;0;'I';None;3
+'Linea.Precio';'L';182.60;72.40;182.60;234.60;None;0;0;0;0;0;0;'I';None;3
+'Linea.Unidad';'L';41.80;72.50;41.80;234.80;None;0;0;0;0;0;0;'I';None;3
+'Linea1';'L';102.80;17.60;102.80;42.80;'Arial';0;0;0;0;0;0;'I';None;3
+'Linea2';'L';7.10;42.70;207.10;42.70;None;0;0;0;0;0;0;'I';None;3
+'Linea3';'L';7.10;72.40;207.10;72.40;None;0;0;0;0;0;0;'I';None;3
+'Linea6';'L';7.20;234.90;207.20;234.90;None;0;0;0;0;0;0;'I';None;3
+'Linea9';'L';7.10;77.10;207.10;77.10;None;0;0;0;0;0;0;'I';None;0
+'Logo';'I';8.70;8.70;66.70;21.70;None;0;0;0;0;0;0;'I';'logo.png';2
+'MEMBRETE1';'T';8.90;21.90;100.80;27.10;'Arial';10;0;0;0;0;0;'I';'';2
+'MEMBRETE2';'T';8.90;27.20;100.80;32.20;'Arial';10;0;0;0;0;0;'I';'';2
+'MEMBRETE3';'T';8.80;32.50;100.70;37.50;'Arial';10;0;0;0;0;0;'I';'';2
+'NETO';'T';177.70;236.50;206.70;241.30;'Arial';9;0;0;0;0;0;'D';'';0
+'NETO.L';'T';152.60;236.50;175.10;241.30;'Arial';9;0;0;0;0;0;'I';'Sub Total Neto:';0
+'Numero';'T';137.20;18.90;197.20;24.50;'Arial';14;1;0;0;0;0;'I';'0000-00000000';2
+'Pagina';'T';150.50;12.90;190.50;16.90;'Arial';8;0;0;0;0;0;'C';'P\xe1gina';2
+'Pedido.L';'T';142.20;59.20;157.70;63.20;'Arial';10;0;0;0;0;0;'I';'Pedido:';0
+'Remito.L';'T';170.30;59.30;184.90;63.30;'Arial';10;0;0;0;0;0;'I';'Remito N\xba:';0
+'TOTAL';'T';182.60;280.40;205.70;285.20;'Arial';10;1;0;0;0;65535;'D';None;0
+'TipoCBTE';'T';96.40;13.90;108.40;18.40;'Arial';7;1;0;0;0;0;'C';'COD.01';2
+'Total.C';'B';181.90;279.70;206.90;285.70;None;0;0;0;0;0;0;'I';None;-1
+'Total.L';'T';152.10;279.80;177.70;285.20;'Arial';10;0;0;0;0;0;'I';'Total:';0
+'Tributo.Alicuota01';'T';175.60;242.20;186.80;247.00;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Alicuota02';'T';175.50;247.50;186.70;252.30;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Alicuota03';'T';175.50;252.30;186.70;257.10;'Arial';12.00;0;0;0;0;0;'D';'';0
+'Tributo.Alicuota04';'T';175.80;257.40;187.00;262.20;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Alicuota05';'T';175.80;262.40;187.00;267.20;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Descripcion01';'T';152.60;242.30;175.40;247.10;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Descripcion02';'T';152.80;247.50;175.60;252.30;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Descripcion03';'T';152.80;252.50;175.60;257.30;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Descripcion04';'T';152.70;257.60;175.50;262.40;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Descripcion05';'T';152.80;262.50;175.60;267.30;'Arial';9;0;0;0;0;0;'D';'';0
+'Tributo.Importe01';'T';187.30;242.30;206.40;247.10;'Arial';9;0;0;0;0;65535;'D';None;0
+'Tributo.Importe02';'T';187.60;247.60;206.70;252.40;'Arial';9;0;0;0;0;65535;'D';None;0
+'Tributo.Importe03';'T';187.50;252.50;206.60;257.30;'Arial';9;0;0;0;0;65535;'D';None;0
+'Tributo.Importe04';'T';187.50;257.50;206.60;262.30;'Arial';9;0;0;0;0;65535;'D';None;0
+'Tributo.Importe05';'T';187.50;262.50;206.60;267.30;'Arial';9;0;0;0;0;65535;'D';None;0
+'copia';'T';114.90;12.90;149.90;16.90;'Arial';8;0;0;0;0;0;'C';'Original';2
+'custom-nota1';'T';102.40;273.60;149.10;277.80;'Arial';8;False;False;False;0;16777215;'C';'';0
+'custom-nota2';'T';103.40;277.60;148.90;281.80;'Arial';8;False;False;False;0;16777215;'C';'';0
+'custom-nota3';'T';103.60;281.40;148.90;285.60;'Arial';8;False;False;False;0;16777215;'C';'';0
+'custom-nro-cli';'T';25.60;44.10;43.60;50.10;'Arial';10;0;0;0;0;65535;'I';None;0
+'custom-pedido';'T';156.30;59.30;169.70;63.30;'Arial';10;0;0;0;0;65535;'I';'';0
+'custom-remito';'T';187.10;59.30;206.30;63.30;'Arial';10;0;0;0;0;0;'I';'';0
+'custom-tit-cond-venta';'T';8.80;65.60;40.60;70.60;'Arial';10;0;0;1;0;0;'I';'Forma de Pago:';0
+'custom-tit-tot-neto_copy';'T';56.60;236.10;75.10;240.90;'Arial';9;0;0;0;0;0;'I';'Subtotal:';0
+'custom-tit-transporte';'T';8.80;267.20;34.80;271.20;'Arial';10;0;0;0;0;65535;'I';'Transporte:';0
+'custom-tot-porc-iva';'T';175.80;268.00;183.80;272.80;'Arial';9;0;0;0;0;0;'D';'';0
+'custom-tot-porc-niva';'T';175.80;273.20;183.80;278.00;'Arial';9;0;0;0;0;0;'D';'';0
+'custom-transporte';'T';32.40;267.40;102.30;271.40;'Arial';10;0;0;0;0;65535;'I';'';0
+'descuento';'T';32.20;236.20;54.60;241.00;'Arial';9;0;0;0;0;0;'D';'';0
+'descuento.L';'T';10.30;236.40;28.80;241.20;'Arial';9;0;0;0;0;0;'I';'Descuento:';0
+'forma_pago';'T';41.80;65.90;136.60;70.90;'Arial';10;0;0;0;0;0;'I';None;0
+'motivos_ds.L';'T';10.40;248.90;147.60;253.70;'Arial';10;0;0;1;0;0;'C';'Observaciones AFIP';0
+'motivos_ds1';'T';10.30;254.70;147.60;258.70;'Arial';9;0;1;0;0;0;'I';'';0
+'motivos_ds2';'T';10.30;258.70;147.80;262.70;'Arial';9;0;1;0;0;0;'I';'';0
+'motivos_ds3';'T';10.30;262.50;148.00;266.50;'Arial';9;0;1;0;0;0;'I';'';0
+'subtotal';'T';76.20;236.10;98.50;240.90;'Arial';9;0;0;0;0;0;'D';'';0
+'Item.Cantidad';'T';15;97;30;102;'Arial';10,00;0;0;0;0;65535;'C';'Cant.';0
+'Item.Codigo';'T';30;97;45;102;'Arial';10,00;0;0;0;0;65535;'C';'Cod.';0
+'Item.Descripcion';'T';45;97;140;102;'Arial';10,00;0;0;0;0;65535;'C';'Descripción';0
+'Item.Precio';'T';140;97;160;102;'Arial';10,00;0;0;0;0;65535;'C';'Precio';0
+'Item.Importe';'T';160;97;185;102;'Arial';10,00;0;0;0;0;65535;'C';'Importe';0
+'Item.Cantidad01';'T';15;103;25;108;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed01';'T';24;103;30;108;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo01';'T';30;103;43;108;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion01';'T';47;103;138;108;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio01';'T';140;103;158;108;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe01';'T';160;103;183;108;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad02';'T';15;108;25;113;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed02';'T';24;108;30;113;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo02';'T';30;108;43;113;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion02';'T';47;108;138;113;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio02';'T';140;108;158;113;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe02';'T';160;108;183;113;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad03';'T';15;113;25;118;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed03';'T';24;113;30;118;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo03';'T';30;113;43;118;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion03';'T';47;113;138;118;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio03';'T';140;113;158;118;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe03';'T';160;113;183;118;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad04';'T';15;118;25;123;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed04';'T';24;118;30;123;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo04';'T';30;118;43;123;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion04';'T';47;118;138;123;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio04';'T';140;118;158;123;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe04';'T';160;118;183;123;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad05';'T';15;123;25;128;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed05';'T';24;123;30;128;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo05';'T';30;123;43;128;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion05';'T';47;123;138;128;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio05';'T';140;123;158;128;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe05';'T';160;123;183;128;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad06';'T';15;128;25;133;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed06';'T';24;128;30;133;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo06';'T';30;128;43;133;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion06';'T';47;128;138;133;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio06';'T';140;128;158;133;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe06';'T';160;128;183;133;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad07';'T';15;133;25;138;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed07';'T';24;133;30;138;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo07';'T';30;133;43;138;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion07';'T';47;133;138;138;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio07';'T';140;133;158;138;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe07';'T';160;133;183;138;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad08';'T';15;138;25;143;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed08';'T';24;138;30;143;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo08';'T';30;138;43;143;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion08';'T';47;138;138;143;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio08';'T';140;138;158;143;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe08';'T';160;138;183;143;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad09';'T';15;143;25;148;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed09';'T';24;143;30;148;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo09';'T';30;143;43;148;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion09';'T';47;143;138;148;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio09';'T';140;143;158;148;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe09';'T';160;143;183;148;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad10';'T';15;148;25;153;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed10';'T';24;148;30;153;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo10';'T';30;148;43;153;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion10';'T';47;148;138;153;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio10';'T';140;148;158;153;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe10';'T';160;148;183;153;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad11';'T';15;153;25;158;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed11';'T';24;153;30;158;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo11';'T';30;153;43;158;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion11';'T';47;153;138;158;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio11';'T';140;153;158;158;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe11';'T';160;153;183;158;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad12';'T';15;158;25;163;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed12';'T';24;158;30;163;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo12';'T';30;158;43;163;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion12';'T';47;158;138;163;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio12';'T';140;158;158;163;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe12';'T';160;158;183;163;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad13';'T';15;163;25;168;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed13';'T';24;163;30;168;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo13';'T';30;163;43;168;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion13';'T';47;163;138;168;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio13';'T';140;163;158;168;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe13';'T';160;163;183;168;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad14';'T';15;168;25;173;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed14';'T';24;168;30;173;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo14';'T';30;168;43;173;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion14';'T';47;168;138;173;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio14';'T';140;168;158;173;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe14';'T';160;168;183;173;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad15';'T';15;173;25;178;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed15';'T';24;173;30;178;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo15';'T';30;173;43;178;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion15';'T';47;173;138;178;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio15';'T';140;173;158;178;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe15';'T';160;173;183;178;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad16';'T';15;178;25;183;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed16';'T';24;178;30;183;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo16';'T';30;178;43;183;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion16';'T';47;178;138;183;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio16';'T';140;178;158;183;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe16';'T';160;178;183;183;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad17';'T';15;183;25;188;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed17';'T';24;183;30;188;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo17';'T';30;183;43;188;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion17';'T';47;183;138;188;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio17';'T';140;183;158;188;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe17';'T';160;183;183;188;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad18';'T';15;188;25;193;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed18';'T';24;188;30;193;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo18';'T';30;188;43;193;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion18';'T';47;188;138;193;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio18';'T';140;188;158;193;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe18';'T';160;188;183;193;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad19';'T';15;193;25;198;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed19';'T';24;193;30;198;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo19';'T';30;193;43;198;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion19';'T';47;193;138;198;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio19';'T';140;193;158;198;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe19';'T';160;193;183;198;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad20';'T';15;198;25;203;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed20';'T';24;198;30;203;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo20';'T';30;198;43;203;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion20';'T';47;198;138;203;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio20';'T';140;198;158;203;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe20';'T';160;198;183;203;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad21';'T';15;203;25;208;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed21';'T';24;203;30;208;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo21';'T';30;203;43;208;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion21';'T';47;203;138;208;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio21';'T';140;203;158;208;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe21';'T';160;203;183;208;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad22';'T';15;208;25;213;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed22';'T';24;208;30;213;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo22';'T';30;208;43;213;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion22';'T';47;208;138;213;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio22';'T';140;208;158;213;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe22';'T';160;208;183;213;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad23';'T';15;213;25;218;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed23';'T';24;213;30;218;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo23';'T';30;213;43;218;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion23';'T';47;213;138;218;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio23';'T';140;213;158;218;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe23';'T';160;213;183;218;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad24';'T';15;218;25;223;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed24';'T';24;218;30;223;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo24';'T';30;218;43;223;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion24';'T';47;218;138;223;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio24';'T';140;218;158;223;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe24';'T';160;218;183;223;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad25';'T';15;223;25;228;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed25';'T';24;223;30;228;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo25';'T';30;223;43;228;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion25';'T';47;223;138;228;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio25';'T';140;223;158;228;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe25';'T';160;223;183;228;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad26';'T';15;228;25;233;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed26';'T';24;228;30;233;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo26';'T';30;228;43;233;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion26';'T';47;228;138;233;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio26';'T';140;228;158;233;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe26';'T';160;228;183;233;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Cantidad27';'T';15;233;25;238;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Umed27';'T';24;233;30;238;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Codigo27';'T';30;233;43;238;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Descripcion27';'T';47;233;138;238;'Arial';10,00;0;0;0;0;65535;'I';'';0
+'Item.Precio27';'T';140;233;158;238;'Arial';10,00;0;0;0;0;65535;'D';'';0
+'Item.Importe27';'T';160;233;183;238;'Arial';10,00;0;0;0;0;65535;'D';'';0
+form_items.py No module named py
+setup_typelib.py No module named py2exe
+nsis_py7.py No module named py2exe.build_exe
+fe_bd.th.py No module named th.py
+setup_pyi25.py No module named py2exe
+setup_wslpg.py No module named py2exe
+wsfev1.py No module named py
+wsaa.py No module named py
+wsfe.py No module named py
+wslpg_datos.py No module named py
+wsfex.py No module named py
+wsbfe.py No module named py
+fe_bd.44c.py No module named 44c.py
+receb.py No module named py
+wslpg.nuevo.py No module named nuevo.py
+setup_cot.py No module named py2exe
+rg1361.py No module named py
+pyrece.rsrc.py wxversion.select() must be called before wxPython is imported
+wdigdepfiel.py No module named py
+fe_bd_progress.py No module named py
+wsctg.py No module named py
+trazamed_new.py No module named py
+trazarenpre.py No module named py
+setup_rg1361.py No module named py2exe
+setup_wsfexv1.py No module named py2exe
+pyemail.py No module named py
+recex1.py No module named py
+cot.py No module named py
+cot0.py No module named simplexml
+setup_wsfex.py No module named py2exe
+fe_bd_ult.py No module named py
+rece-hp.py No module named py
+setup_fe_pdf.py No module named py2exe
+fe_bd.fain.py No module named fain.py
+formato_txt.py No module named py
+setup_wsfev1.py No module named py2exe
+wslpg_1.py No module named py
+formato_json.py No module named py
+recex.py No module named py
+cot_matigro.py No module named py
+designer.py No module named py
+__main__.py No module named py
+wsaa-openssl.py No module named py
+(('Algebra II', ('Ma', 15, 19)), ('Matem\xe1tica I', ('Lu', 15, 17)), ('Algoritmos III', ('Mi', 16, 19)))
+(('Algebra II', ('Ma', 15, 19)), ('Matem\xe1tica I', ('Mi', 20, 21)), ('Algoritmos III', ('Mi', 16, 19)))
+(('Algebra II', ('Ma', 15, 19)), ('Matem\xe1tica I', ('Vi', 16, 18)), ('Algoritmos III', ('Mi', 16, 19)))
+domino.py unhashable type: 'list'
+{u'IWebService': {'documentation': '', 'ports': {u'IWebServicePort': {'port_type_name': 'IWebServicePortType', 'operations': {u'sendCancelacTransacc': {'name': u'sendCancelacTransacc', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'sendCancelacTransaccResponse': *{u'return': *{u'codigoTransaccion': <type 'unicode'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*], u'resultado': <type 'bool'>}*}*}, 'input': {'sendCancelacTransacc': *{u'arg0': <type 'long'>, u'arg1': <type 'unicode'>, u'arg2': <type 'unicode'>}*}}, u'sendAlertaTransacc': {'name': u'sendAlertaTransacc', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'sendAlertaTransaccResponse': *{u'return': *{u'codigoTransaccion': <type 'unicode'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*], u'resultado': <type 'bool'>}*}*}, 'input': {'sendAlertaTransacc': *{u'arg0': <type 'unicode'>, u'arg1': <type 'unicode'>, u'arg2': [<type 'long'>]}*}}, u'getEnviosPropiosAlertados': {'name': u'getEnviosPropiosAlertados', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'getEnviosPropiosAlertadosResponse': *{u'return': *{u'list': [*{u'_id_transaccion': <type 'unicode'>, u'_id_transaccion_global': <type 'unicode'>, u'_f_evento': <type 'unicode'>, u'_f_transaccion': <type 'unicode'>, u'_gtin': <type 'unicode'>, u'_lote': <type 'unicode'>, u'_numero_serial': <type 'unicode'>, u'_nombre': <type 'unicode'>, u'_id_detalle_evento': <type 'long'>, u'_d_evento': <type 'unicode'>, u'_id_estado': <type 'long'>, u'_gln_origen': <type 'unicode'>, u'_razon_social_origen': <type 'unicode'>, u'_gln_destino': <type 'unicode'>, u'_razon_social_destino': <type 'unicode'>, u'_n_remito': <type 'unicode'>, u'_n_factura': <type 'unicode'>, u'_vencimiento': <type 'unicode'>}*], u'cantPaginas': <type 'long'>, u'hay_error': <type 'bool'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*]}*}*}, 'input': {'getEnviosPropiosAlertados': *{u'arg0': <type 'unicode'>, u'arg1': <type 'unicode'>, u'arg2': <type 'long'>, u'arg3': <type 'unicode'>, u'arg4': <type 'unicode'>, u'arg5': <type 'unicode'>, u'arg6': <type 'unicode'>, u'arg7': <type 'long'>, u'arg8': <type 'unicode'>, u'arg9': <type 'unicode'>, u'arg10': <type 'unicode'>, u'arg11': <type 'unicode'>, u'arg12': <type 'unicode'>, u'arg13': <type 'unicode'>, u'arg14': <type 'long'>, u'arg15': <type 'long'>}*}}, u'sendMedicamentosFraccion': {'name': u'sendMedicamentosFraccion', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'sendMedicamentosFraccionResponse': *{u'return': *{u'codigoTransaccion': <type 'unicode'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*], u'resultado': <type 'bool'>}*}*}, 'input': {'sendMedicamentosFraccion': *{u'arg0': [*{u'f_evento': <type 'unicode'>, u'h_evento': <type 'unicode'>, u'gln_origen': <type 'unicode'>, u'gln_destino': <type 'unicode'>, u'n_remito': <type 'unicode'>, u'n_factura': <type 'unicode'>, u'vencimiento': <type 'unicode'>, u'gtin': <type 'unicode'>, u'lote': <type 'unicode'>, u'numero_serial': <type 'unicode'>, u'id_obra_social': <type 'unicode'>, u'id_evento': <type 'unicode'>, u'cuit_origen': <type 'unicode'>, u'cuit_destino': <type 'unicode'>, u'apellido': <type 'unicode'>, u'nombres': <type 'unicode'>, u'tipo_documento': <type 'unicode'>, u'n_documento': <type 'unicode'>, u'sexo': <type 'unicode'>, u'direccion': <type 'unicode'>, u'numero': <type 'unicode'>, u'piso': <type 'unicode'>, u'depto': <type 'unicode'>, u'localidad': <type 'unicode'>, u'provincia': <type 'unicode'>, u'n_postal': <type 'unicode'>, u'fecha_nacimiento': <type 'unicode'>, u'telefono': <type 'unicode'>, u'nro_asociado': <type 'unicode'>, u'cantidad': <type 'unicode'>}*], u'arg1': <type 'unicode'>, u'arg2': <type 'unicode'>}*}}, u'sendMedicamentos': {'name': u'sendMedicamentos', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'sendMedicamentosResponse': *{u'return': *{u'codigoTransaccion': <type 'unicode'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*], u'resultado': <type 'bool'>}*}*}, 'input': {'sendMedicamentos': *{u'arg0': [*{u'f_evento': <type 'unicode'>, u'h_evento': <type 'unicode'>, u'gln_origen': <type 'unicode'>, u'gln_destino': <type 'unicode'>, u'n_remito': <type 'unicode'>, u'n_factura': <type 'unicode'>, u'vencimiento': <type 'unicode'>, u'gtin': <type 'unicode'>, u'lote': <type 'unicode'>, u'numero_serial': <type 'unicode'>, u'id_obra_social': <type 'unicode'>, u'id_evento': <type 'unicode'>, u'cuit_origen': <type 'unicode'>, u'cuit_destino': <type 'unicode'>, u'apellido': <type 'unicode'>, u'nombres': <type 'unicode'>, u'tipo_documento': <type 'unicode'>, u'n_documento': <type 'unicode'>, u'sexo': <type 'unicode'>, u'direccion': <type 'unicode'>, u'numero': <type 'unicode'>, u'piso': <type 'unicode'>, u'depto': <type 'unicode'>, u'localidad': <type 'unicode'>, u'provincia': <type 'unicode'>, u'n_postal': <type 'unicode'>, u'fecha_nacimiento': <type 'unicode'>, u'telefono': <type 'unicode'>, u'nro_asociado': <type 'unicode'>}*], u'arg1': <type 'unicode'>, u'arg2': <type 'unicode'>}*}}, u'sendMedicamentosDHSerie': {'name': u'sendMedicamentosDHSerie', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'sendMedicamentosDHSerieResponse': *{u'return': *{u'codigoTransaccion': <type 'unicode'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*], u'resultado': <type 'bool'>}*}*}, 'input': {'sendMedicamentosDHSerie': *{u'arg0': [*{u'f_evento': <type 'unicode'>, u'h_evento': <type 'unicode'>, u'gln_origen': <type 'unicode'>, u'gln_destino': <type 'unicode'>, u'n_remito': <type 'unicode'>, u'n_factura': <type 'unicode'>, u'vencimiento': <type 'unicode'>, u'gtin': <type 'unicode'>, u'lote': <type 'unicode'>, u'desde_numero_serial': <type 'unicode'>, u'hasta_numero_serial': <type 'unicode'>, u'id_evento': <type 'unicode'>, u'cuit_origen': <type 'unicode'>, u'cuit_destino': <type 'unicode'>, u'id_obra_social': <type 'unicode'>, u'apellido': <type 'unicode'>, u'nombres': <type 'unicode'>, u'tipo_documento': <type 'unicode'>, u'n_documento': <type 'unicode'>, u'sexo': <type 'unicode'>, u'direccion': <type 'unicode'>, u'numero': <type 'unicode'>, u'piso': <type 'unicode'>, u'depto': <type 'unicode'>, u'localidad': <type 'unicode'>, u'provincia': <type 'unicode'>, u'n_postal': <type 'unicode'>, u'fecha_nacimiento': <type 'unicode'>, u'telefono': <type 'unicode'>, u'nro_asociado': <type 'unicode'>}*], u'arg1': <type 'unicode'>, u'arg2': <type 'unicode'>}*}}, u'sendConfirmaTransacc': {'name': u'sendConfirmaTransacc', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'sendConfirmaTransaccResponse': *{u'return': *{u'codigoTransaccion': <type 'unicode'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*], u'resultado': <type 'bool'>, u'id_transac_asociada': <type 'unicode'>}*}*}, 'input': {'sendConfirmaTransacc': *{u'arg0': <type 'unicode'>, u'arg1': <type 'unicode'>, u'arg2': [*{u'p_ids_transac': <type 'long'>, u'f_operacion': <type 'unicode'>}*]}*}}, u'sendCancelacTransaccParcial': {'name': u'sendCancelacTransaccParcial', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'sendCancelacTransaccParcialResponse': *{u'return': *{u'codigoTransaccion': <type 'unicode'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*], u'resultado': <type 'bool'>}*}*}, 'input': {'sendCancelacTransaccParcial': *{u'arg0': <type 'long'>, u'arg1': <type 'unicode'>, u'arg2': <type 'unicode'>, u'arg3': <type 'unicode'>, u'arg4': <type 'unicode'>}*}}, u'getTransaccionesNoConfirmadas': {'name': u'getTransaccionesNoConfirmadas', 'documentation': u'', 'header': None, 'parts': {'input_header': None, 'input_body': None, 'output_header': None, 'output_body': None}, 'output': {'getTransaccionesNoConfirmadasResponse': *{u'return': *{u'list': [*{u'_id_transaccion': <type 'unicode'>, u'_id_transaccion_global': <type 'unicode'>, u'_f_evento': <type 'unicode'>, u'_f_transaccion': <type 'unicode'>, u'_gtin': <type 'unicode'>, u'_lote': <type 'unicode'>, u'_numero_serial': <type 'unicode'>, u'_nombre': <type 'unicode'>, u'_id_detalle_evento': <type 'long'>, u'_d_evento': <type 'unicode'>, u'_id_estado': <type 'long'>, u'_gln_origen': <type 'unicode'>, u'_razon_social_origen': <type 'unicode'>, u'_gln_destino': <type 'unicode'>, u'_razon_social_destino': <type 'unicode'>, u'_n_remito': <type 'unicode'>, u'_n_factura': <type 'unicode'>, u'_vencimiento': <type 'unicode'>}*], u'cantPaginas': <type 'long'>, u'hay_error': <type 'bool'>, u'errores': [*{u'_c_error': <type 'unicode'>, u'_d_error': <type 'unicode'>}*]}*}*}, 'input': {'getTransaccionesNoConfirmadas': *{u'arg0': <type 'unicode'>, u'arg1': <type 'unicode'>, u'arg2': <type 'long'>, u'arg3': <type 'unicode'>, u'arg4': <type 'unicode'>, u'arg5': <type 'unicode'>, u'arg6': <type 'unicode'>, u'arg7': <type 'long'>, u'arg8': <type 'unicode'>, u'arg9': <type 'unicode'>, u'arg10': <type 'unicode'>, u'arg11': <type 'unicode'>, u'arg12': <type 'unicode'>, u'arg13': <type 'unicode'>, u'arg14': <type 'unicode'>, u'arg15': <type 'unicode'>, u'arg16': <type 'long'>}*}}}, 'location': u'http://localhost:9051/trazamed.WebService', 'service_name': u'IWebService', 'soap_uri': u'http://schemas.xmlsoap.org/wsdl/soap/', 'soap_ver': 'soap11', 'transport': u'http://schemas.xmlsoap.org/soap/http'}}}}
+tzm.py 'sendMedicamentos'
+soap-mininterior.py No module named simplexml
+esquema.py No module named pyodbc
+fe.py No module named py
+formato_cot.py list index out of range
+procesando wsfev1
+fe_daemon.py [Errno 2] No existe el archivo o el directorio: './wsfev1/entrada/'
+setup_granos.py No module named py2exe
+wscoc.py No module named py
+nsis.py No module named py2exe.build_exe
+wsfexv1.py No module named py
+extraer_emails_imap.py [AUTHENTICATIONFAILED] Invalid credentials (Failure)
+rece-ftp.py No module named py
+formato_xml.py No module named py
+fe_bd0.py No module named py
+rece.py No module named py
+fe_bd20130627.py No module named py
+setup_trazarenpre.py No module named py2exe
+pyrece121s.rsrc.py No module named rsrc.py
+wscoc-orig.py No module named py
+pyemail102a.py No module named py
+test.py No module named py
+setup_pyrece.py No module named py2exe
+pyrece12
