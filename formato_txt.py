@@ -213,7 +213,6 @@ def escribir_linea_txt(dic, formato):
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
         except Exception, e:
-            raise
             raise ValueError("Error al escribir campo %s val '%s': %s" % (
                 clave, valor, str(e)))
     return linea + "\n"
