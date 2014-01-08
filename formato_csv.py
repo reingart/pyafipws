@@ -145,15 +145,15 @@ def desaplanar(filas):
                 reg[k] = dic.pop(k)
             
         reg['detalles'] = [{
-                'codigo': ('codigo%s' % li) in dic and dic.pop('codigo%s' % li),
-                'ds': ('descripcion%s' % li) in dic and dic.pop('descripcion%s' % li),
-                'umed': ('umed%s' % li) in dic and dic.pop('umed%s' % li),
-                'qty': ('cantidad%s' % li) in dic and dic.pop('cantidad%s' % li),
-                'precio': ('precio%s' % li) in dic and dic.pop('precio%s' % li),
-                'importe': ('importe%s' % li) in dic and dic.pop('importe%s' % li),
-                'iva_id': ('iva_id%s' % li) in dic and dic.pop('iva_id%s' % li),
-                'imp_iva': ('imp_iva%s' % li) in dic and dic.pop('imp_iva%s'% li),
-                'bonif': ('bonif%s' % li) in dic and dic.pop('bonif%s'% li),
+                'codigo': ('codigo%s' % li) in dic and dic.pop('codigo%s' % li) or None,
+                'ds': ('descripcion%s' % li) in dic and dic.pop('descripcion%s' % li) or None,
+                'umed': ('umed%s' % li) in dic and dic.pop('umed%s' % li) or None,
+                'qty': ('cantidad%s' % li) in dic and dic.pop('cantidad%s' % li) or None,
+                'precio': ('precio%s' % li) in dic and dic.pop('precio%s' % li) or None,
+                'importe': ('importe%s' % li) in dic and dic.pop('importe%s' % li) or None,
+                'iva_id': ('iva_id%s' % li) in dic and dic.pop('iva_id%s' % li) or None,
+                'imp_iva': ('imp_iva%s' % li) in dic and dic.pop('imp_iva%s'% li) or None,
+                'bonif': ('bonif%s' % li) in dic and dic.pop('bonif%s'% li) or None,
                 'despacho': ('numero_despacho%s' % li) in dic and dic.pop('numero_despacho%s'% li),
                 } for li in xrange(1, max_li("cantidad")) 
                   if dic['cantidad%s' % li] is not None]
