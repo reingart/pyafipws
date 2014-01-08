@@ -14,11 +14,13 @@ from __init__ import __version__
 
 from distutils.core import setup
 import glob
+import os
 import sys
 
 # modulos a compilar:
 
 import pyafipws
+import pyrece
 import wsaa
 import wsfev1, rece1
 import wsfexv1, recex1
@@ -71,7 +73,7 @@ if 'py2exe' in sys.argv:
     opts = { 
         'py2exe': {
             'includes': includes,
-            'optimize': 2,
+            'optimize': 0,
             'excludes': excludes,
             'dll_excludes': ["mswsock.dll", "powrprof.dll", "KERNELBASE.dll", 
                          "API-MS-Win-Core-LocalRegistry-L1-1-0.dll",
@@ -91,6 +93,30 @@ if 'py2exe' in sys.argv:
     if 'pyafipws' in globals():
         kwargs['com_server'] += ["pyafipws"]
         kwargs['console'] += ['rece.py', 'receb.py', 'recex.py', 'rg1361.py', 'wsaa.py', 'wsfex.py', 'wsbfe.py']
+
+    # visual application
+    if 'pyrece' in globals():
+        # find pythoncard resources, to add as 'data_files'
+        pycard_resources=[]
+        for filename in os.listdir('.'):
+            if filename.find('.rsrc.')>-1:
+                pycard_resources+=[filename]
+
+        kwargs['console'] += [
+            Target(module=pyrece, script="pyrece.py", dest_base="pyrece_consola"),
+            ]
+        kwargs['windows'] += [
+            Target(module=pyrece, script='pyrece.py'),
+            'designer.py',
+            ]
+        data_files.append((".", [
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
+            "logo.png", 
+            "facturas.csv", "facturas.json", "facturas.txt",
+            ]))
+        data_files.append((".", pycard_resources))
+
 
     # new webservices:
     if 'wsaa' in globals():
