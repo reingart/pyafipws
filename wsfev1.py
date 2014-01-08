@@ -760,7 +760,7 @@ def main():
 
     # obteniendo el TA para pruebas
     from wsaa import WSAA
-    ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key")
+    ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", debug=True)
     wsfev1.SetTicketAcceso(ta)
     wsfev1.Cuit = "20267565393"
     
