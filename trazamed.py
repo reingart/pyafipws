@@ -839,7 +839,7 @@ if __name__ == '__main__':
         import pythoncom
         if TYPELIB: 
             if '--register' in sys.argv:
-                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "trazamed.tlb"))
+                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "trazamed.tlb"))
                 print "Registering %s" % (tlb,)
                 tli=pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)

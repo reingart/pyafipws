@@ -946,7 +946,7 @@ if __name__ == '__main__':
         import pythoncom
         if TYPELIB: 
             if '--register' in sys.argv:
-                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "wsfev1.tlb"))
+                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "wsfev1.tlb"))
                 print "Registering %s" % (tlb,)
                 tli=pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)
