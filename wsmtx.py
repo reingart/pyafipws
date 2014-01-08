@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10b"
+__version__ = "1.10c"
 
 import datetime
 import decimal
@@ -55,7 +55,7 @@ class WSMTXCA(BaseWS):
                         'Dummy', 'Conectar', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir',  
+        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 'LanzarExcepciones',
         'Resultado', 'Obs', 'Observaciones', 'ErrCode', 'ErrMsg',
         'EmisionTipo', 'Reproceso', 'Reprocesar',
         'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback', 'Excepcion',

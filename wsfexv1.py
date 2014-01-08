@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 import datetime
 import decimal
@@ -42,7 +42,7 @@ class WSFEXv1(BaseWS):
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version',
+        'XmlRequest', 'XmlResponse', 'Version', 'LanzarExcepciones',
         'Resultado', 'Obs', 'Reproceso',
         'CAE','Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg', 'FchVencCAE',
         'Excepcion', 'LanzarExcepciones', 'Traceback', "InstallDir",
