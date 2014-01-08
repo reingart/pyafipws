@@ -44,7 +44,8 @@ long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"
              "ARBA (Remito Electrónico)")
 
 data_files = [
-    (".", ["licencia.txt", "rece.ini.dist", "geotrust.crt", "afip_ca_info.crt", ]),
+    (".", ["licencia.txt",]),
+    ("conf", ["conf/rece.ini", "conf/geotrust.crt", "conf/afip_ca_info.crt", ]),
     ("cache", glob.glob("cache/*")),
     ]
 
@@ -197,7 +198,7 @@ if 'py2exe' in sys.argv:
             Target(module=wslpg, script='wslpg.py', dest_base="wslpg_cli"),
             ]
         data_files += [
-            (".", ["wslpg.ini", "wslpg_aut_test.xml",]),
+            ("conf", ["conf/wslpg.ini"]),
             ("plantillas", [ 
                "plantillas/liquidacion_form_c1116b_wslpg.csv",
                "plantillas/liquidacion_form_c1116b_wslpg.png",
