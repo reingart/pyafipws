@@ -141,4 +141,4 @@
   'name': 'bgTemplate',
   'size': (592, 265),
   'title': u'Aplicativo Factura Electr\xf3nica (PyRece)',
-  'type': 'Window'}]
+  'type': 'Form'}]
