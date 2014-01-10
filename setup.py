@@ -69,7 +69,10 @@ if 'py2exe' in sys.argv:
             pass 
 
     # don't pull in all this MFC stuff used by the makepy UI.
-    excludes=["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui"]
+    excludes=["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui",
+              "Tkconstants","Tkinter","tcl",
+              "_imagingtk", "PIL._imagingtk", "ImageTk", "PIL.ImageTk", "FixTk",
+             ]
 
     # basic options for py2exe
     opts = { 
