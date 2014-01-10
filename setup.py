@@ -139,6 +139,7 @@ if 'py2exe' in sys.argv:
             data_files.append((".", ["wsaa.tlb"]))
             
         __version__ += (wsaa.HOMO and '-homo' or '-full')
+        __version__ += "+wsaa"
 
     if 'wsfev1' in globals():
         kwargs['com_server'] += [
@@ -151,6 +152,7 @@ if 'py2exe' in sys.argv:
         if wsfev1.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
             data_files.append((".", ["wsfev1.tlb"]))
+        __version__ += "+wsfev1"
 
     if 'wsfexv1' in globals():
         kwargs['com_server'] += [
@@ -160,6 +162,7 @@ if 'py2exe' in sys.argv:
             Target(module=wsfexv1, script='wsfexv1.py', dest_base="wsfexv1_cli"), 
             Target(module=recex1, script='recex1.py'), 
             ]
+        __version__ += "+wsfexv1"
     
     if 'wsmtx' in globals():
         kwargs['com_server'] += [
@@ -169,7 +172,8 @@ if 'py2exe' in sys.argv:
             Target(module=wsmtx, script='wsmtx.py', dest_base="wsmtx_cli"), 
             Target(module=recem, script='recem.py'), 
             ]             
-    
+        __version__ += "+wsmtx"
+
     if 'pyfepdf' in globals():
         kwargs['com_server'] += [
             Target(module=pyfepdf, modules="pyfepdf", create_exe=False, create_dll=True),
@@ -189,6 +193,7 @@ if 'py2exe' in sys.argv:
         data_files += [
             ("plantillas", ["plantillas/factura.csv", 'plantillas/fpdf.png']),
             ]
+        __version__ += "+pyfepdf"
 
     if 'designer' in globals():
         kwargs['windows'] += [
@@ -202,6 +207,7 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wsctg11, script='wsctg11.py', dest_base="wsctg11_cli"),
             ]
+        __version__ += "+wsctg11"
 
     if 'wslpg' in globals():
         kwargs['com_server'] += [
@@ -221,6 +227,7 @@ if 'py2exe' in sys.argv:
                "plantillas/liquidacion_wslpg_ajuste_debcred.png",
                 ]),
             ]
+        __version__ += "+wslpg"
     
     if 'wscoc' in globals():
         kwargs['com_server'] += [
@@ -229,6 +236,7 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wscoc, script='wscoc.py', dest_base="wscoc_cli"),
             ]
+        __version__ += "+wscoc"
 
     if 'wscdc' in globals():
         kwargs['com_server'] += [
@@ -237,6 +245,7 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wscdc, script='wscdc.py', dest_base="wscdc_cli"),
             ]
+        __version__ += "+wscdc"
 
     if 'cot' in globals():
         kwargs['com_server'] += [
@@ -254,6 +263,7 @@ if 'py2exe' in sys.argv:
             "datos/TB_20111111112_000000_20101229_000001.txt", 
             "datos/TB_20111111112_000000_20101229_000001.xml",
             ])]
+        __version__ += "+cot"
 
     if 'trazamed' in globals():
         kwargs['com_server'] += [
@@ -265,6 +275,7 @@ if 'py2exe' in sys.argv:
         if trazamed.TYPELIB:
             kwargs['windows'] += [Target(module=trazamed, script="trazamed.py", dest_base="trazamed")]
             data_files.append((".", ["trazamed.tlb"]))
+        __version__ += "+trazamed"
 
     if 'trazarenpre' in globals():
         kwargs['com_server'] += [
@@ -276,6 +287,7 @@ if 'py2exe' in sys.argv:
         if trazarenpre.TYPELIB:
             kwargs['windows'] += [Target(module=trazarenpre, script="trazarenpre.py", dest_base="trazarenpre")]
             data_files.append((".", ["trazarenpre.tlb"]))
+        __version__ += "+trazarenpre"
 
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
