@@ -1492,11 +1492,13 @@ class WSLPG(BaseWS):
     # Funciones para generar PDF:
 
 
-    def CargarFormatoPDF(self, archivo=""):
+    def CargarFormatoPDF(self, archivo="liquidacion_form_c1116b_wslpg.csv"):
         "Cargo el formato de campos a generar desde una planilla CSV"
-        if not archivo:
-            archivo = os.path.join(self.InstallDir, 
-                                    "liquidacion_form_c1116b_wslpg.csv")
+
+        # si no encuentro archivo, lo busco en el directorio predeterminado:
+        if not os.path.exists(archivo):
+            archivo = os.path.join(self.InstallDir, "plantillas", os.path.basename(archivo))
+
         if DEBUG: print "abriendo archivo ", archivo
         # inicializo la lista de los elementos:
         self.elements = []
@@ -1517,7 +1519,7 @@ class WSLPG(BaseWS):
             # corrijo path relativo para las imágenes:
             if args[1] == 'I':
                 if not os.path.exists(args[14]):
-                    args[14] = os.path.join(self.InstallDir, args[14])
+                    args[14] = os.path.join(self.InstallDir, "plantillas", os.path.basename(args[14]))
                 if DEBUG: print "NUEVO PATH:", args[14]          
 
             self.AgregarCampoPDF(*args)
@@ -1530,6 +1532,7 @@ class WSLPG(BaseWS):
             self.AgregarCampoPDF("homo", 'T', 100, 250, 0, 0,
                               size=70, rotate=45, foreground=0x808080, 
                               priority=-1)
+
         
         # cargo los elementos en la plantilla
         self.template.load_elements(self.elements)
