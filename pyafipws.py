@@ -21,19 +21,17 @@ import sys
 import wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
 from php import SimpleXMLElement, SoapFault, SoapClient, parse_proxy
 import traceback
-from win32com.server.exception import COMException
-import winerror
 import socks
-import pythoncom
 
+try:
+    from win32com.server.exception import COMException
+    import winerror
+    import pythoncom
+except ImportError:
+    print "La extension win32 no presente, interfaz COM deshabilitada"
+    COMException = RuntimeError
+    
 HOMO = True
-
-debugging = 1
-if debugging:
-    from win32com.server.dispatcher import DefaultDebugDispatcher
-    useDispatcher = DefaultDebugDispatcher
-else:
-    useDispatcher = None
 
 vbObjectError= -2147221504
 def raiseSoapError(e):
