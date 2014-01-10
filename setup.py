@@ -95,7 +95,7 @@ if 'py2exe' in sys.argv:
             }
         }
 
-    desc = "Instalador PyAfipWs %s"
+    desc = "Instalador PyAfipWs"
     kwargs['com_server'] = []
     kwargs['console'] = []
     kwargs['windows'] = []
@@ -301,7 +301,7 @@ if 'py2exe' in sys.argv:
             ]
 
 else:
-    desc = "Paquete PyAfipWs %s"
+    desc = "Paquete PyAfipWs
     kwargs['package_dir'] = {'pyafipws': '.'}
     kwargs['packages'] = ['pyafipws']
     opts = {}
@@ -313,7 +313,8 @@ setup(name="PyAfipWs",
       long_description=long_desc,
       author="Mariano Reingart",
       author_email="reingart@gmail.com",
-      url="http://www.sistemasagiles.com.ar",
+      url="https://code.google.com/p/pyafipws/" if 'register' in sys.argv 
+          else "http://www.sistemasagiles.com.ar",
       license="GNU GPL v3",
       options=opts,
       data_files=data_files,
