@@ -17,7 +17,7 @@ import glob
 import os
 import sys
 
-# modulos a compilar:
+# modulos a compilar y empaquetar (comentar si no se desea incluir):
 
 import pyafipws
 import pyrece
@@ -33,7 +33,13 @@ import wscdc
 import cot
 import trazamed
 import trazarenpre
-import designer
+
+# herramientas opcionales a compilar y empaquetar:
+try:
+    import designer     
+except ImportError:
+    # el script pyfpdf/tools/designer.py no esta disponible:
+    print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
 
 # parametros para setup:
 kwargs = {}
