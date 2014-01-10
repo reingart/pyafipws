@@ -33,6 +33,7 @@ import wscdc
 import cot
 import trazamed
 import trazarenpre
+import designer
 
 # parametros para setup:
 kwargs = {}
@@ -108,7 +109,6 @@ if 'py2exe' in sys.argv:
             ]
         kwargs['windows'] += [
             Target(module=pyrece, script='pyrece.py'),
-            'designer.py',
             ]
         data_files += [
             (".", [
@@ -176,10 +176,14 @@ if 'py2exe' in sys.argv:
             Target(module=pyfepdf, script="pyfepdf.py", dest_base="pyfepdf_com"),
             Target(module=pyemail, script="pyemail.py", dest_base="pyemail_com"),
             Target(module=pyi25, script="pyi25.py", dest_base="pyi25_com"),
-            'designer.py',
             ]
         data_files += [
             ("plantillas", ["plantillas/factura.csv", 'plantillas/fpdf.png']),
+            ]
+
+    if 'designer' in globals():
+        kwargs['windows'] += [
+            Target(module=designer, script="designer.py", dest_base="designer"),
             ]
             
     if 'wsctg11' in globals():
