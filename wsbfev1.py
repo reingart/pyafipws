@@ -101,7 +101,7 @@ class WSBFEv1(BaseWS):
                 'imp_op_ex': imp_op_ex, 'imp_tot_conc': imp_tot_conc,
                 'imp_perc': imp_perc, 'imp_perc_mun': imp_perc_mun, 
                 'imp_iibb': imp_iibb, 'imp_internos': imp_internos, 
-                'moneda_id': imp_moneda_id, 'moneda_ctz': imp_moneda_ctz,
+                'imp_moneda_id': imp_moneda_id, 'imp_moneda_ctz': imp_moneda_ctz,
                 'cbtes_asoc': [],
                 'iva': [],
                 'detalles': [],
@@ -139,8 +139,8 @@ class WSBFEv1(BaseWS):
                 'Punto_vta': f['punto_vta'],
                 'Cbte_nro': f['cbte_nro'],
                 'Tipo_doc': f['tipo_doc'], 'Nro_doc': f['nro_doc'], 
-                'Imp_moneda_Id': f['moneda_id'],
-                'Imp_moneda_ctz': f['moneda_ctz'],                
+                'Imp_moneda_Id': f['imp_moneda_id'],
+                'Imp_moneda_ctz': f['imp_moneda_ctz'],                
                 'Imp_total': f['imp_total'],
                 'Imp_tot_conc': f['imp_tot_conc'], 'Imp_op_ex': f['imp_op_ex'],
                 'Imp_neto': f['imp_neto'], 'Impto_liq': f['impto_liq'], 
@@ -167,13 +167,16 @@ class WSBFEv1(BaseWS):
         if 'BFEResultAuth' in result:
             auth = result['BFEResultAuth']
             # Resultado: A: Aceptado, R: Rechazado
-            self.Resultado = auth['Resultado']
+            self.Resultado = auth.get('Resultado', "")
             # Obs:
-            self.Obs = auth['Obs']
-            self.Reproceso = auth['Reproceso']
-            self.CAE = auth['Cae']
-            self.CbteNro  = auth['Fch_cbte']
-            vto = str(auth['Fch_venc_Cae'])
+            self.Obs = auth.get('Obs', "")
+            self.Reproceso = auth.get('Reproceso', "")
+            self.CAE = auth.get('Cae', "")
+            self.CbteNro  = auth.get('Fch_cbte', "")
+            self.ImpTotal = str(auth.get('Imp_total', ''))
+            self.ImptoLiq = str(auth.get('Impto_liq', ''))
+            self.ImpNeto = str(auth.get('Imp_neto', ''))
+            vto = str(auth.get('Fch_venc_Cae', ''))
             self.FchVencCAE = vto
             self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
             return self.CAE
