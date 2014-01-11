@@ -203,18 +203,19 @@ class WSBFEv1(BaseWS):
         if 'BFEResultGet' in result:
             resultget = result['BFEResultGet']
             # Obs, cae y fecha cae
-            self.Obs = resultget['Obs'] and resultget['Obs'].strip(" ") or ''
-            self.CAE = resultget['Cae']
-            vto = str(resultget['Fch_venc_Cae'])
-            self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
-            self.FechaCbte = resultget['Fecha_cbte_orig'] #.strftime("%Y/%m/%d")
-            self.FechaCAE = resultget['Fecha_cbte_cae'] #.strftime("%Y/%m/%d")            
-            self.PuntoVenta = resultget['Punto_vta'] # 4000
-            self.Resultado = resultget['Resultado']
-            self.CbteNro =resultget['Cbte_nro']
-            self.ImpTotal = resultget['Imp_total']
-            self.ImptoLiq = resultget['Impto_liq']
-            self.ImpNeto = resultget['Imp_neto']
+            if 'Cae' in resultget:
+                self.Obs = resultget['Obs'] and resultget['Obs'].strip(" ") or ''
+                self.CAE = resultget['Cae']
+                vto = str(resultget['Fch_venc_Cae'])
+                self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
+                self.FechaCbte = resultget['Fecha_cbte_orig'] #.strftime("%Y/%m/%d")
+                self.FechaCAE = resultget['Fecha_cbte_cae'] #.strftime("%Y/%m/%d")            
+                self.PuntoVenta = resultget['Punto_vta'] # 4000
+                self.Resultado = resultget['Resultado']
+                self.CbteNro =resultget['Cbte_nro']
+                self.ImpTotal = resultget['Imp_total']
+                self.ImptoLiq = resultget['Impto_liq']
+                self.ImpNeto = resultget['Imp_neto']
             return self.CAE
         else:
             return 0
