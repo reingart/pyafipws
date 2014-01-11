@@ -24,6 +24,7 @@ import pyrece
 import wsaa
 import wsfev1, rece1
 import wsfexv1, recex1
+import wsbfev1, receb1
 import wsmtx, recem
 import pyfepdf, pyemail, pyi25
 import wsctg11
@@ -161,6 +162,16 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wsfexv1, script='wsfexv1.py', dest_base="wsfexv1_cli"), 
             Target(module=recex1, script='recex1.py'), 
+            ]
+        __version__ += "+wsfexv1"
+
+    if 'wsbfev1' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsfexv1, modules="wsbfev1", create_exe=True, create_dll=True)
+            ]
+        kwargs['console'] += [
+            Target(module=wsbfev1, script='wsbfev1.py', dest_base="wsbfev1_cli"), 
+            Target(module=receb1, script='receb1.py'), 
             ]
         __version__ += "+wsfexv1"
     
@@ -301,7 +312,7 @@ if 'py2exe' in sys.argv:
             ]
 
 else:
-    desc = "Paquete PyAfipWs
+    desc = "Paquete PyAfipWs"
     kwargs['package_dir'] = {'pyafipws': '.'}
     kwargs['packages'] = ['pyafipws']
     opts = {}
