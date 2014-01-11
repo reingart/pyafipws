@@ -448,7 +448,7 @@ if __name__ == "__main__":
         wsdl = "http://wswhomo.afip.gov.ar/WSFEXv1/service.asmx"
         cache = proxy = ""
         wrapper = "httplib2"
-        cacert = open("afip_ca_info.crt").read()
+        cacert = open("conf/afip_ca_info.crt").read()
         ok = wsfexv1.Conectar(cache, wsdl, proxy, wrapper, cacert)
     
         if '--dummy' in sys.argv:
