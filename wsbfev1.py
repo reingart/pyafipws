@@ -535,7 +535,6 @@ if __name__ == "__main__":
                 raise
 
         if "--get" in sys.argv:
-            wsbfev1.client.help("FEXGetCMP")
             tipo_cbte = 1
             punto_vta = 5
             cbte_nro = wsbfev1.GetLastCMP(tipo_cbte, punto_vta)
@@ -551,10 +550,10 @@ if __name__ == "__main__":
 
             wsbfev1.AnalizarXml("XmlResponse")
             p_assert_eq(wsbfev1.ObtenerTagXml('Cae'), str(wsbfev1.CAE))
-            p_assert_eq(wsbfev1.ObtenerTagXml('Fecha_cbte'), wsbfev1.FechaCbte)
-            p_assert_eq(wsbfev1.ObtenerTagXml('Moneda_Id'), "012")
-            p_assert_eq(wsbfev1.ObtenerTagXml('Moneda_ctz'), "0.50")
-            p_assert_eq(wsbfev1.ObtenerTagXml('Id_impositivo'), "PJ54482221-l")
+            p_assert_eq(wsbfev1.ObtenerTagXml('Fecha_cbte_orig'), wsbfev1.FechaCbte)
+            p_assert_eq(wsbfev1.ObtenerTagXml('Imp_moneda_Id'), "PES")
+            p_assert_eq(wsbfev1.ObtenerTagXml('Imp_moneda_ctz'), "1")
+            p_assert_eq(wsbfev1.ObtenerTagXml('Items', 'Item', 1, 'Pro_ds'), "prueba 2")
 
         if "--params" in sys.argv:
             import codecs, locale
