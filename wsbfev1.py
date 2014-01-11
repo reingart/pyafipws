@@ -109,13 +109,12 @@ class WSBFEv1(BaseWS):
         self.factura = fact
         return True
     
-    def AgregarItem(self, ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total):
+    def AgregarItem(self, ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total, **kwargs):
         "Agrego un item a una factura (interna)"
         ##ds = unicode(ds, "latin1") # convierto a latin1
         # Nota: no se calcula neto, iva, etc (deben venir calculados!)
         self.factura['detalles'].append({
                 'ncm': ncm, 'sec': sec,
-                'codigo': codigo,                
                 'ds': ds,
                 'qty': qty,
                 'umed': umed,
@@ -151,7 +150,6 @@ class WSBFEv1(BaseWS):
                 'Imp_internos': f['imp_internos'],
                 'Items': [
                     {'Item': {
-                        'Pro_codigo': d['codigo'],
                         'Pro_codigo_ncm': d['ncm'],
                         'Pro_codigo_sec': d['sec'],
                         'Pro_ds': d['ds'],
@@ -482,7 +480,6 @@ if __name__ == "__main__":
                 # Agrego un item:
                 ncm = '7308.10.00'
                 sec = ''
-                codigo = "PRO1"
                 umed = 7  # unidades
                 ds = 'prueba Anafe economico'
                 qty = "2.00"
@@ -495,7 +492,6 @@ if __name__ == "__main__":
                 # Agrego otro item:
                 ncm = '7308.20.00'
                 sec = ''
-                codigo = "PRO2"
                 umed = 7  # unidades
                 ds = 'prueba 2'
                 qty = "4.00"
