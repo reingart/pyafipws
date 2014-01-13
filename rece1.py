@@ -126,7 +126,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs)]
         dic = leer_dbf(formatos, conf_dbf)
         encabezado = encabezado[0]
-    if '/json' in sys.argv:
+    elif '/json' in sys.argv:
         import json
         encabezado = json.load(entrada)[0]
         ivas = encabezado.get('ivas', [])
