@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26a"
+__version__ = "1.27a"
 
 import datetime
 import os
@@ -27,6 +27,7 @@ from ConfigParser import SafeConfigParser
 # revisar la instalación de pyafip.ws:
 import wsfexv1
 from php import SimpleXMLElement, SoapClient, SoapFault, date
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
 
 
 HOMO = wsfexv1.HOMO
@@ -47,9 +48,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
 # definición del formato del archivo de intercambio:
-N = 'Numerico'
-A = 'Alfanumerico'
-I = 'Importe'
+
 if not '--pyfepdf' in sys.argv:
     TIPOS_REG = '0', '1', '2', '3'
     ENCABEZADO = [
@@ -121,72 +120,6 @@ if '/recex' in sys.argv:
     DETALLE.append(('bonif', 12, I, 6))
 
 
-def leer(linea, formato):
-    dic = {}
-    comienzo = 1
-    for fmt in formato:    
-        clave, longitud, tipo = fmt[0:3]
-        if isinstance(longitud, tuple):
-            longitud, dec = longitud
-        else:
-            dec = len(fmt)>3 and fmt[3] or 2
-        valor = linea[comienzo-1:comienzo-1+longitud].strip()
-        try:
-            if tipo == N:
-                if valor:
-                    valor = str(int(valor))
-                else:
-                    valor = '0'
-            elif tipo == I:
-                if valor:
-                    try:
-                        valor = valor.strip(" ")
-                        valor = float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
-                    except ValueError:
-                        raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
-                else:
-                    valor = 0.00
-            else:
-                valor = valor.decode("ascii","ignore")
-            dic[clave] = valor
-
-            comienzo += longitud
-        except Exception, e:
-            raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
-                clave, comienzo, valor, str(e)))
-    return dic
-
-def escribir(dic, formato):
-    linea = " " * 335
-    comienzo = 1
-    for fmt in formato:
-        clave, longitud, tipo = fmt[0:3]
-        if isinstance(longitud, tuple):
-            longitud, dec = longitud
-        else:
-            dec = len(fmt)>3 and fmt[3] or 2
-        if clave.capitalize() in dic:
-            clave = clave.capitalize()
-        valor = dic.get(clave,"")
-        try:
-            if isinstance(valor, unicode):
-                valor = valor.encode("latin1", "replace")
-            else:
-                valor = str(valor)
-            if tipo == N and valor and valor!="NULL":
-                valor = ("%%0%dd" % longitud) % int(valor)
-            elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % int(float(valor)*(10**dec))
-            else:
-                valor = ("%%0%ds" % longitud) % valor
-            linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
-            comienzo += longitud
-        except (TypeError, ValueError), e:
-            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
-                clave, comienzo, valor, str(e)))
-    return linea + "\n"
-
-
 def autorizar(ws, entrada, salida):
     # recupero el último número de transacción
     ##id = wsfex.ultnro(client, token, sign, cuit)
@@ -212,7 +145,7 @@ def autorizar(ws, entrada, salida):
         else:
             print "Tipo de registro incorrecto:", linea[0]
 
-    if not encabezado['id'].strip() or int(encabezado['id'])==0:
+    if not encabezado['id']:
         # TODO: habria que leer y/o grabar el id en el archivo
         ##id += 1 # incremento el nº de transacción 
         # Por el momento, el id se calcula con el tipo, pv y nº de comprobant
