@@ -333,7 +333,7 @@ class BaseWS:
 # Funciones para manejo de archivos de texto de campos de ancho fijo:
 
 
-def leer(linea, formato):
+def leer(linea, formato, expandir_fechas=False):
     "Analiza una linea de texto dado un formato, devuelve un diccionario"
     dic = {}
     comienzo = 1
@@ -352,12 +352,20 @@ def leer(linea, formato):
             elif tipo == I:
                 if valor:
                     try:
-                        valor = valor.strip(" ")
-                        valor = float(("%%s.%%0%sd" % dec) % (long(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
+                        if '.' in valor:
+                                valor = float(valor)
+                        else:
+                            valor = valor.strip(" ")
+                            valor = float(("%%s.%%0%sd" % dec) % (long(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
                     except ValueError:
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
                     valor = 0.00
+            elif expandir_fechas and clave.lower().startswith("fec") and longitud <= 8:
+                if valor:
+                    valor = "%s-%s-%s" % (valor[0:4], valor[4:6], valor[6:8])
+                else:
+                    valor = None
             else:
                 valor = valor.decode("ascii","ignore")
             dic[clave] = valor
@@ -368,7 +376,7 @@ def leer(linea, formato):
     return dic
 
 
-def escribir(dic, formato):
+def escribir(dic, formato, contraer_fechas=False):
     "Genera una cadena dado un formato y un diccionario de claves/valores"
     linea = " " * sum([fmt[1] for fmt in formato])
     comienzo = 1
@@ -389,6 +397,8 @@ def escribir(dic, formato):
                 valor = ("%%0%dd" % longitud) % long(valor)
             elif tipo == I and valor:
                 valor = ("%%0%dd" % longitud) % long(float(valor)*(10**dec))
+            elif contraer_fechas and clave.lower().startswith("fec") and longitud <= 8 and valor:
+                valor = valor.replace("-", "")
             else:
                 valor = ("%%-0%ds" % longitud) % valor
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
