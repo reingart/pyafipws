@@ -127,23 +127,29 @@ def autorizar(ws, entrada, salida):
     detalles = []
     permisos = []
     cbtasocs = []
-    encabezado = {}
-    for linea in entrada:
-        if str(linea[0])==TIPOS_REG[0]:
-            encabezado = leer(linea, ENCABEZADO)
-            if 'nro_doc' in encabezado:
-                encabezado['cuit_pais_cliente'] = encabezado['nro_doc']
-        elif str(linea[0])==TIPOS_REG[1]:
-            detalle = leer(linea, DETALLE)
-            detalles.append(detalle)
-        elif str(linea[0])==TIPOS_REG[2]:
-            permiso = leer(linea, PERMISO)
-            permisos.append(permiso)
-        elif str(linea[0])==TIPOS_REG[3]:
-            cbtasoc = leer(linea, CMP_ASOC)
-            cbtasocs.append(cbtasoc)
-        else:
-            print "Tipo de registro incorrecto:", linea[0]
+    encabezado = []
+    if '/dbf' in sys.argv:
+        formatos = [('Encabezado', ENCABEZADO, encabezado), ('Permisos', PERMISO, permisos), ('Comprobante Asociado', CMP_ASOC, cbtasocs), ('Detalles', DETALLE, detalles)]
+        dic = leer_dbf(formatos, conf_dbf)
+        encabezado = encabezado[0]
+    else:
+        encabezado = {}
+        for linea in entrada:
+            if str(linea[0])==TIPOS_REG[0]:
+                encabezado = leer(linea, ENCABEZADO)
+                if 'nro_doc' in encabezado:
+                    encabezado['cuit_pais_cliente'] = encabezado['nro_doc']
+            elif str(linea[0])==TIPOS_REG[1]:
+                detalle = leer(linea, DETALLE)
+                detalles.append(detalle)
+            elif str(linea[0])==TIPOS_REG[2]:
+                permiso = leer(linea, PERMISO)
+                permisos.append(permiso)
+            elif str(linea[0])==TIPOS_REG[3]:
+                cbtasoc = leer(linea, CMP_ASOC)
+                cbtasocs.append(cbtasoc)
+            else:
+                print "Tipo de registro incorrecto:", linea[0]
 
     if not encabezado['id']:
         # TODO: habria que leer y/o grabar el id en el archivo
@@ -195,7 +201,7 @@ def autorizar(ws, entrada, salida):
             print "Excepcion:", ws.Excepcion.encode("ascii", "ignore")
             print "Traceback:", ws.Traceback.encode("ascii", "ignore")
 
-def escribir_factura(dic, archivo):
+def escribir_factura(dic, archivo, agrega=False):
     dic['tipo_reg'] = TIPOS_REG[0]
     archivo.write(escribir(dic, ENCABEZADO))
     for it in dic.get('detalles', []):
@@ -205,6 +211,11 @@ def escribir_factura(dic, archivo):
         for it in dic['permisos']:
             it['tipo_reg'] = TIPOS_REG[2]
             archivo.write(escribir(it, PERMISO))
+
+    if '/dbf' in sys.argv:
+        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Permisos', PERMISO, dic.get('permisos', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])), ('Detalles', DETALLE, dic.get('detalles', []))]
+        guardar_dbf(formatos, agrega, conf_dbf)
+
             
 def depurar_xml(client):
     fecha = time.strftime("%Y%m%d%H%M%S")
@@ -228,6 +239,7 @@ if __name__ == "__main__":
         print " /formato: muestra el formato de los archivos de entrada/salida"
         print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
         print " /xml: almacena los requerimientos y respuestas XML (depuración)"
+        print " /dbf: lee y almacena la información en tablas DBF"
         print
         print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
         sys.exit(0)
@@ -249,6 +261,12 @@ if __name__ == "__main__":
     else:
         wsfexv1_url = ""
 
+    if config.has_section('DBF'):
+        conf_dbf = dict(config.items('DBF'))
+        if DEBUG: print "conf_dbf", conf_dbf
+    else:
+        conf_dbf = {}
+        
     if '/debug'in sys.argv:
         DEBUG = True
 
@@ -356,7 +374,7 @@ if __name__ == "__main__":
                 
             dic = ws.factura
             dic['id'] = ws.GetLastID() + 1
-            escribir_factura(dic, f_entrada)
+            escribir_factura(dic, f_entrada, agrega=True)
             f_entrada.close()
         
         if '/ult' in sys.argv:
