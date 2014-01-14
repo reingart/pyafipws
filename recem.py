@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.30c"
+__version__ = "1.31a"
 
 import datetime
 import os
@@ -27,6 +27,7 @@ from ConfigParser import SafeConfigParser
 # revisar la instalación de pyafip.ws:
 import wsmtx
 from php import SimpleXMLElement, SoapClient, SoapFault, date
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
 
 
 HOMO = wsmtx.HOMO
@@ -48,9 +49,6 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
 # definición del formato del archivo de intercambio:
-N = 'Numerico'
-A = 'Alfanumerico'
-I = 'Importe'
 
 if not '--pyfepdf' in sys.argv:
     TIPOS_REG = '0', '1', '2', '3', '4', '5'
@@ -127,96 +125,9 @@ if not '--pyfepdf' in sys.argv:
 else:
     print "!" * 78
     print "importando formato segun pyfepdf"
-    from formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
+    from formatos.formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
     TIPOS_REG = '0', '5', '4', '3', '1'
 
-def leer(linea, formato):
-    dic = {}
-    comienzo = 1
-    for fmt in formato:    
-        clave, longitud, tipo = fmt[0:3]
-        if isinstance(longitud, tuple):
-            longitud, dec = longitud
-        else:
-            dec = len(fmt)>3 and fmt[3] or 2
-            
-        valor = linea[comienzo-1:comienzo-1+longitud].strip()
-        try:
-            if tipo == N:
-                if valor:
-                    valor = str(int(valor))
-                else:
-                    valor = '0'
-            elif tipo == I:
-                if valor:
-                    try:
-                        if '.' in valor:
-                            valor = float(valor)
-                        else:
-                            valor = valor.strip(" ")
-                            valor = float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
-                    except ValueError:
-                        raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
-                else:
-                    valor = 0.00
-            elif clave.lower().startswith("fec") and longitud <= 8:
-                if valor:
-                    valor = "%s-%s-%s" % (valor[0:4], valor[4:6], valor[6:8])
-                else:
-                    valor = None
-            else:
-                valor = valor.decode("ascii","ignore")
-            if clave=='concepto':
-                if PDB: import pdb;pdb.set_trace()
-            dic[clave] = valor
-
-            comienzo += longitud
-        except Exception, e:
-            if PDB: import pdb; pdb.set_trace()
-
-            raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
-                clave, comienzo, valor, str(e)))
-    return dic
-
-def escribir(dic, formato):
-    linea = " " * 335
-    comienzo = 1
-    for fmt in formato:
-        clave, longitud, tipo = fmt[0:3]
-        if isinstance(longitud, tuple):
-            longitud, dec = longitud
-        else:
-            dec = len(fmt)>3 and fmt[3] or 2
-        try:
-            if clave.capitalize() in dic:
-                clave = clave.capitalize()
-            s = dic.get(clave,"")
-            if isinstance(s, unicode):
-                s = s.encode("latin1")
-            if s is None:
-                valor = ""
-            else:
-                valor = str(s)
-            if tipo == N and valor and valor!="NULL":
-                valor = ("%%0%dd" % longitud) % int(valor)
-            elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % int(float(valor)*(10**dec))
-            elif clave.lower().startswith("fec") and longitud <= 8 and valor:
-                ##import pdb; pdb.set_trace()
-                valor = valor.replace("-", "")
-            else:
-                valor = ("%%-0%ds" % longitud) % valor
-            if len(valor) != longitud:
-                print "Longitud incorrecta!", clave, valor
-                if PDB: import pdb;pdb.set_trace()
-                valor = " "* (longitud-len(valor)) + valor
-            linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
-            comienzo += longitud
-        except Exception, e:
-            import pdb; pdb.set_trace()
-            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
-                clave, comienzo, valor, str(e)))
-    return linea + "\n"
 
 
 def autorizar(ws, entrada, salida, informar_caea=False):
@@ -226,29 +137,13 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     encabezado = []
     detalles = []
     if '/dbf' in sys.argv:
-        import dbf
-        if DEBUG: print "Leyendo DBF..."
-
         formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs), ('Detalles', DETALLE, detalles)]
-        for nombre, formato, ld in formatos:
-            filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
-            if DEBUG: print "leyendo tabla", nombre, filename
-            tabla = dbf.Table(filename)
-            for reg in tabla:
-                r = {}
-                d = reg.scatter_fields() 
-                for fmt in formato:
-                    clave, longitud, tipo = fmt[0:3]
-                    #import pdb; pdb.set_trace()
-                    v = d[clave.replace("_","")[:10]]
-                    r[clave] = v
-                ld.append(r)    
-            tabla.close()
+        dic = leer_dbf(formatos, conf_dbf)
         encabezado = encabezado[0]
     else:
         for linea in entrada:
             if str(linea[0])==TIPOS_REG[0]:
-                encabezado = leer(linea, ENCABEZADO)
+                encabezado = leer(linea, ENCABEZADO, expandir_fechas=True)
                 if 'cbte_nro' in encabezado:
                     print "*" * 80
                     print "cbte_nro", encabezado['cbte_nro']
@@ -317,10 +212,10 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         escribir_factura(dic, salida)
         print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
 
-def escribir_factura(dic, archivo):
+def escribir_factura(dic, archivo, agrega=False):
     dic['tipo_reg'] = TIPOS_REG[0]
     dic['cbte_nro'] = dic.get('cbt_desde')
-    archivo.write(escribir(dic, ENCABEZADO))
+    archivo.write(escribir(dic, ENCABEZADO, contraer_fechas=True))
     if 'tributos' in dic:
         for it in dic['tributos']:
             it['tipo_reg'] = TIPOS_REG[1]
@@ -340,51 +235,8 @@ def escribir_factura(dic, archivo):
             archivo.write(escribir(it, DETALLE))
             
     if '/dbf' in sys.argv:
-        import dbf
-        if DEBUG: print "Creando DBF..."
-
-        tablas = {}
         formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic.get('tributos', [])), ('Iva', IVA, dic.get('iva', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])), ('Detalles', DETALLE, dic.get('detalles', []))]
-        for nombre, formato, l in formatos:
-            campos = []
-            claves = []
-            for fmt in formato:
-                clave, longitud, tipo = fmt[0:3]
-                dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                if longitud>250:
-                    tipo = "M" # memo!
-                elif tipo == A:
-                    tipo = "C(%s)" % longitud 
-                elif tipo == N:
-                    tipo = "N(%s,0)" % longitud 
-                elif tipo == I:
-                    tipo = "N(%s,%s)" % (longitud, dec)
-                campo = "%s %s" % (clave.replace("_","")[:10], tipo)
-                if DEBUG: print "tabla %s campo %s" %  (nombre, campo)
-                campos.append(campo)
-                claves.append(clave.replace("_","")[:10])
-            filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
-            if DEBUG: print "escribiendo tabla", nombre, filename
-            if '/delete' in sys.argv:
-                if DEBUG: print "eliminando", filename
-                os.unlink(filename)
-            tabla = dbf.Table(filename, campos)
-
-            for d in l:
-                r = {}
-                for fmt in formato:
-                    clave, longitud, tipo = fmt[0:3]
-                    v = d.get(clave, None)
-                    if DEBUG: print clave,v, tipo
-                    if v is None and tipo == A:
-                        v = ''
-                    if (v is None or v=='') and tipo in (I, N):
-                        v = 0
-                    if tipo == A:
-                        v = unicode(v)
-                    r[clave.replace("_","")[:10]] = v
-                registro = tabla.append(r)
-            tabla.close()
+        guardar_dbf(formatos, agrega, conf_dbf)
 
 def depurar_xml(client):
     global wsmtxca_xml_dir
@@ -587,7 +439,7 @@ if __name__ == "__main__":
                 print ws.factura
 
             dic = ws.factura
-            escribir_factura(dic, f_entrada)            
+            escribir_factura(dic, f_entrada, agrega=True)            
             f_entrada.close()
       
         if '/ult' in sys.argv:
