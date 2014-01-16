@@ -23,6 +23,8 @@ __version__ = "1.01a"
 import sys, os, time
 from ConfigParser import SafeConfigParser
 from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
+
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL" 
@@ -30,6 +32,33 @@ HOMO = True
 CONFIG_FILE = "rece.ini"
 
 # No debería ser necesario modificar nada despues de esta linea
+
+# definición del formato del archivo de intercambio (sólo para linea de comandos):
+
+ENCABEZADO = [
+    ('tipo_reg', 1, A, u"0: encabezado"),
+    ('cbte_modo', 4, A, u"Modalidad de autorización (CAI, CAE, CAEA)"),
+    ('cuit_emisor', 11, A, u"CUIT del emisor del comprobante"),
+    ('pto_vta', 4, N, u"Punto de Venta del comprobante"),
+    ('cbte_tipo', 3, N, u"Tipo de comprobante"),
+    ('cbte_nro', 8, N, u"Número de comprobante"),
+    ('cbte_fch', 8, A, u"Fecha en formato AAAAMMDD"),
+    ('imp_total', 15, I, u"Importe total Double (13 + 2)"),
+    ('cod_autorizacion', 14, A, u"Número de CAI, CAE, CAEA"),
+    ('doc_tipo_receptor', 2, A, u"Tipo de documento del receptor"),
+    ('doc_nro_receptor', 20, A, u"N° de documento del receptor"),
+    # campos devueltos por AFIP (respuesta)
+    ('resultado', 1, A, u"Resultado (A: Aprobado, O: Observado, R: rechazado)"),
+    ('fch_proceso', 14, A, u"Fecha y hora de procesamiento"),
+    ]
+
+OBSERVACION = [
+    ('tipo_reg', 1, A, u"O: observaciones devueltas por AFIP"),
+    ('code', 5, N, u"Código de Observación / Error / Evento"),
+    ('msg', 255, A, u"Mensaje"),
+    ]
+
+EVENTO = ERROR = OBSERVACION        # misma estructura, cambia tipo de registro
 
 
 class WSCDC(BaseWS):
@@ -185,6 +214,23 @@ INSTALL_DIR = WSCDC.InstallDir = get_install_dir()
 
 def main():
     "Funcion principal para utilizar la interfaz por linea de comando"
+
+    if '--formato' in sys.argv:
+        print "Formato:"
+        for msg, formato in [('Encabezado', ENCABEZADO),
+                             ('Observacion', OBSERVACION),
+                             ('Evento', EVENTO), ('Error', ERROR), 
+                             ]:
+            comienzo = 1
+            print "=== %s ===" % msg
+            print "|| %-20s || %8s || %9s || %-12s || %-20s ||" % (
+                "Campo", "Posición", "Longitud", "Tipo", "Descripción")
+            for fmt in formato:
+                clave, longitud, tipo, desc = fmt
+                print "|| %-20s || %8d || %9d || %-12s || %-20s ||" % (
+                    clave, comienzo, longitud, tipo, desc.encode("latin1"))
+                comienzo += longitud
+        sys.exit(0)
     
     # leer configuracion
     global CONFIG_FILE
