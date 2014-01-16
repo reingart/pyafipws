@@ -244,6 +244,10 @@ if __name__ == "__main__":
         print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
         sys.exit(0)
 
+    if len(sys.argv)>1 and sys.argv[1][0] not in "-/":
+        CONFIG_FILE = sys.argv.pop(1)
+    if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
+    
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
     cert = config.get('WSAA','CERT')
