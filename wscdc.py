@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.02a"
 
 import sys, os, time
 from ConfigParser import SafeConfigParser
@@ -104,6 +104,11 @@ class WSCDC(BaseWS):
                     error['Err']['Code'],
                     error['Err']['Msg'],
                     ))
+            self.errores = [
+                {'code': err['Err']['Code'],
+                 'msg': err['Err']['Msg'].replace("\n", "")
+                                .replace("\r", "")} 
+                             for err in errores]
             self.ErrCode = ' '.join([str(error['Err']['Code']) for error in errores])
             self.ErrMsg = '\n'.join(self.Errores)
 
@@ -120,7 +125,8 @@ class WSCDC(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConstatarComprobante(self, cbte_modo, cuit_emisor, pto_vta, cbte_tipo, 
                              cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
-                             doc_tipo_receptor=None, doc_nro_receptor=None):
+                             doc_tipo_receptor=None, doc_nro_receptor=None,
+                             **kwargs):
         "Método de Constatación de Comprobantes"
         response = self.client.ComprobanteConstatar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
@@ -143,8 +149,13 @@ class WSCDC(BaseWS):
             resp = result['CmpResp']
             self.Resultado = result['Resultado']
             self.FchProceso = result.get('FchProceso', "")
+            self.observaciones = []
             for obs in result.get('Observaciones', []):
                 self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+                self.observaciones.append({
+                    'code': obs['Obs']['Code'],
+                    'msg': obs['Obs']['Msg'].replace("\n", "")
+                                                    .replace("\r", "")})
             self.Obs = '\n'.join(self.Observaciones)
             self.FechaCbte = resp.get('CbteFch', "") #.strftime("%Y/%m/%d")
             self.CbteNro = resp.get('CbteNro', 0) # 1L
@@ -212,6 +223,50 @@ class WSCDC(BaseWS):
 INSTALL_DIR = WSCDC.InstallDir = get_install_dir()
 
 
+def escribir_archivo(dic, nombre_archivo, agrega=True):
+    archivo = open(nombre_archivo, agrega and "a" or "w")
+    formatos = [('Encabezado', ENCABEZADO, [dic], 0), 
+                ('Observacion', OBSERVACION, dic.get('observaciones', []), 'O'),
+                ('Eventos', ERROR, dic.get('eventos', []), 'V'),
+                ('Error', ERROR, dic.get('errores', []), 'E'),
+                ]
+    if '--json' in sys.argv:
+        json.dump(dic, archivo, sort_keys=True, indent=4)
+    elif '--dbf' in sys.argv:
+        guardar_dbf(formatos, agrega, conf_dbf)
+    else:
+        for nombre, formato, registros, tipo_reg in formatos:
+            for it in registros:
+                it['tipo_reg'] = tipo_reg
+                archivo.write(escribir(it, formato))
+    archivo.close()
+
+
+def leer_archivo(nombre_archivo):
+    archivo = open(nombre_archivo, "r")
+    if '--json' in sys.argv:
+        dic = json.load(archivo)
+    elif '--dbf' in sys.argv:
+        dic = {}
+        formatos = [('Encabezado', ENCABEZADO, dic), 
+                    ]
+        leer_dbf(formatos, conf_dbf)
+    else:
+        dic = {}
+        for linea in archivo:
+            if str(linea[0])=='0':
+                d = leer(linea, ENCABEZADO)
+                dic.update(d)
+            else:
+                print "Tipo de registro incorrecto:", linea[0]
+    archivo.close()
+                
+    if not 'cod_autorizacion' in dic:
+        raise RuntimeError("Archivo de entrada invalido, revise campos y lineas en blanco")
+
+    return dic
+
+
 def main():
     "Funcion principal para utilizar la interfaz por linea de comando"
 
@@ -243,6 +298,14 @@ def main():
     cuit = config.get('WSCDC', 'CUIT')
     url_wsaa = config.get('WSAA', 'URL') if config.has_option('WSAA','URL') else ""
     url_wscdc = config.get('WSCDC', 'URL') if config.has_option('WSCDC','URL') else ""
+    
+    # leo configuración de archivos de intercambio
+    ENTRADA = config.get('WSCDC','ENTRADA')
+    SALIDA = config.get('WSCDC','SALIDA')
+    if config.has_section('DBF'):
+        conf_dbf = dict(config.items('DBF'))
+    else:
+        conf_dbf = {}
 
     # instanciar la interfaz con el webservice
     wscdc = WSCDC()
@@ -263,20 +326,34 @@ def main():
     wscdc.Cuit = cuit
 
     if "--constatar" in sys.argv:
-        if "--prueba" in sys.argv:
-            cbte_modo = "CAE"
-            cuit_emisor = "20267565393"
-            pto_vta = 4002
-            cbte_tipo = 1
-            cbte_nro = 109
-            cbte_fch = "20131227"
-            imp_total = "121.0"
-            cod_autorizacion = "63523178385550" 
-            doc_tipo_receptor = 80 
-            doc_nro_receptor = "30628789661"
-            wscdc.ConstatarComprobante(cbte_modo, cuit_emisor, pto_vta, cbte_tipo, 
-                                 cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
-                                 doc_tipo_receptor, doc_nro_receptor)
+        if len(sys.argv) < 8:
+            if "--prueba" in sys.argv:
+                dic = dict(
+                    cbte_modo="CAE",
+                    cuit_emisor="20267565393",
+                    pto_vta=4002,
+                    cbte_tipo=1,
+                    cbte_nro=109,
+                    cbte_fch="20131227",
+                    imp_total="121.0",
+                    cod_autorizacion="63523178385550",
+                    doc_tipo_receptor=80 ,
+                    doc_nro_receptor="30628789661",
+                    )
+                # escribir archivo de intercambio con datos de prueba:
+                escribir_archivo(dic, ENTRADA)
+            else:
+                # leer archivo de intercambio:
+                dic = leer_archivo(ENTRADA)
+            # constatar el comprobante
+            wscdc.ConstatarComprobante(**dic)
+            # actualizar el diccionario con los datos de devueltos por AFIP
+            dic.update({'resultado': wscdc.Resultado,
+                        'fch_proceso': wscdc.FchProceso,
+                        })
+            dic['observaciones'] = wscdc.observaciones
+            dic['errores'] = wscdc.errores
+            escribir_archivo(dic, SALIDA)
         else:
             # usar los datos pasados por linea de comandos:
             wscdc.ConstatarComprobante(*sys.argv[sys.argv.index("--constatar")+1:])
