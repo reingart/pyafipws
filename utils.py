@@ -22,6 +22,7 @@ import sys
 import os
 import traceback
 from cStringIO import StringIO
+from decimal import Decimal
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
@@ -97,8 +98,10 @@ def inicializar_y_capturar_excepciones(func):
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
             # inicializo (limpio variables)
-            self.Errores = []
+            self.Errores = []           # listas de str para lenguajes legados
             self.Observaciones = []
+            self.errores = []           # listas de dict para usar en python
+            self.observaciones = []
             self.Eventos = []
             self.Traceback = self.Excepcion = ""
             self.ErrCode = self.ErrMsg = self.Obs = ""
@@ -339,7 +342,7 @@ def leer(linea, formato, expandir_fechas=False):
     comienzo = 1
     for fmt in formato:    
         clave, longitud, tipo = fmt[0:3]
-        dec = len(fmt)>3 and fmt[3] or 2
+        dec = (len(fmt)>3 and isinstance(fmt[3], int)) and fmt[3] or 2
         valor = linea[comienzo-1:comienzo-1+longitud].strip()
         try:
             if chr(8) in valor or chr(127) in valor or chr(255) in valor:
@@ -383,7 +386,7 @@ def escribir(dic, formato, contraer_fechas=False):
     for fmt in formato:
         clave, longitud, tipo = fmt[0:3]
         try:
-            dec = len(fmt)>3 and fmt[3] or 2
+            dec = (len(fmt)>3 and isinstance(fmt[3], int)) and fmt[3] or 2
             if clave.capitalize() in dic:
                 clave = clave.capitalize()
             s = dic.get(clave,"")
