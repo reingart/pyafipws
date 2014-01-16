@@ -430,6 +430,17 @@ if __name__ == "__main__":
                             }, open(salida,"w"))
             sys.exit(0)
 
+        if '/ctz' in sys.argv:
+            i = sys.argv.index("/ctz")
+            if i+1<len(sys.argv):
+               moneda_id = sys.argv[i+1]
+            else:
+               moneda_id = raw_input("Id de moneda (DOL): ") or 'DOL'
+            ctz = ws.GetParamCtz(moneda_id)
+            print "Cotizacion: ", ctz
+            print ws.ErrMsg
+            sys.exit(0)
+
         f_entrada = f_salida = None
         try:
             f_entrada = open(entrada,"r")
