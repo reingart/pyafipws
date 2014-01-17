@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 import sys, os, time
 from ConfigParser import SafeConfigParser
@@ -321,7 +321,10 @@ def main():
 
     # Gestionar credenciales de acceso con AFIP:
     from wsaa import WSAA
-    ta = WSAA().Autenticar("wscdc", crt, key, url_wsaa)
+    wsaa = WSAA()
+    ta = wsaa.Autenticar("wscdc", crt, key, url_wsaa)
+    if not ta:
+        sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
     wscdc.SetTicketAcceso(ta)
     wscdc.Cuit = cuit
 
