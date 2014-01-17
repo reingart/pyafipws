@@ -209,7 +209,9 @@ def leer_planilla(entrada):
     for row in csv_reader:
         items.append(row)
     if len(items) < 2:
-        raise RuntimeError('El archivo no tiene datos válidos', 'Advertencia')
+        raise RuntimeError('El archivo no tiene filas válidos')
+    if len(items[0]) < 2:
+        raise RuntimeError('El archivo no tiene columnas (usar coma de separador)')
     cols = [str(it).strip() for it in items[0]]
 
     # armar diccionario por cada linea
