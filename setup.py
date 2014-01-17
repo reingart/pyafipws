@@ -37,7 +37,8 @@ import trazarenpre
 
 # herramientas opcionales a compilar y empaquetar:
 try:
-    import designer     
+    if 'pyfepdf' in globals() or 'pyrece' in globals():
+        import designer     
 except ImportError:
     # el script pyfpdf/tools/designer.py no esta disponible:
     print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
