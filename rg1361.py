@@ -321,7 +321,7 @@ def generar_detalle(items):
             else:
                 # tomar datos generales:
                 vals['alicuota_iva'] = (Decimal(item['imp_total'])/Decimal(item['imp_neto']) - 1) * 100
-                if float(item['impto_liq']) == 0:
+                if float(item.get('impto_liq', item.get('imp_iva', 0))) == 0:
                     vals['gravado'] = 'E'
                 else:
                     vals['gravado'] = 'G'
@@ -384,7 +384,7 @@ def generar_ventas(items):
                 # tomar datos generales: 
                 vals['alicuota_iva'] = (Decimal(item['imp_total'])/Decimal(item['imp_neto']) - 1) * 100
                 vals['alicuotas_iva'] = '01'
-                if float(item['impto_liq']) == 0:
+                if float(item.get('impto_liq', item.get('imp_iva', 0))) == 0:
                     vals['codigo_operacion'] = 'E'
                 else:
                     vals['codigo_operacion'] = ' '
