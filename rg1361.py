@@ -250,7 +250,7 @@ def generar_encabezado(items):
         vals['fecha_anulacion'] = ''
         for k in item.keys():
             vals[k] = item[k]
-            if k in totales:
+            if k in totales and k in IMPORTES:
                 totales[k] = totales[k] + Decimal(item[k])
         vals['tipo_reg'] = '1'
         vals['ctl_fiscal'] = item.get('ctl_fiscal', ' ')  # C para controlador
