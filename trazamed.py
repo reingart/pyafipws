@@ -428,7 +428,7 @@ class TrazaMed(BaseWS):
                 fecha_desde_t=None, fecha_hasta_t=None, 
                 fecha_desde_v=None, fecha_hasta_v=None, 
                 n_remito=None, n_factura=None,
-                estado=None,
+                estado=None, lote=None, numero_serial=None,
                 ):
         "Trae un listado de las transacciones que no están confirmadas"
 
@@ -464,6 +464,10 @@ class TrazaMed(BaseWS):
             kwargs['arg15'] = n_factura
         if estado is not None: 
             kwargs['arg16'] = estado
+        if lote is not None: 
+            kwargs['arg17'] = lote
+        if numero_serial is not None: 
+            kwargs['arg18'] = numero_serial
 
         # llamo al webservice
         res = self.client.getTransaccionesNoConfirmadas(
@@ -744,7 +748,9 @@ def main():
                                 #fecha_desde_v="01/04/2013", 
                                 #fecha_hasta_v="30/04/2013", 
                                 #n_factura=5, n_remito=6,
-                                #estado=1
+                                #estado=1,
+                                #lote=88745,
+                                #numero_serial=894124788,
                                 )
         print "CantPaginas", ws.CantPaginas
         print "HayError", ws.HayError
