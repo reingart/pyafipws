@@ -73,7 +73,7 @@ if not '--pyfepdf' in sys.argv:
         ('fecha_venc_pago', 10, A),   # opcional solo conceptos 2 y 3
         ('fecha_serv_desde', 10, A), # opcional solo conceptos 2 y 3
         ('fecha_serv_hasta', 10, A), # opcional solo conceptos 2 y 3
-        ('cae', 14, N),
+        ('cae', 14, A),
         ('fch_venc_cae', 10, A),
         ('resultado', 1, A), 
         ('motivos_obs', 1000, A),
