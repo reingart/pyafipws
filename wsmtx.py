@@ -25,7 +25,7 @@ import os
 import sys
 from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
-HOMO = False
+HOMO = True
 LANZAR_EXCEPCIONES = True
 WSDL="https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
@@ -562,30 +562,30 @@ class WSMTXCA(BaseWS):
                         'numeroComprobante': f['cbt_desde'],
                         'numeroComprobante': f['cbt_hasta'],
                         'fechaEmision': f['fecha_cbte'],
-                        'importeTotal': decimal.Decimal(f['imp_total']),
-                        'importeNoGravado': decimal.Decimal(f['imp_tot_conc']),
-                        'importeGravado': decimal.Decimal(f['imp_neto']),
-                        'importeExento': decimal.Decimal(f['imp_op_ex']),
-                        'importeOtrosTributos': f['tributos'] and decimal.Decimal(f['imp_trib']) or None,
+                        'importeTotal': decimal.Decimal(str(f['imp_total'])),
+                        'importeNoGravado': decimal.Decimal(str(f['imp_tot_conc'])),
+                        'importeGravado': decimal.Decimal(str(f['imp_neto'])),
+                        'importeExento': decimal.Decimal(str(f['imp_op_ex'])),
+                        'importeOtrosTributos': f['tributos'] and decimal.Decimal(str(f['imp_trib'])) or None,
                         'importeSubtotal': f['imp_subtotal'],
                         'fechaServicioDesde': f.get('fecha_serv_desde'),
                         'fechaServicioHasta': f.get('fecha_serv_hasta'),
                         'fechaVencimientoPago': f.get('fecha_venc_pago'),
                         'codigoMoneda': f['moneda_id'],
-                        'cotizacionMoneda': decimal.Decimal(f['moneda_ctz']),
+                        'cotizacionMoneda': str(decimal.Decimal(str(f['moneda_ctz']))),
                         'arrayItems': [
                             {'item': {
                                 'unidadesMtx': it['u_mtx'],
                                 'codigoMtx': it['cod_mtx'],
                                 'codigo': it['codigo'],                
                                 'descripcion': it['ds'],
-                                'cantidad': it['qty'] and decimal.Decimal(it['qty']),
+                                'cantidad': it['qty'] and decimal.Decimal(str(it['qty'])),
                                 'codigoUnidadMedida': it['umed'],
-                                'precioUnitario': it['precio'] and decimal.Decimal(it['precio']) or None,
+                                'precioUnitario': it['precio'] and decimal.Decimal(str(it['precio'])) or None,
                                 #'importeBonificacion': it['bonif'],
-                                'codigoCondicionIVA': decimal.Decimal(it['iva_id']),
-                                'importeIVA': decimal.Decimal(it['imp_iva']) if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
-                                'importeItem': decimal.Decimal(it['imp_subtotal']),
+                                'codigoCondicionIVA': decimal.Decimal(str(it['iva_id'])),
+                                'importeIVA': decimal.Decimal(str(it['imp_iva'])) if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
+                                'importeItem': decimal.Decimal(str(it['imp_subtotal'])),
                                 }}
                             for it in f['detalles']],
                         'arrayComprobantesAsociados': [
@@ -598,14 +598,14 @@ class WSMTXCA(BaseWS):
                             {'otroTributo': {
                                 'codigo': tributo['tributo_id'], 
                                 'descripcion': tributo['desc'],
-                                'baseImponible': decimal.Decimal(tributo['base_imp']),
-                                'importe': decimal.Decimal(tributo['importe']),
+                                'baseImponible': decimal.Decimal(str(tributo['base_imp'])),
+                                'importe': decimal.Decimal(str(tributo['importe'])),
                                 }}
                             for tributo in f['tributos']],
                         'arraySubtotalesIVA': [ 
                             {'subtotalIVA': {
                                 'codigo': iva['iva_id'],
-                                'importe': decimal.Decimal(iva['importe']),
+                                'importe': decimal.Decimal(str(iva['importe'])),
                                 }}
                             for iva in f['iva']],
                         }
