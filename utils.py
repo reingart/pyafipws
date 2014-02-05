@@ -318,7 +318,10 @@ class BaseWS:
             except KeyError:
                 valor = None
         if valor is not None:
-            return str(valor)
+            if isinstance(valor, basestring):
+                return valor
+            else:
+                return str(valor)
         else:
             return ""
 
