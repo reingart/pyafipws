@@ -167,7 +167,8 @@ class TrazaMed(BaseWS):
         # Conecto usando el método estandard:
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
                               soap_server="jetty")
-        if ok:
+
+        if ok and not wsdl.startswith("file"):
             # corrijo ubicación del servidor (localhost:9050 en el WSDL)
             location = self.wsdl[:-5]
             if 'IWebServiceService' in self.client.services:
@@ -590,7 +591,7 @@ def main():
     if '--prod' in sys.argv and not HOMO:
         WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService"
         print "Usando WSDL:", WSDL
-        sys.argv.pop(0)
+        sys.argv.pop(sys.argv.index("--prod"))
 
     # Inicializo las variables y estructuras para el archivo de intercambio:
     medicamentos = []
@@ -759,15 +760,15 @@ def main():
                 print "||", ws.GetParametro(clave),         # imprimo cada fila
             print "||"
     else:
+        argv = [argv for argv in sys.argv if not argv.startswith("--")]
         if not medicamentos:
-            if len(sys.argv)>16:
-                ws.SendMedicamentos(*sys.argv[1:])
+            if len(argv)>16:
+                ws.SendMedicamentos(*argv[1:])
             else:
                 print "ERROR: no se indicaron todos los parámetros requeridos"
         elif medicamentos:
             try:
-                usuario, password = [argv for argv in sys.argv 
-                                     if not argv.startswith("--")][-2:]
+                usuario, password = argv[0:2]
             except:
                 print "ADVERTENCIA: no se indico parámetros usuario y passoword"
                 usuario = password = "pruebasws"
