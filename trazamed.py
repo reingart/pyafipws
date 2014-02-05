@@ -97,6 +97,7 @@ TRANSACCIONES = [
     ('_n_remito', 20, A),
     ('_n_factura', 20, A),
     ('_vencimiento', 10, A),
+    ('_id_evento', 3, N),               # agregado el 30/01/2014
 ]
 
 # Formato para Errores
