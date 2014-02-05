@@ -550,6 +550,11 @@ def dar_nombre_campo_dbf(clave, claves):
 def verifica(ver_list, res_dict, difs):
     "Verificar que dos diccionarios sean iguales, actualiza lista diferencias"
     for k, v in ver_list.items():
+        # normalizo a float para poder comparar numericamente:
+        if isinstance(v, (Decimal, int, long)):
+            v = float(v)
+        if isinstance(res_dict.get(k), (Decimal, int, long)):
+            res_dict[k] = float(res_dict[k])
         if isinstance(v, list):
             # verifico que ambas listas tengan la misma cantidad de elementos:
             if v and not k in res_dict and v:
@@ -577,7 +582,11 @@ def verifica(ver_list, res_dict, difs):
         elif type(res_dict.get(k)) == type(v):
             # tipos iguales, los comparo directamente
             if res_dict.get(k) != v:
-                difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))                 
+                difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
+        elif isinstance(v, float) or isinstance(res_dict.get(k), float):
+            # comparar numericamente
+            if float(res_dict.get(k)) != float(v):
+                difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
         elif unicode(res_dict.get(k)) != unicode(v):
             # tipos diferentes, comparo la representación  
             difs.append("%s: str %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
