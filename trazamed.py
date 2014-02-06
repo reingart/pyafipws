@@ -169,14 +169,16 @@ class TrazaMed(BaseWS):
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
                               soap_server="jetty")
 
-        if ok and not wsdl.startswith("file"):
-            # corrijo ubicación del servidor (localhost:9050 en el WSDL)
-            location = self.wsdl[:-5]
-            if 'IWebServiceService' in self.client.services:
-                ws = self.client.services['IWebServiceService']  # version 1
-            else:
-                ws = self.client.services['IWebService']         # version 2
-            ws['ports']['IWebServicePort']['location'] = location
+        if ok:
+            # si el archivo es local, asumo que ya esta corregido:
+            if not self.wsdl.startswith("file"):
+                # corrijo ubicación del servidor (localhost:9050 en el WSDL)
+                location = self.wsdl[:-5]
+                if 'IWebServiceService' in self.client.services:
+                    ws = self.client.services['IWebServiceService']  # version 1
+                else:
+                    ws = self.client.services['IWebService']         # version 2
+                ws['ports']['IWebServicePort']['location'] = location
             
             # Establecer credenciales de seguridad:
             self.client['wsse:Security'] = {
