@@ -236,13 +236,13 @@ class WSFEXv1(BaseWS):
         if 'FEXResultGet' in result:
             resultget = result['FEXResultGet']
             # Obs, cae y fecha cae
-            self.Obs = resultget['Obs'] and resultget['Obs'].strip(" ") or ''
-            self.CAE = resultget['Cae']
-            vto = str(resultget['Fch_venc_Cae'])
+            self.Obs = resultget.get('Obs') and resultget['Obs'].strip(" ") or ''
+            self.CAE = resultget.get('Cae', '')
+            vto = str(resultget.get('Fch_venc_Cae', ''))
             self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
-            self.FechaCbte = resultget['Fecha_cbte'] #.strftime("%Y/%m/%d")
+            self.FechaCbte = resultget.get('Fecha_cbte', '') #.strftime("%Y/%m/%d")
             self.PuntoVenta = resultget['Punto_vta'] # 4000
-            self.Resultado = resultget['Resultado']
+            self.Resultado = resultget.get('Resultado', '')
             self.CbteNro =resultget['Cbte_nro']
             self.ImpTotal = resultget['Imp_total']
             return self.CAE
