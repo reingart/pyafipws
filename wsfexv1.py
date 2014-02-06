@@ -469,10 +469,10 @@ if __name__ == "__main__":
                 dst_cmp = 203 # país destino
                 cliente = "Joao Da Silva"
                 cuit_pais_cliente = "50000000016"
-                domicilio_cliente = "Rua 76 km 34.5 Alagoas"
+                domicilio_cliente = u"Rúa Ñ°76 km 34.5 Alagoas"
                 id_impositivo = "PJ54482221-l"
-                moneda_id = "012" # para reales, "DOL" o "PES" (ver tabla de parámetros)
-                moneda_ctz = 0.5
+                moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de parámetros)
+                moneda_ctz = "8.00" # wsfexv1.GetParamCtz('DOL') <- no funciona
                 obs_comerciales = "Observaciones comerciales"
                 obs = "Sin observaciones"
                 forma_pago = "30 dias"
@@ -563,8 +563,8 @@ if __name__ == "__main__":
             wsfexv1.AnalizarXml("XmlResponse")
             p_assert_eq(wsfexv1.ObtenerTagXml('Cae'), str(wsfexv1.CAE))
             p_assert_eq(wsfexv1.ObtenerTagXml('Fecha_cbte'), wsfexv1.FechaCbte)
-            p_assert_eq(wsfexv1.ObtenerTagXml('Moneda_Id'), "012")
-            p_assert_eq(wsfexv1.ObtenerTagXml('Moneda_ctz'), "0.50")
+            p_assert_eq(wsfexv1.ObtenerTagXml('Moneda_Id'), "DOL")
+            p_assert_eq(wsfexv1.ObtenerTagXml('Moneda_ctz'), "8")
             p_assert_eq(wsfexv1.ObtenerTagXml('Id_impositivo'), "PJ54482221-l")
 
         if "--params" in sys.argv:
