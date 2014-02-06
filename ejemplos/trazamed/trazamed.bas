@@ -31,8 +31,8 @@ Sub Main()
     h_evento = Left(CStr(Time()), 5) ' ej:  "04:24"
     gln_origen = "9999999999918"     ' Laboratorio
     gln_destino = "glnws"            ' LABORATORIO (asociado al medicamento)
-    n_remito = "1234"
-    n_factura = "1234"
+    n_remito = "R000100000001"       ' nuevo formato 13 digitos!
+    n_factura = "A000100000001"      ' nuevo formato 13 digitos!
     vencimiento = CStr(Date + 30)    ' ej. "27/03/2013"
     gtin = "GTIN1"                   ' código de medicamento de prueba
     lote = Year(Date)                ' uso el año como número de lote
@@ -104,7 +104,7 @@ Sub Main()
     id_agente_informador = Null
     id_agente_origen = Null
     id_agente_destino = Null
-    id_medicamento = Null ' gtin
+    id_medicamento = "GTIN1"    ' gtin
     id_evento = Null
     fecha_desde_op = Null
     fecha_hasta_op = Null
@@ -114,7 +114,9 @@ Sub Main()
     fecha_hasta_v = Null
     n_remito = Null
     n_factura = Null
-    estado = Null ' Informada
+    estado = Null               ' Informada
+    lote = Null                 ' ej 88745 (agregado 30/01/2014)
+    numero_serial = Null        ' ej 894124788 (agregado 30/01/2014)
     ' llamo al webservice para realizar la consulta:
     ok = TrazaMed.GetTransaccionesNoConfirmadas(usuario, password, _
         p_id_transaccion_global, id_agente_informador, _
@@ -122,7 +124,7 @@ Sub Main()
         id_evento, fecha_desde_op, fecha_hasta_op, _
         fecha_desde_t, fecha_hasta_t, _
         fecha_desde_v, fecha_hasta_v, _
-        n_remito, n_factura, estado)
+        n_remito, n_factura, estado, lote, numero_serial)
     If ok Then
         ' recorro las transacciones devueltas (TransaccionPlainWS)
         Do While TrazaMed.LeerTransaccion:
@@ -139,6 +141,7 @@ Sub Main()
             Debug.Print TrazaMed.GetParametro("_numero_serial")
             Debug.Print TrazaMed.GetParametro("_razon_social_destino")
             Debug.Print TrazaMed.GetParametro("_gln_destino")
+            Debug.Print TrazaMed.GetParametro("_id_evento")             ' reintroducido 30/01/2014
             Debug.Print TrazaMed.GetParametro("_d_evento")
             Debug.Print TrazaMed.GetParametro("_razon_social_origen")
             Debug.Print TrazaMed.GetParametro("_gln_origen")
