@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.06c"
 
 import datetime
 import decimal
@@ -26,7 +26,6 @@ import sys
 from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = True
-LANZAR_EXCEPCIONES = True      # valor por defecto: True
 WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 
 
@@ -63,7 +62,6 @@ class WSFEXv1(BaseWS):
         self.Resultado = self.Motivo = self.Reproceso = ''
         self.LastID = self.LastCMP = self.CAE = self.Vencimiento = ''
         self.CbteNro = self.FechaCbte = self.PuntoVenta = self.ImpTotal = None
-        self.LanzarExcepciones = LANZAR_EXCEPCIONES
         self.InstallDir = INSTALL_DIR
         self.FchVencCAE = ""              # retrocompatibilidad
 
