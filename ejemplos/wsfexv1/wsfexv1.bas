@@ -32,14 +32,7 @@ Sub Main()
     wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
     
     ' Ejemplo para pasar el contenido del certificado CA
-    cacert_fn = WSAA.InstallDir & "\geotrust.crt" ' certificado de la autoridad de certificante
-    cacert = ""
-    Open cacert_fn For Input As #1
-    While Not EOF(1)
-        Line Input #1, s
-        cacert = cacert + s + vbCrLf
-    Wend
-    Close #1
+    cacert = WSAA.InstallDir & "conf\afip_ca_info.crt" ' certificado de la autoridad de certificante
     
     ' Conectar al webservice (Homologación)
     wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
@@ -99,10 +92,10 @@ Sub Main()
     dst_cmp = 235 ' país destino
     cliente = "Joao Da Silva"
     cuit_pais_cliente = "50000000016"
-    domicilio_cliente = "Rua 76 km 34.5 Alagoas"
+    domicilio_cliente = "Rua N°76 km 34.5 Alagoas"
     id_impositivo = "PJ54482221-l"
-    moneda_id = "012" ' para reales, "DOL" o "PES" (ver tabla de parámetros)
-    moneda_ctz = "0.5"
+    moneda_id = "DOL" ' para reales, "DOL" o "PES" (ver tabla de parámetros)
+    moneda_ctz = "8.00"
     obs_comerciales = "Observaciones comerciales"
     obs = "Sin observaciones"
     forma_pago = "takataka"
