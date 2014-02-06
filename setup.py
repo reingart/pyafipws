@@ -58,6 +58,7 @@ data_files = [
     ("cache", glob.glob("cache/*")),
     ]
 
+HOMO = True
 
 # build a one-click-installer for windows:
 if 'py2exe' in sys.argv:
@@ -141,7 +142,8 @@ if 'py2exe' in sys.argv:
             data_files.append((".", ["wsaa.tlb"]))
             
         __version__ += (wsaa.HOMO and '-homo' or '-full')
-        __version__ += "+wsaa"
+        __version__ += "+wsaa_" + wsaa.__version__
+        HOMO &= wsaa.HOMO
 
     if 'wsfev1' in globals():
         kwargs['com_server'] += [
@@ -154,7 +156,8 @@ if 'py2exe' in sys.argv:
         if wsfev1.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
             data_files.append((".", ["wsfev1.tlb"]))
-        __version__ += "+wsfev1"
+        __version__ += "+wsfev1_" + wsfev1.__version__
+        HOMO &= wsfev1.HOMO
 
     if 'wsfexv1' in globals():
         kwargs['com_server'] += [
@@ -164,17 +167,19 @@ if 'py2exe' in sys.argv:
             Target(module=wsfexv1, script='wsfexv1.py', dest_base="wsfexv1_cli"), 
             Target(module=recex1, script='recex1.py'), 
             ]
-        __version__ += "+wsfexv1"
+        __version__ += "+wsfexv1_" + wsfexv1.__version__
+        HOMO &= wsfexv1.HOMO
 
     if 'wsbfev1' in globals():
         kwargs['com_server'] += [
-            Target(module=wsfexv1, modules="wsbfev1", create_exe=True, create_dll=True)
+            Target(module=wsbfev1, modules="wsbfev1", create_exe=True, create_dll=True)
             ]
         kwargs['console'] += [
             Target(module=wsbfev1, script='wsbfev1.py', dest_base="wsbfev1_cli"), 
             Target(module=receb1, script='receb1.py'), 
             ]
-        __version__ += "+wsfexv1"
+        __version__ += "+wsbfev_" + wsbfev1.__version__
+        HOMO &= wsbfev1.HOMO
     
     if 'wsmtx' in globals():
         kwargs['com_server'] += [
@@ -184,7 +189,8 @@ if 'py2exe' in sys.argv:
             Target(module=wsmtx, script='wsmtx.py', dest_base="wsmtx_cli"), 
             Target(module=recem, script='recem.py'), 
             ]             
-        __version__ += "+wsmtx"
+        __version__ += "+wsmtx_" + wsmtx.__version__
+        HOMO &= wsmtx.HOMO
 
     if 'pyfepdf' in globals():
         kwargs['com_server'] += [
@@ -205,7 +211,8 @@ if 'py2exe' in sys.argv:
         data_files += [
             ("plantillas", ["plantillas/factura.csv", 'plantillas/fpdf.png']),
             ]
-        __version__ += "+pyfepdf"
+        __version__ += "+pyfepdf_" + pyfepdf11.__version__
+        HOMO &= pyfepdf.HOMO
 
     if 'designer' in globals():
         kwargs['windows'] += [
@@ -219,7 +226,8 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wsctg11, script='wsctg11.py', dest_base="wsctg11_cli"),
             ]
-        __version__ += "+wsctg11"
+        __version__ += "+wsctg11_" + wsctg11.__version__
+        HOMO &= wsctg11.HOMO
 
     if 'wslpg' in globals():
         kwargs['com_server'] += [
@@ -239,7 +247,8 @@ if 'py2exe' in sys.argv:
                "plantillas/liquidacion_wslpg_ajuste_debcred.png",
                 ]),
             ]
-        __version__ += "+wslpg"
+        __version__ += "+wslpg_" + wslpg.__version__
+        HOMO &= wslpg.HOMO
     
     if 'wscoc' in globals():
         kwargs['com_server'] += [
@@ -248,7 +257,8 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wscoc, script='wscoc.py', dest_base="wscoc_cli"),
             ]
-        __version__ += "+wscoc"
+        __version__ += "+wscoc_" + wscoc.__version__
+        HOMO &= wscoc.HOMO
 
     if 'wscdc' in globals():
         kwargs['com_server'] += [
@@ -257,7 +267,8 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wscdc, script='wscdc.py', dest_base="wscdc_cli"),
             ]
-        __version__ += "+wscdc"
+        __version__ += "+wscdc_" + wscdc.__version__
+        HOMO &= wscdc.HOMO
 
     if 'cot' in globals():
         kwargs['com_server'] += [
@@ -275,8 +286,9 @@ if 'py2exe' in sys.argv:
             "datos/TB_20111111112_000000_20101229_000001.txt", 
             "datos/TB_20111111112_000000_20101229_000001.xml",
             ])]
-        __version__ += "+cot"
-
+        __version__ += "+cot_" + cot.__version__
+        HOMO &= cot.HOMO
+        
     if 'trazamed' in globals():
         kwargs['com_server'] += [
             Target(module=trazamed, modules="trazamed", create_exe=not trazamed.TYPELIB, create_dll=not trazamed.TYPELIB),
@@ -287,11 +299,12 @@ if 'py2exe' in sys.argv:
         if trazamed.TYPELIB:
             kwargs['windows'] += [Target(module=trazamed, script="trazamed.py", dest_base="trazamed")]
             data_files.append((".", ["trazamed.tlb"]))
-        __version__ += "+trazamed"
+        __version__ += "+trazamed_"  + trazamed.__version__
+        HOMO &= trazamed.HOMO
 
     if 'trazarenpre' in globals():
         kwargs['com_server'] += [
-            Target(module=trazamed, modules="trazarenpre", create_exe=not trazarenpre.TYPELIB, create_dll=not trazarenpre.TYPELIB),
+            Target(module=trazarenpre, modules="trazarenpre", create_exe=not trazarenpre.TYPELIB, create_dll=not trazarenpre.TYPELIB),
             ]
         kwargs['console'] += [
             Target(module=trazarenpre, script='trazarenpre.py', dest_base="trazarenpre_cli"), 
@@ -299,7 +312,8 @@ if 'py2exe' in sys.argv:
         if trazarenpre.TYPELIB:
             kwargs['windows'] += [Target(module=trazarenpre, script="trazarenpre.py", dest_base="trazarenpre")]
             data_files.append((".", ["trazarenpre.tlb"]))
-        __version__ += "+trazarenpre"
+        __version__ += "+trazarenpre_" + trazarenpre.__version__
+        HOMO &= trazarenpre.HOMO
 
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
@@ -312,6 +326,9 @@ if 'py2exe' in sys.argv:
             ("Microsoft.VC90.CRT", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest')),
             ]
 
+    # agrego tag de homologación (testing - modo evaluación):
+    __version__ += "-homo" if HOMO else "-full"
+    
 else:
     desc = "Paquete PyAfipWs"
     kwargs['package_dir'] = {'pyafipws': '.'}
