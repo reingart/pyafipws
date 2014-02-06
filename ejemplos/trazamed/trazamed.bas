@@ -2,6 +2,7 @@ Attribute VB_Name = "Module1"
 ' Ejemplo de Uso de Interface COM para
 ' Trazabilidad Medicamentos ANMAT
 ' 2011 (C) Mariano Reingart <reingart@gmail.com>
+' Documentacion: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
 ' Licencia: GPLv3
 
 

@@ -1,6 +1,7 @@
 *-- Ejemplo de Uso de Interface  COM para presentar
 *-- Trazabilidad Medicamentos ANMAT
 *-- 2012 (C) Mariano Reingart <reingart@gmail.com>
+*-- Documentacion: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
 *-- Licencia; GPLv3
 
 *--ON ERROR DO errhand;
