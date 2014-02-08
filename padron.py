@@ -61,7 +61,6 @@ class PadronAFIP():
             proxies['https'] = proxy
             proxy_handler = urllib2.ProxyHandler(proxies)
         print "Abriendo URL %s ..." % url
-        import pdb; pdb.set_trace()
         req = urllib2.Request(url)
         if os.path.exists(filename):
             http_date = formatdate(timeval=os.path.getmtime(filename), 
@@ -71,7 +70,7 @@ class PadronAFIP():
             web = urllib2.urlopen(req)
         except urllib2.HTTPError, e:
             if e.code == 304:
-                print "No modificado desde",  web.info()
+                print "No modificado desde", http_date
                 return 304
             else:
                 raise
@@ -167,19 +166,24 @@ class PadronAFIP():
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
 if __name__ == "__main__":
-    padron = PadronAFIP()
-    import time
-    t0 = time.time()
-    if "--descargar" in sys.argv:
-        padron.Descargar()
-    if "--procesar" in sys.argv:
-        padron.Procesar()
-    cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
-    # consultar un cuit:
-    ok = padron.Buscar(cuit)
-    if ok:
-        print "Denominacion:", padron.denominacion
-        print "IVA:", padron.imp_iva
-    t1 = time.time()
-    print "tiempo", t1 -t0
+
+    if "--register" in sys.argv or "--unregister" in sys.argv:
+        import win32com.server.register
+        win32com.server.register.UseCommandLine(PadronAFIP)
+    else:
+        padron = PadronAFIP()
+        import time
+        t0 = time.time()
+        if "--descargar" in sys.argv:
+            padron.Descargar()
+        if "--procesar" in sys.argv:
+            padron.Procesar()
+        cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
+        # consultar un cuit:
+        ok = padron.Buscar(cuit)
+        if ok:
+            print "Denominacion:", padron.denominacion
+            print "IVA:", padron.imp_iva
+        t1 = time.time()
+        print "tiempo", t1 -t0
 
