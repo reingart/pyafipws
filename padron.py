@@ -12,6 +12,12 @@
 
 "Herramienta para procesar y consultar el Padrón Unico de Contribuyentes de AFIP"
 
+__author__ = "Mariano Reingart <reingart@gmail.com>"
+__copyright__ = "Copyright (C) 2014 Mariano Reingart"
+__license__ = "GPL 3.0"
+__version__ = "1.01a"
+
+
 import os
 import shelve
 import sqlite3
@@ -41,9 +47,9 @@ URL = "http://www.afip.gob.ar/genericos/cInscripcion/archivos/apellidoNombreDeno
 class PadronAFIP():
     "Interfaz para el WebService de Constatación de Comprobantes"
 
-    _public_methods_ = ['Consultar'                        
+    _public_methods_ = ['Buscar', 'Descargar', 'Procesar',                    
                         ]
-    _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'ErrMsg', 'Obs',
+    _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
                       'cuit', 'denominacion', 'imp_ganancias', 'imp_iva',  
                       'monotributo', 'integrante_soc', 'empleador', 
                       'actividad_monotributo']
@@ -51,8 +57,9 @@ class PadronAFIP():
     _reg_progid_ = "PadronAFIP"
     _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
 
-    def inicializar(self):
-        pass
+    def __init__(self):
+        self.db_path = os.path.join(self.InstallDir, "padron.db")
+        self.Version = __version__
 
     def Descargar(self, url=URL, filename="padron.txt", proxy=None):
         proxies = {}
@@ -122,13 +129,13 @@ class PadronAFIP():
                 wr.writerow(row)
             csvfile.close()
         f.seek(0)        
-        os.remove("padron.db")
-        if not os.path.exists("padron.db"):
-            db = sqlite3.connect("padron.db")
+        os.remove(self.db_path)
+        if not os.path.exists(self.db_path):
+            db = sqlite3.connect(self.db_path)
             c = db.cursor()
             c.execute("CREATE TABLE padron ("
                         "cuit INTEGER PRIMARY KEY, "
-                        "denominacion varchar(30), "
+                        "denominacion VARCHAR(30), "
                         "imp_ganancias VARCHAR(2), "
                         "imp_iva VARCHAR(2), "
                         "monotributo VARCHAR(1), "
@@ -148,7 +155,7 @@ class PadronAFIP():
             db.close()
         
     def Buscar(self, cuit):
-        db = sqlite3.connect("padron.db")
+        db = sqlite3.connect(self.db_path)
         db.row_factory = sqlite3.Row
         c = db.cursor()
         c.execute("SELECT * FROM padron WHERE cuit=?", [cuit])
