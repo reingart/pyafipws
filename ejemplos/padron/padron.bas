@@ -1,6 +1,8 @@
 Attribute VB_Name = "Module1"
 ' Ejemplo de Uso de Interface COM para consultar
 ' Padron Unico de Contribuyentes AFIP
+' ("archivo completo de la condición tributaria de los contribuyentes y responsables de la Resolución General N° 1817")
+' Documentación: http://www.sistemasagiles.com.ar/trac/wiki/PadronContribuyentesAFIP
 ' 2014 (C) Mariano Reingart <reingart@gmail.com>
 ' Licencia: GPLv3
 

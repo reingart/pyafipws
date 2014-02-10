@@ -10,7 +10,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Herramienta para procesar y consultar el Padrón Unico de Contribuyentes de AFIP"
+"Herramienta para procesar y consultar el Padrón Unico de Contribuyentes AFIP"
+
+# Documentación e información adicional: 
+#    http://www.sistemasagiles.com.ar/trac/wiki/PadronContribuyentesAFIP
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
@@ -27,6 +30,8 @@ from email.utils import formatdate
 import sys
 from utils import leer, escribir, N, A, I, get_install_dir
 
+
+# formato y ubicación archivo completo de la condición tributaria según RG 1817
 
 FORMATO = [
     ("cuit", 11, N, ""),
@@ -45,7 +50,7 @@ URL = "http://www.afip.gob.ar/genericos/cInscripcion/archivos/apellidoNombreDeno
 
 
 class PadronAFIP():
-    "Interfaz para el WebService de Constatación de Comprobantes"
+    "Interfaz para consultar situación tributaria (Constancia de Inscripcion)"
 
     _public_methods_ = ['Buscar', 'Descargar', 'Procesar',                    
                         ]
@@ -62,6 +67,7 @@ class PadronAFIP():
         self.Version = __version__
 
     def Descargar(self, url=URL, filename="padron.txt", proxy=None):
+        "Descarga el archivo de AFIP, devuelve 200 o 304 si no fue modificado"
         proxies = {}
         if proxy:
             proxies['http'] = proxy
@@ -113,6 +119,7 @@ class PadronAFIP():
         return 200
             
     def Procesar(self, filename="padron.txt"):
+        "Analiza y crea la base de datos interna sqlite para consultas" 
         f = open(filename, "r")
         keys = [k for k, l, t, d in FORMATO]
         # conversion a planilla csv (no usado)
@@ -155,6 +162,9 @@ class PadronAFIP():
             db.close()
         
     def Buscar(self, cuit):
+        "Búsca por cuit, devuelve True si fue encontrado y establece atributos"
+        # cuit: codigo único de identificación tributaria del contribuyente
+        #       (sin guiones)
         db = sqlite3.connect(self.db_path)
         db.row_factory = sqlite3.Row
         c = db.cursor()
