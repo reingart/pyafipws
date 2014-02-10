@@ -34,6 +34,7 @@ import wscdc
 import cot
 import trazamed
 import trazarenpre
+import padron
 
 # herramientas opcionales a compilar y empaquetar:
 try:
@@ -314,6 +315,21 @@ if 'py2exe' in sys.argv:
             data_files.append((".", ["trazarenpre.tlb"]))
         __version__ += "+trazarenpre_" + trazarenpre.__version__
         HOMO &= trazarenpre.HOMO
+
+    if 'padron' in globals():
+        kwargs['com_server'] += [
+            Target(module=padron, modules="padron", create_exe=True, create_dll=True),
+            ]
+
+        kwargs['console'] += [
+            Target(module=padron, script='padron.py', dest_base="padron_cli"), 
+            ]
+        if os.path.exists("padron.db"):
+            data_files += [(".", [
+                "padron.db", 
+                ])]
+        __version__ += "+padron_" + padron.__version__
+        #HOMO &= padron.HOMO
 
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
