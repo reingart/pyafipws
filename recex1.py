@@ -334,8 +334,8 @@ if __name__ == "__main__":
             cuit_pais_cliente = "50000000016"
             domicilio_cliente = "Rua 76 km 34.5 Alagoas"
             id_impositivo = "PJ54482221-l"
-            moneda_id = "012" # para reales, "DOL" o "PES" (ver tabla de parámetros)
-            moneda_ctz = 0.5
+            moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de parámetros)
+            moneda_ctz = 8.02
             obs_comerciales = "Observaciones comerciales"
             obs = "Sin observaciones"
             forma_pago = "30 dias"
