@@ -42,7 +42,7 @@ n_serie = 112
 ok = ""
 ok = TrazaRenpre.SaveTransacciones( ;
          usuario, password, gln_origen, gln_destino, ;
-         f_operacion = "01/01/2012", id_evento, cod_producto, n_cantidad, ;
+         f_operacion, id_evento, cod_producto, n_cantidad, ;
          n_documento_operacion, m_entrega_parcial, n_remito, n_serie ;
          )
 
