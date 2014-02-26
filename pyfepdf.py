@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07d"
+__version__ = "1.07e"
 
 DEBUG = False
 HOMO = True
@@ -813,7 +813,7 @@ if __name__ == '__main__':
                 conf_dbf = dict(config.items('DBF'))
                 if DEBUG: print "conf_dbf", conf_dbf
                 regs = formato_dbf.leer(conf_dbf)
-            if '--json' in sys.argv:
+            elif '--json' in sys.argv:
                 from formatos import formato_json
                 entrada = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print "entrada", entrada
