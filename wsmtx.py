@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10c"
+__version__ = "1.10d"
 
 import datetime
 import decimal
@@ -57,8 +57,8 @@ class WSMTXCA(BaseWS):
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 'LanzarExcepciones',
         'Resultado', 'Obs', 'Observaciones', 'ErrCode', 'ErrMsg',
-        'EmisionTipo', 'Reproceso', 'Reprocesar',
-        'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback', 'Excepcion',
+        'EmisionTipo', 'Reproceso', 'Reprocesar', 'Evento',
+        'CAE','Vencimiento', 'Evento', 'Errores', 'Traceback', 'Excepcion', 
         'CAEA', 'Periodo', 'Orden', 'FchVigDesde', 'FchVigHasta', 'FchTopeInf', 'FchProceso',
         'CbteNro', 'FechaCbte', 'PuntoVenta', 'ImpTotal']
         
@@ -83,7 +83,7 @@ class WSMTXCA(BaseWS):
         self.FchVigDesde = self.FchVigHasta = ""
         self.FchTopeInf = self.FchProceso = ""
         self.CbteNro = self.FechaCbte = ImpTotal = None
-        self.EmisionTipo = '' 
+        self.EmisionTipo = self.Evento = '' 
         self.Reproceso = '' # no implementado
 
     def __analizar_errores(self, ret):
