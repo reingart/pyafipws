@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.07c"
+__version__ = "2.07d"
 
 import hashlib, datetime, email, os, sys, time, traceback
 from php import date
@@ -296,6 +296,8 @@ if __name__=="__main__":
         # creo el objeto para comunicarme con el ws
         wsaa = WSAA()
         wsaa.LanzarExcepciones = True
+
+        print >> sys.stderr, "WSAA Version %s %s" % (WSAA.Version, HOMO)
         
         if '--proxy' in args:
             proxy = sys.argv[sys.argv.index("--proxy")+1]
