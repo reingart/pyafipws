@@ -18,7 +18,6 @@ import os
 import sys
 
 # modulos a compilar y empaquetar (comentar si no se desea incluir):
-
 import pyafipws
 import pyrece
 import wsaa
@@ -212,7 +211,7 @@ if 'py2exe' in sys.argv:
         data_files += [
             ("plantillas", ["plantillas/factura.csv", 'plantillas/fpdf.png']),
             ]
-        __version__ += "+pyfepdf_" + pyfepdf11.__version__
+        __version__ += "+pyfepdf_" + pyfepdf.__version__
         HOMO &= pyfepdf.HOMO
 
     if 'designer' in globals():
