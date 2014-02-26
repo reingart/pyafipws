@@ -18,6 +18,7 @@ import os
 import sys
 
 # modulos a compilar y empaquetar (comentar si no se desea incluir):
+
 import pyafipws
 import pyrece
 import wsaa
@@ -102,6 +103,10 @@ if 'py2exe' in sys.argv:
     kwargs['com_server'] = []
     kwargs['console'] = []
     kwargs['windows'] = []
+
+    # add 32bit or 64bit tag to the installer name
+    import platform
+    __version__ += "-" + platform.architecture()[0]
     
     # legacy webservices & utilities:
     if 'pyafipws' in globals():
@@ -132,7 +137,6 @@ if 'py2exe' in sys.argv:
             ]
         data_files.append((".", pycard_resources))
 
-
     # new webservices:
     if 'wsaa' in globals():
         kwargs['com_server'] += [Target(module=wsaa, modules='wsaa', create_exe=not wsaa.TYPELIB, create_dll=not wsaa.TYPELIB)]
@@ -141,7 +145,6 @@ if 'py2exe' in sys.argv:
             kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
             data_files.append((".", ["wsaa.tlb"]))
             
-        __version__ += (wsaa.HOMO and '-homo' or '-full')
         __version__ += "+wsaa_" + wsaa.__version__
         HOMO &= wsaa.HOMO
 
