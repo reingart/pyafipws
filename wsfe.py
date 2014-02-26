@@ -27,9 +27,15 @@ from php import date, SimpleXMLElement, SoapClient
 
 WSDL = 'wsfe.wsdl'
 WSFEURL = "https://wswhomo.afip.gov.ar/wsfe/service.asmx"
-#WSFEURL = "https://wsw.afip.gov.ar/wsfe/service.asmx"
+#WSFEURL = "https://servicios1.afip.gov.ar/wsfe/service.asmx"
 SOAP_ACTION = 'http://ar.gov.afip.dif.facturaelectronica/' # Revisar WSDL
 SOAP_NS = "http://ar.gov.afip.dif.facturaelectronica/"     # Revisar WSDL 
+
+# IMPORTANTE: este servicio web es obsoleto por disposiciones de AFIP
+#             y en general sólo es mantenido por cuestiones históricas
+#             desde el 1/7/2011 sería obligatorio usar WSFEv1 (wsfev1.py) 
+#             (según AFIP RG2845 v.1, v.1.1 v.2, v.2.1) para más info ver:
+#             http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 
 TA = 'TA.xml'
 CUIT = long(20139999999)
