@@ -26,7 +26,9 @@ import wsfev1, rece1
 import wsfexv1, recex1
 import wsbfev1, receb1
 import wsmtx, recem
-import pyfepdf, pyemail, pyi25
+import pyfepdf
+import pyemail
+import pyi25
 import wsctg11
 import wslpg
 import wscoc
@@ -137,6 +139,7 @@ if 'py2exe' in sys.argv:
             ]
         data_files.append((".", pycard_resources))
 
+
     # new webservices:
     if 'wsaa' in globals():
         kwargs['com_server'] += [Target(module=wsaa, modules='wsaa', create_exe=not wsaa.TYPELIB, create_dll=not wsaa.TYPELIB)]
@@ -198,24 +201,45 @@ if 'py2exe' in sys.argv:
     if 'pyfepdf' in globals():
         kwargs['com_server'] += [
             Target(module=pyfepdf, modules="pyfepdf", create_exe=False, create_dll=True),
-            Target(module=pyemail, modules="pyemail", create_exe=False, create_dll=True),
-            Target(module=pyi25, modules="pyi25", create_exe=False, create_dll=True),
             ]
         kwargs['console'] += [
             Target(module=pyfepdf, script='pyfepdf.py', dest_base="pyfepdf"), 
-            Target(module=pyemail, script='pyemail.py', dest_base="pyemail"),
-            Target(module=pyi25, script='pyi25.py', dest_base="pyi25"),
             ]
         kwargs['windows'] += [
             Target(module=pyfepdf, script="pyfepdf.py", dest_base="pyfepdf_com"),
+            ]
+        data_files += [
+            ]
+        __version__ += "+pyfepdf_" + pyfepdf11.__version__
+        HOMO &= pyfepdf.HOMO
+
+    if 'pyemail' in globals():
+        kwargs['com_server'] += [
+            Target(module=pyemail, modules="pyemail", create_exe=False, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=pyemail, script='pyemail.py', dest_base="pyemail"),
+            ]
+        kwargs['windows'] += [
             Target(module=pyemail, script="pyemail.py", dest_base="pyemail_com"),
+            ]
+        data_files += [
+            ]
+        __version__ += "+pyemail_" + pyemail.__version__
+
+    if 'pyi25' in globals():
+        kwargs['com_server'] += [
+            Target(module=pyi25, modules="pyi25", create_exe=False, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=pyi25, script='pyi25.py', dest_base="pyi25"),
+            ]
+        kwargs['windows'] += [
             Target(module=pyi25, script="pyi25.py", dest_base="pyi25_com"),
             ]
         data_files += [
-            ("plantillas", ["plantillas/factura.csv", 'plantillas/fpdf.png']),
             ]
-        __version__ += "+pyfepdf_" + pyfepdf.__version__
-        HOMO &= pyfepdf.HOMO
+        __version__ += "+pyi25_" + pyi25.__version__
 
     if 'designer' in globals():
         kwargs['windows'] += [
