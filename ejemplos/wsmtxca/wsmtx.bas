@@ -62,7 +62,7 @@ Sub Main()
     Debug.Print "appserver status", WSMTXCA.AppServerStatus
     Debug.Print "dbserver status", WSMTXCA.DbServerStatus
     Debug.Print "authserver status", WSMTXCA.AuthServerStatus
-       
+    
     ' Establezco los valores de la factura a autorizar:
     tipo_cbte = 1
     punto_vta = 4000
@@ -151,6 +151,10 @@ Sub Main()
     ' Imprimo pedido y respuesta XML para depuración (errores de formato)
     Debug.Print WSMTXCA.XmlRequest
     Debug.Print WSMTXCA.XmlResponse
+    
+    ok = WSMTXCA.AnalizarXml("XmlResponse")
+    Debug.Print "cuit:", WSMTXCA.ObtenerTagXml("cuit")
+           
     
     MsgBox "Resultado:" & WSMTXCA.Resultado & " CAE: " & cae & " Venc: " & WSMTXCA.Vencimiento & " Obs: " & WSMTXCA.obs, vbInformation + vbOKOnly
     
