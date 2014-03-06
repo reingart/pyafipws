@@ -1688,7 +1688,7 @@ class WSLPG(BaseWS):
                 
                 campania = int(liq.get('campania_ppal') or 0)
                 f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
-                f.set("tipo_operacion", datos.TIPOS_OP[int(liq['cod_tipo_operacion'])])
+                f.set("tipo_operacion", datos.TIPOS_OP.get(int(liq.get('cod_tipo_operacion') or 0), ""))
                 f.set("actividad", datos.ACTIVIDADES.get(int(liq.get('nro_act_comprador') or 0), ""))
                 if 'cod_grano' in liq and liq['cod_grano']:
                     cod_grano = int(liq['cod_grano'])
