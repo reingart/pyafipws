@@ -128,10 +128,10 @@ Sub Main()
                 "99", 0#, 0, cod_iva, "-21.00", "-121.00")
 
     ' Solicito CAE:
-    cae = WSMTXCA.AutorizarComprobante()
+    CAE = WSMTXCA.AutorizarComprobante()
     
     Debug.Print "Resultado", WSMTXCA.Resultado
-    Debug.Print "CAE", WSMTXCA.cae
+    Debug.Print "CAE", WSMTXCA.CAE
     Debug.Print "Vencimiento CAE", WSMTXCA.Vencimiento
     
     ' verifico que no haya errores
@@ -140,7 +140,7 @@ Sub Main()
     Next
     
     ' Verifico que no haya rechazo o advertencia al generar el CAE
-    If cae = "" Or WSMTXCA.Resultado <> "A" Then
+    If CAE = "" Or WSMTXCA.Resultado <> "A" Then
         MsgBox "No se asignó CAE (Rechazado). Observación (motivos): " & WSMTXCA.obs, vbInformation + vbOKOnly
     ElseIf WSMTXCA.obs <> "" And WSMTXCA.obs <> "00" Then
         MsgBox "Se asignó CAE pero con advertencias. Observación (motivos): " & WSMTXCA.obs, vbInformation + vbOKOnly
@@ -156,7 +156,7 @@ Sub Main()
     Debug.Print "cuit:", WSMTXCA.ObtenerTagXml("cuit")
            
     
-    MsgBox "Resultado:" & WSMTXCA.Resultado & " CAE: " & cae & " Venc: " & WSMTXCA.Vencimiento & " Obs: " & WSMTXCA.obs, vbInformation + vbOKOnly
+    MsgBox "Resultado:" & WSMTXCA.Resultado & " CAE: " & CAE & " Venc: " & WSMTXCA.Vencimiento & " Obs: " & WSMTXCA.obs, vbInformation + vbOKOnly
     
     ' Muestro los eventos (mantenimiento programados y otros mensajes de la AFIP)
     If WSMTXCA.evento <> "" Then
@@ -169,13 +169,51 @@ Sub Main()
     Debug.Print "Fecha Comprobante:", WSMTXCA.FechaCbte
     Debug.Print "Fecha Vencimiento CAE", WSMTXCA.Vencimiento
     Debug.Print "Importe Total:", WSMTXCA.ImpTotal
-    
-    If cae <> cae2 Then
-        MsgBox "El CAE de la factura no concuerdan con el recuperado en la AFIP!: " & cae & " vs " & cae2
+        
+    If CAE <> cae2 Then
+        MsgBox "El CAE de la factura no concuerdan con el recuperado en la AFIP!: " & CAE & " vs " & cae2
     Else
         MsgBox "El CAE de la factura concuerdan con el recuperado de la AFIP"
     End If
         
+    ' analizo la respuesta xml para obtener campos específicos:
+    If WSMTXCA.Version >= "1.10d" Then
+        ok = WSMTXCA.AnalizarXml("XmlResponse")
+        If ok Then
+            Debug.Print "CAE:", WSMTXCA.ObtenerTagXml("codigoAutorizacion"), WSMTXCA.CAE
+            Debug.Print "CbteFch:", WSMTXCA.ObtenerTagXml("fechaEmision"), WSMTXCA.FechaCbte
+            Debug.Print "Moneda:", WSMTXCA.ObtenerTagXml("codigoMoneda")
+            Debug.Print "Cotizacion:", WSMTXCA.ObtenerTagXml("cotizacionMoneda")
+            Debug.Print "DocTIpo:", WSMTXCA.ObtenerTagXml("codigoTipoDocumento")
+            Debug.Print "DocNro:", WSMTXCA.ObtenerTagXml("numeroDocumento")
+            
+            ' ejemplos con arreglos (primer elemento = 0):
+            Debug.Print "Primer IVA (alci id):", WSMTXCA.ObtenerTagXml("arraySubtotalesIVA", "subtotalIVA", 0, "codigo")
+            Debug.Print "Primer IVA (importe):", WSMTXCA.ObtenerTagXml("arraySubtotalesIVA", "subtotalIVA", 0, "importe")
+            Debug.Print "Segundo IVA (alic id):", WSMTXCA.ObtenerTagXml("arraySubtotalesIVA", "subtotalIVA", 1, "codigo")
+            Debug.Print "Segundo IVA (importe):", WSMTXCA.ObtenerTagXml("arraySubtotalesIVA", "subtotalIVA", 2, "importe")
+            Debug.Print "Primer Tributo (ds):", WSMTXCA.ObtenerTagXml("arrayTributos", "Tributo", 0, "descripcion")
+            Debug.Print "Primer Tributo (importe):", WSMTXCA.ObtenerTagXml("arrayTributos", "Tributo", 0, "importe")
+            ' recorro el detalle de items (artículos)
+            For i = 0 To 100
+                ' salgo del bucle si no hay más items (ObtenerTagXml devuelve nulo):
+                If IsNull(WSMTXCA.ObtenerTagXml("arrayItems", "item", i)) Then Exit For
+                Debug.Print i, "Articulo (cod_mtx):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "codigoMtx")
+                Debug.Print i, "Articulo (codigo):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "codigo")
+                Debug.Print i, "Articulo (ds):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "descripcion")
+                Debug.Print i, "Articulo (qty):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "cantidad")
+                Debug.Print i, "Articulo (umed):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "codigoUnidadMedida")
+                Debug.Print i, "Articulo (precio):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "precioUnitario")
+                Debug.Print i, "Articulo (bonif):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "importeBonificacion")
+                Debug.Print i, "Articulo (iva_id):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "codigoCondicionIVA")
+                Debug.Print i, "Articulo (importeItem):", WSMTXCA.ObtenerTagXml("arrayItems", "item", i, "importeItem")
+            Next
+        Else
+            ' hubo error, muestro mensaje
+            Debug.Print WSMTXCA.Excepcion
+        End If
+    End If
+    
     Exit Sub
 ManejoError:
     ' Si hubo error:
