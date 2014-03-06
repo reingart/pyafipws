@@ -39,7 +39,7 @@
 'deducciones_comision_gastos_adm_04';'T';102.40;194.20;110.40;198.30;'Arial';8;False;False;False;0;16777215;'R';'';0
 'deducciones_comision_gastos_adm_05';'T';102.40;197.70;110.40;201.80;'Arial';8;False;False;False;0;16777215;'R';'';0
 'deducciones_detalle_aclaratorio_01';'T';19.30;183.40;98.60;187.50;'Arial';9;False;False;False;0;16777215;'L';'';0
-'deducciones_detalle_aclaratorio_02';'T';19.50;188.60;98.80;192.70;'Arial';9;False;False;False;0;16777215;'L';'';0
+'deducciones_detalle_aclaratorio_02';'T';19.50;186.90;98.80;191.10;'Arial';9;False;False;False;0;16777215;'L';'';0
 'deducciones_detalle_aclaratorio_03';'T';19.30;190.40;98.60;194.50;'Arial';9;False;False;False;0;16777215;'L';'';0
 'deducciones_detalle_aclaratorio_04';'T';19.30;193.90;98.60;198.00;'Arial';9;False;False;False;0;16777215;'L';'';0
 'deducciones_detalle_aclaratorio_05';'T';19.30;197.40;98.60;201.50;'Arial';9;False;False;False;0;16777215;'L';'';0
