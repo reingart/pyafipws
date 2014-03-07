@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15a"
+__version__ = "1.15b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -699,7 +699,7 @@ class WSLPG(BaseWS):
 
             # actualizo parámetros de salida:
             self.params_out['coe'] = self.COE
-            self.params_out['coe_ajustado'] = self.COE
+            self.params_out['coe_ajustado'] = self.COEAjustado
             self.params_out['estado'] = self.Estado
             self.params_out['total_deduccion'] = self.TotalDeduccion
             self.params_out['total_retencion'] = self.TotalRetencion
@@ -1031,7 +1031,7 @@ class WSLPG(BaseWS):
             
             # actualizo parámetros de salida:
             self.params_out['coe'] = self.COE
-            self.params_out['coe_ajustado'] = self.COE
+            self.params_out['coe_ajustado'] = self.COEAjustado
             self.params_out['estado'] = self.Estado
             self.params_out['nro_orden'] = aut.get('nroOrden')
             self.params_out['cod_tipo_operacion'] = aut.get('codTipoOperacion')
@@ -2511,9 +2511,9 @@ if __name__ == '__main__':
             nro_orden = 0
             nro_contrato = None
             try:
-                pto_emision = sys.argv[sys.argv.index("--consultar_ajuste") + 1]
-                nro_orden = sys.argv[sys.argv.index("--consultar_ajuste") + 2]
-                nro_contrato = sys.argv[sys.argv.index("--consultar_ajuste") + 3]
+                pto_emision = int(sys.argv[sys.argv.index("--consultar_ajuste") + 1])
+                nro_orden = int(sys.argv[sys.argv.index("--consultar_ajuste") + 2])
+                nro_contrato = int(sys.argv[sys.argv.index("--consultar_ajuste") + 3])
             except IndexError:
                 pass
             print "Consultando: pto_emision=%s nro_orden=%s nro_contrato=%s" % (
