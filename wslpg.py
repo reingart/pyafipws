@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15b"
+__version__ = "1.15c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1930,7 +1930,7 @@ def leer_archivo(nombre_archivo):
                 # referenciar la liquidación para agregar ret. / ded.:
                 liq = dic
             elif str(linea[0])=='1':
-                liq['certificados'].append(leer(linea, CERTIFICADO))
+                dic['certificados'].append(leer(linea, CERTIFICADO))
             elif str(linea[0])=='2':
                 liq['retenciones'].append(leer(linea, RETENCION))
             elif str(linea[0])=='3':
@@ -1949,7 +1949,7 @@ def leer_archivo(nombre_archivo):
                 liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
                 dic['ajuste_credito'] = liq
             elif str(linea[0])=='9':
-                liq['datos'].append(leer(linea, DATO))
+                dic['datos'].append(leer(linea, DATO))
             else:
                 print "Tipo de registro incorrecto:", linea[0]
     archivo.close()
@@ -2193,8 +2193,7 @@ if __name__ == '__main__':
                             alicuota=21.0,
                         ))
                 escribir_archivo(dic, ENTRADA)
-            else:
-                dic = leer_archivo(ENTRADA)
+            dic = leer_archivo(ENTRADA)
                 
             if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
                 # consulto el último número de orden emitido:
@@ -2286,7 +2285,7 @@ if __name__ == '__main__':
             if '--prueba' in sys.argv:
                 # genero una liquidación de ejemplo:
                 dic = dict(
-                    pto_emision=55, nro_orden=0, coe_ajustado='330100023689',
+                    pto_emision=55, nro_orden=0, coe_ajustado='330100025869',
                     cod_localidad_procedencia=5544, cod_prov_procedencia=12,
                     cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
                     cod_grano=31,   # no enviado a AFIP, pero usado para el PDF
@@ -2346,6 +2345,32 @@ if __name__ == '__main__':
                                base_calculo=100,
                                alicuota=10.5, )],
                         ),
+                    datos=[
+                        dict(campo="nombre_comprador", valor="NOMBRE 1"),
+                        dict(campo="domicilio1_comprador", valor="DOMICILIO 1"),
+                        dict(campo="domicilio2_comprador", valor="DOMICILIO 1"),
+                        dict(campo="localidad_comprador", valor="LOCALIDAD 1"),
+                        dict(campo="iva_comprador", valor="R.I."),
+                        dict(campo="nombre_vendedor", valor="NOMBRE 2"),
+                        dict(campo="domicilio1_vendedor", valor="DOMICILIO 2"),
+                        dict(campo="domicilio2_vendedor", valor="DOMICILIO 2"),
+                        dict(campo="localidad_vendedor", valor="LOCALIDAD 2"),
+                        dict(campo="iva_vendedor", valor="R.I."),
+                        dict(campo="nombre_corredor", valor="NOMBRE 3"),
+                        dict(campo="domicilio_corredor", valor="DOMICILIO 3"),
+                        # completo datos no contemplados en la respuesta por AFIP:
+                        dict(campo="cod_grano", valor="31"),
+                        dict(campo="cod_grado_ent", valor="G1"),
+                        dict(campo="cod_grado_ref", valor="G1"),
+                        dict(campo="factor_ent", valor="98"),
+                        dict(campo="cod_puerto", valor=14),
+                        dict(campo="cod_localidad_procedencia", valor=3),
+                        dict(campo="cod_prov_procedencia", valor=1),
+                        dict(campo="precio_ref_tn", valor="$ 1000,00"),
+                        dict(campo="precio_flete_tn", valor="$ 100,00"),
+                        dict(campo="des_grado_ref", valor="G1"),
+                        dict(campo="alic_iva_operacion", valor=""),
+                        ]
                     )
                 if '--contrato' in sys.argv:
                     dic.update(
