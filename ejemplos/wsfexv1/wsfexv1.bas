@@ -61,7 +61,7 @@ Sub Main()
     
     ' Crear objeto interface Web Service de Factura Electrónica de Exportación
     Set WSFEXv1 = CreateObject("WSFEXv1")
-    Debug.Print WSFEXv1.version
+    Debug.Print WSFEXv1.Version
     
     ' Setear tocken y sing de autorización (pasos previos)
     WSFEXv1.Token = WSAA.Token
@@ -150,7 +150,7 @@ Sub Main()
     WSFEXv1.LanzarExcepciones = False
     
     ' Llamo al WebService de Autorización para obtener el CAE
-    cae = WSFEXv1.Authorize(CDec(id))
+    CAE = WSFEXv1.Authorize(CDec(id))
         
     If WSFEXv1.Excepcion <> "" Then
         MsgBox WSFEXv1.Traceback, vbExclamation, WSFEXv1.Excepcion
@@ -160,7 +160,7 @@ Sub Main()
     End If
         
     ' Verifico que no haya rechazo o advertencia al generar el CAE
-    If cae = "" Or WSFEXv1.Resultado <> "A" Then
+    If CAE = "" Or WSFEXv1.Resultado <> "A" Then
         MsgBox "No se asignó CAE (Rechazado). Observación (motivos): " & WSFEXv1.obs, vbInformation + vbOKOnly
     ElseIf WSFEXv1.obs <> "" And WSFEXv1.obs <> "00" Then
         MsgBox "Se asignó CAE pero con advertencias. Observación (motivos): " & WSFEXv1.obs, vbInformation + vbOKOnly
@@ -173,7 +173,7 @@ Sub Main()
     Debug.Print WSFEXv1.XmlResponse
     Debug.Assert False
     
-    MsgBox "Resultado:" & WSFEXv1.Resultado & " CAE: " & cae & " Venc: " & WSFEXv1.Vencimiento & " Reproceso: " & WSFEXv1.Reproceso & " Obs: " & WSFEXv1.obs, vbInformation + vbOKOnly
+    MsgBox "Resultado:" & WSFEXv1.Resultado & " CAE: " & CAE & " Venc: " & WSFEXv1.Vencimiento & " Reproceso: " & WSFEXv1.Reproceso & " Obs: " & WSFEXv1.obs, vbInformation + vbOKOnly
     
     ' Muestro los eventos (mantenimiento programados y otros mensajes de la AFIP)
     For Each evento In WSFEXv1.Eventos
@@ -193,10 +193,39 @@ Sub Main()
     Debug.Print "Importe Total:", WSFEXv1.ImpTotal
     Debug.Print WSFEXv1.XmlResponse
     
-    If cae <> cae2 Then
+    If CAE <> cae2 Then
         MsgBox "El CAE de la factura no concuerdan con el recuperado en la AFIP!"
     Else
         MsgBox "El CAE de la factura concuerdan con el recuperado de la AFIP"
+    End If
+    
+    ' analizo la respuesta xml para obtener campos específicos:
+    If WSFEXv1.Version >= "1.06a" Then
+        ok = WSFEXv1.AnalizarXml("XmlResponse")
+        If ok Then
+            Debug.Print "CAE:", WSFEXv1.ObtenerTagXml("Cae"), WSFEXv1.CAE
+            Debug.Print "CbteFch:", WSFEXv1.ObtenerTagXml("Fecha_cbte"), WSFEXv1.FechaCbte
+            Debug.Print "Moneda:", WSFEXv1.ObtenerTagXml("Moneda_Id")
+            Debug.Print "Cotizacion:", WSFEXv1.ObtenerTagXml("Moneda_ctz")
+            Debug.Print "Cuit_pais_cliente:", WSFEXv1.ObtenerTagXml("Cuit_pais_cliente")
+            Debug.Print "Id_impositivo:", WSFEXv1.ObtenerTagXml("Id_impositivo")
+            
+            ' recorro el detalle de items (artículos)
+            For i = 0 To 100
+                ' salgo del bucle si no hay más items (ObtenerTagXml devuelve nulo):
+                If IsNull(WSFEXv1.ObtenerTagXml("Items", "Item", i)) Then Exit For
+                Debug.Print i, "Articulo (codigo):", WSFEXv1.ObtenerTagXml("Items", "Item", i, "Pro_codigo")
+                Debug.Print i, "Articulo (ds):", WSFEXv1.ObtenerTagXml("Items", "Item", i, "Pro_ds")
+                Debug.Print i, "Articulo (qty):", WSFEXv1.ObtenerTagXml("Items", "Item", i, "Pro_qty")
+                Debug.Print i, "Articulo (umed):", WSFEXv1.ObtenerTagXml("Items", "Item", i, "Pro_umed")
+                Debug.Print i, "Articulo (precio):", WSFEXv1.ObtenerTagXml("Items", "Item", i, "Pro_precio_uni")
+                Debug.Print i, "Articulo (bonif):", WSFEXv1.ObtenerTagXml("Items", "Item", i, "Pro_bonificacion")
+                Debug.Print i, "Articulo (subtotal):", WSFEXv1.ObtenerTagXml("Items", "Item", i, "Pro_total_item")
+            Next
+        Else
+            ' hubo error, muestro mensaje
+            Debug.Print WSFEXv1.Excepcion
+        End If
     End If
     
     
