@@ -30,7 +30,7 @@ from cot import COT
 
 # --- gui2py designer generated code starts ---
 
-gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA', 
+gui.Window(name='mywin', title=u'COT: Remito Electrónico ARBA', 
            resizable=True, height='450px', left='180', top='24', 
            width='550px', bgcolor=u'#E0E0E0', fgcolor=u'#4C4C4C', image='', )
 gui.TextBox(name='txtTest', left='100', top='10', width='105', parent='mywin', 
@@ -90,7 +90,7 @@ mywin = gui.get("mywin")
 
 # cargar listado de archivos a procesar (y su correspondiente respuesta):
 lv = mywin['archivos']
-for fn in os.listdir("."):
+for fn in os.listdir("datos"):
     if fnmatch.fnmatch(fn, 'TB_???????????_*.txt'):
         txt = fn
         xml = os.path.splitext(fn)[0] + ".xml"
@@ -149,6 +149,6 @@ mywin['remitos'].onitemselected = cargar_errores
 
 if __name__ == "__main__":
     mywin.show()
-    mywin.title = "%s - %s" % (mywin.title, cot.Version)
+    mywin.title = u"%s - %s" % (mywin.title, cot.Version.decode("latin1"))
     mywin['statusbar'].text = "" 
     gui.main_loop()
