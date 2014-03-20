@@ -109,7 +109,7 @@ cot.Conectar("", trace=True)
 def cargar_archivo(evt):
     # obtengo y proceso el archivo seleccionado:
     item = evt.target.get_selected_items()[0]
-    cot.PresentarRemito(item['txt'], testing=item['xml'])
+    cot.PresentarRemito(os.path.join("datos", item['txt']), testing=item['xml'])
 
     print cot.Excepcion, cot.Traceback
     # actualizo los datos devueltos en el listado    
