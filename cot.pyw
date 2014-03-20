@@ -36,9 +36,9 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                 image='', ):
     gui.StatusBar(name='statusbar', )
     with gui.Panel(name='panel', ):
-        gui.TextBox(name='txtTest', left='100', top='10', width='105', 
+        gui.TextBox(name='txtTest', left='283', top='10', width='105', 
                     value=u'20267565393', )
-        gui.TextBox(id=329, name='txtTest_329', password=True, left='300', 
+        gui.TextBox(id=329, name='txtTest_329', password=True, left='449', 
                     top='10', width='75', value=u'24567', )
         gui.Line(name='line_25_556', height='3', left='24', top='390', 
                  width='499', )
@@ -48,19 +48,19 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                    width='85', onclick='exit()', )
         gui.ComboBox(name=u'url', 
                      text=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
-                     height='29', left='100', top='36', width='426', 
+                     height='29', left='79', top='36', width='447', 
                      bgcolor=u'#FFFFFF', 
                      data_selection=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
                      fgcolor=u'#4C4C4C', 
                      items=[u'https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do'], 
                      selection=1, 
                      string_selection=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', )
-        gui.Label(name='lblTest_273_363', height='17', left='28', top='15', 
+        gui.Label(name='lblTest_273_363', height='17', left='216', top='15', 
                   width='58', text=u'Usuario:', )
-        gui.Label(name='lblTest_273', height='17', left='243', top='14', 
+        gui.Label(name='lblTest_273', height='17', left='392', top='14', 
                   width='58', text=u'Clave:', )
         gui.Gauge(name='gauge', height='18', left='20', top='360', width='507', )
-        gui.Label(id=228, name='lblTest_228', height='17', left='30', top='41', 
+        gui.Label(id=228, name='lblTest_228', height='17', left='24', top='41', 
                   width='32', text=u'URL:', )
         with gui.ListView(id=213, name=u'remitos', height='74', left='20', 
                           top='171', width='510', bgcolor=u'#FFFFFF', 
@@ -81,6 +81,11 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
             gui.ListColumn(name=u'codigo', text=u'C\xf3digo', width=100, )
             gui.ListColumn(name=u'descripcion', text=u'Descripci\xf3n Error', 
                            width=400, )
+        gui.Label(id=884, name='lblTest_273_363_884', height='17', left='24', 
+                  top='15', width='58', text=u'Fecha:', )
+        gui.TextBox(id=488, mask='date', name='txtTest_488', height='27', 
+                    left='78', top='10', width='127', bgcolor=u'#FFFFFF', 
+                    fgcolor=u'#4C4C4C', value=datetime.date(2014, 3, 19), )
 
 # --- gui2py designer generated code ends ---
 
