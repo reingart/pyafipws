@@ -95,9 +95,10 @@ ENCABEZADO = [
     ('cant_horas', 2, N), 
     ('patente_vehiculo', 6, A), 
     ('cuit_transportista', 11, N), 
-    ('km_recorridos', 4, N),     
-    ('establecimiento', 6, N),             # confirmar arribo
-                     
+    ('km_a_recorrer', 4, N),                          # km_recorridos (en consulta WSCTGv2)
+    ('establecimiento', 6, N),                        # confirmar arribo
+    ('remitente_comercial_como_canjeador', 1, A),     # WSCTGv2
+
     # datos devueltos
     ('numero_ctg', 8, N), 
     ('fecha_hora', 19, A), 
@@ -110,6 +111,8 @@ ENCABEZADO = [
     ('observaciones', 200, A), 
     ('errores', 1000, A),
     ('controles', 1000, A),
+    
+    
     ]        
 
 
@@ -223,11 +226,13 @@ class WSCTGv2(BaseWS):
         cuit_canjeador, cuit_destino, cuit_destinatario, codigo_localidad_origen,
         codigo_localidad_destino, codigo_cosecha, peso_neto_carga, 
         cant_horas=None, patente_vehiculo=None, cuit_transportista=None, 
-        km_recorridos=None, **kwargs):
+        km_a_recorrer=None, remitente_comercial_como_canjeador=None, **kwargs):
         "Solicitar CTG Desde el Inicio"
         # ajusto parámetros según validaciones de AFIP:
         if cuit_canjeador and int(cuit_canjeador) == 0:
             cuit_canjeador = None         # nulo
+        if not remitente_comercial_como_canjeador:
+            remitente_comercial_como_canjeador = None
 
         ret = self.client.solicitarCTGInicial(request=dict(
                         auth={
@@ -237,6 +242,7 @@ class WSCTGv2(BaseWS):
                             cartaPorte=numero_carta_de_porte, 
                             codigoEspecie=codigo_especie,
                             cuitCanjeador=cuit_canjeador or None, 
+                            remitenteComercialComoCanjeador=remitente_comercial_como_canjeador,
                             cuitDestino=cuit_destino, 
                             cuitDestinatario=cuit_destinatario, 
                             codigoLocalidadOrigen=codigo_localidad_origen,
@@ -246,7 +252,7 @@ class WSCTGv2(BaseWS):
                             cuitTransportista=cuit_transportista,
                             cantHoras=cant_horas,
                             patente=patente_vehiculo, 
-                            kmRecorridos=km_recorridos,
+                            kmARecorrer=km_a_recorrer,
                             )))['response']
         self.__analizar_errores(ret)
         self.Observaciones = ret['observacion']
@@ -739,7 +745,7 @@ if __name__ == '__main__':
                 cuit_destino=20061341677, cuit_destinatario=20267565393, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
                 codigo_cosecha='1314', peso_neto_carga=1000, 
-                km_recorridos=1234,
+                km_a_recorrer=1234,
                 ##numero_ctg="43816783", transaccion='10000001681', 
                 observaciones='', establecimiento=1,
             )
