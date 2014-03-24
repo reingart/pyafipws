@@ -97,7 +97,8 @@ ENCABEZADO = [
     ('cuit_transportista', 11, N), 
     ('km_a_recorrer', 4, N),                          # km_recorridos (en consulta WSCTGv2)
     ('establecimiento', 6, N),                        # confirmar arribo
-    ('remitente_comercial_como_canjeador', 1, A),     # WSCTGv2
+    ('remitente_comercial_como_canjeador', 1, A),     # solicitar CTG inicial (WSCTGv2)
+    ('consumo_propio', 1, A),                         # confirmar arribo (WSCTGv2)
 
     # datos devueltos
     ('numero_ctg', 8, N), 
@@ -301,7 +302,7 @@ class WSCTGv2(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConfirmarArribo(self, numero_carta_de_porte, numero_ctg, 
                         cuit_transportista, peso_neto_carga, 
-                        establecimiento, **kwargs):
+                        consumo_propio, establecimiento=None, **kwargs):
         "Confirma arribo CTG"
         ret = self.client.confirmarArribo(request=dict(
                         auth={
@@ -312,6 +313,7 @@ class WSCTGv2(BaseWS):
                             ctg=numero_ctg,
                             cuitTransportista=cuit_transportista,
                             cantKilosCartaPorte=peso_neto_carga,
+                            consumoPropio=consumo_propio,
                             establecimiento=establecimiento,
                             )))['response']
         self.__analizar_errores(ret)
@@ -753,9 +755,10 @@ if __name__ == '__main__':
                 km_a_recorrer=1234,
                 observaciones='', establecimiento=1,
             )
-            if '--confirmar_definitivo' in sys.argv:
+            if [argv for argv in sys.argv if argv.startswith("--confirmar")]:
                 prueba.update(dict(
                     numero_ctg="43816783", transaccion='10000001681', 
+                    consumo_propio='S',
                     ))
             parcial = dict(
                     cant_horas=1, 
