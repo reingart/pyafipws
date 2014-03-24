@@ -112,6 +112,7 @@ ENCABEZADO = [
     ('observaciones', 200, A), 
     ('errores', 1000, A),
     ('controles', 1000, A),
+    ('detalle', 1000, A),                     # consultar detalle (WSCTGv2)
     
     
     ]        
@@ -444,6 +445,7 @@ class WSCTGv2(BaseWS):
             self.VigenciaDesde = str(datos['fechaVigenciaDesde'])
             self.VigenciaHasta = str(datos['fechaVigenciaHasta'])
             self.TarifaReferencia = str(datos['tarifaReferencia'])
+            self.Detalle = str(datos.get('detalle', ""))
         return True
 
     @inicializar_y_capturar_excepciones
@@ -861,6 +863,7 @@ if __name__ == '__main__':
                 print "Vigencia Hasta", wsctg.VigenciaHasta
                 print "Errores:", wsctg.Errores
                 print "Controles:", wsctg.Controles
+                print "Detalle:", wsctg.Detalle
                 it['numero_ctg'] = wsctg.NumeroCTG
                 it['observaciones'] = wsctg.Observaciones
                 it['fecha_hora'] = wsctg.FechaHora
