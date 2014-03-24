@@ -325,7 +325,9 @@ class WSCTGv2(BaseWS):
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_ctg, **kwargs):
+    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_ctg, 
+                            establecimiento=None, codigo_cosecha=None, peso_neto_carga=None, 
+                            **kwargs):
         "Confirma arribo definitivo CTG"
         ret = self.client.confirmarDefinitivo(request=dict(
                         auth={
@@ -334,6 +336,9 @@ class WSCTGv2(BaseWS):
                         datosConfirmarDefinitivo=dict(
                             cartaPorte=numero_carta_de_porte, 
                             ctg=numero_ctg,
+                            establecimiento=establecimiento,
+                            codigoCosecha=codigo_cosecha,
+                            pesoNeto=peso_neto_carga,
                             )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
@@ -746,9 +751,12 @@ if __name__ == '__main__':
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
                 codigo_cosecha='1314', peso_neto_carga=1000, 
                 km_a_recorrer=1234,
-                ##numero_ctg="43816783", transaccion='10000001681', 
                 observaciones='', establecimiento=1,
             )
+            if '--confirmar_definitivo' in sys.argv:
+                prueba.update(dict(
+                    numero_ctg="43816783", transaccion='10000001681', 
+                    ))
             parcial = dict(
                     cant_horas=1, 
                     patente_vehiculo='CZO985', cuit_transportista=20234455967,
