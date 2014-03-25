@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10d"
+__version__ = "1.11a"
 
 import datetime
 import decimal
@@ -34,7 +34,7 @@ class WSMTXCA(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 
-                        'AutorizarComprobante', 'CAESolicitar', 
+                        'AutorizarComprobante', 'CAESolicitar', 'AutorizarAjusteIVA',
                         'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
                         'InformarComprobanteCAEA', 
                         'InformarCAEANoUtilizado', 'InformarCAEANoUtilizadoPtoVta',
@@ -311,6 +311,83 @@ class WSMTXCA(BaseWS):
             cae = "ERR"
         finally:
             return cae
+
+    @inicializar_y_capturar_excepciones
+    def AutorizarAjusteIVA(self):
+        "Envía la información del comprobante de ajuste de IVA que desea autorizar"
+        f = self.factura
+        # contruyo la estructura a convertir en XML:
+        fact = {
+            'codigoTipoDocumento': f['tipo_doc'], 'numeroDocumento':f['nro_doc'],
+            'codigoTipoComprobante': f['tipo_cbte'], 'numeroPuntoVenta': f['punto_vta'],
+            'numeroComprobante': f['cbt_desde'], 'numeroComprobante': f['cbt_hasta'],
+            'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
+            'importeGravado': f['imp_neto'],
+            'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,
+            'importeOtrosTributos': f['tributos']  and f['imp_trib'] or None, 
+			'importeExento': f['imp_op_ex'],
+            'fechaEmision': f['fecha_cbte'],
+            'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f['moneda_ctz'],
+            'codigoConcepto': f['concepto'],
+            'observaciones': f['observaciones'],
+            'fechaVencimientoPago': f.get('fecha_venc_pago'),
+            'fechaServicioDesde': f.get('fecha_serv_desde'),
+            'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
+                'codigoTipoComprobante': cbte_asoc['tipo'], 
+                'numeroPuntoVenta': cbte_asoc['pto_vta'], 
+                'numeroComprobante': cbte_asoc['nro'],
+                }} for cbte_asoc in f['cbtes_asoc']] or None,
+            'arrayOtrosTributos': f['tributos'] and [ {'otroTributo': {
+                'codigo': tributo['tributo_id'], 
+                'descripcion': tributo['desc'], 
+                'baseImponible': tributo['base_imp'], 
+                'importe': tributo['importe'],
+                }} for tributo in f['tributos']] or None,
+            'arraySubtotalesIVA': f['iva'] and [{'subtotalIVA': { 
+                'codigo': iva['iva_id'], 
+                'importe': iva['importe'],
+                }} for iva in f['iva']] or None,
+            'arrayItems': f['detalles'] and [{'item':{
+                'unidadesMtx': it['u_mtx'],
+                'codigoMtx': it['cod_mtx'],
+                'codigo': it['codigo'],                
+                'descripcion': it['ds'],
+                'cantidad': it['qty'],
+                'codigoUnidadMedida': it['umed'],
+                'precioUnitario': it['precio'],
+                'importeBonificacion': it['bonif'],
+                'codigoCondicionIVA': it['iva_id'],
+                'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
+                'importeItem': it['imp_subtotal'],
+                }} for it in f['detalles']] or None,
+            }
+                
+        ret = self.client.autorizarAjusteIVA(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            comprobanteCAERequest = fact,
+            )
+        
+        self.Resultado = ret['resultado'] # u'A'
+        if ret['resultado'] in ("A", "O"):
+            cbteresp = ret['comprobanteResponse']
+            self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
+            self.CbteNro = cbteresp['numeroComprobante'] # 1L
+            self.PuntoVenta = cbteresp['numeroPuntoVenta'] # 4000
+            #self. = cbteresp['cuit'] # 20267565393L
+            #self. = cbteresp['codigoTipoComprobante'] 
+            self.Vencimiento = cbteresp['fechaVencimientoCAE'].strftime("%Y/%m/%d")
+            self.CAE = str(cbteresp['CAE']) # 60423794871430L
+        self.__analizar_errores(ret)
+        
+        for error in ret.get('arrayObservaciones', []):
+            self.Observaciones.append("%(codigo)s: %(descripcion)s" % (
+                error['codigoDescripcion']))
+        self.Obs = '\n'.join(self.Observaciones)
+
+        if 'evento' in ret:
+            self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
+        return self.CAE
 
     @inicializar_y_capturar_excepciones
     def SolicitarCAEA(self, periodo, orden):
@@ -806,7 +883,7 @@ def main():
             wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                         iva_id, imp_iva, imp_subtotal)
             
-            wsmtxca.AgregarItem(None, None, None, 'bonificacion', 0, 99, 1, None, 
+            wsmtxca.AgregarItem(None, None, None, 'bonificacion', None, 99, None, None, 
                         5, -21, -121)
 
             wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, 1, umed, 0, 0, iva_id, 0, 0)
@@ -842,6 +919,68 @@ def main():
             print wsmtxca.XmlResponse        
             print wsmtxca.ErrCode
             print wsmtxca.ErrMsg
+
+    if "--ajustar" in sys.argv:
+        ##print wsmtxca.client.help("autorizarComprobante").encode("latin1")
+        try:
+            tipo_cbte = 2
+            punto_vta = 4000
+            cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+            fecha = datetime.datetime.now().strftime("%Y-%m-%d")
+            concepto = 3
+            tipo_doc = 80; nro_doc = "30000000007"
+            cbte_nro = long(cbte_nro) + 1
+            cbt_desde = cbte_nro; cbt_hasta = cbt_desde
+            imp_total = "21.00"; imp_tot_conc = "0.00"; imp_neto = None
+            imp_trib = "0.00"; imp_op_ex = "0.00"; imp_subtotal = "0.00"
+            fecha_cbte = fecha; fecha_venc_pago = fecha
+            # Fechas del período del servicio facturado (solo si concepto = 1?)
+            fecha_serv_desde = fecha; fecha_serv_hasta = fecha
+            moneda_id = 'PES'; moneda_ctz = '1.000'
+            obs = "Observaciones Comerciales, libre"
+
+            wsmtxca.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
+                cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
+                imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
+                fecha_serv_desde, fecha_serv_hasta, #--
+                moneda_id, moneda_ctz, obs)
+            
+            iva_id = 5 # 21%
+            base_imp = 100
+            importe = 21
+            wsmtxca.AgregarIva(iva_id, base_imp, importe)
+            
+            u_mtx = 1
+            cod_mtx = 7790001001139
+            codigo = None
+            ds = "Descripcion del producto P0001"
+            qty = None
+            umed = 7
+            precio = None
+            bonif = None
+            iva_id = 5
+            imp_iva = 21.00
+            imp_subtotal = 21.00
+            wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
+                        iva_id, imp_iva, imp_subtotal)
+            
+            print wsmtxca.factura
+            
+            wsmtxca.AutorizarAjusteIVA()
+
+            print "Resultado", wsmtxca.Resultado
+            print "CAE", wsmtxca.CAE
+            print "Vencimiento", wsmtxca.Vencimiento
+            
+            print wsmtxca.Excepcion
+            print wsmtxca.ErrMsg
+            
+        except:
+            print wsmtxca.XmlRequest        
+            print wsmtxca.XmlResponse        
+            print wsmtxca.ErrCode
+            print wsmtxca.ErrMsg
+            raise
 
 
     if "--parametros" in sys.argv:
