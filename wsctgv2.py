@@ -124,7 +124,7 @@ class WSCTGv2(BaseWS):
     _public_methods_ = ['Conectar', 'Dummy',
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
-                        'AnularCTG', 'RechazarCTG', 
+                        'AnularCTG', 'RechazarCTG', 'CTGsPendientesResolucion',
                         'ConsultarCTG', 'LeerDatosCTG', 'ConsultarDetalleCTG',
                         'ConsultarCTGExcel', 'ConsultarConstanciaCTGPDF',
                         'ConsultarProvincias', 
@@ -141,7 +141,7 @@ class WSCTGv2(BaseWS):
         'NumeroCTG', 'CartaPorte', 'FechaHora', 'CodigoOperacion', 
         'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosCTG',
         'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
-        'TarifaReferencia',
+        'TarifaReferencia', 'Destino', 'Destinatario',
         ]
     _reg_progid_ = "WSCTGv2"
     _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
@@ -162,6 +162,7 @@ class WSCTGv2(BaseWS):
         self.Controles = []
         self.DatosCTG = self.TarifaReferencia = None
         self.CodigoTransaccion = self.Observaciones = ''
+        self.Detalle = self.Destino = self.Destinatario = ''
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -381,21 +382,48 @@ class WSCTGv2(BaseWS):
             self.DatosCTG = []
         return ''
 
-    def LeerDatosCTG(self, pop=True):
+    @inicializar_y_capturar_excepciones
+    def CTGsPendientesResolucion(self, numero_carta_de_porte=None, numero_ctg=None, 
+                     patente=None, cuit_solicitante=None, cuit_destino=None,
+                     fecha_emision_desde=None, fecha_emision_hasta=None):
+        "Operación que realiza consulta de CTGs según el criterio ingresado."
+        ret = self.client.CTGsPendientesResolucion(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                            ))['response']
+        self.__analizar_errores(ret)
+        if ret:
+            self.DatosCTG = ret
+            return True
+        else:
+            self.DatosCTG = {}
+        return False
+
+    def LeerDatosCTG(self, clave='', pop=True):
         "Recorro los datos devueltos y devuelvo el primero si existe"
-        
+                
         if self.DatosCTG:
             # extraigo el primer item
-            if pop:
-                datos = self.DatosCTG.pop(0)
+            if clave:
+                datos = self.DatosCTG[clave]
             else:
-                datos = self.DatosCTG[0]
+                datos = self.DatosCTG
+            if pop:
+                datos = datos.pop(0)
+            else:
+                datos = datos[0]
             datos_ctg = datos['datosConsultarCTG']
             self.CartaPorte = str(datos_ctg['cartaPorte'])
             self.NumeroCTG = str(datos_ctg['ctg'])
-            self.Estado = unicode(datos_ctg['estado'])
+            self.Estado = unicode(datos_ctg.get('estado', ""))
             self.ImprimeConstancia = str(datos_ctg['imprimeConstancia'])
-            self.FechaHora = str(datos_ctg['fechaSolicitud'])
+            for campo in ("fechaRechazo", "fechaEmision", "fechaConfirmacionArribo"):
+                if campo in datos_ctg:
+                    self.FechaHora = str(datos_ctg.get(campo))
+            self.Destino = datos_ctg.get("destino", "")
+            self.Destinatario = datos_ctg.get("destinatario", "")
+            self.Observaciones = datos_ctg.get("observaciones", "")
             return self.NumeroCTG
         else:
             return ""
@@ -749,7 +777,7 @@ if __name__ == '__main__':
 
 
         if '--prueba' in sys.argv or '--formato' in sys.argv:
-            prueba = dict(numero_carta_de_porte=512345679, codigo_especie=23,
+            prueba = dict(numero_carta_de_porte=512345681, codigo_especie=23,
                 cuit_canjeador=0, #30660685908, 
                 cuit_destino=20061341677, cuit_destinatario=20267565393, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
@@ -924,6 +952,17 @@ if __name__ == '__main__':
             ok = wsctg.ConsultarConstanciaCTGPDF(ctg, archivo)
             print "Errores:", wsctg.Errores
 
+        if "--pendientes" in sys.argv:
+            wsctg.LanzarExcepciones = True
+            wsctg.CTGsPendientesResolucion()
+            for clave in ("arrayCTGsRechazadosAResolver", 
+                          "arrayCTGsOtorgadosAResolver",
+                          "arrayCTGsConfirmadosAResolver", ):
+                print clave[6:]
+                print "Numero CTG - Carta de Porte - Imprime Constancia - Estado"
+                while wsctg.LeerDatosCTG(clave):
+                    print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora
+                    print wsctg.Destino, wsctg.Destinatario, wsctg.Observaciones
             
         print "hecho."
         
