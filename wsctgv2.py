@@ -97,8 +97,8 @@ ENCABEZADO = [
     ('cuit_transportista', 11, N), 
     ('km_a_recorrer', 4, N),                          # km_recorridos (en consulta WSCTGv2)
     ('establecimiento', 6, N),                        # confirmar arribo
-    ('remitente_comercial_como_canjeador', 1, A),     # solicitar CTG inicial (WSCTGv2)
-    ('consumo_propio', 1, A),                         # confirmar arribo (WSCTGv2)
+    ('remitente_comercial_como_canjeador', 1, A),     # S/N solicitar CTG inicial (WSCTGv2)
+    ('consumo_propio', 1, A),                         # S/N confirmar arribo (WSCTGv2)
 
     # datos devueltos
     ('numero_ctg', 8, N), 
@@ -777,9 +777,9 @@ if __name__ == '__main__':
 
 
         if '--prueba' in sys.argv or '--formato' in sys.argv:
-            prueba = dict(numero_carta_de_porte=512345681, codigo_especie=23,
+            prueba = dict(numero_carta_de_porte=1200001233, codigo_especie=23,
                 cuit_canjeador=0, #30660685908, 
-                cuit_destino=20061341677, cuit_destinatario=20267565393, 
+                cuit_destino=20111111112, cuit_destinatario=20222222223, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
                 codigo_cosecha='1314', peso_neto_carga=1000, 
                 km_a_recorrer=1234,
@@ -787,12 +787,12 @@ if __name__ == '__main__':
             )
             if [argv for argv in sys.argv if argv.startswith("--confirmar")]:
                 prueba.update(dict(
-                    numero_ctg="43816783", transaccion='10000001681', 
+                    numero_ctg="49241727", transaccion='10000001681', 
                     consumo_propio='S',
                     ))
             parcial = dict(
                     cant_horas=1, 
-                    patente_vehiculo='CZO985', cuit_transportista=20234455967,
+                    patente_vehiculo='APE652', cuit_transportista=20333333334,
                     )
             if not '--parcial' in sys.argv:
                 prueba.update(parcial)
