@@ -155,6 +155,15 @@ class WSCTGv2(BaseWS):
     LanzarExcepciones = False
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
+    def Conectar(self, *args, **kwargs):
+        ret = BaseWS.Conectar(self, *args, **kwargs)
+        # corregir descripción de servicio WSDL publicado por AFIP
+        # kmARecorrer -> kmRecorridos (ConsultarDetalleCTG) 
+        port = self.client.services['CTGService_v2.0']['ports']['CTGServiceHttpSoap20Endpoint']
+        msg = port['operations']['consultarDetalleCTG']['output']['consultarDetalleCTGResponse']
+        msg['response']['consultarDetalleCTGDatos']['kmRecorridos'] = int
+        return ret
+
     def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.CodError = self.DescError = ''
