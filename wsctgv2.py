@@ -15,13 +15,13 @@ del web service WSCTG versión 2.0 de AFIP (RG3593/14)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
 __version__ = "1.11a"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
-Copyright (C) 2012 Mariano Reingart reingart@gmail.com
+Copyright (C) 2014 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -395,9 +395,7 @@ class WSCTGv2(BaseWS):
         return ''
 
     @inicializar_y_capturar_excepciones
-    def CTGsPendientesResolucion(self, numero_carta_de_porte=None, numero_ctg=None, 
-                     patente=None, cuit_solicitante=None, cuit_destino=None,
-                     fecha_emision_desde=None, fecha_emision_hasta=None):
+    def CTGsPendientesResolucion(self):
         "Consulta de CTGs Otorgados, CTGs Rechazados y CTGs Confirmados"
         ret = self.client.CTGsPendientesResolucion(request=dict(
                         auth={
