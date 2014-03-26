@@ -52,6 +52,7 @@ Opciones:
   --consultar_excel: consulta las CTG generadas (genera un excel)
   --consultar_detalle: obtiene el detalle de una CTG
   --consultar_constancia_pdf: descarga el documento PDF de una CTG
+  --pendientes: consulta CTGs otorgados, rechazados, confirmados a resolver
   
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -71,12 +72,14 @@ import utils
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
+# constantes de configuración (homologación):
+
 WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v2.0?wsdl"
 
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsctg.ini"
-HOMO = False
+HOMO = True
 
 # definición del formato del archivo de intercambio:
 
@@ -141,7 +144,7 @@ class WSCTGv2(BaseWS):
         'NumeroCTG', 'CartaPorte', 'FechaHora', 'CodigoOperacion', 
         'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosCTG',
         'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
-        'TarifaReferencia', 'Destino', 'Destinatario',
+        'TarifaReferencia', 'Destino', 'Destinatario', 'Detalle',
         ]
     _reg_progid_ = "WSCTGv2"
     _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
@@ -386,7 +389,7 @@ class WSCTGv2(BaseWS):
     def CTGsPendientesResolucion(self, numero_carta_de_porte=None, numero_ctg=None, 
                      patente=None, cuit_solicitante=None, cuit_destino=None,
                      fecha_emision_desde=None, fecha_emision_hasta=None):
-        "Operación que realiza consulta de CTGs según el criterio ingresado."
+        "Consulta de CTGs Otorgados, CTGs Rechazados y CTGs Confirmados"
         ret = self.client.CTGsPendientesResolucion(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
