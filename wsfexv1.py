@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.07a"
 
 import datetime
 import decimal
@@ -36,7 +36,7 @@ class WSFEXv1(BaseWS):
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT',
-                        'GetParamCtz', 'LoadTestXML',
+                        'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
@@ -384,6 +384,25 @@ class WSFEXv1(BaseWS):
             ctz = ''
         return ctz
     
+    @inicializar_y_capturar_excepciones
+    def GetParamPtosVenta(self):
+        "Recupera el listado de los puntos de venta para exportacion y estado"
+        ret = self.client.FEXGetPARAM_PtoVenta(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        self.__analizar_errores(ret['FEXGetPARAM_PtoVentaResult'])
+        res = ret['FEXGetPARAM_PtoVentaResult'].get('FEXResultGet')
+        ret = []
+        for pu in res:
+            p = pu['ClsFEXResponse_PtoVenta']
+            try:
+                r = {'nro': u.get('Pve_Nro'), 'baja': u.get('Pve_FchBaj'),
+                     'bloqueado': u.get('Pve_Bloqueado'), }
+            except Exception, e:
+                print e
+            ret.append(r)
+        return [(u"%(nro)s\tBloqueado:%(bloqueado)s\tFchBaja:%(baja)s" % r).replace("\t", sep)
+                 for r in ret]
 
 
 class WSFEX(WSFEXv1):
@@ -596,3 +615,7 @@ if __name__ == "__main__":
             
         if "--ctz" in sys.argv:
             print wsfexv1.GetParamCtz('DOL')
+            
+        if "--ptosventa" in sys.argv:
+            print wsfexv1.GetParamPtosVenta()
+
