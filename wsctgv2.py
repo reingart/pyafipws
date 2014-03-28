@@ -17,7 +17,7 @@ del web service WSCTG versión 2.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.11a"
+__version__ = "1.11b"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -413,12 +413,14 @@ class WSCTGv2(BaseWS):
     def LeerDatosCTG(self, clave='', pop=True):
         "Recorro los datos devueltos y devuelvo el primero si existe"
                 
-        if self.DatosCTG:
+        if clave and self.DatosCTG:
+            # obtengo la lista por estado pendiente de resolución ("array")
+            datos = self.DatosCTG[clave]
+        else:
+            # uso directamente la lista devuelta por la consulta
+            datos = self.DatosCTG
+        if datos:
             # extraigo el primer item
-            if clave:
-                datos = self.DatosCTG[clave]
-            else:
-                datos = self.DatosCTG
             if pop:
                 datos = datos.pop(0)
             else:
@@ -787,7 +789,7 @@ if __name__ == '__main__':
 
 
         if '--prueba' in sys.argv or '--formato' in sys.argv:
-            prueba = dict(numero_carta_de_porte=1200001233, codigo_especie=23,
+            prueba = dict(numero_carta_de_porte=512345679, codigo_especie=23,
                 cuit_canjeador=0, #30660685908, 
                 cuit_destino=20111111112, cuit_destinatario=20222222223, 
                 codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
