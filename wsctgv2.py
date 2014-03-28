@@ -460,7 +460,7 @@ class WSCTGv2(BaseWS):
                             fechaEmisionHasta=fecha_emision_hasta,
                             )))['response']
         self.__analizar_errores(ret)
-        datos = base64.b64decode(ret.get('archivo', ""))
+        datos = base64.b64decode(ret.get('archivo') or "")
         f = open(archivo, "wb")
         f.write(datos)
         f.close()
