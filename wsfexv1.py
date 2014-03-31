@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.07b"
 
 import datetime
 import decimal
@@ -348,6 +348,28 @@ class WSFEXv1(BaseWS):
         return ret
 
     @inicializar_y_capturar_excepciones
+    def GetParamTipoCbte(self):
+        "Recuperador de valores referenciales de códigos de Tipo de comprobantes"
+        ret = self.client.FEXGetPARAM_Cbte_Tipo(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_Cbte_TipoResult']
+        self.__analizar_errores(result)
+     
+        ret = []
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_Cbte_Tipo']
+            try:
+                r = {'codigo': u.get('Cbte_Id'), 
+                     'ds': u.get('Cbte_Ds').replace('\n', '').replace('\r', ''),
+                     'vig_desde': u.get('Cbte_vig_desde'), 
+                     'vig_hasta': u.get('Cbte_vig_hasta')}
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        return ret
+
+    @inicializar_y_capturar_excepciones
     def GetParamTipoExpo(self):
         "Recuperador de valores referenciales de códigos de Tipo de exportación"
         ret = self.client.FEXGetPARAM_Tipo_Expo(
@@ -356,7 +378,6 @@ class WSFEXv1(BaseWS):
         self.__analizar_errores(result)
      
         ret = []
-        print result
         for u in result['FEXResultGet']:
             u = u['ClsFEXResponse_Tex']
             try:
@@ -589,6 +610,12 @@ if __name__ == "__main__":
         if "--params" in sys.argv:
             import codecs, locale
             sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
+
+            print "=== Tipos Comprobantes ==="
+            tipos = wsfexv1.GetParamTipoCbte()    
+            for t in tipos:
+                print "||%(codigo)s||%(ds)s||" % t
+            
 
             print "=== Tipos Expo ==="
             tipos = wsfexv1.GetParamTipoExpo()    
