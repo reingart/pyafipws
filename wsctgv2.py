@@ -713,7 +713,7 @@ if __name__ == '__main__':
 
         # obteniendo el TA
         from wsaa import WSAA
-        ta = WSAA().Autenticar("wsctg", CERT, PRIVATEKEY, wsaa_url)
+        ta = WSAA().Autenticar("wsctg", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
 
         # cliente soap del web service
         wsctg = WSCTGv2()
