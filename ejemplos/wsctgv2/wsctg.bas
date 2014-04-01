@@ -39,7 +39,7 @@ Sub Main()
     WSCTGv2.CUIT = "20267565393"
     
     ' Conectar al Servicio Web
-    ok = WSCTGv2.Conectar("", "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v1.1?wsdl") ' homologación
+    ok = WSCTGv2.Conectar("", "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v2.0?wsdl") ' homologación
     
     ' Verifico que la versión esté actualizada (nuevos métodos)
     Debug.Print WSCTGv2.version >= "1.11b"
@@ -96,6 +96,7 @@ Sub Main()
         tarifa_ref = WSCTGv2.TarifaReferencia
         numero_ctg = WSCTGv2.NumeroCTG
         Debug.Print WSCTGv2.TarifaReferencia
+        Debug.Print WSCTGv2.Detalle             ' nuevo campo WSCTGv2
     End If
     
     
@@ -123,7 +124,7 @@ Sub Main()
             remitente_comercial_como_canjeador)
             
     Debug.Print WSCTGv2.XmlResponse
-    Debug.Print WSCTGv2.Observaciones
+    Debug.Print WSCTGv2.observaciones
     Debug.Print WSCTGv2.ErrMsg
             
     If ok Then
@@ -171,8 +172,33 @@ Sub Main()
     archivo = App.Path & "\constancia.pdf"
     ok = WSCTGv2.ConsultarConstanciaCTGPDF(ctg, archivo)
     Debug.Print "Errores:", WSCTGv2.ErrMsg
+        
+        
+    ' Ejemplo de Confirmación (usar el método que corresponda en cada caso):
     
+    numero_carta_de_porte = "512345678"
+    numero_ctg = "49241727"
+    peso_neto_carga = 1000
+    patente_vehiculo = "APE652"
+    cuit_transportista = "20333333334"
+    consumo_propio = "S"                ' nuevo campo WSCTGv2
+    codigo_cosecha = "1314"
+    peso_neto_carga = "1000"
     
+    transaccion = WSCTGv2.ConfirmarArribo(numero_carta_de_porte, numero_ctg, _
+                        cuit_transportista, peso_neto_carga, _
+                        consumo_propio, establecimiento)
+    Debug.Print "Transaccion:", transaccion
+    Debug.Print "Fecha y Hora", WSCTGv2.FechaHora
+    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    
+    transaccion = WSCTGv2.ConfirmarDefinitivo(numero_carta_de_porte, numero_ctg, _
+            establecimiento, codigo_cosecha, peso_neto_carga)
+    Debug.Print "Transaccion:", transaccion
+    Debug.Print "Fecha y Hora", WSCTGv2.FechaHora
+    Debug.Print "Errores:", WSCTGv2.ErrMsg
+
+
     ' Consulta de CTG a Resolver (nuevo método WSCTGv2)
     ok = WSCTGv2.CTGsPendientesResolucion()
     For Each clave In Array("arrayCTGsRechazadosAResolver", _
@@ -183,7 +209,7 @@ Sub Main()
         ' recorro cada uno para esta clave, devuelve el número de ctg o string vacio
         Do While WSCTGv2.LeerDatosCTG(clave) <> "":
             Debug.Print WSCTGv2.NumeroCTG, WSCTGv2.CartaPorte, WSCTGv2.FechaHora
-            Debug.Print WSCTGv2.Destino, WSCTGv2.Destinatario, WSCTGv2.Observaciones
+            Debug.Print WSCTGv2.Destino, WSCTGv2.Destinatario, WSCTGv2.observaciones
         Loop
 
     Next
