@@ -12,6 +12,7 @@ import decimal
 import time
 import os
 import fnmatch
+import shelve
 
 # establecer la configuración regional por defecto:
 import locale
@@ -39,7 +40,7 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
         gui.TextBox(name='usuario', left='299', top='10', width='105', 
                     value=u'20267565393', )
         gui.TextBox(name='clave', password=True, left='455', top='10', 
-                    width='75', value=u'24567', )
+                    width='75', value=u'', )
         gui.Line(name='line_25_556', height='3', left='24', top='390', 
                  width='499', )
         gui.Button(label=u'Salir', name='salir', left='440', top='394', 
@@ -103,6 +104,24 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
 mywin = gui.get("mywin")
 panel = mywin['panel']
 
+# Manejo simple de claves:
+
+passwd_db = shelve.open("passwd")
+
+def getpass(username):
+    password = passwd_db.get(str(username))
+    if not password:
+        password = gui.prompt(message="Ingrese contraseña",
+                              title="Usuario: %s" % username, 
+                              password=True) or ""
+    return password
+
+def setpass(username, password):
+    passwd_db[str(username)] = password
+
+def grabar_clave(evt):
+    setpass(panel['usuario'].value, panel['clave'].value)
+
 # asignar controladores 
 
 cot = COT()
@@ -146,10 +165,13 @@ def cargar_archivo(evt):
     procesar_archivo(item)
 
 
-def procesar_archivo(item, enviar=False):    
+def procesar_archivo(item, enviar=False):
+    "Enviar archivo a ARBA y analizar la respuesta"
+    
     # establezco credenciales:
-    cot.Usuario = panel['usuario'].value
-    cot.Password = panel['clave'].value
+    cuit = item['txt'][3:14]    
+    cot.Usuario = panel['usuario'].value = cuit
+    cot.Password = panel['clave'].value = getpass(cuit)
     cot.Conectar(panel['url'].text, trace=True)
 
     # obtengo la ruta al archivo de texto y xml
@@ -238,7 +260,8 @@ def mover_archivos(evt=None):
                 except Exception as e:
                     gui.alert(unicode(e), "No se puede mover %s" % fn)
     gui.alert("Se movieron: %s archivos" % i)
-    
+    listar_archivos()
+
 
 panel['archivos'].onitemselected = cargar_archivo 
 panel['remitos'].onitemselected = cargar_errores
@@ -247,6 +270,7 @@ panel['fecha'].onchange = listar_archivos
 panel['carpeta'].onchange = listar_archivos
 panel['mover'].onclick = mover_archivos
 panel['procesar'].onclick = procesar_archivos
+panel['clave'].onchange = grabar_clave
 
 
 if __name__ == "__main__":
@@ -255,3 +279,5 @@ if __name__ == "__main__":
     mywin['statusbar'].text = "" 
     listar_archivos()
     gui.main_loop()
+    passwd_db.close()
+
