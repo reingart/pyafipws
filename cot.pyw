@@ -36,9 +36,9 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                 image='', ):
     gui.StatusBar(name='statusbar', )
     with gui.Panel(label=u'', name='panel', image='', ):
-        gui.TextBox(name='txtTest', left='299', top='10', width='105', 
+        gui.TextBox(name='usuario', left='299', top='10', width='105', 
                     value=u'20267565393', )
-        gui.TextBox(id=329, name='txtTest_329', password=True, left='455', 
+        gui.TextBox(name='clave', password=True, left='455', 
                     top='10', width='75', value=u'24567', )
         gui.Line(name='line_25_556', height='3', left='24', top='390', 
                  width='499', )
@@ -97,10 +97,6 @@ panel = mywin['panel']
 
 cot = COT()
 
-cot.Usuario = ""
-cot.Password = ""
-cot.Conectar("", trace=True)
-
 def listar_archivos(evt=None):
     # cargar listado de archivos a procesar (y su correspondiente respuesta):
     lv = panel['archivos']
@@ -126,9 +122,19 @@ def listar_archivos(evt=None):
 def cargar_archivo(evt):
     # obtengo y proceso el archivo seleccionado:
     item = evt.target.get_selected_items()[0]
+    
+    cot.Usuario = panel['usuario'].value
+    cot.Password = panel['clave'].value
+    cot.Conectar(panel['url'].text, trace=True)
+
     cot.PresentarRemito(os.path.join("datos", item['txt']), testing=item['xml'])
 
-    print cot.Excepcion, cot.Traceback
+    if cot.Excepcion:
+        gui.alert(cot.Traceback, cot.Excepcion)
+     
+    if cot.TipoError:
+        gui.alert(cot.MensajeError, "Error %s: %s" % (cot.TipoError, cot.CodigoError))
+
     # actualizo los datos devueltos en el listado    
     item['cuit'] = cot.CuitEmpresa
     item['nro'] = cot.NumeroComprobante
