@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.02d"
 
 import os,sys
 from pysimplesoap.simplexml import SimpleXMLElement
@@ -141,9 +141,10 @@ class COT:
                 return False
 
             archivo = open(filename,"rb")
-            response = self.client(user=self.Usuario, password=self.Password, 
+            if not testing:
+                response = self.client(user=self.Usuario, password=self.Password, 
                                    file=archivo)
-            if testing:
+            else:
                 response = open(testing).read()
             self.XmlResponse = response
             self.xml = SimpleXMLElement(response)  
