@@ -75,6 +75,7 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
             gui.ListColumn(name=u'cuit', text='CUIT Empresa', )
             gui.ListColumn(name=u'nro', text=u'N\xb0 Comprobante', )
             gui.ListColumn(name=u'md5', text=u'C\xf3digo Integridad', )
+            gui.ListColumn(name=u'carpeta', text=u'Carpeta', )
         with gui.ListView(id=309, name=u'errores', height='99', left='20', 
                           top='250', width='510', item_count=0, sort_column=-1, ):
             gui.ListColumn(name=u'codigo', text=u'C\xf3digo', width=100, )
@@ -106,7 +107,8 @@ def listar_archivos(evt=None):
         fecha = panel['fecha'].value.strftime("%Y%m%d")
     else:
         fecha = None        
-    for fn in os.listdir("datos"):
+    carpeta = "datos"
+    for fn in os.listdir(carpeta):
         if fnmatch.fnmatch(fn, 'TB_???????????_*.txt'):
             # filtro por fecha (si esta tildado):
             # TB_20111111112_000000_20080124_000001.txt
@@ -115,19 +117,35 @@ def listar_archivos(evt=None):
                 continue
             txt = fn
             xml = os.path.splitext(fn)[0] + ".xml"
-            if not os.path.exists(xml):
+            if not os.path.exists(os.path.join(carpeta, xml)):
                 xml = ""
-            lv.items[fn] = {'txt': txt, 'xml': xml}        
+            lv.items[fn] = {'txt': txt, 'xml': xml, 'carpeta': carpeta}
 
 def cargar_archivo(evt):
     # obtengo y proceso el archivo seleccionado:
     item = evt.target.get_selected_items()[0]
     
+    # establezco credenciales:
     cot.Usuario = panel['usuario'].value
     cot.Password = panel['clave'].value
     cot.Conectar(panel['url'].text, trace=True)
 
-    cot.PresentarRemito(os.path.join("datos", item['txt']), testing=item['xml'])
+    # obtengo la ruta al archivo de texto y xml
+    fn = os.path.join(item['carpeta'], item['txt'])
+    xml = item['xml']
+    if xml:
+        xml = os.path.join(item['carpeta'], xml)
+    elif not gui.confirm("¿Enviar a ARBA?", u"Remito Electrónico"):
+        return
+
+    # llamada al webservice:
+    cot.PresentarRemito(fn, testing=xml)
+
+    # grabo el xml devuelto:
+    if not xml:
+        xml = os.path.splitext(fn)[0] + ".xml"
+        with open(xml, "w") as f:
+            f.write(cot.XmlResponse)
 
     if cot.Excepcion:
         gui.alert(cot.Traceback, cot.Excepcion)
