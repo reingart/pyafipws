@@ -3,6 +3,8 @@
 
 "Aplicativo Visual (Front-end) Remito Electrónico (COT) ARBA"
 
+from __future__ import with_statement
+ 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013- Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -257,7 +259,7 @@ def mover_archivos(evt=None):
                 try:
                     os.rename(fn0, fn1)
                     i += 1
-                except Exception as e:
+                except Exception, e:
                     gui.alert(unicode(e), "No se puede mover %s" % fn)
     gui.alert("Se movieron: %s archivos" % i)
     listar_archivos()
