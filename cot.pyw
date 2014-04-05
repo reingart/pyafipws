@@ -31,14 +31,14 @@ from cot import COT
 # --- gui2py designer generated code starts ---
 
 with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA', 
-                resizable=True, height='428px', left='180', top='24', 
+                resizable=True, height='382px', left='180', top='24', 
                 width='550px', bgcolor=u'#E0E0E0', fgcolor=u'#4C4C4C', 
                 image='', ):
     gui.StatusBar(name='statusbar', )
-    with gui.Panel(name='panel', ):
-        gui.TextBox(name='txtTest', left='283', top='10', width='105', 
+    with gui.Panel(label=u'', name='panel', image='', ):
+        gui.TextBox(name='txtTest', left='299', top='10', width='105', 
                     value=u'20267565393', )
-        gui.TextBox(id=329, name='txtTest_329', password=True, left='449', 
+        gui.TextBox(id=329, name='txtTest_329', password=True, left='455', 
                     top='10', width='75', value=u'24567', )
         gui.Line(name='line_25_556', height='3', left='24', top='390', 
                  width='499', )
@@ -48,60 +48,50 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                    width='85', onclick='exit()', )
         gui.ComboBox(name=u'url', 
                      text=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
-                     height='29', left='79', top='36', width='447', 
+                     height='29', left='79', top='36', width='451', 
                      bgcolor=u'#FFFFFF', 
                      data_selection=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
                      fgcolor=u'#4C4C4C', 
                      items=[u'https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do'], 
                      selection=1, 
                      string_selection=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', )
-        gui.Label(name='lblTest_273_363', height='17', left='216', top='15', 
+        gui.Label(name='lblTest_273_363', height='17', left='234', top='15', 
                   width='58', text=u'Usuario:', )
-        gui.Label(name='lblTest_273', height='17', left='392', top='14', 
+        gui.Label(name='lblTest_273', height='17', left='410', top='14', 
                   width='58', text=u'Clave:', )
-        gui.Gauge(name='gauge', height='18', left='20', top='360', width='507', )
-        gui.Label(id=228, name='lblTest_228', height='17', left='24', top='41', 
-                  width='32', text=u'URL:', )
+        gui.Gauge(name='gauge', height='18', left='20', top='360', 
+                  width='507', )
+        gui.Label(id=228, name='lblTest_228', height='17', left='24', 
+                  top='41', width='32', text=u'URL:', )
         with gui.ListView(id=213, name=u'remitos', height='74', left='20', 
-                          top='171', width='510', bgcolor=u'#FFFFFF', 
-                          fgcolor=u'#3C3C3C', item_count=0, sort_column=0, ):
-            gui.ListColumn(name=u'nro', text=u'N\xb0 \xdanico Remito', width=250, )
+                          top='171', width='510', item_count=0, sort_column=0, ):
+            gui.ListColumn(name=u'nro', text=u'N\xb0 \xdanico Remito', 
+                           width=250, )
             gui.ListColumn(name=u'proc', text=u'Procesado', )
         with gui.ListView(name=u'archivos', height='99', left='21', top='70', 
-                          width='509', bgcolor=u'#FFFFFF', fgcolor=u'#3C3C3C', 
-                          item_count=2, sort_column=2, ):
+                          width='509', item_count=2, sort_column=2, ):
             gui.ListColumn(name=u'txt', text='Archivo TXT', width=200, )
             gui.ListColumn(name=u'xml', text='Archivo XML', )
             gui.ListColumn(name=u'cuit', text='CUIT Empresa', )
             gui.ListColumn(name=u'nro', text=u'N\xb0 Comprobante', )
             gui.ListColumn(name=u'md5', text=u'C\xf3digo Integridad', )
         with gui.ListView(id=309, name=u'errores', height='99', left='20', 
-                          top='250', width='510', bgcolor=u'#FFFFFF', 
-                          fgcolor=u'#3C3C3C', item_count=0, sort_column=-1, ):
+                          top='250', width='510', item_count=0, sort_column=-1, ):
             gui.ListColumn(name=u'codigo', text=u'C\xf3digo', width=100, )
             gui.ListColumn(name=u'descripcion', text=u'Descripci\xf3n Error', 
                            width=400, )
-        gui.Label(id=884, name='lblTest_273_363_884', height='17', left='24', 
-                  top='15', width='58', text=u'Fecha:', )
-        gui.TextBox(id=488, mask='date', name='txtTest_488', height='27', 
-                    left='78', top='10', width='127', bgcolor=u'#FFFFFF', 
-                    fgcolor=u'#4C4C4C', value=datetime.date(2014, 3, 19), )
+        gui.TextBox(id=488, mask='date', name='fecha', height='27', 
+                    left='101', top='10', width='127', enabled=False, 
+                    value=datetime.date(2014, 4, 5), )
+        gui.CheckBox(label=u'Fecha:', name=u'filtrar_fecha', height='24', 
+                     left='22', top='11', width='73', 
+                     tooltip=u'filtrar por fecha', )
 
 # --- gui2py designer generated code ends ---
 
 # get a reference to the Top Level Window (used by designer / events handlers):
 mywin = gui.get("mywin")
 panel = mywin['panel']
-
-# cargar listado de archivos a procesar (y su correspondiente respuesta):
-lv = panel['archivos']
-for fn in os.listdir("datos"):
-    if fnmatch.fnmatch(fn, 'TB_???????????_*.txt'):
-        txt = fn
-        xml = os.path.splitext(fn)[0] + ".xml"
-        if not os.path.exists(xml):
-            xml = ""
-        lv.items[fn] = {'txt': txt, 'xml': xml}        
 
 # asignar controladores 
 
@@ -110,6 +100,28 @@ cot = COT()
 cot.Usuario = ""
 cot.Password = ""
 cot.Conectar("", trace=True)
+
+def listar_archivos(evt=None):
+    # cargar listado de archivos a procesar (y su correspondiente respuesta):
+    lv = panel['archivos']
+    lv.clear()
+    # obtengo el fitlro de fecha (si esta habilitado):
+    if panel['filtrar_fecha'].value:
+        fecha = panel['fecha'].value.strftime("%Y%m%d")
+    else:
+        fecha = None        
+    for fn in os.listdir("datos"):
+        if fnmatch.fnmatch(fn, 'TB_???????????_*.txt'):
+            # filtro por fecha (si esta tildado):
+            # TB_20111111112_000000_20080124_000001.txt
+            fecha_fn = fn[22:30]
+            if fecha and fecha != fecha_fn:
+                continue
+            txt = fn
+            xml = os.path.splitext(fn)[0] + ".xml"
+            if not os.path.exists(xml):
+                xml = ""
+            lv.items[fn] = {'txt': txt, 'xml': xml}        
 
 def cargar_archivo(evt):
     # obtengo y proceso el archivo seleccionado:
@@ -149,11 +161,18 @@ def cargar_errores(evt):
         print i, error
         errores.items[i] = error
 
+def filtro_fecha(evt):
+    panel['fecha'].enabled = evt.target.value
+    listar_archivos()
+
 panel['archivos'].onitemselected = cargar_archivo 
 panel['remitos'].onitemselected = cargar_errores
+panel['filtrar_fecha'].onclick = filtro_fecha
+panel['fecha'].onchange = listar_archivos
 
 if __name__ == "__main__":
     mywin.show()
     mywin.title = u"%s - %s" % (mywin.title, cot.Version.decode("latin1"))
     mywin['statusbar'].text = "" 
+    listar_archivos()
     gui.main_loop()
