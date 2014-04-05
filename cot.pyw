@@ -31,7 +31,7 @@ from cot import COT
 # --- gui2py designer generated code starts ---
 
 with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA', 
-                resizable=True, height='397px', left='180', top='24', 
+                resizable=True, height='450px', left='180', top='24', 
                 width='550px', bgcolor=u'#E0E0E0', fgcolor=u'#4C4C4C', 
                 image='', ):
     gui.StatusBar(name='statusbar', )
@@ -42,9 +42,7 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                     width='75', value=u'24567', )
         gui.Line(name='line_25_556', height='3', left='24', top='390', 
                  width='499', )
-        gui.Button(label=u'Procesar', name=u'procesar', left='187', top='394', 
-                   width='85', default=True, fgcolor=u'#4C4C4C', )
-        gui.Button(label=u'Salir', name='salir', left='287', top='394', 
+        gui.Button(label=u'Salir', name='salir', left='440', top='394', 
                    width='85', onclick='exit()', )
         gui.ComboBox(name=u'url', 
                      text=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
@@ -94,6 +92,10 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                      data_selection=u'datos', fgcolor=u'#4C4C4C', 
                      items=[u'datos', u'procesados'], selection=0, 
                      string_selection=u'datos', )
+        gui.Button(label=u'Procesar', name=u'procesar', left='20', top='394', 
+                   width='85', default=True, fgcolor=u'#4C4C4C', )
+        gui.Button(label=u'Mover Procesados', name=u'mover', left='112', 
+                   top='394', width='166', default=True, fgcolor=u'#4C4C4C', )
 
 # --- gui2py designer generated code ends ---
 
@@ -109,6 +111,8 @@ def listar_archivos(evt=None):
     # cargar listado de archivos a procesar (y su correspondiente respuesta):
     lv = panel['archivos']
     lv.clear()
+    panel['remitos'].clear()
+    panel['errores'].clear()
     # obtengo el fitlro de fecha (si esta habilitado):
     if panel['filtrar_fecha'].value:
         fecha = panel['fecha'].value.strftime("%Y%m%d")
@@ -169,14 +173,17 @@ def cargar_archivo(evt):
 
     # limpio, enumero y agrego los remitos para el archivo seleccionado: 
     remitos = panel['remitos']
+    item['remitos'] = []
     panel['errores'].items = []
     remitos.items = []
     i = 0
     while cot.LeerValidacionRemito():
         print "REMITO", i
         errores = []
-        remitos.items[i] = {'nro': cot.NumeroUnico, 'proc': cot.Procesado,
-                            'errores': errores}
+        remito = {'nro': cot.NumeroUnico, 'proc': cot.Procesado,
+                  'errores': errores}
+        remitos.items[i] = remito
+        item['remitos'].append(remito)
         i += 1
         while cot.LeerErrorValidacion():
             print "Error Validacion:", "|", cot.CodigoError, "|", cot.MensajeError
@@ -197,11 +204,35 @@ def filtro_fecha(evt):
     panel['fecha'].enabled = evt.target.value
     listar_archivos()
 
+
+def mover_archivos(evt=None):
+    carpeta = panel['carpeta'].text
+    if carpeta != "datos":
+        gui.alert("No se puede mover archivos de carpeta %s" % carpeta)
+        
+    i = 0
+    print panel['archivos'].items
+    for item in panel['archivos'].items:
+        procesado = all([remito.get('proc', 'NO') == 'SI' 
+                         for remito in item.get('remitos', [])])
+        if procesado and item.get('remitos'):
+            for fn in (item['txt'], item['xml']):
+                fn0 = os.path.join("datos", fn)
+                fn1 = os.path.join("procesados", fn)
+                try:
+                    os.rename(fn0, fn1)
+                    i += 1
+                except Exception as e:
+                    gui.alert(unicode(e), "No se puede mover %s" % fn)
+    gui.alert("Se movieron: %s archivos" % i)
+    
+
 panel['archivos'].onitemselected = cargar_archivo 
 panel['remitos'].onitemselected = cargar_errores
 panel['filtrar_fecha'].onclick = filtro_fecha
 panel['fecha'].onchange = listar_archivos
 panel['carpeta'].onchange = listar_archivos
+panel['mover'].onclick = mover_archivos
 
 if __name__ == "__main__":
     mywin.show()
