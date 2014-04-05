@@ -95,7 +95,7 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
         gui.Button(label=u'Procesar', name=u'procesar', left='20', top='394', 
                    width='85', default=True, fgcolor=u'#4C4C4C', )
         gui.Button(label=u'Mover Procesados', name=u'mover', left='112', 
-                   top='394', width='166', default=True, fgcolor=u'#4C4C4C', )
+                   top='394', width='166', default=False, fgcolor=u'#4C4C4C', )
 
 # --- gui2py designer generated code ends ---
 
@@ -132,10 +132,21 @@ def listar_archivos(evt=None):
                 xml = ""
             lv.items[fn] = {'txt': txt, 'xml': xml}
 
+def procesar_archivos(evt):
+    # establezco la barra de progreso con la cantidad de archivos:
+    panel['gauge'].max = len(panel['archivos'].items)
+    # recorro los archivos a procesar:
+    for i, item in enumerate(panel['archivos'].items):
+        panel['gauge'].value = i + 1
+        procesar_archivo(item, enviar=True)
+
 def cargar_archivo(evt):
     # obtengo y proceso el archivo seleccionado:
     item = evt.target.get_selected_items()[0]
-    
+    procesar_archivo(item)
+
+
+def procesar_archivo(item, enviar=False):    
     # establezco credenciales:
     cot.Usuario = panel['usuario'].value
     cot.Password = panel['clave'].value
@@ -147,6 +158,8 @@ def cargar_archivo(evt):
     xml = item['xml']
     if xml:
         xml = os.path.join(carpeta, xml)
+    elif enviar:
+        pass
     elif not gui.confirm("¿Enviar a ARBA?", u"Remito Electrónico"):
         return
 
@@ -233,6 +246,8 @@ panel['filtrar_fecha'].onclick = filtro_fecha
 panel['fecha'].onchange = listar_archivos
 panel['carpeta'].onchange = listar_archivos
 panel['mover'].onclick = mover_archivos
+panel['procesar'].onclick = procesar_archivos
+
 
 if __name__ == "__main__":
     mywin.show()
