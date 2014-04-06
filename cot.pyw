@@ -42,14 +42,14 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
         gui.TextBox(name='usuario', left='299', top='10', width='105', 
                     value=u'20267565393', )
         gui.TextBox(name='clave', password=True, left='455', top='10', 
-                    width='75', value=u'', )
+                    width='75', )
         gui.Line(name='line_25_556', height='3', left='24', top='390', 
                  width='499', )
         gui.Button(label=u'Salir', name='salir', left='440', top='394', 
                    width='85', onclick='exit()', )
         gui.ComboBox(name=u'url', 
                      text=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
-                     height='29', left='79', top='37', width='250', 
+                     height='29', left='79', top='42', width='250', 
                      bgcolor=u'#FFFFFF', 
                      data_selection=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
                      fgcolor=u'#4C4C4C', 
@@ -60,16 +60,16 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                   width='58', text=u'Usuario:', )
         gui.Label(name='lblTest_273', height='17', left='410', top='14', 
                   width='58', text=u'Clave:', )
-        gui.Gauge(name='gauge', height='18', left='20', top='360', 
+        gui.Gauge(name='gauge', height='18', left='20', top='365', 
                   width='507', )
         gui.Label(id=228, name='lblTest_228', height='17', left='341', 
-                  top='42', width='32', text=u'Carpeta:', )
+                  top='47', width='32', text=u'Carpeta:', )
         with gui.ListView(id=213, name=u'remitos', height='74', left='20', 
-                          top='171', width='510', item_count=0, sort_column=0, ):
+                          top='180', width='510', item_count=0, sort_column=0, ):
             gui.ListColumn(name=u'nro', text=u'N\xb0 \xdanico Remito', 
                            width=250, )
             gui.ListColumn(name=u'proc', text=u'Procesado', )
-        with gui.ListView(name=u'archivos', height='99', left='21', top='70', 
+        with gui.ListView(name=u'archivos', height='99', left='21', top='77', 
                           width='509', item_count=0, sort_column=2, ):
             gui.ListColumn(name=u'txt', text='Archivo TXT', width=200, )
             gui.ListColumn(name=u'xml', text='Archivo XML', )
@@ -77,28 +77,27 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
             gui.ListColumn(name=u'nro', text=u'N\xb0 Comprobante', )
             gui.ListColumn(name=u'md5', text=u'C\xf3digo Integridad', )
         with gui.ListView(id=309, name=u'errores', height='99', left='20', 
-                          top='250', width='510', item_count=0, 
-                          sort_column=-1, ):
+                          top='259', width='510', item_count=0, sort_column=0, ):
             gui.ListColumn(name=u'codigo', text=u'C\xf3digo', width=100, )
             gui.ListColumn(name=u'descripcion', text=u'Descripci\xf3n Error', 
                            width=400, )
-        gui.TextBox(id=488, mask='date', name='fecha', height='27', 
+        gui.TextBox(id=488, mask='date', name='fecha',  
                     left='101', top='10', width='127', enabled=False, 
                     value=datetime.date(2014, 4, 5), )
         gui.CheckBox(label=u'Fecha:', name=u'filtrar_fecha', height='24', 
                      left='22', top='11', width='73', 
                      tooltip=u'filtrar por fecha', )
         gui.Label(id=2084, name='lblTest_228_2084', height='17', left='24', 
-                  top='42', width='32', text=u'URL:', )
+                  top='47', width='32', text=u'URL:', )
         gui.ComboBox(id=961, name=u'carpeta', text=u'datos', height='29', 
-                     left='412', top='37', width='118', bgcolor=u'#FFFFFF', 
+                     left='412', top='42', width='118', bgcolor=u'#FFFFFF', 
                      data_selection=u'datos', fgcolor=u'#4C4C4C', 
                      items=[u'datos', u'procesados'], selection=0, 
                      string_selection=u'datos', )
         gui.Button(label=u'Procesar', name=u'procesar', left='20', top='394', 
                    width='85', default=True, fgcolor=u'#4C4C4C', )
         gui.Button(label=u'Mover Procesados', name=u'mover', left='112', 
-                   top='394', width='166', default=False, fgcolor=u'#4C4C4C', )
+                   top='394', width='166', fgcolor=u'#4C4C4C', )
 
 # --- gui2py designer generated code ends ---
 
@@ -113,7 +112,7 @@ passwd_db = shelve.open("passwd")
 def getpass(username):
     password = passwd_db.get(str(username))
     if not password:
-        password = gui.prompt(message="Ingrese contraseña",
+        password = gui.prompt(message=u"Ingrese contraseña",
                               title="Usuario: %s" % username, 
                               password=True) or ""
     return password
