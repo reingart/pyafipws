@@ -95,6 +95,7 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                      items=[u'datos', u'procesados'], selection=0, 
                      string_selection=u'datos', )
         gui.Button(label=u'Procesar', name=u'procesar', left='20', top='394', 
+                   tooltip="Presentar el remito en ARBA",
                    width='85', default=True, fgcolor=u'#4C4C4C', )
         gui.Button(label=u'Mover Procesados', name=u'mover', left='112', 
                    top='394', width='166', fgcolor=u'#4C4C4C', )
@@ -165,6 +166,14 @@ def cargar_archivo(evt):
     item = evt.target.get_selected_items()[0]
     procesar_archivo(item)
 
+def abrir_archivo(evt):
+    # obtengo y proceso el archivo seleccionado:
+    item = evt.target.get_selected_items()[0]
+    fn = os.path.join(panel['carpeta'].text, item['txt'])
+    try:
+        os.startfile(fn)
+    except AttributeError:
+        os.system("""gedit "%s" """ % fn)
 
 def procesar_archivo(item, enviar=False):
     "Enviar archivo a ARBA y analizar la respuesta"
@@ -181,9 +190,7 @@ def procesar_archivo(item, enviar=False):
     xml = item['xml']
     if xml:
         xml = os.path.join(carpeta, xml)
-    elif enviar:
-        pass
-    elif not gui.confirm("¿Enviar a ARBA?", u"Remito Electrónico"):
+    elif not enviar:
         return
 
     # llamada al webservice:
@@ -195,10 +202,10 @@ def procesar_archivo(item, enviar=False):
         with open(xml, "w") as f:
             f.write(cot.XmlResponse)
 
-    if cot.Excepcion:
+    if cot.Excepcion and enviar:
         gui.alert(cot.Traceback, cot.Excepcion)
      
-    if cot.TipoError:
+    if cot.TipoError and enviar:
         gui.alert(cot.MensajeError, "Error %s: %s" % (cot.TipoError, cot.CodigoError))
 
     # actualizo los datos devueltos en el listado    
@@ -265,6 +272,7 @@ def mover_archivos(evt=None):
 
 
 panel['archivos'].onitemselected = cargar_archivo 
+panel['archivos'].onmousedclick = abrir_archivo
 panel['remitos'].onitemselected = cargar_errores
 panel['filtrar_fecha'].onclick = filtro_fecha
 panel['fecha'].onchange = listar_archivos
