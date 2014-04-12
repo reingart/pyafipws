@@ -26,6 +26,7 @@ from cStringIO import StringIO
 from decimal import Decimal
 from urllib import urlencode
 import mimetools, mimetypes
+from HTMLParser import HTMLParser
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
@@ -408,6 +409,27 @@ class WebClient:
             print content
             print "="*80
         return content
+
+
+class HTMLFormParser(HTMLParser):
+    "Convert HTML form into python dicts"
+    
+    def __init__(self, *args, **kwargs):
+        HTMLParser.__init__(self, *args, **kwargs)
+        self.forms = {}
+        
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if 'name' in attrs:
+            name = attrs['name']
+        elif 'id' in attrs:
+            name = attrs['id']
+        else:
+            name = None
+        if tag == 'form':
+            self.form = self.forms[name or len(self.forms)] = {}
+        elif tag == 'input':
+            self.form[name or len(self.form)] = attrs.get('value')
 
 
 # Funciones para manejo de archivos de texto de campos de ancho fijo:
