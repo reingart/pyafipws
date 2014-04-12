@@ -27,6 +27,7 @@ from decimal import Decimal
 from urllib import urlencode
 import mimetools, mimetypes
 from HTMLParser import HTMLParser
+from Cookie import SimpleCookie
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
@@ -353,7 +354,7 @@ class WebClient:
         self.trace = trace
         self.location = location
         self.enctype = enctype
-
+        self.cookies = None
 
     def multipart_encode(self, vars):
         "Enconde form data (vars dict)"
@@ -394,6 +395,11 @@ class WebClient:
             'Content-type': content_type,
             'Content-length': str(len(body)),
                 }
+
+        # add cookies to request header (in correct format)
+        if self.cookies:
+            headers['Cookie'] = self.cookies.output(attrs=(), header="", sep=";")
+
         if self.trace:
             print "-"*80
             print "POST %s" % self.location
@@ -408,6 +414,13 @@ class WebClient:
             print '\n'.join(["%s: %s" % (k,v) for k,v in response.items()])
             print content
             print "="*80
+
+        # Parse and store the cookies (if any)
+        if "set-cookie" in self.response:
+            if not self.cookies:
+                self.cookies = SimpleCookie()
+            self.cookies.load(self.response["set-cookie"])
+
         return content
 
 
