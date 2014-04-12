@@ -355,6 +355,7 @@ class WebClient:
         self.location = location
         self.enctype = enctype
         self.cookies = None
+        self.method = "POST"
 
     def multipart_encode(self, vars):
         "Enconde form data (vars dict)"
@@ -381,7 +382,7 @@ class WebClient:
         return boundary, buf
 
     def __call__(self, **vars):
-        "Perform a POST request and return the response"
+        "Perform a GET/POST request and return the response"
         
         # prepare the request content suitable to be sent to the server:
         if self.enctype == "multipart/form-data":
@@ -391,24 +392,28 @@ class WebClient:
             body = urlencode(vars)
             content_type = self.enctype
             
-        headers={
-            'Content-type': content_type,
-            'Content-length': str(len(body)),
-                }
-
-        # add cookies to request header (in correct format)
+        # add headers according method, cookies, etc.:
+        headers={}        
+        if self.method == "POST":
+            headers.update({
+                'Content-type': content_type,
+                'Content-length': str(len(body)),
+                })
         if self.cookies:
             headers['Cookie'] = self.cookies.output(attrs=(), header="", sep=";")
 
         if self.trace:
             print "-"*80
-            print "POST %s" % self.location
+            print "%s %s" % (self.method, self.location)
             print '\n'.join(["%s: %s" % (k,v) for k,v in headers.items()])
             print "\n%s" % body
+        
+        # send the request to the server and store the result:
         response, content = self.http.request(
-            self.location,"POST", body=body, headers=headers )
+            self.location, self.method, body=body, headers=headers )
         self.response = response
         self.content = content
+
         if self.trace: 
             print 
             print '\n'.join(["%s: %s" % (k,v) for k,v in response.items()])
