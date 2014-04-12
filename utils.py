@@ -347,10 +347,11 @@ class BaseWS:
 class WebClient:
     "Minimal webservice client to do POST request with multipart encoded FORM data"
 
-    def __init__(self, location, trace=False):
+    def __init__(self, location, enctype="multipart/form-data", trace=False):
         self.http = httplib2.Http('.cache')
         self.trace = trace
         self.location = location
+        self.enctype = enctype
 
 
     def multipart_encode(self, vars):
@@ -379,9 +380,17 @@ class WebClient:
 
     def __call__(self, **vars):
         "Perform a POST request and return the response"
-        boundary, body = self.multipart_encode(vars)
+        
+        # prepare the request content suitable to be sent to the server:
+        if self.enctype == "multipart/form-data":
+            boundary, body = self.multipart_encode(vars)
+            content_type = '%s; boundary=%s' % (self.enctype, boundary)
+        elif self.enctype == "application/x-www-form-urlencoded":
+            body = urlencode(vars)
+            content_type = self.enctype
+            
         headers={
-            'Content-type': 'multipart/form-data; boundary=%s' % boundary,
+            'Content-type': content_type,
             'Content-length': str(len(body)),
                 }
         if self.trace:
