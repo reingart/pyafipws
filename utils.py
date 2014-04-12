@@ -411,8 +411,12 @@ class WebClient:
         return content
 
 
+class AttrDict(dict):
+    "Custom Dict to hold attributes and items"
+
+
 class HTMLFormParser(HTMLParser):
-    "Convert HTML form into python dicts"
+    "Convert HTML form into custom named-tuple dicts"
     
     def __init__(self, *args, **kwargs):
         HTMLParser.__init__(self, *args, **kwargs)
@@ -427,7 +431,10 @@ class HTMLFormParser(HTMLParser):
         else:
             name = None
         if tag == 'form':
-            self.form = self.forms[name or len(self.forms)] = {}
+            form = AttrDict()
+            for k, v in attrs.items():
+                setattr(form, "_%s" % k, v)
+            self.form = self.forms[name or len(self.forms)] = form
         elif tag == 'input':
             self.form[name or len(self.form)] = attrs.get('value')
 
