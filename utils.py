@@ -356,6 +356,7 @@ class WebClient:
         self.enctype = enctype
         self.cookies = None
         self.method = "POST"
+        self.referer = None
 
     def multipart_encode(self, vars):
         "Enconde form data (vars dict)"
@@ -401,6 +402,8 @@ class WebClient:
                 })
         if self.cookies:
             headers['Cookie'] = self.cookies.output(attrs=(), header="", sep=";")
+        if self.referer:
+            headers['Referer'] = self.referer
 
         if self.trace:
             print "-"*80
