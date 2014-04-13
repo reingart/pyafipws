@@ -384,7 +384,11 @@ class WebClient:
 
     def __call__(self, **vars):
         "Perform a GET/POST request and return the response"
-        
+
+        location = self.location
+        if self.method == "GET":
+            location += "?%s" % urlencode(vars)
+            
         # prepare the request content suitable to be sent to the server:
         if self.enctype == "multipart/form-data":
             boundary, body = self.multipart_encode(vars)
@@ -407,13 +411,13 @@ class WebClient:
 
         if self.trace:
             print "-"*80
-            print "%s %s" % (self.method, self.location)
+            print "%s %s" % (self.method, location)
             print '\n'.join(["%s: %s" % (k,v) for k,v in headers.items()])
             print "\n%s" % body
         
         # send the request to the server and store the result:
         response, content = self.http.request(
-            self.location, self.method, body=body, headers=headers )
+            location, self.method, body=body, headers=headers )
         self.response = response
         self.content = content
 
