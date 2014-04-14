@@ -421,9 +421,12 @@ if __name__ == "__main__":
                cbte_nro = int(raw_input("Numero de comprobante: "))
             ws.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
 
+            ws.AnalizarXml("XmlResponse")
             print "FechaCbte = ", ws.FechaCbte
             print "CbteNro = ", ws.CbteNro
             print "PuntoVenta = ", ws.PuntoVenta
+            print "TipoDoc = ", ws.ObtenerTagXml('DocTipo')
+            print "NroDoc = ", ws.ObtenerTagXml('DocNro')
             print "ImpTotal =", ws.ImpTotal
             print "CAE = ", ws.CAE
             print "Vencimiento = ", ws.Vencimiento
@@ -514,6 +517,13 @@ if __name__ == "__main__":
                 print "FchTopeInf:", ws.FchTopeInf
                 print "FchProceso:", ws.FchProceso
             sys.exit(0)
+
+        if '/ptosventa' in sys.argv:
+
+            print "=== Puntos de Venta ==="
+            print u'\n'.join(ws.ParamGetPtosVenta())
+            sys.exit(0)
+
 
         ws.LanzarExcepciones = False
         f_entrada = f_salida = None
