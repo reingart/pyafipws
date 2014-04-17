@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11b"
+__version__ = "1.11c"
 
 import datetime
 import decimal
@@ -628,7 +628,7 @@ class WSMTXCA(BaseWS):
         self.Resultado = ret['resultado'] # u'A'
         if ret['resultado'] in ("A", "O"):
             cbteresp = ret['comprobanteCAEAResponse']
-            self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
+            self.FchProceso = ret['fechaProceso'].strftime("%Y-%m-%d")
             self.CbteNro = cbteresp['numeroComprobante'] # 1L
             self.PuntoVenta = cbteresp['numeroPuntoVenta'] # 4000
             #self. = cbteresp['cuit'] # 20267565393L
@@ -1027,7 +1027,7 @@ def main():
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
-            caea = "1234"
+            caea = "24163778394093"
             fch_venc_cae = None
 
             wsmtxca.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
