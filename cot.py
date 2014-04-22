@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02d"
+__version__ = "1.02e"
 
 import os, sys, traceback
 from pysimplesoap.simplexml import SimpleXMLElement
@@ -29,8 +29,8 @@ HOMO = True
 
 ##URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
 # Nuevo servidor para el "Remito Electrónico Automático"
-URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
-#URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do" # testing
+URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # testing
+#URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # prod.
 
 
 class COT:
@@ -212,6 +212,14 @@ if __name__=="__main__":
         #test_response = "cot_response_3_sinerrores.xml"
     else:
         test_response = ""
+
+    if not HOMO:
+        for i, arg in enumerate(sys.argv):
+            if arg.startswith("https"):
+                URL = arg
+                print "Usando URL:", URL
+                sys.argv.pop(i)
+                break
         
     cot.Conectar(URL, trace='--trace' in sys.argv)
     cot.PresentarRemito(filename, testing=test_response)
