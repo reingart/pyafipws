@@ -286,7 +286,8 @@ if __name__ == "__main__":
         proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
     else:
         proxy_dict = {}
-
+    CACERT = config.has_option('WSFEv1', 'CACERT') and config.get('WSFEv1', 'CACERT') or None
+    WRAPPER = config.has_option('WSFEv1', 'WRAPPER') and config.get('WSFEv1', 'WRAPPER') or None
 
     if '/xml'in sys.argv:
         XML = True
@@ -302,7 +303,7 @@ if __name__ == "__main__":
     try:
         ws = wsfev1.WSFEv1()
         ws.LanzarExcepciones = True
-        ws.Conectar("", wsfev1_url, proxy=proxy_dict)
+        ws.Conectar("", wsfev1_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
         ws.Cuit = cuit
         if wsfev1_reprocesar is not None:
             ws.Reprocesar = wsfev1_reprocesar
@@ -331,7 +332,7 @@ if __name__ == "__main__":
         # obteniendo el TA
         from wsaa import WSAA
         wsaa = WSAA()
-        ta = wsaa.Autenticar("wsfe", cert, privatekey, wsaa_url, proxy=proxy_dict)
+        ta = wsaa.Autenticar("wsfe", cert, privatekey, wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
         if not ta:
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
         ws.SetTicketAcceso(ta)
