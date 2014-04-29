@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07b"
+__version__ = "1.07c"
 
 import datetime
 import decimal
@@ -244,7 +244,7 @@ class WSFEXv1(BaseWS):
             self.PuntoVenta = resultget['Punto_vta'] # 4000
             self.Resultado = resultget.get('Resultado', '')
             self.CbteNro =resultget['Cbte_nro']
-            self.ImpTotal = resultget['Imp_total']
+            self.ImpTotal = str(resultget['Imp_total'])
             return self.CAE
         else:
             return 0
