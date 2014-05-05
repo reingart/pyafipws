@@ -17,7 +17,7 @@ del web service WSCTG versión 2.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.11b"
+__version__ = "1.12a"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -130,6 +130,7 @@ class WSCTGv2(BaseWS):
                         'AnularCTG', 'RechazarCTG', 'CTGsPendientesResolucion',
                         'ConsultarCTG', 'LeerDatosCTG', 'ConsultarDetalleCTG',
                         'ConsultarCTGExcel', 'ConsultarConstanciaCTGPDF',
+                        'ConsultarCTGRechazados',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
                         'ConsultarEstablecimientos',
@@ -393,6 +394,24 @@ class WSCTGv2(BaseWS):
         else:
             self.DatosCTG = []
         return ''
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarCTGRechazados(self):
+        "Consulta de CTGs Otorgados, CTGs Rechazados y CTGs Confirmados"
+        ret = self.client.consultarCTGRechazados(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                            ))['response']
+        self.__analizar_errores(ret)
+        datos = ret.get('arrayConsultarCTGRechazados')
+        if datos:
+            self.DatosCTG = datos
+            self.LeerDatosCTG(pop=False)
+            return True
+        else:
+            self.DatosCTG = []
+        return False
 
     @inicializar_y_capturar_excepciones
     def CTGsPendientesResolucion(self):
@@ -941,6 +960,14 @@ if __name__ == '__main__':
             while wsctg.LeerDatosCTG():
                 print wsctg.NumeroCTG, wsctg.CartaPorte,
                 print wsctg.ImprimeConstancia, wsctg.Estado, wsctg.FechaHora
+
+        if "--consultar_rechazados" in sys.argv:
+            wsctg.LanzarExcepciones = True
+            wsctg.ConsultarCTGRechazados()
+            print "Numero CTG - Carta de Porte - Fecha - Destino/Dest./Obs."
+            while wsctg.LeerDatosCTG():
+                print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora,
+                print wsctg.Destino, wsctg.Destinatario, wstcg.Observaciones
 
         if '--consultar_excel' in sys.argv:
             archivo = raw_input("Archivo a generar (planilla.xls): ") or \
