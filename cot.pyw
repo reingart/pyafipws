@@ -46,7 +46,7 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
         gui.Line(name='line_25_556', height='3', left='24', top='390', 
                  width='499', )
         gui.Button(label=u'Salir', name='salir', left='440', top='394', 
-                   width='85', onclick='exit()', )
+                   width='85', onclick='import sys; sys.exit(0)', )
         gui.ComboBox(name=u'url', 
                      text=u'http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do', 
                      height='29', left='79', top='42', width='250', 
