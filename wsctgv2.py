@@ -47,12 +47,16 @@ Opciones:
   --rechazar: permite al destino rechazar el CTG
   --confirmar_arribo: confirma el arribo de un CTG
   --confirmar_definitivo: confirma el arribo definitivo de un CTG
+  --regresar_a_origen_rechazado: tomar la acción de "Regresar a Origen"
+  --cambiar_destino_destinatario_rechazado: "Cambio de Destino y Destinatario"
 
   --consultar: consulta las CTG generadas
   --consultar_excel: consulta las CTG generadas (genera un excel)
   --consultar_detalle: obtiene el detalle de una CTG
   --consultar_constancia_pdf: descarga el documento PDF de una CTG
   --pendientes: consulta CTGs otorgados, rechazados, confirmados a resolver
+  --consultar_rechazados: obtener CTGs rechazados para darles un nuevo curso
+  --consultar_activos_por_patente: consulta de CTGs activos por patente 
   
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
