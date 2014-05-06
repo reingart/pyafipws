@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11a"
+__version__ = "1.11c"
 
 import datetime
 import decimal
@@ -25,7 +25,7 @@ import os
 import sys
 from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
-HOMO = True
+HOMO = False
 LANZAR_EXCEPCIONES = True
 WSDL="https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
@@ -36,7 +36,7 @@ class WSMTXCA(BaseWS):
                         'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 
                         'AutorizarComprobante', 'CAESolicitar', 'AutorizarAjusteIVA',
                         'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
-                        'InformarComprobanteCAEA', 
+                        'InformarComprobanteCAEA', 'InformarAjusteIVACAEA',
                         'InformarCAEANoUtilizado', 'InformarCAEANoUtilizadoPtoVta',
                         'ConsultarUltimoComprobanteAutorizado', 'CompUltimoAutorizado', 
                         'ConsultarPtosVtaCAEANoInformados',
@@ -391,7 +391,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SolicitarCAEA(self, periodo, orden):
-        
+        "Obtener un CAEA y su respectivo período de vigencia"
         ret = self.client.solicitarCAEA(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             solicitudCAEA = {
@@ -478,6 +478,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def InformarComprobanteCAEA(self):
+        "Envía la información del comprobante emitido y asociado a un CAEA"
         f = self.factura
         # contruyo la estructura a convertir en XML:
         fact = {
@@ -560,6 +561,94 @@ class WSMTXCA(BaseWS):
         if 'evento' in ret:
             self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
         return self.CAEA
+
+
+    @inicializar_y_capturar_excepciones
+    def InformarAjusteIVACAEA(self):
+        "Envía la información del comprobante de ajuste de IVA emitidos"
+        f = self.factura
+        # contruyo la estructura a convertir en XML:
+        fact = {
+            'codigoTipoDocumento': f['tipo_doc'], 'numeroDocumento':f['nro_doc'],
+            'codigoTipoComprobante': f['tipo_cbte'], 'numeroPuntoVenta': f['punto_vta'],
+            'numeroComprobante': f['cbt_desde'], 'numeroComprobante': f['cbt_hasta'],
+            'codigoTipoAutorizacion': 'A',
+            'codigoAutorizacion': f['caea'],
+            'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
+            'importeGravado': f['imp_neto'],
+            'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,
+            'importeOtrosTributos': f['tributos']  and f['imp_trib'] or None, 
+			'importeExento': f['imp_op_ex'],
+            'fechaEmision': f['fecha_cbte'],
+            'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f['moneda_ctz'],
+            'codigoConcepto': f['concepto'],
+            'observaciones': f['observaciones'],
+            'fechaVencimientoPago': f.get('fecha_venc_pago'),
+            'fechaServicioDesde': f.get('fecha_serv_desde'),
+            'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
+                'codigoTipoComprobante': cbte_asoc['tipo'], 
+                'numeroPuntoVenta': cbte_asoc['pto_vta'], 
+                'numeroComprobante': cbte_asoc['nro'],
+                }} for cbte_asoc in f['cbtes_asoc']] or None,
+            'arrayOtrosTributos': f['tributos'] and [ {'otroTributo': {
+                'codigo': tributo['tributo_id'], 
+                'descripcion': tributo['desc'], 
+                'baseImponible': tributo['base_imp'], 
+                'importe': tributo['importe'],
+                }} for tributo in f['tributos']] or None,
+            'arraySubtotalesIVA': f['iva'] and [{'subtotalIVA': { 
+                'codigo': iva['iva_id'], 
+                'importe': iva['importe'],
+                }} for iva in f['iva']] or None,
+            'arrayItems': f['detalles'] and [{'item':{
+                'unidadesMtx': it['u_mtx'],
+                'codigoMtx': it['cod_mtx'],
+                'codigo': it['codigo'],                
+                'descripcion': it['ds'],
+                'cantidad': it['qty'],
+                'codigoUnidadMedida': it['umed'],
+                'precioUnitario': it['precio'],
+                'importeBonificacion': it['bonif'],
+                'codigoCondicionIVA': it['iva_id'],
+                'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
+                'importeItem': it['imp_subtotal'],
+                }} for it in f['detalles']] or None,
+            }
+                
+        # fecha de vencimiento opcional (igual al último día de vigencia del CAEA)
+        if 'fch_venc_cae' in f:
+            fact['fechaVencimiento'] =  f['fch_venc_cae']
+            
+        ret = self.client.informarAjusteIVACAEA(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            comprobanteCAEARequest = fact,
+            )
+        
+        self.Resultado = ret['resultado'] # u'A'
+        if ret['resultado'] in ("A", "O"):
+            cbteresp = ret['comprobanteCAEAResponse']
+            self.FchProceso = ret['fechaProceso'].strftime("%Y-%m-%d")
+            self.CbteNro = cbteresp['numeroComprobante'] # 1L
+            self.PuntoVenta = cbteresp['numeroPuntoVenta'] # 4000
+            #self. = cbteresp['cuit'] # 20267565393L
+            #self. = cbteresp['codigoTipoComprobante'] 
+            if 'fechaVencimientoCAE' in cbteresp:
+                self.Vencimiento = cbteresp['fechaVencimientoCAE'].strftime("%Y-%m-%d")
+            else:
+                self.Vencimiento = ""
+            self.CAEA = str(cbteresp['CAEA']) # 60423794871430L
+            self.EmisionTipo = 'CAEA'
+        self.__analizar_errores(ret)
+        
+        for error in ret.get('arrayObservaciones', []):
+            self.Observaciones.append("%(codigo)s: %(descripcion)s" % (
+                error['codigoDescripcion']))
+        self.Obs = '\n'.join(self.Observaciones)
+
+        if 'evento' in ret:
+            self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
+        return self.CAE
 
 
     @inicializar_y_capturar_excepciones
@@ -938,12 +1027,14 @@ def main():
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
+            caea = "24163778394093"
+            fch_venc_cae = None
 
             wsmtxca.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
                 cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
                 imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
                 fecha_serv_desde, fecha_serv_hasta, #--
-                moneda_id, moneda_ctz, obs)
+                moneda_id, moneda_ctz, obs, caea, fch_venc_cae)
             
             iva_id = 5 # 21%
             base_imp = 100
@@ -966,7 +1057,10 @@ def main():
             
             print wsmtxca.factura
             
-            wsmtxca.AutorizarAjusteIVA()
+            if not caea:
+                wsmtxca.AutorizarAjusteIVA()
+            else:
+                wsmtxca.InformarAjusteIVACAEA()
 
             print "Resultado", wsmtxca.Resultado
             print "CAE", wsmtxca.CAE

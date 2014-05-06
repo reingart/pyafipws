@@ -20,9 +20,14 @@ import inspect
 import socket
 import sys
 import os
+import stat
 import traceback
 from cStringIO import StringIO
 from decimal import Decimal
+from urllib import urlencode
+import mimetools, mimetypes
+from HTMLParser import HTMLParser
+from Cookie import SimpleCookie
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
@@ -39,6 +44,11 @@ except ImportError:
     except:
         print "para soporte de JSON debe instalar simplejson"
         json = None
+
+try:
+    import httplib2
+except:
+    print "para soporte de WebClient debe instalar httplib2"
 
 
 DEBUG = False
@@ -334,6 +344,124 @@ class BaseWS:
             return er
         else:
             return ""
+
+
+class WebClient:
+    "Minimal webservice client to do POST request with multipart encoded FORM data"
+
+    def __init__(self, location, enctype="multipart/form-data", trace=False):
+        self.http = httplib2.Http('.cache')
+        self.trace = trace
+        self.location = location
+        self.enctype = enctype
+        self.cookies = None
+        self.method = "POST"
+        self.referer = None
+
+    def multipart_encode(self, vars):
+        "Enconde form data (vars dict)"
+        boundary = mimetools.choose_boundary()
+        buf = StringIO()
+        for key, value in vars.items():
+            if not isinstance(value, file):
+                buf.write('--%s\r\n' % boundary)
+                buf.write('Content-Disposition: form-data; name="%s"' % key)
+                buf.write('\r\n\r\n' + value + '\r\n')
+            else:
+                fd = value
+                file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
+                filename = fd.name.split('/')[-1]
+                contenttype = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+                buf.write('--%s\r\n' % boundary)
+                buf.write('Content-Disposition: form-data; name="%s"; filename="%s"\r\n' % (key, filename))
+                buf.write('Content-Type: %s\r\n' % contenttype)
+                # buffer += 'Content-Length: %s\r\n' % file_size
+                fd.seek(0)
+                buf.write('\r\n' + fd.read() + '\r\n')
+        buf.write('--' + boundary + '--\r\n\r\n')
+        buf = buf.getvalue()
+        return boundary, buf
+
+    def __call__(self, **vars):
+        "Perform a GET/POST request and return the response"
+
+        location = self.location
+        if self.method == "GET":
+            location += "?%s" % urlencode(vars)
+            
+        # prepare the request content suitable to be sent to the server:
+        if self.enctype == "multipart/form-data":
+            boundary, body = self.multipart_encode(vars)
+            content_type = '%s; boundary=%s' % (self.enctype, boundary)
+        elif self.enctype == "application/x-www-form-urlencoded":
+            body = urlencode(vars)
+            content_type = self.enctype
+            
+        # add headers according method, cookies, etc.:
+        headers={}        
+        if self.method == "POST":
+            headers.update({
+                'Content-type': content_type,
+                'Content-length': str(len(body)),
+                })
+        if self.cookies:
+            headers['Cookie'] = self.cookies.output(attrs=(), header="", sep=";")
+        if self.referer:
+            headers['Referer'] = self.referer
+
+        if self.trace:
+            print "-"*80
+            print "%s %s" % (self.method, location)
+            print '\n'.join(["%s: %s" % (k,v) for k,v in headers.items()])
+            print "\n%s" % body
+        
+        # send the request to the server and store the result:
+        response, content = self.http.request(
+            location, self.method, body=body, headers=headers )
+        self.response = response
+        self.content = content
+
+        if self.trace: 
+            print 
+            print '\n'.join(["%s: %s" % (k,v) for k,v in response.items()])
+            print content
+            print "="*80
+
+        # Parse and store the cookies (if any)
+        if "set-cookie" in self.response:
+            if not self.cookies:
+                self.cookies = SimpleCookie()
+            self.cookies.load(self.response["set-cookie"])
+
+        return content
+
+
+class AttrDict(dict):
+    "Custom Dict to hold attributes and items"
+
+
+class HTMLFormParser(HTMLParser):
+    "Convert HTML form into custom named-tuple dicts"
+    
+    def __init__(self, *args, **kwargs):
+        HTMLParser.__init__(self, *args, **kwargs)
+        self.forms = {}
+        
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if 'name' in attrs:
+            name = attrs['name']
+        elif 'id' in attrs:
+            name = attrs['id']
+        else:
+            name = None
+        if tag == 'form':
+            form = AttrDict()
+            for k, v in attrs.items():
+                setattr(form, "_%s" % k, v)
+            self.form = self.forms[name or len(self.forms)] = form
+        elif tag == 'input':
+            self.form[name or len(self.form)] = attrs.get('value')
 
 
 # Funciones para manejo de archivos de texto de campos de ancho fijo:

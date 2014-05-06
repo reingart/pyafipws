@@ -153,6 +153,7 @@ class PadronAFIP():
             # importar los datos a la base sqlite
             for i, l in enumerate(f):
                 if i % 10000 == 0: print i
+                l = l.strip("\x00")
                 r = leer(l, FORMATO)
                 params = [r[k] for k in keys]
                 c.execute("INSERT INTO padron VALUES (?, ?, ?, ?, ?, ?, ?, ?)",

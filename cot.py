@@ -18,78 +18,19 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02d"
+__version__ = "1.02e"
 
-import os,sys
+import os, sys, traceback
 from pysimplesoap.simplexml import SimpleXMLElement
-import httplib2
-from urllib import urlencode
-import mimetools, mimetypes
-import os, stat, traceback
-from cStringIO import StringIO
+
+from utils import WebClient
 
 HOMO = True
 
 ##URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
 # Nuevo servidor para el "Remito Electrónico Automático"
-URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
-#URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do" # testing
-
-class WebClient:
-    "Minimal webservice client to do POST request with multipart encoded FORM data"
-
-    def __init__(self, location=URL, trace=False):
-        self.http = httplib2.Http('.cache')
-        self.trace = trace
-        self.location = location
-
-
-    def multipart_encode(self, vars):
-        "Enconde form data (vars dict)"
-        boundary = mimetools.choose_boundary()
-        buf = StringIO()
-        for key, value in vars.items():
-            if not isinstance(value, file):
-                buf.write('--%s\r\n' % boundary)
-                buf.write('Content-Disposition: form-data; name="%s"' % key)
-                buf.write('\r\n\r\n' + value + '\r\n')
-            else:
-                fd = value
-                file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-                filename = fd.name.split('/')[-1]
-                contenttype = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
-                buf.write('--%s\r\n' % boundary)
-                buf.write('Content-Disposition: form-data; name="%s"; filename="%s"\r\n' % (key, filename))
-                buf.write('Content-Type: %s\r\n' % contenttype)
-                # buffer += 'Content-Length: %s\r\n' % file_size
-                fd.seek(0)
-                buf.write('\r\n' + fd.read() + '\r\n')
-        buf.write('--' + boundary + '--\r\n\r\n')
-        buf = buf.getvalue()
-        return boundary, buf
-
-    def __call__(self, **vars):
-        "Perform a POST request and return the response"
-        boundary, body = self.multipart_encode(vars)
-        headers={
-            'Content-type': 'multipart/form-data; boundary=%s' % boundary,
-            'Content-length': str(len(body)),
-                }
-        if self.trace:
-            print "-"*80
-            print "POST %s" % self.location
-            print '\n'.join(["%s: %s" % (k,v) for k,v in headers.items()])
-            print "\n%s" % body
-        response, content = self.http.request(
-            self.location,"POST", body=body, headers=headers )
-        self.response = response
-        self.content = content
-        if self.trace: 
-            print 
-            print '\n'.join(["%s: %s" % (k,v) for k,v in response.items()])
-            print content
-            print "="*80
-        return content
+URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # testing
+#URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # prod.
 
 
 class COT:
@@ -271,6 +212,14 @@ if __name__=="__main__":
         #test_response = "cot_response_3_sinerrores.xml"
     else:
         test_response = ""
+
+    if not HOMO:
+        for i, arg in enumerate(sys.argv):
+            if arg.startswith("https"):
+                URL = arg
+                print "Usando URL:", URL
+                sys.argv.pop(i)
+                break
         
     cot.Conectar(URL, trace='--trace' in sys.argv)
     cot.PresentarRemito(filename, testing=test_response)

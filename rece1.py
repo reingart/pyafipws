@@ -286,7 +286,8 @@ if __name__ == "__main__":
         proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
     else:
         proxy_dict = {}
-
+    CACERT = config.has_option('WSFEv1', 'CACERT') and config.get('WSFEv1', 'CACERT') or None
+    WRAPPER = config.has_option('WSFEv1', 'WRAPPER') and config.get('WSFEv1', 'WRAPPER') or None
 
     if '/xml'in sys.argv:
         XML = True
@@ -302,7 +303,7 @@ if __name__ == "__main__":
     try:
         ws = wsfev1.WSFEv1()
         ws.LanzarExcepciones = True
-        ws.Conectar("", wsfev1_url, proxy=proxy_dict)
+        ws.Conectar("", wsfev1_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
         ws.Cuit = cuit
         if wsfev1_reprocesar is not None:
             ws.Reprocesar = wsfev1_reprocesar
@@ -331,7 +332,7 @@ if __name__ == "__main__":
         # obteniendo el TA
         from wsaa import WSAA
         wsaa = WSAA()
-        ta = wsaa.Autenticar("wsfe", cert, privatekey, wsaa_url, proxy=proxy_dict)
+        ta = wsaa.Autenticar("wsfe", cert, privatekey, wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
         if not ta:
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
         ws.SetTicketAcceso(ta)
@@ -421,9 +422,12 @@ if __name__ == "__main__":
                cbte_nro = int(raw_input("Numero de comprobante: "))
             ws.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
 
+            ws.AnalizarXml("XmlResponse")
             print "FechaCbte = ", ws.FechaCbte
             print "CbteNro = ", ws.CbteNro
             print "PuntoVenta = ", ws.PuntoVenta
+            print "TipoDoc = ", ws.ObtenerTagXml('DocTipo')
+            print "NroDoc = ", ws.ObtenerTagXml('DocNro')
             print "ImpTotal =", ws.ImpTotal
             print "CAE = ", ws.CAE
             print "Vencimiento = ", ws.Vencimiento
@@ -514,6 +518,13 @@ if __name__ == "__main__":
                 print "FchTopeInf:", ws.FchTopeInf
                 print "FchProceso:", ws.FchProceso
             sys.exit(0)
+
+        if '/ptosventa' in sys.argv:
+
+            print "=== Puntos de Venta ==="
+            print u'\n'.join(ws.ParamGetPtosVenta())
+            sys.exit(0)
+
 
         ws.LanzarExcepciones = False
         f_entrada = f_salida = None
