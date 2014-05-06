@@ -130,7 +130,8 @@ class WSCTGv2(BaseWS):
                         'AnularCTG', 'RechazarCTG', 'CTGsPendientesResolucion',
                         'ConsultarCTG', 'LeerDatosCTG', 'ConsultarDetalleCTG',
                         'ConsultarCTGExcel', 'ConsultarConstanciaCTGPDF',
-                        'ConsultarCTGRechazados',
+                        'ConsultarCTGRechazados', 
+                        'RegresarAOrigenCTGRechazado',
                         'ConsultarCTGActivosPorPatente',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
@@ -362,6 +363,29 @@ class WSCTGv2(BaseWS):
                             establecimiento=establecimiento,
                             codigoCosecha=codigo_cosecha,
                             pesoNeto=peso_neto_carga,
+                            )))['response']
+        self.__analizar_errores(ret)
+        datos = ret.get('datosResponse')
+        if datos:
+            self.CartaPorte = str(datos['cartaPorte'])
+            self.NumeroCTG = str(datos['ctg'])
+            self.FechaHora = str(datos['fechaHora'])
+            self.CodigoTransaccion = str(datos['codigoOperacion'])
+            self.Observaciones = ""
+        return self.CodigoTransaccion
+
+    @inicializar_y_capturar_excepciones
+    def RegresarAOrigenCTGRechazado(self, numero_carta_de_porte, numero_ctg, 
+                            km_a_recorrer=None, 
+                            **kwargs):
+        "Al consultar los CTGs rechazados se puede Regresar a Origen"
+        ret = self.client.regresarAOrigenCTGRechazado(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        datosRegresarAOrigenCTGRechazado=dict(
+                            cartaPorte=numero_carta_de_porte, 
+                            ctg=numero_ctg, kmARecorrer=km_a_recorrer,
                             )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
@@ -854,7 +878,7 @@ if __name__ == '__main__':
                 km_a_recorrer=1234,
                 observaciones='', establecimiento=1,
             )
-            if [argv for argv in sys.argv if argv.startswith("--confirmar")]:
+            if [argv for argv in sys.argv if argv.startswith(("--confirmar", "--regresar"))]:
                 prueba.update(dict(
                     numero_ctg="49241727", transaccion='10000001681', 
                     consumo_propio='S',
@@ -939,6 +963,17 @@ if __name__ == '__main__':
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Errores)
                 
+        if '--regresar_a_origen_rechazado' in sys.argv:
+            for it in items:
+                print "regresando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
+                transaccion = wsctg.RegresarAOrigenCTGRechazado(**it)
+                print "transaccion: %s" % (transaccion, )
+                print "Fecha y Hora", wsctg.FechaHora
+                print "Errores:", wsctg.Errores
+                it['transaccion'] = transaccion
+                it['errores'] = '|'.join(wsctg.Errores)
+                it['controles'] = '|'.join(wsctg.Errores)
+                
         if '--consultar_detalle' in sys.argv:
             i = sys.argv.index("--consultar_detalle")
             if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
@@ -1012,7 +1047,7 @@ if __name__ == '__main__':
             if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
                 patente = int(sys.argv[i+1])
             elif not ctg:
-                patente= raw_input("Patente: ") or 'CZO985'
+                patente= raw_input("Patente: ") or 'APE652'
             wsctg.LanzarExcepciones = True
             wsctg.ConsultarCTGActivosPorPatente(patente=patente)
             print "Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario"
