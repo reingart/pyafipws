@@ -210,7 +210,7 @@ if 'py2exe' in sys.argv:
             ]
         data_files += [
             ]
-        __version__ += "+pyfepdf_" + pyfepdf11.__version__
+        __version__ += "+pyfepdf_" + pyfepdf.__version__
         HOMO &= pyfepdf.HOMO
 
     if 'pyemail' in globals():
