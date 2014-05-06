@@ -132,6 +132,7 @@ class WSCTGv2(BaseWS):
                         'ConsultarCTGExcel', 'ConsultarConstanciaCTGPDF',
                         'ConsultarCTGRechazados', 
                         'RegresarAOrigenCTGRechazado',
+                        'CambiarDestinoDestinatarioCTGRechazado',
                         'ConsultarCTGActivosPorPatente',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
@@ -386,6 +387,35 @@ class WSCTGv2(BaseWS):
                         datosRegresarAOrigenCTGRechazado=dict(
                             cartaPorte=numero_carta_de_porte, 
                             ctg=numero_ctg, kmARecorrer=km_a_recorrer,
+                            )))['response']
+        self.__analizar_errores(ret)
+        datos = ret.get('datosResponse')
+        if datos:
+            self.CartaPorte = str(datos['cartaPorte'])
+            self.NumeroCTG = str(datos['ctg'])
+            self.FechaHora = str(datos['fechaHora'])
+            self.CodigoTransaccion = str(datos['codigoOperacion'])
+            self.Observaciones = ""
+        return self.CodigoTransaccion
+
+    @inicializar_y_capturar_excepciones
+    def CambiarDestinoDestinatarioCTGRechazado(self, numero_carta_de_porte, 
+                            numero_ctg, codigo_localidad_destino=None,
+                            cuit_destino=None, cuit_destinatario=None,
+                            km_a_recorrer=None, 
+                            **kwargs):
+        "Tomar acción de Cambio de Destino y Destinatario para CTG rechazado"
+        ret = self.client.cambiarDestinoDestinatarioCTGRechazado(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        datosCambiarDestinoDestinatarioCTGRechazado=dict(
+                            cartaPorte=numero_carta_de_porte,
+                            ctg=numero_ctg, 
+                            codigoLocalidadDestino=codigo_localidad_destino,
+                            cuitDestino=cuit_destino, 
+                            cuitDestinatario=cuit_destinatario,
+                            kmARecorrer=km_a_recorrer,
                             )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
@@ -878,7 +908,8 @@ if __name__ == '__main__':
                 km_a_recorrer=1234,
                 observaciones='', establecimiento=1,
             )
-            if [argv for argv in sys.argv if argv.startswith(("--confirmar", "--regresar"))]:
+            if [argv for argv in sys.argv if argv.startswith(("--confirmar", 
+                    "--regresar", '--cambiar'))]:
                 prueba.update(dict(
                     numero_ctg="49241727", transaccion='10000001681', 
                     consumo_propio='S',
@@ -967,6 +998,17 @@ if __name__ == '__main__':
             for it in items:
                 print "regresando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
                 transaccion = wsctg.RegresarAOrigenCTGRechazado(**it)
+                print "transaccion: %s" % (transaccion, )
+                print "Fecha y Hora", wsctg.FechaHora
+                print "Errores:", wsctg.Errores
+                it['transaccion'] = transaccion
+                it['errores'] = '|'.join(wsctg.Errores)
+                it['controles'] = '|'.join(wsctg.Errores)
+                
+        if '--cambiar_destino_destinatario_rechazado' in sys.argv:
+            for it in items:
+                print "cambiando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
+                transaccion = wsctg.CambiarDestinoDestinatarioCTGRechazado(**it)
                 print "transaccion: %s" % (transaccion, )
                 print "Fecha y Hora", wsctg.FechaHora
                 print "Errores:", wsctg.Errores
