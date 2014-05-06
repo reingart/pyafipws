@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.14a"
+__version__ = "1.14b"
 
 import os
 import socket
@@ -772,7 +772,12 @@ def main():
         argv = [argv for argv in sys.argv if not argv.startswith("--")]
         if not medicamentos:
             if len(argv)>16:
-                ws.SendMedicamentos(*argv[1:])
+                if '--dh' in sys.argv:
+                    ws.SendMedicamentosDHSerie(*argv[1:])
+                elif '--fraccion' in sys.argv:
+                    ws.SendMedicamentosFraccion(*argv[1:])
+                else:
+                    ws.SendMedicamentos(*argv[1:])
             else:
                 print "ERROR: no se indicaron todos los parámetros requeridos"
         elif medicamentos:
