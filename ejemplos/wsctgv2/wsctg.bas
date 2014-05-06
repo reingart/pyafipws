@@ -42,7 +42,7 @@ Sub Main()
     ok = WSCTGv2.Conectar("", "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v2.0?wsdl") ' homologación
     
     ' Verifico que la versión esté actualizada (nuevos métodos)
-    Debug.Print WSCTGv2.version >= "1.11b"
+    Debug.Print WSCTGv2.version >= "1.12a"
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSCTGv2.Dummy
@@ -124,7 +124,7 @@ Sub Main()
             remitente_comercial_como_canjeador)
             
     Debug.Print WSCTGv2.XmlResponse
-    Debug.Print WSCTGv2.observaciones
+    Debug.Print WSCTGv2.Observaciones
     Debug.Print WSCTGv2.ErrMsg
             
     If ok Then
@@ -209,10 +209,49 @@ Sub Main()
         ' recorro cada uno para esta clave, devuelve el número de ctg o string vacio
         Do While WSCTGv2.LeerDatosCTG(clave) <> "":
             Debug.Print WSCTGv2.NumeroCTG, WSCTGv2.CartaPorte, WSCTGv2.FechaHora
-            Debug.Print WSCTGv2.Destino, WSCTGv2.Destinatario, WSCTGv2.observaciones
+            Debug.Print WSCTGv2.Destino, WSCTGv2.Destinatario, WSCTGv2.Observaciones
         Loop
-
     Next
+
+    ' Consulta de CTG a Rechazados (nuevo método WSCTGv2)
+    ok = WSCTGv2.ConsultarCTGRechazados()
+    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    Debug.Print "Numero CTG - Carta de Porte - Fecha - Destino/Dest./Obs."
+    ' recorro cada uno para esta clave, devuelve el número de ctg o string vacio
+    Do While WSCTGv2.LeerDatosCTG() <> "":
+        Debug.Print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora,
+        Debug.Print wsctg.Destino, wsctg.Destinatario, wstcg.Observaciones
+    Loop
+    
+    ' Al consultar los CTGs rechazados se puede tomar la acción "Regresar a Origen" (nuevo método WSCTGv2)
+    ok = WSCTGv2.RegresarAOrigenCTGRechazado(numero_carta_de_porte, numero_ctg, km_a_recorrer)
+    Debug.Print "Transaccion:", transaccion
+    Debug.Print "Fecha y Hora", WSCTGv2.FechaHora
+    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    
+    ' Al consultar los CTGs rechazados se puede tomar la acción "Cambio de Destino y Destinatario para CTG rechazado" (nuevo método WSCTGv2)
+    cuit_destino = "20111111112"
+    ok = WSCTGv2.CambiarDestinoDestinatarioCTGRechazado(numero_carta_de_porte, _
+                            numero_ctg, codigo_localidad_destino, _
+                            cuit_destino, cuit_destinatario, _
+                            km_a_recorrer)
+    Debug.Print "Transaccion:", transaccion
+    Debug.Print "Fecha y Hora", WSCTGv2.FechaHora
+    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    
+    ' Consulta de CTG a Activos por patente (nuevo método WSCTGv2)
+    patente = "APE652"
+    ok = WSCTGv2.ConsultarCTGActivosPorPatente(patente)
+    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    Debug.Print "Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario"
+    Do While WSCTGv2.LeerDatosCTG() <> "":
+        Debug.Print wsctg.NumeroCTG, wsctg.CartaPorte, wsct.patente,
+        Debug.Print wsctg.FechaHora, wsctg.Vencimiento, wsctg.PesoNeto,
+        Debug.Print wsctg.UsuarioSolicitante, wstcg.UsuarioReal
+    Loop
+    
+    
+    
 
 Exit Sub
 ManejoError:
