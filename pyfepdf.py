@@ -487,7 +487,7 @@ class FEPDF:
             hojas = 1
 
         if HOMO:
-            self.AgregarDato("homo", "HOMOLOGACIÓN")
+            self.AgregarDato("homo", u"HOMOLOGACIÓN")
 
         if fact.get('motivos_obs') and fact['motivos_obs']<>'00':
             if not f.has_key('motivos_ds.L'):
