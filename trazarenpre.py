@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10a"
+__version__ = "1.10b"
 
 #http://renpre.servicios.pami.org.ar/portal_traza_renpre/paso5.html
 
@@ -30,11 +30,11 @@ import pysimplesoap.client
 from pysimplesoap.client import SoapFault
 from utils import BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
-HOMO = False
+HOMO = True
 TYPELIB = False
 
-WSDL = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
-LOCATION = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
+WSDL = "https://servicios.pami.org.ar/trazamed.WebServiceSDRN?wsdl"
+LOCATION = "https://servicios.pami.org.ar/trazamed.WebServiceSDRN?wsdl"
          
 
 class TrazaRenpre(BaseWS):
@@ -212,7 +212,7 @@ def main():
     ws.Password = 'testwservicepsw'
     
     if '--prod' in sys.argv and not HOMO:
-        WSDL = "https://servicios.pami.org.ar/trazarenpre.WebServiceSDRN"
+        WSDL = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
         print "Usando WSDL:", WSDL
         sys.argv.pop(0)
     
