@@ -131,6 +131,7 @@ class WSCTGv2(BaseWS):
                         'ConsultarCTG', 'LeerDatosCTG', 'ConsultarDetalleCTG',
                         'ConsultarCTGExcel', 'ConsultarConstanciaCTGPDF',
                         'ConsultarCTGRechazados',
+                        'ConsultarCTGActivosPorPatente',
                         'ConsultarProvincias', 
                         'ConsultarLocalidadesPorProvincia', 
                         'ConsultarEstablecimientos',
@@ -146,6 +147,8 @@ class WSCTGv2(BaseWS):
         'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosCTG',
         'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
         'TarifaReferencia', 'Destino', 'Destinatario', 'Detalle',
+        'Patente', 'PesoNeto', 'FechaVencimiento',
+        'UsuarioSolicitante', 'UsuarioReal',
         ]
     _reg_progid_ = "WSCTGv2"
     _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
@@ -176,6 +179,9 @@ class WSCTGv2(BaseWS):
         self.DatosCTG = self.TarifaReferencia = None
         self.CodigoTransaccion = self.Observaciones = ''
         self.Detalle = self.Destino = self.Destinatario = ''
+        self.Patente = self.PesoNeto = self.FechaVencimiento = ''
+        self.UsuarioSolicitante = self.UsuarioReal = ''
+
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -414,6 +420,25 @@ class WSCTGv2(BaseWS):
         return False
 
     @inicializar_y_capturar_excepciones
+    def ConsultarCTGActivosPorPatente(self, patente="ZZZ999"):
+        "Consulta de CTGs activos por patente"
+        ret = self.client.consultarCTGActivosPorPatente(request=dict(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentado': self.Cuit, },
+                        patente=patente,
+                            ))['response']
+        self.__analizar_errores(ret)
+        datos = ret.get('arrayConsultarCTGActivosPorPatenteResponse')
+        if datos:
+            self.DatosCTG = datos
+            self.LeerDatosCTG(pop=False)
+            return True
+        else:
+            self.DatosCTG = []
+        return False
+
+    @inicializar_y_capturar_excepciones
     def CTGsPendientesResolucion(self):
         "Consulta de CTGs Otorgados, CTGs Rechazados y CTGs Confirmados"
         ret = self.client.CTGsPendientesResolucion(request=dict(
@@ -444,7 +469,14 @@ class WSCTGv2(BaseWS):
                 datos = datos.pop(0)
             else:
                 datos = datos[0]
-            datos_ctg = datos['datosConsultarCTG']
+            for det in ('datosConsultarCTG', 'detalleConsultaCTGRechazado', 
+                          'detalleConsultaCTGActivo'):
+                if det in datos:
+                    datos_ctg = datos[det]
+                    break
+            else:
+                # elemento del array no encontrado:
+                return ""
             self.CartaPorte = str(datos_ctg['cartaPorte'])
             self.NumeroCTG = str(datos_ctg['ctg'])
             self.Estado = unicode(datos_ctg.get('estado', ""))
@@ -455,6 +487,11 @@ class WSCTGv2(BaseWS):
             self.Destino = datos_ctg.get("destino", "")
             self.Destinatario = datos_ctg.get("destinatario", "")
             self.Observaciones = datos_ctg.get("observaciones", "")
+            self.Patente = datos_ctg.get("patente")
+            self.PesoNeto = datos_ctg.get("pesoNeto")
+            self.FechaVencimiento = datos_ctg.get("fechaVencimiento")
+            self.UsuarioSolicitante = datos_ctg.get("usuarioSolicitante")
+            self.UsuarioReal = datos_ctg.get("usuarioReal")
             return self.NumeroCTG
         else:
             return ""
@@ -757,6 +794,7 @@ if __name__ == '__main__':
                 carta_porte = sys.argv[i + 1]
                 ctg = sys.argv[i + 2]
             ret = wsctg.AnularCTG(carta_porte, ctg)
+            wsctg.SolicitarCTGDatoPendiente()
             print "Carta Porte", wsctg.CartaPorte
             print "Numero CTG", wsctg.NumeroCTG
             print "Fecha y Hora", wsctg.FechaHora
@@ -968,6 +1006,20 @@ if __name__ == '__main__':
             while wsctg.LeerDatosCTG():
                 print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora,
                 print wsctg.Destino, wsctg.Destinatario, wstcg.Observaciones
+
+        if "--consultar_activos_por_patente" in sys.argv:
+            i = sys.argv.index("--consultar_activos_por_patente")
+            if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
+                patente = int(sys.argv[i+1])
+            elif not ctg:
+                patente= raw_input("Patente: ") or 'CZO985'
+            wsctg.LanzarExcepciones = True
+            wsctg.ConsultarCTGActivosPorPatente(patente=patente)
+            print "Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario"
+            while wsctg.LeerDatosCTG():
+                print wsctg.NumeroCTG, wsctg.CartaPorte, wsct.Patente,
+                print wsctg.FechaHora, wsctg.Vencimiento, wsctg.PesoNeto, 
+                print wsctg.UsuarioSolicitante, wstcg.UsuarioReal
 
         if '--consultar_excel' in sys.argv:
             archivo = raw_input("Archivo a generar (planilla.xls): ") or \
