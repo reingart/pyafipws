@@ -538,7 +538,7 @@ class WSCTGv2(BaseWS):
             self.CartaPorte = str(datos_ctg['cartaPorte'])
             self.NumeroCTG = str(datos_ctg['ctg'])
             self.Estado = unicode(datos_ctg.get('estado', ""))
-            self.ImprimeConstancia = str(datos_ctg['imprimeConstancia'])
+            self.ImprimeConstancia = str(datos_ctg.get('imprimeConstancia', ""))
             for campo in ("fechaRechazo", "fechaEmision", "fechaConfirmacionArribo"):
                 if campo in datos_ctg:
                     self.FechaHora = str(datos_ctg.get(campo))
@@ -1098,12 +1098,14 @@ if __name__ == '__main__':
             elif not ctg:
                 patente= raw_input("Patente: ") or 'APE652'
             wsctg.LanzarExcepciones = True
+            if '--testing' in sys.argv:
+                wsctg.LoadTestXML("wsctgv2_activos.xml")
             wsctg.ConsultarCTGActivosPorPatente(patente=patente)
             print "Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario"
             while wsctg.LeerDatosCTG():
-                print wsctg.NumeroCTG, wsctg.CartaPorte, wsct.Patente,
-                print wsctg.FechaHora, wsctg.Vencimiento, wsctg.PesoNeto, 
-                print wsctg.UsuarioSolicitante, wstcg.UsuarioReal
+                print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.Patente,
+                print wsctg.FechaHora, wsctg.FechaVencimiento, wsctg.PesoNeto, 
+                print wsctg.UsuarioSolicitante, wsctg.UsuarioReal
 
         if '--consultar_excel' in sys.argv:
             archivo = raw_input("Archivo a generar (planilla.xls): ") or \
