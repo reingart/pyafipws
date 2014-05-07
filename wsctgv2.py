@@ -17,7 +17,7 @@ del web service WSCTG versión 2.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.12a"
+__version__ = "1.12b"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -827,7 +827,10 @@ if __name__ == '__main__':
 
         # obteniendo el TA
         from wsaa import WSAA
-        ta = WSAA().Autenticar("wsctg", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
+        wsaa = WSAA()
+        ta = wsaa.Autenticar("wsctg", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
+        if not ta:
+            sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
 
         # cliente soap del web service
         wsctg = WSCTGv2()
