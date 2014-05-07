@@ -219,8 +219,8 @@ Sub Main()
     Debug.Print "Numero CTG - Carta de Porte - Fecha - Destino/Dest./Obs."
     ' recorro cada uno para esta clave, devuelve el número de ctg o string vacio
     Do While WSCTGv2.LeerDatosCTG() <> "":
-        Debug.Print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora,
-        Debug.Print wsctg.Destino, wsctg.Destinatario, wstcg.Observaciones
+        Debug.Print WSCTGv2.NumeroCTG, WSCTGv2.CartaPorte, WSCTGv2.FechaHora,
+        Debug.Print WSCTGv2.Destino, WSCTGv2.Destinatario, WSCTGv2.Observaciones
     Loop
     
     ' Al consultar los CTGs rechazados se puede tomar la acción "Regresar a Origen" (nuevo método WSCTGv2)
@@ -245,9 +245,9 @@ Sub Main()
     Debug.Print "Errores:", WSCTGv2.ErrMsg
     Debug.Print "Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario"
     Do While WSCTGv2.LeerDatosCTG() <> "":
-        Debug.Print wsctg.NumeroCTG, wsctg.CartaPorte, wsct.patente,
-        Debug.Print wsctg.FechaHora, wsctg.Vencimiento, wsctg.PesoNeto,
-        Debug.Print wsctg.UsuarioSolicitante, wstcg.UsuarioReal
+        Debug.Print WSCTGv2.NumeroCTG, WSCTGv2.CartaPorte, WSCTGv2.patente,
+        Debug.Print WSCTGv2.FechaHora, WSCTGv2.FechaVencimiento, WSCTGv2.PesoNeto,
+        Debug.Print WSCTGv2.UsuarioSolicitante, WSCTGv2.UsuarioReal
     Loop
     
     
