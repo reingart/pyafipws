@@ -539,7 +539,8 @@ class WSCTGv2(BaseWS):
             self.NumeroCTG = str(datos_ctg['ctg'])
             self.Estado = unicode(datos_ctg.get('estado', ""))
             self.ImprimeConstancia = str(datos_ctg.get('imprimeConstancia', ""))
-            for campo in ("fechaRechazo", "fechaEmision", "fechaConfirmacionArribo"):
+            for campo in ("fechaRechazo", "fechaEmision", "fechaSolicitud",
+                          "fechaConfirmacionArribo"):
                 if campo in datos_ctg:
                     self.FechaHora = str(datos_ctg.get(campo))
             self.Destino = datos_ctg.get("destino", "")
