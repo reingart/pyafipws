@@ -17,7 +17,7 @@ del web service WSCTG versión 2.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.12b"
+__version__ = "1.12c"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -143,7 +143,7 @@ class WSCTGv2(BaseWS):
                         'ConsultarEstablecimientos',
                         'ConsultarCosechas',
                         'ConsultarEspecies',
-                        'AnalizarXml', 'ObtenerTagXml',
+                        'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
