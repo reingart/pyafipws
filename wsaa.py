@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.07d"
+__version__ = "2.08a"
 
 import hashlib, datetime, email, os, sys, time, traceback
 from php import date
@@ -71,7 +71,7 @@ def create_tra(service=SERVICE,ttl=2400):
     tra.add_child('service',service)
     return tra.as_xml()
 
-def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY):
+def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
 
     if BIO:
@@ -79,12 +79,15 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY):
         buf = BIO.MemoryBuffer(tra)             # Crear un buffer desde el texto
         #Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
         s = SMIME.SMIME()                       # Instanciar un SMIME
+        # soporte de contraseña de encriptación (clave privada, opcional)
+        callback = lambda *args, **kwarg: passphrase
+        # Cargar clave privada y certificado
         if privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
             key_bio = BIO.MemoryBuffer(privatekey)
             crt_bio = BIO.MemoryBuffer(cert)
-            s.load_key_bio(key_bio, crt_bio)        # Cargar certificados (buffer)
+            s.load_key_bio(key_bio, crt_bio)        # (desde buffer)
         elif os.path.exists(privatekey) and os.path.exists(cert):
-            s.load_key(privatekey, cert)            # Cargar certificados (archivo)
+            s.load_key(privatekey, cert, callback)  # (desde archivo)
         else:
             raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
         p7 = s.sign(buf,0)                      # Firmar el buffer
