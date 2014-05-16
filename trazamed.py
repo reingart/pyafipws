@@ -116,7 +116,7 @@ class TrazaMed(BaseWS):
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
                         'GetTransaccionesNoConfirmadas',
                         'GetEnviosPropiosAlertados',
-                        'GetTransaccionesWS',
+                        'GetTransaccionesWS', 'GetCatalogoElectronicoByGTIN',
                         'Conectar', 'LeerError', 'LeerTransaccion',
                         'SetUsername', 
                         'SetParametro', 'GetParametro',
@@ -625,6 +625,37 @@ class TrazaMed(BaseWS):
             self.HayError = ret.get('hay_error')
             self.TransaccionPlainWS = [it for it in ret.get('list', [])]
         return True
+    
+    @inicializar_y_capturar_excepciones
+    def GetCatalogoElectronicoByGTIN(self, usuario, password, 
+                cuit_fabricante=None, gtin=None, descripcion=None, 
+                id_monodroga=None, 
+                ):
+        "Obtiene el Catálogo Electrónico de Medicamentos"
+
+        # preparo los parametros de entrada opcionales:
+        kwargs = {}
+        if cuit_fabricante is not None:
+            kwargs['arg2'] = cuit_fabricante
+        if gtin is not None:
+            kwargs['arg3'] = gtin
+        if descripcion is not None: 
+            kwargs['arg4'] = descripcion
+        if id_monodroga is not None: 
+            kwargs['arg5'] = id_monodroga
+
+        # llamo al webservice
+        res = self.client.getCatalogoElectronicoByGTIN(
+            arg0=usuario, 
+            arg1=password,
+            **kwargs
+        )
+        ret = res['return']
+        if ret:
+            self.__analizar_errores(ret)
+            self.CantPaginas = ret.get('cantPaginas')
+            self.HayError = ret.get('hay_error')
+            return [it for it in ret.get('list', [])]
 
     def SetUsername(self, username):
         "Establezco el nombre de usuario"        
@@ -833,6 +864,12 @@ def main():
             for clave in claves:
                 print "||", ws.GetParametro(clave),         # imprimo cada fila
             print "||"
+    elif '--catalogo' in sys.argv:
+        ret = ws.GetCatalogoElectronicoByGTIN(
+                                *sys.argv[sys.argv.index("--catalogo")+1:]
+                                )
+        for catalogo in ret:
+            print ret        # imprimo cada fila
     else:
         argv = [argv for argv in sys.argv if not argv.startswith("--")]
         if not medicamentos:
