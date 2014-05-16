@@ -910,7 +910,7 @@ INSTALL_DIR = TrazaMed.InstallDir = get_install_dir()
 if __name__ == '__main__':
 
     # ajusto el encoding por defecto (si se redirije la salida)
-    if sys.stdout.encoding is None:
+    if not hasattr(sys.stdout, "encoding") or sys.stdout.encoding is None:
         import codecs, locale
         sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
         sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
