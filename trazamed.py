@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.14b"
+__version__ = "1.15a"
 
 import os
 import socket
@@ -116,6 +116,7 @@ class TrazaMed(BaseWS):
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
                         'GetTransaccionesNoConfirmadas',
                         'GetEnviosPropiosAlertados',
+                        'GetTransaccionesWS',
                         'Conectar', 'LeerError', 'LeerTransaccion',
                         'SetUsername', 
                         'SetParametro', 'GetParametro',
@@ -565,6 +566,66 @@ class TrazaMed(BaseWS):
             self.TransaccionPlainWS = [it for it in ret.get('list', [])]
         return True
 
+    @inicializar_y_capturar_excepciones
+    def GetTransaccionesWS(self, usuario, password, 
+                p_id_transaccion_global=None,
+                id_agente_origen=None, id_agente_destino=None, 
+                id_medicamento=None, id_evento=None, 
+                fecha_desde_op=None, fecha_hasta_op=None, 
+                fecha_desde_t=None, fecha_hasta_t=None, 
+                fecha_desde_v=None, fecha_hasta_v=None, 
+                n_remito=None, n_factura=None,
+                id_estado=None, nro_pag=None,
+                ):
+        "Obtiene los movimientos realizados y permite filtros de búsqueda"
+
+        # preparo los parametros de entrada opcionales:
+        kwargs = {}
+        if p_id_transaccion_global is not None:
+            kwargs['arg2'] = p_id_transaccion_global
+        if id_agente_origen is not None:
+            kwargs['arg3'] = id_agente_origen
+        if id_agente_destino is not None: 
+            kwargs['arg4'] = id_agente_destino
+        if id_medicamento is not None: 
+            kwargs['arg5'] = id_medicamento
+        if id_evento is not None: 
+            kwargs['arg6'] = id_evento
+        if fecha_desde_op is not None: 
+            kwargs['arg7'] = fecha_desde_op
+        if fecha_hasta_op is not None: 
+            kwargs['arg8'] = fecha_hasta_op
+        if fecha_desde_t is not None: 
+            kwargs['arg9'] = fecha_desde_t
+        if fecha_hasta_t is not None: 
+            kwargs['arg10'] = fecha_hasta_t
+        if fecha_desde_v is not None: 
+            kwargs['arg11'] = fecha_desde_v
+        if fecha_hasta_v is not None: 
+            kwargs['arg12'] = fecha_hasta_v
+        if n_remito is not None: 
+            kwargs['arg13'] = n_remito
+        if n_factura is not None: 
+            kwargs['arg14'] = n_factura
+        if id_estado is not None: 
+            kwargs['arg15'] = id_estado
+        if nro_pag is not None: 
+            kwargs['arg16'] = nro_pag
+
+        # llamo al webservice
+        res = self.client.getTransaccionesWS(
+            arg0=usuario, 
+            arg1=password,
+            **kwargs
+        )
+        ret = res['return']
+        if ret:
+            self.__analizar_errores(ret)
+            self.CantPaginas = ret.get('cantPaginas')
+            self.HayError = ret.get('hay_error')
+            self.TransaccionPlainWS = [it for it in ret.get('list', [])]
+        return True
+
     def SetUsername(self, username):
         "Establezco el nombre de usuario"        
         self.Username = username
@@ -732,6 +793,10 @@ def main():
         if '--alertados' in sys.argv:
             ws.GetEnviosPropiosAlertados(
                                 *sys.argv[sys.argv.index("--alertados")+1:]
+                                )
+        elif '--movimientos' in sys.argv:
+            ws.GetTransaccionesWS(
+                                *sys.argv[sys.argv.index("--movimientos")+1:]
                                 )
         else:
             ws.GetTransaccionesNoConfirmadas(
