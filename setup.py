@@ -36,6 +36,7 @@ import wscdc
 import cot
 import trazamed
 import trazarenpre
+import trazafito
 import padron
 
 # herramientas opcionales a compilar y empaquetar:
@@ -341,6 +342,16 @@ if 'py2exe' in sys.argv:
             data_files.append((".", ["trazarenpre.tlb"]))
         __version__ += "+trazarenpre_" + trazarenpre.__version__
         HOMO &= trazarenpre.HOMO
+
+    if 'trazafito' in globals():
+        kwargs['com_server'] += [
+            Target(module=trazafito, modules="trazafito", create_exe=True, create_dll=False),
+            ]
+        kwargs['console'] += [
+            Target(module=trazafito, script='trazafito.py', dest_base="trazafito_cli"), 
+            ]
+        __version__ += "+trazafito_" + trazafito.__version__
+        HOMO &= trazafito.HOMO
 
     if 'padron' in globals():
         kwargs['com_server'] += [
