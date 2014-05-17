@@ -85,9 +85,9 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
         if privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
             key_bio = BIO.MemoryBuffer(privatekey)
             crt_bio = BIO.MemoryBuffer(cert)
-            s.load_key_bio(key_bio, crt_bio)        # (desde buffer)
+            s.load_key_bio(key_bio, crt_bio, callback)  # (desde buffer)
         elif os.path.exists(privatekey) and os.path.exists(cert):
-            s.load_key(privatekey, cert, callback)  # (desde archivo)
+            s.load_key(privatekey, cert, callback)      # (desde archivo)
         else:
             raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
         p7 = s.sign(buf,0)                      # Firmar el buffer
@@ -156,9 +156,9 @@ class WSAA(BaseWS):
         return create_tra(service,ttl)
         
     @inicializar_y_capturar_excepciones
-    def SignTRA(self, tra, cert, privatekey):
+    def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
-        return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'))
+        return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'),passphrase.encode("utf8"))
 
     @inicializar_y_capturar_excepciones
     def LoginCMS(self, cms):
