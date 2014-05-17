@@ -47,6 +47,33 @@ LOCATION = "https://servicios.pami.org.ar/trazaenagr.WebService"
 
 # Formato de TransaccionSenasaDTO (SaveTransaccion)
 TRANSACCION_DTO = [
+    ('gln_origen', 13, A),
+    ('gln_destino', 13, A),
+    ('f_operacion', 10, A),
+    ('f_elaboracion', 10, A),
+    ('f_vto', 10, A),
+    ('id_evento', 15, N),
+    ('cod_producto', 14, A),
+    ('n_cantidad', 30, N),
+    ('n_serie', 20, A),
+    ('n_lote', 50, A),
+    ('n_cai', 15, A),
+    ('n_cae', 15, A),
+    ('id_motivo_destruccion', 5, A),
+    ('n_manifiesto', 15, N),
+    ('en_transporte', 1, A), # boolean
+    ('n_remito', 15, A),
+    ('motivo_devolucion', 100, A),
+    ('observaciones', 1000, A),
+    ('n_vale_compra', 15, A),
+    ('apellidoNombres', 255, A),
+    ('direccion', 200, A),
+    ('numero', 6, N),
+    ('localidad', 15, A),
+    ('provincia', 15, A),
+    ('n_postal', 8, A),
+    ('cuit', 11, A),
+    ('codigo_transaccion', 14, A),
 ]
 
 # Formato para TransaccionSenasa (getTransacciones)
@@ -181,9 +208,34 @@ class TrazaFito(BaseWS):
                          ):
         "Realiza el registro de una transacción de productos fitosanitarios. "
         # creo los parámetros para esta llamada
-        params = {  
+        params = {  'gln_origen': gln_origen,
+                    'gln_destino': gln_destino,
+                    'f_operacion': f_operacion,
+                    'f_elaboracion': f_elaboracion,
+                    'f_vto': f_vto,
+                    'id_evento': id_evento,
+                    'cod_producto': cod_producto,
+                    'n_cantidad': n_cantidad,
+                    'n_serie': n_serie,
+                    'n_lote': n_lote,
+                    'n_cai': n_cai or None,
+                    'n_cae': n_cae or None,
+                    'id_motivo_destruccion': id_motivo_destruccion or None,
+                    'n_manifiesto': n_manifiesto or None,
+                    'en_transporte': en_transporte or None,
+                    'n_remito': n_remito or None,
+                    'motivo_devolucion': motivo_devolucion or None,
+                    'observaciones': observaciones or None,
+                    'n_vale_compra': n_vale_compra or None,
+                    'apellidoNombres': apellidoNombres or None,
+                    'direccion': direccion or None,
+                    'numero': numero or None,
+                    'localidad': localidad or None,
+                    'provincia': provincia or None,
+                    'n_postal': n_postal or None,
+                    'cuit': cuit or None,
                     }
-        res = self.client.saveTransaccion(
+        res = self.client.saveTransacciones(
             arg0=params,
             arg1=usuario, 
             arg2=password,
@@ -383,26 +435,31 @@ def main():
     # Datos de pruebas:
     
     if '--test' in sys.argv:
-        medicamentos.append(dict(
-            f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
-            h_evento=datetime.datetime.now().strftime("%H:%M"), 
-            gln_origen="9999999999918", gln_destino="glnws", 
-            n_remito="1234", n_factura="1234", 
-            vencimiento=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"), 
-            gtin="GTIN1", lote=datetime.datetime.now().strftime("%Y"),
-            numero_serial=int(time.time()*10), 
-            id_obra_social=None, id_evento=134,
-            cuit_origen="20267565393", cuit_destino="20267565393", 
-            apellido="Reingart", nombres="Mariano",
-            tipo_documento="96", n_documento="26756539", sexo="M",
-            direccion="Saraza", numero="1234", piso="", depto="", 
+        transaccion_dto.append(dict(
+            gln_origen="9876543210982", gln_destino="3692581473693", 
+            f_operacion=datetime.datetime.now().strftime("%d/%m/%Y"),
+            f_elaboracion=datetime.datetime.now().strftime("%d/%m/%Y"),
+            f_vto=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"),
+            id_evento=11,
+            cod_producto="88900000000001",
+            n_cantidad=1,
+            n_serie=int(time.time()*10), 
+            n_lote=datetime.datetime.now().strftime("%Y"),
+            n_cai="123456789012345",
+            n_cae="",
+            id_motivo_destruccion=0,
+            n_manifiesto="",
+            en_transporte="N",
+            n_remito="1234",
+            motivo_devolucion="",
+            observaciones="prueba",
+            n_vale_compra="",
+            apellidoNombres="Juan Peres",
+            direccion="Saraza", numero="1234", 
             localidad="Hurlingham", provincia="Buenos Aires",
-            n_postal="1688", fecha_nacimiento="01/01/2000", 
-            telefono="5555-5555", 
-            nro_asociado="9999999999999",
-            cantidad=None, 
-            desde_numero_serial=None, hasta_numero_serial=None, 
-            codigo_transaccion=None, 
+            n_postal="1688",
+            cuit="20267565393",
+            codigo_transaccion=None,
         ))
 
     # Opciones principales:
@@ -435,47 +492,24 @@ def main():
             for clave in claves:
                 print "||", ws.GetParametro(clave),         # imprimo cada fila
             print "||"
-    elif '--catalogo' in sys.argv:
-        ret = ws.GetCatalogoElectronicoByGTIN(
-                                *sys.argv[sys.argv.index("--catalogo")+1:]
-                                )
-        for catalogo in ret:
-            print ret        # imprimo cada fila
     else:
         argv = [argv for argv in sys.argv if not argv.startswith("--")]
-        if not medicamentos:
-            if len(argv)>16:
-                if '--dh' in sys.argv:
-                    ws.SendMedicamentosDHSerie(*argv[1:])
-                elif '--fraccion' in sys.argv:
-                    ws.SendMedicamentosFraccion(*argv[1:])
-                else:
-                    ws.SendMedicamentos(*argv[1:])
+        if not transaccion_dto:
+            if len(argv)>10:
+                ws.SaveTransaccion(*argv[1:])
             else:
                 print "ERROR: no se indicaron todos los parámetros requeridos"
-        elif medicamentos:
+        elif transaccion_dto:
             try:
-                usuario, password = argv[0:2]
+                usuario, password = argv[-2:]
             except:
                 print "ADVERTENCIA: no se indico parámetros usuario y passoword"
-                usuario = password = "pruebasws"
-            for i, med in enumerate(medicamentos):
+                usuario, password = "senasaws", "Clave2013"
+            for i, dto in enumerate(transaccion_dto):
                 print "Procesando registro", i
-                del med['codigo_transaccion']
-                if med.get("cantidad"):
-                    del med["desde_numero_serial"]
-                    del med["hasta_numero_serial"]
-                    ws.SendMedicamentosFraccion(usuario, password, **med)
-                elif med.get("desde_numero_serial"):
-                    del med["cantidad"]
-                    del med["numero_serial"]
-                    ws.SendMedicamentosDHSerie(usuario, password, **med)
-                else:
-                    del med["cantidad"]
-                    del med["desde_numero_serial"]
-                    del med["hasta_numero_serial"]
-                    ws.SendMedicamentos(usuario, password, **med)
-                med['codigo_transaccion'] = ws.CodigoTransaccion
+                del dto['codigo_transaccion']
+                ws.SaveTransaccion(usuario, password, **dto)
+                dto['codigo_transaccion'] = ws.CodigoTransaccion
                 errores.extend(ws.errores)
                 print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                     ws.Resultado,
@@ -483,7 +517,7 @@ def main():
                     '|'.join(ws.Errores or []),
                     )
         else:
-            print "ERROR: no se especificaron medicamentos a informar"
+            print "ERROR: no se especificaron productos a informar"
             
     if not transaccion_dto:
         print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
