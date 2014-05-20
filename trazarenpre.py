@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10b"
+__version__ = "1.10c"
 
 #http://renpre.servicios.pami.org.ar/portal_traza_renpre/paso5.html
 
@@ -35,10 +35,10 @@ TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazamed.WebServiceSDRN?wsdl"
 LOCATION = "https://servicios.pami.org.ar/trazamed.WebServiceSDRN?wsdl"
-         
+##WSDL = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"  # prod.
 
 class TrazaRenpre(BaseWS):
-    "Interfaz para el WebService de Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP"
+    "Interfaz para el WebService de Trazabilidad de Precursores Quimicos SEDRONAR SNT"
     _public_methods_ = ['SaveTransacciones',
                         'SendCancelacTransacc',
                         'Conectar', 'LeerError', 'LeerTransaccion',
@@ -82,6 +82,12 @@ class TrazaRenpre(BaseWS):
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
                              soap_server="jetty")
         if ok:
+            # si el archivo es local, asumo que ya esta corregido:
+            if not self.wsdl.startswith("file"):
+                # corrijo ubicación del servidor (localhost:9050 en el WSDL)
+                location = self.wsdl[:-5]
+                ws = self.client.services['IWebServiceSDRN']
+                ws['ports']['IWebServiceSDRNPort']['location'] = location
             # Establecer credenciales de seguridad:
             self.client['wsse:Security'] = {
                 'wsse:UsernameToken': {
@@ -230,10 +236,10 @@ def main():
         ws.SaveTransacciones(
             usuario='pruebasws', password='pruebasws',
             gln_origen=8888888888888,
-            gln_destino=4,
-            f_operacion="01/01/2012",
-            id_evento=40,
-            cod_producto=12312312313255,
+            gln_destino=8888888888888,
+            f_operacion="20/05/2014",
+            id_evento=44,
+            cod_producto=88800000000035, # acido sulfúrico
             n_cantidad=1,
             n_documento_operacion=1,
             #m_entrega_parcial="",
