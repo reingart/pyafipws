@@ -342,7 +342,7 @@ class WSFEv1(BaseWS):
                             }}
                         for iva in f['iva']],
                     }
-                verifica(verificaciones, resultget, difs)
+                verifica(verificaciones, resultget.copy(), difs)
                 if difs:
                     print "Diferencias:", difs
                     self.log("Diferencias: %s" % difs)
