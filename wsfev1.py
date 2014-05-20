@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.14a"
+__version__ = "1.14b"
 
 import datetime
 import decimal
@@ -305,10 +305,10 @@ class WSFEv1(BaseWS):
                     'CbteDesde': f['cbt_desde'],
                     'CbteHasta': f['cbt_hasta'],
                     'CbteFch': f['fecha_cbte'],
-                    'ImpTotal': float(f['imp_total']),
-                    'ImpTotConc': float(f['imp_tot_conc']),
-                    'ImpNeto': float(f['imp_neto']),
-                    'ImpOpEx': float(f['imp_op_ex']),
+                    'ImpTotal': f['imp_total'] and float(f['imp_total']) or 0.0,
+                    'ImpTotConc': f['imp_tot_conc'] and float(f['imp_tot_conc']) or 0.0,
+                    'ImpNeto': f['imp_neto'] and float(f['imp_neto']) or 0.0,
+                    'ImpOpEx': f['imp_op_ex'] and float(f['imp_op_ex']) or 0.0,
                     'ImpTrib': f['imp_trib'] and float(f['imp_trib']) or 0.0,
                     'ImpIVA': f['imp_iva'] and float(f['imp_iva']) or 0.0,
                     'FchServDesde': f.get('fecha_serv_desde'),
