@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16a"
+__version__ = "1.16b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -250,9 +250,9 @@ AJUSTE = [
     ('total_neto_a_pagar', 17, I, 2), # 17.2
     ('total_iva_rg_2300_07', 17, I, 2), # 17.2
     ('total_pago_segun_condicion', 17, I, 2), # 17.2
-    ('iva_calculado_iva_0', 15, I, 2), # 11.2
-    ('iva_calculado_iva_105', 20, A),
-    ('iva_calculado_iva_21', 20, A),
+    ('iva_calculado_iva_0', 15, I, 2), # 15.2
+    ('iva_calculado_iva_105', 15, I, 2), # 15.2
+    ('iva_calculado_iva_21', 15, I, 2), # 15.2
     ]
 
 EVENTO = [
