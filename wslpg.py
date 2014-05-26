@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15d"
+__version__ = "1.16a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -250,6 +250,9 @@ AJUSTE = [
     ('total_neto_a_pagar', 17, I, 2), # 17.2
     ('total_iva_rg_2300_07', 17, I, 2), # 17.2
     ('total_pago_segun_condicion', 17, I, 2), # 17.2
+    ('iva_calculado_iva_0', 15, I, 2), # 11.2
+    ('iva_calculado_iva_105', 20, A),
+    ('iva_calculado_iva_21', 20, A),
     ]
 
 EVENTO = [
@@ -668,6 +671,14 @@ class WSLPG(BaseWS):
                         concepto_importe_iva_21=liq.get('conceptoImporteIva21'),
                         importe_ajustar_iva_21=liq.get('importeAjustarIva21'),
                     )
+                # analizar detalle de importes ajustados discriminados por alicuota
+                # (por compatibildiad y consistencia se usan los mismos campos)
+                for it in liq.get("importes"):
+                    it = it['importeReturn']
+                    tasa = "iva_%s" % str(it['alicuota']).replace(".", "").strip()
+                    self.params_out["concepto_importe_%s" % tasa] = it['concepto']
+                    self.params_out["importe_ajustar_%s" % tasa] = it['importe']
+                    self.params_out["iva_calculado_%s" % tasa] = it['ivaCalculado']
             if 'certificados' in liq:
                 for c in liq['certificados']:
                     cert = c['certificado']
