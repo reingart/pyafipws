@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15c"
+__version__ = "1.15d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -346,7 +346,7 @@ class WSLPG(BaseWS):
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert="", timeout=None):
+    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=None):
         "Establecer la conexión a los servidores de la AFIP"
         # llamo al constructor heredado:
         ok = BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
