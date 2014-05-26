@@ -133,6 +133,7 @@ if 'py2exe' in sys.argv:
         data_files += [
             (".", [
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCR71.dll",
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
             ]), 
             ("plantillas", ["plantillas/logo.png", ]),
