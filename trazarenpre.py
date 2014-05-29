@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10c"
+__version__ = "1.10d"
 
 #http://renpre.servicios.pami.org.ar/portal_traza_renpre/paso5.html
 
@@ -73,7 +73,7 @@ class TrazaRenpre(BaseWS):
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        self.Errores = ["%s: %s" % (it['_c_error'], it['_d_error'])
+        self.Errores = ["%s: %s" % (it.get('_c_error', ""), it.get('_d_error', ""))
                         for it in ret.get('errores', [])]
         self.Resultado = ret.get('resultado')
 
@@ -140,8 +140,8 @@ class TrazaRenpre(BaseWS):
             arg1=usuario, 
             arg2=password,
         )
-        ret = res['return']        
-        self.CodigoTransaccion = ret['codigoTransaccion']
+        ret = res['return']
+        self.CodigoTransaccion = ret.get('codigoTransaccion')
         self.__analizar_errores(ret)
         return True
 
