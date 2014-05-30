@@ -954,7 +954,7 @@ def main():
             wsmtxca.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
             iva_id = 5 # 21%
-            base_im = 100
+            base_imp = 100
             importe = 21
             wsmtxca.AgregarIva(iva_id, base_imp, importe)
             

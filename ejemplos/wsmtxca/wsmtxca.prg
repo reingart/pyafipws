@@ -115,7 +115,7 @@ ok = WSMTXCA.AgregarTributo(id, Desc, base_imp, alic, importe)
 *-- Agrego subtotales de IVA
 *-- 21%
 id = 5 
-base_im = "100.00"
+base_imp = "100.00"
 importe = "21.00"
 ok = WSMTXCA.AgregarIva(id, base_imp, importe)
 

@@ -105,7 +105,7 @@ Sub Main()
 
     ' Agrego subtotales de IVA
     id = 5 ' 21%
-    base_im = "100.00"
+    base_imp = "100.00"
     importe = "21.00"
     ok = WSMTXCA.AgregarIva(id, base_imp, importe)
     
