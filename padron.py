@@ -135,9 +135,10 @@ class PadronAFIP():
                 row = [r[k] for k in keys]
                 wr.writerow(row)
             csvfile.close()
-        f.seek(0)        
-        os.remove(self.db_path)
-        if not os.path.exists(self.db_path):
+        f.seek(0)
+        if os.path.exists(self.db_path):
+            os.remove(self.db_path)
+        if True:
             db = sqlite3.connect(self.db_path)
             c = db.cursor()
             c.execute("CREATE TABLE padron ("
