@@ -801,7 +801,7 @@ def main():
         wsfev1.AgregarTributo(id, desc, base_imp, alic, importe)
 
         id = 5 # 21%
-        base_im = 100
+        base_imp = 100
         importe = 21
         wsfev1.AgregarIva(id, base_imp, importe)
         
