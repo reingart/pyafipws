@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.02a"
 
 
 import os
@@ -53,12 +53,15 @@ URL = "http://www.afip.gob.ar/genericos/cInscripcion/archivos/apellidoNombreDeno
 class PadronAFIP():
     "Interfaz para consultar situación tributaria (Constancia de Inscripcion)"
 
-    _public_methods_ = ['Buscar', 'Descargar', 'Procesar',                    
+    _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 
+                        'ConsultarDomicilios',
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
                       'cuit', 'denominacion', 'imp_ganancias', 'imp_iva',  
                       'monotributo', 'integrante_soc', 'empleador', 
-                      'actividad_monotributo']
+                      'actividad_monotributo', 'cat_iva', 'domicilios',
+                      'tipo_doc', 'nro_doc',
+                     ]
     _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "PadronAFIP"
     _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
@@ -200,6 +203,15 @@ class PadronAFIP():
             self.dni = self.nro_doc
         return True
 
+    def ConsultarDomicilios(self, nro_doc, tipo_doc=80, cat_iva=None):
+        "Busca los domicilios, devuelve la cantidad y establece la lista"
+        self.cursor.execute("SELECT direccion FROM domicilio WHERE "
+                            " tipo_doc=? AND nro_doc=?", [tipo_doc, nro_doc])
+        filas = self.cursor.fetchall()
+        self.domicilios = [fila['direccion'] for fila in filas]
+        return len(filas)
+
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
@@ -222,6 +234,9 @@ if __name__ == "__main__":
         if ok:
             print "Denominacion:", padron.denominacion
             print "IVA:", padron.imp_iva
+            padron.ConsultarDomicilios(cuit)
+            for dom in padron.domicilios:
+                print dom
         t1 = time.time()
         print "tiempo", t1 -t0
 
