@@ -43,6 +43,7 @@ FORMATO = [
     ("empleador", 1, A, "'N', 'S'"),
     ("actividad_monotributo", 2, A, ""),
     ("tipo_doc", 2, N, "80: CUIT, 96: DNI, etc."),
+    ("cat_iva", 2, N, "1: RI, 4: EX, 5: CF, 6: MT, etc"),
     ]	 
 
 DEBUG = True
@@ -53,7 +54,7 @@ URL = "http://www.afip.gob.ar/genericos/cInscripcion/archivos/apellidoNombreDeno
 class PadronAFIP():
     "Interfaz para consultar situación tributaria (Constancia de Inscripcion)"
 
-    _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 
+    _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
                         'ConsultarDomicilios',
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
@@ -175,9 +176,8 @@ class PadronAFIP():
                 l = l.strip("\x00")
                 r = leer(l, FORMATO)
                 params = [r[k] for k in keys]
-                del params[-1]          # tipo_doc no viene de AFIP
-                params.insert(0, 80)    # agrego tipo_doc = CUIT
-                params.append(None)     # cat_iva no viene de AFIP
+                params[-2] = 80         # agrego tipo_doc = CUIT
+                params[-1] = None       # cat_iva no viene de AFIP
                 placeholders = ", ".join(["?"] * len(params))
                 c.execute("INSERT INTO padron VALUES (%s)" % placeholders,
                           params)
@@ -201,7 +201,7 @@ class PadronAFIP():
             self.cuit = self.nro_doc
         elif self.tipo_doc == 96:
             self.dni = self.nro_doc
-        return True
+        return True if row else False
 
     def ConsultarDomicilios(self, nro_doc, tipo_doc=80, cat_iva=None):
         "Busca los domicilios, devuelve la cantidad y establece la lista"
@@ -210,6 +210,28 @@ class PadronAFIP():
         filas = self.cursor.fetchall()
         self.domicilios = [fila['direccion'] for fila in filas]
         return len(filas)
+
+    def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion):
+        "Agregar o actualizar los datos del cliente"
+        if self.Buscar(nro_doc, tipo_doc):
+            sql = ("UPDATE padron SET denominacion=?, cat_iva=? "
+                    "WHERE tipo_doc=? AND nro_doc=?")
+            params = [denominacion, cat_iva, tipo_doc, nro_doc]
+        else:
+            sql = ("INSERT INTO padron (tipo_doc, nro_doc, denominacion, "
+                    "cat_iva) VALUES (?, ?, ?, ?)")
+            params = [tipo_doc, nro_doc, denominacion, cat_iva]
+        self.cursor.execute(sql, params)
+        # agregar el domicilio solo si no existe:
+        if direccion:
+            self.cursor.execute("SELECT * FROM domicilio WHERE direccion=?",
+                                [direccion])
+            if not self.cursor.rowcount:
+                sql = ("INSERT INTO domicilio (nro_doc, tipo_doc, direccion)"
+                        "VALUES (?, ?, ?)")
+                self.cursor.execute(sql, nro_doc, tipo_doc, direccion)
+        self.db.commit()
+        return True
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
