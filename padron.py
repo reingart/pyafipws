@@ -44,6 +44,7 @@ FORMATO = [
     ("actividad_monotributo", 2, A, ""),
     ("tipo_doc", 2, N, "80: CUIT, 96: DNI, etc."),
     ("cat_iva", 2, N, "1: RI, 4: EX, 5: CF, 6: MT, etc"),
+    ("email", 250, A, ""),    
     ]	 
 
 DEBUG = True
@@ -151,7 +152,6 @@ class PadronAFIP():
             db = db = sqlite3.connect(self.db_path)
             c = db.cursor()
             c.execute("CREATE TABLE padron ("
-                        "tipo_doc INTEGER, "
                         "nro_doc INTEGER, "
                         "denominacion VARCHAR(30), "
                         "imp_ganancias VARCHAR(2), "
@@ -160,7 +160,9 @@ class PadronAFIP():
                         "integrante_soc VARCHAR(1), "
                         "empleador VARCHAR(1), "
                         "actividad_monotributo VARCHAR(2), "
+                        "tipo_doc INTEGER, "
                         "cat_iva INTEGER DEFAULT NULL, "
+                        "email VARCHAR(250), "
                         "PRIMARY KEY (tipo_doc, nro_doc)"
                       ");")
             c.execute("CREATE TABLE domicilio ("
@@ -172,12 +174,12 @@ class PadronAFIP():
                       ");")
             # importar los datos a la base sqlite
             for i, l in enumerate(f):
-                if i % 10000 == 0: print i
+                if i % 10000 == 100: break;# print i
                 l = l.strip("\x00")
                 r = leer(l, FORMATO)
                 params = [r[k] for k in keys]
-                params[-2] = 80         # agrego tipo_doc = CUIT
-                params[-1] = None       # cat_iva no viene de AFIP
+                params[8] = 80          # agrego tipo_doc = CUIT
+                params[9] = None        # cat_iva no viene de AFIP
                 placeholders = ", ".join(["?"] * len(params))
                 c.execute("INSERT INTO padron VALUES (%s)" % placeholders,
                           params)
@@ -206,30 +208,32 @@ class PadronAFIP():
     def ConsultarDomicilios(self, nro_doc, tipo_doc=80, cat_iva=None):
         "Busca los domicilios, devuelve la cantidad y establece la lista"
         self.cursor.execute("SELECT direccion FROM domicilio WHERE "
-                            " tipo_doc=? AND nro_doc=?", [tipo_doc, nro_doc])
+                            " tipo_doc=? AND nro_doc=? ORDER BY id ", 
+                            [tipo_doc, nro_doc])
         filas = self.cursor.fetchall()
         self.domicilios = [fila['direccion'] for fila in filas]
         return len(filas)
 
-    def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion):
+    def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion, email):
         "Agregar o actualizar los datos del cliente"
         if self.Buscar(nro_doc, tipo_doc):
-            sql = ("UPDATE padron SET denominacion=?, cat_iva=? "
+            sql = ("UPDATE padron SET denominacion=?, cat_iva=?, email=? "
                     "WHERE tipo_doc=? AND nro_doc=?")
-            params = [denominacion, cat_iva, tipo_doc, nro_doc]
+            params = [denominacion, cat_iva, email, tipo_doc, nro_doc]
         else:
             sql = ("INSERT INTO padron (tipo_doc, nro_doc, denominacion, "
-                    "cat_iva) VALUES (?, ?, ?, ?)")
-            params = [tipo_doc, nro_doc, denominacion, cat_iva]
+                    "cat_iva, email) VALUES (?, ?, ?, ?, ?)")
+            params = [tipo_doc, nro_doc, denominacion, cat_iva, email]
         self.cursor.execute(sql, params)
         # agregar el domicilio solo si no existe:
         if direccion:
-            self.cursor.execute("SELECT * FROM domicilio WHERE direccion=?",
-                                [direccion])
-            if not self.cursor.rowcount:
+            self.cursor.execute("SELECT * FROM domicilio WHERE direccion=? "
+                                "AND tipo_doc=? AND nro_doc=?", 
+                                [direccion, tipo_doc, nro_doc])
+            if self.cursor.rowcount < 0:
                 sql = ("INSERT INTO domicilio (nro_doc, tipo_doc, direccion)"
                         "VALUES (?, ?, ?)")
-                self.cursor.execute(sql, nro_doc, tipo_doc, direccion)
+                self.cursor.execute(sql, [nro_doc, tipo_doc, direccion])
         self.db.commit()
         return True
 
