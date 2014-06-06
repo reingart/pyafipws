@@ -123,7 +123,7 @@ class PadronAFIP():
             tf.close()
         return 200
             
-    def Procesar(self, filename="padron.txt"):
+    def Procesar(self, filename="padron.txt", borrar=False):
         "Analiza y crea la base de datos interna sqlite para consultas" 
         f = open(filename, "r")
         keys = [k for k, l, t, d in FORMATO]
@@ -141,10 +141,10 @@ class PadronAFIP():
                 wr.writerow(row)
             csvfile.close()
         f.seek(0)
-        if os.path.exists(self.db_path):
+        if os.path.exists(self.db_path) and borrar:
             os.remove(self.db_path)
         if True:
-            db = sqlite3.connect(self.db_path)
+            db = db = sqlite3.connect(self.db_path)
             c = db.cursor()
             c.execute("CREATE TABLE padron ("
                         "tipo_doc INTEGER, "
@@ -160,7 +160,7 @@ class PadronAFIP():
                       ");")
             # importar los datos a la base sqlite
             for i, l in enumerate(f):
-                if i % 10000 == 1: break; #print i
+                if i % 10000 == 0: print i
                 l = l.strip("\x00")
                 r = leer(l, FORMATO)
                 params = [r[k] for k in keys]
@@ -206,7 +206,7 @@ if __name__ == "__main__":
         if "--descargar" in sys.argv:
             padron.Descargar()
         if "--procesar" in sys.argv:
-            padron.Procesar()
+            padron.Procesar(borrar='--borrar' in sys.argv)
         cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
         # consultar un cuit:
         ok = padron.Buscar(cuit)
