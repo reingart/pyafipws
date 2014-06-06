@@ -156,7 +156,15 @@ class PadronAFIP():
                         "integrante_soc VARCHAR(1), "
                         "empleador VARCHAR(1), "
                         "actividad_monotributo VARCHAR(2), "
+                        "cat_iva INTEGER DEFAULT NULL, "
                         "PRIMARY KEY (tipo_doc, nro_doc)"
+                      ");")
+            c.execute("CREATE TABLE domicilio ("
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        "tipo_doc INTEGER, "
+                        "nro_doc INTEGER, "
+                        "direccion TEXT, "
+                        "FOREIGN KEY (tipo_doc, nro_doc) REFERENCES padron "
                       ");")
             # importar los datos a la base sqlite
             for i, l in enumerate(f):
@@ -166,6 +174,7 @@ class PadronAFIP():
                 params = [r[k] for k in keys]
                 del params[-1]          # tipo_doc no viene de AFIP
                 params.insert(0, 80)    # agrego tipo_doc = CUIT
+                params.append(None)     # cat_iva no viene de AFIP
                 placeholders = ", ".join(["?"] * len(params))
                 c.execute("INSERT INTO padron VALUES (%s)" % placeholders,
                           params)
