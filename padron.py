@@ -34,7 +34,7 @@ from utils import leer, escribir, N, A, I, get_install_dir
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
 
 FORMATO = [
-    ("cuit", 11, N, ""),
+    ("nro_doc", 11, N, ""),
     ("denominacion", 30, A, ""),
     ("imp_ganancias", 2, A,	"'NI', 'AC','EX', 'NC'"),
     ("imp_iva", 2, A, "'NI' , 'AC','EX','NA','XN','AN'"),
@@ -42,6 +42,7 @@ FORMATO = [
     ("integrante_soc", 1, A, "'N' , 'S'"),
     ("empleador", 1, A, "'N', 'S'"),
     ("actividad_monotributo", 2, A, ""),
+    ("tipo_doc", 2, N, "80: CUIT, 96: DNI, etc."),
     ]	 
 
 DEBUG = True
@@ -146,38 +147,48 @@ class PadronAFIP():
             db = sqlite3.connect(self.db_path)
             c = db.cursor()
             c.execute("CREATE TABLE padron ("
-                        "cuit INTEGER PRIMARY KEY, "
+                        "tipo_doc INTEGER, "
+                        "nro_doc INTEGER, "
                         "denominacion VARCHAR(30), "
                         "imp_ganancias VARCHAR(2), "
                         "imp_iva VARCHAR(2), "
                         "monotributo VARCHAR(1), "
                         "integrante_soc VARCHAR(1), "
                         "empleador VARCHAR(1), "
-                        "actividad_monotributo VARCHAR(2)"
+                        "actividad_monotributo VARCHAR(2), "
+                        "PRIMARY KEY (tipo_doc, nro_doc)"
                       ");")
             # importar los datos a la base sqlite
             for i, l in enumerate(f):
-                if i % 10000 == 0: print i
+                if i % 10000 == 1: break; #print i
                 l = l.strip("\x00")
                 r = leer(l, FORMATO)
                 params = [r[k] for k in keys]
-                c.execute("INSERT INTO padron VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                del params[-1]          # tipo_doc no viene de AFIP
+                params.insert(0, 80)    # agrego tipo_doc = CUIT
+                placeholders = ", ".join(["?"] * len(params))
+                c.execute("INSERT INTO padron VALUES (%s)" % placeholders,
                           params)
             db.commit()
             c.close()
             db.close()
         
-    def Buscar(self, cuit):
-        "Búsca por cuit, devuelve True si fue encontrado y establece atributos"
+    def Buscar(self, nro_doc, tipo_doc=80):
+        "Devuelve True si fue encontrado y establece atributos con datos"
         # cuit: codigo único de identificación tributaria del contribuyente
         #       (sin guiones)
-        self.cursor.execute("SELECT * FROM padron WHERE cuit=?", [cuit])
+        self.cursor.execute("SELECT * FROM padron WHERE "
+                            " tipo_doc=? AND nro_doc=?", [tipo_doc, nro_doc])
         row = self.cursor.fetchone()
         for key in [k for k, l, t, d in FORMATO]:
             if row:
                 setattr(self, key, str(row[key]))
             else:
                 setattr(self, key, '')
+        if self.tipo_doc == 80:
+            self.cuit = self.nro_doc
+        elif self.tipo_doc == 96:
+            self.dni = self.nro_doc
         return True
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
