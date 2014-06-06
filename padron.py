@@ -65,6 +65,10 @@ class PadronAFIP():
     def __init__(self):
         self.db_path = os.path.join(self.InstallDir, "padron.db")
         self.Version = __version__
+        # Abrir la base de datos
+        self.db = sqlite3.connect(self.db_path)
+        self.db.row_factory = sqlite3.Row
+        self.cursor = self.db.cursor()
 
     def Descargar(self, url=URL, filename="padron.txt", proxy=None):
         "Descarga el archivo de AFIP, devuelve 200 o 304 si no fue modificado"
@@ -167,18 +171,13 @@ class PadronAFIP():
         "Búsca por cuit, devuelve True si fue encontrado y establece atributos"
         # cuit: codigo único de identificación tributaria del contribuyente
         #       (sin guiones)
-        db = sqlite3.connect(self.db_path)
-        db.row_factory = sqlite3.Row
-        c = db.cursor()
-        c.execute("SELECT * FROM padron WHERE cuit=?", [cuit])
-        row = c.fetchone()
+        self.cursor.execute("SELECT * FROM padron WHERE cuit=?", [cuit])
+        row = self.cursor.fetchone()
         for key in [k for k, l, t, d in FORMATO]:
             if row:
                 setattr(self, key, str(row[key]))
             else:
                 setattr(self, key, '')
-        c.close()
-        db.close()
         return True
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
