@@ -562,9 +562,15 @@ class RG1361AFIP():
         escribir([self.factura], self.db)
         return self.factura['id']
 
-    def ObtenerFactura(self, id):
+    def ActualizarFactura(self, id_factura):
+        from formatos.formato_sql import modificar
+        self.factura["id"] = id_factura
+        modificar(self.factura, self.db)
+        return True
+
+    def ObtenerFactura(self, id_factura):
         from formatos.formato_sql import leer
-        facts = list(leer(self.db, ids=[id]))
+        facts = list(leer(self.db, ids=[id_factura]))
         if facts:
             self.factura = facts[0]
         return True
@@ -615,8 +621,8 @@ if __name__ == '__main__':
             idioma_cbte = 1
             motivo = "11"
 
-            cae = "61123022925855"
-            fch_venc_cae = "20110320"
+            cae = None
+            fch_venc_cae = None
             
             rg1361.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
                 cbte_nro, imp_total, imp_tot_conc, imp_neto,
@@ -665,9 +671,9 @@ if __name__ == '__main__':
 
             rg1361.AgregarDato("prueba", "1234")
             print "Prueba!"
-            id = rg1361.GuardarFactura()
+            id_factura = rg1361.GuardarFactura()
             fact = rg1361.factura.copy()
-            ok = rg1361.ObtenerFactura(id)
+            ok = rg1361.ObtenerFactura(id_factura)
             f = rg1361.factura
             
             # verificar que los datos se hayan grabado y leido correctamente:
@@ -693,6 +699,14 @@ if __name__ == '__main__':
             cmp_dict(fact, f)
             for dif in difs:
                 print dif
+                
+            rg1361.EstablecerParametro("cae", "61123022925855")
+            rg1361.EstablecerParametro("fch_venc_cae", "20110320")
+            rg1361.EstablecerParametro("motivo_obs", "")
+            ok = rg1361.ActualizarFactura(id_factura)
+            ok = rg1361.ObtenerFactura(id_factura)
+            assert rg1361.factura["cae"] == "61123022925855"
+
             sys.exit(0)
 
         if '--leer' in sys.argv:
