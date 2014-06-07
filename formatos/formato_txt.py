@@ -86,6 +86,7 @@ ENCABEZADO = [
     ('imp_iva', (15,3), I), 
     ('emision_tipo', 4, A),
     ('imp_subtotal', (15,3), I), 
+    ('cat_iva', 2, N),
     ]
 
 DETALLE = [
