@@ -568,8 +568,10 @@ class RG1361AFIP():
         modificar(self.factura, self.db)
         return True
 
-    def ObtenerFactura(self, id_factura):
-        from formatos.formato_sql import leer
+    def ObtenerFactura(self, id_factura=None):
+        from formatos.formato_sql import leer, max_id
+        if not id_factura:
+            id_factura = max_id(self.db) 
         facts = list(leer(self.db, ids=[id_factura]))
         if facts:
             self.factura = facts[0]
