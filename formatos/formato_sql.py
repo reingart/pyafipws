@@ -19,6 +19,11 @@ __license__ = "GPL 3.0"
 from decimal import Decimal
 
 DEBUG = False
+CAE_NULL = None
+FECHA_VTO_NULL = None
+RESULTADO_NULL = None
+NULL = None
+
 
 def esquema_sql(tipos_registro, conf={}):
     from formato_txt import A, N, I
@@ -179,6 +184,34 @@ def escribir(facts, db, schema={}, commit=True):
                     ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in IVA if k in item])
         if commit:
             db.commit()
+    finally:
+        pass
+
+
+def modificar(fact, db, schema={}, webservice="wsfev1", ids=None, conf_db={}):
+    from formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
+    update = ['cae', 'fecha_vto', 'resultado', 'reproceso', 'motivo_obs', 'err_code', 'err_msg', 'cbte_nro']
+    tablas, campos, campos_rev = configurar(schema)
+    cur = db.cursor()
+    if fact['cae']=='NULL' or fact['cae']=='' or fact['cae']==None:
+        fact['cae'] = CAE_NULL
+        fact['fecha_vto'] = FECHA_VTO_NULL
+    if 'null' in conf_db and fact['resultado']==None or fact['resultado']=='':
+        fact['resultado'] = RESULTADO_NULL
+    for k in ['reproceso', 'motivo_obs', 'err_code', 'err_msg']:
+        if 'null' in conf_db and k in fact and fact[k]==None or fact[k]=='':
+            if DEBUG: print k, "NULL"
+            fact[k] = NULL
+    try:
+        query = ("UPDATE %(encabezado)s SET %%%%s WHERE %%(id)s=?" % tablas) % campos["encabezado"]
+        fields = [campos["encabezado"].get(k, k) for k,t,n in ENCABEZADO if k in update and k in fact]
+        values = [fact[k] for k,t,n in ENCABEZADO if k in update and k in fact]
+        query = query % ','.join(["%s=?" % f for f in fields])
+        if DEBUG: print query, values+[fact['id']]
+        ejecutar(cur, query, values+[fact['id']] )
+        db.commit()
+    except:
+        raise
     finally:
         pass
 
