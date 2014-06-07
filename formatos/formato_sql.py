@@ -62,8 +62,97 @@ def esquema_sql(tipos_registro, conf={}):
         yield '\n'.join(sql)    
 
 
+def configurar(schema):
+    tablas = {}
+    campos = {}
+    if not schema:
+        for tabla in "encabezado", "detalle", "cmp_asoc", "permiso", "tributo", "iva":
+            tablas[tabla] = tabla
+            campos[tabla] = {"id": "id"}
+    return tablas, campos
+
+def ejecutar(cur, sql, params=None):
+    print sql, params
+    if params is None:
+        return cur.execute(sql)
+    else:
+        return cur.execute(sql, params)
+
+
+def max_id(db, schema={}):
+    cur = db.cursor()
+    tablas, campos = configurar(schema)
+    query = ("SELECT MAX(%%(id)s) FROM %(encabezado)s" % tablas) % campos["encabezado"]
+    if DEBUG: print "ejecutando",query
+    ret = None
+    try:
+        ejecutar(cur, query)
+        for row in cur:
+            ret = row[0]
+        if not ret:
+            ret = 0
+        print "MAX_ID = ", ret
+        return ret
+    finally:
+        cur.close()
+
+
+def escribir(facts, db, schema={}, commit=True):
+    from formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
+    tablas, campos = configurar(schema)
+    cur = db.cursor()
+    try:
+        for dic in facts:
+            if not 'id' in dic:
+                dic['id'] = max_id(db, schema={})
+            query = "INSERT INTO %(encabezado)s (%%s) VALUES (%%s)" % tablas
+            fields = ','.join([campos["encabezado"].get(k, k) for k,t,n in ENCABEZADO if k in dic])
+            values = ','.join(['?' for k,t,n in ENCABEZADO if k in dic])
+            if DEBUG: print "Ejecutando2: %s %s" % (query % (fields, values), [dic[k] for k,t,n in ENCABEZADO if k in dic])
+            ejecutar(cur, query % (fields, values), [dic[k] for k,t,n in ENCABEZADO if k in dic])
+            query = ("INSERT INTO %(detalle)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["detalle"]
+            for item in dic['detalles']:
+                fields = ','.join([campos["detalle"].get(k, k) for k,t,n in DETALLE if k in item])
+                values = ','.join(['?' for k,t,n in DETALLE if k in item])
+                if DEBUG: print "Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in DETALLE if k in item])
+                ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in DETALLE if k in item])
+            if 'cbtes_asoc' in dic and tablas["cmp_asoc"]: 
+                query = ("INSERT INTO %(cmp_asoc)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["cmp_asoc"]
+                for item in dic['cbtes_asoc']:
+                    fields = ','.join([campos["cmp_asoc"].get(k, k) for k,t,n in CMP_ASOC if k in item])
+                    values = ','.join(['?' for k,t,n in CMP_ASOC if k in item])
+                    if DEBUG: print "Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in CMP_ASOC if k in item])
+                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in CMP_ASOC if k in item])
+            if 'permisos' in dic: 
+                query = ("INSERT INTO %(permiso)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["permiso"]
+                for item in dic['permisos']:
+                    fields = ','.join([campos["permiso"].get(k, k) for k,t,n in PERMISO if k in item])
+                    values = ','.join(['?' for k,t,n in PERMISO if k in item])
+                    if DEBUG: print "Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in PERMISO if k in item])
+                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in PERMISO if k in item])
+            if 'tributos' in dic: 
+                query = ("INSERT INTO %(tributo)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["tributo"]
+                for item in dic['tributos']:
+                    fields = ','.join([campos["tributo"].get(k, k) for k,t,n in TRIBUTO if k in item])
+                    values = ','.join(['?' for k,t,n in TRIBUTO if k in item])
+                    if DEBUG: print "Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in TRIBUTO if k in item])
+                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in TRIBUTO if k in item])
+            if 'ivas' in dic: 
+                query = ("INSERT INTO %(iva)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["iva"]
+                for item in dic['ivas']:
+                    fields = ','.join([campos["iva"].get(k, k) for k,t,n in IVA if k in item])
+                    values = ','.join(['?' for k,t,n in IVA if k in item])
+                    if DEBUG: print "Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in IVA if k in item])
+                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in IVA if k in item])
+        if commit:
+            db.commit()
+    finally:
+        pass
+
+
+
 def ayuda():
-    print "Formato:"
+    print "-- Formato:"
     from formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, DATO
     tipos_registro =  [
         ('encabezado', ENCABEZADO),
@@ -73,7 +162,7 @@ def ayuda():
         ('cmp_asoc', CMP_ASOC),
         ('dato', DATO),
         ]
-    print "Esquema:"
+    print "-- Esquema:"
     for sql in esquema_sql(tipos_registro):
         print sql
 
