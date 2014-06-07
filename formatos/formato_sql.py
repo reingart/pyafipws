@@ -104,7 +104,7 @@ def escribir(facts, db, schema={}, commit=True):
     try:
         for dic in facts:
             if not 'id' in dic:
-                dic['id'] = max_id(db, schema={})
+                dic['id'] = max_id(db, schema={}) + 1
             query = "INSERT INTO %(encabezado)s (%%s) VALUES (%%s)" % tablas
             fields = ','.join([campos["encabezado"].get(k, k) for k,t,n in ENCABEZADO if k in dic])
             values = ','.join(['?' for k,t,n in ENCABEZADO if k in dic])

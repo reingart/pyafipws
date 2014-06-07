@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18"
+__version__ = "1.20a"
 
 LICENCIA = """
 rg1361.py: Generador de archivos ventas para SIRED/SIAP RG1361/02
@@ -437,9 +437,23 @@ class RG1361AFIP():
         self.db_path = os.path.join(self.InstallDir, "rg1361.db")
         self.Version = __version__
         # Abrir la base de datos
+        crear = not os.path.exists(self.db_path)
         self.db = sqlite3.connect(self.db_path)
         self.db.row_factory = sqlite3.Row
         self.cursor = self.db.cursor()
+        if crear:
+            from formatos.formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, DATO
+            from formatos.formato_sql import esquema_sql
+            tipos_registro =  [
+                ('encabezado', ENCABEZADO),
+                ('detalle', DETALLE),
+                ('tributo', TRIBUTO), 
+                ('iva', IVA), 
+                ('cmp_asoc', CMP_ASOC),
+                ('dato', DATO),
+                ]
+            for sql in esquema_sql(tipos_registro):
+                self.cursor.execute(sql)
 
     def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
             cbte_nro=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
