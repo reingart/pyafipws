@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 
 import os
@@ -196,7 +196,10 @@ class PadronAFIP():
         row = self.cursor.fetchone()
         for key in [k for k, l, t, d in FORMATO]:
             if row:
-                setattr(self, key, str(row[key]))
+                val = row[key]
+                if not isinstance(val, basestring):
+                    val = str(row[key])
+                setattr(self, key, val)
             else:
                 setattr(self, key, '')
         if self.tipo_doc == 80:
