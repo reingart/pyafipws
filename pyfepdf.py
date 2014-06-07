@@ -15,10 +15,10 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07e"
+__version__ = "1.07f"
 
 DEBUG = False
-HOMO = True
+HOMO = False
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = u"""
@@ -90,6 +90,22 @@ class FEPDF:
         
     _reg_progid_ = "PyFEPDF"
     _reg_clsid_ = "{C9B5D7BB-0388-4A5E-87D5-0B4376C7A336}"
+
+    tipos_doc = {80:'CUIT',86:'CUIL',96:'DNI',99: '', 87: u"CDI", 
+                 89: u"LE", 90: u"LC", 91: u"CI Extranjera", 
+                 92: u"en trámite", 93: u"Acta Nacimiento", 94: u"Pasaporte", 
+                 95: u"CI Bs. As. RNP",  
+                 0: u"CI Policía Federal", 1: u"CI Buenos Aires", 
+                 2: u"CI Catamarca", 3: u"CI Córdoba", 4: u"CI Corrientes", 
+                 5: u"CI Entre Ríos", 6: u"CI Jujuy", 7: u"CI Mendoza", 
+                 8: u"CI La Rioja", 9: u"CI Salta", 10: u"CI San Juan", 
+                 11: u"CI San Luis", 12: u"CI Santa Fe", 
+                 13: u"CI Santiago del Estero", 14: u"CI Tucumán", 
+                 16: u"CI Chaco", 17: u"CI Chubut", 18: u"CI Formosa", 
+                 19: u"CI Misiones", 20: u"CI Neuquén", 21: u"CI La Pampa", 
+                 22: u"CI Río Negro", 23: u"CI Santa Cruz", 
+                 24: u"CI Tierra del Fuego",
+                }
 
     umeds_ds = {0: u' ', 1: u'kg', 2: u'm', 3: u'm2', 4: u'm3', 5: u'l', 
              6: u'1000 kWh', 7: u'u', 
@@ -563,7 +579,7 @@ class FEPDF:
                 f.set('Cliente.Telefono', fact.get('telefono', fact.get('telefono_cliente')))
                 f.set('Cliente.IVA', fact.get('categoria', fact.get('id_impositivo')))
                 f.set('Cliente.CUIT', self.fmt_cuit(str(fact['nro_doc'])))
-                f.set('Cliente.TipoDoc', {80:'CUIT',86:'CUIL',96:'DNI',99: ''}[int(str(fact['tipo_doc']))])
+                f.set('Cliente.TipoDoc', u"%s:" % self.tipos_doc[int(str(fact['tipo_doc']))])
                 f.set('Cliente.Observaciones', fact.get('obs_comerciales'))
                 f.set('Cliente.PaisDestino', self.paises.get(fact.get('pais_dst_cmp'), fact.get('pais_dst_cmp')) or '')
 
