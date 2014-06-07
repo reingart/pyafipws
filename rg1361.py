@@ -425,7 +425,7 @@ class RG1361AFIP():
                         'AgregarDetalleItem', 'AgregarIva', 'AgregarTributo', 
                         'AgregarCmpAsoc', 'AgregarPermiso',
                         'AgregarDato',
-                        'GuardarFactura',
+                        'GuardarFactura', 'ObtenerFactura',
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
                      ]
@@ -442,7 +442,7 @@ class RG1361AFIP():
         self.db.row_factory = sqlite3.Row
         self.cursor = self.db.cursor()
         if crear:
-            from formatos.formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, DATO
+            from formatos.formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
             from formatos.formato_sql import esquema_sql
             tipos_registro =  [
                 ('encabezado', ENCABEZADO),
@@ -450,6 +450,7 @@ class RG1361AFIP():
                 ('tributo', TRIBUTO), 
                 ('iva', IVA), 
                 ('cmp_asoc', CMP_ASOC),
+                ('permiso', PERMISO),
                 ('dato', DATO),
                 ]
             for sql in esquema_sql(tipos_registro):
@@ -559,6 +560,14 @@ class RG1361AFIP():
     def GuardarFactura(self):
         from formatos.formato_sql import escribir
         escribir([self.factura], self.db)
+        return self.factura['id']
+
+    def ObtenerFactura(self, id):
+        from formatos.formato_sql import leer
+        facts = list(leer(self.db, ids=[id]))
+        if facts:
+            self.factura = facts[0]
+        return True
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -656,7 +665,34 @@ if __name__ == '__main__':
 
             rg1361.AgregarDato("prueba", "1234")
             print "Prueba!"
-            rg1361.GuardarFactura()
+            id = rg1361.GuardarFactura()
+            fact = rg1361.factura.copy()
+            ok = rg1361.ObtenerFactura(id)
+            f = rg1361.factura
+            
+            # verificar que los datos se hayan grabado y leido correctamente:
+            difs = []
+            def cmp_dict(d1, d2, prefijo=None):
+                global difs
+                if difs is None:
+                    difs = []
+                for k in set(d1.keys() + d2.keys()):
+                    if k in d1 and k in d2:
+                        if isinstance(d1[k], list):
+                            for i, (v1, v2) in enumerate(zip(d1[k], d2[k])):
+                                cmp_dict(v1, v2, (k, i))
+                        else:
+                            if isinstance(d1[k], Decimal) or isinstance(d2[k], Decimal):
+                                d1[k] = float(d1[k])
+                                d2[k] = float(d2[k])
+                            if isinstance(d1[k], long) or isinstance(d2[k], long):
+                                d1[k] = long(d1[k])
+                                d2[k] = long(d2[k])
+                            if d1[k] != d2[k]:
+                                difs.append(("Dif", prefijo, k, d1[k], d2[k]))
+            cmp_dict(fact, f)
+            for dif in difs:
+                print dif
             sys.exit(0)
 
         if '--leer' in sys.argv:
