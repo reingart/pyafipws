@@ -30,12 +30,14 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
 import csv
+import datetime
 from decimal import Decimal
 import os
 import sys
+import sqlite3
 import traceback
 
-from utils import leer, escribir, C, N, A, I, B
+from utils import leer, escribir, C, N, A, I, B, get_install_dir
 
 CUIT = '20267565393'
 
@@ -415,6 +417,139 @@ def generar_ventas(items):
     out.close()
 
 
+class RG1361AFIP():
+    "Componente para almacenamiento de duplicados digitales (RG1361/02)"
+
+    _public_methods_ = ['CrearBD', 
+                        'CrearFactura', 
+                        'AgregarDetalleItem', 'AgregarIva', 'AgregarTributo', 
+                        'AgregarCmpAsoc', 'AgregarPermiso',
+                        'AgregarDato',
+                        'GuardarFactura',
+                        ]
+    _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
+                     ]
+    _readonly_attrs_ = _public_attrs_
+    _reg_progid_ = "RG1361AFIP"
+    _reg_clsid_ = "{3DC74AD5-939F-42AB-8381-FCA7AF783C77}"
+
+    def __init__(self):
+        self.db_path = os.path.join(self.InstallDir, "rg1361.db")
+        self.Version = __version__
+        # Abrir la base de datos
+        self.db = sqlite3.connect(self.db_path)
+        self.db.row_factory = sqlite3.Row
+        self.cursor = self.db.cursor()
+
+    def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
+            cbte_nro=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
+            imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago="", 
+            fecha_serv_desde=None, fecha_serv_hasta=None, 
+            moneda_id="PES", moneda_ctz="1.0000", cae="", fch_venc_cae="", id_impositivo='',
+            nombre_cliente="", domicilio_cliente="", pais_dst_cmp=None,
+            obs_comerciales="", obs_generales="", forma_pago="", incoterms="", 
+            idioma_cbte=7, motivos_obs="", descuento=0.0, email="",
+            **kwargs
+            ):
+        "Creo un objeto factura (internamente)"
+        fact = {'tipo_doc': tipo_doc, 'nro_doc':  nro_doc,
+                'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
+                'cbte_nro': cbte_nro, 
+                'imp_total': imp_total, 'imp_tot_conc': imp_tot_conc,
+                'imp_neto': imp_neto, 'imp_iva': imp_iva,
+                'imp_trib': imp_trib, 'imp_op_ex': imp_op_ex,
+                'fecha_cbte': fecha_cbte,
+                'fecha_venc_pago': fecha_venc_pago,
+                'moneda_id': moneda_id, 'moneda_ctz': moneda_ctz,
+                'concepto': concepto,
+                'nombre_cliente': nombre_cliente,
+                'domicilio_cliente': domicilio_cliente,
+                'pais_dst_cmp': pais_dst_cmp,
+                'obs_comerciales': obs_comerciales,
+                'obs_generales': obs_generales,
+                'id_impositivo': id_impositivo,
+                'forma_pago': forma_pago, 'incoterms': incoterms,
+                'cae': cae, 'fecha_vto': fch_venc_cae,
+                'motivos_obs': motivos_obs,
+                'descuento': descuento,
+                'email': email,
+                'cbtes_asoc': [],
+                'tributos': [],
+                'ivas': [],
+                'permisos': [],
+                'detalles': [],
+                'datos': [],
+            }
+        if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
+        if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
+        self.factura = fact
+        return True
+
+    def EstablecerParametro(self, parametro, valor):
+        "Modifico un parametro general a la factura (internamente)"
+        self.factura[parametro] = valor
+        return True
+
+    def AgregarDato(self, campo, valor, pagina='T'):
+        "Agrego un dato a la factura (internamente)"
+        self.factura["datos"].append({'campo': campo, 'valor': valor, 'pagina': pagina})
+        return True
+
+    def AgregarDetalleItem(self, u_mtx, cod_mtx, codigo, ds, qty, umed, precio, 
+                    bonif, iva_id, imp_iva, importe, despacho, 
+                    dato_a=None, dato_b=None, dato_c=None, dato_d=None, dato_e=None):
+        "Agrego un item a una factura (internamente)"
+        ##ds = unicode(ds, "latin1") # convierto a latin1
+        # Nota: no se calcula neto, iva, etc (deben venir calculados!)
+        item = {
+                'u_mtx': u_mtx,
+                'cod_mtx': cod_mtx,
+                'codigo': codigo,                
+                'ds': ds,
+                'qty': qty,
+                'umed': umed,
+                'precio': precio,
+                'bonif': bonif,
+                'iva_id': iva_id,
+                'imp_iva': imp_iva,
+                'importe': importe,
+                'despacho': despacho,
+                'dato_a': dato_a,
+                'dato_b': dato_b,
+                'dato_c': dato_c,
+                'dato_d': dato_d,
+                'dato_e': dato_e,
+                }
+        self.factura['detalles'].append(item)
+        return True
+
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwarg):
+        "Agrego un comprobante asociado a una factura (interna)"
+        cmp_asoc = {'cbte_tipo': tipo, 'cbte_punto_vta': pto_vta, 'cbte_nro': nro}
+        self.factura['cbtes_asoc'].append(cmp_asoc)
+        return True
+
+    def AgregarTributo(self, tributo_id=0, desc="", base_imp=0.00, alic=0, importe=0.00, **kwarg):
+        "Agrego un tributo a una factura (interna)"
+        tributo = { 'tributo_id': tributo_id, 'desc': desc, 'base_imp': base_imp, 
+                    'alic': alic, 'importe': importe}
+        self.factura['tributos'].append(tributo)
+        return True
+
+    def AgregarIva(self, iva_id=0, base_imp=0.0, importe=0.0, **kwarg):
+        "Agrego un tributo a una factura (interna)"
+        iva = { 'iva_id': iva_id, 'base_imp': base_imp, 'importe': importe }
+        self.factura['ivas'].append(iva)
+        return True
+    
+    def GuardarFactura(self):
+        from formatos.formato_sql import escribir
+        escribir([self.factura], self.db)
+
+
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
+INSTALL_DIR = RG1361AFIP.InstallDir = get_install_dir()
+
 if __name__ == '__main__':
     try:
         if hasattr(sys,"frozen") or False:
@@ -425,6 +560,90 @@ if __name__ == '__main__':
             entrada = sys.argv[1]
         else:
             entrada = 'facturas3.csv'
+
+        if '--prueba' in sys.argv:
+            rg1361 = RG1361AFIP()
+            
+            # creo una factura de ejemplo
+            tipo_cbte = 2
+            punto_vta = 4000
+            fecha = datetime.datetime.now().strftime("%Y%m%d")
+            concepto = 3
+            tipo_doc = 80; nro_doc = "30000000007"
+            cbte_nro = 12345678
+            imp_total = "122.00"; imp_tot_conc = "3.00"
+            imp_neto = "100.00"; imp_iva = "21.00"
+            imp_trib = "1.00"; imp_op_ex = "2.00"; imp_subtotal = "100.00"
+            fecha_cbte = fecha; fecha_venc_pago = fecha
+            # Fechas del período del servicio facturado (solo si concepto = 1?)
+            fecha_serv_desde = fecha; fecha_serv_hasta = fecha
+            moneda_id = 'PES'; moneda_ctz = '1.000'
+            obs_generales = "Observaciones Generales, texto libre"
+            obs_comerciales = "Observaciones Comerciales, texto libre"
+
+            nombre_cliente = 'Joao Da Silva'
+            domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
+            pais_dst_cmp = 16
+            id_impositivo = 'PJ54482221-l'
+            moneda_id = '012'
+            moneda_ctz = 0.5
+            forma_pago = '30 dias'
+            incoterms = 'FOB'
+            idioma_cbte = 1
+            motivo = "11"
+
+            cae = "61123022925855"
+            fch_venc_cae = "20110320"
+            
+            rg1361.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
+                cbte_nro, imp_total, imp_tot_conc, imp_neto,
+                imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
+                fecha_serv_desde, fecha_serv_hasta, 
+                moneda_id, moneda_ctz, cae, fch_venc_cae, id_impositivo,
+                nombre_cliente, domicilio_cliente, pais_dst_cmp, 
+                obs_comerciales, obs_generales, forma_pago, incoterms, 
+                idioma_cbte, motivo)
+            
+            tipo = 91
+            pto_vta = 2
+            nro = 1234
+            rg1361.AgregarCmpAsoc(tipo, pto_vta, nro)
+            tipo = 5
+            pto_vta = 2
+            nro = 1234
+            rg1361.AgregarCmpAsoc(tipo, pto_vta, nro)
+            
+            tributo_id = 99
+            desc = 'Impuesto Municipal Matanza'
+            base_imp = "100.00"
+            alic = "1.00"
+            importe = "1.00"
+            rg1361.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+
+            iva_id = 5 # 21%
+            base_imp = 100
+            importe = 21
+            rg1361.AgregarIva(iva_id, base_imp, importe)
+            
+            u_mtx = 123456
+            cod_mtx = 1234567890123
+            codigo = "P0001"
+            ds = "Descripcion del producto P0001\n" + "Lorem ipsum sit amet " * 10
+            qty = 1.00
+            umed = 7
+            precio = 100.00
+            bonif = 0.00
+            iva_id = 5
+            imp_iva = 21.00
+            importe = 121.00
+            despacho = u'Nº 123456'
+            rg1361.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
+                    precio, bonif, iva_id, imp_iva, importe, despacho)
+
+            rg1361.AgregarDato("prueba", "1234")
+            print "Prueba!"
+            rg1361.GuardarFactura()
+            sys.exit(0)
 
         if '--leer' in sys.argv:
             claves = [clave for clave, pos, leng in VENTAS_TIPO1 if clave not in ('tipo','info_adic')]
