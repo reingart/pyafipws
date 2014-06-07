@@ -65,11 +65,13 @@ def esquema_sql(tipos_registro, conf={}):
 def configurar(schema):
     tablas = {}
     campos = {}
+    campos_rev = {}
     if not schema:
         for tabla in "encabezado", "detalle", "cmp_asoc", "permiso", "tributo", "iva":
             tablas[tabla] = tabla
             campos[tabla] = {"id": "id"}
-    return tablas, campos
+            campos_rev[tabla] = dict([(v, k) for k, v in campos[tabla].items()])
+    return tablas, campos, campos_rev
 
 def ejecutar(cur, sql, params=None):
     print sql, params
@@ -81,7 +83,7 @@ def ejecutar(cur, sql, params=None):
 
 def max_id(db, schema={}):
     cur = db.cursor()
-    tablas, campos = configurar(schema)
+    tablas, campos, campos_rev = configurar(schema)
     query = ("SELECT MAX(%%(id)s) FROM %(encabezado)s" % tablas) % campos["encabezado"]
     if DEBUG: print "ejecutando",query
     ret = None
@@ -96,10 +98,41 @@ def max_id(db, schema={}):
     finally:
         cur.close()
 
+def redondear(formato, clave, valor):
+    from formato_txt import A, N, I
+    # corregir redondeo (aparentemente sqlite no guarda correctamente los decimal)
+    import decimal
+    long = [fmt[1] for fmt in formato if fmt[0]==clave]
+    tipo = [fmt[2] for fmt in formato if fmt[0]==clave]
+    if not tipo:
+        return valor
+    tipo = tipo[0]
+    if DEBUG: print "tipo", tipo, clave, valor, long
+    if valor is None:
+        return None
+    if valor == "":
+        return ""
+    if tipo == A:
+        return valor
+    if tipo == N:
+        return int(valor)
+    if isinstance(valor, (int, float)):
+        valor = str(valor)
+    if isinstance(valor, basestring):
+        valor = Decimal(valor) 
+    if long and isinstance(long[0], (tuple, list)):
+        decimales = Decimal('1')  / Decimal(10**(long[0][1]))
+    else:
+        decimales = Decimal('.01')
+    valor1 = valor.quantize(decimales, rounding=decimal.ROUND_DOWN)
+    if valor != valor1 and DEBUG:
+        print "REDONDEANDO ", clave, decimales, valor, valor1
+    return valor1
+
 
 def escribir(facts, db, schema={}, commit=True):
     from formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
-    tablas, campos = configurar(schema)
+    tablas, campos, campos_rev = configurar(schema)
     cur = db.cursor()
     try:
         for dic in facts:
@@ -150,16 +183,118 @@ def escribir(facts, db, schema={}, commit=True):
         pass
 
 
+def leer(db, schema={}, webservice="wsfev1", ids=None):
+    from formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
+    tablas, campos, campos_rev = configurar(schema)
+    cur = db.cursor()
+    if not ids:
+        query = ("SELECT * FROM %(encabezado)s WHERE (%%(resultado)s IS NULL OR %%(resultado)s='' OR %%(resultado)s=' ') AND (%%(id)s IS NOT NULL) AND %%(webservice)s=? ORDER BY %%(tipo_cbte)s, %%(punto_vta)s, %%(cbte_nro)s" % tablas) % campos["encabezado"]
+        ids = [webservice]
+    else:
+        query = ("SELECT * FROM %(encabezado)s WHERE " % tablas) + " OR ".join(["%(id)s=?" % campos["encabezado"] for id in ids])
+    if DEBUG: print "ejecutando",query, ids
+    try:
+        ejecutar(cur, query, ids)
+        rows = cur.fetchall()
+        description = cur.description
+        for row in rows:
+            detalles = []
+            encabezado = {}
+            for i, k in enumerate(description):
+                val = row[i]
+                if isinstance(val,str):
+                    val = val.decode(CHARSET)
+                if isinstance(val,basestring):
+                    val = val.strip()
+                key = campos_rev["encabezado"].get(k[0], k[0].lower())
+                val = redondear(ENCABEZADO, key, val)                
+                encabezado[key] = val
+            print encabezado
+            detalles = []
+            if DEBUG: print ("SELECT * FROM %(detalle)s WHERE %%(id)s = ?" % tablas) % campos["detalle"], [encabezado['id']]
+            ejecutar(cur, ("SELECT * FROM %(detalle)s WHERE %%(id)s = ?" % tablas) % campos["detalle"], [encabezado['id']]) 
+            for it in cur.fetchall():
+                detalle = {}
+                for i, k in enumerate(cur.description):
+                    val = it[i]
+                    if isinstance(val,str):
+                        val = val.decode(CHARSET)
+                    key = campos_rev["detalle"].get(k[0], k[0].lower())
+                    val = redondear(DETALLE, key, val)
+                    detalle[key] = val
+                detalles.append(detalle)
+            encabezado['detalles'] = detalles
+
+            cmps_asoc = []
+            if DEBUG: print ("SELECT * FROM %(cmp_asoc)s WHERE %%(id)s = ?" % tablas) % campos["cmp_asoc"], [encabezado['id']]
+            ejecutar(cur, ("SELECT * FROM %(cmp_asoc)s WHERE %%(id)s = ?" % tablas) % campos["cmp_asoc"], [encabezado['id']]) 
+            for it in cur.fetchall():
+                cmp_asoc = {}
+                for i, k in enumerate(cur.description):
+                    val = it[i]
+                    key = campos_rev["cmp_asoc"].get(k[0], k[0].lower())
+                    cmp_asoc[key] = val
+                cmps_asoc.append(cmp_asoc)
+            if cmps_asoc:
+                encabezado['cbtes_asoc'] = cmps_asoc
+
+            permisos = []
+            if DEBUG: print ("SELECT * FROM %(permiso)s WHERE %%(id)s = ?" % tablas) % campos["permiso"], [encabezado['id']]
+            ejecutar(cur, ("SELECT * FROM %(permiso)s WHERE %%(id)s = ?" % tablas) % campos["permiso"], [encabezado['id']]) 
+            for it in cur.fetchall():
+                permiso = {}
+                for i, k in enumerate(cur.description):
+                    val = it[i]
+                    key = campos_rev["permiso"].get(k[0], k[0].lower())
+                    permiso[key] = val
+                permisos.append(permiso)
+            if permisos:
+                encabezado['permisos'] = permisos
+
+            ivas = []
+            if DEBUG: print ("SELECT * FROM %(iva)s WHERE %%(id)s = ?" % tablas) % campos["iva"], [encabezado['id']]
+            ejecutar(cur, ("SELECT * FROM %(iva)s WHERE %%(id)s = ?" % tablas) % campos["iva"], [encabezado['id']]) 
+            for it in cur.fetchall():
+                iva = {}
+                for i, k in enumerate(cur.description):
+                    val = it[i]
+                    key = campos_rev["iva"].get(k[0], k[0].lower())
+                    val = redondear(IVA, key, val)
+                    iva[key] = val
+                ivas.append(iva)
+            if ivas:
+                encabezado['ivas'] = ivas
+
+            tributos = []
+            if DEBUG: print ("SELECT * FROM %(tributo)s WHERE %%(id)s = ?" % tablas) % campos["tributo"], [encabezado['id']]
+            ejecutar(cur, ("SELECT * FROM %(tributo)s WHERE %%(id)s = ?" % tablas) % campos["tributo"], [encabezado['id']]) 
+            for it in cur.fetchall():
+                tributo = {}
+                for i, k in enumerate(cur.description):
+                    val = it[i]
+                    key = campos_rev["tributo"].get(k[0], k[0].lower())
+                    val = redondear(TRIBUTO, key, val)
+                    tributo[key] = val
+                tributos.append(tributo)
+            if tributos:
+                encabezado['tributos'] = tributos
+            
+            yield encabezado
+        db.commit()
+    finally:
+        cur.close()
+
 
 def ayuda():
     print "-- Formato:"
-    from formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, DATO
+    from formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, DATO, PERMISO
     tipos_registro =  [
         ('encabezado', ENCABEZADO),
         ('detalle', DETALLE),
         ('tributo', TRIBUTO), 
         ('iva', IVA), 
         ('cmp_asoc', CMP_ASOC),
+        ('permiso', PERMISO),
         ('dato', DATO),
         ]
     print "-- Esquema:"
