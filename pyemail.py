@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.06a"
 
 import os
 import sys
@@ -33,6 +33,7 @@ class PyEmail:
     "Interfaz para enviar correos de Factura Electrónica"
     _public_methods_ = ['Conectar', 'Crear', 'Enviar',
                         'AgregarDestinatario', 'Adjuntar', 
+                        'AgregarCC', 'AgregarBCC',
                         ]
     _public_attrs_ = [
                     'Motivo', 'Remitente', 'Destinatarios', 'ResponderA',
@@ -50,6 +51,8 @@ class PyEmail:
         self.Motivo = self.Destinatario = self.ResponderA = ""
         self.MensajeHTML = MensajeTexto = None
         self.adjuntos = []
+        self.BCC = []
+        self.CC = []
 
     def Conectar(self, servidor, usuario=None, clave=None, puerto=25):
         "Iniciar conexión al servidor de correo electronico"
@@ -85,6 +88,16 @@ class PyEmail:
         self.Destinatarios.append(destinatario)
         return True
         
+    def AgregarCC(self, destinatario):
+        "Agrega una dirección de correo de destino (copia carbónica)"
+        self.CC.append(destinatario)
+        return True
+
+    def AgregarBCC(self, destinatario):
+        "Agrega una dirección de correo de destino (copia carbónica invisible)"
+        self.BCC.append(destinatario)
+        return True
+
     def Adjuntar(self, archivo):
         "Agrega un archivo para ser enviado como adjunto"
         self.adjuntos.append(archivo)
@@ -101,6 +114,12 @@ class PyEmail:
             msg['From'] = remitente or self.Remitente
             msg['Reply-to'] = remitente or self.ResponderA
             msg['To'] = ', '.join(to)
+            if self.CC:
+                msg['CC'] = u", ".join(self.CC)
+                to += self.CC
+            if self.BCC:
+                to += self.BCC
+
             msg.preamble = 'Mensaje de multiples partes.\n'
             
             if mensaje:
