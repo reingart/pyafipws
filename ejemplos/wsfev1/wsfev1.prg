@@ -1,14 +1,14 @@
 *-- Ejemplo de Uso de Interface COM con Web Services AFIP (PyAfipWs)
 *-- Factura Electronica mercado interno RG2485 Version 1 
 *-- para Visual FoxPro 5.0 o superior (vfp5, vfp9.0)
-*-- Seg鷑 RG2904/2010 Art韈ulo 4 Opci髇 B (sin detalle, CAE tradicional)
+*-- Seg煤n RG2485/08 y RG2904/10 Art. 4 Opci贸n B (sin detalle, CAE tradicional)
 *-- 2010 (C) Mariano Reingart <reingart@gmail.com>
 
 ON ERROR DO errhand1;
 
 CLEAR
 
-*-- Crear objeto interface Web Service Autenticaci髇 y Autorizaci髇
+*-- Crear objeto interface Web Service Autenticaci贸n y Autorizaci贸n
 WSAA = CREATEOBJECT("WSAA") 
 
 *-- Generar un Ticket de Requerimiento de Acceso (TRA)
@@ -26,28 +26,28 @@ cms = WSAA.SignTRA(tra, ruta + "reingart.crt", ruta + "reingart.key") && Cert. D
 *-- cms = WSAA.SignTRA(tra, ruta + "homo.crt", ruta + "homo.key") 
 
 *-- Llamar al web service para autenticar
-*-- Producci髇 usar: ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") && Producci髇
-ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") && Homologaci髇
+*-- Producci贸n usar: ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") && Producci贸n
+ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") && Homologaci贸n
 
 ON ERROR DO errhand2;
 
-*-- Crear objeto interface Web Service de Factura Electr髇ica
+*-- Crear objeto interface Web Service de Factura Electr贸nica
 WSFE = CREATEOBJECT("WSFEv1") 
 
 ? WSFE.Version
 ? WSFE.InstallDir
 
-*-- Setear tocken y sing de autorizaci髇 (pasos previos)
+*-- Setear tocken y sing de autorizaci贸n (pasos previos)
 WSFE.Token = WSAA.Token 
 WSFE.Sign = WSAA.Sign    
 
 * CUIT del emisor (debe estar registrado en la AFIP)
 WSFE.Cuit = "20267565393"
 
-*-- Conectar al Servicio Web de Facturaci髇
-*-- Producci髇 usar: 
-*-- ok = WSFE.Conectar("", "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL") && Producci髇
-ok = WSFE.Conectar("")      && Homologaci髇
+*-- Conectar al Servicio Web de Facturaci贸n
+*-- Producci贸n usar: 
+*-- ok = WSFE.Conectar("", "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL") && Producci贸n
+ok = WSFE.Conectar("")      && Homologaci贸n
 
 ? WSFE.DebugLog()
 
@@ -58,7 +58,7 @@ WSFE.Dummy()
 ? "authserver status", WSFE.AuthServerStatus
 
 
-*-- Recupero 鷏timo n鷐ero de comprobante para un punto de venta y tipo (opcional)
+*-- Recupero 煤ltimo n煤mero de comprobante para un punto de venta y tipo (opcional)
 tipo_cbte = 1
 punto_vta = 1
 LastCBTE = WSFE.CompUltimoAutorizado(tipo_cbte, punto_vta)
@@ -81,13 +81,13 @@ impto_liq_rni = "0.00"
 imp_op_ex = "0.00"
 fecha_cbte = Fecha
 fecha_venc_pago = Fecha
-*-- Fechas del per韔do del servicio facturado (solo si presta_serv = 1)
+*-- Fechas del per铆odo del servicio facturado (solo si presta_serv = 1)
 fecha_serv_desde = Fecha
 fecha_serv_hasta = Fecha
 moneda_id = "PES"
 moneda_ctz = "1.000"
 
-*-- Llamo al WebService de Autorizaci髇 para obtener el CAE
+*-- Llamo al WebService de Autorizaci贸n para obtener el CAE
 ok = WSFE.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta, ;
         cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto, ;
         imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, ;
@@ -116,7 +116,7 @@ cae = WSFE.CAESolicitar()
 
 ? "LastCBTE:", LastCBTE 
 ? "CAE: ", cae
-? "Vencimiento ", WSFE.Vencimiento && Fecha de vencimiento o vencimiento de la autorizaci髇
+? "Vencimiento ", WSFE.Vencimiento && Fecha de vencimiento o vencimiento de la autorizaci贸n
 ? "Resultado: ", WSFE.Resultado && A=Aceptado, R=Rechazado
 ? "Motivo de rechazo o advertencia", WSFE.Obs
 *--? WSFE.XmlResponse
@@ -125,7 +125,7 @@ MESSAGEBOX("Resultado: " + WSFE.Resultado + " CAE " + cae + " Vencimiento: " + W
 
 
 
-*-- Depuraci髇 (grabar a un archivo los datos de prueba)
+*-- Depuraci贸n (grabar a un archivo los datos de prueba)
 * gnErrFile = FCREATE('c:\error.txt')  
 * =FWRITE(gnErrFile, WSFE.Token + CHR(13))
 * =FWRITE(gnErrFile, WSFE.Sign + CHR(13))	
@@ -145,7 +145,7 @@ PROCEDURE errhand1
 	*--? WSAA.XmlRequest
 	*--? WSAA.XmlResponse
 
-	*-- trato de extraer el c骴igo de error de afip (1000)
+	*-- trato de extraer el c贸digo de error de afip (1000)
 	afiperr = ERROR() -2147221504 
 	if afiperr>1000 and afiperr<2000 then
 		? 'codigo error afip:',afiperr
