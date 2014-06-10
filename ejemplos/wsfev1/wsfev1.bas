@@ -1,6 +1,6 @@
 Attribute VB_Name = "Modulo1"
-' Ejemplo de Uso de Interface COM con Web Service Factura Electr髇ica Mercado Interno AFIP
-' Seg鷑 RG2904 Art韈ulo 4 Opci髇 B (sin detalle, Version 1)
+' Ejemplo de Uso de Interface COM con Web Service Factura Electr贸nica Mercado Interno AFIP
+' Seg煤n RG2485 y RG2904 Art铆culo 4 Opci贸n B (sin detalle, Version 1)
 ' 2010 (C) Mariano Reingart <reingart@gmail.com>
 ' Licencia: GPLv3
 
@@ -9,11 +9,11 @@ Sub Main()
     
     On Error GoTo ManejoError
     
-    ' Crear objeto interface Web Service Autenticaci髇 y Autorizaci髇
+    ' Crear objeto interface Web Service Autenticaci贸n y Autorizaci贸n
     Set WSAA = CreateObject("WSAA")
     Debug.Print WSAA.Version
     If WSAA.Version < "2.04" Then
-        MsgBox "Debe instalar una versi髇 m醩 actualizada de PyAfipWs WSAA!"
+        MsgBox "Debe instalar una versi贸n m谩s actualizada de PyAfipWs WSAA!"
         End
     End If
 
@@ -21,7 +21,7 @@ Sub Main()
     WSAA.LanzarExcepciones = False
         
     ' Generar un Ticket de Requerimiento de Acceso (TRA) para WSFEv1
-    ttl = 36000 ' tiempo de vida = 10hs hasta expiraci髇
+    ttl = 36000 ' tiempo de vida = 10hs hasta expiraci贸n
     tra = WSAA.CreateTRA("wsfe", ttl)
     ControlarExcepcion WSAA
     Debug.Print tra
@@ -38,38 +38,38 @@ Sub Main()
     ControlarExcepcion WSAA
     Debug.Print cms
     
-    ' Conectarse con el webservice de autenticaci髇:
+    ' Conectarse con el webservice de autenticaci贸n:
     cache = ""
     proxy = "" '"usuario:clave@localhost:8000"
     wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
     cacert = WSAA.InstallDir & "\geotrust.crt" ' certificado de la autoridad de certificante
     wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
-    ok = WSAA.Conectar(cache, wsdl, proxy, wrapper, cacert) ' Homologaci髇
+    ok = WSAA.Conectar(cache, wsdl, proxy, wrapper, cacert) ' Homologaci贸n
     ControlarExcepcion WSAA
     
     ' Llamar al web service para autenticar:
     ta = WSAA.LoginCMS(cms)
     ControlarExcepcion WSAA
 
-    ' Imprimir el ticket de acceso, ToKen y Sign de autorizaci髇
+    ' Imprimir el ticket de acceso, ToKen y Sign de autorizaci贸n
     Debug.Print ta
     Debug.Print "Token:", WSAA.Token
     Debug.Print "Sign:", WSAA.Sign
     
     ' Una vez obtenido, se puede usar el mismo token y sign por 10 horas
-    ' (este per韔do se puede cambiar)
+    ' (este per铆odo se puede cambiar)
     ' revisar WSAA.Expirado() y en dicho caso tramitar nuevo TA
     
-    ' Crear objeto interface Web Service de Factura Electr髇ica de Mercado Interno
+    ' Crear objeto interface Web Service de Factura Electr贸nica de Mercado Interno
     Set WSFEv1 = CreateObject("WSFEv1")
     Debug.Print WSFEv1.Version
     If WSAA.Version < "1.12" Then
-        MsgBox "Debe instalar una versi髇 mas actualizada de PyAfipWs WSFEv1!"
+        MsgBox "Debe instalar una versi贸n mas actualizada de PyAfipWs WSFEv1!"
         End
     End If
     'Debug.Print WSFEv1.InstallDir
     
-    ' Setear tocken y sing de autorizaci髇 (pasos previos)
+    ' Setear tocken y sing de autorizaci贸n (pasos previos)
     WSFEv1.Token = WSAA.Token
     WSFEv1.Sign = WSAA.Sign
     
@@ -79,18 +79,18 @@ Sub Main()
     ' deshabilito errores no manejados
     WSFEv1.LanzarExcepciones = False
     
-    ' Conectar al Servicio Web de Facturaci髇
+    ' Conectar al Servicio Web de Facturaci贸n
     proxy = "" ' "usuario:clave@localhost:8000"
     wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
     cache = "" 'Path
     wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
     cacert = WSAA.InstallDir & "\geotrust.crt" ' certificado de la autoridad de certificante (solo pycurl)
     
-    ok = WSFEv1.Conectar(cache, wsdl, proxy, wrapper, cacert) ' homologaci髇
+    ok = WSFEv1.Conectar(cache, wsdl, proxy, wrapper, cacert) ' homologaci贸n
     Debug.Print WSFEv1.Version
     ControlarExcepcion WSFEv1
     
-    ' mostrar bit醕ora de depuraci髇:
+    ' mostrar bit谩cora de depuraci贸n:
     Debug.Print WSFEv1.DebugLog
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
@@ -123,7 +123,7 @@ Sub Main()
     imp_total = "179.25": imp_tot_conc = "2.00": imp_neto = "150.00"
     imp_iva = "26.25": imp_trib = "1.00": imp_op_ex = "0.00"
     fecha_cbte = fecha: fecha_venc_pago = ""
-    ' Fechas del per韔do del servicio facturado (solo si concepto = 1?)
+    ' Fechas del per铆odo del servicio facturado (solo si concepto = 1?)
     fecha_serv_desde = "": fecha_serv_hasta = ""
     moneda_id = "PES": moneda_ctz = "1.000"
 
@@ -177,7 +177,7 @@ Sub Main()
     importe = "5.25"
     ok = WSFEv1.AgregarIva(id, base_imp, importe)
     
-    ' Habilito reprocesamiento autom醫ico (predeterminado):
+    ' Habilito reprocesamiento autom谩tico (predeterminado):
     WSFEv1.Reprocesar = True
 
     ' Solicito CAE:
@@ -189,7 +189,7 @@ Sub Main()
 
     Debug.Print "Numero de comprobante:", WSFEv1.CbteNro
     
-    ' Imprimo pedido y respuesta XML para depuraci髇 (errores de formato)
+    ' Imprimo pedido y respuesta XML para depuraci贸n (errores de formato)
     Debug.Print WSFEv1.XmlRequest
     Debug.Print WSFEv1.XmlResponse
     
@@ -258,7 +258,7 @@ Sub Main()
 ManejoError:
     ' Si hubo error (tradicional, no controlado):
     
-    ' Depuraci髇 (grabar a un archivo los detalles del error)
+    ' Depuraci贸n (grabar a un archivo los detalles del error)
     fd = FreeFile
     Open "c:\error.txt" For Append As fd
     If Not WSAA Is Nothing Then
@@ -284,7 +284,7 @@ ManejoError:
     End If
     Close fd
     
-    Debug.Print Err.Description            ' descripci髇 error afip
+    Debug.Print Err.Description            ' descripci贸n error afip
     Debug.Print Err.Number - vbObjectError ' codigo error afip
     If Excepcion = "" Then                 ' si no tengo mensaje de excepcion
         Excepcion = Err.Description        ' uso el error de VB
@@ -304,7 +304,7 @@ Sub ControlarExcepcion(obj As Object)
     ' Nueva funcion para verificar que no haya habido errores:
     On Error GoTo 0
     If obj.Excepcion <> "" Then
-        ' Depuraci髇 (grabar a un archivo los detalles del error)
+        ' Depuraci贸n (grabar a un archivo los detalles del error)
         fd = FreeFile
         Open "c:\excepcion.txt" For Append As fd
         Print #fd, obj.Excepcion
@@ -312,7 +312,7 @@ Sub ControlarExcepcion(obj As Object)
         Print #fd, obj.XmlRequest
         Print #fd, obj.XmlResponse
         Close fd
-        MsgBox obj.Excepcion, vbExclamation, "Excepci髇"
+        MsgBox obj.Excepcion, vbExclamation, "Excepci贸n"
         End
     End If
 End Sub
