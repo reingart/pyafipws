@@ -47,6 +47,24 @@ except ImportError:
 
 try:
     import httplib2
+    # corregir temas de negociacion de SSL en algunas versiones de ubuntu:
+    import platform
+    dist, ver, nick = platform.linux_distribution()
+    from pysimplesoap.client import SoapClient
+    monkey_patch = httplib2._ssl_wrap_socket.__module__ != "httplib2"
+    if dist == 'Ubuntu' and ver == '14.04' and not monkey_patch:
+        import ssl
+        def _ssl_wrap_socket(sock, key_file, cert_file,
+                             disable_validation, ca_certs):
+            if disable_validation:
+                cert_reqs = ssl.CERT_NONE
+            else:
+                cert_reqs = ssl.CERT_REQUIRED
+            return ssl.wrap_socket(sock, keyfile=key_file, certfile=cert_file,
+                           cert_reqs=cert_reqs, ca_certs=ca_certs,
+                           ssl_version=ssl.PROTOCOL_SSLv3)
+        httplib2._ssl_wrap_socket = _ssl_wrap_socket
+
 except:
     print "para soporte de WebClient debe instalar httplib2"
 
