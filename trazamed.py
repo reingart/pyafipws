@@ -35,7 +35,7 @@ from cStringIO import StringIO
 # importo funciones compartidas:
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf, get_install_dir, BaseWS, inicializar_y_capturar_excepciones
 
-HOMO = True
+HOMO = False
 TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazamed.WebService?wsdl"

@@ -30,7 +30,7 @@ import pysimplesoap.client
 from pysimplesoap.client import SoapFault
 from utils import BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
-HOMO = True
+HOMO = False
 TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazamed.WebServiceSDRN?wsdl"

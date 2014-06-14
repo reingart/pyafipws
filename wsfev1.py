@@ -861,6 +861,8 @@ def main():
             sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
             sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
 
+        print u'\n'.join(wsfev1.ParamGetTiposDoc())
+        exit()
         print "=== Tipos de Comprobante ==="
         print u'\n'.join(wsfev1.ParamGetTiposCbte())
         print "=== Tipos de Concepto ==="

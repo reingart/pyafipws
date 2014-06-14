@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10a"
+__version__ = "1.10b"
 
 # http://senasa.servicios.pami.org.ar/
 
@@ -38,7 +38,7 @@ from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, \
                   dar_nombre_campo_dbf, get_install_dir, BaseWS, \
                   inicializar_y_capturar_excepciones
 
-HOMO = True
+HOMO = False
 TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazaenagr.WebService?wsdl"

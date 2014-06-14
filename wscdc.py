@@ -28,7 +28,7 @@ from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL" 
-HOMO = True
+HOMO = False
 CONFIG_FILE = "rece.ini"
 
 # No debería ser necesario modificar nada despues de esta linea

@@ -25,7 +25,7 @@ import os
 import sys
 from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
-HOMO = True
+HOMO = False
 WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 
 

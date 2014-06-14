@@ -25,7 +25,7 @@ from pysimplesoap.simplexml import SimpleXMLElement
 
 from utils import WebClient
 
-HOMO = True
+HOMO = False
 
 ##URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
 # Nuevo servidor para el "Remito Electrónico Automático"
