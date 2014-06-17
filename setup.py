@@ -19,25 +19,25 @@ import sys
 
 # modulos a compilar y empaquetar (comentar si no se desea incluir):
 
-import pyafipws
-import pyrece
-import wsaa
-import wsfev1, rece1
-import wsfexv1, recex1
-import wsbfev1, receb1
-import wsmtx, recem
-import pyfepdf
-import pyemail
-import pyi25
-import wsctgv2
-import wslpg
-import wscoc
-import wscdc
-import cot
+#import pyafipws
+#import pyrece
+#import wsaa
+#import wsfev1, rece1
+#import wsfexv1, recex1
+#import wsbfev1, receb1
+#import wsmtx, recem
+#import pyfepdf
+#import pyemail
+#import pyi25
+#import wsctgv2
+#import wslpg
+#import wscoc
+#import wscdc
+#import cot
 import trazamed
-import trazarenpre
-import trazafito
-import padron
+#import trazarenpre
+#import trazafito
+#import padron
 
 # herramientas opcionales a compilar y empaquetar:
 try:
