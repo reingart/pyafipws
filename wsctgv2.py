@@ -17,7 +17,7 @@ del web service WSCTG versión 2.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.12c"
+__version__ = "1.12d"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -375,7 +375,7 @@ class WSCTGv2(BaseWS):
             self.CartaPorte = str(datos['cartaPorte'])
             self.NumeroCTG = str(datos['ctg'])
             self.FechaHora = str(datos['fechaHora'])
-            self.CodigoTransaccion = str(datos['codigoOperacion'])
+            self.CodigoTransaccion = str(datos.get('codigoOperacion', ""))
             self.Observaciones = ""
         return self.CodigoTransaccion
 
@@ -992,6 +992,8 @@ if __name__ == '__main__':
                 it['controles'] = '|'.join(wsctg.Controles)
                 
         if '--confirmar_definitivo' in sys.argv:
+            if '--testing' in sys.argv:
+                wsctg.LoadTestXML("wsctg_confirmar_def.xml") # cargo respuesta
             for it in items:
                 print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
                 transaccion = wsctg.ConfirmarDefinitivo(**it)
