@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10d"
+__version__ = "1.10e"
 
 #http://renpre.servicios.pami.org.ar/portal_traza_renpre/paso5.html
 
@@ -86,7 +86,10 @@ class TrazaRenpre(BaseWS):
             if not self.wsdl.startswith("file"):
                 # corrijo ubicación del servidor (localhost:9050 en el WSDL)
                 location = self.wsdl[:-5]
-                ws = self.client.services['IWebServiceSDRN']
+                if 'IWebServiceSDRNService' in self.client.services:
+                    ws = self.client.services['IWebServiceSDRNService']
+                else:
+                    ws = self.client.services['IWebServiceSDRN']
                 ws['ports']['IWebServiceSDRNPort']['location'] = location
             # Establecer credenciales de seguridad:
             self.client['wsse:Security'] = {
