@@ -35,7 +35,7 @@ class WSFEXv1(BaseWS):
                         'AgregarPermiso', 'AgregarCmpAsoc',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
-                        'GetParamDstPais','GetParamDstCUIT',
+                        'GetParamDstPais','GetParamDstCUIT', 'GetParamIdiomas',
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
@@ -411,6 +411,31 @@ class WSFEXv1(BaseWS):
             return ret
 
     @inicializar_y_capturar_excepciones
+    def GetParamIdiomas(self, sep="|"):
+        "Recuperar lista de valores referenciales de códigos de Idiomas"
+        ret = self.client.FEXGetPARAM_Idiomas(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_IdiomasResult']
+        self.__analizar_errores(result)
+     
+        ret = []
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_Idi']
+            try:
+                r = {'codigo': u.get('Idi_Id'), 'ds': u.get('Idi_Ds'),
+                     'vig_desde': u.get('Idi_vig_hasta'), 
+                     'vig_hasta': u.get('Idi_vig_desde')}
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t%(vig_desde)s\t%(vig_hasta)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
+    
+    @inicializar_y_capturar_excepciones
     def GetParamCtz(self, moneda_id):
         "Recuperador de cotización de moneda"
         ret = self.client.FEXGetPARAM_Ctz(
@@ -631,11 +656,15 @@ if __name__ == "__main__":
             import codecs, locale
             sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
 
+            print "=== Idiomas ==="
+            idiomas = wsfexv1.GetParamIdiomas(sep="||")
+            for idioma in idiomas:
+                print idioma
+
             print "=== Tipos Comprobantes ==="
             tipos = wsfexv1.GetParamTipoCbte()    
             for t in tipos:
                 print "||%(codigo)s||%(ds)s||" % t
-            
 
             print "=== Tipos Expo ==="
             tipos = wsfexv1.GetParamTipoExpo()    
