@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07c"
+__version__ = "1.08a"
 
 import datetime
 import decimal
@@ -277,7 +277,7 @@ class WSFEXv1(BaseWS):
             return resultget.get('Id')
 
     @inicializar_y_capturar_excepciones
-    def GetParamUMed(self):
+    def GetParamUMed(self, sep="|"):
         ret = self.client.FEXGetPARAM_UMed(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['FEXGetPARAM_UMedResult']
@@ -300,36 +300,44 @@ class WSFEXv1(BaseWS):
                 
             
             umeds.append(umed)
-        return umeds
+        if sep:
+            return [("\t%(id)s\t%(ds)s\t%(vig_desde)s\t%(vig_hasta)s\t"
+                      % it).replace("\t", sep) for it in umeds]
+        else:
+            return umeds
 
     @inicializar_y_capturar_excepciones
-    def GetParamMon(self):
+    def GetParamMon(self, sep="|"):
         ret = self.client.FEXGetPARAM_MON(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['FEXGetPARAM_MONResult']
         self.__analizar_errores(result)
      
-        umeds = [] # unidades de medida
+        mons = [] # monedas
         for u in result['FEXResultGet']:
             u = u['ClsFEXResponse_Mon']
             try:
-                umed = {'id': u.get('Mon_Id'), 'ds': u.get('Mon_Ds'), 
+                mon = {'id': u.get('Mon_Id'), 'ds': u.get('Mon_Ds'), 
                         'vig_desde': u.get('Mon_vig_desde'), 
                         'vig_hasta': u.get('Mon_vig_hasta')}
             except Exception, e:
                 print e
                 if u is None:
                     # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
-                    umed = {'id':'', 'ds':'','vig_desde':'','vig_hasta':''}
+                    mon = {'id':'', 'ds':'','vig_desde':'','vig_hasta':''}
                     #import pdb; pdb.set_trace()
                     #print u
                 
             
-            umeds.append(umed)
-        return umeds
+            mons.append(mon)
+        if sep:
+            return [("\t%(id)s\t%(ds)s\t%(vig_desde)s\t%(vig_hasta)s\t"
+                      % it).replace("\t", sep) for it in mons]
+        else:
+            return mons
 
     @inicializar_y_capturar_excepciones
-    def GetParamDstPais(self):
+    def GetParamDstPais(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Países"
         ret = self.client.FEXGetPARAM_DST_pais(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
@@ -345,10 +353,14 @@ class WSFEXv1(BaseWS):
                 print e
             
             ret.append(r)
-        return ret
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
 
     @inicializar_y_capturar_excepciones
-    def GetParamTipoCbte(self):
+    def GetParamTipoCbte(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipo de comprobantes"
         ret = self.client.FEXGetPARAM_Cbte_Tipo(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
@@ -367,10 +379,14 @@ class WSFEXv1(BaseWS):
                 print e
             
             ret.append(r)
-        return ret
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t%(vig_desde)s\t%(vig_hasta)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
 
     @inicializar_y_capturar_excepciones
-    def GetParamTipoExpo(self):
+    def GetParamTipoExpo(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipo de exportación"
         ret = self.client.FEXGetPARAM_Tipo_Expo(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
@@ -388,7 +404,11 @@ class WSFEXv1(BaseWS):
                 print e
             
             ret.append(r)
-        return ret
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t%(vig_desde)s\t%(vig_hasta)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
 
     @inicializar_y_capturar_excepciones
     def GetParamCtz(self, moneda_id):
