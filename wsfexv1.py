@@ -662,30 +662,30 @@ if __name__ == "__main__":
                 print idioma
 
             print "=== Tipos Comprobantes ==="
-            tipos = wsfexv1.GetParamTipoCbte()    
+            tipos = wsfexv1.GetParamTipoCbte(sep=False)    
             for t in tipos:
                 print "||%(codigo)s||%(ds)s||" % t
 
             print "=== Tipos Expo ==="
-            tipos = wsfexv1.GetParamTipoExpo()    
+            tipos = wsfexv1.GetParamTipoExpo(sep=False)    
             for t in tipos:
                 print "||%(codigo)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % t
             #umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
                 
             print "=== Monedas ==="
-            mons = wsfexv1.GetParamMon()    
+            mons = wsfexv1.GetParamMon(sep=False)    
             for m in mons:
                 print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % m
             #umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
 
             print "=== Unidades de medida ==="
-            umedidas = wsfexv1.GetParamUMed()    
+            umedidas = wsfexv1.GetParamUMed(sep=False)    
             for u in umedidas:
                 print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u
             umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
 
             print "=== Pais Destino ==="
-            ret = wsfexv1.GetParamDstPais()    
+            ret = wsfexv1.GetParamDstPais(sep=False)    
             for r in ret:
                 print "||%(codigo)s||%(ds)s||" % r
             
