@@ -36,6 +36,7 @@ class WSFEXv1(BaseWS):
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT', 'GetParamIdiomas',
+                        'GetParamIncoterms',
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
@@ -435,6 +436,30 @@ class WSFEXv1(BaseWS):
         else:
             return ret
     
+    def GetParamIncoterms(self, sep="|"):
+        "Recuperar lista de valores referenciales de Incoterms"
+        ret = self.client.FEXGetPARAM_Incoterms(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_IncotermsResult']
+        self.__analizar_errores(result)
+     
+        ret = []
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_Inc']
+            try:
+                r = {'codigo': u.get('Inc_Id'), 'ds': u.get('Inc_Ds'),
+                     'vig_desde': u.get('Inc_vig_hasta'), 
+                     'vig_hasta': u.get('Inc_vig_desde')}
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t%(vig_desde)s\t%(vig_hasta)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
+
     @inicializar_y_capturar_excepciones
     def GetParamCtz(self, moneda_id):
         "Recuperador de cotización de moneda"
@@ -655,6 +680,11 @@ if __name__ == "__main__":
         if "--params" in sys.argv:
             import codecs, locale
             sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
+
+            print "=== Incoterms ==="
+            idiomas = wsfexv1.GetParamIncoterms(sep="||")
+            for idioma in idiomas:
+                print idioma
 
             print "=== Idiomas ==="
             idiomas = wsfexv1.GetParamIdiomas(sep="||")
