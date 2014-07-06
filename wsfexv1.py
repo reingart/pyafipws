@@ -36,7 +36,7 @@ class WSFEXv1(BaseWS):
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT', 'GetParamIdiomas',
-                        'GetParamIncoterms',
+                        'GetParamIncoterms', 'GetParamDstCUIT',
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
@@ -348,6 +348,29 @@ class WSFEXv1(BaseWS):
         ret = []
         for u in result['FEXResultGet']:
             u = u['ClsFEXResponse_DST_pais']
+            try:
+                r = {'codigo': u.get('DST_Codigo'), 'ds': u.get('DST_Ds'), }
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
+
+    @inicializar_y_capturar_excepciones
+    def GetParamDstCUIT(self, sep="|"):
+        "Recuperar lista de valores referenciales de CUIT de Países"
+        ret = self.client.FEXGetPARAM_DST_CUIT(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_DST_CUITResult']
+        self.__analizar_errores(result)
+     
+        ret = []
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_DST_cuit']
             try:
                 r = {'codigo': u.get('DST_Codigo'), 'ds': u.get('DST_Ds'), }
             except Exception, e:
@@ -714,8 +737,13 @@ if __name__ == "__main__":
                 print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u
             umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
 
-            print "=== Pais Destino ==="
+            print u"=== Código Pais Destino ==="
             ret = wsfexv1.GetParamDstPais(sep=False)    
+            for r in ret:
+                print "||%(codigo)s||%(ds)s||" % r
+
+            print u"=== CUIT Pais Destino ==="
+            ret = wsfexv1.GetParamDstCUIT(sep=False)    
             for r in ret:
                 print "||%(codigo)s||%(ds)s||" % r
             
