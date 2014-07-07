@@ -388,12 +388,9 @@ class TrazaMed(BaseWS):
             arg3=gtin_medicamento,
             arg4=numero_serial,
         )
-
         ret = res['return']
-        
-        self.CodigoTransaccion = ret['codigoTransaccion']
+        self.CodigoTransaccion = ret.get('codigoTransaccion')
         self.__analizar_errores(ret)
-
         return True
 
     @inicializar_y_capturar_excepciones
