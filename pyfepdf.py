@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07g"
+__version__ = "1.07h"
 
 DEBUG = False
 HOMO = False
@@ -363,7 +363,7 @@ class FEPDF:
                     v = eval(v.strip())
                 args.append(v)
             self.AgregarCampo(*args)
-        return True        
+        return True
 
 
     @inicializar_y_capturar_excepciones
@@ -387,6 +387,7 @@ class FEPDF:
                 'align': align, 'text': text, 'priority': priority}
         field.update(kwargs)
         self.elements.append(field)
+        return True
         
 
     @inicializar_y_capturar_excepciones
@@ -409,6 +410,7 @@ class FEPDF:
                  keywords="AFIP Factura Electrónica", 
                  creator='PyFEPDF %s (http://www.PyAfipWs.com.ar)' % __version__,)
         self.template = t
+        return True
 
 
     @inicializar_y_capturar_excepciones
@@ -746,6 +748,7 @@ class FEPDF:
                             if DEBUG: print "set(%s,%s)" % (field, value)
                         except Exception, e:
                             raise RuntimeError("Error al evaluar %s formula '%s': %s" % (field, formula, e))
+        return True
 
 
     def GenerarPDF(self, archivo=""):
@@ -762,6 +765,7 @@ class FEPDF:
         else:
             operation = imprimir and "print" or ""
             os.startfile(archivo, operation)
+        return True
 
 
 
