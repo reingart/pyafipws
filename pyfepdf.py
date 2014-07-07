@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07f"
+__version__ = "1.07g"
 
 DEBUG = False
 HOMO = False
@@ -421,7 +421,7 @@ class FEPDF:
         tipo_fact, letra_fact, numero_fact = self.fmt_fact(fact['tipo_cbte'], fact['punto_vta'], fact['cbte_nro'])
         fact['_fmt_fact'] = tipo_fact, letra_fact, numero_fact
         if fact['tipo_cbte'] in (19,20,21):
-            tipo_fact_ex = tipo_fact + " de Exportación"
+            tipo_fact_ex = tipo_fact + u" de Exportación"
         else:
             tipo_fact_ex = tipo_fact 
 
