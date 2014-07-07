@@ -924,13 +924,14 @@ if __name__ == '__main__':
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, despacho)
 
-            fepdf.AgregarDato("prueba", "1234")
+            fepdf.AgregarDato("pedido", "1234")
             print "Prueba!"
 
         # grabar muestra en dbf:
         if '--grabar' in sys.argv:
             reg = fepdf.factura.copy()
             reg['id'] = 0
+            reg['datos'] = fepdf.datos
             reg['err_code'] = 'OK'
             if '--dbf' in sys.argv:
                 from formatos import formato_dbf
