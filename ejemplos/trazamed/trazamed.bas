@@ -245,8 +245,9 @@ Sub Main()
                                               codigo_transaccion, _
                                               gtin_medicamento, _
                                               numero_serial)
-     ' por el momento ANMAT devuelve error en pruebas:
-     If ok Then
+    Debug.Print Err.Description, TrazaMed.XmlResponse
+    ' por el momento ANMAT devuelve error en pruebas:
+    If ok Then
         Debug.Assert TrazaMed.Resultado
         For Each er In TrazaMed.Errores
             Debug.Print er
@@ -256,4 +257,62 @@ Sub Main()
         MsgBox TrazaMed.Traceback, vbCritical, TrazaMed.Excepcion
     End If
     
+    ' obtener las transacciones relaizadas según criterios de búsqueda:
+    ' de no especificar criterio correcto, el servidor devolverá una excepcion:
+    '    "SoapFault: soap:Server: Error grave: null"
+    id_transaccion_global = Null
+    id_agente_origen = Null
+    id_agente_destino = Null
+    id_medicamento = Null
+    id_evento = Null
+    fecha_desde_op = CStr(Date) '"01/07/2014"
+    fecha_hasta_op = CStr(Date + 31) '"31/07/2014"
+    fecha_desde_t = Null
+    fecha_hasta_t = Null
+    fecha_desde_v = Null
+    fecha_hasta_v = Null
+    n_remito = Null
+    n_factura = Null
+    id_estado = Null
+    nro_pag = Null
+    ok = TrazaMed.GetTransaccionesWS(usuario, password, _
+                p_id_transaccion_global, _
+                id_agente_origen, id_agente_destino, _
+                id_medicamento, id_evento, _
+                fecha_desde_op, fecha_hasta_op, _
+                fecha_desde_t, fecha_hasta_t, _
+                fecha_desde_v, fecha_hasta_v, _
+                n_remito, n_factura, _
+                id_estado, nro_pag)
+    ' revisar si hubo errores:
+    Debug.Print TrazaMed.XmlRequest, TrazaMed.XmlResponse, Err.Description
+    If ok Then
+    ' recorro las transacciones devueltas (TransaccionPlainWS)
+        Do While TrazaMed.LeerTransaccion:
+            If MsgBox("GTIN: " & TrazaMed.GetParametro("_gtin") & vbCrLf & _
+                    "Evento: " & TrazaMed.GetParametro("_f_evento") & vbCrLf & _
+                    "CodigoTransaccion: " & TrazaMed.GetParametro("_id_transaccion"), _
+                    vbInformation + vbOKCancel, "GetEnviosPropiosAlertados") = vbCancel Then
+                Exit Do
+            End If
+            Debug.Print TrazaMed.GetParametro("_f_evento")
+            Debug.Print TrazaMed.GetParametro("_f_transaccion")
+            Debug.Print TrazaMed.GetParametro("_lote")
+            Debug.Print TrazaMed.GetParametro("_numero_serial")
+            Debug.Print TrazaMed.GetParametro("_vencimiento")
+            Debug.Print TrazaMed.GetParametro("_razon_social_destino")
+            Debug.Print TrazaMed.GetParametro("_gln_destino")
+            Debug.Print TrazaMed.GetParametro("_razon_social_origen")
+            Debug.Print TrazaMed.GetParametro("_gln_origen")
+            Debug.Print TrazaMed.GetParametro("_nombre")
+            Debug.Print TrazaMed.GetParametro("_gtin")
+            Debug.Print TrazaMed.GetParametro("_id_transaccion")
+            Debug.Print TrazaMed.GetParametro("_id_transaccion_global")
+            Debug.Print TrazaMed.GetParametro("_n_factura")
+            Debug.Print TrazaMed.GetParametro("_n_remito")
+        Loop
+    Else
+        MsgBox TrazaMed.Traceback, vbCritical, TrazaMed.Excepcion
+    End If
+
 End Sub
