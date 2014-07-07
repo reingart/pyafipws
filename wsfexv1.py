@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08a"
+__version__ = "1.08b"
 
 import datetime
 import decimal
@@ -372,7 +372,7 @@ class WSFEXv1(BaseWS):
         for u in result['FEXResultGet']:
             u = u['ClsFEXResponse_DST_cuit']
             try:
-                r = {'codigo': u.get('DST_Codigo'), 'ds': u.get('DST_Ds'), }
+                r = {'codigo': u.get('DST_CUIT'), 'ds': u.get('DST_Ds'), }
             except Exception, e:
                 print e
             
