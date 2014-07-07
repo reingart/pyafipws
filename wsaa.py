@@ -65,9 +65,9 @@ def create_tra(service=SERVICE,ttl=2400):
     # El source es opcional. Si falta, toma la firma (recomendado).
     #tra.header.addChild('source','subject=...')
     #tra.header.addChild('destination','cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239')
-    tra.header.add_child('uniqueId',date('U'))
-    tra.header.add_child('generationTime',date('c',date('U')-ttl))
-    tra.header.add_child('expirationTime',date('c',date('U')+ttl))
+    tra.header.add_child('uniqueId',str(date('U')))
+    tra.header.add_child('generationTime',str(date('c',date('U')-ttl)))
+    tra.header.add_child('expirationTime',str(date('c',date('U')+ttl)))
     tra.add_child('service',service)
     return tra.as_xml()
 
