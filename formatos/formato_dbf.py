@@ -106,7 +106,9 @@ def leer(archivos=None):
                 ('Dato', DATO, 'datos'),
                 ]
     for nombre, formato, subclave in formatos:
-        filename = archivos.get(nombre.lower(), "%s.dbf" % nombre[:8])
+        filename = archivos.get(nombre.lower(), "%s.dbf" % nombre[:8]).strip()
+        if not filename:
+            continue
         if DEBUG: print "leyendo tabla", nombre, filename
         tabla = dbf.Table(filename, codepage=CODEPAGE)
         for reg in tabla:
