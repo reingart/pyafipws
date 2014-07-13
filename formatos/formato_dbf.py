@@ -115,7 +115,7 @@ def leer(archivos=None):
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 nombre = dar_nombre_campo(clave)
-                v = d[nombre]
+                v = d.get(nombre)
                 r[clave] = v
             # agrego 
             if formato==ENCABEZADO:
