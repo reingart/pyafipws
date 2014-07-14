@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10b"
+__version__ = "1.10c"
 
 # http://senasa.servicios.pami.org.ar/
 
@@ -168,7 +168,7 @@ class TrazaFito(BaseWS):
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
         self.errores = ret.get('errores', [])
-        self.Errores = ["%s: %s" % (it['_c_error'], it['_d_error'])
+        self.Errores = ["%s: %s" % (it['c_error'], it['d_error'])
                         for it in ret.get('errores', [])]
         self.Resultado = ret.get('resultado')
 
