@@ -245,12 +245,14 @@ class TrazaFito(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def SendConfirmaTransacc(self, usuario, password, p_ids_transac, f_operacion):
+    def SendConfirmaTransacc(self, usuario, password, p_ids_transac, f_operacion, n_cantidad=None):
         "Confirma la recepción de un medicamento"
         res = self.client.sendConfirmaTransacc(
             arg0=usuario, 
             arg1=password,
-            arg2={'p_ids_transac': p_ids_transac, 'f_operacion': f_operacion}, 
+            arg2={'p_ids_transac': p_ids_transac, 'f_operacion': f_operacion,
+                  'n_cantidad': n_cantidad,
+                 }, 
         )
         ret = res['return']
         self.CodigoTransaccion = ret.get('id_transac_asociada')
