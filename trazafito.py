@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10c"
+__version__ = "1.10d"
 
 # http://senasa.servicios.pami.org.ar/
 
@@ -43,7 +43,6 @@ TYPELIB = False
 
 WSDL = "https://servicios.pami.org.ar/trazaenagr.WebService?wsdl"
 LOCATION = "https://servicios.pami.org.ar/trazaenagr.WebService"
-#WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService?wsdl"
 
 # Formato de TransaccionSenasaDTO (SaveTransaccion)
 TRANSACCION_DTO = [
@@ -378,7 +377,7 @@ def main():
     ws.Password = 'testwservicepsw'
     
     if '--prod' in sys.argv and not HOMO:
-        WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService"
+        WSDL = "https://servicios.pami.org.ar/trazaagr.WebService?wsdl"
         print "Usando WSDL:", WSDL
         sys.argv.pop(sys.argv.index("--prod"))
 
