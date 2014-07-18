@@ -120,8 +120,9 @@ Sub Main()
         ' Confirmo la transacción (última en la lista consultada)
     
     f_operacion = CStr(Date)  ' ej. 25/02/2013
+    n_cantidad = 100
     ok = TrazaFito.SendConfirmaTransacc(usuario, password, _
-                                p_ids_transac, f_operacion)
+                                p_ids_transac, f_operacion, n_cantidad)
     If ok Then
         Debug.Print "Resultado", TrazaFito.Resultado
         Debug.Print "CodigoTransaccion", TrazaFito.CodigoTransaccion
