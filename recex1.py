@@ -403,7 +403,7 @@ if __name__ == "__main__":
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
                               'punto_vta': punto_vta, 
-                              'cbt_desde': ult_cbte, 
+                              'cbte_nro': ult_cbte,
                               'fecha_cbte': ws.FechaCbte, 
                               'err_msg': ws.ErrMsg,
                               }, open(salida,"w"))
@@ -433,7 +433,7 @@ if __name__ == "__main__":
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
                               'punto_vta': ws.PuntoVenta, 
-                              'cbt_desde': ws.CbteNro, 
+                              'cbte_nro': ws.CbteNro, 
                               'fecha_cbte': ws.FechaCbte, 
                               'imp_total': ws.ImpTotal, 
                               'cae': str(ws.CAE), 
