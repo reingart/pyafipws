@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10d"
+__version__ = "1.11a"
 
 # http://senasa.servicios.pami.org.ar/
 
@@ -125,7 +125,7 @@ ERRORES = [
 class TrazaFito(BaseWS):
     "Interfaz para el WebService de Trazabilidad de Fitosanitarios SENASA"
     
-    _public_methods_ = ['SaveTransaccion',
+    _public_methods_ = ['SaveTransaccion', 'SendCancelaTransac',
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
                         'GetTransacciones',
                         'Conectar', 'LeerError', 'LeerTransaccion',
@@ -236,6 +236,19 @@ class TrazaFito(BaseWS):
                     }
         res = self.client.saveTransacciones(
             arg0=params,
+            arg1=usuario, 
+            arg2=password,
+        )
+        ret = res['return']
+        self.CodigoTransaccion = ret['codigoTransaccion']
+        self.__analizar_errores(ret)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def SendCancelaTransac(self, usuario, password, codigo_transaccion):
+        " Realiza la cancelación de una transacción"
+        res = self.client.sendCancelaTransac(
+            arg0=codigo_transaccion, 
             arg1=usuario, 
             arg2=password,
         )
@@ -475,6 +488,8 @@ def main():
         ws.SendConfirmaTransacc(*sys.argv[sys.argv.index("--confirma")+1:])
     elif '--alerta' in sys.argv:
         ws.SendAlertaTransacc(*sys.argv[sys.argv.index("--alerta")+1:])
+    elif '--cancela' in sys.argv:
+        ws.SendCancelaTransac(*sys.argv[sys.argv.index("--cancela")+1:])
     elif '--consulta' in sys.argv:
         ws.GetTransacciones(
                             *sys.argv[sys.argv.index("--consulta")+1:]
