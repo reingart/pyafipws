@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.11a"
+__version__ = "1.11b"
 
 # http://senasa.servicios.pami.org.ar/
 
@@ -268,7 +268,7 @@ class TrazaFito(BaseWS):
                  }, 
         )
         ret = res['return']
-        self.CodigoTransaccion = ret.get('id_transac_asociada')
+        self.CodigoTransaccion = ret.get('codigoTransaccion')
         self.__analizar_errores(ret)
         return True
 
