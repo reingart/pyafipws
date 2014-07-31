@@ -545,6 +545,8 @@ def escribir(dic, formato, contraer_fechas=False):
                 valor = ""
             else:
                 valor = str(s)
+            # reemplazo saltos de linea por tabulaci{on vertical
+            valor = valor.replace("\n\r", "\v").replace("\n", "\v").replace("\r", "\v")
             if tipo == N and valor and valor!="NULL":
                 valor = ("%%0%dd" % longitud) % long(valor)
             elif tipo == I and valor:
