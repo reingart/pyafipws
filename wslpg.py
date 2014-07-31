@@ -1771,7 +1771,7 @@ class WSLPG(BaseWS):
                     f.set("vendedor.L", "MANDANTE/COMITENTE:")
                     f.set("formulario", u"Form. Electrónico 1116 C %s" % homo)
                 
-                if int(liq.get("coe_ajustado", 0)) or int(liq.get("nro_contrato", 0)):
+                if int(liq.get("coe_ajustado") or 0) or int(liq.get("nro_contrato") or 0):
                     f.set("formulario", u"Ajuste Unificado %s" % homo)
 
                 certs = []
