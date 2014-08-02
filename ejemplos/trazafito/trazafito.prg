@@ -1,7 +1,10 @@
-*-- Ejemplo de Uso de Interface  COM para presentar
+*-- Ejemplo de Uso de Interface COM para para Servicio Web (SOAP)
 *-- Trazabilidad Productos Agroquimicos Fitosanitarios SENASA
+*-- Resolución 369/2013 del Servicio Nacional de Sanidad y Calidad Agroalimentaria 
+*-- Principios Activos incluidos en el Anexo I. Sistema Nacional de Trazabilidad.
 *-- 2014 (C) Mariano Reingart <reingart@gmail.com>
 *-- Documentacion: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosFitosanitarios
+*-- Lenguajes: Visual Fox Pro 5.0 (VFP5 o superior), para soporte FoxPro por DBF ver pagina web
 *-- Licencia; GPLv3
 
 ON ERROR DO errhand;
@@ -13,24 +16,22 @@ TrazaFito= CREATEOBJECT("TrazaFito")
 
 ? TrazaFito.Version
 ? TrazaFito.InstallDir
-
     
 *-- Establecer credenciales de seguridad
 TrazaFito.Username = "testwservice"
 TrazaFito.Password = "testwservicepsw"
 
-*-- Conectar al servidor (pruebas)
+*-- Conectar al servidor (pruebas, cambiar URL para produccion)
 url = "https://servicios.pami.org.ar/trazaenagr.WebService?wsdl"
 cache = ""
-ok = TrazaFito.Conectar()
+ok = TrazaFito.Conectar(cache, url)
 ? "Conectar", ok
 
-*-- credenciales de prueba
+*-- credenciales genéricas de prueba (no utilizar para entrenamiento)
 usuario = "senasaws" 
 password = "Clave2013"
 
-*-- Consulto transacciones pendientes -v2-:
-
+*-- Consulto transacciones pendientes (recibidas):
 id_transaccion = Null
 id_agente_informador = Null 
 gln_origen = Null
@@ -47,7 +48,8 @@ fecha_hasta_t = Null
 fecha_desde_v = Null 
 fecha_hasta_v = Null
 n_remito_factura = Null
-            
+
+*-- llamar al webservice:
 ok = TrazaFito.GetTransacciones(usuario, password, ;
                 id_transaccion, id_evento, gln_origen, ;
                 fecha_desde_t, fecha_hasta_t, ;
@@ -57,7 +59,7 @@ ok = TrazaFito.GetTransacciones(usuario, password, ;
                 n_remito_factura)
 
 IF ok THEN
-    *-- Muestro transacciones
+    *-- Recorro y muestro transacciones recibidas
     DO WHILE TrazaFito.LeerTransaccion()
         ? TrazaFito.GetParametro("cod_producto")
         ? TrazaFito.GetParametro("f_operacion")
@@ -82,7 +84,7 @@ IF ok THEN
 ENDIF
 
 *-- Confirmar la transaccion (si corresponde)
-*-- p_ids_transac y f_operacion consultadas arriba con GetTransacciones
+*-- p_ids_transac y f_operacion consultadas anteriormente con GetTransacciones
 n_cantidad = 100
 ok = TrazaFito.SendConfirmaTransacc(usuario, password, ;
                             p_ids_transac, f_operacion, n_cantidad)
