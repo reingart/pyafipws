@@ -17,7 +17,7 @@ del web service WSCTG versión 2.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.12d"
+__version__ = "1.12e"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -121,6 +121,8 @@ ENCABEZADO = [
     ('controles', 1000, A),
     ('detalle', 1000, A),                     # consultar detalle (WSCTGv2)
     
+    # nuevos campos agregados:
+    ('cuit_chofer', 11, N), 
     
     ]        
 
@@ -329,7 +331,8 @@ class WSCTGv2(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConfirmarArribo(self, numero_carta_de_porte, numero_ctg, 
                         cuit_transportista, peso_neto_carga, 
-                        consumo_propio, establecimiento=None, **kwargs):
+                        consumo_propio, establecimiento=None, cuit_chofer=None,
+                        **kwargs):
         "Confirma arribo CTG"
         ret = self.client.confirmarArribo(request=dict(
                         auth={
@@ -339,6 +342,7 @@ class WSCTGv2(BaseWS):
                             cartaPorte=numero_carta_de_porte, 
                             ctg=numero_ctg,
                             cuitTransportista=cuit_transportista,
+                            cuitChofer=cuit_chofer,
                             cantKilosCartaPorte=peso_neto_carga,
                             consumoPropio=consumo_propio,
                             establecimiento=establecimiento,
