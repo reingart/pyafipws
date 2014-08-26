@@ -82,7 +82,7 @@ class PyRece(gui.Controller):
         if entrada and os.path.exists(entrada):
             self.cargar()
         
-        self.components.cboWebservice.string_selection = DEFAULT_WEBSERVICE
+        self.components.cboWebservice.value = DEFAULT_WEBSERVICE
         self.on_cboWebservice_click(event)
         
         self.tipos = {
@@ -365,7 +365,7 @@ class PyRece(gui.Controller):
         self.component.size = (592, 517)
         
     def on_cboWebservice_click(self, event):
-        self.webservice = self.components.cboWebservice.string_selection
+        self.webservice = self.components.cboWebservice.value
         self.ws = None
         self.token = None
         self.sign = None
