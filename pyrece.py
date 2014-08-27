@@ -111,7 +111,7 @@ class PyRece(gui.Controller):
             15:u"Recibo C",
             }
 
-        
+        self.component.bgcolor = "light gray"
         # deshabilito ordenar
         ##self.components.lvwListado.GetColumnSorter = lambda: lambda x,y: 0
 
