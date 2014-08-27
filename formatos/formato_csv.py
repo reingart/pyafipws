@@ -195,7 +195,11 @@ def escribir(filas, fn="salida.csv", delimiter=";"):
     f = open(fn,"wb")
     csv_writer = csv.writer(f, dialect='excel', delimiter=";")
     # TODO: filas = aplanar(regs)
-    csv_writer.writerows(filas)
+    for fila in filas:
+        # convertir a ISO-8859-1 (evita error de encoding de csv writer):
+        fila = [celda.encode("latin1") if isinstance(celda, unicode) else celda
+                for celda in fila]
+        csv_writer.writerow(fila)
     f.close()
 
     
