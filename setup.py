@@ -7,8 +7,8 @@
 
 "Creador de instalador para PyAfipWs"
 
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
-__copyright__ = "Copyright (C) 2008-2013 Mariano Reingart"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
+__copyright__ = "Copyright (C) 2008-2014 Mariano Reingart"
 
 from __init__ import __version__
 
@@ -19,25 +19,25 @@ import sys
 
 # modulos a compilar y empaquetar (comentar si no se desea incluir):
 
-#import pyafipws
-#import pyrece
-#import wsaa
-#import wsfev1, rece1
-#import wsfexv1, recex1
-#import wsbfev1, receb1
-#import wsmtx, recem
-#import pyfepdf
-#import pyemail
-#import pyi25
-#import wsctgv2
-#import wslpg
-#import wscoc
-#import wscdc
-#import cot
+import pyafipws
+import pyrece
+import wsaa
+import wsfev1, rece1
+import wsfexv1, recex1
+import wsbfev1, receb1
+import wsmtx, recem
+import pyfepdf
+import pyemail
+import pyi25
+import wsctgv2
+import wslpg
+import wscoc
+import wscdc
+import cot
 import trazamed
-#import trazarenpre
-#import trazafito
-#import padron
+import trazarenpre
+import trazafito
+import padron
 
 # herramientas opcionales a compilar y empaquetar:
 try:
@@ -132,14 +132,17 @@ if 'py2exe' in sys.argv:
             ]
         data_files += [
             (".", [
-            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
-            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCR71.dll",
+            "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+            "C:\python25\MSVCR71.dll",
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
             ]), 
             ("plantillas", ["plantillas/logo.png", ]),
             ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", ])
             ]
         data_files.append((".", pycard_resources))
+
+        __version__ += "+pyrece_" + pyrece.__version__
+        HOMO &= pyrece.HOMO
 
 
     # new webservices:
@@ -186,7 +189,7 @@ if 'py2exe' in sys.argv:
             Target(module=wsbfev1, script='wsbfev1.py', dest_base="wsbfev1_cli"), 
             Target(module=receb1, script='receb1.py'), 
             ]
-        __version__ += "+wsbfev_" + wsbfev1.__version__
+        __version__ += "+wsbfev1_" + wsbfev1.__version__
         HOMO &= wsbfev1.HOMO
     
     if 'wsmtx' in globals():
