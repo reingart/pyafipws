@@ -67,7 +67,6 @@ LastCBTE = WSFE.CompUltimoAutorizado(tipo_cbte, punto_vta)
 concepto = 3
 Fecha = STRTRAN(STR(YEAR(DATE()),4) + STR(MONTH(DATE()),2) + STR(DAY(DATE()),2)," ","0")
 ? fecha && formato: AAAAMMDD
-presta_serv = 1
 tipo_doc = 80
 nro_doc = "27269434894"
 cbt_desde = INT(VAL(LastCBTE)) + 1
@@ -81,7 +80,7 @@ impto_liq_rni = "0.00"
 imp_op_ex = "0.00"
 fecha_cbte = Fecha
 fecha_venc_pago = Fecha
-*-- Fechas del período del servicio facturado (solo si presta_serv = 1)
+*-- Fechas del período del servicio facturado (solo si concepto > 1)
 fecha_serv_desde = Fecha
 fecha_serv_hasta = Fecha
 moneda_id = "PES"
@@ -93,7 +92,7 @@ ok = WSFE.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta, ;
         imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, ;
         fecha_serv_desde, fecha_serv_hasta, ;
         moneda_id, moneda_ctz) 
-*-- si presta_serv = 0 no pasar estas fechas
+*-- si concepto = 1 (productos) no pasar estas fechas
 
 *-- Agrego impuestos varios
 id = 99
