@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.14b"
+__version__ = "1.14c"
 
 import datetime
 import decimal
@@ -862,7 +862,6 @@ def main():
             sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
 
         print u'\n'.join(wsfev1.ParamGetTiposDoc())
-        exit()
         print "=== Tipos de Comprobante ==="
         print u'\n'.join(wsfev1.ParamGetTiposCbte())
         print "=== Tipos de Concepto ==="
