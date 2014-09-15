@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.32a"
+__version__ = "1.32b"
 
 import datetime
 import os
@@ -152,6 +152,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         if '/testing' in sys.argv:
             encabezado['cae'] = '21073372218437'
         encabezado['caea'] = encabezado['cae']
+
+    if not encabezado:
+        raise RuntimeError("No se pudieron leer los registros de la entrada")
 
     ws.CrearFactura(**encabezado)
     for tributo in tributos:
