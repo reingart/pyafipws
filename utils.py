@@ -641,7 +641,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                     claves.append(clave_dbf)
                     r[clave_dbf] = v
             # agregar si lo solicitaron o si la tabla no tiene registros:
-            if agrega or (tabla.eof() and tabla.bof()):
+            if agrega or not tabla:
                 print "Agregando !!!", r
                 registro = tabla.append(r)
             else:
