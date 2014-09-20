@@ -22,6 +22,8 @@ import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.Dispatch;
 import com.jacob.com.LibraryLoader;
 import com.jacob.com.Variant;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FacturaElectronica {
 
@@ -75,6 +77,85 @@ public class FacturaElectronica {
             System.out.println("Ultimo comprobante: " + ult.toString());
             excepcion =  Dispatch.get(wsfev1, "Excepcion").toString();
             System.out.println("Excepcion: " + excepcion);
+
+            /* CAE */             
+            String fecha = new SimpleDateFormat("yyyyMMdd").format(new Date());
+            String concepto = "1";
+            String tipo_doc = "80", nro_doc = "33693450239";
+            int cbte_nro = Integer.parseInt(ult.toString()) + 1,
+                cbt_desde = cbte_nro,
+                cbt_hasta = cbte_nro;
+            String imp_total = "124.00";
+            String imp_tot_conc = "2.00";
+            String imp_neto = "100.00";
+            String imp_iva = "21.00", imp_trib = "1.00", imp_op_ex = "0.00";
+            String fecha_cbte = fecha, fecha_venc_pago = "";
+            /* Fechas período del servicio facturado (solo si concepto> 1) */
+            String fecha_serv_desde = "", fecha_serv_hasta = "";
+            String moneda_id = "PES", moneda_ctz = "1.000";
+
+            Variant ok = Dispatch.call(wsfev1, "CrearFactura",
+                new Variant(concepto), new Variant(tipo_doc), 
+                new Variant(nro_doc), new Variant(tipo_cbte), 
+                new Variant(pto_vta), 
+                new Variant(cbt_desde), new Variant(cbt_hasta), 
+                new Variant(imp_total), new Variant(imp_tot_conc), 
+                new Variant(imp_neto), new Variant(imp_iva), 
+                new Variant(imp_trib), new Variant(imp_op_ex), 
+                new Variant(fecha_cbte), new Variant(fecha_venc_pago), 
+                new Variant(fecha_serv_desde), new Variant(fecha_serv_hasta),
+                new Variant(moneda_id), new Variant(moneda_ctz));
+            
+            /* Agrego los comprobantes asociados: */ 
+            if (false) { /* solo nc/nd */
+                Variant cbte_asoc_tipo = new Variant("19"), 
+                        cbte_asoc_pto_vta = new Variant("2"), 
+                        cbte_asoc_nro = new Variant("1234");
+                Dispatch.call(wsfev1, "AgregarCmpAsoc",
+                              cbte_asoc_tipo, cbte_asoc_pto_vta, cbte_asoc_nro);
+            }
+                
+            /* Agrego impuestos varios */
+            Variant tributo_id = new Variant(4),
+                    tributo_desc = new Variant("Impuestos internos"),
+                    tributo_base_imp = new Variant("100.00"),
+                    tributo_alic = new Variant("1.00"),
+                    tributo_importe = new Variant("1.00");
+            Dispatch.call(wsfev1, "AgregarTributo", 
+                          tributo_id, tributo_desc, tributo_base_imp, 
+                          tributo_alic, tributo_importe);
+
+            /* Agrego tasas de IVA */
+            Variant iva_id = new Variant(5), /* 21% */
+                    iva_base_imp = new Variant("100.00"),
+                    iva_importe = new Variant("21.00");
+            Dispatch.call(wsfev1, "AgregarIva", 
+                          iva_id, iva_base_imp, iva_importe);
+            
+            /* Habilito reprocesamiento automático (predeterminado): */
+            Dispatch.put(wsfev1, "Reprocesar", new Variant(true));
+
+            /* Solicito CAE (llamando al webservice de AFIP): */
+            Variant cae = Dispatch.call(wsfev1, "CAESolicitar");
+
+            /* Mostrar mensajes XML enviados y recibidos (depuración) */            
+            System.out.println("XmlRequest: " +
+                               Dispatch.get(wsfev1, "XmlRequest").toString());
+            System.out.println("XmlResponse: " +
+                               Dispatch.get(wsfev1, "XmlResponse").toString());
+
+            excepcion =  Dispatch.get(wsfev1, "Excepcion").toString();
+            System.out.println("Excepcion: " + excepcion);
+
+            String errmsg =  Dispatch.get(wsfev1, "ErrMsg").toString();
+            System.out.println("ErrMsg: " + errmsg);
+            String obs =  Dispatch.get(wsfev1, "Obs").toString();
+            System.out.println("Obs: " + obs);
+           
+            /* datos devueltos */
+            System.out.println("CAE: " + cae.toString());
+            String resultado = Dispatch.get(wsfev1, "Resultado").toString();
+            System.out.println("Resultado: " + resultado);
 
         } catch (Exception e) {
             e.printStackTrace();
