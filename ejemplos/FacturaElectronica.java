@@ -51,7 +51,31 @@ public class FacturaElectronica {
             String sign = Dispatch.get(wsaa, "Sign").toString();
             System.out.println("Token: " + token +  "Sign: " + sign);
             
-            
+            /* Instanciar WSFEv1: WebService de Factura Electrónica version 1 */
+
+            ActiveXComponent wsfev1 = new ActiveXComponent("WSFEv1");
+
+            /* Establecer parametros de uso: */
+            Dispatch.put(wsfev1, "Cuit", new Variant("20267565393"));
+            Dispatch.put(wsfev1, "Token", new Variant(token));
+            Dispatch.put(wsfev1, "Sign", new Variant(sign));
+
+            /* Conectar al websrvice (cambiar URL para producción) */
+            wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL";
+            Dispatch.call(wsfev1, "Conectar", 
+                                  new Variant(""), 
+                                  new Variant(wsdl));
+
+            /* Consultar último comprobante autorizado en AFIP */
+            String tipo_cbte = "1";
+            String pto_vta = "1";
+            Variant ult = Dispatch.call(wsfev1, "CompUltimoAutorizado", 
+                                                new Variant(tipo_cbte), 
+                                                new Variant(pto_vta));
+            System.out.println("Ultimo comprobante: " + ult.toString());
+            excepcion =  Dispatch.get(wsfev1, "Excepcion").toString();
+            System.out.println("Excepcion: " + excepcion);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
