@@ -10,10 +10,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo Trazabilidad de Productos Fitosanitarios SENASA Resolución 369/2013"
+"Módulo Trazabilidad de Productos Veterinarios SENASA Resolución 369/2013"
 
 # Información adicional y documentación:
-# http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosFitosanitarios
+# http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosVeterinarios
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
@@ -41,8 +41,8 @@ from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, \
 HOMO = True
 TYPELIB = False
 
-WSDL = "https://servicios.pami.org.ar/trazaenagr.WebService?wsdl"
-LOCATION = "https://servicios.pami.org.ar/trazaenagr.WebService"
+WSDL = "https://servicios.pami.org.ar/trazaenvet.WebService?wsdl"
+LOCATION = "https://servicios.pami.org.ar/trazaenvet.WebService?wsdl"
 
 # Formato de TransaccionSenasaDTO (SaveTransaccion)
 TRANSACCION_DTO = [
@@ -122,8 +122,8 @@ ERRORES = [
     ]
 
 
-class TrazaFito(BaseWS):
-    "Interfaz para el WebService de Trazabilidad de Fitosanitarios SENASA"
+class TrazaVet(BaseWS):
+    "Interfaz para el WebService de Trazabilidad de Veterinarios SENASA"
     
     _public_methods_ = ['SaveTransaccion', 'SendCancelaTransac',
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
@@ -142,8 +142,8 @@ class TrazaFito(BaseWS):
         'CantPaginas', 'HayError', 'TransaccionSenasa',
         ]
 
-    _reg_progid_ = "TrazaFito"
-    _reg_clsid_ = "{39793931-450A-4F66-9324-D4D981FC5319}"
+    _reg_progid_ = "TrazaVet"
+    _reg_clsid_ = "{2E28D79D-23B0-4C1E-85B9-64BDC41B8FCF}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -178,7 +178,7 @@ class TrazaFito(BaseWS):
         if ok:
             # si el archivo es local, asumo que ya esta corregido:
             if not self.wsdl.startswith("file"):
-                # corrijo ubicación del servidor (localhost:9050 en el WSDL)
+                # corrijo ubicación del servidor (localhost:59050 en el WSDL)
                 location = self.wsdl[:-5]
                 ws = self.client.services['IWebServiceSenasa']
                 ws['ports']['IWebServiceSenasaPort']['location'] = location
@@ -386,7 +386,7 @@ def main():
 
     DEBUG = '--debug' in sys.argv
 
-    ws = TrazaFito()
+    ws = TrazaVet()
     
     ws.Username = 'testwservice'
     ws.Password = 'testwservicepsw'
@@ -562,7 +562,7 @@ def main():
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-INSTALL_DIR = TrazaFito.InstallDir = get_install_dir()
+INSTALL_DIR = TrazaVet.InstallDir = get_install_dir()
 
 
 if __name__ == '__main__':
@@ -576,12 +576,12 @@ if __name__ == '__main__':
     if '--register' in sys.argv or '--unregister' in sys.argv:
         import pythoncom
         import win32com.server.register
-        win32com.server.register.UseCommandLine(TrazaFito)
+        win32com.server.register.UseCommandLine(TrazaVet)
     elif "/Automate" in sys.argv:
         # MS seems to like /automate to run the class factories.
         import win32com.server.localserver
         #win32com.server.localserver.main()
         # start the server.
-        win32com.server.localserver.serve([TrazaFito._reg_clsid_])
+        win32com.server.localserver.serve([TrazaVet._reg_clsid_])
     else:
         main()
