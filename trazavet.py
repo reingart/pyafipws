@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.11c"
+__version__ = "1.11d"
 
 # http://senasa.servicios.pami.org.ar/
 
@@ -392,9 +392,16 @@ def main():
     ws.Password = 'testwservicepsw'
     
     if '--prod' in sys.argv and not HOMO:
-        WSDL = "https://servicios.pami.org.ar/trazaagr.WebService?wsdl"
+        WSDL = "https://servicios.pami.org.ar/trazavet.WebService?wsdl"
         print "Usando WSDL:", WSDL
         sys.argv.pop(sys.argv.index("--prod"))
+
+    if '--proxy' in sys.argv and not HOMO:
+        proxy = sys.argv.pop(sys.argv.index("--proxy") + 1)
+        print "Usando proxy:", proxy
+        sys.argv.pop(sys.argv.index("--proxy"))
+    else:
+        proxy = None
 
     # Inicializo las variables y estructuras para el archivo de intercambio:
     transaccion_dto = []
@@ -439,7 +446,7 @@ def main():
                     formato[2].append(d)
                 archivo.close()
         
-    ws.Conectar("", WSDL)
+    ws.Conectar("", WSDL, proxy)
     
     if ws.Excepcion:
         print ws.Excepcion
