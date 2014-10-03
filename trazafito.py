@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.11c"
+__version__ = "1.11d"
 
 # http://senasa.servicios.pami.org.ar/
 
@@ -84,7 +84,7 @@ TRANSACCIONES = [
     ('f_vencimiento', 10, A),
     ('f_elaboracion', 10, A),
     ('d_evento', 100, A),
-    ('n_cantidad', 30, N),
+    ('cantidad', 30, N),
     ('id_unidad', 15, N),
     ('d_unidad', 100, A),
     ('cod_producto', 14, A),
