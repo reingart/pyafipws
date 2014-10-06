@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07h"
+__version__ = "1.07i"
 
 DEBUG = False
 HOMO = False
@@ -416,6 +416,11 @@ class FEPDF:
     @inicializar_y_capturar_excepciones
     def ProcesarPlantilla(self, num_copias=1, lineas_max=24, qty_pos='izq'):
         "Generar el PDF según la factura creada y plantilla cargada"
+
+        if isinstance(num_copias, basestring):
+            num_copias = int(num_copias)
+        if isinstance(lineas_max, basestring):
+            lineas_max = int(lineas_max)
 
         f = self.template
         fact = self.factura
