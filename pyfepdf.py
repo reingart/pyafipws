@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07i"
+__version__ = "1.07j"
 
 DEBUG = False
 HOMO = False
@@ -52,6 +52,7 @@ import datetime
 import decimal
 import os
 import sys
+import tempfile
 import traceback
 from cStringIO import StringIO
 from decimal import Decimal
@@ -417,344 +418,365 @@ class FEPDF:
     def ProcesarPlantilla(self, num_copias=1, lineas_max=24, qty_pos='izq'):
         "Generar el PDF según la factura creada y plantilla cargada"
 
-        if isinstance(num_copias, basestring):
-            num_copias = int(num_copias)
-        if isinstance(lineas_max, basestring):
-            lineas_max = int(lineas_max)
+        try:
+            if isinstance(num_copias, basestring):
+                num_copias = int(num_copias)
+            if isinstance(lineas_max, basestring):
+                lineas_max = int(lineas_max)
 
-        f = self.template
-        fact = self.factura
+            f = self.template
+            fact = self.factura
 
-        tipo_fact, letra_fact, numero_fact = self.fmt_fact(fact['tipo_cbte'], fact['punto_vta'], fact['cbte_nro'])
-        fact['_fmt_fact'] = tipo_fact, letra_fact, numero_fact
-        if fact['tipo_cbte'] in (19,20,21):
-            tipo_fact_ex = tipo_fact + u" de Exportación"
-        else:
-            tipo_fact_ex = tipo_fact 
-
-        # dividir y contar líneas:
-        lineas = 0
-        li_items = []
-        for it in fact['detalles']:
-            qty = qty_pos=='izq' and it['qty'] or None
-            codigo = it['codigo']
-            umed = it['umed']
-            ds = it['ds']
-            if '\x00' in ds:
-                # limpiar descripción (campos dbf):
-                ds = ds.replace('\x00', '')
-            if '<br/>' in ds:
-                # reemplazar saltos de linea:
-                ds = ds.replace('<br/>', '\n')
-            if DEBUG: print "dividiendo", ds
-            # divido la descripción (simil célda múltiple de PDF) 
-            n_li = 0
-            for ds in f.split_multicell(ds, 'Item.Descripcion01'):
-                if DEBUG: print "multicell", ds
-                # agrego un item por linea (sin precio ni importe):
-                li_items.append(dict(codigo=codigo, ds=ds, qty=qty, umed=umed, precio=None, importe=None))
-                # limpio cantidad y código (solo en el primero)
-                umed = qty = codigo = None
-                n_li += 1
-            # asigno el precio a la última línea del item 
-            li_items[-1].update(importe = it['importe'],
-                                despacho = it.get('despacho'),
-                                precio = it['precio'],
-                                qty = (n_li==1 or qty_pos=='der') and it['qty'] or None,
-                                bonif = it.get('bonif'),
-                                iva_id = it.get('iva_id'), imp_iva = it.get('imp_iva'),
-                                dato_a = it.get('dato_a'), dato_b = it.get('dato_b'),
-                                dato_c = it.get('dato_c'), dato_d= it.get('dato_d'),
-                                dato_e = it.get('dato_e'),
-                                u_mtx = it.get('u_mtx'),
-                                cod_mtx = it.get('cod_mtx'),
-                                )
-        
-        # divido las observaciones por linea:
-        if fact.get('obs_generales') and not f.has_key('obs') and not f.has_key('ObservacionesGenerales1'):
-            obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
-            for ds in f.split_multicell(obs, 'Item.Descripcion01'):
-                li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-        if fact.get('obs_comerciales') and not f.has_key('obs_comerciales'):
-            obs="\n<U>Observaciones Comerciales:</U>\n\n" + fact['obs_comerciales']
-            for ds in f.split_multicell(obs, 'Item.Descripcion01'):
-                li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-
-        # agrego permisos a descripciones (si corresponde)
-        permisos =  [u'Codigo de Despacho %s - Destino de la mercadería: %s' % (
-                     p['Permiso']['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
-                     for p in fact.get('permisos',[])]
-        if not f.has_key('permisos') and permisos:
-            obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
-            for ds in f.split_multicell(obs, 'Item.Descripcion01'):
-                li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-        permisos_ds = ', '.join(permisos)
-
-        # agrego comprobantes asociados
-        cmps_asoc = [u'%s %s %s' % self.fmt_fact(c['cbte_tipo'], c['cbte_punto_vta'], c['cbte_nro']) 
-                      for c in fact.get('cbtes_asoc',[])]
-        if not f.has_key('cmps_asoc') and cmps_asoc:
-            obs="\n<U>Comprobantes Asociados:</U>\n\n" + '\n'.join(cmps_asoc)
-            for ds in f.split_multicell(obs, 'Item.Descripcion01'):
-                li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-        cmps_asoc_ds = ', '.join(permisos)
-
-        # calcular cantidad de páginas:
-        lineas = len(li_items)
-        if lineas_max>0:
-            hojas = lineas / (lineas_max - 1)
-            if lineas % (lineas_max - 1): hojas = hojas + 1
-            if not hojas:
-                hojas = 1
-        else:
-            hojas = 1
-
-        if HOMO:
-            self.AgregarDato("homo", u"HOMOLOGACIÓN")
-
-        if fact.get('motivos_obs') and fact['motivos_obs']<>'00':
-            if not f.has_key('motivos_ds.L'):
-                motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
+            tipo_fact, letra_fact, numero_fact = self.fmt_fact(fact['tipo_cbte'], fact['punto_vta'], fact['cbte_nro'])
+            fact['_fmt_fact'] = tipo_fact, letra_fact, numero_fact
+            if fact['tipo_cbte'] in (19,20,21):
+                tipo_fact_ex = tipo_fact + u" de Exportación"
             else:
-                motivos_ds = u"%s" % fact['motivos_obs']
-        elif HOMO:
-            motivos_ds = u"Ejemplo Sin validez fiscal - Homologación - Testing"
-        else:
-            motivos_ds = ""
+                tipo_fact_ex = tipo_fact 
 
-        copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
-
-        for copia in range(1, num_copias+1):
+            # dividir y contar líneas:
+            lineas = 0
+            li_items = []
+            for it in fact['detalles']:
+                qty = qty_pos=='izq' and it['qty'] or None
+                codigo = it['codigo']
+                umed = it['umed']
+                ds = it['ds']
+                if '\x00' in ds:
+                    # limpiar descripción (campos dbf):
+                    ds = ds.replace('\x00', '')
+                if '<br/>' in ds:
+                    # reemplazar saltos de linea:
+                    ds = ds.replace('<br/>', '\n')
+                if DEBUG: print "dividiendo", ds
+                # divido la descripción (simil célda múltiple de PDF) 
+                n_li = 0
+                for ds in f.split_multicell(ds, 'Item.Descripcion01'):
+                    if DEBUG: print "multicell", ds
+                    # agrego un item por linea (sin precio ni importe):
+                    li_items.append(dict(codigo=codigo, ds=ds, qty=qty, umed=umed, precio=None, importe=None))
+                    # limpio cantidad y código (solo en el primero)
+                    umed = qty = codigo = None
+                    n_li += 1
+                # asigno el precio a la última línea del item 
+                li_items[-1].update(importe = it['importe'],
+                                    despacho = it.get('despacho'),
+                                    precio = it['precio'],
+                                    qty = (n_li==1 or qty_pos=='der') and it['qty'] or None,
+                                    bonif = it.get('bonif'),
+                                    iva_id = it.get('iva_id'), imp_iva = it.get('imp_iva'),
+                                    dato_a = it.get('dato_a'), dato_b = it.get('dato_b'),
+                                    dato_c = it.get('dato_c'), dato_d= it.get('dato_d'),
+                                    dato_e = it.get('dato_e'),
+                                    u_mtx = it.get('u_mtx'),
+                                    cod_mtx = it.get('cod_mtx'),
+                                    )
             
-            # completo campos y hojas
-            for hoja in range(1, hojas+1):
-                f.add_page()                   
-                f.set('copia', copias.get(copia, "Adicional %s" % copia))
-                f.set('hoja', str(hoja))
-                f.set('hojas', str(hojas))
-                f.set('pagina', 'Pagina %s de %s' % (hoja, hojas))
-                if hojas>1 and hoja<hojas:
-                    s = 'Continúa en hoja %s' % (hoja+1)
-                else:
-                    s = ''
-                f.set('continua', s)
-                f.set('Item.Descripcion%02d' % (lineas_max+1), s)
+            # divido las observaciones por linea:
+            if fact.get('obs_generales') and not f.has_key('obs') and not f.has_key('ObservacionesGenerales1'):
+                obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
+                for ds in f.split_multicell(obs, 'Item.Descripcion01'):
+                    li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
+            if fact.get('obs_comerciales') and not f.has_key('obs_comerciales'):
+                obs="\n<U>Observaciones Comerciales:</U>\n\n" + fact['obs_comerciales']
+                for ds in f.split_multicell(obs, 'Item.Descripcion01'):
+                    li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
 
-                if hoja>1:
-                    s = 'Continúa de hoja %s' % (hoja-1)
-                else:
-                    s = ''
-                f.set('continua_de', s)
-                f.set('Item.Descripcion%02d' % (0), s)
+            # agrego permisos a descripciones (si corresponde)
+            permisos =  [u'Codigo de Despacho %s - Destino de la mercadería: %s' % (
+                         p['Permiso']['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
+                         for p in fact.get('permisos',[])]
+            if not f.has_key('permisos') and permisos:
+                obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
+                for ds in f.split_multicell(obs, 'Item.Descripcion01'):
+                    li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
+            permisos_ds = ', '.join(permisos)
 
-                if DEBUG: print u"generando pagina %s de %s" % (hoja, hojas)
+            # agrego comprobantes asociados
+            cmps_asoc = [u'%s %s %s' % self.fmt_fact(c['cbte_tipo'], c['cbte_punto_vta'], c['cbte_nro']) 
+                          for c in fact.get('cbtes_asoc',[])]
+            if not f.has_key('cmps_asoc') and cmps_asoc:
+                obs="\n<U>Comprobantes Asociados:</U>\n\n" + '\n'.join(cmps_asoc)
+                for ds in f.split_multicell(obs, 'Item.Descripcion01'):
+                    li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
+            cmps_asoc_ds = ', '.join(permisos)
+
+            # calcular cantidad de páginas:
+            lineas = len(li_items)
+            if lineas_max>0:
+                hojas = lineas / (lineas_max - 1)
+                if lineas % (lineas_max - 1): hojas = hojas + 1
+                if not hojas:
+                    hojas = 1
+            else:
+                hojas = 1
+
+            if HOMO:
+                self.AgregarDato("homo", u"HOMOLOGACIÓN")
+
+            if fact.get('motivos_obs') and fact['motivos_obs']<>'00':
+                if not f.has_key('motivos_ds.L'):
+                    motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
+                else:
+                    motivos_ds = u"%s" % fact['motivos_obs']
+            elif HOMO:
+                motivos_ds = u"Ejemplo Sin validez fiscal - Homologación - Testing"
+            else:
+                motivos_ds = ""
+
+            copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
+
+            for copia in range(1, num_copias+1):
                 
-                # establezco datos según configuración:
-                for d in self.datos:
-                    if d['pagina'] == 'P' and hoja != 1:
-                        continue
-                    if d['pagina'] == 'U' and hojas != hoja:
-                        # no es la última hoja
-                        continue
-                    f.set(d['campo'], d['valor'])
-
-                # establezco campos según tabla encabezado:
-                for k,v in fact.items():
-                    f.set(k,v)
-
-                f.set('Numero', numero_fact)
-                f.set('Fecha', self.fmt_date(fact['fecha_cbte']))
-                f.set('Vencimiento', self.fmt_date(fact['fecha_venc_pago']))
-                
-                f.set('LETRA', letra_fact)
-                f.set('TipoCBTE', "COD.%02d" % int(fact['tipo_cbte']))
-
-                f.set('Comprobante.L', tipo_fact)
-                f.set('ComprobanteEx.L', tipo_fact_ex)
-
-                if fact.get('fecha_serv_desde'):
-                    f.set('Periodo.Desde', self.fmt_date(fact['fecha_serv_desde']))
-                    f.set('Periodo.Hasta', self.fmt_date(fact['fecha_serv_hasta']))
-                else:
-                    for k in 'Periodo.Desde', 'Periodo.Hasta', 'PeriodoFacturadoL':
-                        f.set(k, '')
-
-                f.set('Cliente.Nombre', fact.get('nombre', fact.get('nombre_cliente')))
-                f.set('Cliente.Domicilio', fact.get('domicilio', fact.get('domicilio_cliente')))
-                f.set('Cliente.Localidad', fact.get('localidad', fact.get('localidad_cliente')))
-                f.set('Cliente.Provincia', fact.get('provincia', fact.get('provincia_cliente')))
-                f.set('Cliente.Telefono', fact.get('telefono', fact.get('telefono_cliente')))
-                f.set('Cliente.IVA', fact.get('categoria', fact.get('id_impositivo')))
-                f.set('Cliente.CUIT', self.fmt_cuit(str(fact['nro_doc'])))
-                f.set('Cliente.TipoDoc', u"%s:" % self.tipos_doc[int(str(fact['tipo_doc']))])
-                f.set('Cliente.Observaciones', fact.get('obs_comerciales'))
-                f.set('Cliente.PaisDestino', self.paises.get(fact.get('pais_dst_cmp'), fact.get('pais_dst_cmp')) or '')
-
-                if fact['moneda_id']:
-                    f.set('moneda_ds', self.monedas_ds.get(fact['moneda_id'],''))
-                else:
-                    for k in 'moneda.L', 'moneda_id', 'moneda_ds', 'moneda_ctz.L', 'moneda_ctz':
-                        f.set(k, '')
-
-                if not fact.get('incoterms'):
-                    for k in 'incoterms.L', 'incoterms', 'incoterms_ds':
-                        f.set(k, '')
-
-                li = 0
-                k = 0
-                subtotal = Decimal("0.00")
-                for it in li_items:
-                    k = k + 1
-                    if k > hoja * (lineas_max - 1):
-                        break
-                    if it['importe']:
-                        subtotal += Decimal("%.6f" % float(it['importe']))
-                    if k > (hoja - 1) * (lineas_max - 1):
-                        if DEBUG: print "it", it
-                        li += 1
-                        if it['qty'] is not None:
-                            f.set('Item.Cantidad%02d' % li, self.fmt_qty(it['qty']))
-                        if it['codigo'] is not None:
-                            f.set('Item.Codigo%02d' % li, it['codigo'])
-                        if it['umed'] is not None:
-                            f.set('Item.Umed%02d' % li, it['umed'])
-                            if it['umed']:
-                                f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(int(it['umed'])))
-                        if it.get('iva_id') is not None:
-                            f.set('Item.IvaId%02d' % li, it['iva_id'])
-                            if it['iva_id']:
-                                f.set('Item.AlicuotaIva%02d' % li, self.ivas_ds.get(int(it['iva_id'])))
-                        if it.get('imp_iva') is not None:
-                            f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
-                        if it.get('despacho') is not None:
-                            f.set('Item.Numero_Despacho%02d' % li, it['despacho'])
-                        if it.get('bonif') is not None:
-                            f.set('Item.Bonif%02d' % li, self.fmt_pre(it['bonif']))
-                        f.set('Item.Descripcion%02d' % li, it['ds'])
-                        if it['precio'] is not None:
-                            f.set('Item.Precio%02d' % li, self.fmt_pre(it['precio']))
-                        if it['importe'] is not None:
-                            f.set('Item.Importe%02d' % li, self.fmt_num(it['importe']))
-
-                        # Datos MTX
-                        if it.get('u_mtx') is not None:
-                            f.set('Item.U_MTX%02d' % li, it['u_mtx'])
-                        if it.get('cod_mtx') is not None:
-                            f.set('Item.COD_MTX%02d' % li, it['cod_mtx'])
-
-                        # datos adicionales de items
-                        for adic in ['dato_a', 'dato_b', 'dato_c', 'dato_d', 'dato_e']:
-                            if adic in it:
-                                f.set('Item.%s%02d' % (adic, li), it[adic])
-
-                if hojas == hoja:
-                    # última hoja, imprimo los totales
-                    li += 1
-            
-                    # agrego otros tributos
-                    lit = 0
-                    for it in fact['tributos']:
-                        lit += 1
-                        if it['desc']:
-                            f.set('Tributo.Descripcion%02d' % lit, it['desc'])
-                        else:
-                            f.set('Tributo.Descripcion%02d' % lit, self.tributos_ds[it['tributo_id']])
-                        if it['alic'] is not None:
-                            f.set('Tributo.Alicuota%02d' % lit, self.fmt_num(it['alic']) + "%")
-                        if it['importe'] is not None:
-                            f.set('Tributo.Importe%02d' % lit, self.fmt_imp(it['importe']))
-
-                    if 'descuento' in fact and fact['descuento']:
-                        descuento = Decimal("%.6f" % float(fact['descuento']))
-                        f.set('descuento', self.fmt_imp(descuento))
-                        subtotal -= descuento
-                    f.set('subtotal', self.fmt_imp(subtotal))
-                    f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
-                    f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
-                    f.set('imp_total', self.fmt_imp(fact['imp_total']))
-                    f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
-                    f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
-
-                    f.set('IMPTO_PERC', self.fmt_imp(fact.get('impto_perc')))
-                    f.set('IMP_OP_EX', self.fmt_imp(fact.get('imp_op_ex')))
-                    f.set('IMP_IIBB', self.fmt_imp(fact.get('imp_iibb')))
-                    f.set('IMPTO_PERC_MUN', self.fmt_imp(fact.get('impto_perc_mun')))
-                    f.set('IMP_INTERNOS', self.fmt_imp(fact.get('imp_internos')))
-
-                    if letra_fact=='A':
-                        f.set('NETO', self.fmt_imp(fact['imp_neto']))
-                        f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
-                        f.set('LeyendaIVA',"")
-                        
-                        for iva in fact['ivas']:
-                            a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[int(iva['iva_id'])]
-                            f.set('IVA%s' % a, self.fmt_imp(iva['importe']))
-
+                # completo campos y hojas
+                for hoja in range(1, hojas+1):
+                    f.add_page()                   
+                    f.set('copia', copias.get(copia, "Adicional %s" % copia))
+                    f.set('hoja', str(hoja))
+                    f.set('hojas', str(hojas))
+                    f.set('pagina', 'Pagina %s de %s' % (hoja, hojas))
+                    if hojas>1 and hoja<hojas:
+                        s = 'Continúa en hoja %s' % (hoja+1)
                     else:
+                        s = ''
+                    f.set('continua', s)
+                    f.set('Item.Descripcion%02d' % (lineas_max+1), s)
+
+                    if hoja>1:
+                        s = 'Continúa de hoja %s' % (hoja-1)
+                    else:
+                        s = ''
+                    f.set('continua_de', s)
+                    f.set('Item.Descripcion%02d' % (0), s)
+
+                    if DEBUG: print u"generando pagina %s de %s" % (hoja, hojas)
+                    
+                    # establezco datos según configuración:
+                    for d in self.datos:
+                        if d['pagina'] == 'P' and hoja != 1:
+                            continue
+                        if d['pagina'] == 'U' and hojas != hoja:
+                            # no es la última hoja
+                            continue
+                        f.set(d['campo'], d['valor'])
+
+                    # establezco campos según tabla encabezado:
+                    for k,v in fact.items():
+                        f.set(k,v)
+
+                    f.set('Numero', numero_fact)
+                    f.set('Fecha', self.fmt_date(fact['fecha_cbte']))
+                    f.set('Vencimiento', self.fmt_date(fact['fecha_venc_pago']))
+                    
+                    f.set('LETRA', letra_fact)
+                    f.set('TipoCBTE', "COD.%02d" % int(fact['tipo_cbte']))
+
+                    f.set('Comprobante.L', tipo_fact)
+                    f.set('ComprobanteEx.L', tipo_fact_ex)
+
+                    if fact.get('fecha_serv_desde'):
+                        f.set('Periodo.Desde', self.fmt_date(fact['fecha_serv_desde']))
+                        f.set('Periodo.Hasta', self.fmt_date(fact['fecha_serv_hasta']))
+                    else:
+                        for k in 'Periodo.Desde', 'Periodo.Hasta', 'PeriodoFacturadoL':
+                            f.set(k, '')
+
+                    f.set('Cliente.Nombre', fact.get('nombre', fact.get('nombre_cliente')))
+                    f.set('Cliente.Domicilio', fact.get('domicilio', fact.get('domicilio_cliente')))
+                    f.set('Cliente.Localidad', fact.get('localidad', fact.get('localidad_cliente')))
+                    f.set('Cliente.Provincia', fact.get('provincia', fact.get('provincia_cliente')))
+                    f.set('Cliente.Telefono', fact.get('telefono', fact.get('telefono_cliente')))
+                    f.set('Cliente.IVA', fact.get('categoria', fact.get('id_impositivo')))
+                    f.set('Cliente.CUIT', self.fmt_cuit(str(fact['nro_doc'])))
+                    f.set('Cliente.TipoDoc', u"%s:" % self.tipos_doc[int(str(fact['tipo_doc']))])
+                    f.set('Cliente.Observaciones', fact.get('obs_comerciales'))
+                    f.set('Cliente.PaisDestino', self.paises.get(fact.get('pais_dst_cmp'), fact.get('pais_dst_cmp')) or '')
+
+                    if fact['moneda_id']:
+                        f.set('moneda_ds', self.monedas_ds.get(fact['moneda_id'],''))
+                    else:
+                        for k in 'moneda.L', 'moneda_id', 'moneda_ds', 'moneda_ctz.L', 'moneda_ctz':
+                            f.set(k, '')
+
+                    if not fact.get('incoterms'):
+                        for k in 'incoterms.L', 'incoterms', 'incoterms_ds':
+                            f.set(k, '')
+
+                    li = 0
+                    k = 0
+                    subtotal = Decimal("0.00")
+                    for it in li_items:
+                        k = k + 1
+                        if k > hoja * (lineas_max - 1):
+                            break
+                        if it['importe']:
+                            subtotal += Decimal("%.6f" % float(it['importe']))
+                        if k > (hoja - 1) * (lineas_max - 1):
+                            if DEBUG: print "it", it
+                            li += 1
+                            if it['qty'] is not None:
+                                f.set('Item.Cantidad%02d' % li, self.fmt_qty(it['qty']))
+                            if it['codigo'] is not None:
+                                f.set('Item.Codigo%02d' % li, it['codigo'])
+                            if it['umed'] is not None:
+                                f.set('Item.Umed%02d' % li, it['umed'])
+                                if it['umed']:
+                                    f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(int(it['umed'])))
+                            if it.get('iva_id') is not None:
+                                f.set('Item.IvaId%02d' % li, it['iva_id'])
+                                if it['iva_id']:
+                                    f.set('Item.AlicuotaIva%02d' % li, self.ivas_ds.get(int(it['iva_id'])))
+                            if it.get('imp_iva') is not None:
+                                f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
+                            if it.get('despacho') is not None:
+                                f.set('Item.Numero_Despacho%02d' % li, it['despacho'])
+                            if it.get('bonif') is not None:
+                                f.set('Item.Bonif%02d' % li, self.fmt_pre(it['bonif']))
+                            f.set('Item.Descripcion%02d' % li, it['ds'])
+                            if it['precio'] is not None:
+                                f.set('Item.Precio%02d' % li, self.fmt_pre(it['precio']))
+                            if it['importe'] is not None:
+                                f.set('Item.Importe%02d' % li, self.fmt_num(it['importe']))
+
+                            # Datos MTX
+                            if it.get('u_mtx') is not None:
+                                f.set('Item.U_MTX%02d' % li, it['u_mtx'])
+                            if it.get('cod_mtx') is not None:
+                                f.set('Item.COD_MTX%02d' % li, it['cod_mtx'])
+
+                            # datos adicionales de items
+                            for adic in ['dato_a', 'dato_b', 'dato_c', 'dato_d', 'dato_e']:
+                                if adic in it:
+                                    f.set('Item.%s%02d' % (adic, li), it[adic])
+
+                    if hojas == hoja:
+                        # última hoja, imprimo los totales
+                        li += 1
+                
+                        # agrego otros tributos
+                        lit = 0
+                        for it in fact['tributos']:
+                            lit += 1
+                            if it['desc']:
+                                f.set('Tributo.Descripcion%02d' % lit, it['desc'])
+                            else:
+                                f.set('Tributo.Descripcion%02d' % lit, self.tributos_ds[it['tributo_id']])
+                            if it['alic'] is not None:
+                                f.set('Tributo.Alicuota%02d' % lit, self.fmt_num(it['alic']) + "%")
+                            if it['importe'] is not None:
+                                f.set('Tributo.Importe%02d' % lit, self.fmt_imp(it['importe']))
+
+                        if 'descuento' in fact and fact['descuento']:
+                            descuento = Decimal("%.6f" % float(fact['descuento']))
+                            f.set('descuento', self.fmt_imp(descuento))
+                            subtotal -= descuento
+                        f.set('subtotal', self.fmt_imp(subtotal))
+                        f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
+                        f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
+                        f.set('imp_total', self.fmt_imp(fact['imp_total']))
+                        f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
+                        f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
+
+                        f.set('IMPTO_PERC', self.fmt_imp(fact.get('impto_perc')))
+                        f.set('IMP_OP_EX', self.fmt_imp(fact.get('imp_op_ex')))
+                        f.set('IMP_IIBB', self.fmt_imp(fact.get('imp_iibb')))
+                        f.set('IMPTO_PERC_MUN', self.fmt_imp(fact.get('impto_perc_mun')))
+                        f.set('IMP_INTERNOS', self.fmt_imp(fact.get('imp_internos')))
+
+                        if letra_fact=='A':
+                            f.set('NETO', self.fmt_imp(fact['imp_neto']))
+                            f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
+                            f.set('LeyendaIVA',"")
+                            
+                            for iva in fact['ivas']:
+                                a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[int(iva['iva_id'])]
+                                f.set('IVA%s' % a, self.fmt_imp(iva['importe']))
+
+                        else:
+                            f.set('NETO.L',"")
+                            f.set('IVA.L',"")
+                            f.set('LeyendaIVA', "")
+                            f.set('IVA21.L',"")
+                            f.set('IVA10.5.L',"")
+                            f.set('IVA27.L',"")
+
+                        f.set('Total.L', 'Total:')
+                        f.set('TOTAL', self.fmt_imp(fact['imp_total']))
+                    else:
+                        for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc', 
+                                  'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
+                                  'NETO', 'IVA21', 'IVA10.5', 'IVA27'):
+                            f.set(k,"")
                         f.set('NETO.L',"")
                         f.set('IVA.L',"")
                         f.set('LeyendaIVA', "")
-                        f.set('IVA21.L',"")
-                        f.set('IVA10.5.L',"")
-                        f.set('IVA27.L',"")
+                        f.set('Total.L', 'Subtotal:')
+                        f.set('TOTAL', self.fmt_imp(subtotal))
 
-                    f.set('Total.L', 'Total:')
-                    f.set('TOTAL', self.fmt_imp(fact['imp_total']))
-                else:
-                    for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc', 
-                              'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
-                              'NETO', 'IVA21', 'IVA10.5', 'IVA27'):
-                        f.set(k,"")
-                    f.set('NETO.L',"")
-                    f.set('IVA.L',"")
-                    f.set('LeyendaIVA', "")
-                    f.set('Total.L', 'Subtotal:')
-                    f.set('TOTAL', self.fmt_imp(subtotal))
+                    f.set('cmps_asoc_ds', cmps_asoc_ds)
+                    f.set('permisos_ds', permisos_ds)
 
-                f.set('cmps_asoc_ds', cmps_asoc_ds)
-                f.set('permisos_ds', permisos_ds)
-
-                f.set('motivos_ds', motivos_ds)
-                if f.has_key('motivos_ds1') and motivos_ds:
-                    if letra_fact=='A':
-                        msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
-                        if not f.has_key('leyenda_credito_fiscal'):
-                            motivos_ds += msg_no_iva
-                        else:
-                            f.set('leyenda_credito_fiscal', msg_no_iva)
-                    for i, txt in enumerate(f.split_multicell(motivos_ds, 'motivos_ds1')):
-                        f.set('motivos_ds%d' % (i+1), txt)
-                    
-                f.set('CAE', fact['cae'])
-                f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
-                if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
-                    cuit = ''.join([x for x in str(self.CUIT) if x.isdigit()])
-                    barras = ''.join([cuit, "%02d" % int(fact['tipo_cbte']), "%04d" % int(fact['punto_vta']), 
-                        str(fact['cae']), fact['fecha_vto']])
-                    barras = barras + self.digito_verificador_modulo10(barras)
-                else:
-                    barras = ""
-
-                f.set('CodigoBarras', barras)
-                f.set('CodigoBarrasLegible', barras)
-
-                if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
-                    for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
-                        f.set('ObservacionesGenerales%d' % (i+1), txt)
+                    f.set('motivos_ds', motivos_ds)
+                    if f.has_key('motivos_ds1') and motivos_ds:
+                        if letra_fact=='A':
+                            msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
+                            if not f.has_key('leyenda_credito_fiscal'):
+                                motivos_ds += msg_no_iva
+                            else:
+                                f.set('leyenda_credito_fiscal', msg_no_iva)
+                        for i, txt in enumerate(f.split_multicell(motivos_ds, 'motivos_ds1')):
+                            f.set('motivos_ds%d' % (i+1), txt)
                         
-                # evaluo fórmulas (expresiones python)
-                for field in f.keys:
-                    if field.startswith("="):
-                        formula = f.elements[field]['text']
-                        if DEBUG: print "**** formula: %s %s" % (field, formula)
-                        try:
-                            value = eval(formula,dict(fact=fact))
-                            f.set(field, value)
-                            if DEBUG: print "set(%s,%s)" % (field, value)
-                        except Exception, e:
-                            raise RuntimeError("Error al evaluar %s formula '%s': %s" % (field, formula, e))
-        return True
+                    f.set('CAE', fact['cae'])
+                    f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
+                    if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
+                        cuit = ''.join([x for x in str(self.CUIT) if x.isdigit()])
+                        barras = ''.join([cuit, "%02d" % int(fact['tipo_cbte']), "%04d" % int(fact['punto_vta']), 
+                            str(fact['cae']), fact['fecha_vto']])
+                        barras = barras + self.digito_verificador_modulo10(barras)
+                    else:
+                        barras = ""
 
+                    f.set('CodigoBarras', barras)
+                    f.set('CodigoBarrasLegible', barras)
+
+                    if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
+                        for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
+                            f.set('ObservacionesGenerales%d' % (i+1), txt)
+                            
+                    # evaluo fórmulas (expresiones python)
+                    for field in f.keys:
+                        if field.startswith("="):
+                            formula = f.elements[field]['text']
+                            if DEBUG: print "**** formula: %s %s" % (field, formula)
+                            try:
+                                value = eval(formula,dict(fact=fact))
+                                f.set(field, value)
+                                if DEBUG: print "set(%s,%s)" % (field, value)
+                            except Exception, e:
+                                raise RuntimeError("Error al evaluar %s formula '%s': %s" % (field, formula, e))
+            return True
+        except:
+            # capturar la excepción manualmente, para imprimirla en el PDF:
+            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            self.Traceback = ''.join(ex)
+            self.Excepcion = traceback.format_exception_only(sys.exc_type, 
+                                                             sys.exc_value)[0]
+            # guardar la traza de la excepción en un archivo temporal:
+            fname = os.path.join(tempfile.gettempdir(), "traceback.txt")
+            f = open(fname, "w")
+            f.write(self.Traceback)
+            f.close()
+            # agregar el texto de la excepción y ubicación de la traza al PDF:
+            self.template.add_page()
+            self.AgregarCampo("excepcion", 'T', 25, 250, 0, 0,
+                  size=10, rotate=0, foreground=0xF00000, priority=-1, 
+                  text="Excepcion %s" % (self.Excepcion, ))
+            self.AgregarCampo("traceback", 'T', 25, 270, 0, 0,
+                  size=10, rotate=0, foreground=0xF00000, priority=-1, 
+                  text="Traceback %s" % (fn, ))
+        finally:
+            return False
 
     def GenerarPDF(self, archivo=""):
         "Generar archivo de salida en formato PDF"
