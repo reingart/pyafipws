@@ -155,9 +155,12 @@ class FEPDF:
         self.Exception = self.Traceback = ""
         self.InstallDir = INSTALL_DIR
         if sys.platform == "win32":
-            self.Locale="Spanish_Argentina.1252"
+            self.Locale = "Spanish_Argentina.1252"
+        elif sys.platform == "linux2":
+            self.Locale = "es_AR.utf8"
         else:
-            self.Locale="es_AR.utf8"
+            # plataforma no soportada aun (jython?), emular
+            self.Locale = None
         self.FmtCantidad = self.FmtPrecio = "0.2"
         self.CUIT = ''
         self.factura = {}
@@ -800,7 +803,7 @@ class FEPDF:
 
     @inicializar_y_capturar_excepciones
     def MostrarPDF(self, archivo, imprimir=False):
-        if sys.platform=="linux2":
+        if sys.platform.startswith(("linux2", 'java')):
             os.system("evince ""%s""" % archivo)
         else:
             operation = imprimir and "print" or ""
