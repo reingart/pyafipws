@@ -70,7 +70,8 @@ def inicializar_y_capturar_excepciones(func):
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
             self.Traceback = ''.join(ex)
             self.Excepcion = u"%s" % (e)
-            raise
+            if self.LanzarExcepciones:
+                raise
         finally:
             pass
     return capturar_errores_wrapper
@@ -88,6 +89,7 @@ class FEPDF:
                         ]
     _public_attrs_ = ['Version', 'Excepcion', 'Traceback', 'InstallDir',
                       'Locale', 'FmtCantidad', 'FmtPrecio', 'CUIT',
+                      'LanzarExcepciones',
                     ]
         
     _reg_progid_ = "PyFEPDF"
@@ -165,6 +167,7 @@ class FEPDF:
         self.log = StringIO()
         #sys.stdout = self.log
         #sys.stderr = self.log
+        self.LanzarExcepciones = True
             
     def DebugLog(self):
         "Devolver bitácora de depuración"
