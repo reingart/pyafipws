@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07j"
+__version__ = "1.07l"
 
 DEBUG = False
 HOMO = False
@@ -57,6 +57,7 @@ import traceback
 from cStringIO import StringIO
 from decimal import Decimal
 from fpdf import Template
+import utils
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
@@ -415,7 +416,7 @@ class FEPDF:
 
 
     @inicializar_y_capturar_excepciones
-    def ProcesarPlantilla(self, num_copias=1, lineas_max=24, qty_pos='izq'):
+    def ProcesarPlantilla(self, num_copias=3, lineas_max=36, qty_pos='izq'):
         "Generar el PDF según la factura creada y plantilla cargada"
 
         try:
@@ -758,26 +759,34 @@ class FEPDF:
             return True
         except:
             # capturar la excepción manualmente, para imprimirla en el PDF:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only(sys.exc_type, 
-                                                             sys.exc_value)[0]
+            ex = utils.exception_info()
+            self.Excepcion = ex['msg']
+            self.Traceback = ex['tb']
+            if DEBUG:
+                print self.Excepcion
+                print self.Traceback
             # guardar la traza de la excepción en un archivo temporal:
             fname = os.path.join(tempfile.gettempdir(), "traceback.txt")
-            f = open(fname, "w")
-            f.write(self.Traceback)
-            f.close()
             # agregar el texto de la excepción y ubicación de la traza al PDF:
             self.template.add_page()
-            self.AgregarCampo("excepcion", 'T', 25, 250, 0, 0,
-                  size=10, rotate=0, foreground=0xF00000, priority=-1, 
-                  text="Excepcion %s" % (self.Excepcion, ))
             self.AgregarCampo("traceback", 'T', 25, 270, 0, 0,
                   size=10, rotate=0, foreground=0xF00000, priority=-1, 
-                  text="Traceback %s" % (fn, ))
+                  text="Traceback %s" % (fname, ))
+            self.AgregarCampo("excepcion", 'T', 25, 250, 0, 0,
+                  size=10, rotate=0, foreground=0xF00000, priority=-1, 
+                  text="Excepcion %(name)s:%(lineno)s" % ex)
+            print "grabando...", fname, self.Excepcion, self.Traceback,ex
+            f = open(fname, "w")
+            try:
+                f.write(str(ex))
+            except Exception, e:
+                f.write("imposible grabar")
+            finally:
+                f.close()
         finally:
             return False
 
+    @inicializar_y_capturar_excepciones
     def GenerarPDF(self, archivo=""):
         "Generar archivo de salida en formato PDF"
         if not archivo:
@@ -786,6 +795,7 @@ class FEPDF:
             dest = "F"  # guardar en archivo
         return self.template.render(archivo, dest)
 
+    @inicializar_y_capturar_excepciones
     def MostrarPDF(self, archivo, imprimir=False):
         if sys.platform=="linux2":
             os.system("evince ""%s""" % archivo)
