@@ -205,15 +205,22 @@ if 'py2exe' in sys.argv:
 
     if 'pyfepdf' in globals():
         kwargs['com_server'] += [
-            Target(module=pyfepdf, modules="pyfepdf", create_exe=False, create_dll=True),
+            Target(module=pyfepdf, modules="pyfepdf", create_exe=True, create_dll=True),
             ]
         kwargs['console'] += [
-            Target(module=pyfepdf, script='pyfepdf.py', dest_base="pyfepdf"), 
+            Target(module=pyfepdf, script='pyfepdf.py', dest_base="pyfepdf_cli"), 
             ]
-        kwargs['windows'] += [
-            Target(module=pyfepdf, script="pyfepdf.py", dest_base="pyfepdf_com"),
-            ]
+        #kwargs['windows'] += [
+        #    Target(module=pyfepdf, script="pyfepdf.py", dest_base="pyfepdf_com"),
+        #    ]
         data_files += [
+            (".", [
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
+            ]), 
+            ("plantillas", ["plantillas/logo.png", 
+                            "plantillas/factura.csv",
+                            "plantillas/recibo.csv"]),
             ]
         __version__ += "+pyfepdf_" + pyfepdf.__version__
         HOMO &= pyfepdf.HOMO
