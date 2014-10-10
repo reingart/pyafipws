@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07l"
+__version__ = "1.07m"
 
 DEBUG = False
 HOMO = False
@@ -828,6 +828,12 @@ if __name__ == '__main__':
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(FEPDF)
+    elif "/Automate" in sys.argv:
+        # MS seems to like /automate to run the class factories.
+        import win32com.server.localserver
+        #win32com.server.localserver.main()
+        # start the server.
+        win32com.server.localserver.serve([FEPDF._reg_clsid_])
     else:
         from ConfigParser import SafeConfigParser
 
