@@ -37,6 +37,7 @@ import cot
 import trazamed
 import trazarenpre
 import trazafito
+import trazavet
 import padron
 
 # herramientas opcionales a compilar y empaquetar:
@@ -362,6 +363,16 @@ if 'py2exe' in sys.argv:
             ]
         __version__ += "+trazafito_" + trazafito.__version__
         HOMO &= trazafito.HOMO
+
+    if 'trazavet' in globals():
+        kwargs['com_server'] += [
+            Target(module=trazavet, modules="trazavet", create_exe=True, create_dll=False),
+            ]
+        kwargs['console'] += [
+            Target(module=trazavet, script='trazavet.py', dest_base="trazavet_cli"), 
+            ]
+        __version__ += "+trazavet_" + trazavet.__version__
+        HOMO &= trazavet.HOMO
 
     if 'padron' in globals():
         kwargs['com_server'] += [
