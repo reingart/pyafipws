@@ -62,6 +62,12 @@ data_files = [
     ("cache", glob.glob("cache/*")),
     ]
 
+WX_DLL = (".", [
+            "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+            "C:\python25\MSVCR71.dll",
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
+            ])
+
 HOMO = True
 
 # build a one-click-installer for windows:
@@ -131,11 +137,7 @@ if 'py2exe' in sys.argv:
             Target(module=pyrece, script='pyrece.py'),
             ]
         data_files += [
-            (".", [
-            "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
-            "C:\python25\MSVCR71.dll",
-            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
-            ]), 
+            WX_DLL, 
             ("plantillas", ["plantillas/logo.png", ]),
             ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", ])
             ]
@@ -214,10 +216,7 @@ if 'py2exe' in sys.argv:
         #    Target(module=pyfepdf, script="pyfepdf.py", dest_base="pyfepdf_com"),
         #    ]
         data_files += [
-            (".", [
-            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
-            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
-            ]), 
+            WX_DLL, 
             ("plantillas", ["plantillas/logo.png", 
                             "plantillas/factura.csv",
                             "plantillas/recibo.csv"]),
