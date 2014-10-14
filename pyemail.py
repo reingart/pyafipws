@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06c"
 
 import os
 import sys
@@ -27,6 +27,9 @@ from email.mime.multipart import MIMEMultipart
 import sys, os
 import smtplib
 from ConfigParser import SafeConfigParser
+
+
+DEBUG = False
 
 
 class PyEmail:
@@ -62,6 +65,8 @@ class PyEmail:
             else:
                 # creo una conexión segura (SSL, no disponible en Python<2.6):
                 self.smtp = smtplib.SMTP_SSL(servidor, puerto)
+            if DEBUG:
+                self.smtp.set_debuglevel(1)
             self.smtp.ehlo()
             if int(puerto) == 587:
                 # inicio una sesión segura (TLS)
@@ -222,6 +227,11 @@ if __name__ == '__main__':
         config = SafeConfigParser()
         config.read("rece.ini")
 
+        if '/debug'in sys.argv:
+            DEBUG = True
+            print "VERSION", __version__
+            sys.argv.remove("/debug")
+
         if len(sys.argv)<3:
             print "Parámetros: motivo destinatario [mensaje] [archivo]"
             sys.exit(1)
@@ -238,8 +248,10 @@ if __name__ == '__main__':
         print "Archivo: ", archivo
         
         pyemail = PyEmail()
-        pyemail.Conectar(conf_mail['servidor'], 
-                         conf_mail['usuario'], conf_mail['clave'], )
-        pyemail.Enviar(conf_mail['remitente'], 
-                       motivo, destinatario, mensaje, archivo)
-
+        ok = pyemail.Conectar(conf_mail['servidor'], 
+                              conf_mail['usuario'], conf_mail['clave'])
+        if ok:
+            pyemail.Enviar(conf_mail['remitente'], 
+                           motivo, destinatario, mensaje, archivo)
+        else:
+            print pyemail.Traceback
