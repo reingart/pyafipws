@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.06d"
 
 import os
 import sys
@@ -249,7 +249,8 @@ if __name__ == '__main__':
         
         pyemail = PyEmail()
         ok = pyemail.Conectar(conf_mail['servidor'], 
-                              conf_mail['usuario'], conf_mail['clave'])
+                              conf_mail['usuario'], conf_mail['clave'],
+                              conf_mail.get('puerto', 25))
         if ok:
             pyemail.Enviar(conf_mail['remitente'], 
                            motivo, destinatario, mensaje, archivo)
