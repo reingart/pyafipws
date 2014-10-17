@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06d"
+__version__ = "1.06e"
 
 import os
 import sys
@@ -60,7 +60,9 @@ class PyEmail:
     def Conectar(self, servidor, usuario=None, clave=None, puerto=25):
         "Iniciar conexión al servidor de correo electronico"
         try:
-            if int(puerto) != 465:
+            # convertir el nro de puerto a entero porque puede ser string:
+            puerto = int(puerto)
+            if puerto != 465:
                 self.smtp = smtplib.SMTP(servidor, puerto)
             else:
                 # creo una conexión segura (SSL, no disponible en Python<2.6):
@@ -68,7 +70,7 @@ class PyEmail:
             if DEBUG:
                 self.smtp.set_debuglevel(1)
             self.smtp.ehlo()
-            if int(puerto) == 587:
+            if puerto == 587:
                 # inicio una sesión segura (TLS)
                 self.smtp.starttls()
             if usuario and clave:
