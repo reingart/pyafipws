@@ -135,6 +135,7 @@ class WSFEv1(BaseWS):
                 'cbtes_asoc': [],
                 'tributos': [],
                 'iva': [],
+                'opcionales': [],
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
@@ -160,6 +161,12 @@ class WSFEv1(BaseWS):
         "Agrego un tributo a una factura (interna)"
         iva = { 'iva_id': iva_id, 'base_imp': base_imp, 'importe': importe }
         self.factura['iva'].append(iva)
+        return True
+
+    def AgregarOpcional(self, opcional_id=0, valor="", **kwarg):
+        "Agrego un dato opcional a una factura (interna)"
+        op = { 'opcional_id': opcional_id, 'valor': valor }
+        self.factura['opcionales'].append(op)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -215,6 +222,11 @@ class WSFEv1(BaseWS):
                             'Importe': iva['importe'],
                             }}
                         for iva in f['iva']] or None,
+                    'Opcionales': [ 
+                        {'Opcional': {
+                            'Id': opcional['opcional_id'],
+                            'Valor': opcional['valor'],
+                            }} for opcional in f['opcionales']] or None,
                     }
                 }]
             })
@@ -426,6 +438,11 @@ class WSFEv1(BaseWS):
                             'Importe': iva['importe'],
                             }}
                         for iva in f['iva']],
+                    'Opcionales': [ 
+                        {'Opcional': {
+                            'Id': opcional['opcional_id'],
+                            'Valor': opcional['valor'],
+                            }} for opcional in f['opcionales']] or None,
                     }
                 } for k in range (250)]
             })
@@ -804,6 +821,10 @@ def main():
         base_imp = 100
         importe = 21
         wsfev1.AgregarIva(id, base_imp, importe)
+
+        # datos opcionales para proyectos promovidos
+        if False:
+            wsfev1.AgregarOpcional(2, "1234")
         
         import time
         t0 = time.time()
