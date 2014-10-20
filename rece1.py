@@ -13,9 +13,9 @@
 "Módulo de Intefase para archivos de texto (mercado interno versión 1)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2010 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.32b"
+__version__ = "1.33a"
 
 import datetime
 import os
@@ -105,14 +105,17 @@ IVA = [
     ('importe', 15, I, 2), 
     ]
 
-
-                    
 CMP_ASOC = [
     ('tipo_reg', 1, N), # 3: comprobante asociado
     ('tipo', 3, N), ('pto_vta', 4, N),
     ('nro', 8, N), 
     ]
 
+OPCIONAL = [
+    ('tipo_reg', 1, N), # 6: datos opcionales
+    ('opcional_id', 4, A),
+    ('valor', 250, A), 
+    ]
 
 
 def autorizar(ws, entrada, salida, informar_caea=False):
@@ -120,10 +123,16 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     ivas = []
     cbtasocs = []
     encabezado = []
+    opcionales = []
     if '/dbf' in sys.argv:
         if DEBUG: print "Leyendo DBF..."
 
-        formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs)]
+        formatos = [('Encabezado', ENCABEZADO, encabezado), 
+                    ('Tributo', TRIBUTO, tributos), 
+                    ('Iva', IVA, ivas), 
+                    ('Comprobante Asociado', CMP_ASOC, cbtasocs),
+                    ('Datos Adicionales', OPCIONAL, opcionales),
+                    ]
         dic = leer_dbf(formatos, conf_dbf)
         encabezado = encabezado[0]
     elif '/json' in sys.argv:
@@ -132,6 +141,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         ivas = encabezado.get('ivas', [])
         tributos = encabezado.get('tributos', [])
         cbtasocs = encabezado.get('cbtasocs', [])
+        opcionales = encabezado.get('opcionales', [])
     else:
         for linea in entrada:
             if str(linea[0])=='0':
@@ -145,6 +155,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             elif str(linea[0])=='3':
                 cbtasoc = leer(linea, CMP_ASOC)
                 cbtasocs.append(cbtasoc)
+            elif str(linea[0])=='6':
+                opcional = leer(linea, OPCIONAL)
+                opcionales.append(opcional)
             else:
                 print "Tipo de registro incorrecto:", linea[0]
 
@@ -163,6 +176,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         ws.AgregarIva(**iva)
     for cbtasoc in cbtasocs:
         ws.AgregarCmpAsoc(**cbtasoc)
+    for opcional in opcionales:
+        ws.AgregarOpcional(**opcional)
 
     if DEBUG:
         print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
@@ -206,9 +221,18 @@ def escribir_factura(dic, archivo, agrega=False):
             for it in dic['cbtes_asoc']:
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, CMP_ASOC))
+        if 'opcionales' in dic:
+            for it in dic['opcionales']:
+                it['tipo_reg'] = 6
+                archivo.write(escribir(it, OPCIONAL))
 
     if '/dbf' in sys.argv:
-        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic.get('tributos', [])), ('Iva', IVA, dic.get('iva', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', []))]
+        formatos = [('Encabezado', ENCABEZADO, [dic]), 
+                    ('Tributo', TRIBUTO, dic.get('tributos', [])), 
+                    ('Iva', IVA, dic.get('iva', [])), 
+                    ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])),
+                    ('Datos Opcionales', OPCIONAL, dic.get("opcionales", [])),
+                    ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
 
@@ -370,6 +394,9 @@ if __name__ == "__main__":
                 nro = 1234
                 ws.AgregarCmpAsoc(tipo, pto_vta, nro)
             
+            if '--proyectos' in sys.argv:
+                ws.AgregarOpcional(2, "1234")  # identificador del proyecto
+            
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
             base_imp = 100
@@ -388,7 +415,7 @@ if __name__ == "__main__":
                 print ws.factura
 
             dic = ws.factura
-            escribir_factura(dic, f_entrada, agrega=True)            
+            escribir_factura(dic, f_entrada, agrega=True)
             f_entrada.close()
       
         if '/ult' in sys.argv:
