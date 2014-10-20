@@ -37,7 +37,7 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 class WSFEv1(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Version 1"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
-                        'AgregarTributo', 'AgregarCmpAsoc',
+                        'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
                         'CAEASinMovimientoInformar',
