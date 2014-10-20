@@ -784,18 +784,23 @@ def main():
     if "--prueba" in sys.argv:
         print wsfev1.client.help("FECAESolicitar").encode("latin1")
 
-        tipo_cbte = 2
+        tipo_cbte = 2 if '--usados' not in sys.argv else 49
         punto_vta = 4001
         cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
-        concepto = 2
-        tipo_doc = 80; nro_doc = "30500010912" # CUIT BNA
+        concepto = 2 if '--usados' not in sys.argv else 1
+        tipo_doc = 80 if '--usados' not in sys.argv else 30
+        nro_doc = "30500010912" # CUIT BNA
         cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
         imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
         imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
-        fecha_cbte = fecha; fecha_venc_pago = fecha
-        # Fechas del período del servicio facturado (solo si concepto = 1?)
-        fecha_serv_desde = fecha; fecha_serv_hasta = fecha
+        fecha_cbte = fecha
+        # Fechas del período del servicio facturado y vencimiento de pago:
+        if concepto > 1:
+            fecha_venc_pago = fecha
+            fecha_serv_desde = fecha; fecha_serv_hasta = fecha
+        else:
+            fecha_venc_pago = fecha_serv_desde = fecha_serv_hasta = None
         moneda_id = 'PES'; moneda_ctz = '1.000'
 
         wsfev1.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
@@ -804,12 +809,14 @@ def main():
             fecha_serv_desde, fecha_serv_hasta, #--
             moneda_id, moneda_ctz)
         
-        if tipo_cbte not in (1, 2):
-            tipo = 19
+        # comprobantes asociados (notas de crédito / débito)
+        if tipo_cbte in (1, 2, 3, 6, 7, 8, 11, 12, 13):
+            tipo = 3
             pto_vta = 2
             nro = 1234
             wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro)
         
+        # otros tributos:
         id = 99
         desc = 'Impuesto Municipal Matanza'
         base_imp = 100
@@ -817,19 +824,20 @@ def main():
         importe = 1
         wsfev1.AgregarTributo(id, desc, base_imp, alic, importe)
 
+        # subtotales por alicuota de IVA:
         id = 5 # 21%
         base_imp = 100
         importe = 21
         wsfev1.AgregarIva(id, base_imp, importe)
 
         # datos opcionales para proyectos promovidos:
-        if '--proyectos':
+        if '--proyectos' in sys.argv:
             wsfev1.AgregarOpcional(2, "1234")   # identificador del proyecto
-        # datos opcionales para RG Bienes Usados 3411:
-        if '--usados':
-            wsfev1.AgregarOpcional(91, "Nombre y Apellido del vendedor")
-            wsfev1.AgregarOpcional(92, "Nacionalidad del vendedor")
-            wsfev1.AgregarOpcional(93, "Domicilio del vendedor")
+        # datos opcionales para RG Bienes Usados 3411 (del vendedor):
+        if '--usados' in sys.argv:
+            wsfev1.AgregarOpcional(91, "Juan Perez")    # Nombre y Apellido 
+            wsfev1.AgregarOpcional(92, "200")           # Nacionalidad
+            wsfev1.AgregarOpcional(93, "Balcarce 50")   # Domicilio
         
         import time
         t0 = time.time()
