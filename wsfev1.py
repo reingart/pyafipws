@@ -822,9 +822,14 @@ def main():
         importe = 21
         wsfev1.AgregarIva(id, base_imp, importe)
 
-        # datos opcionales para proyectos promovidos
-        if False:
-            wsfev1.AgregarOpcional(2, "1234")
+        # datos opcionales para proyectos promovidos:
+        if '--proyectos':
+            wsfev1.AgregarOpcional(2, "1234")   # identificador del proyecto
+        # datos opcionales para RG Bienes Usados 3411:
+        if '--usados':
+            wsfev1.AgregarOpcional(91, "Nombre y Apellido del vendedor")
+            wsfev1.AgregarOpcional(92, "Nacionalidad del vendedor")
+            wsfev1.AgregarOpcional(93, "Domicilio del vendedor")
         
         import time
         t0 = time.time()
