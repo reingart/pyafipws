@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15a"
+__version__ = "1.15b"
 
 import datetime
 import decimal
@@ -838,7 +838,13 @@ def main():
             wsfev1.AgregarOpcional(91, "Juan Perez")    # Nombre y Apellido 
             wsfev1.AgregarOpcional(92, "200")           # Nacionalidad
             wsfev1.AgregarOpcional(93, "Balcarce 50")   # Domicilio
-        
+         # datos opcionales para RG 3668 Impuesto al Valor Agregado - Art.12:
+        if '--rg3668' in sys.argv:
+            wsfev1.AgregarOpcional(5, "02")             # IVA Excepciones
+            wsfev1.AgregarOpcional(61, "80")            # Firmante Doc Tipo
+            wsfev1.AgregarOpcional(62, "20267565393")   # Firmante Doc Nro
+            wsfev1.AgregarOpcional(7, "01")             # Carácter del Firmante
+
         import time
         t0 = time.time()
         wsfev1.CAESolicitar()
