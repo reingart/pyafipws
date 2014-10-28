@@ -138,7 +138,7 @@ class TrazaFito(BaseWS):
         'CodigoTransaccion', 'Errores', 'Resultado',
         'XmlRequest', 'XmlResponse', 
         'Version', 'InstallDir', 
-        'Traceback', 'Excepcion',
+        'Traceback', 'Excepcion', 'LanzarExcepciones',
         'CantPaginas', 'HayError', 'TransaccionSenasa',
         ]
 

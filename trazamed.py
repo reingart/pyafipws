@@ -126,8 +126,8 @@ class TrazaMed(BaseWS):
         'Username', 'Password', 
         'CodigoTransaccion', 'Errores', 'Resultado',
         'XmlRequest', 'XmlResponse', 
-        'Version', 'InstallDir', 
-        'Traceback', 'Excepcion',
+        'Version', 'InstallDir',
+        'Traceback', 'Excepcion', 'LanzarExcepciones',
         'CantPaginas', 'HayError', 'TransaccionPlainWS',
         ]
 

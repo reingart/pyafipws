@@ -51,7 +51,7 @@ class TrazaRenpre(BaseWS):
         'CodigoTransaccion', 'Errores', 'Resultado',
         'XmlRequest', 'XmlResponse', 
         'Version', 'InstallDir', 
-        'Traceback', 'Excepcion',
+        'Traceback', 'Excepcion', 'LanzarExcepciones',
         ]
 
     _reg_progid_ = "TrazaRenpre"
