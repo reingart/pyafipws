@@ -81,23 +81,23 @@ MEDICAMENTOS = [
 
 # Formato para TransaccionPlainWS (getTransaccionesNoConfirmadas)
 TRANSACCIONES = [
-    ('id_transaccion', 14, A), 
-    ('id_transaccion_global', 14, A),
-    ('f_evento', 10, A),
-    ('f_transaccion', 16, A),          # formato DD/MM/AAAA HH:MM
-    ('gtin', 14, A),
-    ('lote', 20, A), 
-    ('numero_serial', 20, A),
-    ('nombre', 200, A),
-    ('d_evento', 100, A),
-    ('gln_origen', 13, A),
-    ('razon_social_origen', 200, A), 
-    ('gln_destino', 13, A),
-    ('razon_social_destino', 200, A), 
-    ('n_remito', 20, A),
-    ('n_factura', 20, A),
-    ('vencimiento', 10, A),
-    ('id_evento', 3, N),               # agregado el 30/01/2014
+    ('_id_transaccion', 14, A), 
+    ('_id_transaccion_global', 14, A),
+    ('_f_evento', 10, A),
+    ('_f_transaccion', 16, A),          # formato DD/MM/AAAA HH:MM
+    ('_gtin', 14, A),
+    ('_lote', 20, A), 
+    ('_numero_serial', 20, A),
+    ('_nombre', 200, A),
+    ('_d_evento', 100, A),
+    ('_gln_origen', 13, A),
+    ('_razon_social_origen', 200, A), 
+    ('_gln_destino', 13, A),
+    ('_razon_social_destino', 200, A), 
+    ('_n_remito', 20, A),
+    ('_n_factura', 20, A),
+    ('_vencimiento', 10, A),
+    ('_id_evento', 3, N),               # agregado el 30/01/2014
 ]
 
 # Formato para Errores
