@@ -75,9 +75,8 @@ Opciones:
 Ver wslpg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, time, shelve
+import os, sys, shelve
 import decimal, datetime
-from php import date
 import traceback
 import pprint
 from pysimplesoap.client import SoapFault
@@ -341,7 +340,7 @@ class WSLPG(BaseWS):
         BaseWS.inicializar(self)
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.errores = []
-        self.COE = self.COEAjustado = NroContrato = ""
+        self.COE = self.COEAjustado = ""
         self.Estado = self.Resultado = self.NroOrden = self.NroContrato = ''
         self.TotalDeduccion = ""
         self.TotalRetencion = ""
@@ -1137,7 +1136,6 @@ class WSLPG(BaseWS):
             self.__ajuste_debito = None
             self.__ajuste_credito = None
         
-        
     @inicializar_y_capturar_excepciones
     def AnalizarAjusteDebito(self):
         "Método para analizar la respuesta de AFIP para Ajuste Debito"
@@ -1469,14 +1467,13 @@ class WSLPG(BaseWS):
                     (it['codigoDescripcion']['codigo'], 
                      it['codigoDescripcion']['descripcion']) 
                for it in array]
-        except Exception, e:
+        except Exception:
             ex = utils.exception_info()
             self.Excepcion = ex['msg']
             self.Traceback = ex['tb']
             if sep:
                 return ["ERROR"]
 
-            
     def ConsultarProvincias(self, sep="||"):
         "Consulta las provincias habilitadas"
         ret = self.client.provinciasConsultar(
