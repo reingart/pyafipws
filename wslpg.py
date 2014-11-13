@@ -182,7 +182,7 @@ ENCABEZADO = [
     ('cantidad_tn', 11, I, 3),      #  8.3
     ('nro_act_vendedor', 5, N),
     ('detalle_deducciones', 50, A),
-    ('importe_deducciones', 10, I), # 8.2
+    ('importe_deducciones', 10, I, 2), # 8.2
     
     ]
 
