@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16b"
+__version__ = "1.17a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -178,6 +178,12 @@ ENCABEZADO = [
     ('iva_deducciones', 17, I, 2), # 17.2
     ('subtotal_deb_cred', 17, I, 2), # 17.2
     ('total_base_deducciones', 17, I, 2), # 17.2
+    
+    # Campos agregados WSLPGv1.6 (liquidación secundaria base):
+    ('cantidad_tn', 11, I, 3),      #  8.3
+    ('nro_act_vendedor', 5, N),
+    ('detalle_deducciones', 50, A),
+    ('importe_deducciones', 10, I), # 8.2
     
     ]
 
@@ -507,6 +513,46 @@ class WSLPG(BaseWS):
         self.deducciones = []
 
     @inicializar_y_capturar_excepciones
+    def CrearLiqSecundariaBase(self, pto_emision=1, nro_orden=None, 
+            nro_contrato=None,
+            cuit_comprador=None, nro_ing_bruto_comprador=None,
+            cod_puerto=None, des_puerto_localidad=None, 
+            cod_grano=None, cantidad_tn=None,
+            cuit_vendedor=None, nro_act_vendedor=None,  # nuevo!!
+            nro_ing_bruto_vendedor=None,
+            actua_corredor=None, liquida_corredor=None, cuit_corredor=None,
+            nro_ing_bruto_corredor=None, 
+            fecha_precio_operacion=None, precio_ref_tn=None,
+            precio_operacion=None, alic_iva_operacion=None, campania_ppal=None,
+            cod_localidad_procedencia=None, cod_prov_procedencia=None,
+            detalle_deducciones=None, importe_deducciones=None,  # nuevo!
+            datos_adicionales=None,
+            **kwargs):
+        "Inicializa los datos de una liquidación secundaria de granos (base)"
+ 
+        # creo el diccionario con los campos generales de la liquidación:
+        self.liquidacion = dict(
+            ptoEmision=pto_emision, nroOrden=nro_orden,
+            numeroContrato=nro_contrato or None, cuitComprador=cuit_comprador, 
+            nroIngBrutoComprador=nro_ing_bruto_comprador,
+            codPuerto=cod_puerto, desPuertoLocalidad=des_puerto_localidad,
+            codGrano=cod_grano, cantidadTn=cantidad_tn,
+            cuitVendedor=cuit_vendedor, nroActVendedor=nro_act_vendedor,
+            nroIngBrutoVendedor=nro_ing_bruto_vendedor,
+            actuaCorredor=actua_corredor, liquidaCorredor=liquida_corredor,
+            cuitCorredor=cuit_corredor, 
+            nroIngBrutoCorredor=nro_ing_bruto_corredor,
+            fechaPrecioOperacion=fecha_precio_operacion,
+            precioRefTn=precio_ref_tn, precioOperacion=precio_operacion,
+            alicIvaOperacion=alic_iva_operacion, campaniaPPal=campania_ppal,
+            codLocalidad=cod_localidad_procedencia, 
+            codProvincia=cod_prov_procedencia,
+            detalleDeducciones=detalle_deducciones,
+            importeDeducciones=importe_deducciones,
+            datosAdicionales=datos_adicionales,
+            )
+
+    @inicializar_y_capturar_excepciones
     def AgregarCertificado(self, tipo_certificado_deposito=None,
                            nro_certificado_deposito=None,
                            peso_neto=None,
@@ -612,6 +658,23 @@ class WSLPG(BaseWS):
 
         # analizo la respusta
         ret = ret['liqReturn']
+        self.__analizar_errores(ret)
+        self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
+
+    @inicializar_y_capturar_excepciones
+    def AutorizarLiquidacionSecundaria(self):
+        "Autorizar Liquidación Secundaria Electrónica de Granos"
+        
+        # llamo al webservice:
+        ret = self.client.lsgAutorizar(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        liquidacionSecBase=self.liquidacion,
+                        )
+
+        # analizo la respusta
+        ret = ret['liqSecundariaReturn']
         self.__analizar_errores(ret)
         self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
 
@@ -2605,7 +2668,65 @@ if __name__ == '__main__':
             print "Errores:", wslpg.Errores
             sys.exit(0)
 
+        if '--autorizar-lsg' in sys.argv:
+        
+            if '--prueba' in sys.argv:
+                # genero una liquidación de ejemplo:
+                dic = dict(
+                    pto_emision=99,
+                    nro_orden=1,  nro_contrato=100001232,
+                    cuit_comprador='20111111112',  
+                    nro_ing_bruto_comprador='123',
+                    cod_puerto=8, des_puerto_localidad="DETALLE PUERTO",
+                    cod_grano=2, cantidad_tn=100,
+                    cuit_vendedor=20222222223, nro_act_vendedor=29,
+                    nro_ing_bruto_vendedor=123456,
+                    actua_corredor="S", liquida_corredor="S",
+                    cuit_corredor=wslpg.Cuit, # uso Cuit representado
+                    nro_ing_bruto_corredor=wslpg.Cuit,
+                    fecha_precio_operacion="2014-10-10",
+                    precio_ref_tn=100, precio_operacion=150,
+                    alic_iva_operacion=10.5, campania_ppal=1314,
+                    cod_localidad_procedencia=197,
+                    cod_prov_procedencia=10,
+                    datos_adicionales="Prueba",
+                    detalle_deducciones="Prueba",
+                    importe_deducciones="2000.00",
+                )
+                escribir_archivo(dic, ENTRADA)
+            dic = leer_archivo(ENTRADA)
+            
+            # cargo la liquidación:
+            wslpg.CrearLiqSecundariaBase(**dic)
+            
+            print "Liquidacion Secundaria: pto_emision=%s nro_orden=%s" % (
+                    wslpg.liquidacion['ptoEmision'],
+                    wslpg.liquidacion['nroOrden'],
+                    )
+            
+            if '--testing' in sys.argv:
+                # mensaje de prueba (no realiza llamada remota), 
+                wslpg.LoadTestXML("wslpg_lsg_autorizar_resp.xml")
+            
+            wslpg.AutorizarLiquidacionSecundaria()
+            
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
+            print "Errores:", wslpg.Errores
+            print "COE", wslpg.COE
+            print wslpg.GetParametro("cod_tipo_operacion")
+            print wslpg.GetParametro("fecha_liquidacion") 
+            print wslpg.GetParametro("subtotal")
+            print wslpg.GetParametro("importe_iva")
+            print wslpg.GetParametro("operacion_con_iva")
+            print wslpg.GetParametro("total_peso_neto")
+            print wslpg.GetParametro("numero_contrato")
 
+            # actualizo el archivo de salida con los datos devueltos
+            dic.update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
+            
         # Recuperar parámetros:
         
         if '--campanias' in sys.argv:
