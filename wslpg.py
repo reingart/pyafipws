@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17a"
+__version__ = "1.17b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -197,6 +197,7 @@ CERTIFICADO = [
     ('campania', 4, N),
     ('fecha_cierre', 10, A),
     ('peso_neto_total_certificado', 8, N), # para ajuste unificado (WSLPGv1.4)
+    ('coe_certificado_deposito', 12, N), # para certificacion (WSLPGv1.6)
     ]
     
 RETENCION = [
@@ -259,6 +260,75 @@ AJUSTE = [
     ('iva_calculado_iva_105', 15, I, 2), # 15.2
     ('iva_calculado_iva_21', 15, I, 2), # 15.2
     ]
+
+CERTIFICACION = [
+    # campos para cgAutorizarDeposito (WSLPGv1.6)
+    ('pto_emision', 4, N),
+    ('nro_orden', 8, N),
+    ('modo_certificacion', 1, A),   # "P" (Dep. en planta) "O" (Dep. en origen)
+    ('nro_planta', 4, N),
+    ('nro_ing_bruto_depositario', 15, N),
+    ('titular_grano', 1, A),        # "P" (Propio) "T" (Tercero)
+    ('cuit_depositante', 11, N),    # obligatorio si titular_grano es T
+    ('nro_ing_bruto_depositante', 15, N),
+    ('cod_grano', 3, N),
+    ('campania', 4, N),
+    ('descripcion_tipo_grano', 20, A),
+    ('monto_almacenaje', 10, I, 2),
+    ('monto_acarreo', 10, I, 2),
+    ('monto_gastos_generales', 10, I, 2),
+    ('monto_zarandeo', 10, I, 2),
+    ('porcentaje_secado_de', 5, I, 2),
+    ('porcentaje_secado_a', 5, I, 2),
+    ('monto_secado', 10, I, 2),
+    ('monto_por_cada_punto_exceso', 10, I, 2),
+    ('monto_otros', 10, I, 2),
+    ('analisis_muestra', 10, N),
+    ('nro_boletin', 10, N),
+    ('valor_grado', 4, I, 3),
+    ('valor_contenido_proteico', 4, I, 3),
+    ('valor_factor', 4, I, 3),
+    ('porcentaje_merma_volatil', 5, I, 2),
+    ('peso_neto_merma_volatil', 10, I , 2),
+    ('porcentaje_merma_secado', 5, I, 2),
+    ('peso_neto_merma_secado', 10, I, 2),
+    ('porcentaje_merma_zarandeo', 5, I, 2),
+    ('peso_neto_merma_zarandeo', 10, I, 2),
+    ('peso_neto_certificado', 8, N),
+    ('servicios_secado', 8, I, 3),
+    ('servicios_zarandeo', 8, I, 3),
+    ('servicios_otros', 7, I, 3),
+    ('servicios_forma_de_pago', 20, N),
+    # campos para cgAutorizarRetiroTransferencia (WSLPGv1.6):
+    ('fecha', 10, A),
+    ('nro_carta_porte_a_utilizar', 9, N),
+    ('cee_carta_porte_a_utilizar', 12, N),
+    # para cgAutorizarPreexistente (WSLPGv1.6):
+    ('tipo_certificado_deposito_preexistente', 1, N),  # "R": Retiro "T": Tra.
+    ('nro_certificado_deposito_preexistente', 12, N),
+    ('cee_certificado_deposito_preexistente', 14, N),
+    ('fecha_emision_certificado_deposito_preexistente', 10, A),
+    ('datosAdicionales', 400, A),
+]
+
+CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
+    ('nro_ctg', 8, N),
+    ('peso_neto_a_certificar', 8, N),
+    ('porcentaje_secado_humedad', 5, I, 2),
+    ('importe_secado', 10, I, 2),
+    ('peso_neto_merma_secado', 8, N),
+    ('tarifa_secado', 10, I, 2),
+    ('importe_zarandeo', 10, I, 2),
+    ('peso_neto_merma_zarandeo', 8, N),
+    ('tarifa_zarandeo', 8, N),
+]
+
+DET_MUESTRA_ANALISIS = [            # para cgAutorizarDeposito (WSLPGv1.6)
+    ('descripcion_rubro', 400, A),
+    ('tipo_rubro', 1, A),           #  "B" (Bonificación) y "R" (Rebaja)
+    ('porcentaje', 3, I, 2),
+    ('valor', 3, I, 2),
+]
 
 EVENTO = [
     ('tipo_reg', 1, A), # E: Evento
@@ -2049,6 +2119,9 @@ if __name__ == '__main__':
                              ('Retencion', RETENCION), 
                              ('Deduccion', DEDUCCION), 
                              ('Ajuste', AJUSTE),
+                             ('Certificacion', CERTIFICACION),
+                             ('CTG', CTG),
+                             ('Det. Muestra Analisis', DET_MUESTRA_ANALISIS),
                              ('Evento', EVENTO), ('Error', ERROR), 
                              ('Dato', DATO)]:
             comienzo = 1
