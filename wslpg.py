@@ -628,8 +628,10 @@ class WSLPG(BaseWS):
                            cod_localidad_procedencia=None,
                            cod_prov_procedencia=None,
                            campania=None, fecha_cierre=None, 
-                           peso_neto_total_certificado=None, **kwargs):
-        "Agrego el certificado a la liquidación"
+                           peso_neto_total_certificado=None,
+                           coe_certificado_deposito=None,       # WSLPGv1.6
+                           **kwargs):
+        "Agrego el certificado a la liquidación / certificación de granos"
         # limpio campos opcionales:
         if not peso_neto_total_certificado:
             peso_neto_total_certificado = None  # 0 no es válido
@@ -643,6 +645,7 @@ class WSLPG(BaseWS):
                         campania=campania,
                         fechaCierre=fecha_cierre,
                         pesoNetoTotalCertificado=peso_neto_total_certificado,
+                        coeCertificadoDeposito=coe_certificado_deposito,
                       )))
 
     @inicializar_y_capturar_excepciones
@@ -1231,6 +1234,124 @@ class WSLPG(BaseWS):
         liq.update(self.__ajuste_credito)
         self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=liq, ajuste=True)
         self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
+
+    @inicializar_y_capturar_excepciones
+    def CrearCertificacion(self, pto_emision=1, nro_orden=None,
+            # para cgAutorizarDeposito (y algunos campos compartidos)
+            modo_certificacion=None, nro_planta=None,
+            nro_ing_bruto_depositario=None, titular_grano=None,
+            cuit_depositante=None, nro_ing_bruto_depositante=None,
+            cod_grano=None, campania=None, descripcion_tipo_grano=None,
+            monto_almacenaje=None, monto_acarreo=None, 
+            monto_gastos_generales=None, monto_zarandeo=None,
+            porcentaje_secado_de=None, porcentaje_secado_a=None,
+            monto_secado=None, monto_por_cada_punto_exceso=None,
+            monto_otros=None, analisis_muestra=None, nro_boletin=None,
+            valor_grado=None, valor_contenido_proteico=None, valor_factor=None, 
+            porcentaje_merma_volatil=None, peso_neto_merma_volatil=None, 
+            porcentaje_merma_secado=None, peso_neto_merma_secado=None, 
+            porcentaje_merma_zarandeo=None, peso_neto_merma_zarandeo=None,
+            peso_neto_certificado=None, servicios_secado=None,  
+            servicios_zarandeo=None, servicios_otros=None, 
+            servicios_forma_de_pago=None,
+            # para cgAutorizarRetiroTransferencia
+            fecha=None, 
+            nro_carta_porte_a_utilizar=None,
+            cee_carta_porte_a_utilizar=None,
+            # para cgAutorizarPreexistente
+            tipo_certificado_deposito_preexistente=None,
+            nro_certificado_deposito_preexistente=None,
+            cee_certificado_deposito_preexistente=None,
+            fecha_emision_certificado_deposito_preexistente=None,
+            # compartido:
+            datosAdicionales=None,
+            **kwargs):
+        "Inicializa los datos de una certificación de granos"
+ 
+        ## self.certificacion = dict(...)
+        raise NotImplementedError 
+
+    @inicializar_y_capturar_excepciones
+    def AgregarDetalleMuestraAnalisis(self, descripcion_rubro=None, 
+                                      tipo_rubro=None, porcentaje=None, 
+                                      valor=None,
+                                      **kwargs):
+        "Agrega la información referente al detalle de la certificación"
+        
+        ## det = dict(...)
+        ## self.certificacion['detalleMuestraAnalisis'].append(det)
+        raise NotImplementedError
+
+    @inicializar_y_capturar_excepciones
+    def AgregarCTG(self, nro_ctg=None, peso_neto_a_certificar=None,
+                         porcentaje_secado_humedad=None, importe_secado=None,
+                         peso_neto_merma_secado=None, tarifa_secado=None,
+                         importe_zarandeo=None, peso_neto_merma_zarandeo=None,
+                         tarifa_zarandeo=None,
+                         **kwargs):
+        "Agrega la información referente a una CTG de la certificación"
+        
+        ## ctg = dict(...)
+        ## self.certificacion['ctg'].append(ctg)
+        raise NotImplementedError
+
+    @inicializar_y_capturar_excepciones
+    def AutorizarDeposito(self):
+        "Certificación Primaria de Depósito de Granos (ex C1116A)"
+        
+        # llamo al webservice:
+        ret = self.client.cgAutorizarDeposito(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        ## ** self.certificacion,
+                        )
+
+        # analizo la respusta
+        ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        self.AnalizarAutorizarCertificadoResp(ret)
+
+    @inicializar_y_capturar_excepciones
+    def AutorizarRetiroTransferencia(self):
+        "Certificación Primaria de Retiro / Transf. de Granos (ex C1116RT)"
+        
+        # llamo al webservice:
+        ret = self.client.cgAutorizarRetiroTransferencia(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        ## ** self.certificacion
+                        )
+
+        # analizo la respusta
+        ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        self.AnalizarAutorizarCertificadoResp(ret)
+
+    @inicializar_y_capturar_excepciones
+    def AutorizarPreexistente(self):
+        "Autorizar y dar de alta un certificado de granos preexistente"
+        
+        # llamo al webservice:
+        ret = self.client.cgAutorizarPreexistente(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        ## ** self.certificacion
+                        )
+
+        # analizo la respusta
+        ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        self.AnalizarAutorizarCertificadoResp(ret)
+        
+    def AnalizarAutorizarCertificadoResp(self, ret):
+        "Metodo interno para extraer datos de la Respuesta de Certificación"
+        self.PtoEmision = ret['ptoEmision']
+        self.NroOrden = ret['nroOrden']
+        self.FechaCertificacion = ret['fechaCertificacion']
+        self.COE = ret['coe']
 
     @inicializar_y_capturar_excepciones
     def AsociarLiquidacionAContrato(self, coe=None, nro_contrato=None, 
