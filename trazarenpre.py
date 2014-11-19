@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.10e"
+__version__ = "1.11a"
 
 #http://renpre.servicios.pami.org.ar/portal_traza_renpre/paso5.html
 
@@ -112,9 +112,11 @@ class TrazaRenpre(BaseWS):
                          d_dominio_tractor=None, 
                          d_dominio_semi=None, 
                          n_serie=None, n_lote=None, doc_despacho_plaza=None, 
-                         djai=None, n_cert_rnpq=None, 
+                         djai=None, n_cert_impo_expo=None, 
                          id_tipo_documento=None, n_documento=None, 
-                         m_calidad_analitica=None
+                         m_calidad_analitica=None, m_entrega_parcial=None,
+                         doc_permiso_embarque=None, gln_transportista=None,
+                         operacion_excento_djai=None, control_duplicidad=None,
                          ):
         "Permite informe por parte de un agente de una o varias transacciones"
         # creo los parámetros para esta llamada
@@ -131,10 +133,15 @@ class TrazaRenpre(BaseWS):
                     'd_dominio_semi': d_dominio_semi, 
                     'n_serie': n_serie, 'n_lote': n_lote, 
                     'doc_despacho_plaza': doc_despacho_plaza, 
-                    'djai': djai, 'n_cert_rnpq': n_cert_rnpq, 
+                    'djai': djai, 'n_cert_impo_expo': n_cert_impo_expo, 
                     'id_tipo_documento': id_tipo_documento, 
                     'n_documento': n_documento, 
                     'm_calidad_analitica': m_calidad_analitica,
+                    'm_entrega_parcial': m_entrega_parcial,
+                    'doc_permiso_embarque': doc_permiso_embarque, 
+                    'gln_transportista': gln_transportista,
+                    'operacion_excento_djai': operacion_excento_djai, 
+                    'control_duplicidad': control_duplicidad,
                     }
         # actualizo con parámetros generales:
         params.update(self.params_in)
