@@ -324,7 +324,7 @@ if 'py2exe' in sys.argv:
             "datos/TB_20111111112_000000_20080124_000001.xml",
             "datos/TB_20111111112_000000_20101229_000001.txt", 
             "datos/TB_20111111112_000000_20101229_000001.xml",
-            ])]
+            ]), ("conf", ["conf/arba.crt"])]
         __version__ += "+cot_" + cot.__version__
         HOMO &= cot.HOMO
         
