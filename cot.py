@@ -215,10 +215,14 @@ if __name__=="__main__":
 
     if not HOMO:
         for i, arg in enumerate(sys.argv):
+            if arg.startswith("--prod"):
+                URL = URL.replace("http://cot.test.arba.gov.ar", 
+                                  "https://cot.arba.gov.ar")
+                print "Usando URL:", URL
+                break
             if arg.startswith("https"):
                 URL = arg
                 print "Usando URL:", URL
-                sys.argv.pop(i)
                 break
         
     cot.Conectar(URL, trace='--trace' in sys.argv)
