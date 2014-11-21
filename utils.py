@@ -367,8 +367,13 @@ class BaseWS:
 class WebClient:
     "Minimal webservice client to do POST request with multipart encoded FORM data"
 
-    def __init__(self, location, enctype="multipart/form-data", trace=False):
-        self.http = httplib2.Http('.cache')
+    def __init__(self, location, enctype="multipart/form-data", trace=False,
+                       cacert=None, ):
+        kwargs = {}
+        if httplib2.__version__ >= '0.7.0':
+                kwargs['disable_ssl_certificate_validation'] = cacert is None
+                kwargs['ca_certs'] = cacert
+        self.http = httplib2.Http('.cache', **kwargs)
         self.trace = trace
         self.location = location
         self.enctype = enctype
