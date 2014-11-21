@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02e"
+__version__ = "1.02f"
 
 import os, sys, traceback
 from pysimplesoap.simplexml import SimpleXMLElement
@@ -26,6 +26,7 @@ from pysimplesoap.simplexml import SimpleXMLElement
 from utils import WebClient
 
 HOMO = False
+CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producción)
 
 ##URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
 # Nuevo servidor para el "Remito Electrónico Automático"
@@ -72,7 +73,7 @@ class COT:
     def Conectar(self, url=None, proxy="", wrapper=None, cacert=None, trace=False):
         if HOMO or not url:
             url = URL
-        self.client = WebClient(location=url, trace=trace)
+        self.client = WebClient(location=url, trace=trace, cacert=cacert)
 
     def PresentarRemito(self, filename, testing=""):
         self.limpiar()
@@ -225,7 +226,7 @@ if __name__=="__main__":
                 print "Usando URL:", URL
                 break
         
-    cot.Conectar(URL, trace='--trace' in sys.argv)
+    cot.Conectar(URL, trace='--trace' in sys.argv, cacert=CACERT)
     cot.PresentarRemito(filename, testing=test_response)
     
     if cot.Excepcion:
