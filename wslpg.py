@@ -742,11 +742,11 @@ class WSLPG(BaseWS):
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
-                        liquidacionSecBase=self.liquidacion,
+                        liqSecundariaBase=self.liquidacion,
                         )
 
         # analizo la respusta
-        ret = ret['liqSecundariaReturn']
+        ret = ret['oReturn']
         self.__analizar_errores(ret)
         self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
 
