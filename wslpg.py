@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17b"
+__version__ = "1.17c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -265,12 +265,13 @@ CERTIFICACION = [
     # campos para cgAutorizarDeposito (WSLPGv1.6)
     ('pto_emision', 4, N),
     ('nro_orden', 8, N),
-    ('modo_certificacion', 1, A),   # "P" (Dep. en planta) "O" (Dep. en origen)
+    ('tipo_certificado', 1, A),   # P:Planta,R:Retiro,T:Transferencia,E:Preexistente,D:en Deposito y/o Elevador.
     ('nro_planta', 4, N),
     ('nro_ing_bruto_depositario', 15, N),
     ('titular_grano', 1, A),        # "P" (Propio) "T" (Tercero)
     ('cuit_depositante', 11, N),    # obligatorio si titular_grano es T
     ('nro_ing_bruto_depositante', 15, N),
+    ('cuit_corredor', 11, N),
     ('cod_grano', 3, N),
     ('campania', 4, N),
     ('descripcion_tipo_grano', 20, A),
@@ -1236,12 +1237,35 @@ class WSLPG(BaseWS):
         self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
 
     @inicializar_y_capturar_excepciones
-    def CrearCertificacion(self, pto_emision=1, nro_orden=None,
-            # para cgAutorizarDeposito (y algunos campos compartidos)
-            modo_certificacion=None, nro_planta=None,
+    def CrearCertificacionCabecera(self, pto_emision=1, nro_orden=None,
+            tipo_certificado=None, nro_planta=None,
             nro_ing_bruto_depositario=None, titular_grano=None,
             cuit_depositante=None, nro_ing_bruto_depositante=None,
-            cod_grano=None, campania=None, descripcion_tipo_grano=None,
+            cuit_corredor=None, cod_grano=None, campania=None, 
+            datos_adicionales=None,
+            **kwargs):
+        "Inicializa los datos de una certificación de granos (cabecera)"
+ 
+        self.certificacion = {}
+        self.certificacion['cabecera'] = dict(
+                ptoEmision=pto_emision,
+                nroOrden=nro_orden,
+                tipoCertificado=tipo_certificado,
+                nroPlanta=nro_planta,                               # opcional
+                nroIngBrutoDepositario=nro_ing_bruto_depositario,
+                titularGrano=titular_grano,
+                cuitDepositante=cuit_depositante,                   # opcional
+                nroIngBrutoDepositante=nro_ing_bruto_depositante,   # opcional
+                cuitCorredor=cuit_corredor,                         # opcional
+                codGrano=cod_grano,
+                campania=campania,
+                datosAdicionales=datos_adicionales,                 # opcional
+            )
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarCertificacionPlantaDepositoElevador(self, 
+            descripcion_tipo_grano=None,
             monto_almacenaje=None, monto_acarreo=None, 
             monto_gastos_generales=None, monto_zarandeo=None,
             porcentaje_secado_de=None, porcentaje_secado_a=None,
@@ -1254,22 +1278,57 @@ class WSLPG(BaseWS):
             peso_neto_certificado=None, servicios_secado=None,  
             servicios_zarandeo=None, servicios_otros=None, 
             servicios_forma_de_pago=None,
-            # para cgAutorizarRetiroTransferencia
+            ):
+        
+        self.certificacion['plantaDepositoElevador'] = dict(
+                ctg=[],                        # <!--0 or more repetitions:-->
+                descripcionTipoGrano=descripcion_tipo_grano,
+                montoAlmacenaje=monto_almacenaje,
+                montoAcarreo=monto_acarreo,
+                montoGastosGenerales=monto_gastos_generales,
+                montoZarandeo=monto_zarandeo,
+                porcentajeSecadoDe=porcentaje_secado_de,
+                porcentajeSecadoA=porcentaje_secado_a,
+                montoSecado=monto_secado,
+                montoPorCadaPuntoExceso=monto_por_cada_punto_exceso,
+                montoOtros=monto_otros,
+                analisisMuestra=analisis_muestra,
+                nroBoletin=nro_boletin,
+                detalleMuestraAnalisis=[],     # <!--1 or more repetitions:-->
+                valorGrado=valor_grado,
+                valorContenidoProteico=valor_contenido_proteico,
+                valorFactor=valor_factor,
+                porcentajeMermaVolatil=porcentaje_merma_volatil,
+                pesoNetoMermaVolatil=peso_neto_merma_volatil,
+                porcentajeMermaSecado=porcentaje_merma_secado,
+                pesoNetoMermaSecado=peso_neto_merma_secado,
+                porcentajeMermaZarandeo=porcentaje_merma_zarandeo,
+                pesoNetoMermaZarandeo=peso_neto_merma_zarandeo,
+                pesoNetoCertificado=peso_neto_certificado,
+                serviciosSecado=servicios_secado,
+                serviciosZarandeo=servicios_zarandeo,
+                serviciosOtros=servicios_otros,
+                serviciosFormaDePago=servicios_forma_de_pago,
+            )
+
+    
+    @inicializar_y_capturar_excepciones
+    def AgregarCertificacionRetiroTransferencia(self, 
             fecha=None, 
             nro_carta_porte_a_utilizar=None,
             cee_carta_porte_a_utilizar=None,
-            # para cgAutorizarPreexistente
+            ):
+        pass
+        
+    @inicializar_y_capturar_excepciones
+    def AgregarCertificacionPreexistente(self, 
             tipo_certificado_deposito_preexistente=None,
             nro_certificado_deposito_preexistente=None,
             cee_certificado_deposito_preexistente=None,
             fecha_emision_certificado_deposito_preexistente=None,
-            # compartido:
-            datosAdicionales=None,
+            peso_neto=None,
             **kwargs):
-        "Inicializa los datos de una certificación de granos"
- 
-        ## self.certificacion = dict(...)
-        raise NotImplementedError 
+        pass
 
     @inicializar_y_capturar_excepciones
     def AgregarDetalleMuestraAnalisis(self, descripcion_rubro=None, 
@@ -1278,9 +1337,14 @@ class WSLPG(BaseWS):
                                       **kwargs):
         "Agrega la información referente al detalle de la certificación"
         
-        ## det = dict(...)
-        ## self.certificacion['detalleMuestraAnalisis'].append(det)
-        raise NotImplementedError
+        det = dict(
+                descripcionRubro=descripcion_rubro,
+                tipoRubro=tipo_rubro,
+                porcentaje=porcentaje,
+                valor=valor,
+            )
+        self.certificacion['plantaDepositoElevador']['detalleMuestraAnalisis'].append(det)
+        return True
 
     @inicializar_y_capturar_excepciones
     def AgregarCTG(self, nro_ctg=None, peso_neto_a_certificar=None,
@@ -1291,20 +1355,30 @@ class WSLPG(BaseWS):
                          **kwargs):
         "Agrega la información referente a una CTG de la certificación"
         
-        ## ctg = dict(...)
-        ## self.certificacion['ctg'].append(ctg)
-        raise NotImplementedError
+        ctg = dict(
+                nroCTG=nro_ctg,
+                pesoNetoACertificar=peso_neto_a_certificar,
+                porcentajeSecadoHumedad=porcentaje_secado_humedad,
+                importeSecado=importe_secado,
+                pesoNetoMermaSecado=peso_neto_merma_secado,
+                tarifaSecado=tarifa_secado,
+                importeZarandeo=importe_zarandeo,
+                pesoNetoMermaZarandeo=peso_neto_merma_zarandeo,
+                tarifaZarandeo=tarifa_zarandeo,
+            )
+        self.certificacion['plantaDepositoElevador']['ctg'].append(ctg)
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AutorizarDeposito(self):
-        "Certificación Primaria de Depósito de Granos (ex C1116A)"
+    def AutorizarCertificacion(self):
+        "Autoriza una Certificación Primaria de Depósito de Granos (C1116A/RT)"
         
         # llamo al webservice:
-        ret = self.client.cgAutorizarDeposito(
+        ret = self.client.cgAutorizar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
-                        ## ** self.certificacion,
+                        **self.certificacion
                         )
 
         # analizo la respusta
@@ -1312,45 +1386,11 @@ class WSLPG(BaseWS):
         self.__analizar_errores(ret)
         self.AnalizarAutorizarCertificadoResp(ret)
 
-    @inicializar_y_capturar_excepciones
-    def AutorizarRetiroTransferencia(self):
-        "Certificación Primaria de Retiro / Transf. de Granos (ex C1116RT)"
-        
-        # llamo al webservice:
-        ret = self.client.cgAutorizarRetiroTransferencia(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        ## ** self.certificacion
-                        )
-
-        # analizo la respusta
-        ret = ret['oReturn']
-        self.__analizar_errores(ret)
-        self.AnalizarAutorizarCertificadoResp(ret)
-
-    @inicializar_y_capturar_excepciones
-    def AutorizarPreexistente(self):
-        "Autorizar y dar de alta un certificado de granos preexistente"
-        
-        # llamo al webservice:
-        ret = self.client.cgAutorizarPreexistente(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        ## ** self.certificacion
-                        )
-
-        # analizo la respusta
-        ret = ret['oReturn']
-        self.__analizar_errores(ret)
-        self.AnalizarAutorizarCertificadoResp(ret)
-        
     def AnalizarAutorizarCertificadoResp(self, ret):
         "Metodo interno para extraer datos de la Respuesta de Certificación"
         self.PtoEmision = ret['ptoEmision']
         self.NroOrden = ret['nroOrden']
-        self.FechaCertificacion = ret['fechaCertificacion']
+        self.FechaCertificacion = ret.get('fechaCertificacion', "")
         self.COE = ret['coe']
 
     @inicializar_y_capturar_excepciones
@@ -2917,6 +2957,50 @@ if __name__ == '__main__':
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
+            
+        if '--autorizar-cert' in sys.argv:
+        
+            if '--prueba' in sys.argv:
+                # genero una liquidación de ejemplo:
+                dic = dict(
+                    pto_emision=99,
+                    nro_orden=1,  tipo_certificado="P", nro_planta="1",
+                    nro_ing_bruto_depositario="20267565393",
+                    titular_grano="T",
+                    cuit_depositante='20111111112',  
+                    nro_ing_bruto_depositante='123',
+                    cuit_corredor='20222222223',
+                    cod_grano=2, campania=1314,
+                    datos_adicionales="Prueba",
+                    )
+                ##escribir_archivo(dic, CERTIFICACION)
+            ##dic = leer_archivo(ENTRADA)
+            
+            # cargo la liquidación:
+            wslpg.CrearCertificacionCabecera(**dic)
+            
+            print "Certificacion: pto_emision=%s nro_orden=%s" % (
+                    wslpg.certificacion['cabecera']['ptoEmision'],
+                    wslpg.certificacion['cabecera']['nroOrden'],
+                    )
+            
+            if '--testing' in sys.argv:
+                # mensaje de prueba (no realiza llamada remota), 
+                wslpg.LoadTestXML("wslpg_cert_autorizar_resp.xml")
+            
+            wslpg.AutorizarCertificacion()
+            
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
+            print "Errores:", wslpg.Errores
+            print "COE", wslpg.COE
+            ##print wslpg.GetParametro("cod_tipo_operacion")
+            print wslpg.GetParametro("fecha_certificacion") 
+
+            # actualizo el archivo de salida con los datos devueltos
+            ##dic.update(wslpg.params_out)
+            ##escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
             
         # Recuperar parámetros:
         
