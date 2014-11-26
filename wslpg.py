@@ -2979,6 +2979,38 @@ if __name__ == '__main__':
             # cargo la liquidación:
             wslpg.CrearCertificacionCabecera(**dic)
             
+            # datos provisorios de prueba
+            if False:
+                wslpg.AgregarCertificacionPlantaDepositoElevador( 
+                    descripcion_tipo_grano="SOJA",
+                    monto_almacenaje=1, monto_acarreo=2, 
+                    monto_gastos_generales=3, monto_zarandeo=4,
+                    porcentaje_secado_de=5, porcentaje_secado_a=6,
+                    monto_secado=7, monto_por_cada_punto_exceso=8,
+                    monto_otros=9, analisis_muestra=10, nro_boletin=11,
+                    valor_grado=1.02, 
+                    valor_contenido_proteico=1, valor_factor=1, 
+                    porcentaje_merma_volatil=15, peso_neto_merma_volatil=16, 
+                    porcentaje_merma_secado=17, peso_neto_merma_secado=18, 
+                    porcentaje_merma_zarandeo=19, peso_neto_merma_zarandeo=20,
+                    peso_neto_certificado=21, servicios_secado=22,  
+                    servicios_zarandeo=23, servicios_otros=24, 
+                    servicios_forma_de_pago=25,
+                    )
+                    
+                wslpg.AgregarDetalleMuestraAnalisis(descripcion_rubro="bonif", 
+                                  tipo_rubro="B", porcentaje=1, 
+                                  valor=1)
+                ##wslpg.AgregarDetalleMuestraAnalisis(descripcion_rubro="rebaja", 
+                ##                  tipo_rubro="R", porcentaje=1, 
+                ##                  valor=1)
+
+                wslpg.AgregarCTG(nro_ctg="123456", peso_neto_a_certificar=1000,
+                        porcentaje_secado_humedad=1, importe_secado=2,
+                        peso_neto_merma_secado=3, tarifa_secado=4,
+                        importe_zarandeo=5, peso_neto_merma_zarandeo=6,
+                        tarifa_zarandeo=7),
+
             print "Certificacion: pto_emision=%s nro_orden=%s" % (
                     wslpg.certificacion['cabecera']['ptoEmision'],
                     wslpg.certificacion['cabecera']['nroOrden'],
