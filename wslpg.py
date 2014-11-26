@@ -2980,76 +2980,76 @@ if __name__ == '__main__':
         if '--autorizar-cert' in sys.argv:
         
             if '--prueba' in sys.argv:
-                # genero una liquidación de ejemplo:
+                # genero una certificación de ejemplo a autorizar:
                 dic = dict(
-                    pto_emision=99,
-                    nro_orden=1,  tipo_certificado="P", nro_planta="1",
-                    nro_ing_bruto_depositario="20267565393",
-                    titular_grano="T",
-                    cuit_depositante='20111111112',  
-                    nro_ing_bruto_depositante='123',
-                    cuit_corredor='20222222223',
-                    cod_grano=2, campania=1314,
-                    datos_adicionales="Prueba",
-                    )
-                ##escribir_archivo(dic, CERTIFICACION)
-            ##dic = leer_archivo(ENTRADA)
-            
-            # cargo la liquidación:
-            wslpg.CrearCertificacionCabecera(**dic)
-            
-            # datos provisorios de prueba
-            if False:
-                wslpg.AgregarCertificacionPlantaDepositoElevador( 
-                    descripcion_tipo_grano="SOJA",
-                    monto_almacenaje=1, monto_acarreo=2, 
-                    monto_gastos_generales=3, monto_zarandeo=4,
-                    porcentaje_secado_de=5, porcentaje_secado_a=6,
-                    monto_secado=7, monto_por_cada_punto_exceso=8,
-                    monto_otros=9, analisis_muestra=10, nro_boletin=11,
-                    valor_grado=1.02, 
-                    valor_contenido_proteico=1, valor_factor=1, 
-                    porcentaje_merma_volatil=15, peso_neto_merma_volatil=16, 
-                    porcentaje_merma_secado=17, peso_neto_merma_secado=18, 
-                    porcentaje_merma_zarandeo=19, peso_neto_merma_zarandeo=20,
-                    peso_neto_certificado=21, servicios_secado=22,  
-                    servicios_zarandeo=23, servicios_otros=24, 
-                    servicios_forma_de_pago=25,
-                    )
+                        pto_emision=99, nro_orden=1,  
+                        tipo_certificado="P", nro_planta="1",
+                        nro_ing_bruto_depositario="20267565393",
+                        titular_grano="T",
+                        cuit_depositante='20111111112',  
+                        nro_ing_bruto_depositante='123',
+                        cuit_corredor='20222222223',
+                        cod_grano=2, campania=1314,
+                        datos_adicionales="Prueba",)
+                wslpg.CrearCertificacionCabecera(**dic)
+           
+                # datos provisorios de prueba (segun tipo de certificación):
+                if '--deposito' in sys.argv:
+                    dep = dict(
+                        descripcion_tipo_grano="SOJA",
+                        monto_almacenaje=1, monto_acarreo=2, 
+                        monto_gastos_generales=3, monto_zarandeo=4,
+                        porcentaje_secado_de=5, porcentaje_secado_a=6,
+                        monto_secado=7, monto_por_cada_punto_exceso=8,
+                        monto_otros=9, analisis_muestra=10, nro_boletin=11,
+                        valor_grado=1.02, 
+                        valor_contenido_proteico=1, valor_factor=1, 
+                        porcentaje_merma_volatil=15, peso_neto_merma_volatil=16, 
+                        porcentaje_merma_secado=17, peso_neto_merma_secado=18, 
+                        porcentaje_merma_zarandeo=19, peso_neto_merma_zarandeo=20,
+                        peso_neto_certificado=21, servicios_secado=22,  
+                        servicios_zarandeo=23, servicios_otros=24, 
+                        servicios_forma_de_pago=25,
+                        )
+                    wslpg.AgregarCertificacionPlantaDepositoElevador(**dep)
                     
-                wslpg.AgregarDetalleMuestraAnalisis(descripcion_rubro="bonif", 
-                                  tipo_rubro="B", porcentaje=1, 
-                                  valor=1)
-                ##wslpg.AgregarDetalleMuestraAnalisis(descripcion_rubro="rebaja", 
-                ##                  tipo_rubro="R", porcentaje=1, 
-                ##                  valor=1)
+                    det = dict(descripcion_rubro="bonif", 
+                               tipo_rubro="B", porcentaje=1, valor=1)
+                    wslpg.AgregarDetalleMuestraAnalisis(**det)
 
-                wslpg.AgregarCTG(nro_ctg="123456", peso_neto_a_certificar=1000,
-                        porcentaje_secado_humedad=1, importe_secado=2,
-                        peso_neto_merma_secado=3, tarifa_secado=4,
-                        importe_zarandeo=5, peso_neto_merma_zarandeo=6,
-                        tarifa_zarandeo=7),
+                    ctg = dict(nro_ctg="123456", peso_neto_a_certificar=1000,
+                            porcentaje_secado_humedad=1, importe_secado=2,
+                            peso_neto_merma_secado=3, tarifa_secado=4,
+                            importe_zarandeo=5, peso_neto_merma_zarandeo=6,
+                            tarifa_zarandeo=7)
+                    wslpg.AgregarCTG(**ctg)
 
-            if False:
-                wslpg.AgregarCertificacionRetiroTransferencia(
-                        cuit_receptor="20400000000",
-                        fecha="2014-11-26", 
-                        nro_carta_porte_a_utilizar="12345",
-                        cee_carta_porte_a_utilizar="12345678901234",
+                if '--retiro-transf' in sys.argv:
+                    rt = dict(
+                            cuit_receptor="20400000000",
+                            fecha="2014-11-26", 
+                            nro_carta_porte_a_utilizar="12345",
+                            cee_carta_porte_a_utilizar="12345678901234",
+                            )
+                    wslpg.AgregarCertificacionRetiroTransferencia(**rt)
+                    cert = dict(
+                           peso_neto=10000,
+                           coe_certificado_deposito="12345678901234", 
                         )
-                wslpg.AgregarCertificado(
-                       peso_neto=10000,
-                       coe_certificado_deposito="12345678901234", 
-                    )
+                    wslpg.AgregarCertificado(**cert)
 
-            if False:
-                wslpg.AgregarCertificacionPreexistente(
-                        tipo_certificado_deposito_preexistente=1, # "R" o "T"
-                        nro_certificado_deposito_preexistente="12345",
-                        cee_certificado_deposito_preexistente="12345678901234",
-                        fecha_emision_certificado_deposito_preexistente="2014-11-26",
-                        peso_neto=1000,
-                        )
+                if '--preexistente' in sys.argv:
+                    pre = dict(
+                            tipo_certificado_deposito_preexistente=1, # "R" o "T"
+                            nro_certificado_deposito_preexistente="12345",
+                            cee_certificado_deposito_preexistente="12345678901234",
+                            fecha_emision_certificado_deposito_preexistente="2014-11-26",
+                            peso_neto=1000,
+                            )
+                    wslpg.AgregarCertificacionPreexistente(**pre)
+
+                ##escribir_archivo(dic, ENTRADA)
+            ##dic = leer_archivo(ENTRADA)
 
             print "Certificacion: pto_emision=%s nro_orden=%s" % (
                     wslpg.certificacion['cabecera']['ptoEmision'],
