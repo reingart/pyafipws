@@ -99,7 +99,7 @@ HOMO = False
 # definición del formato del archivo de intercambio:
 
 ENCABEZADO = [
-    ('tipo_reg', 1, A), # 0: encabezado
+    ('tipo_reg', 1, A), # 0: encabezado liquidación
     ('nro_orden', 18, N), 
     ('cuit_comprador', 11, N),
     ('nro_act_comprador', 5, N),
@@ -262,7 +262,8 @@ AJUSTE = [
     ]
 
 CERTIFICACION = [
-    # campos para cgAutorizarDeposito (WSLPGv1.6)
+    ('tipo_reg', 1, A), # 7: encabezado certificación
+    # campos de la cabecera para todas las certificaciones (WSLPGv1.6)
     ('pto_emision', 4, N),
     ('nro_orden', 8, N),
     ('tipo_certificado', 1, A),   # P:Planta,R:Retiro,T:Transferencia,E:Preexistente,D:en Deposito y/o Elevador.
@@ -274,6 +275,9 @@ CERTIFICACION = [
     ('cuit_corredor', 11, N),
     ('cod_grano', 3, N),
     ('campania', 4, N),
+    ('datos_adicionales', 400, A),
+    ('reservado1', 21, A),          # reservado para futuros campos (no usar)
+    # campos para cgAutorizarDeposito (WSLPGv1.6)
     ('descripcion_tipo_grano', 20, A),
     ('monto_almacenaje', 10, I, 2),
     ('monto_acarreo', 10, I, 2),
@@ -310,10 +314,15 @@ CERTIFICACION = [
     ('nro_certificado_deposito_preexistente', 12, N),
     ('cee_certificado_deposito_preexistente', 14, N),
     ('fecha_emision_certificado_deposito_preexistente', 10, A),
-    ('datosAdicionales', 400, A),
+    ('peso_neto', 8, N),
+    # datos devueltos por el webservice:
+    ('reservado2', 185, N),     # padding para futuros campos (no usar)
+    ('coe', 12, N),
+    ('fecha_certificacion', 10, A), 
 ]
 
 CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
+    ('tipo_reg', 1, A), # C: CTG
     ('nro_ctg', 8, N),
     ('peso_neto_a_certificar', 8, N),
     ('porcentaje_secado_humedad', 5, I, 2),
@@ -326,6 +335,7 @@ CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
 ]
 
 DET_MUESTRA_ANALISIS = [            # para cgAutorizarDeposito (WSLPGv1.6)
+    ('tipo_reg', 1, A), # D: detalle muestra analisis
     ('descripcion_rubro', 400, A),
     ('tipo_rubro', 1, A),           #  "B" (Bonificación) y "R" (Rebaja)
     ('porcentaje', 3, I, 2),
@@ -1282,7 +1292,7 @@ class WSLPG(BaseWS):
             peso_neto_certificado=None, servicios_secado=None,  
             servicios_zarandeo=None, servicios_otros=None, 
             servicios_forma_de_pago=None,
-            ):
+            **kwargs):
         
         self.certificacion['plantaDepositoElevador'] = dict(
                 ctg=[],                        # <!--0 or more repetitions:-->
@@ -1322,7 +1332,7 @@ class WSLPG(BaseWS):
             fecha=None, 
             nro_carta_porte_a_utilizar=None,
             cee_carta_porte_a_utilizar=None,
-            ):
+            **kwargs):
         self.certificacion['retiroTransferencia'] = dict(
                 cuitReceptor=cuit_receptor,                         # opcional
                 fecha=fecha,
@@ -2170,11 +2180,14 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
         json.dump(dic, archivo, sort_keys=True, indent=4)
     elif '--dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, [dic]), 
+                    ('Certificacion', CERTIFICACION, [dic]),
                     ('Certificado', CERTIFICADO, dic.get('certificados', [])), 
                     ('Retencion', RETENCION, dic.get('retenciones', [])), 
                     ('Deduccion', DEDUCCION, dic.get('deducciones', [])),
                     ('AjusteCredito', AJUSTE, dic.get('ajuste_credito', [])),
                     ('AjusteDebito', AJUSTE, dic.get('ajuste_debito', [])),
+                    ('CTG', CTG, dic.get('ctgs', [])),
+                    ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
                     ('Dato', DATO, dic.get('datos', [])),
                     ('Error', ERROR, dic.get('errores', [])),
                     ]
@@ -2182,6 +2195,8 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
     else:
         dic['tipo_reg'] = 0
         archivo.write(escribir(dic, ENCABEZADO))
+        dic['tipo_reg'] = 7
+        archivo.write(escribir(dic, CERTIFICACION))
         if 'certificados' in dic:
             for it in dic['certificados']:
                 it['tipo_reg'] = 1
@@ -2212,6 +2227,14 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['ajuste_credito'].get('deducciones', []):
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
+        if 'ctgs' in dic:
+            for it in dic['ctgs']:
+                it['tipo_reg'] = 'C'
+                archivo.write(escribir(it, CTG))
+        if 'det_muestra_analisis' in dic:
+            for it in dic['det_muestra_analisis']:
+                it['tipo_reg'] = 'D'
+                archivo.write(escribir(it, DET_MUESTRA_ANALISIS))
         if 'datos' in dic:
             for it in dic['datos']:
                 it['tipo_reg'] = 9
@@ -2228,21 +2251,29 @@ def leer_archivo(nombre_archivo):
         dic = json.load(archivo)
     elif '--dbf' in sys.argv:
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
-               'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], }
-        formatos = [('Encabezado', ENCABEZADO, dic), 
+               'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], 
+               'ctgs': [], 'det_muestra_analisis': [],
+              }
+        formatos = [('Encabezado', ENCABEZADO, dic),
+                    ('Certificacion', CERTIFICACION, dic),
                     ('Certificado', CERTIFICADO, dic['certificados']), 
                     ('Retencio', RETENCION, dic['retenciones']), 
                     ('Deduccion', DEDUCCION, dic['deducciones']),
                     ('AjusteCredito', AJUSTE, dic['ajuste_credito']),
                     ('AjusteDebito', AJUSTE, dic['ajuste_debito']),
+                    ('CTG', CTG, dic.get('ctgs', [])),
+                    ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
                     ('Dato', DATO, dic['datos']),
                     ]
         leer_dbf(formatos, conf_dbf)
     else:
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
-               'datos': [], 'ajuste_credito': {}, 'ajuste_debito': {}, }
+               'datos': [], 'ajuste_credito': {}, 'ajuste_debito': {}, 
+               'ctgs': [], 'det_muestra_analisis': [],
+               }
         for linea in archivo:
             if str(linea[0])=='0':
+                # encabezado base de las liquidaciones
                 d = leer(linea, ENCABEZADO)
                 if d['reservado1']:
                     print "ADVERTENCIA: USAR datos adicionales (nueva posición)" 
@@ -2269,6 +2300,14 @@ def leer_archivo(nombre_archivo):
                 liq = leer(linea, AJUSTE)
                 liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
                 dic['ajuste_credito'] = liq
+            elif str(linea[0])=='7':
+                # actualizo con cabecera para certificaciones de granos:
+                d = leer(linea, CERTIFICACION)
+                dic.update(d)
+            elif str(linea[0])=='C':
+                dic['ctgs'].append(leer(linea, CTG))
+            elif str(linea[0])=='D':
+                dic['det_muestra_analisis'].append(leer(linea, DET_MUESTRA_ANALISIS))
             elif str(linea[0])=='9':
                 dic['datos'].append(leer(linea, DATO))
             else:
@@ -2991,11 +3030,11 @@ if __name__ == '__main__':
                         cuit_corredor='20222222223',
                         cod_grano=2, campania=1314,
                         datos_adicionales="Prueba",)
-                wslpg.CrearCertificacionCabecera(**dic)
            
                 # datos provisorios de prueba (segun tipo de certificación):
                 if '--deposito' in sys.argv:
                     dep = dict(
+                        tipo_certificado="D",
                         descripcion_tipo_grano="SOJA",
                         monto_almacenaje=1, monto_acarreo=2, 
                         monto_gastos_generales=3, monto_zarandeo=4,
@@ -3011,46 +3050,67 @@ if __name__ == '__main__':
                         servicios_zarandeo=23, servicios_otros=24, 
                         servicios_forma_de_pago=25,
                         )
-                    wslpg.AgregarCertificacionPlantaDepositoElevador(**dep)
+                    dic.update(dep)
                     
                     det = dict(descripcion_rubro="bonif", 
                                tipo_rubro="B", porcentaje=1, valor=1)
-                    wslpg.AgregarDetalleMuestraAnalisis(**det)
+                    dic['det_muestra_analisis'] = [det]
 
                     ctg = dict(nro_ctg="123456", peso_neto_a_certificar=1000,
                             porcentaje_secado_humedad=1, importe_secado=2,
                             peso_neto_merma_secado=3, tarifa_secado=4,
                             importe_zarandeo=5, peso_neto_merma_zarandeo=6,
                             tarifa_zarandeo=7)
-                    wslpg.AgregarCTG(**ctg)
+                    dic['ctgs'] = [ctg]
 
                 if '--retiro-transf' in sys.argv:
                     rt = dict(
+                            tipo_certificado="R",
                             cuit_receptor="20400000000",
                             fecha="2014-11-26", 
                             nro_carta_porte_a_utilizar="12345",
                             cee_carta_porte_a_utilizar="12345678901234",
                             )
-                    wslpg.AgregarCertificacionRetiroTransferencia(**rt)
+                    dic.update(rt)
                     cert = dict(
                            peso_neto=10000,
                            coe_certificado_deposito="12345678901234", 
                         )
-                    wslpg.AgregarCertificado(**cert)
+                    dic['certificados'] = [cert]
 
                 if '--preexistente' in sys.argv:
                     pre = dict(
+                            tipo_certificado="E",
                             tipo_certificado_deposito_preexistente=1, # "R" o "T"
                             nro_certificado_deposito_preexistente="12345",
                             cee_certificado_deposito_preexistente="12345678901234",
                             fecha_emision_certificado_deposito_preexistente="2014-11-26",
                             peso_neto=1000,
                             )
-                    wslpg.AgregarCertificacionPreexistente(**pre)
+                    dic.update(pre)
 
-                ##escribir_archivo(dic, ENTRADA)
-            ##dic = leer_archivo(ENTRADA)
+                escribir_archivo(dic, ENTRADA)
+            dic = leer_archivo(ENTRADA)
+            
+            # cargar los datos según el tipo de certificación:
+            
+            wslpg.CrearCertificacionCabecera(**dic)
 
+            if dic["tipo_certificado"] in ('D', 'P'):
+                wslpg.AgregarCertificacionPlantaDepositoElevador(**dic)
+                for ctg in dic.get("ctgs", []):
+                    wslpg.AgregarCTG(**ctg)
+                for det in dic.get("det_muestra_analisis", []):
+                    wslpg.AgregarDetalleMuestraAnalisis(**det) 
+            
+            if dic["tipo_certificado"] in ('R', 'T'):
+                wslpg.AgregarCertificacionRetiroTransferencia(**dic)
+                for cert in dic.get("certificados", []):
+                    wslpg.AgregarCertificado(**cert)
+
+            if dic["tipo_certificado"] in ('E', ):
+                wslpg.AgregarCertificacionPreexistente(**dic)
+            
             print "Certificacion: pto_emision=%s nro_orden=%s" % (
                     wslpg.certificacion['cabecera']['ptoEmision'],
                     wslpg.certificacion['cabecera']['nroOrden'],
