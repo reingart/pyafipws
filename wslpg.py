@@ -301,6 +301,7 @@ CERTIFICACION = [
     ('servicios_otros', 7, I, 3),
     ('servicios_forma_de_pago', 20, N),
     # campos para cgAutorizarRetiroTransferencia (WSLPGv1.6):
+    ('cuit_receptor', 11, N),
     ('fecha', 10, A),
     ('nro_carta_porte_a_utilizar', 9, N),
     ('cee_carta_porte_a_utilizar', 12, N),
@@ -1314,12 +1315,20 @@ class WSLPG(BaseWS):
     
     @inicializar_y_capturar_excepciones
     def AgregarCertificacionRetiroTransferencia(self, 
+            cuit_receptor=None,
             fecha=None, 
             nro_carta_porte_a_utilizar=None,
             cee_carta_porte_a_utilizar=None,
             ):
-        pass
-        
+        self.certificacion['retiroTransferencia'] = dict(
+                cuitReceptor=cuit_receptor,                         # opcional
+                fecha=fecha,
+                nroCartaPorteAUtilizar=nro_carta_porte_a_utilizar,
+                ceeCartaPorteAUtilizar=cee_carta_porte_a_utilizar,
+                certificadoDeposito=[],        # <!--0 or more repetitions:-->
+                )
+        return True
+
     @inicializar_y_capturar_excepciones
     def AgregarCertificacionPreexistente(self, 
             tipo_certificado_deposito_preexistente=None,
@@ -1328,7 +1337,14 @@ class WSLPG(BaseWS):
             fecha_emision_certificado_deposito_preexistente=None,
             peso_neto=None,
             **kwargs):
-        pass
+        self.certificacion['preexistente'] = dict(
+                tipoCertificadoDepositoPreexistente=tipo_certificado_deposito_preexistente,
+                nroCertificadoDepositoPreexistente=nro_certificado_deposito_preexistente,
+                ceeCertificadoDepositoPreexistente=cee_certificado_deposito_preexistente,
+                fechaEmisionCertificadoDepositoPreexistente=fecha_emision_certificado_deposito_preexistente,
+                pesoNeto=peso_neto,
+                )
+        return True
 
     @inicializar_y_capturar_excepciones
     def AgregarDetalleMuestraAnalisis(self, descripcion_rubro=None, 
@@ -3010,6 +3026,23 @@ if __name__ == '__main__':
                         peso_neto_merma_secado=3, tarifa_secado=4,
                         importe_zarandeo=5, peso_neto_merma_zarandeo=6,
                         tarifa_zarandeo=7),
+
+            if False:
+                wslpg.AgregarCertificacionRetiroTransferencia(
+                        cuit_receptor="20400000000",
+                        fecha="2014-11-26", 
+                        nro_carta_porte_a_utilizar="12345",
+                        cee_carta_porte_a_utilizar="12345678901234",
+                        )
+
+            if False:
+                wslpg.AgregarCertificacionPreexistente(
+                        tipo_certificado_deposito_preexistente=1, # "R" o "T"
+                        nro_certificado_deposito_preexistente="12345",
+                        cee_certificado_deposito_preexistente="12345678901234",
+                        fecha_emision_certificado_deposito_preexistente="2014-11-26",
+                        peso_neto=1000,
+                        )
 
             print "Certificacion: pto_emision=%s nro_orden=%s" % (
                     wslpg.certificacion['cabecera']['ptoEmision'],
