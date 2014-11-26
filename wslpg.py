@@ -3069,12 +3069,12 @@ if __name__ == '__main__':
                             cuit_receptor="20400000000",
                             fecha="2014-11-26", 
                             nro_carta_porte_a_utilizar="12345",
-                            cee_carta_porte_a_utilizar="12345678901234",
+                            cee_carta_porte_a_utilizar="123456789012",
                             )
                     dic.update(rt)
                     cert = dict(
                            peso_neto=10000,
-                           coe_certificado_deposito="12345678901234", 
+                           coe_certificado_deposito="123456789012", 
                         )
                     dic['certificados'] = [cert]
 
@@ -3083,7 +3083,7 @@ if __name__ == '__main__':
                             tipo_certificado="E",
                             tipo_certificado_deposito_preexistente=1, # "R" o "T"
                             nro_certificado_deposito_preexistente="12345",
-                            cee_certificado_deposito_preexistente="12345678901234",
+                            cee_certificado_deposito_preexistente="123456789012",
                             fecha_emision_certificado_deposito_preexistente="2014-11-26",
                             peso_neto=1000,
                             )
