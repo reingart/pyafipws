@@ -637,8 +637,7 @@ class WSLPG(BaseWS):
         # limpio campos opcionales:
         if not peso_neto_total_certificado:
             peso_neto_total_certificado = None  # 0 no es válido
-        self.liquidacion['certificados'].append(
-                    dict(certificado=dict(
+        cert = dict(
                         tipoCertificadoDeposito=tipo_certificado_deposito,
                         nroCertificadoDeposito=nro_certificado_deposito,
                         pesoNeto=peso_neto,
@@ -648,7 +647,11 @@ class WSLPG(BaseWS):
                         fechaCierre=fecha_cierre,
                         pesoNetoTotalCertificado=peso_neto_total_certificado,
                         coeCertificadoDeposito=coe_certificado_deposito,
-                      )))
+                      )
+        if not coe_certificado_deposito:
+            self.liquidacion['certificados'].append({'certificado': cert})
+        else:
+            self.certificacion['retiroTransferencia']['certificadoDeposito'].append(cert)
 
     @inicializar_y_capturar_excepciones
     def AgregarRetencion(self, codigo_concepto, detalle_aclaratorio, 
@@ -3034,6 +3037,10 @@ if __name__ == '__main__':
                         nro_carta_porte_a_utilizar="12345",
                         cee_carta_porte_a_utilizar="12345678901234",
                         )
+                wslpg.AgregarCertificado(
+                       peso_neto=10000,
+                       coe_certificado_deposito="12345678901234", 
+                    )
 
             if False:
                 wslpg.AgregarCertificacionPreexistente(
