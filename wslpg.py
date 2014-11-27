@@ -499,6 +499,7 @@ class WSLPG(BaseWS):
         self.AppServerStatus = str(results['appserver'])
         self.DbServerStatus = str(results['dbserver'])
         self.AuthServerStatus = str(results['authserver'])
+        return True
 
     @inicializar_y_capturar_excepciones
     def CrearLiquidacion(self, nro_orden=None, cuit_comprador=None, 
@@ -602,6 +603,7 @@ class WSLPG(BaseWS):
         # inicializo las listas que contentran las retenciones y deducciones:
         self.retenciones = []
         self.deducciones = []
+        return True
 
     @inicializar_y_capturar_excepciones
     def CrearLiqSecundariaBase(self, pto_emision=1, nro_orden=None, 
@@ -701,6 +703,7 @@ class WSLPG(BaseWS):
                                         importeCertificadoRetencion=importe_certificado_retencion,
                                     ))
                             )
+        return True
 
     @inicializar_y_capturar_excepciones
     def AgregarDeduccion(self, codigo_concepto=None, detalle_aclaratorio=None,
@@ -732,6 +735,7 @@ class WSLPG(BaseWS):
                                         alicuotaIva=alicuota
                                     ))
                             )
+        return True
 
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
@@ -759,6 +763,7 @@ class WSLPG(BaseWS):
         ret = ret['liqReturn']
         self.__analizar_errores(ret)
         self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
+        return True
 
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacionSecundaria(self):
@@ -1013,6 +1018,7 @@ class WSLPG(BaseWS):
                         }
         # para compatibilidad con AgregarCertificado
         self.liquidacion = self.ajuste['ajusteBase']
+        return True
 
     @inicializar_y_capturar_excepciones
     def CrearAjusteCredito(self, 
@@ -1056,6 +1062,7 @@ class WSLPG(BaseWS):
         # vinculación con AgregarRetencion y AgregarDeduccion
         self.deducciones = self.ajuste['ajusteCredito']['deducciones']
         self.retenciones = self.ajuste['ajusteCredito']['retenciones']
+        return True
 
     @inicializar_y_capturar_excepciones
     def CrearAjusteDebito(self, 
@@ -1099,7 +1106,8 @@ class WSLPG(BaseWS):
         # vinculación con AgregarRetencion y AgregarDeduccion
         self.deducciones = self.ajuste['ajusteDebito']['deducciones']
         self.retenciones = self.ajuste['ajusteDebito']['retenciones']
-        
+        return True
+
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacionUnificado(self):
         "Ajustar Liquidación Primaria de Granos"
@@ -1127,6 +1135,7 @@ class WSLPG(BaseWS):
         if 'ajusteUnificado' in ret:
             aut = ret['ajusteUnificado']
             self.AnalizarAjuste(aut)
+        return True
 
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacionUnificadoPapel(self):
@@ -1150,6 +1159,7 @@ class WSLPG(BaseWS):
         if 'ajustePapel' in ret:
             aut = ret['ajustePapel']
             self.AnalizarAjuste(aut)
+        return True
 
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacionContrato(self):
@@ -1174,7 +1184,8 @@ class WSLPG(BaseWS):
         if 'ajusteContrato' in ret:
             aut = ret['ajusteContrato']
             self.AnalizarAjuste(aut)
-    
+        return True
+
     def AnalizarAjuste(self, aut, base=True):
         "Método interno para analizar la respuesta de AFIP (ajustes)"
         
@@ -1236,7 +1247,8 @@ class WSLPG(BaseWS):
             self.__ajuste_base = None
             self.__ajuste_debito = None
             self.__ajuste_credito = None
-        
+        return True
+    
     @inicializar_y_capturar_excepciones
     def AnalizarAjusteDebito(self):
         "Método para analizar la respuesta de AFIP para Ajuste Debito"
@@ -1250,6 +1262,7 @@ class WSLPG(BaseWS):
         liq.update(self.__ajuste_debito)
         self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=liq, ajuste=True)
         self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
+        return True
 
     @inicializar_y_capturar_excepciones
     def AnalizarAjusteCredito(self):
@@ -1262,6 +1275,7 @@ class WSLPG(BaseWS):
         liq.update(self.__ajuste_credito)
         self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=liq, ajuste=True)
         self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
+        return True
 
     @inicializar_y_capturar_excepciones
     def CrearCertificacionCabecera(self, pto_emision=1, nro_orden=None,
@@ -1464,7 +1478,8 @@ class WSLPG(BaseWS):
             liq = ret['liquidacion']
             aut = ret['autorizacion']
             self.AnalizarLiquidacion(aut, liq)
-        
+        return True
+
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacionesPorContrato(self, nro_contrato=None, 
                                                 cuit_comprador=None, 
@@ -1490,6 +1505,7 @@ class WSLPG(BaseWS):
             self.DatosLiquidacion = sorted(ret['coeRelacionados'])  
             # establezco el primer COE
             self.LeerDatosLiquidacion()
+        return True
     
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None):
@@ -1515,6 +1531,7 @@ class WSLPG(BaseWS):
             aut = ret['autorizacion']
             liq = ret['liquidacion']
             self.AnalizarLiquidacion(aut, liq)
+        return True
 
     @inicializar_y_capturar_excepciones
     def ConsultarAjuste(self, pto_emision=None, nro_orden=None, nro_contrato=None):
@@ -1540,7 +1557,8 @@ class WSLPG(BaseWS):
         if 'ajusteUnificado' in ret:
             aut = ret['ajusteUnificado']
             self.AnalizarAjuste(aut)
-            
+        return True
+
     @inicializar_y_capturar_excepciones
     def ConsultarUltNroOrden(self, pto_emision=1):
         "Consulta el último No de orden registrado"
