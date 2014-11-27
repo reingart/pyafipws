@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17c"
+__version__ = "1.17d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -55,6 +55,9 @@ Opciones:
   --pdf: genera el formulario C 1116 B en formato PDF
   --mostrar: muestra el documento PDF generado (usar con --pdf)
   --imprimir: imprime el documento PDF generado (usar con --mostrar y --pdf)
+
+  --autorizar-lsg: Autoriza una Liquidación Secundaria de Granos (lsgAutorizar)
+  --autorizar-cg: Autorizar Certificación de Granos (cgAutorizar)
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -3028,7 +3031,7 @@ if __name__ == '__main__':
             dic.update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
             
-        if '--autorizar-cert' in sys.argv:
+        if '--autorizar-cg' in sys.argv:
         
             if '--prueba' in sys.argv:
                 # genero una certificación de ejemplo a autorizar:
