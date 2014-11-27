@@ -364,9 +364,9 @@ DATO = [
 class WSLPG(BaseWS):
     "Interfaz para el WebService de Liquidación Primaria de Granos"    
     _public_methods_ = ['Conectar', 'Dummy', 'LoadTestXML',
-                        'AutorizarLiquidacion', 
-                        'AnularLiquidacion',
-                        'CrearLiquidacion',  
+                        'AutorizarLiquidacion',
+                        'AutorizarLiquidacionSecundaria', 'AnularLiquidacion',
+                        'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion',
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
@@ -378,6 +378,12 @@ class WSLPG(BaseWS):
                         'AnalizarAjusteDebito', 'AnalizarAjusteCredito',
                         'AsociarLiquidacionAContrato', 'ConsultarAjuste',
                         'ConsultarLiquidacionesPorContrato', 
+                        'CrearCertificacionCabecera', 
+                        'AgregarCertificacionPlantaDepositoElevador',
+                        'AgregarCertificacionRetiroTransferencia',
+                        'AgregarCertificacionPreexistente',
+                        'AgregarDetalleMuestraAnalisis', 'AgregarCTG',
+                        'AutorizarCertificacion',
                         'LeerDatosLiquidacion',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
@@ -408,6 +414,7 @@ class WSLPG(BaseWS):
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
         'TotalIvaRg2300_07', 'Subtotal', 'TotalIva105', 'TotalIva21',
         'TotalRetencionesGanancias', 'TotalRetencionesIVA', 'NroContrato',
+        'FechaCertificacion', 
         ]
     _reg_progid_ = "WSLPG"
     _reg_clsid_ = "{9D21C513-21A6-413C-8592-047357692608}"
@@ -632,6 +639,7 @@ class WSLPG(BaseWS):
             importeDeducciones=importe_deducciones,
             datosAdicionales=datos_adicionales,
             )
+        return True
 
     @inicializar_y_capturar_excepciones
     def AgregarCertificado(self, tipo_certificado_deposito=None,
@@ -662,6 +670,7 @@ class WSLPG(BaseWS):
             self.liquidacion['certificados'].append({'certificado': cert})
         else:
             self.certificacion['retiroTransferencia']['certificadoDeposito'].append(cert)
+        return True
 
     @inicializar_y_capturar_excepciones
     def AgregarRetencion(self, codigo_concepto, detalle_aclaratorio, 
@@ -764,6 +773,7 @@ class WSLPG(BaseWS):
         ret = ret['oReturn']
         self.__analizar_errores(ret)
         self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
+        return True
 
     def AnalizarLiquidacion(self, aut, liq=None, ajuste=False):
         "Método interno para analizar la respuesta de AFIP"
@@ -1324,6 +1334,7 @@ class WSLPG(BaseWS):
                 serviciosOtros=servicios_otros,
                 serviciosFormaDePago=servicios_forma_de_pago,
             )
+        return True
 
     
     @inicializar_y_capturar_excepciones
@@ -1414,6 +1425,7 @@ class WSLPG(BaseWS):
         ret = ret['oReturn']
         self.__analizar_errores(ret)
         self.AnalizarAutorizarCertificadoResp(ret)
+        return True
 
     def AnalizarAutorizarCertificadoResp(self, ret):
         "Metodo interno para extraer datos de la Respuesta de Certificación"
