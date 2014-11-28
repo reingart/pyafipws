@@ -51,7 +51,7 @@ Sub Main()
     End If
         
     ' Establecer tipo de certificación a autorizar
-    tipo_certificado = "E"      '  cambiar D: deposito, P: planta, R: retiro, T: transf, E: preexistente
+    tipo_certificado = "D"      '  cambiar D: deposito, P: planta, R: retiro, T: transf, E: preexistente
         
     ' genero una certificación de ejemplo a autorizar (datos generales de cabecera):
     pto_emision = 99
@@ -116,13 +116,13 @@ Sub Main()
             ok = WSLPG.AgregarDetalleMuestraAnalisis( _
                 descripcion_rubro, tipo_rubro, porcentaje, valor)
     
-            nro_ctg = "123456": peso_neto_a_certificar = 1000:
+            nro_ctg = "123456": nro_carta_porte = 1000:
             porcentaje_secado_humedad = 1: importe_secado = 2:
             peso_neto_merma_secado = 3: tarifa_secado = 4:
             importe_zarandeo = 5: peso_neto_merma_zarandeo = 6:
             tarifa_zarandeo = 7
             ok = WSLPG.AgregarCTG( _
-                nro_ctg, peso_neto_a_certificar, _
+                nro_ctg, nro_carta_porte, _
                 porcentaje_secado_humedad, importe_secado, _
                 peso_neto_merma_secado, tarifa_secado, _
                 importe_zarandeo, peso_neto_merma_zarandeo, _

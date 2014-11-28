@@ -36,7 +36,7 @@ cms = WSAA.SignTRA(tra, ruta + "reingart.crt", ruta + "reingart.key") && Cert. D
 ta = WSAA.LoginCMS(cms) && Homologación
 
 *-- chequeo si hubo error
-IF WSAA.Excepcion <> ""
+IF LEN(WSAA.Excepcion) > 0 THEN 
 	? WSAA.Excepcion
 	? WSAA.Traceback
 	MESSAGEBOX("No se pudo obtener token y sign WSAA")
