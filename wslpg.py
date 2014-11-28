@@ -327,7 +327,7 @@ CERTIFICACION = [
 CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
     ('tipo_reg', 1, A), # C: CTG
     ('nro_ctg', 8, N),
-    ('peso_neto_a_certificar', 8, N),
+    ('nro_carta_porte', 9, N),
     ('porcentaje_secado_humedad', 5, I, 2),
     ('importe_secado', 10, I, 2),
     ('peso_neto_merma_secado', 8, N),
@@ -1404,7 +1404,7 @@ class WSLPG(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarCTG(self, nro_ctg=None, peso_neto_a_certificar=None,
+    def AgregarCTG(self, nro_ctg=None, nro_carta_porte=None,
                          porcentaje_secado_humedad=None, importe_secado=None,
                          peso_neto_merma_secado=None, tarifa_secado=None,
                          importe_zarandeo=None, peso_neto_merma_zarandeo=None,
@@ -1414,7 +1414,7 @@ class WSLPG(BaseWS):
         
         ctg = dict(
                 nroCTG=nro_ctg,
-                pesoNetoACertificar=peso_neto_a_certificar,
+                nroCartaDePorte=nro_carta_porte,
                 porcentajeSecadoHumedad=porcentaje_secado_humedad,
                 importeSecado=importe_secado,
                 pesoNetoMermaSecado=peso_neto_merma_secado,
@@ -3089,7 +3089,7 @@ if __name__ == '__main__':
                                tipo_rubro="B", porcentaje=1, valor=1)
                     dic['det_muestra_analisis'] = [det]
 
-                    ctg = dict(nro_ctg="123456", peso_neto_a_certificar=1000,
+                    ctg = dict(nro_ctg="123456", nro_carta_porte=1000,
                             porcentaje_secado_humedad=1, importe_secado=2,
                             peso_neto_merma_secado=3, tarifa_secado=4,
                             importe_zarandeo=5, peso_neto_merma_zarandeo=6,
