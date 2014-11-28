@@ -2057,7 +2057,7 @@ class WSLPG(BaseWS):
                 if 'cod_grano' in liq and liq['cod_grano']:
                     cod_grano = int(liq['cod_grano'])
                 else:
-                    cod_grano = int(self.datos.get('cod_grano', 0))
+                    cod_grano = int(self.datos.get('cod_grano') or 0)
                 f.set("grano", datos.GRANOS.get(cod_grano, ""))
                 cod_puerto = int(liq.get('cod_puerto', self.datos.get('cod_puerto')) or 0)
                 if cod_puerto in datos.PUERTOS:
@@ -2069,7 +2069,7 @@ class WSLPG(BaseWS):
                 else:
                     f.set("des_grado_ref", cod_grado_ref)
                 cod_grado_ent = liq.get('cod_grado_ent', self.datos.get('cod_grado_ent'))
-                if 'val_grado_ent' in liq and int(liq.get('val_grado_ent', 0)):
+                if 'val_grado_ent' in liq and int(liq.get('val_grado_ent') or 0):
                     val_grado_ent = liq['val_grado_ent']
                 elif 'val_grado_ent' in self.datos:
                     val_grado_ent = self.datos.get('val_grado_ent')
@@ -2115,7 +2115,7 @@ class WSLPG(BaseWS):
                 else:
                     homo = ""
                 
-                if int(liq['cod_tipo_operacion']) == 1: 
+                if int(liq['cod_tipo_operacion'] or 0) == 1: 
                     f.set("comprador.L", "COMPRADOR:")
                     f.set("vendedor.L", "VENDEDOR:")
                     f.set("formulario", u"Form. Electrónico 1116 B %s" % homo)
@@ -2162,7 +2162,7 @@ class WSLPG(BaseWS):
                     f.set('subtipo_ajuste', {'ajuste_debito': u'AJUSTE DÉBITO',
                            'ajuste_credito': u'AJUSTE CRÉDITO'}[clave])
                 
-                if int(liq.get('coe_ajustado', 0)):
+                if int(liq.get('coe_ajustado') or 0):
                     f.set("leyenda_coe_nro", "COE Ajustado:")
                     f.set("nro_contrato_o_coe_ajustado", liq['coe_ajustado'])
                     f.set("coe_relacionados.L", "")
