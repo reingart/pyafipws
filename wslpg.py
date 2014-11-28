@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17d"
+__version__ = "1.17e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -270,7 +270,7 @@ CERTIFICACION = [
     ('pto_emision', 4, N),
     ('nro_orden', 8, N),
     ('tipo_certificado', 1, A),   # P:Planta,R:Retiro,T:Transferencia,E:Preexistente,D:en Deposito y/o Elevador.
-    ('nro_planta', 4, N),
+    ('nro_planta', 6, N),
     ('nro_ing_bruto_depositario', 15, N),
     ('titular_grano', 1, A),        # "P" (Propio) "T" (Tercero)
     ('cuit_depositante', 11, N),    # obligatorio si titular_grano es T
@@ -279,7 +279,7 @@ CERTIFICACION = [
     ('cod_grano', 3, N),
     ('campania', 4, N),
     ('datos_adicionales', 400, A),
-    ('reservado1', 21, A),          # reservado para futuros campos (no usar)
+    ('reservado1', 19, A),          # reservado para futuros campos (no usar)
     # campos para cgAutorizarDeposito (WSLPGv1.6)
     ('descripcion_tipo_grano', 20, A),
     ('monto_almacenaje', 10, I, 2),
@@ -334,7 +334,7 @@ CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
     ('tarifa_secado', 10, I, 2),
     ('importe_zarandeo', 10, I, 2),
     ('peso_neto_merma_zarandeo', 8, N),
-    ('tarifa_zarandeo', 8, N),
+    ('tarifa_zarandeo', 10, I, 2),
 ]
 
 DET_MUESTRA_ANALISIS = [            # para cgAutorizarDeposito (WSLPGv1.6)
