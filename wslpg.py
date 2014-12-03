@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17e"
+__version__ = "1.17f"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1292,12 +1292,12 @@ class WSLPG(BaseWS):
                 ptoEmision=pto_emision,
                 nroOrden=nro_orden,
                 tipoCertificado=tipo_certificado,
-                nroPlanta=nro_planta,                               # opcional
+                nroPlanta=nro_planta or None,                       # opcional
                 nroIngBrutoDepositario=nro_ing_bruto_depositario,
                 titularGrano=titular_grano,
-                cuitDepositante=cuit_depositante,                   # opcional
-                nroIngBrutoDepositante=nro_ing_bruto_depositante,   # opcional
-                cuitCorredor=cuit_corredor,                         # opcional
+                cuitDepositante=cuit_depositante or None,           # opcional
+                nroIngBrutoDepositante=nro_ing_bruto_depositante or None,  # opcional
+                cuitCorredor=cuit_corredor or None,                 # opcional
                 codGrano=cod_grano,
                 campania=campania,
                 datosAdicionales=datos_adicionales,                 # opcional
@@ -1333,12 +1333,12 @@ class WSLPG(BaseWS):
                 montoSecado=monto_secado,
                 montoPorCadaPuntoExceso=monto_por_cada_punto_exceso,
                 montoOtros=monto_otros,
-                analisisMuestra=analisis_muestra,
-                nroBoletin=nro_boletin,
+                analisisMuestra=analisis_muestra or None,           # opcional
+                nroBoletin=nro_boletin or None,                     # opcional
                 detalleMuestraAnalisis=[],     # <!--1 or more repetitions:-->
-                valorGrado=valor_grado,
-                valorContenidoProteico=valor_contenido_proteico,
-                valorFactor=valor_factor,
+                valorGrado=valor_grado or None,                     # opcional
+                valorContenidoProteico=valor_contenido_proteico or None,
+                valorFactor=valor_factor or None,                   # opcional
                 porcentajeMermaVolatil=porcentaje_merma_volatil,
                 pesoNetoMermaVolatil=peso_neto_merma_volatil,
                 porcentajeMermaSecado=porcentaje_merma_secado,
@@ -1346,10 +1346,10 @@ class WSLPG(BaseWS):
                 porcentajeMermaZarandeo=porcentaje_merma_zarandeo,
                 pesoNetoMermaZarandeo=peso_neto_merma_zarandeo,
                 pesoNetoCertificado=peso_neto_certificado,
-                serviciosSecado=servicios_secado,
-                serviciosZarandeo=servicios_zarandeo,
-                serviciosOtros=servicios_otros,
-                serviciosFormaDePago=servicios_forma_de_pago,
+                serviciosSecado=servicios_secado or None,           # opcional
+                serviciosZarandeo=servicios_zarandeo or None,
+                serviciosOtros=servicios_otros or None,
+                serviciosFormaDePago=servicios_forma_de_pago or None,
             )
         return True
 
@@ -1362,10 +1362,10 @@ class WSLPG(BaseWS):
             cee_carta_porte_a_utilizar=None,
             **kwargs):
         self.certificacion['retiroTransferencia'] = dict(
-                cuitReceptor=cuit_receptor,                         # opcional
+                cuitReceptor=cuit_receptor or None,                 # opcional
                 fecha=fecha,
-                nroCartaPorteAUtilizar=nro_carta_porte_a_utilizar,
-                ceeCartaPorteAUtilizar=cee_carta_porte_a_utilizar,
+                nroCartaPorteAUtilizar=nro_carta_porte_a_utilizar or None,
+                ceeCartaPorteAUtilizar=cee_carta_porte_a_utilizar or None,
                 certificadoDeposito=[],        # <!--0 or more repetitions:-->
                 )
         return True
@@ -1430,6 +1430,14 @@ class WSLPG(BaseWS):
     def AutorizarCertificacion(self):
         "Autoriza una Certificación Primaria de Depósito de Granos (C1116A/RT)"
         
+        # limpio los elementos que no correspondan por estar vacios:
+        for k1 in ('plantaDepositoElevador', 'retiroTransferencia'):
+            dic = self.certificacion.get(k1)
+            if not dic: continue
+            for k2 in ('ctg', 'detalleMuestraAnalisis', 'certificadoDeposito'):
+                if k2 in dic and not dic[k2]:
+                    del dic[k2]
+            
         # llamo al webservice:
         ret = self.client.cgAutorizar(
                         auth={
