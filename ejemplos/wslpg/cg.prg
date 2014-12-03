@@ -11,6 +11,7 @@ WSAA = CREATEOBJECT("WSAA")
 ? WSAA.Version
 ? WSAA.InstallDir
 
+*-- evitar "Error fatal: código de excepción C0000005" en algunas versiones de VFP
 WSAA.LanzarExcepciones = .F.
 
 *-- Producción usar: ta = WSAA.Conectar("", "https://wsaa.afip.gov.ar/ws/services/LoginCms")
@@ -47,6 +48,9 @@ WSLPG = CREATEOBJECT("WSLPG")
 
 ? WSLPG.Version
 ? WSLPG.InstallDir
+
+*-- evitar "Error fatal: código de excepción C0000005" en algunas versiones de VFP
+WSLPG.LanzarExcepciones = .F.
 
 *--  Setear tocken y sing de autorización (pasos previos)
 WSLPG.Token = WSAA.Token
