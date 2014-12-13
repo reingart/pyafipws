@@ -17,7 +17,7 @@ WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11c"
+__version__ = "1.12a"
 
 import datetime
 import decimal
@@ -69,7 +69,7 @@ class WSMTXCA(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
-    Reprocesar = False  # no recuperar automaticamente CAE emitidos
+    Reprocesar = True  # recuperar automaticamente CAE emitidos
     LanzarExcepciones = LANZAR_EXCEPCIONES
     factura = None
 
@@ -538,6 +538,24 @@ class WSMTXCA(BaseWS):
             comprobanteCAEARequest = fact,
             )
         
+        # Reprocesar en caso de error (verifica datos informado anteriormente)
+        if self.Reprocesar and ('arrayErrores' in ret):
+            for error in ret['arrayErrores']:
+                err_code = error['codigoDescripcion']['codigo']
+                if ret['resultado'] == 'R' and err_code == 703:
+                    # guardo los mensajes xml originales
+                    xml_request = self.client.xml_request
+                    xml_response = self.client.xml_response
+                    cae = self.ConsultarComprobante(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
+                    if cae == f['caea'] and self.EmisionTipo=='CAEA':
+                        self.Reproceso = 'S'
+                        self.Resultado = 'A'  # verificar O
+                        return cae
+                    self.Reproceso = 'N'
+                    # reestablesco los mensajes xml originales
+                    self.client.xml_request = xml_request
+                    self.client.xml_response = xml_response
+        
         self.Resultado = ret['resultado'] # u'A'
         self.Errores = []
         if ret['resultado'] in ("A", "O"):
@@ -747,7 +765,7 @@ class WSMTXCA(BaseWS):
                                 'descripcion': it['ds'],
                                 'cantidad': it['qty'] and decimal.Decimal(str(it['qty'])),
                                 'codigoUnidadMedida': it['umed'],
-                                'precioUnitario': it['precio'] and decimal.Decimal(str(it['precio'])) or None,
+                                'precioUnitario': it['precio'] is not None and decimal.Decimal(str(it['precio'])) or None,
                                 #'importeBonificacion': it['bonif'],
                                 'codigoCondicionIVA': decimal.Decimal(str(it['iva_id'])),
                                 'importeIVA': decimal.Decimal(str(it['imp_iva'])) if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
@@ -934,12 +952,18 @@ def main():
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
+            if '--caea' in sys.argv:
+                periodo = fecha.replace("-", "")[:6]
+                orden = 1 if fecha[-2:] < 16 else 2
+                caea = wsmtxca.ConsultarCAEA(periodo, orden)
+            else:
+                caea = None
 
             wsmtxca.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
                 cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
                 imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
                 fecha_serv_desde, fecha_serv_hasta, #--
-                moneda_id, moneda_ctz, obs)
+                moneda_id, moneda_ctz, obs, caea)
             
             #tipo = 19
             #pto_vta = 2
@@ -972,18 +996,25 @@ def main():
             wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                         iva_id, imp_iva, imp_subtotal)
             
-            wsmtxca.AgregarItem(None, None, None, 'bonificacion', None, 99, None, None, 
-                        5, -21, -121)
-
-            wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, 1, umed, 0, 0, iva_id, 0, 0)
+            if not "--caea" in sys.argv:
+                # ejemplo descuento (sin precio unitario)
+                wsmtxca.AgregarItem(None, None, None, 'bonificacion', 
+                                    None, 99, None, None, 5, -21, -121)
+                # ejemplo item solo descripción:                
+                #wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, 1, umed, 
+                #                    0, 0, iva_id, 0, 0)
             
             print wsmtxca.factura
             
-            wsmtxca.AutorizarComprobante()
+            if '--caea' in sys.argv:
+                wsmtxca.InformarComprobanteCAEA()
+            else:
+                wsmtxca.AutorizarComprobante()
 
             print "Resultado", wsmtxca.Resultado
             print "CAE", wsmtxca.CAE
             print "Vencimiento", wsmtxca.Vencimiento
+            print "Reproceso", wsmtxca.Reproceso
             
             print wsmtxca.Excepcion
             print wsmtxca.ErrMsg
