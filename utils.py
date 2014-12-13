@@ -16,6 +16,7 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 
+import functools
 import inspect
 import socket
 import sys
@@ -123,6 +124,7 @@ def exception_info(current_filename=None, index=-1):
 
 def inicializar_y_capturar_excepciones(func):
     "Decorador para inicializar y capturar errores"
+    @functools.wraps(func)
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
             # inicializo (limpio variables)
