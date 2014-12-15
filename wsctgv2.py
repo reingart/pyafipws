@@ -11,13 +11,13 @@
 # for more details.
 
 """Módulo para obtener Código de Trazabilidad de Granos
-del web service WSCTG versión 2.0 de AFIP (RG3593/14)
+del web service WSCTG versión 3.0 de AFIP (RG3593/14)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.12e"
+__version__ = "1.13a"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -78,7 +78,7 @@ from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, 
 
 # constantes de configuración (homologación):
 
-WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v2.0?wsdl"
+WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v3.0?wsdl"
 
 DEBUG = False
 XML = False
@@ -124,12 +124,16 @@ ENCABEZADO = [
     # nuevos campos agregados:
     ('cuit_chofer', 11, N), 
     
+    # nuevos campos agregados WSCTGv3:
+    ('cuit_corredor', 12, N),
+    ('remitente_comercial_como_productor', 1, A),
+    
     ]        
 
 
 
 class WSCTGv2(BaseWS):
-    "Interfaz para el WebService de Código de Trazabilidad de Granos (Version 2)"    
+    "Interfaz para el WebService de Código de Trazabilidad de Granos (Version 3)"    
     _public_methods_ = ['Conectar', 'Dummy',
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
@@ -171,7 +175,7 @@ class WSCTGv2(BaseWS):
         ret = BaseWS.Conectar(self, *args, **kwargs)
         # corregir descripción de servicio WSDL publicado por AFIP
         # kmARecorrer -> kmRecorridos (ConsultarDetalleCTG) 
-        port = self.client.services['CTGService_v2.0']['ports']['CTGServiceHttpSoap20Endpoint']
+        port = self.client.services['CTGService_v3.0']['ports']['CTGServiceHttpSoap20Endpoint']
         msg = port['operations']['consultarDetalleCTG']['output']['consultarDetalleCTGResponse']
         msg['response']['consultarDetalleCTGDatos']['kmRecorridos'] = int
         return ret
@@ -256,7 +260,9 @@ class WSCTGv2(BaseWS):
         cuit_canjeador, cuit_destino, cuit_destinatario, codigo_localidad_origen,
         codigo_localidad_destino, codigo_cosecha, peso_neto_carga, 
         cant_horas=None, patente_vehiculo=None, cuit_transportista=None, 
-        km_a_recorrer=None, remitente_comercial_como_canjeador=None, **kwargs):
+        km_a_recorrer=None, remitente_comercial_como_canjeador=None, 
+        cuit_corredor=None, remitente_comercial_como_productor=None,
+        **kwargs):
         "Solicitar CTG Desde el Inicio"
         # ajusto parámetros según validaciones de AFIP:
         if cuit_canjeador and int(cuit_canjeador) == 0:
@@ -283,6 +289,8 @@ class WSCTGv2(BaseWS):
                             cantHoras=cant_horas,
                             patente=patente_vehiculo, 
                             kmARecorrer=km_a_recorrer,
+                            cuitCorredor=cuit_corredor,
+                            remitenteComercialcomoProductor=remitente_comercial_como_productor,
                             )))['response']
         self.__analizar_errores(ret)
         self.Observaciones = ret['observacion']
