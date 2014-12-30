@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.03a"
 
 
 import os
@@ -28,7 +28,8 @@ import urllib2
 import zipfile
 from email.utils import formatdate
 import sys
-from utils import leer, escribir, N, A, I, get_install_dir
+from utils import leer, escribir, N, A, I, get_install_dir, \
+                  inicializar_y_capturar_excepciones_simple
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
@@ -62,7 +63,7 @@ class PadronAFIP():
                       'cuit', 'denominacion', 'imp_ganancias', 'imp_iva',  
                       'monotributo', 'integrante_soc', 'empleador', 
                       'actividad_monotributo', 'cat_iva', 'domicilios',
-                      'tipo_doc', 'nro_doc',
+                      'tipo_doc', 'nro_doc', 'LanzarExcepciones',
                      ]
     _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "PadronAFIP"
@@ -75,7 +76,14 @@ class PadronAFIP():
         self.db = sqlite3.connect(self.db_path)
         self.db.row_factory = sqlite3.Row
         self.cursor = self.db.cursor()
+        self.LanzarExcepciones = False
+        self.inicializar()
+    
+    def inicializar(self):
+        self.Excepcion = self.Traceback = ""
+        self.cuit = self.dni = 0
 
+    @inicializar_y_capturar_excepciones_simple
     def Descargar(self, url=URL, filename="padron.txt", proxy=None):
         "Descarga el archivo de AFIP, devuelve 200 o 304 si no fue modificado"
         proxies = {}
@@ -128,6 +136,7 @@ class PadronAFIP():
             tf.close()
         return 200
             
+    @inicializar_y_capturar_excepciones_simple
     def Procesar(self, filename="padron.txt", borrar=False):
         "Analiza y crea la base de datos interna sqlite para consultas" 
         f = open(filename, "r")
@@ -187,6 +196,7 @@ class PadronAFIP():
             c.close()
             db.close()
         
+    @inicializar_y_capturar_excepciones_simple
     def Buscar(self, nro_doc, tipo_doc=80):
         "Devuelve True si fue encontrado y establece atributos con datos"
         # cuit: codigo único de identificación tributaria del contribuyente
@@ -208,6 +218,7 @@ class PadronAFIP():
             self.dni = self.nro_doc
         return True if row else False
 
+    @inicializar_y_capturar_excepciones_simple
     def ConsultarDomicilios(self, nro_doc, tipo_doc=80, cat_iva=None):
         "Busca los domicilios, devuelve la cantidad y establece la lista"
         self.cursor.execute("SELECT direccion FROM domicilio WHERE "
@@ -217,6 +228,7 @@ class PadronAFIP():
         self.domicilios = [fila['direccion'] for fila in filas]
         return len(filas)
 
+    @inicializar_y_capturar_excepciones_simple
     def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion, email):
         "Agregar o actualizar los datos del cliente"
         if self.Buscar(nro_doc, tipo_doc):
@@ -251,6 +263,7 @@ if __name__ == "__main__":
         win32com.server.register.UseCommandLine(PadronAFIP)
     else:
         padron = PadronAFIP()
+        padron.LanzarExcepciones = True
         import time
         t0 = time.time()
         if "--descargar" in sys.argv:
@@ -266,6 +279,9 @@ if __name__ == "__main__":
             padron.ConsultarDomicilios(cuit)
             for dom in padron.domicilios:
                 print dom
+        else:
+            print padron.Excepcion
+            print padron.Traceback
         t1 = time.time()
         print "tiempo", t1 -t0
 

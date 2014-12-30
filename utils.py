@@ -123,7 +123,7 @@ def exception_info(current_filename=None, index=-1):
 
 
 def inicializar_y_capturar_excepciones(func):
-    "Decorador para inicializar y capturar errores"
+    "Decorador para inicializar y capturar errores (version para webservices)"
     @functools.wraps(func)
     def capturar_errores_wrapper(self, *args, **kwargs):
         try:
@@ -177,6 +177,24 @@ def inicializar_y_capturar_excepciones(func):
             if self.client:
                 self.XmlRequest = self.client.xml_request
                 self.XmlResponse = self.client.xml_response
+    return capturar_errores_wrapper
+
+
+def inicializar_y_capturar_excepciones_simple(func):
+    "Decorador para inicializar y capturar errores (versión básica indep.)"
+    @functools.wraps(func)
+    def capturar_errores_wrapper(self, *args, **kwargs):
+        self.inicializar()
+        try:
+            return func(self, *args, **kwargs)
+        except:
+            ex = exception_info()
+            self.Excepcion = ex['name']
+            self.Traceback = ex['msg']
+            if self.LanzarExcepciones:
+                raise
+            else:
+                return False
     return capturar_errores_wrapper
 
 
