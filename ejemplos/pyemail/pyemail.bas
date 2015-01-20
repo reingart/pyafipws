@@ -24,5 +24,9 @@ Sub Main()
     
     ok = PyEmail.Enviar(remitente, motivo, destinatario, mensaje, archivo)
  
+    ' Muestro mensaje de error si el envio no fue correcto:
+    If Not ok Then
+        MsgBox PyEmail.Traceback, vbCritical, PyEmail.Excepcion
+    End If
  
 End Sub
