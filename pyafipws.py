@@ -22,6 +22,10 @@ import wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
 from php import SimpleXMLElement, SoapFault, SoapClient, parse_proxy
 import traceback
 import socks
+import warnings
+
+warnings.warn("Este modulo es obsoleto (mantenido por compatibilidad).\n"
+              "Usar modulos individuales: wsaa, wsfev1, wsfexv1, wsbfev1, etc.")
 
 try:
     from win32com.server.exception import COMException
