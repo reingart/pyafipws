@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (mariano@nsis.com.ar)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18"
+__version__ = "1.18a"
 
 import datetime
 import sys
