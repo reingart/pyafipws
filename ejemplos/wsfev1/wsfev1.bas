@@ -42,7 +42,7 @@ Sub Main()
     cache = ""
     proxy = "" '"usuario:clave@localhost:8000"
     wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
-    cacert = WSAA.InstallDir & "\geotrust.crt" ' certificado de la autoridad de certificante
+    cacert = WSAA.InstallDir & "\conf\afip_ca_info.crt" ' certificado de la autoridad de certificante
     wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
     ok = WSAA.Conectar(cache, wsdl, proxy, wrapper, cacert) ' Homologación
     ControlarExcepcion WSAA
@@ -84,7 +84,7 @@ Sub Main()
     wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
     cache = "" 'Path
     wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
-    cacert = WSAA.InstallDir & "\geotrust.crt" ' certificado de la autoridad de certificante (solo pycurl)
+    cacert = WSAA.InstallDir & "\conf\afip_ca_info.crt" ' certificado de la autoridad de certificante (solo pycurl)
     
     ok = WSFEv1.Conectar(cache, wsdl, proxy, wrapper, cacert) ' homologación
     Debug.Print WSFEv1.Version
