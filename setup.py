@@ -19,26 +19,26 @@ import sys
 
 # modulos a compilar y empaquetar (comentar si no se desea incluir):
 
-import pyafipws
-import pyrece
+#import pyafipws
+#import pyrece
 import wsaa
 import wsfev1, rece1
 import wsfexv1, recex1
 import wsbfev1, receb1
 import wsmtx, recem
 import pyfepdf
-import pyemail
-import pyi25
-import wsctgv2
-import wslpg
-import wscoc
-import wscdc
-import cot
-import trazamed
-import trazarenpre
-import trazafito
-import trazavet
-import padron
+#import pyemail
+#import pyi25
+#import wsctgv2
+#import wslpg
+#import wscoc
+#import wscdc
+#import cot
+#import trazamed
+#import trazarenpre
+#import trazafito
+#import trazavet
+#import padron
 
 # herramientas opcionales a compilar y empaquetar:
 try:
@@ -63,11 +63,19 @@ data_files = [
     ("cache", glob.glob("cache/*")),
     ]
 
-WX_DLL = (".", [
-            "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
-            "C:\python25\MSVCR71.dll",
-            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
-            ])
+if sys.version_info > (2, 7):
+    # add "Microsoft Visual C++ 2008 Redistributable Package (x86)"
+    sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
+    WX_DLL = (
+        ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*') +
+             glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest'),
+        )
+else:
+    WX_DLL = (".", [
+        "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+        "C:\python25\MSVCR71.dll",
+        "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
+        ])
 
 HOMO = True
 
@@ -101,9 +109,23 @@ if 'py2exe' in sys.argv:
             'optimize': 0,
             'excludes': excludes,
             'dll_excludes': ["mswsock.dll", "powrprof.dll", "KERNELBASE.dll", 
-                         "API-MS-Win-Core-LocalRegistry-L1-1-0.dll",
-                         "API-MS-Win-Core-ProcessThreads-L1-1-0.dll",
-                         "API-MS-Win-Security-Base-L1-1-0.dll"
+                         # Windows 8.1 DLL:
+                         "CRYPT32.dll", "WLDAP32.dll",
+                         "api-ms-win-core-delayload-l1-1-1.dll",
+                         "api-ms-win-core-errorhandling-l1-1-1.dll",
+                         "api-ms-win-core-handle-l1-1-0.dll",
+                         "api-ms-win-core-heap-l1-2-0.dll",
+                         "api-ms-win-core-heap-obsolete-l1-1-0.dll",
+                         "api-ms-win-core-libraryloader-l1-2-0.dll",
+                         "api-ms-win-core-localization-obsolete-l1-2-0.dll",
+                         "api-ms-win-core-processthreads-l1-1-2.dll",
+                         "api-ms-win-core-profile-l1-1-0.dll",
+                         "api-ms-win-core-registry-l1-1-0.dll",
+                         "api-ms-win-core-string-l1-1-0.dll",
+                         "api-ms-win-core-string-obsolete-l1-1-0.dll",
+                         "api-ms-win-core-synch-l1-2-0.dll",
+                         "api-ms-win-core-sysinfo-l1-2-1.dll",
+                         "api-ms-win-security-base-l1-2-0.dll",
                          ],
             'skip_archive': True,
             }
@@ -392,13 +414,14 @@ if 'py2exe' in sys.argv:
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
 
-    if sys.version_info > (2, 7):
-        # add MSVCP90.dll path for py2exe
-        sys.path.append("C:\\Program Files\\Microsoft Visual Studio 9.0\\VC\\redist\\x86\\Microsoft.VC90.CRT")
-        data_files += [
-            ("Microsoft.VC90.CRT", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*')),
-            ("Microsoft.VC90.CRT", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest')),
-            ]
+    # add certification authorities (newer versions of httplib2)
+    try:
+        import httplib2
+        if httplib2.__version__ >= "0.9":
+            data_files += [("httplib2", 
+                [os.path.join(os.path.dirname(httplib2.__file__), "cacerts.txt")])]
+    except ImportError:
+        pass
 
     # agrego tag de homologación (testing - modo evaluación):
     __version__ += "-homo" if HOMO else "-full"
