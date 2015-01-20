@@ -10,12 +10,18 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2014 Mariano Reingart"
 
-from __init__ import __version__
-
 from distutils.core import setup
 import glob
 import os
+import subprocess
 import sys
+
+try:
+    rev = subprocess.check_output(['hg', 'id', '--num']).strip().rstrip("+")
+except:
+    rev = 0
+
+__version__ = "%s.%s.%s" % (sys.version_info[0:2] + (rev, ))
 
 # modulos a compilar y empaquetar (comentar si no se desea incluir):
 
@@ -26,7 +32,7 @@ import wsfev1, rece1
 import wsfexv1, recex1
 import wsbfev1, receb1
 import wsmtx, recem
-import pyfepdf
+#import pyfepdf
 #import pyemail
 #import pyi25
 #import wsctgv2
