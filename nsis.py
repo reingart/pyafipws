@@ -89,6 +89,7 @@ notistalled:
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "DisplayName" "%(description)s (solo eliminar)"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "UninstallString" "$INSTDIR\Uninst.exe"
     WriteUninstaller "Uninst.exe"
+    %(install_vcredist)s
     ;To Register a DLL
     %(register_com_servers_dll)s
     %(register_com_servers_exe)s
@@ -153,6 +154,19 @@ unregister_com_server_dll = """\
 """
 unregister_com_server_exe = """\
     ExecWait '%s /unregister' 
+"""
+
+install_vcredist = r"""
+    ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{FF66E9F6-83E7-3A3E-AF14-8DE9A809A6A4}" "DisplayName"
+    StrCmp $0 "Microsoft Visual C++ 2008 Redistributable - x86 9.0.21022"  vcredist_ok vcredist_install
+ 
+    vcredist_install:
+    File "vcredist_x86.exe" 	
+    DetailPrint "Installing Microsoft Visual C++ 2008 Redistributable"
+    ExecWait '"$INSTDIR\vcredist_x86.exe" /q' $0
+    Delete $INSTDIR\vcredist_x86.exe
+    vcredist_ok:
+    
 """
 
 class build_installer(py2exe):
@@ -227,6 +241,7 @@ class NSISScript:
             'install_dir': self.name,
             'reg_key': self.name,
             'out_file': "instalador-%s-%s.exe" % (self.name, self.version),
+            'install_vcredist': install_vcredist if sys.version_info > (2, 7) else "",
             'register_com_servers_exe': ''.join([register_com_server_exe % comserver for comserver in self.comserver_files_exe]),
             'register_com_servers_dll': ''.join([register_com_server_dll % comserver for comserver in self.comserver_files_dll]),
             'unregister_com_servers_exe': ''.join([unregister_com_server_exe % comserver for comserver in self.comserver_files_exe]),
