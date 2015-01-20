@@ -12,7 +12,7 @@
 
 """Módulo para acceder a web services de la afip
 """
-__author__ = "Mariano Reingart (mariano@gmail.com.ar)"
-__copyright__ = "Copyright (C) 2008 Mariano Reingart"
+__author__ = "Mariano Reingart (mariano@gmail.com)"
+__copyright__ = "Copyright (C) 2008-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
 
