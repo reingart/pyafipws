@@ -220,8 +220,12 @@ class NSISScript:
         self.comserver_files_dll = [self.chop(p) for p in comserver_files if p.lower().endswith(".dll")]
 
     def chop(self, pathname):
+        global install_vcredist
         #print pathname, self.dist_dir
         #assert pathname.startswith(self.dist_dir)
+        if 'Microsoft.VC90.CRT.manifest' in pathname:
+            # clean redistributable instructions (DLL files already included)
+            install_vcredist = ""
         return pathname[len(self.dist_dir):]
     
     def create(self, pathname="base.nsi"):
@@ -240,7 +244,7 @@ class NSISScript:
             'copyright': self.copyright,
             'install_dir': self.name,
             'reg_key': self.name,
-            'out_file': "instalador-%s-%s.exe" % (self.name, self.version),
+            'out_file': "%s-%s.exe" % (self.name, self.version),
             'install_vcredist': install_vcredist if sys.version_info > (2, 7) else "",
             'register_com_servers_exe': ''.join([register_com_server_exe % comserver for comserver in self.comserver_files_exe]),
             'register_com_servers_dll': ''.join([register_com_server_dll % comserver for comserver in self.comserver_files_dll]),
