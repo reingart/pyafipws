@@ -15,12 +15,12 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.02d"
 
 import os
 import sys
 import traceback
-import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw
 
 
 class PyI25:
