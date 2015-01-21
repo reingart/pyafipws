@@ -45,6 +45,7 @@ Web services supported so far:
 ------------------------------
 
 AFIP:
+
  * [WSAA][10]: authorization & authentication, including digital cryptographic signature
  * [WSFEv1][11]: domestic market (electronic invoice) -[English][12]-
  * [WSMTXCA][22]: domestic market (electronic invoice) -detailing articles and barcodes-
@@ -55,12 +56,14 @@ AFIP:
  * [wDigDepFiel][18]: customs (faithful depositary)
  * [WSCOC][19]: currency exchange operations autorization
  * [WSCDC][22]: invoice verification
- * [Taxpayers' Registe][26]: 
+ * [Taxpayers' Registe][26]: database to check sellers and buyers register
 
 ARBA:
+
  * [COT][20]: Provincial Operation Transport Code (aka electronic Shipping note)
 
 ANMAT/SEDRONAR/SENASA (SNT):
+
  * [TrazaMed][21]: National Medical Drug Traceability Program
  * [TrazaRenpre][24]: Controlled Chemical Precursors Traceability Program
  * [TrazaFito][25]: Phytosanitary Products Traceability Program

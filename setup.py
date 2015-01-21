@@ -63,6 +63,16 @@ long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"
              "RENPRE (Trazabilidad de Precursores Químicos), "
              "ARBA (Remito Electrónico)")
 
+# convert the README and format in restructured text (only when registering)
+if os.path.exists("README.md"):
+    try:
+        cmd = ['pandoc', '--from=markdown', '--to=rst', 'README.md']
+        long_desc = subprocess.check_output(cmd).decode("utf8")
+        print "Long DESC", long_desc
+    except Exception as e:
+        warnings.warn("Exception when converting the README format: %s" % e)
+
+
 data_files = [
     (".", ["licencia.txt",]),
     ("conf", ["conf/rece.ini", "conf/geotrust.crt", "conf/afip_ca_info.crt", ]),
@@ -433,7 +443,8 @@ if 'py2exe' in sys.argv:
     __version__ += "-homo" if HOMO else "-full"
     
 else:
-    desc = "Paquete PyAfipWs"
+    desc = ("Interfases, tools and apps for Argentina's gov't. webservices "
+            "(soap, com/dll, pdf, dbf, xml, etc.)")
     kwargs['package_dir'] = {'pyafipws': '.'}
     kwargs['packages'] = ['pyafipws']
     opts = {}
