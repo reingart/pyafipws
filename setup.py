@@ -14,6 +14,7 @@ from distutils.core import setup
 import glob
 import os
 import subprocess
+import warnings
 import sys
 
 try:
@@ -32,18 +33,18 @@ import wsfev1, rece1
 import wsfexv1, recex1
 import wsbfev1, receb1
 import wsmtx, recem
-#import pyfepdf
-#import pyemail
-#import pyi25
-#import wsctgv2
-#import wslpg
+import pyfepdf
+import pyemail
+import pyi25
+import wsctgv2
+import wslpg
 #import wscoc
-#import wscdc
-#import cot
-#import trazamed
-#import trazarenpre
-#import trazafito
-#import trazavet
+import wscdc
+import cot
+import trazamed
+import trazarenpre
+import trazafito
+import trazavet
 #import padron
 
 # herramientas opcionales a compilar y empaquetar:
@@ -64,7 +65,7 @@ long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"
              "ARBA (Remito Electrónico)")
 
 # convert the README and format in restructured text (only when registering)
-if os.path.exists("README.md"):
+if os.path.exists("README.md") and sys.platform == "linux2":
     try:
         cmd = ['pandoc', '--from=markdown', '--to=rst', 'README.md']
         long_desc = subprocess.check_output(cmd).decode("utf8")
