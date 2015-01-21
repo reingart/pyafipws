@@ -36,15 +36,15 @@ import wsmtx, recem
 import pyfepdf
 import pyemail
 import pyi25
-import wsctgv2
-import wslpg
+#import wsctgv2
+#import wslpg
 #import wscoc
-import wscdc
-import cot
-import trazamed
-import trazarenpre
-import trazafito
-import trazavet
+#import wscdc
+#import cot
+#import trazamed
+#import trazarenpre
+#import trazafito
+#import trazavet
 #import padron
 
 # herramientas opcionales a compilar y empaquetar:
@@ -82,6 +82,11 @@ data_files = [
 
 if sys.version_info > (2, 7):
     # add "Microsoft Visual C++ 2008 Redistributable Package (x86)"
+    if os.path.exists(r"c:\Program Files\Mercurial"):
+        data_files += [(
+            ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll') +
+                 glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
+            )]
     sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
     WX_DLL = (
         ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*') +
