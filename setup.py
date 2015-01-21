@@ -108,6 +108,8 @@ if 'py2exe' in sys.argv:
 
     # includes for py2exe
     includes=['email.generator', 'email.iterators', 'email.message', 'email.utils',  'email.mime.text', 'email.mime.application', 'email.mime.multipart']
+    if 'pyi25' in globals() or 'pyfepdf' in globals():
+        includes.extend(["PIL.Image", "PIL.ImageFont", "PIL.ImageDraw"])
 
     # optional modules:
     # required modules for shelve support (not detected by py2exe by default):
