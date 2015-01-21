@@ -3,7 +3,7 @@ pyafipws
 
 PyAfipWs contains Python modules to operate with web services regarding AFIP (Argentina's "IRS") and other government agencies, mainly related to electronic invoicing, several taxes and traceability.
 
-Copyright 2008 - 2013 (C) Mariano Reingart [reingart@gmail.com](mailto:reingart@gmail.com) (creator and maintainter). All rights reserved.
+Copyright 2008 - 2015 (C) Mariano Reingart [reingart@gmail.com](mailto:reingart@gmail.com) (creator and maintainter). All rights reserved.
 
 License: GPLv3+, with "commercial" exception available to include it and distribute with propietary programs
 
@@ -30,7 +30,7 @@ Project Structure:
  * [PyRece][5] GUI and [FacturaLibre][6] WEB apps as complete reference implementations
  * Examples for Visual Basic, Visual Fox Pro, Delphi, C, PHP. 
  * Minor code fragment samples for SAP (ABAP), PowerBuilder, Fujitsu Net Cobol, Clarion, etc.
- * OpenERP module (comming soon)
+ * Modules for [OpenERP][27] - [Tryton][28]
  
 Features implemented:
 ---------------------
@@ -48,55 +48,90 @@ AFIP:
  * [WSAA][10]: authorization & authentication, including digital cryptographic signature
  * [WSFEv1][11]: domestic market (electronic invoice) -[English][12]-
  * [WSMTXCA][22]: domestic market (electronic invoice) -detailing articles and barcodes-
- * [WSBFE][13]: tax bonus (electronic invoice)
+ * [WSBFEv1][13]: tax bonus (electronic invoice)
  * [WSFEXv1][14]: foreign trade (electronic invoice) -[English][15]-
  * [WSCTG][16]: agriculture (grain traceability code)
  * [WSLPG][17]: agriculture (grain liquidation - invoice)
  * [wDigDepFiel][18]: customs (faithful depositary)
  * [WSCOC][19]: currency exchange operations autorization
+ * [WSCDC][22]: invoice verification
+ * [Taxpayers' Registe][26]: 
 
 ARBA:
  * [COT][20]: Provincial Operation Transport Code (aka electronic Shipping note)
 
-ANMAT:
+ANMAT/SEDRONAR/SENASA (SNT):
  * [TrazaMed][21]: National Medical Drug Traceability Program
- * Traza Renpre SEDRONAR: Controlled Chemical Precursors Traceability Program (comming soon)
+ * [TrazaRenpre][24]: Controlled Chemical Precursors Traceability Program
+ * [TrazaFito][25]: Phytosanitary Products Traceability Program
 
 Installation Instructions:
 --------------------------
 
-On Ubuntu (GNU/Linux), you will need to install the following dependencies:
+## Quick-Start
 
-httplib2 and openssl binding:
+On Ubuntu (GNU/Linux), you will need to install httplib2 and openssl binding.
+Then you can download the compressed file, unzip it and use:
 
-    apt-get install python-httplib2 python-m2crypto
+```
+   sudo apt-get install python-httplib2 python-m2crypto
+   wget https://pyafipws.googlecode.com/archive/default.zip
+   unzip default.zip
+   cd pyafipws-default
+   sudo pip install -r requirements.txt
+```
 
-For SOAP webservices you will need [PySimpleSOAP](https://code.google.com/p/pysimplesoap/) (spin-off of this library, inspired by the PHP SOAP extension):
+**Note:** M2Crypto is optional, the library will use OpenSSL directly (using
+subprocess)
 
+## Virtual environment (testing):
+
+The following commands clone the repository, creates a virtualenv and install
+the packages there (including the latest versions of the dependencies) to avoid
+conflicts with other libraries:
+```
+   sudo apt-get install python-dev swig python-virtualenv mercurial python-pip libssl-dev
+   hg clone https://code.google.com/p/pyafipws
+   cd pyafipws
+   virtualenv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+```
+
+## Dependency installation (development):
+
+For SOAP webservices [PySimpleSOAP](https://code.google.com/p/pysimplesoap/) is
+needed (spin-off of this library, inspired by the PHP SOAP extension):
+```
     hg clone https://code.google.com/p/pysimplesoap/ 
     cd pysimplesoap
     hg update reingart
     sudo python setup.py install
-    
-For PDF generation, you will need the [PyFPDF](https://code.google.com/p/pyfpdf) (PHP's FPDF library, python port):
-
+``` 
+For PDF generation, you will need the [PyFPDF](https://code.google.com/p/pyfpdf)
+(PHP's FPDF library, python port):
+```
     hg clone https://code.google.com/p/pyfpdf/ 
     cd pyfpdf
     sudo python setup.py install
-
+```
 For the GUI app, you will need [wxPython](http://www.wxpython.org/):
-
+```
     sudo apt-get install wxpython
-
+```
 PythonCard is being replaced by [gui2py](https://code.google.com/p/gui2py/):
-
+```
     hg clone https://code.google.com/p/gui2py/ 
     cd gui2py
     sudo python setup.py install
-
+```
 For the WEB app, you will need [web2py](http://www.web2py.com/).
 
-On Windows, you can see available installers released for evaluation purposes on [Downloads](https://code.google.com/p/pyafipws/downloads)
+On Windows, you can see available installers released for evaluation purposes on
+[Downloads](https://code.google.com/p/pyafipws/downloads)
+
+For more information see the source code installation steps in the 
+[wiki](https://code.google.com/p/pyafipws/wiki/InstalacionCodigoFuente)
 
 
  [1]: http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaPython
@@ -120,3 +155,10 @@ On Windows, you can see available installers released for evaluation purposes on
  [20]: http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCotArba
  [21]: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
  [22]: http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaMTXCAService
+ [23]: http://www.sistemasagiles.com.ar/trac/wiki/ConstatacionComprobantes
+ [24]: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadPrecursoresQuimicos
+ [25]: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosFitosanitarios
+ [26]: http://www.sistemasagiles.com.ar/trac/wiki/PadronContribuyentesAFIP
+ [27]: https://github.com/reingart/openerp_pyafipws
+ [28]: https://github.com/tryton-ar/account_invoice_ar
+ 
