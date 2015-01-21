@@ -133,6 +133,7 @@ if 'py2exe' in sys.argv:
             'optimize': 0,
             'excludes': excludes,
             'dll_excludes': ["mswsock.dll", "powrprof.dll", "KERNELBASE.dll", 
+                         "tcl85.dll", "tk85.dll",
                          # Windows 8.1 DLL:
                          "CRYPT32.dll", "WLDAP32.dll",
                          "api-ms-win-core-delayload-l1-1-1.dll",
