@@ -1,0 +1,6 @@
+httplib2>=0.7
+pysimplesoap==1.08d
+m2crypto>=0.18
+fpdf>=1.7.2
+dbf>=0.96.003
+
