@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15d"
+__version__ = "1.15e"
 
 import os
 import socket
@@ -118,7 +118,7 @@ class TrazaMed(BaseWS):
                         'GetEnviosPropiosAlertados',
                         'GetTransaccionesWS', 'GetCatalogoElectronicoByGTIN',
                         'Conectar', 'LeerError', 'LeerTransaccion',
-                        'SetUsername', 
+                        'SetUsername', 'SetPassword',
                         'SetParametro', 'GetParametro',
                         'GetCodigoTransaccion', 'GetResultado', 'LoadTestXML']
                         
