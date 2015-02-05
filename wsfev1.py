@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15c"
+__version__ = "1.15d"
 
 import datetime
 import decimal
@@ -567,7 +567,8 @@ class WSFEv1(BaseWS):
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
                             'Nro': cbte_asoc['nro']}}
-                        for cbte_asoc in f['cbtes_asoc']],
+                        for cbte_asoc in f['cbtes_asoc']]
+                        if f['cbtes_asoc'] else None,
                     'Tributos': [
                         {'Tributo': {
                             'Id': tributo['tributo_id'], 
@@ -576,7 +577,8 @@ class WSFEv1(BaseWS):
                             'Alic': tributo['alic'],
                             'Importe': tributo['importe'],
                             }}
-                        for tributo in f['tributos']],
+                        for tributo in f['tributos']] 
+                        if f['tributos'] else None,
                     'Iva': [ 
                         {'AlicIva': {
                             'Id': iva['iva_id'],
