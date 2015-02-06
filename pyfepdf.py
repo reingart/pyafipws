@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07m"
+__version__ = "1.07n"
 
 DEBUG = False
 HOMO = False
@@ -121,7 +121,8 @@ class FEPDF:
             53: u'kg base', 54: u'gruesa', 61: u'kg bruto', 
             62: u'uiactant', 63: u'muiactant', 64: u'uiactig', 65: u'muiactig', 66: u'kg activo', 
             67: u'gramo activo', 68: u'gramo base', 96: u'packs', 97: u'hormas', 
-            98: u'bonificaci\xf3n', 99: u'otras unidades'}
+            96: u'packs', 97: u'seña/anticipo', 
+            99: u'bonificaci\xf3n', 98: u'otras unidades'}
 
     ivas_ds = {3: '0%', 4: '10.5%', 5: '21%', 6: '27%'}
 
