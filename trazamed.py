@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15e"
+__version__ = "1.15f"
 
 import os
 import socket
@@ -372,7 +372,7 @@ class TrazaMed(BaseWS):
 
         ret = res['return']
         
-        self.CodigoTransaccion = ret['codigoTransaccion']
+        self.CodigoTransaccion = ret.get('codigoTransaccion')
         self.__analizar_errores(ret)
 
         return True
@@ -804,6 +804,8 @@ def main():
     # Opciones principales:
     
     if '--cancela' in sys.argv:
+        if '--loadxml' in sys.argv:
+            ws.LoadTestXML("trazamed_cancela_err.xml")  # cargo respuesta
         ws.SendCancelacTransacc(*sys.argv[sys.argv.index("--cancela")+1:])
     elif '--cancela_parcial' in sys.argv:
         ws.SendCancelacTransaccParcial(*sys.argv[sys.argv.index("--cancela_parcial")+1:])
@@ -836,7 +838,7 @@ def main():
                                 #id_agente_destino="1", 
                                 #id_medicamento="1", 
                                 #id_evento="1", 
-                                #fecha_desde_op="01/01/2013", 
+                                #fecha_desde_op="01/01/2015", 
                                 #fecha_hasta_op="31/12/2013", 
                                 #fecha_desde_t="01/01/2013", 
                                 #fecha_hasta_t="31/12/2013", 
