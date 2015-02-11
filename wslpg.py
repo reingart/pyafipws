@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17f"
+__version__ = "1.18a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -294,8 +294,8 @@ CERTIFICACION = [
     ('analisis_muestra', 10, N),
     ('nro_boletin', 10, N),
     ('valor_grado', 4, I, 3),
-    ('valor_contenido_proteico', 4, I, 3),
-    ('valor_factor', 4, I, 3),
+    ('valor_contenido_proteico', 5, I, 3),
+    ('valor_factor', 6, I, 3),
     ('porcentaje_merma_volatil', 5, I, 2),
     ('peso_neto_merma_volatil', 10, I , 2),
     ('porcentaje_merma_secado', 5, I, 2),
@@ -306,12 +306,12 @@ CERTIFICACION = [
     ('servicios_secado', 8, I, 3),
     ('servicios_zarandeo', 8, I, 3),
     ('servicios_otros', 7, I, 3),
-    ('servicios_forma_de_pago', 20, N),
+    ('servicios_forma_de_pago', 20, A),
     # campos para cgAutorizarRetiroTransferencia (WSLPGv1.6):
     ('cuit_receptor', 11, N),
     ('fecha', 10, A),
     ('nro_carta_porte_a_utilizar', 9, N),
-    ('cee_carta_porte_a_utilizar', 12, N),
+    ('cee_carta_porte_a_utilizar', 14, N),
     # para cgAutorizarPreexistente (WSLPGv1.6):
     ('tipo_certificado_deposito_preexistente', 1, N),  # "R": Retiro "T": Tra.
     ('nro_certificado_deposito_preexistente', 12, N),
@@ -330,10 +330,10 @@ CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
     ('nro_carta_porte', 9, N),
     ('porcentaje_secado_humedad', 5, I, 2),
     ('importe_secado', 10, I, 2),
-    ('peso_neto_merma_secado', 8, N),
+    ('peso_neto_merma_secado', 10, N, 2),
     ('tarifa_secado', 10, I, 2),
     ('importe_zarandeo', 10, I, 2),
-    ('peso_neto_merma_zarandeo', 8, N),
+    ('peso_neto_merma_zarandeo', 10, N, 2),
     ('tarifa_zarandeo', 10, I, 2),
 ]
 
@@ -341,8 +341,8 @@ DET_MUESTRA_ANALISIS = [            # para cgAutorizarDeposito (WSLPGv1.6)
     ('tipo_reg', 1, A), # D: detalle muestra analisis
     ('descripcion_rubro', 400, A),
     ('tipo_rubro', 1, A),           #  "B" (Bonificación) y "R" (Rebaja)
-    ('porcentaje', 3, I, 2),
-    ('valor', 3, I, 2),
+    ('porcentaje', 5, I, 2),
+    ('valor', 5, I, 2),
 ]
 
 EVENTO = [
