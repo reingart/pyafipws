@@ -17,7 +17,7 @@ WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15e"
+__version__ = "1.16a"
 
 import datetime
 import decimal
@@ -51,7 +51,7 @@ class WSFEv1(BaseWS):
                         'ParamGetCotizacion', 
                         'ParamGetPtosVenta',
                         'AnalizarXml', 'ObtenerTagXml',
-                        'SetParametros',
+                        'SetParametros', 'EstablecerCampoFactura',
                         'Dummy', 'Conectar', 'DebugLog']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -143,6 +143,13 @@ class WSFEv1(BaseWS):
 
         self.factura = fact
         return True
+
+    def EstablecerCampoFactura(self, campo, valor):
+        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae'):
+            self.factura[campo] = valor
+            return True
+        else:
+            return False
 
     def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwarg):
         "Agrego un comprobante asociado a una factura (interna)"
