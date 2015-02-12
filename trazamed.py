@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15f"
+__version__ = "1.15g"
 
 import os
 import socket
@@ -883,7 +883,7 @@ def main():
                 print "ERROR: no se indicaron todos los parámetros requeridos"
         elif medicamentos:
             try:
-                usuario, password = argv[0:2]
+                usuario, password = argv[1:3]
             except:
                 print "ADVERTENCIA: no se indico parámetros usuario y passoword"
                 usuario = password = "pruebasws"
