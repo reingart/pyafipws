@@ -66,7 +66,7 @@ IF ! ok Then
 ENDIF
 
 *-- Establecer tipo de certificación a autorizar
-tipo_certificado = "P"      &&  cambiar D: deposito, P: planta, R: retiro, T: transf, E: preexistente
+tipo_certificado = "P"      &&  cambiar P: primaria, R: retiro, T: transf, E: preexistente
     
 *-- genero una certificación de ejemplo a autorizar (datos generales de cabecera):
 pto_emision = 99
@@ -95,8 +95,9 @@ ok = WSLPG.CrearCertificacionCabecera( ;
 
 DO CASE
 	
-    CASE INLIST(tipo_certificado, "D", "P")
+    CASE INLIST(tipo_certificado, "P")
         *-- datos del certificado depósito F1116A:
+        ok = WSLPG.SetParametro("nro_act_depositario", "29")
         ok = WSLPG.SetParametro("descripcion_tipo_grano", "SOJA")
         ok = WSLPG.SetParametro("monto_almacenaje", 1)
         ok = WSLPG.SetParametro("monto_acarreo", 2)
@@ -124,7 +125,7 @@ DO CASE
         ok = WSLPG.SetParametro("servicios_otros", 24)
         ok = WSLPG.SetParametro("servicios_forma_de_pago", 25)
         
-        ok = WSLPG.AgregarCertificacionPlantaDepositoElevador()
+        ok = WSLPG.AgregarCertificacionPrimaria()
     
         descripcion_rubro = "bonif"
         tipo_rubro = "B"
@@ -155,8 +156,9 @@ DO CASE
         fecha = "2014-11-26"
         nro_carta_porte_a_utilizar = "12345"
         cee_carta_porte_a_utilizar = "123456789012"
+        nro_act_depositario = "29"
         ok = WSLPG.AgregarCertificacionRetiroTransferencia( ;
-                cuit_receptor, fecha, ;
+                nro_act_depositario, cuit_receptor, fecha, ;
                 nro_carta_porte_a_utilizar, ;
                 cee_carta_porte_a_utilizar)
         *-- datos del certificado (los NULL no se utilizan por el momento)
@@ -168,13 +170,13 @@ DO CASE
         *-- establezco datos del certificado preexistente:
         tipo_certificado_deposito_preexistente = 1  && "R" o "T"
         nro_certificado_deposito_preexistente = "12345"
-        cee_certificado_deposito_preexistente = "123456789012"
+        cac_certificado_deposito_preexistente = "123456789012"
         fecha_emision_certificado_deposito_preexistente = "2014-11-26"
         peso_neto = 1000
         ok = WSLPG.AgregarCertificacionPreexistente( ;
                 tipo_certificado_deposito_preexistente, ;
                 nro_certificado_deposito_preexistente, ;
-                cee_certificado_deposito_preexistente, ;
+                cac_certificado_deposito_preexistente, ;
                 fecha_emision_certificado_deposito_preexistente, ;
                 peso_neto)
 
