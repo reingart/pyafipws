@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18a"
+__version__ = "1.19a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -97,7 +97,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = False
+HOMO = True
 
 # definición del formato del archivo de intercambio:
 
@@ -269,7 +269,7 @@ CERTIFICACION = [
     # campos de la cabecera para todas las certificaciones (WSLPGv1.6)
     ('pto_emision', 4, N),
     ('nro_orden', 8, N),
-    ('tipo_certificado', 1, A),   # P:Planta,R:Retiro,T:Transferencia,E:Preexistente,D:en Deposito y/o Elevador.
+    ('tipo_certificado', 1, A),   # P:Primaria,R:Retiro,T:Transferencia,E:Preexistente
     ('nro_planta', 6, N),
     ('nro_ing_bruto_depositario', 15, N),
     ('titular_grano', 1, A),        # "P" (Propio) "T" (Tercero)
@@ -279,8 +279,9 @@ CERTIFICACION = [
     ('cod_grano', 3, N),
     ('campania', 4, N),
     ('datos_adicionales', 400, A),
-    ('reservado1', 19, A),          # reservado para futuros campos (no usar)
-    # campos para cgAutorizarDeposito (WSLPGv1.6)
+    ('reservado1', 14, A),          # reservado para futuros campos (no usar)
+    # campos para CgAutorizarPrimariaType ex-cgAutorizarDeposito (WSLPGv1.6-1.8)
+    ('nro_act_depositario', 5, N),              # nuevo WSLPGv1.8 tambien R/T
     ('descripcion_tipo_grano', 20, A),
     ('monto_almacenaje', 10, I, 2),
     ('monto_acarreo', 10, I, 2),
@@ -309,13 +310,13 @@ CERTIFICACION = [
     ('servicios_forma_de_pago', 20, A),
     # campos para cgAutorizarRetiroTransferencia (WSLPGv1.6):
     ('cuit_receptor', 11, N),
-    ('fecha', 10, A),
-    ('nro_carta_porte_a_utilizar', 9, N),
-    ('cee_carta_porte_a_utilizar', 14, N),
+    ('fecha', 10, A),                           # no usado WSLPGv1.8
+    ('nro_carta_porte_a_utilizar', 9, N),       # obligatorio para retiro
+    ('cee_carta_porte_a_utilizar', 14, N),      # no usado WSLPGv1.8
     # para cgAutorizarPreexistente (WSLPGv1.6):
     ('tipo_certificado_deposito_preexistente', 1, N),  # "R": Retiro "T": Tra.
     ('nro_certificado_deposito_preexistente', 12, N),
-    ('cee_certificado_deposito_preexistente', 14, N),
+    ('cac_certificado_deposito_preexistente', 14, N),  # cambio WSLPGv1.8
     ('fecha_emision_certificado_deposito_preexistente', 10, A),
     ('peso_neto', 8, N),
     # datos devueltos por el webservice:
@@ -335,6 +336,7 @@ CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
     ('importe_zarandeo', 10, I, 2),
     ('peso_neto_merma_zarandeo', 10, N, 2),
     ('tarifa_zarandeo', 10, I, 2),
+    ('peso_neto_confirmado_definitivo', 10, I, 2),
 ]
 
 DET_MUESTRA_ANALISIS = [            # para cgAutorizarDeposito (WSLPGv1.6)
@@ -382,7 +384,7 @@ class WSLPG(BaseWS):
                         'AsociarLiquidacionAContrato', 'ConsultarAjuste',
                         'ConsultarLiquidacionesPorContrato', 
                         'CrearCertificacionCabecera', 
-                        'AgregarCertificacionPlantaDepositoElevador',
+                        'AgregarCertificacionPrimaria',
                         'AgregarCertificacionRetiroTransferencia',
                         'AgregarCertificacionPreexistente',
                         'AgregarDetalleMuestraAnalisis', 'AgregarCTG',
@@ -675,7 +677,7 @@ class WSLPG(BaseWS):
         if not coe_certificado_deposito:
             self.liquidacion['certificados'].append({'certificado': cert})
         else:
-            self.certificacion['retiroTransferencia']['certificadoDeposito'].append(cert)
+            self.certificacion['retiroTransferencia']['certificadoDeposito'] = cert
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1306,7 +1308,8 @@ class WSLPG(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarCertificacionPlantaDepositoElevador(self, 
+    def AgregarCertificacionPrimaria(self, 
+            nro_act_depositario=None,
             descripcion_tipo_grano=None,
             monto_almacenaje=None, monto_acarreo=None, 
             monto_gastos_generales=None, monto_zarandeo=None,
@@ -1322,7 +1325,8 @@ class WSLPG(BaseWS):
             servicios_forma_de_pago=None,
             **kwargs):
         
-        self.certificacion['plantaDepositoElevador'] = dict(
+        self.certificacion['primaria'] = dict(
+                nroActDepositario=nro_act_depositario,
                 ctg=[],                        # <!--0 or more repetitions:-->
                 descripcionTipoGrano=descripcion_tipo_grano,
                 montoAlmacenaje=monto_almacenaje,
@@ -1357,12 +1361,14 @@ class WSLPG(BaseWS):
     
     @inicializar_y_capturar_excepciones
     def AgregarCertificacionRetiroTransferencia(self, 
+            nro_act_depositario=None,
             cuit_receptor=None,
             fecha=None, 
             nro_carta_porte_a_utilizar=None,
             cee_carta_porte_a_utilizar=None,
             **kwargs):
         self.certificacion['retiroTransferencia'] = dict(
+                nroActDepositario=nro_act_depositario,
                 cuitReceptor=cuit_receptor or None,                 # opcional
                 fecha=fecha,
                 nroCartaPorteAUtilizar=nro_carta_porte_a_utilizar or None,
@@ -1375,14 +1381,14 @@ class WSLPG(BaseWS):
     def AgregarCertificacionPreexistente(self, 
             tipo_certificado_deposito_preexistente=None,
             nro_certificado_deposito_preexistente=None,
-            cee_certificado_deposito_preexistente=None,
+            cac_certificado_deposito_preexistente=None,
             fecha_emision_certificado_deposito_preexistente=None,
             peso_neto=None,
             **kwargs):
         self.certificacion['preexistente'] = dict(
                 tipoCertificadoDepositoPreexistente=tipo_certificado_deposito_preexistente,
                 nroCertificadoDepositoPreexistente=nro_certificado_deposito_preexistente,
-                ceeCertificadoDepositoPreexistente=cee_certificado_deposito_preexistente,
+                cacCertificadoDepositoPreexistente=cac_certificado_deposito_preexistente,
                 fechaEmisionCertificadoDepositoPreexistente=fecha_emision_certificado_deposito_preexistente,
                 pesoNeto=peso_neto,
                 )
@@ -1401,7 +1407,7 @@ class WSLPG(BaseWS):
                 porcentaje=porcentaje,
                 valor=valor,
             )
-        self.certificacion['plantaDepositoElevador']['detalleMuestraAnalisis'].append(det)
+        self.certificacion['primaria']['detalleMuestraAnalisis'].append(det)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1409,13 +1415,15 @@ class WSLPG(BaseWS):
                          porcentaje_secado_humedad=None, importe_secado=None,
                          peso_neto_merma_secado=None, tarifa_secado=None,
                          importe_zarandeo=None, peso_neto_merma_zarandeo=None,
-                         tarifa_zarandeo=None,
+                         tarifa_zarandeo=None, 
+                         peso_neto_confirmado_definitivo=None,
                          **kwargs):
         "Agrega la información referente a una CTG de la certificación"
         
         ctg = dict(
                 nroCTG=nro_ctg,
                 nroCartaDePorte=nro_carta_porte,
+                pesoNetoConfirmadoDefinitivo=peso_neto_confirmado_definitivo,
                 porcentajeSecadoHumedad=porcentaje_secado_humedad,
                 importeSecado=importe_secado,
                 pesoNetoMermaSecado=peso_neto_merma_secado,
@@ -1424,7 +1432,7 @@ class WSLPG(BaseWS):
                 pesoNetoMermaZarandeo=peso_neto_merma_zarandeo,
                 tarifaZarandeo=tarifa_zarandeo,
             )
-        self.certificacion['plantaDepositoElevador']['ctg'].append(ctg)
+        self.certificacion['primaria']['ctg'].append(ctg)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1432,7 +1440,7 @@ class WSLPG(BaseWS):
         "Autoriza una Certificación Primaria de Depósito de Granos (C1116A/RT)"
         
         # limpio los elementos que no correspondan por estar vacios:
-        for k1 in ('plantaDepositoElevador', 'retiroTransferencia'):
+        for k1 in ('primaria', 'retiroTransferencia'):
             dic = self.certificacion.get(k1)
             if not dic: continue
             for k2 in ('ctg', 'detalleMuestraAnalisis', 'certificadoDeposito'):
@@ -3074,13 +3082,14 @@ if __name__ == '__main__':
                         datos_adicionales="Prueba",)
            
                 # datos provisorios de prueba (segun tipo de certificación):
-                if '--deposito' in sys.argv:
+                if '--primaria' in sys.argv:
                     dep = dict(
-                        tipo_certificado="D",
+                        nro_act_depositario=40,
+                        tipo_certificado="P",
                         descripcion_tipo_grano="SOJA",
                         monto_almacenaje=1, monto_acarreo=2, 
                         monto_gastos_generales=3, monto_zarandeo=4,
-                        porcentaje_secado_de=5, porcentaje_secado_a=6,
+                        porcentaje_secado_de=5, porcentaje_secado_a=4,
                         monto_secado=7, monto_por_cada_punto_exceso=8,
                         monto_otros=9, analisis_muestra=10, nro_boletin=11,
                         valor_grado=1.02, 
@@ -3102,11 +3111,13 @@ if __name__ == '__main__':
                             porcentaje_secado_humedad=1, importe_secado=2,
                             peso_neto_merma_secado=3, tarifa_secado=4,
                             importe_zarandeo=5, peso_neto_merma_zarandeo=6,
-                            tarifa_zarandeo=7)
+                            tarifa_zarandeo=7, 
+                            peso_neto_confirmado_definitivo=1)
                     dic['ctgs'] = [ctg]
 
                 if '--retiro-transf' in sys.argv:
                     rt = dict(
+                            nro_act_depositario=29,
                             tipo_certificado="R",
                             cuit_receptor="20400000000",
                             fecha="2014-11-26", 
@@ -3125,7 +3136,7 @@ if __name__ == '__main__':
                             tipo_certificado="E",
                             tipo_certificado_deposito_preexistente=1, # "R" o "T"
                             nro_certificado_deposito_preexistente="12345",
-                            cee_certificado_deposito_preexistente="123456789012",
+                            cac_certificado_deposito_preexistente="123456789012",
                             fecha_emision_certificado_deposito_preexistente="2014-11-26",
                             peso_neto=1000,
                             )
@@ -3138,8 +3149,8 @@ if __name__ == '__main__':
             
             wslpg.CrearCertificacionCabecera(**dic)
 
-            if dic["tipo_certificado"] in ('D', 'P'):
-                wslpg.AgregarCertificacionPlantaDepositoElevador(**dic)
+            if dic["tipo_certificado"] in ('P'):
+                wslpg.AgregarCertificacionPrimaria(**dic)
                 for ctg in dic.get("ctgs", []):
                     wslpg.AgregarCTG(**ctg)
                 for det in dic.get("det_muestra_analisis", []):
