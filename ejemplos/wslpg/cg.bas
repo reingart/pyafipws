@@ -51,7 +51,7 @@ Sub Main()
     End If
         
     ' Establecer tipo de certificación a autorizar
-    tipo_certificado = "D"      '  cambiar D: deposito, P: planta, R: retiro, T: transf, E: preexistente
+    tipo_certificado = "P"      '  cambiar P: primaria, R: retiro, T: transf, E: preexistente
         
     ' genero una certificación de ejemplo a autorizar (datos generales de cabecera):
     pto_emision = 99
@@ -79,8 +79,9 @@ Sub Main()
             datos_adicionales)
 
     Select Case tipo_certificado
-        Case "D", "P"
+        Case "P"
             ' datos del certificado depósito F1116A:
+            nro_act_depositario = 29
             descripcion_tipo_grano = "SOJA"
             monto_almacenaje = 1: monto_acarreo = 2
             monto_gastos_generales = 3: monto_zarandeo = 4
@@ -95,7 +96,8 @@ Sub Main()
             servicios_zarandeo = 23: servicios_otros = 24
             servicios_forma_de_pago = 25
             
-            ok = WSLPG.AgregarCertificacionPlantaDepositoElevador( _
+            ok = WSLPG.AgregarCertificacionPrimaria( _
+                    nro_act_depositario = 29, _
                     descripcion_tipo_grano, _
                     monto_almacenaje, monto_acarreo, _
                     monto_gastos_generales, monto_zarandeo, _
@@ -120,21 +122,22 @@ Sub Main()
             porcentaje_secado_humedad = 1: importe_secado = 2:
             peso_neto_merma_secado = 3: tarifa_secado = 4:
             importe_zarandeo = 5: peso_neto_merma_zarandeo = 6:
-            tarifa_zarandeo = 7
+            tarifa_zarandeo = 7: peso_neto_confirmado_definitivo = 8
             ok = WSLPG.AgregarCTG( _
                 nro_ctg, nro_carta_porte, _
                 porcentaje_secado_humedad, importe_secado, _
                 peso_neto_merma_secado, tarifa_secado, _
                 importe_zarandeo, peso_neto_merma_zarandeo, _
-                tarifa_zarandeo)
+                tarifa_zarandeo, peso_neto_confirmado_definitivo)
     
         Case "R", "T":
             ' establezco datos del certificado retiro/transferencia F1116R/T:
+            nro_act_depositario = 29
             cuit_receptor = "20400000000": fecha = "2014-11-26"
             nro_carta_porte_a_utilizar = "12345"
             cee_carta_porte_a_utilizar = "123456789012"
             ok = WSLPG.AgregarCertificacionRetiroTransferencia( _
-                    cuit_receptor, fecha, _
+                    nro_act_depositario, cuit_receptor, fecha, _
                     nro_carta_porte_a_utilizar, _
                     cee_carta_porte_a_utilizar)
             ' datos del certificado (los Null no se utilizan por el momento)
@@ -156,13 +159,13 @@ Sub Main()
             ' establezco datos del certificado preexistente:
             tipo_certificado_deposito_preexistente = 1: ' "R" o "T"
             nro_certificado_deposito_preexistente = "12345"
-            cee_certificado_deposito_preexistente = "123456789012"
+            cac_certificado_deposito_preexistente = "123456789012"
             fecha_emision_certificado_deposito_preexistente = "2014-11-26"
             peso_neto = 1000
             ok = WSLPG.AgregarCertificacionPreexistente( _
                     tipo_certificado_deposito_preexistente, _
                     nro_certificado_deposito_preexistente, _
-                    cee_certificado_deposito_preexistente, _
+                    cac_certificado_deposito_preexistente, _
                     fecha_emision_certificado_deposito_preexistente, _
                     peso_neto)
     
