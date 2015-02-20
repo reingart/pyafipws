@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19a"
+__version__ = "1.19b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1463,10 +1463,13 @@ class WSLPG(BaseWS):
 
     def AnalizarAutorizarCertificadoResp(self, ret):
         "Metodo interno para extraer datos de la Respuesta de Certificación"
-        self.PtoEmision = ret['ptoEmision']
-        self.NroOrden = ret['nroOrden']
-        self.FechaCertificacion = ret.get('fechaCertificacion', "")
-        self.COE = ret['coe']
+        aut = ret.get('autorizacion')
+        if aut:
+            self.PtoEmision = aut['ptoEmision']
+            self.NroOrden = aut['nroOrden']
+            self.FechaCertificacion = ret.aut('fechaCertificacion', "")
+            self.COE = aut['coe']
+            self.Estado = aut['estado']
 
     @inicializar_y_capturar_excepciones
     def AsociarLiquidacionAContrato(self, coe=None, nro_contrato=None, 
@@ -3084,7 +3087,7 @@ if __name__ == '__main__':
                 # datos provisorios de prueba (segun tipo de certificación):
                 if '--primaria' in sys.argv:
                     dep = dict(
-                        nro_act_depositario=40,
+                        nro_act_depositario=29,
                         tipo_certificado="P",
                         descripcion_tipo_grano="SOJA",
                         monto_almacenaje=1, monto_acarreo=2, 
@@ -3142,7 +3145,7 @@ if __name__ == '__main__':
                             )
                     dic.update(pre)
 
-                escribir_archivo(dic, ENTRADA)
+                escribir_archivo(dic, ENTRADA, agrega=False)
             dic = leer_archivo(ENTRADA)
             
             # cargar los datos según el tipo de certificación:
