@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19b"
+__version__ = "1.19c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -3167,9 +3167,10 @@ if __name__ == '__main__':
             if dic["tipo_certificado"] in ('E', ):
                 wslpg.AgregarCertificacionPreexistente(**dic)
             
-            print "Certificacion: pto_emision=%s nro_orden=%s" % (
+            print "Certificacion: pto_emision=%s nro_orden=%s tipo=%s" % (
                     wslpg.certificacion['cabecera']['ptoEmision'],
                     wslpg.certificacion['cabecera']['nroOrden'],
+                    wslpg.certificacion['cabecera']['tipoCertificado'],
                     )
             
             if '--testing' in sys.argv:
@@ -3183,12 +3184,11 @@ if __name__ == '__main__':
                 if DEBUG: print >> sys.stderr, wslpg.Traceback
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
-            ##print wslpg.GetParametro("cod_tipo_operacion")
             print wslpg.GetParametro("fecha_certificacion") 
 
             # actualizo el archivo de salida con los datos devueltos
-            ##dic.update(wslpg.params_out)
-            ##escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
+            dic.update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
             
         # Recuperar parámetros:
         
