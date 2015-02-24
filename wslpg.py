@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19c"
+__version__ = "1.19d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -319,8 +319,9 @@ CERTIFICACION = [
     ('cac_certificado_deposito_preexistente', 14, N),  # cambio WSLPGv1.8
     ('fecha_emision_certificado_deposito_preexistente', 10, A),
     ('peso_neto', 8, N),
+    ('nro_planta', 6, N),                       # agregado WSLPGv1.8
     # datos devueltos por el webservice:
-    ('reservado2', 185, N),     # padding para futuros campos (no usar)
+    ('reservado2', 179, N),     # padding para futuros campos (no usar)
     ('coe', 12, N),
     ('fecha_certificacion', 10, A), 
 ]
@@ -1383,14 +1384,14 @@ class WSLPG(BaseWS):
             nro_certificado_deposito_preexistente=None,
             cac_certificado_deposito_preexistente=None,
             fecha_emision_certificado_deposito_preexistente=None,
-            peso_neto=None,
+            peso_neto=None, nro_planta=None,
             **kwargs):
         self.certificacion['preexistente'] = dict(
                 tipoCertificadoDepositoPreexistente=tipo_certificado_deposito_preexistente,
                 nroCertificadoDepositoPreexistente=nro_certificado_deposito_preexistente,
                 cacCertificadoDepositoPreexistente=cac_certificado_deposito_preexistente,
                 fechaEmisionCertificadoDepositoPreexistente=fecha_emision_certificado_deposito_preexistente,
-                pesoNeto=peso_neto,
+                pesoNeto=peso_neto, nroPlanta=nro_planta,
                 )
         return True
 
@@ -3141,7 +3142,7 @@ if __name__ == '__main__':
                             nro_certificado_deposito_preexistente="12345",
                             cac_certificado_deposito_preexistente="123456789012",
                             fecha_emision_certificado_deposito_preexistente="2014-11-26",
-                            peso_neto=1000,
+                            peso_neto=1000, nro_planta=1,
                             )
                     dic.update(pre)
 
