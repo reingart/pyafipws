@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19d"
+__version__ = "1.20a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -229,6 +229,19 @@ DEDUCCION = [
     ('precio_pkg_diario', 11, I, 8), # 3.8, ajustado WSLPGv1.2
     ]
 
+PERCEPCION = [
+    ('tipo_reg', 1, A), # P: Percepcion
+    ('detalle_aclaratoria', 50, A), # max 50 por WSLPGv1.8
+    ('base_calculo', 10, I, 2),  # 8.2
+    ('alicuota', 6, I, 2),  # 3.2
+    ]
+
+OPCIONAL = [
+    ('tipo_reg', 1, A), # O: Opcional
+    ('codigo', 50, A), 
+    ('descripcion', 250, A), 
+    ]
+
 AJUSTE = [
     ('tipo_reg', 1, A), # 4: ajuste débito / 5: crédito (WSLPGv1.4)
     ('concepto_importe_iva_0', 20, A),
@@ -374,7 +387,8 @@ class WSLPG(BaseWS):
                         'AutorizarLiquidacionSecundaria', 'AnularLiquidacion',
                         'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
-                        'AgregarDeduccion',
+                        'AgregarDeduccion', 'AgregarPercepcion',
+                        'AgregarOpcional', 
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'CrearAjusteBase', 
                         'CrearAjusteDebito', 'CrearAjusteCredito',
@@ -644,10 +658,12 @@ class WSLPG(BaseWS):
             campaniaPPal=campania_ppal,
             codLocalidad=cod_localidad_procedencia, 
             codProvincia=cod_prov_procedencia,
-            detalleDeducciones=detalle_deducciones,
-            importeDeducciones=importe_deducciones,
             datosAdicionales=datos_adicionales,
             )
+        # inicializo las listas que contentran las retenciones y deducciones:
+        self.deducciones = []
+        self.percepciones = []
+        self.opcionales = []
         return True
 
     @inicializar_y_capturar_excepciones
@@ -736,11 +752,35 @@ class WSLPG(BaseWS):
                                         precioPKGdiario=precio_pkg_diario,
                                         comisionGastosAdm=comision_gastos_adm,
                                         baseCalculo=base_calculo,
-                                        alicuotaIva=alicuota
+                                        alicuotaIva=alicuota, 
                                     ))
                             )
         return True
 
+    @inicializar_y_capturar_excepciones
+    def AgregarPercepcion(self, codigo_concepto=None, detalle_aclaratoria=None,
+                               base_calculo=None, alicuota=None, **kwargs):
+        "Agrega la información referente a las percepciones de la liq. sec."
+        self.percepciones.append(dict(
+                                    percepcion=dict(
+                                        detalleAclaratoria=detalle_aclaratoria,
+                                        baseCalculo=base_calculo,
+                                        alicuota=alicuota,
+                                    ))
+                            )
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarOpcional(self, codigo=None, descripcion=None, **kwargs):
+        "Agrega la información referente a los opcionales de la liq. seq."
+        self.opcionales.append(dict(
+                                    opcional=dict(
+                                        codigo=codigo,
+                                        descripcion=descripcion,
+                                    ))
+                            )
+        return True
+    
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
         "Autorizar Liquidación Primaria Electrónica de Granos"
@@ -772,6 +812,23 @@ class WSLPG(BaseWS):
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacionSecundaria(self):
         "Autorizar Liquidación Secundaria Electrónica de Granos"
+
+        # extraer y adaptar los campos para liq. sec.
+        if self.deducciones:
+            self.liquidacion['deduccion'] = []
+            for it in self.deducciones:
+                ded = it['deduccion']                  # no se agrupa
+                self.liquidacion['deduccion'].append({
+                    'detalleAclaratoria': ded['detalleAclaratorio'],
+                    'baseCalculo': ded['baseCalculo'], 
+                    'alicuotaIVA': ded['alicuotaIva']})
+        if self.percepciones:
+            self.liquidacion['percepcion'] = []
+            for it in self.percepciones:
+                per = it['percepcion']                  # no se agrupa
+                self.liquidacion['percepcion'].append(per)
+        if self.opcionales:
+            self.liquidacion['opcionales'] = self.opcionales    # agrupado ok
         
         # llamo al webservice:
         ret = self.client.lsgAutorizar(
@@ -2238,6 +2295,8 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
                     ('Certificado', CERTIFICADO, dic.get('certificados', [])), 
                     ('Retencion', RETENCION, dic.get('retenciones', [])), 
                     ('Deduccion', DEDUCCION, dic.get('deducciones', [])),
+                    ('Percepcion', PERCEPCION, dic.get('percepciones', [])),
+                    ('Opcional', OPCIONAL, dic.get('opcionales', [])),
                     ('AjusteCredito', AJUSTE, dic.get('ajuste_credito', [])),
                     ('AjusteDebito', AJUSTE, dic.get('ajuste_debito', [])),
                     ('CTG', CTG, dic.get('ctgs', [])),
@@ -2263,6 +2322,14 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['deducciones']:
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
+        if 'percepciones' in dic:
+            for it in dic['percepciones']:
+                it['tipo_reg'] = 'P'
+                archivo.write(escribir(it, PERCEPCION))
+        if 'opcionales' in dic:
+            for it in dic['opcionales']:
+                it['tipo_reg'] = 'O'
+                archivo.write(escribir(it, OPCIONAL))
         if 'ajuste_debito' in dic:
             dic['ajuste_debito']['tipo_reg'] = 4
             archivo.write(escribir(dic['ajuste_debito'], AJUSTE))
@@ -2305,6 +2372,7 @@ def leer_archivo(nombre_archivo):
         dic = json.load(archivo)
     elif '--dbf' in sys.argv:
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
+               'percepciones': [], 'opcionales': [],
                'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], 
                'ctgs': [], 'det_muestra_analisis': [],
               }
@@ -2313,6 +2381,8 @@ def leer_archivo(nombre_archivo):
                     ('Certificado', CERTIFICADO, dic['certificados']), 
                     ('Retencio', RETENCION, dic['retenciones']), 
                     ('Deduccion', DEDUCCION, dic['deducciones']),
+                    ('Percepcion', PERCEPCION, dic['percepciones']),
+                    ('Opcional', OPCIONAL, dic['opcionales']),
                     ('AjusteCredito', AJUSTE, dic['ajuste_credito']),
                     ('AjusteDebito', AJUSTE, dic['ajuste_debito']),
                     ('CTG', CTG, dic.get('ctgs', [])),
@@ -2322,6 +2392,7 @@ def leer_archivo(nombre_archivo):
         leer_dbf(formatos, conf_dbf)
     else:
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
+               'percepciones': [], 'opcionales': [],
                'datos': [], 'ajuste_credito': {}, 'ajuste_debito': {}, 
                'ctgs': [], 'det_muestra_analisis': [],
                }
@@ -2346,6 +2417,10 @@ def leer_archivo(nombre_archivo):
                     print "ADVERTENCIA: USAR precio_pkg_diario!" 
                     d['precio_pkg_diario'] = d['reservado1'] 
                 liq['deducciones'].append(d)
+            elif str(linea[0])=='P':
+                liq['percepciones'].append(leer(linea, PERCEPCION))
+            elif str(linea[0])=='O':
+                liq['opcionales'].append(leer(linea, OPCIONAL))
             elif str(linea[0])=='4':
                 liq = leer(linea, AJUSTE)
                 liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
@@ -2391,6 +2466,8 @@ if __name__ == '__main__':
                              ('Certificado', CERTIFICADO), 
                              ('Retencion', RETENCION), 
                              ('Deduccion', DEDUCCION), 
+                             ('Percepcion', PERCEPCION),
+                             ('Opcional', OPCIONAL), 
                              ('Ajuste', AJUSTE),
                              ('Certificacion', CERTIFICACION),
                              ('CTG', CTG),
@@ -3033,15 +3110,26 @@ if __name__ == '__main__':
                     cod_localidad_procedencia=197,
                     cod_prov_procedencia=10,
                     datos_adicionales="Prueba",
-                    detalle_deducciones="Prueba",
-                    importe_deducciones="2000.00",
+                    deducciones=[{'detalle_aclaratorio': 'deduccion 1',
+                                  'base_calculo': 100, 'alicuota_iva': 21}],
+                    percepciones=[{'detalle_aclaratoria': 'percepcion 1',
+                                  'base_calculo': 1000, 'alicuota_iva': 21}],
+                    opcionales=[{'codigo': 1, 
+                                 'descripcion': 'previsto para info adic.'}],
                 )
-                escribir_archivo(dic, ENTRADA)
+                escribir_archivo(dic, ENTRADA, agrega=False)
             dic = leer_archivo(ENTRADA)
             
             # cargo la liquidación:
             wslpg.CrearLiqSecundariaBase(**dic)
             
+            for ded in dic.get('deducciones', []):
+                wslpg.AgregarDeduccion(**ded)
+            for per in dic.get("percepciones", []):
+                wslpg.AgregarPercepcion(**per)
+            for opc in dic.get("opcionales", []):
+                wslpg.AgregarOpcional(**opc)
+
             print "Liquidacion Secundaria: pto_emision=%s nro_orden=%s" % (
                     wslpg.liquidacion['ptoEmision'],
                     wslpg.liquidacion['nroOrden'],
