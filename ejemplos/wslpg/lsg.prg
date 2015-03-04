@@ -93,11 +93,46 @@ ok = WSLPG.SetParametro("campania_ppal", 1314)
 ok = WSLPG.SetParametro("cod_localidad_procedencia", 197)
 ok = WSLPG.SetParametro("cod_prov_procedencia", 10)
 ok = WSLPG.SetParametro("datos_adicionales", "Prueba")
-ok = WSLPG.SetParametro("detalle_deducciones", "Prueba")
-ok = WSLPG.SetParametro("importe_deducciones", "2000.00")
 
 *-- Establezco los datos de la Liquidación Sec. Base
 ok = WSLPG.CrearLiqSecundariaBase()
+
+*-- Detalle de Deducciones:
+
+codigo_concepto = ""                    && no usado por el momento
+detalle_aclaratorio = "deduccion 1"
+dias_almacenaje = ""                    && no usado por el momento
+precio_pkg_diario = "0"                 && no usado por el momento
+comision_gastos_adm = "0"               && no usado por el momento
+base_calculo = "1000.00"
+alicuota = "21.00"
+
+ok = WSLPG.AgregarDeduccion( ;
+    codigo_concepto, ;
+    detalle_aclaratorio, ;
+    dias_almacenaje, ;
+    precio_pkg_diario, ;
+    comision_gastos_adm, ;
+    base_calculo, ;
+    alicuota)
+
+*-- Detalle de Percepciones:
+
+codigo_concepto = ""                    && no usado por el momento
+detalle_aclaratoria = "percepcion 1"
+base_calculo = "1000.00"
+alicuota = "21.00"
+ok = WSLPG.AgregarPercepcion( ;
+    codigo_concepto, ;
+    detalle_aclaratoria, ;
+    base_calculo, ;
+    alicuota)
+
+*-- Detalle de Opciona:
+
+codigo = "1"
+descripcion = "opcional"
+ok = WSLPG.AgregarOpcional(codigo, descripcion)
 
 *-- Llamo al metodo remoto lsgAutorizar:
 

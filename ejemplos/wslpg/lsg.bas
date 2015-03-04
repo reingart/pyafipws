@@ -55,7 +55,7 @@ Sub Main()
     nro_contrato = 100001232
     cuit_comprador = "20111111112"
     nro_ing_bruto_comprador = "123"
-    cod_puerto = 8
+    cod_puerto = 14
     des_puerto_localidad = "DETALLE PUERTO"
     cod_grano = 2
     cantidad_tn = 100
@@ -74,8 +74,6 @@ Sub Main()
     cod_localidad_procedencia = 197
     cod_prov_procedencia = 10
     datos_adicionales = "Prueba"
-    detalle_deducciones = "Prueba"
-    importe_deducciones = "2000.00"
           
     ok = WSLPG.CrearLiqSecundariaBase(pto_emision, nro_orden, _
             nro_contrato, cuit_comprador, nro_ing_bruto_comprador, _
@@ -86,8 +84,44 @@ Sub Main()
             fecha_precio_operacion, precio_ref_tn, precio_operacion, _
             alic_iva_operacion, campania_ppal, _
             cod_localidad_procedencia, cod_prov_procedencia, _
-            detalle_deducciones, importe_deducciones, _
             datos_adicionales)
+    
+    ' Detalle de Deducciones:
+    
+    codigo_concepto = ""                    ' no usado por el momento
+    detalle_aclaratorio = "deduccion 1"
+    dias_almacenaje = ""                    ' no usado por el momento
+    precio_pkg_diario = "0"                 ' no usado por el momento
+    comision_gastos_adm = "0"               ' no usado por el momento
+    base_calculo = "1000.00"
+    alicuota = "21.00"
+    
+    ok = WSLPG.AgregarDeduccion( _
+        codigo_concepto, _
+        detalle_aclaratorio, _
+        dias_almacenaje, _
+        precio_pkg_diario, _
+        comision_gastos_adm, _
+        base_calculo, _
+        alicuota)
+
+    ' Detalle de Percepciones:
+    codigo_concepto = ""                    ' no usado por el momento
+    detalle_aclaratoria = "percepcion 1"
+    base_calculo = "1000.00"
+    alicuota = "21.00"
+    ok = WSLPG.AgregarPercepcion( _
+        codigo_concepto, _
+        detalle_aclaratoria, _
+        base_calculo, _
+        alicuota)
+    
+    ' Detalle de Opciona:
+    codigo = "1"
+    descripcion = "opcional"
+    ok = WSLPG.AgregarOpcional(codigo, descripcion)
+    
+    ' LLamada al webservice para autorizar la LSG:
     
     ok = WSLPG.AutorizarLiquidacionSecundaria()
             
