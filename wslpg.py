@@ -59,6 +59,7 @@ Opciones:
   --autorizar-lsg: Autoriza una Liquidación Secundaria de Granos (lsgAutorizar)
     --lsg --anular: Anula una LSG (lsgAnular)
   --autorizar-cg: Autorizar Certificación de Granos (cgAutorizar)
+    --cg --anular: Solicita anulación de un CG (cgSolicitarAnulacion)
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -1580,6 +1581,20 @@ class WSLPG(BaseWS):
             self.params_out['servicio_zarandeo'] = p.get("servicioZarandeo")
 
     @inicializar_y_capturar_excepciones
+    def AnularCertificacion(self, coe):
+        "Anular liquidación activa"
+        ret = self.client.cgSolicitarAnulacion(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        )
+        ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        self.Estado = ret.get('estadoCertificado', "")
+        return self.COE
+
+    @inicializar_y_capturar_excepciones
     def AsociarLiquidacionAContrato(self, coe=None, nro_contrato=None, 
                                           cuit_comprador=None, 
                                           cuit_vendedor=None,
@@ -3082,6 +3097,9 @@ if __name__ == '__main__':
             if '--lsg' in sys.argv:
                 print "Anulando COE LSG", coe
                 ret = wslpg.AnularLiquidacionSecundaria(coe)
+            if '--cg' in sys.argv:
+                print "Anulando COE CG", coe
+                ret = wslpg.AnularCertificacion(coe)
             else:
                 print "Anulando COE", coe
                 ret = wslpg.AnularLiquidacion(coe)
