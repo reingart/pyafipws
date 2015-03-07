@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20b"
+__version__ = "1.20c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -3202,7 +3202,7 @@ if __name__ == '__main__':
                             importe_zarandeo=5, peso_neto_merma_zarandeo=6,
                             tarifa_zarandeo=7, 
                             peso_neto_confirmado_definitivo=1)
-                    dic['ctgs'] = [ctg]
+                    dic['ctgs'] = [ctg, ctg]
 
                 if '--retiro-transf' in sys.argv:
                     rt = dict(
