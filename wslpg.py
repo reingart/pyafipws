@@ -58,8 +58,10 @@ Opciones:
 
   --autorizar-lsg: Autoriza una Liquidación Secundaria de Granos (lsgAutorizar)
     --lsg --anular: Anula una LSG (lsgAnular)
+    --lsg --consular: Consulta una LSG por pto_emision, nro_orden o COE
   --autorizar-cg: Autorizar Certificación de Granos (cgAutorizar)
     --cg --anular: Solicita anulación de un CG (cgSolicitarAnulacion)
+    --cg --consultar: Consulta una CG por pto_emision, nro_orden o COE
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -429,6 +431,8 @@ class WSLPG(BaseWS):
                         'AgregarCertificacionPreexistente',
                         'AgregarDetalleMuestraAnalisis', 'AgregarCTG',
                         'AutorizarCertificacion',
+                        'AnularCertificacion',
+                        'ConsultarCertificacion',
                         'LeerDatosLiquidacion',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
@@ -1700,6 +1704,32 @@ class WSLPG(BaseWS):
             aut = ret['autorizacion']
             liq = ret['liquidacion']
             self.AnalizarLiquidacion(aut, liq)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarCertificacion(self, pto_emision=None, nro_orden=None, coe=None):
+        "Consulta una certificacion por No de orden o COE"
+        if coe:
+            ret = self.client.cgConsultarXCoe(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        )
+        else:
+            ret = self.client.cgConsultarXNroOrden(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        ptoEmision=pto_emision,
+                        nroOrden=nro_orden,
+                        )
+        ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        if 'autorizacion' in ret:
+            aut = ret['autorizacion']
+            cab = ret['cabecera']
+            ##self.AnalizarLiquidacion(aut, liq)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -3128,6 +3158,8 @@ if __name__ == '__main__':
             print "Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe)
             if '--lsg' in sys.argv:
                 ret = wslpg.ConsultarLiquidacionSecundaria(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
+            if '--cg' in sys.argv:
+                ret = wslpg.ConsultarCertificacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
             else:
                 ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
             print "COE", wslpg.COE
