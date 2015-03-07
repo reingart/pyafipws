@@ -184,7 +184,9 @@ ENCABEZADO = [
     # Campos agregados WSLPGv1.6 (liquidación secundaria base):
     ('cantidad_tn', 11, I, 3),      #  8.3
     ('nro_act_vendedor', 5, N),
-    
+    # Campos agregados WSLPGv1.9 (liquidación secundaria base):
+    ('total_deducciones', 19, I , 2),    
+    ('total_percepciones', 19, I , 2),
     ]
 
 CERTIFICADO = [
@@ -943,13 +945,13 @@ class WSLPG(BaseWS):
             
         # proceso la respuesta de autorizar, ajustar (y consultar):
         if aut:
-            self.TotalDeduccion = aut['totalDeduccion']
-            self.TotalRetencion = aut['totalRetencion']
-            self.TotalRetencionAfip = aut['totalRetencionAfip']
-            self.TotalOtrasRetenciones = aut['totalOtrasRetenciones']
-            self.TotalNetoAPagar = aut['totalNetoAPagar']
-            self.TotalIvaRg2300_07 = aut['totalIvaRg2300_07']
-            self.TotalPagoSegunCondicion = aut['totalPagoSegunCondicion']
+            self.TotalDeduccion = aut.get('totalDeduccion')
+            self.TotalRetencion = aut.get('totalRetencion')
+            self.TotalRetencionAfip = aut.get('totalRetencionAfip')
+            self.TotalOtrasRetenciones = aut.get('totalOtrasRetenciones')
+            self.TotalNetoAPagar = aut.get('totalNetoAPagar')
+            self.TotalIvaRg2300_07 = aut.get('totalIvaRg2300_07')
+            self.TotalPagoSegunCondicion = aut.get('totalPagoSegunCondicion')
             self.COE = str(aut.get('coe', ''))
             self.COEAjustado = aut.get('coeAjustado')
             self.Estado = aut.get('estado', '')
@@ -980,6 +982,10 @@ class WSLPG(BaseWS):
             self.params_out['precio_operacion'] = aut.get('precioOperacion')
             self.params_out['total_peso_neto'] = aut.get('totalPesoNeto')
             self.params_out['subtotal'] = aut.get('subTotal')
+            # LSG (especificos):
+            self.params_out['total_deducciones'] = aut.get('totalDeducciones')
+            self.params_out['total_percepciones'] = aut.get('totalPercepciones')
+            # sub estructuras:
             self.params_out['retenciones'] = []
             self.params_out['deducciones'] = []
             for retret in aut.get("retenciones", []):
