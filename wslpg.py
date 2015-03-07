@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20c"
+__version__ = "1.21a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -314,7 +314,7 @@ CERTIFICACION = [
     ('peso_neto_merma_secado', 10, I, 2),
     ('porcentaje_merma_zarandeo', 5, I, 2),
     ('peso_neto_merma_zarandeo', 10, I, 2),
-    ('peso_neto_certificado', 8, N),
+    ('peso_neto_certificado', 10, I, 2),        # WSLPGv1.9 2 decimales!
     ('servicios_secado', 8, I, 3),
     ('servicios_zarandeo', 8, I, 3),
     ('servicios_otros', 7, I, 3),
@@ -330,11 +330,32 @@ CERTIFICACION = [
     ('cac_certificado_deposito_preexistente', 14, N),  # cambio WSLPGv1.8
     ('fecha_emision_certificado_deposito_preexistente', 10, A),
     ('peso_neto', 8, N),
-    ('nro_planta', 6, N),                       # agregado WSLPGv1.8
+    # nro_planta definido previamente - agregado WSLPGv1.8
+    
     # datos devueltos por el webservice:
-    ('reservado2', 179, N),     # padding para futuros campos (no usar)
+    ('reservado2', 183, N),     # padding para futuros campos (no usar)
     ('coe', 12, N),
     ('fecha_certificacion', 10, A), 
+    ('estado', 2, A),
+
+    ('reservado3', 101, A),     # padding para futuros campos (no usar)
+    
+    # otros campos devueltos (opcionales)
+    # 'pesosResumen'
+    ('peso_bruto_certificado', 10, I , 2),
+    ('peso_merma_secado', 10, I , 2),
+    ('peso_merma_zarandeo', 10, I , 2),
+    # peso_neto_certificado definido arriba
+    # serviciosResumen
+    ('importe_iva', 10, I , 2),
+    ('servicio_gastos_generales', 10, I , 2),
+    ('servicio_otros', 10, I , 2),
+    ('servicio_total', 10, I , 2),
+    ('servicio_zarandeo', 10, I , 2),
+    # planta
+    ('cuit_titular_planta', 11, N),
+    ('razon_social_titular_planta', 11, A),
+
 ]
 
 CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
@@ -1522,9 +1543,32 @@ class WSLPG(BaseWS):
         if aut:
             self.PtoEmision = aut['ptoEmision']
             self.NroOrden = aut['nroOrden']
-            self.FechaCertificacion = ret.aut('fechaCertificacion', "")
+            self.FechaCertificacion = str(aut.get('fechaCertificacion', ""))
             self.COE = aut['coe']
             self.Estado = aut['estado']
+            # actualizo parámetros de salida:
+            self.params_out['coe'] = self.COE
+            self.params_out['estado'] = self.Estado
+            self.params_out['nro_orden'] = self.NroOrden
+            self.params_out['fecha_certificacion'] = self.FechaCertificacion.replace("-", "")
+            if "planta" in aut:
+                p = aut.get("planta")
+                self.params_out['nro_planta'] = p.get("nroPlanta")
+                self.params_out['cuit_titular_planta'] = p.get("cuitTitularPlanta")
+                self.params_out['razon_social_titular_planta'] = p.get("razonSocialTitularPlanta")
+            # otros campos devueltos (opcionales)
+            p = aut.get('pesosResumen', {})
+            self.params_out['peso_bruto_certificado'] = p.get("pesoBrutoCertificado")
+            self.params_out['peso_merma_secado'] = p.get("pesoMermaSecado")
+            self.params_out['peso_merma_volatil'] = p.get("pesoMermaVolatil")
+            self.params_out['peso_merma_zarandeo'] = p.get("pesoMermaZarandeo")
+            self.params_out['peso_neto_certificado'] = p.get("pesoNetoCertificado")
+            p = aut.get('serviciosResumen', {})
+            self.params_out['importe_iva'] = p.get("importeIVA")
+            self.params_out['servicio_gastos_generales'] = p.get("servicioGastosGenerales")
+            self.params_out['servicio_otros'] = p.get("servicioOtros")
+            self.params_out['servicio_total'] = p.get("servicioTotal")
+            self.params_out['servicio_zarandeo'] = p.get("servicioZarandeo")
 
     @inicializar_y_capturar_excepciones
     def AsociarLiquidacionAContrato(self, coe=None, nro_contrato=None, 
@@ -3443,4 +3487,5 @@ if __name__ == '__main__':
         if XML:
             open("wslpg_request.xml", "w").write(wslpg.client.xml_request)
             open("wslpg_response.xml", "w").write(wslpg.client.xml_response)
+
 
