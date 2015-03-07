@@ -57,6 +57,7 @@ Opciones:
   --imprimir: imprime el documento PDF generado (usar con --mostrar y --pdf)
 
   --autorizar-lsg: Autoriza una Liquidación Secundaria de Granos (lsgAutorizar)
+    --lsg --anular: Anula una LSG (lsgAnular)
   --autorizar-cg: Autorizar Certificación de Granos (cgAutorizar)
 
   --provincias: obtiene el listado de provincias
@@ -405,7 +406,8 @@ class WSLPG(BaseWS):
     "Interfaz para el WebService de Liquidación Primaria de Granos"    
     _public_methods_ = ['Conectar', 'Dummy', 'LoadTestXML',
                         'AutorizarLiquidacion',
-                        'AutorizarLiquidacionSecundaria', 'AnularLiquidacion',
+                        'AutorizarLiquidacionSecundaria', 
+                        'AnularLiquidacionSecundaria','AnularLiquidacion',
                         'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion', 'AgregarPercepcion',
@@ -1727,6 +1729,20 @@ class WSLPG(BaseWS):
         self.__analizar_errores(ret)
         self.Resultado = ret['resultado']
         return self.COE
+    
+    @inicializar_y_capturar_excepciones
+    def AnularLiquidacionSecundaria(self, coe):
+        "Anular liquidación secundaria activa"
+        ret = self.client.lsgAnular(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        )
+        ret = ret['anulacionReturn']
+        self.__analizar_errores(ret)
+        self.Resultado = ret['resultado']
+        return self.COE
         
     def ConsultarCampanias(self, sep="||"):
         ret = self.client.campaniasConsultar(
@@ -3036,8 +3052,12 @@ if __name__ == '__main__':
             except IndexError:
                 coe = 330100000357
 
-            print "Anulando COE", coe
-            ret = wslpg.AnularLiquidacion(coe)
+            if '--lsg' in sys.argv:
+                print "Anulando COE LSG", coe
+                ret = wslpg.AnularLiquidacionSecundaria(coe)
+            else:
+                print "Anulando COE", coe
+                ret = wslpg.AnularLiquidacion(coe)
             if wslpg.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
                 if DEBUG: print >> sys.stderr, wslpg.Traceback
@@ -3045,7 +3065,7 @@ if __name__ == '__main__':
             print "Resultado", wslpg.Resultado
             print "Errores:", wslpg.Errores
             sys.exit(0)
-
+            
         if '--consultar' in sys.argv:
             pto_emision = None
             nro_orden = 0
