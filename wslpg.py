@@ -413,6 +413,7 @@ class WSLPG(BaseWS):
                         'AgregarDeduccion', 'AgregarPercepcion',
                         'AgregarOpcional', 
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
+                        'ConsultarLiquidacionSecundaria',
                         'CrearAjusteBase', 
                         'CrearAjusteDebito', 'CrearAjusteCredito',
                         'AjustarLiquidacionUnificado',
@@ -1653,6 +1654,32 @@ class WSLPG(BaseWS):
                         nroOrden=nro_orden,
                         )
         ret = ret['liqConsReturn']
+        self.__analizar_errores(ret)
+        if 'liquidacion' in ret:
+            aut = ret['autorizacion']
+            liq = ret['liquidacion']
+            self.AnalizarLiquidacion(aut, liq)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarLiquidacionSecundaria(self, pto_emision=None, nro_orden=None, coe=None):
+        "Consulta una liquidación sequndaria por No de orden o coe"
+        if coe:
+            ret = self.client.lsgConsultarXCoe(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        )
+        else:
+            ret = self.client.lsgConsultarXNroOrden(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        ptoEmision=pto_emision,
+                        nroOrden=nro_orden,
+                        )
+        ret = ret['oReturn']
         self.__analizar_errores(ret)
         if 'liquidacion' in ret:
             aut = ret['autorizacion']
@@ -3081,7 +3108,10 @@ if __name__ == '__main__':
                 # usar solo si no está operativo
                 wslpg.LoadTestXML("wslpg_cons_test.xml")     # cargo prueba
             print "Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe)
-            ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
+            if '--lsg' in sys.argv:
+                ret = wslpg.ConsultarLiquidacionSecundaria(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
+            else:
+                ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
