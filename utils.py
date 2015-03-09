@@ -413,7 +413,7 @@ class WebClient:
             else:
                 fd = value
                 file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-                filename = fd.name.split('/')[-1]
+                filename = os.path.basename(fd.name)
                 contenttype = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
                 buf.write('--%s\r\n' % boundary)
                 buf.write('Content-Disposition: form-data; name="%s"; filename="%s"\r\n' % (key, filename))
