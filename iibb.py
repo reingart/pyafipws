@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import md5, os, sys, tempfile, traceback
 from pysimplesoap.simplexml import SimpleXMLElement
@@ -26,7 +26,7 @@ HOMO = False
 CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producción)
 
 URL = "https://dfe.test.arba.gov.ar/DomicilioElectronico/SeguridadCliente/dfeServicioConsulta.do"  # testing
-##URL = "https://dfe.arba.gov.ar/DomicilioElectronico/SeguridadCliente/dfeServicioConsulta.do"  # testing
+##URL = "https://dfe.arba.gov.ar/DomicilioElectronico/SeguridadCliente/dfeServicioConsulta.do"  # produccion
 
 
 XML_ENTRADA_BASE = """<?xml version = "1.0" encoding = "ISO-8859-1"?>
@@ -49,12 +49,12 @@ class IIBB:
         'Version', 'Excepcion', 'Traceback', 'InstallDir',
         'NumeroComprobante', 'CantidadContribuyentes', 'CodigoHash',
         'CuitContribuyente', 'AlicuotaPercepcion', 'AlicuotaRetencion',
-        'GrupoPercepcion', 'iibb.GrupoRetencion',
+        'GrupoPercepcion', 'GrupoRetencion',
         'TipoError', 'CodigoError', 'MensajeError',
         ]
 
     _reg_progid_ = "IIBB"
-    _reg_clsid_ = "{}"
+    _reg_clsid_ = "{2C7E29D2-0C99-49D8-B04B-A16B807BB123}"
 
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
@@ -87,6 +87,7 @@ class IIBB:
         self.testing = testing
 
     def ConsultarContribuyentes(self, fecha_desde, fecha_hasta, cuit_contribuyente):
+        "Realiza la consulta remota a ARBA, estableciendo los resultados"
         self.limpiar()
         try:
 
