@@ -41,6 +41,7 @@ import pyi25
 #import wscoc
 #import wscdc
 #import cot
+#import iibb
 #import trazamed
 #import trazarenpre
 #import trazafito
@@ -374,6 +375,17 @@ if 'py2exe' in sys.argv:
             ]), ("conf", ["conf/arba.crt"])]
         __version__ += "+cot_" + cot.__version__
         HOMO &= cot.HOMO
+
+    if 'iibb' in globals():
+        kwargs['com_server'] += [
+            Target(module=iibb,modules="iibb")
+            ]
+        kwargs['console'] += [
+            Target(module=iibb, script='iibb.py', dest_base="iibb_cli")
+            ]
+        data_files += [("conf", ["conf/arba.crt"])]
+        __version__ += "+iibb_" + iibb.__version__
+        HOMO &= iibb.HOMO
         
     if 'trazamed' in globals():
         kwargs['com_server'] += [
