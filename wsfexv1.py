@@ -17,7 +17,7 @@ electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08b"
+__version__ = "1.08c"
 
 import datetime
 import decimal
@@ -488,7 +488,7 @@ class WSFEXv1(BaseWS):
         "Recuperador de cotización de moneda"
         ret = self.client.FEXGetPARAM_Ctz(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
-            MonId=moneda_id,
+            Mon_id=moneda_id,
             )
         self.__analizar_errores(ret['FEXGetPARAM_CtzResult'])
         res = ret['FEXGetPARAM_CtzResult'].get('FEXResultGet')
