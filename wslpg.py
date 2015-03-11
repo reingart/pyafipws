@@ -372,10 +372,10 @@ CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
     ('nro_carta_porte', 9, N),
     ('porcentaje_secado_humedad', 5, I, 2),
     ('importe_secado', 10, I, 2),
-    ('peso_neto_merma_secado', 10, N, 2),
+    ('peso_neto_merma_secado', 10, I, 2),
     ('tarifa_secado', 10, I, 2),
     ('importe_zarandeo', 10, I, 2),
-    ('peso_neto_merma_zarandeo', 10, N, 2),
+    ('peso_neto_merma_zarandeo', 10, I, 2),
     ('tarifa_zarandeo', 10, I, 2),
     ('peso_neto_confirmado_definitivo', 10, I, 2),
 ]
@@ -1630,13 +1630,40 @@ class WSLPG(BaseWS):
             self.params_out['servicios_zarandeo'] = pri.get('serviciosZarandeo')
             self.params_out['servicios_otros'] = pri.get('serviciosOtros')
             self.params_out['servicios_forma_de_pago'] = pri.get('serviciosFormaDePago')
-            # TODO: ctg y detalleMuestraAnalisis
+            # sub estructuras:
+            self.params_out['ctgs'] = []
+            self.params_out['det_muestra_analisis'] = []
+            for ctg in pri.get("ctg", []):
+                self.params_out['ctgs'].append({
+                    'nro_ctg': ctg.get('nroCTG'),
+                    'nro_carta_porte': ctg.get('nroCartaDePorte'),
+                    'peso_neto_confirmado_definitivo': ctg.get('pesoNetoConfirmadoDefinitivo'),
+                    'porcentaje_secado_humedad': ctg.get('porcentajeSecadoHumedad'),
+                    'importe_secado': ctg.get('importeSecado'),
+                    'peso_neto_merma_secado': ctg.get('pesoNetoMermaSecado'),
+                    'importe_zarandeo': ctg.get('importeZarandeo'),
+                    'peso_neto_merma_zarandeo': ctg.get('pesoNetoMermaZarandeo'),
+                    'tarifa_zarandeo': ctg.get('tarifaZarandeo'),
+                    })
+            for det in pri.get("detalleMuestraAnalisis", []):
+                self.params_out['det_muestra_analisis'].append({
+                    'descripcion_rubro': det.get('descripcionRubro'),
+                    'tipo_rubro': det.get('tipoRubro'),
+                    'porcentaje': det.get('porcentaje'),
+                    'valor': det.get('valor'),
+                    })
         rt = ret.get('retiroTransferencia')
         if rt:
             self.params_out['nro_act_depositario'] = rt.get('nroActDepositario')
             self.params_out['cuit_receptor'] = rt.get('cuitReceptor')
             self.params_out['nro_carta_porte_a_utilizar'] = rt.get('nroCartaPorteAUtilizar')
-            # TODO: certificadoDeposito
+            # sub estructuras:
+            self.params_out['certificados'] = []
+            for cert in rt.get("certificadoDeposito", []):
+                self.params_out['certificados'].append({
+                    'coe_certificado_deposito': cert.get('coeCertificadoDeposito'),
+                    'peso_neto': cert.get('pesoNeto'),
+                    })
         pre = ret.get('preexistente')
         if pre:
             self.params_out['nro_planta'] = pre.get('nroPlanta')
