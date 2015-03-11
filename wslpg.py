@@ -1731,9 +1731,7 @@ class WSLPG(BaseWS):
         ret = ret['oReturn']
         self.__analizar_errores(ret)
         if 'autorizacion' in ret:
-            aut = ret['autorizacion']
-            cab = ret['cabecera']
-            ##self.AnalizarLiquidacion(aut, liq)
+            self.AnalizarAutorizarCertificadoResp(ret)
         return True
 
     @inicializar_y_capturar_excepciones
