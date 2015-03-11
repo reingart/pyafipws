@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21a"
+__version__ = "1.22a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -59,9 +59,11 @@ Opciones:
   --autorizar-lsg: Autoriza una Liquidación Secundaria de Granos (lsgAutorizar)
     --lsg --anular: Anula una LSG (lsgAnular)
     --lsg --consular: Consulta una LSG por pto_emision, nro_orden o COE
+    --lsg --ult: Consulta el último Nº LSG emitida (lsgConsultarUltimoNroOrden)
   --autorizar-cg: Autorizar Certificación de Granos (cgAutorizar)
     --cg --anular: Solicita anulación de un CG (cgSolicitarAnulacion)
     --cg --consultar: Consulta una CG por pto_emision, nro_orden o COE
+    --cg --ult: Consulta el último Nº LSG emitida (cgConsultarUltimoNroOrden)
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -417,6 +419,7 @@ class WSLPG(BaseWS):
                         'AgregarOpcional', 
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'ConsultarLiquidacionSecundaria',
+                        'ConsultarLiquidacionSecundariaUltNroOrden',
                         'CrearAjusteBase', 
                         'CrearAjusteDebito', 'CrearAjusteCredito',
                         'AjustarLiquidacionUnificado',
@@ -433,6 +436,7 @@ class WSLPG(BaseWS):
                         'AutorizarCertificacion',
                         'AnularCertificacion',
                         'ConsultarCertificacion',
+                        'ConsultarCertificacionUltNroOrden',
                         'LeerDatosLiquidacion',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
@@ -1762,6 +1766,34 @@ class WSLPG(BaseWS):
     def ConsultarUltNroOrden(self, pto_emision=1):
         "Consulta el último No de orden registrado"
         ret = self.client.liquidacionUltimoNroOrdenConsultar(
+                    auth={
+                        'token': self.Token, 'sign': self.Sign,
+                        'cuit': self.Cuit, },
+                    ptoEmision=pto_emision,
+                    )
+        ret = ret['liqUltNroOrdenReturn']
+        self.__analizar_errores(ret)
+        self.NroOrden = ret['nroOrden']
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarLiquidacionSecundariaUltNroOrden(self, pto_emision=1):
+        "Consulta el último No de orden registrado para LSG"
+        ret = self.client.lsgConsultarUltimoNroOrden(
+                    auth={
+                        'token': self.Token, 'sign': self.Sign,
+                        'cuit': self.Cuit, },
+                    ptoEmision=pto_emision,
+                    )
+        ret = ret['liqUltNroOrdenReturn']
+        self.__analizar_errores(ret)
+        self.NroOrden = ret['nroOrden']
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarCertificacionUltNroOrden(self, pto_emision=1):
+        "Consulta el último No de orden registrado para CG"
+        ret = self.client.cgConsultarUltimoNroOrden(
                     auth={
                         'token': self.Token, 'sign': self.Sign,
                         'cuit': self.Cuit, },
@@ -3226,8 +3258,16 @@ if __name__ == '__main__':
                 pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
             except IndexError, ValueError:
                 pto_emision = 1
-            print "Consultando ultimo nro_orden para pto_emision=%s" % pto_emision
-            ret = wslpg.ConsultarUltNroOrden(pto_emision)
+            print "Consultando ultimo nro_orden para pto_emision=%s" % pto_emision,
+            if '--lsg' in sys.argv:
+                print "LSG"
+                ret = wslpg.ConsultarLiquidacionSecundariaUltNroOrden(pto_emision)
+            elif '--cg' in sys.argv:
+                print "CG"
+                ret = wslpg.ConsultarCertificacionUltNroOrden(pto_emision)            
+            else:
+                print "LPG"
+                ret = wslpg.ConsultarUltNroOrden(pto_emision)
             if wslpg.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
                 if DEBUG: print >> sys.stderr, wslpg.Traceback
