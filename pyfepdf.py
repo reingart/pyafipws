@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07n"
+__version__ = "1.07m"
 
 DEBUG = False
 HOMO = False
@@ -58,23 +58,6 @@ from cStringIO import StringIO
 from decimal import Decimal
 from fpdf import Template
 import utils
-
-def inicializar_y_capturar_excepciones(func):
-    "Decorador para inicializar y capturar errores"
-    def capturar_errores_wrapper(self, *args, **kwargs):
-        try:
-            # inicializo (limpio variables)
-            self.Traceback = self.Excepcion = ""
-            return func(self, *args, **kwargs)
-        except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
-            self.Excepcion = u"%s" % (e)
-            if self.LanzarExcepciones:
-                raise
-        finally:
-            pass
-    return capturar_errores_wrapper
 
 
 class FEPDF:
@@ -178,7 +161,10 @@ class FEPDF:
         msg = self.log.getvalue()
         return msg    
 
-    @inicializar_y_capturar_excepciones
+    def inicializar(self):
+        self.Excepcion = self.Traceback = ""
+
+    @utils.inicializar_y_capturar_excepciones_simple
     def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
             cbte_nro=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago="", 
@@ -348,7 +334,7 @@ class FEPDF:
     # Funciones públicas:
 
 
-    @inicializar_y_capturar_excepciones
+    @utils.inicializar_y_capturar_excepciones_simple
     def CargarFormato(self, archivo="factura.csv"):
         "Cargo el formato de campos a generar desde una planilla CSV"
 
@@ -375,7 +361,7 @@ class FEPDF:
         return True
 
 
-    @inicializar_y_capturar_excepciones
+    @utils.inicializar_y_capturar_excepciones_simple
     def AgregarCampo(self, nombre, tipo, x1, y1, x2, y2, 
                            font="Arial", size=12,
                            bold=False, italic=False, underline=False, 
@@ -399,7 +385,7 @@ class FEPDF:
         return True
         
 
-    @inicializar_y_capturar_excepciones
+    @utils.inicializar_y_capturar_excepciones_simple
     def CrearPlantilla(self, papel="A4", orientacion="portrait"):
         "Iniciar la creación del archivo PDF"
         
@@ -422,7 +408,7 @@ class FEPDF:
         return True
 
 
-    @inicializar_y_capturar_excepciones
+    @utils.inicializar_y_capturar_excepciones_simple
     def ProcesarPlantilla(self, num_copias=3, lineas_max=36, qty_pos='izq'):
         "Generar el PDF según la factura creada y plantilla cargada"
 
@@ -793,7 +779,7 @@ class FEPDF:
         finally:
             return False
 
-    @inicializar_y_capturar_excepciones
+    @utils.inicializar_y_capturar_excepciones_simple
     def GenerarPDF(self, archivo=""):
         "Generar archivo de salida en formato PDF"
         if not archivo:
@@ -802,7 +788,7 @@ class FEPDF:
             dest = "F"  # guardar en archivo
         return self.template.render(archivo, dest)
 
-    @inicializar_y_capturar_excepciones
+    @utils.inicializar_y_capturar_excepciones_simple
     def MostrarPDF(self, archivo, imprimir=False):
         if sys.platform.startswith(("linux2", 'java')):
             os.system("evince ""%s""" % archivo)
