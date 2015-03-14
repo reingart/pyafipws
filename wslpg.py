@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22a"
+__version__ = "1.23a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -311,12 +311,7 @@ CERTIFICACION = [
     ('monto_secado', 10, I, 2),
     ('monto_por_cada_punto_exceso', 10, I, 2),
     ('monto_otros', 10, I, 2),
-    ('analisis_muestra', 10, N),
-    ('nro_boletin', 10, N),
-    ('valor_grado', 4, I, 3),
-    ('valor_contenido_proteico', 5, I, 3),
-    ('valor_factor', 6, I, 3),
-    ('porcentaje_merma_volatil', 5, I, 2),
+    ('reservado_calidad', 35, A),               # ver subestructura WSLPGv1.10 
     ('peso_neto_merma_volatil', 10, I , 2),
     ('porcentaje_merma_secado', 5, I, 2),
     ('peso_neto_merma_secado', 10, I, 2),
@@ -388,6 +383,16 @@ DET_MUESTRA_ANALISIS = [            # para cgAutorizarDeposito (WSLPGv1.6)
     ('valor', 5, I, 2),
 ]
 
+CALIDAD = [             # para cgAutorizar y cgInformarCalidad (WSLPGv1.10)
+    ('tipo_reg', 1, A), # Q: caldiad
+    ('analisis_muestra', 10, N),
+    ('nro_boletin', 10, N),
+    ('cod_grado', 2, A),                        # nuevo WSLPGv1.10: G1 G2 ....
+    ('valor_grado', 4, I, 3),                   # solo para cod_grado F1 F2 ...
+    ('valor_contenido_proteico', 5, I, 3),
+    ('valor_factor', 6, I, 3),
+]
+
 EVENTO = [
     ('tipo_reg', 1, A), # E: Evento
     ('codigo', 4, A), 
@@ -416,7 +421,7 @@ class WSLPG(BaseWS):
                         'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion', 'AgregarPercepcion',
-                        'AgregarOpcional', 
+                        'AgregarOpcional', 'AgregarCalidad',
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'ConsultarLiquidacionSecundaria',
                         'ConsultarLiquidacionSecundariaUltNroOrden',
@@ -1409,8 +1414,7 @@ class WSLPG(BaseWS):
             monto_gastos_generales=None, monto_zarandeo=None,
             porcentaje_secado_de=None, porcentaje_secado_a=None,
             monto_secado=None, monto_por_cada_punto_exceso=None,
-            monto_otros=None, analisis_muestra=None, nro_boletin=None,
-            valor_grado=None, valor_contenido_proteico=None, valor_factor=None, 
+            monto_otros=None, 
             porcentaje_merma_volatil=None, peso_neto_merma_volatil=None, 
             porcentaje_merma_secado=None, peso_neto_merma_secado=None, 
             porcentaje_merma_zarandeo=None, peso_neto_merma_zarandeo=None,
@@ -1432,12 +1436,6 @@ class WSLPG(BaseWS):
                 montoSecado=monto_secado,
                 montoPorCadaPuntoExceso=monto_por_cada_punto_exceso,
                 montoOtros=monto_otros,
-                analisisMuestra=analisis_muestra or None,           # opcional
-                nroBoletin=nro_boletin or None,                     # opcional
-                detalleMuestraAnalisis=[],     # <!--1 or more repetitions:-->
-                valorGrado=valor_grado or None,                     # opcional
-                valorContenidoProteico=valor_contenido_proteico or None,
-                valorFactor=valor_factor or None,                   # opcional
                 porcentajeMermaVolatil=porcentaje_merma_volatil,
                 pesoNetoMermaVolatil=peso_neto_merma_volatil,
                 porcentajeMermaSecado=porcentaje_merma_secado,
@@ -1489,6 +1487,22 @@ class WSLPG(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
+    def AgregarCalidad(self, analisis_muestra=None, nro_boletin=None,
+                             cod_grado=None, valor_grado=None, 
+                             valor_contenido_proteico=None, valor_factor=None, 
+                             **kwargs):
+        "Agrega la información sobre la calidad, al autorizar o posteriormente"
+        self.certificacion['primaria']['calidad'] = dict(
+                analisisMuestra=analisis_muestra,
+                nroBoletin=nro_boletin,
+                codGrado=cod_grado,                 # G1 G2 G3 F1 F2 F3
+                valorGrado=valor_grado or None,                     # opcional
+                valorContProteico=valor_contenido_proteico or None,
+                valorFactor=valor_factor or None,                   # opcional
+                detalleMuestraAnalisis=[],     # <!--1 or more repetitions:-->
+                )
+
+    @inicializar_y_capturar_excepciones
     def AgregarDetalleMuestraAnalisis(self, descripcion_rubro=None, 
                                       tipo_rubro=None, porcentaje=None, 
                                       valor=None,
@@ -1501,7 +1515,7 @@ class WSLPG(BaseWS):
                 porcentaje=porcentaje,
                 valor=valor,
             )
-        self.certificacion['primaria']['detalleMuestraAnalisis'].append(det)
+        self.certificacion['primaria']['calidad']['detalleMuestraAnalisis'].append(det)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -2551,6 +2565,7 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
                     ('AjusteDebito', AJUSTE, dic.get('ajuste_debito', [])),
                     ('CTG', CTG, dic.get('ctgs', [])),
                     ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
+                    ('Calidad', CALIDAD, dic.get('calidad', [])),
                     ('Dato', DATO, dic.get('datos', [])),
                     ('Error', ERROR, dic.get('errores', [])),
                     ]
@@ -2606,6 +2621,10 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['det_muestra_analisis']:
                 it['tipo_reg'] = 'D'
                 archivo.write(escribir(it, DET_MUESTRA_ANALISIS))
+        if 'calidad' in dic:
+            for it in dic['calidad']:
+                it['tipo_reg'] = 'Q'
+                archivo.write(escribir(it, CALIDAD))
         if 'datos' in dic:
             for it in dic['datos']:
                 it['tipo_reg'] = 9
@@ -2624,7 +2643,7 @@ def leer_archivo(nombre_archivo):
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
                'percepciones': [], 'opcionales': [],
                'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], 
-               'ctgs': [], 'det_muestra_analisis': [],
+               'ctgs': [], 'det_muestra_analisis': [], 'calidad': [],
               }
         formatos = [('Encabezado', ENCABEZADO, dic),
                     ('Certificacion', CERTIFICACION, dic),
@@ -2637,6 +2656,7 @@ def leer_archivo(nombre_archivo):
                     ('AjusteDebito', AJUSTE, dic['ajuste_debito']),
                     ('CTG', CTG, dic.get('ctgs', [])),
                     ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
+                    ('Calidad', CALIDAD, dic.get('calidad', [])),
                     ('Dato', DATO, dic['datos']),
                     ]
         leer_dbf(formatos, conf_dbf)
@@ -2644,7 +2664,7 @@ def leer_archivo(nombre_archivo):
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
                'percepciones': [], 'opcionales': [],
                'datos': [], 'ajuste_credito': {}, 'ajuste_debito': {}, 
-               'ctgs': [], 'det_muestra_analisis': [],
+               'ctgs': [], 'det_muestra_analisis': [], 'calidad': [],
                }
         for linea in archivo:
             if str(linea[0])=='0':
@@ -2687,6 +2707,8 @@ def leer_archivo(nombre_archivo):
                 dic['ctgs'].append(leer(linea, CTG))
             elif str(linea[0])=='D':
                 dic['det_muestra_analisis'].append(leer(linea, DET_MUESTRA_ANALISIS))
+            elif str(linea[0])=='Q':
+                dic['calidad'].append(leer(linea, CALIDAD))
             elif str(linea[0])=='9':
                 dic['datos'].append(leer(linea, DATO))
             else:
@@ -2722,6 +2744,7 @@ if __name__ == '__main__':
                              ('Certificacion', CERTIFICACION),
                              ('CTG', CTG),
                              ('Det. Muestra Analisis', DET_MUESTRA_ANALISIS),
+                             ('Calidad', CALIDAD),
                              ('Evento', EVENTO), ('Error', ERROR), 
                              ('Dato', DATO)]:
             comienzo = 1
@@ -3453,9 +3476,7 @@ if __name__ == '__main__':
                         monto_gastos_generales=3, monto_zarandeo=4,
                         porcentaje_secado_de=5, porcentaje_secado_a=4,
                         monto_secado=7, monto_por_cada_punto_exceso=8,
-                        monto_otros=9, analisis_muestra=10, nro_boletin=11,
-                        valor_grado=1.02, 
-                        valor_contenido_proteico=1, valor_factor=1, 
+                        monto_otros=9, 
                         porcentaje_merma_volatil=15, peso_neto_merma_volatil=16, 
                         porcentaje_merma_secado=17, peso_neto_merma_secado=18, 
                         porcentaje_merma_zarandeo=19, peso_neto_merma_zarandeo=20,
@@ -3468,6 +3489,11 @@ if __name__ == '__main__':
                     det = dict(descripcion_rubro="bonif", 
                                tipo_rubro="B", porcentaje=1, valor=1)
                     dic['det_muestra_analisis'] = [det]
+                    
+                    cal = dict(analisis_muestra=10, nro_boletin=11,
+                               cod_grado="G1", valor_grado=1.02, 
+                               valor_contenido_proteico=1, valor_factor=1)
+                    dic['calidad'] = [cal]
 
                     ctg = dict(nro_ctg="123456", nro_carta_porte=1000,
                             porcentaje_secado_humedad=1, importe_secado=2,
@@ -3515,6 +3541,8 @@ if __name__ == '__main__':
                 wslpg.AgregarCertificacionPrimaria(**dic)
                 for ctg in dic.get("ctgs", []):
                     wslpg.AgregarCTG(**ctg)
+                for cal in dic.get("calidad", []):
+                    wslpg.AgregarCalidad(**cal) 
                 for det in dic.get("det_muestra_analisis", []):
                     wslpg.AgregarDetalleMuestraAnalisis(**det) 
             
