@@ -1631,12 +1631,6 @@ class WSLPG(BaseWS):
             self.params_out['monto_secado'] = pri.get('montoSecado')
             self.params_out['monto_por_cada_punto_exceso'] = pri.get('montoPorCadaPuntoExceso')
             self.params_out['monto_otros'] = pri.get('montoOtros')
-            self.params_out['analisis_muestra'] = pri.get('analisisMuestra')
-            self.params_out['nro_boletin'] = pri.get('nroBoletin')
-            self.params_out['nro_act_depositario'] = pri.get('nroActDepositario')
-            self.params_out['valor_grado'] = pri.get('valorGrado')
-            self.params_out['valor_contenido_proteico'] = pri.get('valorContenidoProteico')
-            self.params_out['valor_factor'] = pri.get('valorFactor')
             self.params_out['porcentaje_merma_volatil'] = pri.get('porcentajeMermaVolatil')
             self.params_out['porcentaje_merma_secado'] = pri.get('porcentajeMermaSecado')
             self.params_out['peso_neto_merma_secado'] = pri.get('pesoNetoMermaSecado')
@@ -1661,13 +1655,24 @@ class WSLPG(BaseWS):
                     'peso_neto_merma_zarandeo': ctg.get('pesoNetoMermaZarandeo'),
                     'tarifa_zarandeo': ctg.get('tarifaZarandeo'),
                     })
-            for det in pri.get("detalleMuestraAnalisis", []):
-                self.params_out['det_muestra_analisis'].append({
-                    'descripcion_rubro': det.get('descripcionRubro'),
-                    'tipo_rubro': det.get('tipoRubro'),
-                    'porcentaje': det.get('porcentaje'),
-                    'valor': det.get('valor'),
+            self.params_out['calidad'] = []
+            for cal in [pri.get("calidad", {})]:
+                self.params_out['calidad'].append({
+                    'analisis_muestra': cal.get('analisisMuestra'),
+                    'nro_boletin': cal.get('nroBoletin'),
+                    'nro_act_depositario': cal.get('nroActDepositario'),
+                    'cod_grado': cal.get('codGrado'),
+                    'valor_grado': cal.get('valorGrado'),
+                    'valor_contenido_proteico': cal.get('valorContProteico'),
+                    'valor_factor': cal.get('valorFactor')
                     })
+                for det in cal.get("detalleMuestraAnalisis", []):
+                    self.params_out['det_muestra_analisis'].append({
+                        'descripcion_rubro': det.get('descripcionRubro'),
+                        'tipo_rubro': det.get('tipoRubro'),
+                        'porcentaje': det.get('porcentaje'),
+                        'valor': det.get('valor'),
+                        })
         rt = ret.get('retiroTransferencia')
         if rt:
             self.params_out['nro_act_depositario'] = rt.get('nroActDepositario')
