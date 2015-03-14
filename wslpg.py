@@ -64,6 +64,7 @@ Opciones:
     --cg --anular: Solicita anulación de un CG (cgSolicitarAnulacion)
     --cg --consultar: Consulta una CG por pto_emision, nro_orden o COE
     --cg --ult: Consulta el último Nº LSG emitida (cgConsultarUltimoNroOrden)
+  --informar-calidad: Informa la calidad de una CG (cgInformarCalidad)
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -438,7 +439,8 @@ class WSLPG(BaseWS):
                         'AgregarCertificacionRetiroTransferencia',
                         'AgregarCertificacionPreexistente',
                         'AgregarDetalleMuestraAnalisis', 'AgregarCTG',
-                        'AutorizarCertificacion',
+                        'AutorizarCertificacion', 
+                        'InformarCalidadCertificacion',
                         'AnularCertificacion',
                         'ConsultarCertificacion',
                         'ConsultarCertificacionUltNroOrden',
@@ -1686,6 +1688,25 @@ class WSLPG(BaseWS):
             self.params_out['cac_certificado_deposito_preexistente'] = pre.get('cacCertificadoDepositoPreexistente')
             self.params_out['fecha_emision_certificado_deposito_preexistente'] = pre.get('fechaEmisionCertificadoDepositoPreexistente')
             self.params_out['peso_neto'] = pre.get('pesoNeto')
+
+    @inicializar_y_capturar_excepciones
+    def InformarCalidadCertificacion(self, coe):
+        "Informar calidad de un certificado (C1116A/RT)"
+        
+        # llamo al webservice:
+        ret = self.client.cgInformarCalidad(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        calidad=self.certificacion['primaria']['calidad'],
+                        )
+
+        # analizo la respusta
+        ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        self.AnalizarAutorizarCertificadoResp(ret)
+        return True
 
     @inicializar_y_capturar_excepciones
     def AnularCertificacion(self, coe):
@@ -3491,7 +3512,7 @@ if __name__ == '__main__':
                     dic['det_muestra_analisis'] = [det]
                     
                     cal = dict(analisis_muestra=10, nro_boletin=11,
-                               cod_grado="G1", valor_grado=1.02, 
+                               cod_grado="F1", valor_grado=1.02, 
                                valor_contenido_proteico=1, valor_factor=1)
                     dic['calidad'] = [cal]
 
@@ -3577,6 +3598,36 @@ if __name__ == '__main__':
             dic.update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
             
+        # Informar calidad (solo CG primarias)
+        
+        if '--informar-calidad' in sys.argv:
+            dic = leer_archivo(ENTRADA)
+            wslpg.CrearCertificacionCabecera(**dic)
+            wslpg.AgregarCertificacionPrimaria()
+            
+            for cal in dic.get("calidad", []):
+                wslpg.AgregarCalidad(**cal) 
+            for det in dic.get("det_muestra_analisis", []):
+                wslpg.AgregarDetalleMuestraAnalisis(**det) 
+            
+            # intento obtener el COE por linea de parametros o del archivo:
+            try:
+                coe = sys.argv[sys.argv.index("--informar-calidad") + 1]
+            except IndexError:
+                coe = dic['coe']
+            
+            print "Informar Calidad: coe=%s " % (coe, )
+            wslpg.InformarCalidadCertificacion(coe)
+            
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
+            print "Errores:", wslpg.Errores
+            print "COE", wslpg.COE
+            # actualizo el archivo de salida con los datos devueltos
+            dic.update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
+
         # Recuperar parámetros:
         
         if '--campanias' in sys.argv:
