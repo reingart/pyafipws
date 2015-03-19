@@ -21,7 +21,7 @@ import sys
 import wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
 from php import SimpleXMLElement, SoapFault, SoapClient, parse_proxy
 import traceback
-import socks
+from httplib2 import socks
 import warnings
 
 warnings.warn("Este modulo es obsoleto (mantenido por compatibilidad).\n"
