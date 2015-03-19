@@ -393,7 +393,7 @@ class WebClient:
         if httplib2.__version__ >= '0.7.0':
                 kwargs['disable_ssl_certificate_validation'] = cacert is None
                 kwargs['ca_certs'] = cacert
-        self.http = httplib2.Http('.cache', **kwargs)
+        self.http = httplib2.Http(**kwargs)
         self.trace = trace
         self.location = location
         self.enctype = enctype
