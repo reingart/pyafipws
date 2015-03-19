@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23a"
+__version__ = "1.23c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1003,7 +1003,11 @@ class WSLPG(BaseWS):
             self.params_out['subtotal'] = aut.get('subTotal')
             # LSG (especificos):
             self.params_out['total_deducciones'] = aut.get('totalDeducciones')
-            self.params_out['total_percepciones'] = aut.get('totalPercepciones')
+            if 'todalPercepciones' in aut:
+                # error de tipeo en el WSDL de AFIP...
+                self.params_out['total_percepciones'] = aut.get('todalPercepciones')
+            else:
+                self.params_out['total_percepciones'] = aut.get('totalPercepciones')
             # sub estructuras:
             self.params_out['retenciones'] = []
             self.params_out['deducciones'] = []
@@ -1499,8 +1503,8 @@ class WSLPG(BaseWS):
                 nroBoletin=nro_boletin,
                 codGrado=cod_grado,                 # G1 G2 G3 F1 F2 F3
                 valorGrado=valor_grado or None,                     # opcional
-                valorContProteico=valor_contenido_proteico or None,
-                valorFactor=valor_factor or None,                   # opcional
+                valorContProteico=valor_contenido_proteico,
+                valorFactor=valor_factor,
                 detalleMuestraAnalisis=[],     # <!--1 or more repetitions:-->
                 )
 
