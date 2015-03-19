@@ -1,13 +1,20 @@
 <?php
 
 // Ejemplo de Uso de Interface PyAfipWs con Web Service Factura Electrónica AFIP
-// 2013 (C) Mariano Reingart <reingart@gmail.com>
+// 2013-2015 (C) Mariano Reingart <reingart@gmail.com>
 // Licencia: GPLv3
 // Requerimientos: scripts rece1.py (CAE) y pyfepdf.py (generación de PDF)
 // Nota: debe configurar certificado, clave privada y CUIT en rece.ini
 // Documentacion: http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs
 // Importante: configurar en rece.ini entrada=factura.json y salida=salida.json
 // Nota: cambiar ruta a rece1.py / pyfepdf.py y rece.ini (de corresponder)
+
+// Instructivo:
+//  * Copiar este script a la carpeta superior donde se encuentra rece1.py
+//  * Configurar el archivo rece.ini (ver ejemplo en conf/rece.ini):
+//   * Sección [WSAA]: revisar certificado y clave privada, [WSFEv1]: CUIT
+//   * Sección [WSFEv1]: ENTRADA=factura.json y SALIDA=salida.json
+//   * Sección [FACTURA]: ENTRADA=factura.json
 
 // Establezco los valores de la factura a autorizar:
 $factura = array(
@@ -141,6 +148,6 @@ $json = file_put_contents('./factura.json', json_encode(array($factura)));
 // Genero la factura en PDF (agregar --mostrar si se tiene visor de PDF)
 exec("python ./pyfepdf.py rece.ini --cargar --json")
 
-// leer factura.pdf o similar para obtener el documento generado
+// leer factura.pdf o similar para obtener el documento generado. TIP: --mostrar
 
 ?>
