@@ -1,0 +1,91 @@
+[
+    {
+        "cae": "65123215861144", 
+        "cbt_desde": 186, 
+        "cbt_hasta": 186, 
+        "cbte_nro": 186, 
+        "cbtes_asoc": [], 
+        "concepto": 1, 
+        "datos": [], 
+        "descuento": 0, 
+        "detalles": [
+            {
+                "bonif": 0, 
+                "cod_mtx": 1234567890123, 
+                "codigo": "P0001", 
+                "dato_a": null, 
+                "dato_b": null, 
+                "dato_c": null, 
+                "dato_d": null, 
+                "dato_e": null, 
+                "despacho": "N\u00ba 123456", 
+                "ds": "Descripcion del producto P0001", 
+                "imp_iva": 21, 
+                "importe": 121, 
+                "iva_id": 5, 
+                "precio": 100, 
+                "qty": 1, 
+                "u_mtx": 123456, 
+                "umed": 7
+            }
+        ], 
+        "domicilio_cliente": "Rua 76 km 34.5 Alagoas", 
+        "emision_tipo": "CAE", 
+        "err_code": "", 
+        "err_msg": "", 
+        "fch_venc_cae": "20150329", 
+        "fecha_cbte": "20150319", 
+        "fecha_serv_desde": null, 
+        "fecha_serv_hasta": null, 
+        "fecha_venc_pago": null, 
+        "fecha_vto": "", 
+        "forma_pago": "30 dias", 
+        "id": 0, 
+        "id_impositivo": "PJ54482221-l", 
+        "imp_iva": "21.00", 
+        "imp_neto": "100.00", 
+        "imp_op_ex": "2.00", 
+        "imp_tot_conc": "3.00", 
+        "imp_total": "127.00", 
+        "imp_trib": "1.00", 
+        "incoterms": "FOB", 
+        "iva": [
+            {
+                "base_imp": 100, 
+                "importe": 21, 
+                "iva_id": 5
+            }
+        ], 
+        "ivas": [
+            {
+                "base_imp": 100, 
+                "importe": 21, 
+                "iva_id": 5
+            }
+        ], 
+        "moneda_ctz": 1, 
+        "moneda_id": "PES", 
+        "motivos_obs": "10017: Factura individual, DocTipo: 80, DocNro 30000000007 no se encuentra registrado en los padrones de AFIP.", 
+        "nombre_cliente": "Joao Da Silva", 
+        "nro_doc": "30000000007", 
+        "obs_comerciales": "Observaciones Comerciales, texto libre", 
+        "obs_generales": "Observaciones Generales, texto libre", 
+        "opcionales": [], 
+        "pais_dst_cmp": 16, 
+        "permisos": [], 
+        "punto_vta": 4000, 
+        "reproceso": "", 
+        "resultado": "A", 
+        "tipo_cbte": 1, 
+        "tipo_doc": 80, 
+        "tributos": [
+            {
+                "alic": "1.00", 
+                "base_imp": "100.00", 
+                "desc": "Impuesto Municipal Matanza", 
+                "importe": "1.00", 
+                "tributo_id": 99
+            }
+        ]
+    }
+]
