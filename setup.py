@@ -88,6 +88,14 @@ if sys.version_info > (2, 7):
             ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll') +
                  glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
             )]
+    # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
+    # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
+    data_files += [(
+            r"win32com\gen_py", 
+            [r"c:\Python27\Lib\site-packages\win32com\gen_py\__init__.py",
+             r"c:\Python27\Lib\site-packages\win32com\gen_py\dicts.dat", ],
+            )]
+    
     sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
     WX_DLL = (
         ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*') +
