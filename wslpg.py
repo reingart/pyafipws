@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23d"
+__version__ = "1.24a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -65,6 +65,8 @@ Opciones:
     --cg --consultar: Consulta una CG por pto_emision, nro_orden o COE
     --cg --ult: Consulta el último Nº LSG emitida (cgConsultarUltimoNroOrden)
   --informar-calidad: Informa la calidad de una CG (cgInformarCalidad)
+  --buscar-ctg: devuelve los datos de la CTG a certificar
+    espera tipo_certificado, cuit_depositante, nro_planta, cod_grano, campania
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -440,7 +442,7 @@ class WSLPG(BaseWS):
                         'AgregarCertificacionPreexistente',
                         'AgregarDetalleMuestraAnalisis', 'AgregarCTG',
                         'AutorizarCertificacion', 
-                        'InformarCalidadCertificacion',
+                        'InformarCalidadCertificacion', 'BuscarCTG',
                         'AnularCertificacion',
                         'ConsultarCertificacion',
                         'ConsultarCertificacionUltNroOrden',
@@ -470,7 +472,7 @@ class WSLPG(BaseWS):
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
         'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
         'COE', 'COEAjustado', 'Estado', 'Resultado', 'NroOrden',
-        'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip', 
+        'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip',
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
         'TotalIvaRg2300_07', 'Subtotal', 'TotalIva105', 'TotalIva21',
         'TotalRetencionesGanancias', 'TotalRetencionesIVA', 'NroContrato',
@@ -500,6 +502,8 @@ class WSLPG(BaseWS):
         self.TotalPagoSegunCondicion = ""
         self.Subtotal = self.TotalIva105 = self.TotalIva21 = ""
         self.TotalRetencionesGanancias = self.TotalRetencionesIVA = ""
+        self.TotalPercepcion = ""
+        self.FechaCertificacion = ""
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
@@ -1524,6 +1528,48 @@ class WSLPG(BaseWS):
             )
         self.certificacion['primaria']['calidad']['detalleMuestraAnalisis'].append(det)
         return True
+
+    @inicializar_y_capturar_excepciones
+    def BuscarCTG(self, tipo_certificado="P", cuit_depositante=None,
+                        nro_planta=None, cod_grano=2, campania=1314, 
+                        nro_ctg=None, tipo_ctg=None, nro_carta_porte=None,
+                        fecha_confirmacion_ctg_des=None,
+                        fecha_confirmacion_ctg_has=None,
+                 ):
+        "Devuelve los CTG/Carta de porte que se puede incluir en un certificado"
+        ret = self.client.cgBuscarCtg(
+                    auth={
+                        'token': self.Token, 'sign': self.Sign,
+                        'cuit': self.Cuit, },
+                    tipoCertificado=tipo_certificado,
+                    cuitDepositante=cuit_depositante or self.Cuit,
+                    nroPlanta=nro_planta,
+                    codGrano=cod_grano, campania=campania,
+                    nroCtg=nro_ctg, tipoCtg=tipo_ctg,
+                    nroCartaPorte=nro_carta_porte,
+                    fechaConfirmacionCtgDes=fecha_confirmacion_ctg_des,
+                    fechaConfirmacionCtgHas=fecha_confirmacion_ctg_has,
+                        )['oReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('ctg', [])
+        self.Excepcion = self.Traceback = ""
+        self.params_out['ctgs'] = []
+        for ctg in array:
+            self.params_out['ctgs'].append({
+                'campania': ctg.get('campania'),
+                'nro_planta': ctg.get('nroPlanta'),
+                'nro_ctg': ctg.get('nroCtg'),
+                'tipo_ctg': ctg.get('tipoCtg'),
+                'nro_carta_porte': ctg.get('nroCartaPorte'),
+                'kilos_confirmados': ctg.get('kilosConfirmados'),
+                'fecha_confirmacion_ctg': ctg.get('fechaConfirmacionCtg'),
+                'cod_grano': ctg.get('codGrano'),
+                'cuit_remitente_comercial': ctg.get('cuitRemitenteComercial'),
+                'cuit_liquida': ctg.get('cuitLiquida'),
+                'cuit_certifica': ctg.get('cuitCertifica'),
+                })
+        return True
+
 
     @inicializar_y_capturar_excepciones
     def AgregarCTG(self, nro_ctg=None, nro_carta_porte=None,
@@ -3637,6 +3683,23 @@ if __name__ == '__main__':
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
+
+        # consultar CTG a certificar en una CG:
+        
+        if '--buscar-ctg' in sys.argv:
+            argv = dict([(i, e) for i, e 
+                         in enumerate(sys.argv[sys.argv.index("--buscar-ctg")+1:]) 
+                         if not e.startswith("--")])
+            print argv
+            tipo_certificado = argv.get(0, 1)   # P
+            cuit_depositante = argv.get(1)      # 
+            nro_planta = argv.get(2, 3091)      
+            cod_grano  = argv.get(3, 2)
+            campania = argv.get(4, 1314)
+            ret = wslpg.BuscarCTG(tipo_certificado, cuit_depositante, 
+                                  nro_planta, cod_grano, campania)
+            import pprint
+            pprint.pprint(wslpg.params_out)
 
         # Recuperar parámetros:
         
