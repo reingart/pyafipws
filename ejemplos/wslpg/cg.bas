@@ -85,7 +85,7 @@ Sub Main()
             descripcion_tipo_grano = "SOJA"
             monto_almacenaje = 1: monto_acarreo = 2
             monto_gastos_generales = 3: monto_zarandeo = 4
-            porcentaje_secado_de = 5: porcentaje_secado_a = 6
+            porcentaje_secado_de = 6: porcentaje_secado_a = 5
             monto_secado = 7: monto_por_cada_punto_exceso = 8
             monto_otros = 9:
             porcentaje_merma_volatil = 15: peso_neto_merma_volatil = 16
@@ -96,7 +96,7 @@ Sub Main()
             servicios_forma_de_pago = 25
             
             ok = WSLPG.AgregarCertificacionPrimaria( _
-                    nro_act_depositario = 29, _
+                    nro_act_depositario, _
                     descripcion_tipo_grano, _
                     monto_almacenaje, monto_acarreo, _
                     monto_gastos_generales, monto_zarandeo, _
@@ -168,12 +168,13 @@ Sub Main()
             cac_certificado_deposito_preexistente = "123456789012"
             fecha_emision_certificado_deposito_preexistente = "2014-11-26"
             peso_neto = 1000
+            nro_planta = 1234
             ok = WSLPG.AgregarCertificacionPreexistente( _
                     tipo_certificado_deposito_preexistente, _
                     nro_certificado_deposito_preexistente, _
                     cac_certificado_deposito_preexistente, _
                     fecha_emision_certificado_deposito_preexistente, _
-                    peso_neto)
+                    peso_neto, nro_planta)
     
     End Select
 
@@ -187,6 +188,26 @@ Sub Main()
         Debug.Print "COE", WSLPG.COE
         
         MsgBox "COE: " & WSLPG.COE & vbCrLf, vbInformation, "Autorizar Liquidación:"
+        
+        ' Planta (opcional):
+        Debug.Print "Nro. Planta", WSLPG.GetParametro("nro_planta")
+        Debug.Print "Cuit Titular Planta", WSLPG.GetParametro("cuit_titular_planta")
+        Debug.Print "Razon Titular Planta", WSLPG.GetParametro("razon_titular_planta")
+    
+        ' Resumen de pesos (si fue autorizada):
+        Debug.Print "peso_bruto_certificado", WSLPG.GetParametro("peso_bruto_certificado")
+        Debug.Print "peso_merma_secado", WSLPG.GetParametro("peso_merma_secado")
+        Debug.Print "peso_merma_volatil", WSLPG.GetParametro("peso_merma_volatil")
+        Debug.Print "peso_merma_zarandeo", WSLPG.GetParametro("peso_merma_zarandeo")
+        Debug.Print "peso_neto_certificado", WSLPG.GetParametro("peso_neto_certificado")
+    
+        ' Resumen de servicios (si fue autorizada):
+        Debug.Print "importe_iva", WSLPG.GetParametro("importe_iva")
+        Debug.Print "servicio_gastos_generales", WSLPG.GetParametro("servicio_gastos_generales")
+        Debug.Print "servicio_otros", WSLPG.GetParametro("servicio_otros")
+        Debug.Print "servicio_total", WSLPG.GetParametro("servicio_total")
+        Debug.Print "servicio_zarandeo", WSLPG.GetParametro("servicio_zarandeo")
+        
         If WSLPG.ErrMsg <> "" Then
             Debug.Print "Errores", WSLPG.ErrMsg
             ' recorro y muestro los errores
