@@ -41,7 +41,7 @@ IF LEN(WSAA.Excepcion) > 0 THEN
 	MESSAGEBOX("No se pudo obtener token y sign WSAA")
 ENDIF
 
-ON ERROR DO errhand2;
+*-- ON ERROR DO errhand2;
 
 *-- Crear objeto interface Web Service de Liquidación Primaria de Granos
 WSLPG = CREATEOBJECT("WSLPG")
@@ -103,16 +103,11 @@ DO CASE
         ok = WSLPG.SetParametro("monto_acarreo", 2)
         ok = WSLPG.SetParametro("monto_gastos_generales", 3)
         ok = WSLPG.SetParametro("monto_zarandeo", 4)
-        ok = WSLPG.SetParametro("porcentaje_secado_de", 5)
-        ok = WSLPG.SetParametro("porcentaje_secado_a", 6)
+        ok = WSLPG.SetParametro("porcentaje_secado_de", 6)
+        ok = WSLPG.SetParametro("porcentaje_secado_a", 5)
         ok = WSLPG.SetParametro("monto_secado", 7)
         ok = WSLPG.SetParametro("monto_por_cada_punto_exceso", 8)
         ok = WSLPG.SetParametro("monto_otros", 9)
-        ok = WSLPG.SetParametro("analisis_muestra", 10)
-        ok = WSLPG.SetParametro("nro_boletin", 11)
-        ok = WSLPG.SetParametro("valor_grado", 1.02)
-        ok = WSLPG.SetParametro("valor_contenido_proteico", 1)
-        ok = WSLPG.SetParametro("valor_factor", 1)
         ok = WSLPG.SetParametro("porcentaje_merma_volatil", 15)
         ok = WSLPG.SetParametro("peso_neto_merma_volatil", 16)
         ok = WSLPG.SetParametro("porcentaje_merma_secado", 17)
@@ -126,6 +121,15 @@ DO CASE
         ok = WSLPG.SetParametro("servicios_forma_de_pago", 25)
         
         ok = WSLPG.AgregarCertificacionPrimaria()
+        
+        analisis_muestra = 10
+        nro_boletin = 11
+        cod_grado = "F1"
+        valor_grado = 1.02
+        valor_contenido_proteico = 1
+        valor_factor = 1
+
+        ok = WSLPG.AgregarCalidad(analisis_muestra, nro_boletin, cod_grado, valor_grado, valor_contenido_proteico, valor_factor)
     
         descripcion_rubro = "bonif"
         tipo_rubro = "B"
@@ -143,12 +147,13 @@ DO CASE
         importe_zarandeo = 5
         peso_neto_merma_zarandeo = 6
         tarifa_zarandeo = 7
+        peso_neto_confirmado_definitivo = 9
         ok = WSLPG.AgregarCTG( ;
             nro_ctg, nro_carta_porte, ;
             porcentaje_secado_humedad, importe_secado, ;
             peso_neto_merma_secado, tarifa_secado, ;
             importe_zarandeo, peso_neto_merma_zarandeo, ;
-            tarifa_zarandeo)
+            tarifa_zarandeo, peso_neto_confirmado_definitivo)
 
     CASE INLIST(tipo_certificado, "R", "T")
         *-- establezco datos del certificado retiro/transferencia F1116R/T:
@@ -173,12 +178,13 @@ DO CASE
         cac_certificado_deposito_preexistente = "123456789012"
         fecha_emision_certificado_deposito_preexistente = "2014-11-26"
         peso_neto = 1000
+        nro_planta = 1234
         ok = WSLPG.AgregarCertificacionPreexistente( ;
                 tipo_certificado_deposito_preexistente, ;
                 nro_certificado_deposito_preexistente, ;
                 cac_certificado_deposito_preexistente, ;
                 fecha_emision_certificado_deposito_preexistente, ;
-                peso_neto)
+                peso_neto, nro_planta)
 
 ENDCASE
 
@@ -189,15 +195,35 @@ ok = WSLPG.AutorizarCertificacion()
 IF ok THEN
     *-- muestro los resultados devueltos por el webservice:
     
-    ? "COE", WSLPG.COE
-    ? "Fecha", WSLPG.FechaCertificacion
-    
-    MESSAGEBOX("COE: " + STR(WSLPG.COE), 0, "Autorizar Liquidación:")
+    ? "COE", WSLPG.COE, WSLPG.Estado
+    ? "Fecha", WSLPG.GetParametro("fecha_certificacion")
+
+    *-- Planta (opcional):
+    ? "Nro. Planta", WSLPG.GetParametro("nro_planta")
+    ? "Cuit Titular Planta", WSLPG.GetParametro("cuit_titular_planta")
+    ? "Razon Titular Planta", WSLPG.GetParametro("razon_titular_planta")
+
+    *-- Resumen de pesos (si fue autorizada):
+    ? "peso_bruto_certificado", WSLPG.GetParametro("peso_bruto_certificado")
+    ? "peso_merma_secado", WSLPG.GetParametro("peso_merma_secado")
+    ? "peso_merma_volatil", WSLPG.GetParametro("peso_merma_volatil")
+    ? "peso_merma_zarandeo", WSLPG.GetParametro("peso_merma_zarandeo")
+    ? "peso_neto_certificado", WSLPG.GetParametro("peso_neto_certificado")
+
+    *-- Resumen de servicios (si fue autorizada):
+    ? "importe_iva", WSLPG.GetParametro("importe_iva")
+    ? "servicio_gastos_generales", WSLPG.GetParametro("servicio_gastos_generales")
+    ? "servicio_otros", WSLPG.GetParametro("servicio_otros")
+    ? "servicio_total", WSLPG.GetParametro("servicio_total")
+    ? "servicio_zarandeo", WSLPG.GetParametro("servicio_zarandeo")
+
     ? "Errores", WSLPG.ErrMsg
     IF LEN(WSLPG.ErrMsg) > 0
-	    MESSAGEBOX(WSLPG.ErrMsg, 0, "Autorizar Liquidación:")
+	    MESSAGEBOX(WSLPG.ErrMsg, 0, "Autorizar Certificación:")
 	    ? WSLPG.XmlRequest
     	? WSLPG.XmlResponse
+    ELSE
+        ch = MESSAGEBOX("COE: " + STR(WSLPG.COE), 5, "Autorizar Certificación:")
    	ENDIF
 
 ELSE
