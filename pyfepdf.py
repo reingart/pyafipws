@@ -927,7 +927,10 @@ if __name__ == '__main__':
                 nombre_cliente, domicilio_cliente, pais_dst_cmp, 
                 obs_comerciales, obs_generales, forma_pago, incoterms, 
                 idioma_cbte, motivo)
-            
+
+            ok = fepdf.EstablecerParametro("localidad_cliente", "Hurlingham")
+            ok = fepdf.EstablecerParametro("provincia_cliente", "Buenos Aires")
+
             tipo = 91
             pto_vta = 2
             nro = 1234
