@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24a"
+__version__ = "1.24b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -200,7 +200,7 @@ ENCABEZADO = [
 
 CERTIFICADO = [
     ('tipo_reg', 1, A), # 1: Certificado
-    ('tipo_certificado_deposito', 2, N), 
+    ('reservado1', 2, N), 		   # en WSLPGv1.7 se amplio el campo
     ('nro_certificado_deposito', 12, N), 
     ('peso_neto', 8, N), 
     ('cod_localidad_procedencia', 6, N), 
@@ -210,6 +210,7 @@ CERTIFICADO = [
     ('fecha_cierre', 10, A),
     ('peso_neto_total_certificado', 8, N), # para ajuste unificado (WSLPGv1.4)
     ('coe_certificado_deposito', 12, N), # para certificacion (WSLPGv1.6)
+    ('tipo_certificado_deposito', 3, N), # wSLPGv1.7 agrega valor 332
     ]
     
 RETENCION = [
@@ -2754,7 +2755,11 @@ def leer_archivo(nombre_archivo):
                 # referenciar la liquidación para agregar ret. / ded.:
                 liq = dic
             elif str(linea[0])=='1':
-                dic['certificados'].append(leer(linea, CERTIFICADO))
+                d = leer(linea, CERTIFICADO)
+                if d['reservado1']:
+                    print "ADVERTENCIA: USAR tipo_certificado_deposito (nueva posición)" 
+                    d['tipo_certificado_deposito'] = d['reservado1'] 
+                dic['certificados'].append(d)
             elif str(linea[0])=='2':
                 liq['retenciones'].append(leer(linea, RETENCION))
             elif str(linea[0])=='3':
@@ -2946,7 +2951,7 @@ if __name__ == '__main__':
                     precio_operacion=None,  # para probar ajustar
                     total_peso_neto=1000,   # para probar ajustar
                     certificados=[dict(   
-                        tipo_certificado_deposito=5,
+                        tipo_certificado_deposito=5,  # 332 p/ cert. electronico
                         nro_certificado_deposito=555501200729,
                         peso_neto=1000,
                         cod_localidad_procedencia=3,
