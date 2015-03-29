@@ -447,6 +447,7 @@ class WSLPG(BaseWS):
                         'AnularCertificacion',
                         'ConsultarCertificacion',
                         'ConsultarCertificacionUltNroOrden',
+                        'BuscarCertConSaldoDisponible',
                         'LeerDatosLiquidacion',
                         'ConsultarCampanias',
                         'ConsultarTipoGrano',
@@ -1595,6 +1596,42 @@ class WSLPG(BaseWS):
                 tarifaZarandeo=tarifa_zarandeo,
             )
         self.certificacion['primaria']['ctg'].append(ctg)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def BuscarCertConSaldoDisponible(self, cuit_depositante=None,
+                        cod_grano=2, campania=1314, coe=None, 
+                        fecha_emision_des=None,
+                        fecha_emision_has=None,
+                 ):
+        """Devuelve los certificados de depósito en los que un productor tiene
+        saldo disponible para Liquidar/Retirar/Transferir"""
+        
+        ret = self.client.cgBuscarCertConSaldoDisponible(
+                    auth={
+                        'token': self.Token, 'sign': self.Sign,
+                        'cuit': self.Cuit, },
+                    cuitDepositante=cuit_depositante or self.Cuit,
+                    codGrano=cod_grano, campania=campania,
+                    coe=coe,
+                    fechaEmisionDes=fecha_emision_des,
+                    fechaEmisionHas=fecha_emision_has,
+                        )['oReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('certificado', [])
+        self.Excepcion = self.Traceback = ""
+        self.params_out['certificados'] = []
+        for cert in array:
+            self.params_out['certificados'].append(dict(
+                coe=cert['coe'],
+                tipo_certificado=cert['tipoCertificado'],
+                campania=cert['campania'],
+                cuit_depositante=cert['cuitDepositante'],
+                cuit_depositario=cert['cuitDepositario'],
+                nro_planta=cert['nroPlanta'],
+                kilos_disponibles=cert['kilos_disponibles'],
+                cod_grano=cert['codGrano'],
+            ))
         return True
 
     @inicializar_y_capturar_excepciones
@@ -3703,9 +3740,28 @@ if __name__ == '__main__':
             campania = argv.get(4, 1314)
             ret = wslpg.BuscarCTG(tipo_certificado, cuit_depositante, 
                                   nro_planta, cod_grano, campania)
-            import pprint
             pprint.pprint(wslpg.params_out)
 
+        # consultar certificados con saldo disponible para liquidar/transferir:
+        
+        if '--buscar-cert-con-saldo-disp' in sys.argv:
+            argv = dict([(i, e) for i, e 
+                         in enumerate(sys.argv[sys.argv.index("--buscar-cert-con-saldo-disp")+1:]) 
+                         if not e.startswith("--")])
+            print argv
+            cuit_depositante = argv.get(0)      # por defecto usa el CUIT .ini
+            cod_grano = argv.get(1, 2)          # 
+            campania = argv.get(2, 1314)
+            coe = argv.get(3)
+            fecha_emision_des = argv.get(4)
+            fecha_emision_has = argv.get(5)
+            ret = wslpg.BuscarCertConSaldoDisponible(cuit_depositante,
+                        cod_grano, campania, coe, 
+                        fecha_emision_des, fecha_emision_has,
+                 )
+            pprint.pprint(wslpg.params_out)
+            print wslpg.ErrMsg
+            
         # Recuperar parámetros:
         
         if '--campanias' in sys.argv:
