@@ -23,6 +23,7 @@ import sys
 import os
 import stat
 import traceback
+import warnings
 from cStringIO import StringIO
 from decimal import Decimal
 from urllib import urlencode
@@ -245,6 +246,14 @@ class BaseWS:
                 trace = "--trace" in sys.argv)
             self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
             self.wsdl = wsdl    # utilizado por TrazaMed (para corregir el location)
+            # corrijo ubicación del servidor (puerto http 80 en el WSDL AFIP)
+            for service in self.client.services.values():
+                for port  in service['ports'].values():
+                    location = port['location']
+                    if location and location.startswith("http://"):
+                        warnings.warn("Corrigiendo WSDL ... %s" % location)
+                        location = location.replace("http://", "https://").replace(":80", ":443")
+                        port['location'] = location
             return True
         except:
             ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
