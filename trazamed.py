@@ -746,7 +746,7 @@ def main():
             f_evento=datetime.datetime.now().strftime("%d/%m/%Y"),
             h_evento=datetime.datetime.now().strftime("%H:%M"), 
             gln_origen="9999999999918", gln_destino="glnws", 
-            n_remito="1234", n_factura="1234", 
+            n_remito="R000100001234", n_factura="A000100001234", 
             vencimiento=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"), 
             gtin="GTIN1", lote=datetime.datetime.now().strftime("%Y"),
             numero_serial=int(time.time()*10), 
