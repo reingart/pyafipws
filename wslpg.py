@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24c"
+__version__ = "1.24d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -67,6 +67,8 @@ Opciones:
   --informar-calidad: Informa la calidad de una CG (cgInformarCalidad)
   --buscar-ctg: devuelve los datos de la CTG a certificar
     espera tipo_certificado, cuit_depositante, nro_planta, cod_grano, campania
+  --buscar-cert-con-saldo-disp: CG disponible para liquidar/retirar/transferir
+    espera cuit_depositante, cod_grano, campania, coe fecha_emision_des/has
 
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
@@ -1634,7 +1636,7 @@ class WSLPG(BaseWS):
                 cuit_depositante=cert['cuitDepositante'],
                 cuit_depositario=cert['cuitDepositario'],
                 nro_planta=cert['nroPlanta'],
-                kilos_disponibles=cert['kilos_disponibles'],
+                kilos_disponibles=cert['kilosDisponibles'],
                 cod_grano=cert['codGrano'],
             ))
         return True
@@ -3578,15 +3580,18 @@ if __name__ == '__main__':
         if '--autorizar-cg' in sys.argv:
         
             if '--prueba' in sys.argv:
+                # consulto ultimo numero de orden
+                pto_emision = 99
+                wslpg.ConsultarCertificacionUltNroOrden(pto_emision)
                 # genero una certificación de ejemplo a autorizar:
                 dic = dict(
-                        pto_emision=99, nro_orden=1,  
-                        tipo_certificado="P", nro_planta="1",
+                        pto_emision=pto_emision, nro_orden=wslpg.NroOrden + 1,  
+                        tipo_certificado="P", nro_planta="3091",
                         nro_ing_bruto_depositario="20267565393",
                         titular_grano="T",
                         cuit_depositante='20111111112',  
                         nro_ing_bruto_depositante='123',
-                        cuit_corredor='20222222223',
+                        cuit_corredor=None if '--sincorr' in sys.argv else '20222222223',
                         cod_grano=2, campania=1314,
                         datos_adicionales="Prueba",)
            
@@ -3631,15 +3636,15 @@ if __name__ == '__main__':
                     rt = dict(
                             nro_act_depositario=29,
                             tipo_certificado="R",
-                            cuit_receptor="20400000000",
+                            cuit_receptor="20267565393",
                             fecha="2014-11-26", 
-                            nro_carta_porte_a_utilizar="12345",
+                            nro_carta_porte_a_utilizar="530305323",
                             cee_carta_porte_a_utilizar="123456789012",
                             )
                     dic.update(rt)
                     cert = dict(
                            peso_neto=10000,
-                           coe_certificado_deposito="123456789012", 
+                           coe_certificado_deposito="332000000357", 
                         )
                     dic['certificados'] = [cert]
 
@@ -3647,10 +3652,10 @@ if __name__ == '__main__':
                     pre = dict(
                             tipo_certificado="E",
                             tipo_certificado_deposito_preexistente=1, # "R" o "T"
-                            nro_certificado_deposito_preexistente="12345",
-                            cac_certificado_deposito_preexistente="123456789012",
+                            nro_certificado_deposito_preexistente="530305327",
+                            cac_certificado_deposito_preexistente="85113524869336",
                             fecha_emision_certificado_deposito_preexistente="2014-11-26",
-                            peso_neto=1000, nro_planta=1,
+                            peso_neto=10000, nro_planta=3091,
                             )
                     dic.update(pre)
 
@@ -3737,8 +3742,7 @@ if __name__ == '__main__':
             argv = dict([(i, e) for i, e 
                          in enumerate(sys.argv[sys.argv.index("--buscar-ctg")+1:]) 
                          if not e.startswith("--")])
-            print argv
-            tipo_certificado = argv.get(0, 1)   # P
+            tipo_certificado = argv.get(0, "P") # P
             cuit_depositante = argv.get(1)      # 
             nro_planta = argv.get(2, 3091)      
             cod_grano  = argv.get(3, 2)
@@ -3746,6 +3750,8 @@ if __name__ == '__main__':
             ret = wslpg.BuscarCTG(tipo_certificado, cuit_depositante, 
                                   nro_planta, cod_grano, campania)
             pprint.pprint(wslpg.params_out)
+            if DEBUG:
+                print "NRO CTG", wslpg.GetParametro("ctgs", 0, "nro_ctg")
 
         # consultar certificados con saldo disponible para liquidar/transferir:
         
@@ -3753,19 +3759,22 @@ if __name__ == '__main__':
             argv = dict([(i, e) for i, e 
                          in enumerate(sys.argv[sys.argv.index("--buscar-cert-con-saldo-disp")+1:]) 
                          if not e.startswith("--")])
-            print argv
             cuit_depositante = argv.get(0)      # por defecto usa el CUIT .ini
             cod_grano = argv.get(1, 2)          # 
             campania = argv.get(2, 1314)
             coe = argv.get(3)
             fecha_emision_des = argv.get(4)
             fecha_emision_has = argv.get(5)
+            if '--testing' in sys.argv:
+                wslpg.LoadTestXML("wslpg_resp_buscar_cert.xml")  # cargo respuesta
             ret = wslpg.BuscarCertConSaldoDisponible(cuit_depositante,
                         cod_grano, campania, coe, 
                         fecha_emision_des, fecha_emision_has,
                  )
             pprint.pprint(wslpg.params_out)
             print wslpg.ErrMsg
+            if DEBUG:
+                print "1er COE", wslpg.GetParametro("certificados", 0, "coe")
             
         # Recuperar parámetros:
         
