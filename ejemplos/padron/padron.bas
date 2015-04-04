@@ -17,9 +17,9 @@ Sub Main()
         
     cuit = InputBox("Ingrese CUIT a buscar:", "Consultar Padron AFIP", "20267565393")
     
-    ' Consultar CUIT:
+    ' Consultar CUIT (base local):
     ok = Padron.Buscar(cuit)
-    Debug.Print Err.Description
+    Debug.Print ok, Err.Description
     
     ' Imprimir resultado
     Debug.Print "Denominacion", Padron.denominacion
@@ -45,8 +45,38 @@ Sub Main()
     End Select
     
     If Padron.cuit <> "" Then
-        MsgBox Padron.denominacion & vbCrLf & iva, vbInformation, "Resultado CUIT " & cuit
+        MsgBox Padron.denominacion & vbCrLf & iva, vbInformation, "Resultado CUIT " & cuit & " (base local)"
     Else
         MsgBox "CUIT no encontrado", vbCritical, "Resultado CUIT " & cuit
     End If
+    
+    ' Consultar CUIT (online con AFIP:
+    ok = Padron.Consultar(cuit)
+    Debug.Print ok, Err.Description
+
+    ' Imprimir respuesta obtenida
+    Debug.Print "Denominacion:", Padron.denominacion
+    Debug.Print "CUIT:", Padron.cuit
+    ' Debug.Print "Tipo:", Padron.tipo_persona, Padron.tipo_doc, Padron.nro_doc
+    Debug.Print "Estado:", Padron.Estado
+    Debug.Print "Direccion:", Padron.direccion
+    Debug.Print "Localidad:", Padron.localidad
+    Debug.Print "Provincia:", Padron.provincia
+    Debug.Print "Codigo Postal:", Padron.cod_postal
+    For Each impuesto In Padron.impuestos
+        Debug.Print "Impuesto:", impuesto
+    Next
+    For Each actividad In Padron.actividades
+        Debug.Print "Actividade:", actividad
+    Next
+    Debug.Print "IVA", Padron.imp_iva
+    Debug.Print "MT", Padron.monotributo, Padron.actividad_monotributo
+    Debug.Print "Empleador", Padron.empleador
+
+    If Padron.Excepcion = "" Then
+        MsgBox Padron.denominacion & " " & Padron.Estado & vbCrLf & Padron.direccion & vbCrLf & Padron.localidad & vbCrLf & Padron.provincia & vbCrLf & Padron.cod_postal, vbInformation, "Resultado CUIT " & cuit & " (online AFIP)"
+    Else
+        MsgBox "Error AFIP: " & Padron.Excepcion, vbCritical, "Resultado CUIT " & cuit & " (online)"
+    End If
+
 End Sub
