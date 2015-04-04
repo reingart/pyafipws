@@ -18,9 +18,10 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.04a"
 
 
+import json
 import os
 import shelve
 import sqlite3
@@ -29,7 +30,7 @@ import zipfile
 from email.utils import formatdate
 import sys
 from utils import leer, escribir, N, A, I, get_install_dir, \
-                  inicializar_y_capturar_excepciones_simple
+                  inicializar_y_capturar_excepciones_simple, WebClient
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
@@ -48,22 +49,36 @@ FORMATO = [
     ("email", 250, A, ""),    
     ]	 
 
+# Mapeos constantes:
+
+PROVINCIAS = {0: 'CIUDAD AUTONOMA BUENOS AIRES', 1: 'BUENOS AIRES', 
+    2: 'CATAMARCA', 3: 'CORDOBA', 4: 'CORRIENTES', 5: 'ENTRE RIOS', 6: 'JUJUY',
+    7: 'MENDOZA', 8: 'LA RIOJA', 9: 'SALTA', 10: 'SAN JUAN', 11: 'SAN LUIS', 
+    12: 'SANTA FE', 13: 'SANTIAGO DEL ESTERO', 14: 'TUCUMAN', 16: 'CHACO', 
+    17: 'CHUBUT', 18: 'FORMOSA', 19: 'MISIONES', 20: 'NEUQUEN', 21: 'LA PAMPA',
+    22: 'RIO NEGRO', 23: 'SANTA CRUZ', 24: 'TIERRA DEL FUEGO'}
+
+TIPO_CLAVE = {'CUIT': 80, 'CUIL': 86, 'CDI': 86, 'DNI': 96, 'Otro': 99}
+
 DEBUG = True
 
 URL = "http://www.afip.gob.ar/genericos/cInscripcion/archivos/apellidoNombreDenominacion.zip"
+URL_API = "https://soa.afip.gob.ar/sr-padron"
 
 
 class PadronAFIP():
     "Interfaz para consultar situación tributaria (Constancia de Inscripcion)"
 
     _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
-                        'ConsultarDomicilios',
+                        'ConsultarDomicilios', 'Consultar',
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
                       'cuit', 'denominacion', 'imp_ganancias', 'imp_iva',  
                       'monotributo', 'integrante_soc', 'empleador', 
                       'actividad_monotributo', 'cat_iva', 'domicilios',
                       'tipo_doc', 'nro_doc', 'LanzarExcepciones',
+                      'estado', 'impuestos', 'actividades',
+                      'direccion', 'localidad', 'provincia', 'cod_postal',
                      ]
     _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "PadronAFIP"
@@ -82,6 +97,17 @@ class PadronAFIP():
     def inicializar(self):
         self.Excepcion = self.Traceback = ""
         self.cuit = self.dni = 0
+        self.tipo_persona = ""                      # FISICA o JURIDICA
+        self.tipo_doc = 0
+        self.estado = ""                            # ACTIVO
+        self.denominacion = ""
+        self.direccion = self.localidad = self.provincia = self.cod_postal = ""
+        self.domicilios = []
+        self.impuestos = []
+        self.actividades = []
+        self.imp_iva = self.empleador = self.integrante_soc = self.cat_iva = ""
+        self.monotributo = self.actividad_monotributo = "" 
+        self.data = {}
 
     @inicializar_y_capturar_excepciones_simple
     def Descargar(self, url=URL, filename="padron.txt", proxy=None):
@@ -252,6 +278,49 @@ class PadronAFIP():
         self.db.commit()
         return True
 
+    @inicializar_y_capturar_excepciones_simple
+    def Consultar(self, nro_doc):
+        "Llama a la API pública de AFIP para obtener los datos de una persona"
+        url = "%s/v2/persona/%s" % (URL_API, nro_doc)
+        client = WebClient(location=url, trace=True)
+        client.method = "GET"
+        response = client()
+        result = json.loads(response)
+        if result['success']:
+            data = result['data']
+            # extraigo datos generales del contribuyente:
+            self.cuit = data["idPersona"]
+            self.tipo_persona = data["tipoPersona"]
+            self.tipo_doc = TIPO_CLAVE.get(data["tipoClave"])
+            self.dni = data.get("numeroDocumento")
+            self.estado = data.get("estadoClave")
+            self.denominacion = data.get("nombre")
+            # analizo el domicilio
+            domicilio = data.get("domicilioFiscal")
+            self.direccion = domicilio.get("direccion", "")
+            self.localidad = domicilio.get("localidad", "")  # no usado en CABA
+            self.provincia = PROVINCIAS.get(domicilio.get("idProvincia"), "")
+            self.cod_postal = domicilio.get("codPostal")
+            # retrocompatibilidad:
+            self.domicilios = ["%s - %s (%s) - %s" % (
+                                    self.direccion, self.localidad, 
+                                    self.cod_postal, self.provincia,) ]
+            # analizo impuestos:
+            self.impuestos = data.get("impuestos", [])
+            self.actividades = data.get("actividades", [])
+            self.imp_iva = "S" if 30 in self.impuestos else "N"
+            mt = data.get("categoriasMonotributo", {})
+            self.monotributo = "S" if mt else "N"
+            self.actividad_monotributo = "" # TODO: mt[0].get("idCategoria")
+            self.integrante_soc = ""
+            self.empleador = "S" if 301 in self.impuestos else "N"
+            self.cat_iva = ""
+            self.data = data
+        else:
+            error = result['error']
+            self.Excepcion = error['mensaje']
+        return True
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
@@ -272,16 +341,34 @@ if __name__ == "__main__":
             padron.Procesar(borrar='--borrar' in sys.argv)
         cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
         # consultar un cuit:
-        ok = padron.Buscar(cuit)
-        if ok:
+        if '--api' in sys.argv:
+            print "Consultando API...",
+            ok = padron.Consultar(cuit)
+            print 'ok' if ok else "error", padron.Excepcion
             print "Denominacion:", padron.denominacion
-            print "IVA:", padron.imp_iva
-            padron.ConsultarDomicilios(cuit)
-            for dom in padron.domicilios:
-                print dom
+            print "CUIT:", padron.cuit 
+            print "Tipo:", padron.tipo_persona, padron.tipo_doc, padron.dni
+            print "Estado:", padron.estado
+            print "Direccion:", padron.direccion
+            print "Localidad:", padron.localidad
+            print "Provincia:", padron.provincia
+            print "Codigo Postal:", padron.cod_postal
+            print "Impuestos:", padron.impuestos
+            print "Actividades:", padron.actividades
+            print "IVA", padron.imp_iva
+            print "MT", padron.monotributo, padron.actividad_monotributo
+            print "Empleador", padron.empleador
         else:
-            print padron.Excepcion
-            print padron.Traceback
+            ok = padron.Buscar(cuit)
+            if ok:
+                print "Denominacion:", padron.denominacion
+                print "IVA:", padron.imp_iva
+                padron.ConsultarDomicilios(cuit)
+                for dom in padron.domicilios:
+                    print dom
+            else:
+                print padron.Excepcion
+                print padron.Traceback
         t1 = time.time()
         print "tiempo", t1 -t0
 
