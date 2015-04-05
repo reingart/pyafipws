@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.04b"
 
 
 import json
@@ -63,22 +63,23 @@ TIPO_CLAVE = {'CUIT': 80, 'CUIL': 86, 'CDI': 86, 'DNI': 96, 'Otro': 99}
 DEBUG = True
 
 URL = "http://www.afip.gob.ar/genericos/cInscripcion/archivos/apellidoNombreDenominacion.zip"
-URL_API = "https://soa.afip.gob.ar/sr-padron"
+URL_API = "https://soa.afip.gob.ar/"
 
 
 class PadronAFIP():
     "Interfaz para consultar situación tributaria (Constancia de Inscripcion)"
 
     _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
-                        'ConsultarDomicilios', 'Consultar',
+                        'ConsultarDomicilios', 'Consultar', 'Conectar',
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
-                      'cuit', 'denominacion', 'imp_ganancias', 'imp_iva',  
+                      'cuit', 'dni', 'denominacion', 'imp_ganancias', 'imp_iva',  
                       'monotributo', 'integrante_soc', 'empleador', 
                       'actividad_monotributo', 'cat_iva', 'domicilios',
                       'tipo_doc', 'nro_doc', 'LanzarExcepciones',
-                      'estado', 'impuestos', 'actividades',
+                      'tipo_persona', 'estado', 'impuestos', 'actividades',
                       'direccion', 'localidad', 'provincia', 'cod_postal',
+                      'data', 'response',
                      ]
     _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "PadronAFIP"
@@ -93,6 +94,7 @@ class PadronAFIP():
         self.cursor = self.db.cursor()
         self.LanzarExcepciones = False
         self.inicializar()
+        self.client = None
     
     def inicializar(self):
         self.Excepcion = self.Traceback = ""
@@ -108,6 +110,14 @@ class PadronAFIP():
         self.imp_iva = self.empleador = self.integrante_soc = self.cat_iva = ""
         self.monotributo = self.actividad_monotributo = "" 
         self.data = {}
+        self.response = ""
+
+    @inicializar_y_capturar_excepciones_simple
+    def Conectar(self, url=URL_API, proxy="", wrapper=None, cacert=None, trace=False):
+        self.client = WebClient(location=url, trace=trace, cacert=cacert)
+        self.client.method = "GET"       # metodo RESTful predeterminado 
+        self.client.enctype = None       # no enviar body
+        return True
 
     @inicializar_y_capturar_excepciones_simple
     def Descargar(self, url=URL, filename="padron.txt", proxy=None):
@@ -281,11 +291,10 @@ class PadronAFIP():
     @inicializar_y_capturar_excepciones_simple
     def Consultar(self, nro_doc):
         "Llama a la API pública de AFIP para obtener los datos de una persona"
-        url = "%s/v2/persona/%s" % (URL_API, nro_doc)
-        client = WebClient(location=url, trace=True)
-        client.method = "GET"
-        response = client()
-        result = json.loads(response)
+        if not self.client:
+            self.Conectar()
+        self.response = self.client("sr-padron", "v2", "persona", str(nro_doc))
+        result = json.loads(self.response)
         if result['success']:
             data = result['data']
             # extraigo datos generales del contribuyente:
@@ -341,8 +350,9 @@ if __name__ == "__main__":
             padron.Procesar(borrar='--borrar' in sys.argv)
         cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
         # consultar un cuit:
-        if '--api' in sys.argv:
-            print "Consultando API...",
+        if '--online' in sys.argv:
+            padron.Conectar(trace="--trace" in sys.argv)
+            print "Consultando AFIP online...",
             ok = padron.Consultar(cuit)
             print 'ok' if ok else "error", padron.Excepcion
             print "Denominacion:", padron.denominacion
@@ -370,5 +380,6 @@ if __name__ == "__main__":
                 print padron.Excepcion
                 print padron.Traceback
         t1 = time.time()
-        print "tiempo", t1 -t0
+        if '--trace' in sys.argv:
+            print "tiempo", t1 -t0
 
