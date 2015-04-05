@@ -434,10 +434,13 @@ class WebClient:
         buf = buf.getvalue()
         return boundary, buf
 
-    def __call__(self, **vars):
+    def __call__(self, *args, **vars):
         "Perform a GET/POST request and return the response"
 
         location = self.location
+        # extend the base URI with additional components
+        if args:
+            location += "/".join(args)
         if self.method == "GET":
             location += "?%s" % urlencode(vars)
             
@@ -448,6 +451,8 @@ class WebClient:
         elif self.enctype == "application/x-www-form-urlencoded":
             body = urlencode(vars)
             content_type = self.enctype
+        else:
+            body = None
             
         # add headers according method, cookies, etc.:
         headers={}        
