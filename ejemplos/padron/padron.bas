@@ -50,14 +50,15 @@ Sub Main()
         MsgBox "CUIT no encontrado", vbCritical, "Resultado CUIT " & cuit
     End If
     
-    ' Consultar CUIT (online con AFIP:
+    ' Consultar CUIT (online con AFIP):
+    ok = Padron.Conectar()
     ok = Padron.Consultar(cuit)
     Debug.Print ok, Err.Description
 
     ' Imprimir respuesta obtenida
     Debug.Print "Denominacion:", Padron.denominacion
     Debug.Print "CUIT:", Padron.cuit
-    ' Debug.Print "Tipo:", Padron.tipo_persona, Padron.tipo_doc, Padron.nro_doc
+    Debug.Print "Tipo:", Padron.tipo_persona, Padron.tipo_doc, Padron.nro_doc, Padron.dni
     Debug.Print "Estado:", Padron.Estado
     Debug.Print "Direccion:", Padron.direccion
     Debug.Print "Localidad:", Padron.localidad
@@ -67,7 +68,7 @@ Sub Main()
         Debug.Print "Impuesto:", impuesto
     Next
     For Each actividad In Padron.actividades
-        Debug.Print "Actividade:", actividad
+        Debug.Print "Actividad:", actividad
     Next
     Debug.Print "IVA", Padron.imp_iva
     Debug.Print "MT", Padron.monotributo, Padron.actividad_monotributo
@@ -76,6 +77,8 @@ Sub Main()
     If Padron.Excepcion = "" Then
         MsgBox Padron.denominacion & " " & Padron.Estado & vbCrLf & Padron.direccion & vbCrLf & Padron.localidad & vbCrLf & Padron.provincia & vbCrLf & Padron.cod_postal, vbInformation, "Resultado CUIT " & cuit & " (online AFIP)"
     Else
+        ' respuesta del servidor (para depuración)
+        Debug.Print Padron.response
         MsgBox "Error AFIP: " & Padron.Excepcion, vbCritical, "Resultado CUIT " & cuit & " (online)"
     End If
 
