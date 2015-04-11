@@ -225,6 +225,7 @@ class BaseWS:
                 proxy_dict = proxy
             else:
                 proxy_dict = parse_proxy(proxy)
+                self.log("Proxy Dict: %s" % str(proxy_dict))
             if self.HOMO or not wsdl:
                 wsdl = self.WSDL
             # agregar sufijo para descargar descripción del servicio ?WSDL o ?wsdl
@@ -233,6 +234,14 @@ class BaseWS:
             if not cache or self.HOMO:
                 # use 'cache' from installation base directory 
                 cache = os.path.join(self.InstallDir, 'cache')
+            # deshabilitar verificación cert. servidor si es nulo falso vacio
+            if not cacert:
+                cacert = None
+            elif cacert is True:
+                # usar certificados predeterminados que vienen en la biblioteca
+                cacert = os.path.join(httplib2.__path__[0], 'cacerts.txt')
+                if not os.path.exists(cacert):
+                    cacert = None   # wrong version, certificates not found...
             self.log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
             # analizar espacio de nombres (axis vs .net):
             ns = 'ser' if self.WSDL[-5:] == "?wsdl" else None
