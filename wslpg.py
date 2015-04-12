@@ -598,8 +598,6 @@ class WSLPG(BaseWS):
             cuit_corredor = None
             comision_corredor = None
             nro_ing_bruto_corredor = None
-        elif es_liquidacion_propia == "N" and liquida_corredor == "N":
-            nro_ing_bruto_corredor = None           # validación 1623
         
         # si no corresponde elimino el peso neto certificado campo opcional
         if not peso_neto_sin_certificado or not int(peso_neto_sin_certificado):
