@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24d"
+__version__ = "1.24e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -536,7 +536,6 @@ class WSLPG(BaseWS):
             except Exception, e:
                 print "ADVERTENCIA: No se pudo abrir la bbdd de localidades:", e
                 self.Excepcion = str(e)
-            
         return ok
 
     def __analizar_errores(self, ret):
@@ -668,6 +667,8 @@ class WSLPG(BaseWS):
         # inicializo las listas que contentran las retenciones y deducciones:
         self.retenciones = []
         self.deducciones = []
+        # limpio las estructuras internas no utilizables en este caso
+        self.certificacion = None
         return True
 
     @inicializar_y_capturar_excepciones
@@ -743,7 +744,7 @@ class WSLPG(BaseWS):
                         pesoNetoTotalCertificado=peso_neto_total_certificado,
                         coeCertificadoDeposito=coe_certificado_deposito,
                       )
-        if not coe_certificado_deposito:
+        if self.liquidacion:
             self.liquidacion['certificados'].append({'certificado': cert})
         else:
             self.certificacion['retiroTransferencia']['certificadoDeposito'] = cert
@@ -1423,6 +1424,8 @@ class WSLPG(BaseWS):
                 campania=campania,
                 datosAdicionales=datos_adicionales,                 # opcional
             )
+        # limpio las estructuras internas no utilizables en este caso
+        self.liquidacion = None
         return True
 
     @inicializar_y_capturar_excepciones
