@@ -2409,6 +2409,11 @@ class WSLPG(BaseWS):
 
     def AgregarDatoPDF(self, campo, valor, pagina='T'):
         "Agrego un dato a la factura (internamente)"
+        # corrijo path relativo para las imágenes (compatibilidad hacia atrás):
+        if campo == 'fondo' and valor.startswith(self.InstallDir):
+            if not os.path.exists(valor):
+                valor = os.path.join(self.InstallDir, "plantillas", os.path.basename(valor))
+            if DEBUG: print "NUEVO PATH:", valor          
         self.datos[campo] = valor
         return True
 
