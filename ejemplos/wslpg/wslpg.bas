@@ -5,7 +5,7 @@ Attribute VB_Name = "Module1"
 
 Sub Main()
     Dim WSAA As Object, WSLPG As Object
-    Dim ok As Boolean
+    Dim ok As Variant
     
     ttl = 2400 ' tiempo de vida en segundos
     cache = "" ' Directorio para archivos temporales (dejar en blanco para usar predeterminado)
@@ -308,19 +308,19 @@ Sub Main()
     ' consulto las liquidaciones relacionadas a un contrato (liquidacionPorContratoConsultar):
     
     ok = WSLPG.ConsultarLiquidacionesPorContrato(nro_contrato, cuit_comprador, cuit_vendedor, cuit_corredor, cod_grano)
-    Do While ok
+    Do
         If WSLPG.COE = "" Then Exit Do
         ' si existe COE relacionado, lo muestro:
         Debug.Print WSLPG.COE
         ' leo la próxima liquidación:
         ok = WSLPG.LeerDatosLiquidacion()
-    Loop
+    Loop Until ok = ""
     
     ' anulo una liquidacion
     
     'COE = "330100000357"     ' nro ejemplo AFIP
-    ok = WSLPG.AnularLiquidacion(COE)
-    If ok Then
+    COE = WSLPG.AnularLiquidacion(COE)
+    If COE <> "" Then
         MsgBox "Resultado: " & WSLPG.Resultado & vbCrLf, vbInformation, "AnularLiquidación:"
         For Each er In WSLPG.Errores
             MsgBox er, vbExclamation, "Error"
