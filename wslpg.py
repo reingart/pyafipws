@@ -1777,7 +1777,8 @@ class WSLPG(BaseWS):
             self.params_out['nro_carta_porte_a_utilizar'] = rt.get('nroCartaPorteAUtilizar')
             # sub estructuras:
             self.params_out['certificados'] = []
-            for cert in rt.get("certificadoDeposito", []):
+            cert = rt.get("certificadoDeposito")
+            if cert:
                 self.params_out['certificados'].append({
                     'coe_certificado_deposito': cert.get('coeCertificadoDeposito'),
                     'peso_neto': cert.get('pesoNeto'),
