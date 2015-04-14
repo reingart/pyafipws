@@ -10,14 +10,18 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para obtener código de autorización electrónico del web service 
-WSFEv1 de AFIP (Factura Electrónica Nacional - Version 1 - RG2904 opción B)
+"""Módulo para obtener CAE/CAEA, código de autorización electrónico webservice 
+WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.5)
+Según RG 2485/08, RG 2757/2010, RG 2904/2010 y RG2926/10 (CAE anticipado), 
+RG 3067/2011 (RS - Monotributo), RG 3571/2013 (Responsables inscriptos IVA), 
+RG 3668/2014 (Factura A IVA F.8001), RG 3749/2015 (R.I. y exentos)
+Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16b"
+__version__ = "1.16c"
 
 import datetime
 import decimal
@@ -35,7 +39,7 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 
 
 class WSFEv1(BaseWS):
-    "Interfaz para el WebService de Factura Electrónica Version 1"
+    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.5"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
                         'CompUltimoAutorizado', 'CompConsultar',
@@ -50,9 +54,10 @@ class WSFEv1(BaseWS):
                         'ParamGetTiposTributos',
                         'ParamGetCotizacion', 
                         'ParamGetPtosVenta',
-                        'AnalizarXml', 'ObtenerTagXml',
-                        'SetParametros', 'EstablecerCampoFactura',
-                        'Dummy', 'Conectar', 'DebugLog']
+                        'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
+                        'SetParametros', 'SetTicketAcceso', 'GetParametro', 
+                        'EstablecerCampoFactura',
+                        'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 'Excepcion', 'LanzarExcepciones',

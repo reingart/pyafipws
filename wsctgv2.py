@@ -17,11 +17,12 @@ del web service WSCTG versión 3.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.13a"
+__version__ = "1.13b"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
-Copyright (C) 2014 Mariano Reingart reingart@gmail.com
+Copyright (C) 2014-2015 Mariano Reingart reingart@gmail.com
+http://www.sistemasagiles.com.ar/trac/wiki/CodigoTrazabilidadGranos
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -83,7 +84,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v3.0?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsctg.ini"
-HOMO = False
+HOMO = True
 
 # definición del formato del archivo de intercambio:
 
@@ -134,7 +135,7 @@ ENCABEZADO = [
 
 class WSCTGv2(BaseWS):
     "Interfaz para el WebService de Código de Trazabilidad de Granos (Version 3)"    
-    _public_methods_ = ['Conectar', 'Dummy',
+    _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
                         'AnularCTG', 'RechazarCTG', 'CTGsPendientesResolucion',
@@ -149,6 +150,7 @@ class WSCTGv2(BaseWS):
                         'ConsultarEstablecimientos',
                         'ConsultarCosechas',
                         'ConsultarEspecies',
+                        'SetParametros', 'SetParametro', 'GetParametro',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 

@@ -10,14 +10,15 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para obtener código de autorización electrónico del web service 
-WSMTX de AFIP (Factura Electrónica Mercado Interno RG2904 opción A con detalle)
+"""Módulo para obtener código de autorización electrónico CAE/CAEA webservice 
+WSMTX de AFIP (Factura Electrónica Mercado Interno con codificación de 
+productos) según RG2904 (opción A con detalle) y RG2926/10 (CAE anticipado).
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12a"
+__version__ = "1.12b"
 
 import datetime
 import decimal
@@ -51,8 +52,9 @@ class WSMTXCA(BaseWS):
                         'ConsultarCotizacionMoneda',
                         'ConsultarPuntosVentaCAE',
                         'ConsultarPuntosVentaCAEA',
-                        'AnalizarXml', 'ObtenerTagXml',
-                        'Dummy', 'Conectar', 'DebugLog']
+                        'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
+                        'SetParametros', 'SetTicketAcceso', 'GetParametro',
+                        'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
         'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 'LanzarExcepciones',

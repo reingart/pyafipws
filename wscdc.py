@@ -16,9 +16,9 @@
 # http://www.sistemasagiles.com.ar/trac/wiki/ConstatacionComprobantes
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2013 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.02c"
 
 import sys, os, time
 from ConfigParser import SafeConfigParser
@@ -63,11 +63,13 @@ EVENTO = ERROR = OBSERVACION        # misma estructura, cambia tipo de registro
 
 class WSCDC(BaseWS):
     "Interfaz para el WebService de Constatación de Comprobantes"
-    _public_methods_ = ['Conectar', 'AnalizarXml', 'ObtenerTagXml', 
+    _public_methods_ = ['Conectar', 'SetTicketAcceso', 'DebugLog',
+                        'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'ConstatarComprobante', 'Dummy',
                         'ConsultarModalidadComprobantes',
                         'ConsultarTipoComprobantes',
-                        'ConsultarTipoDocumentos', 'ConsultarTipoOpcionales',                        
+                        'ConsultarTipoDocumentos', 'ConsultarTipoOpcionales',  
+                        'SetParametros', 'SetParametro', 'GetParametro',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 'Observaciones', 'Errores',

@@ -15,14 +15,14 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2013 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25a"
+__version__ = "1.25b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
 Liquidación Primaria de Granos (LpgService)
-Copyright (C) 2013 Mariano Reingart reingart@gmail.com
+Copyright (C) 2013-2015 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
@@ -420,7 +420,7 @@ DATO = [
 
 class WSLPG(BaseWS):
     "Interfaz para el WebService de Liquidación Primaria de Granos"    
-    _public_methods_ = ['Conectar', 'Dummy', 'LoadTestXML',
+    _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'AutorizarLiquidacion',
                         'AutorizarLiquidacionSecundaria', 
                         'AnularLiquidacionSecundaria','AnularLiquidacion',
@@ -465,8 +465,8 @@ class WSLPG(BaseWS):
                         'ConsultarLocalidadesPorProvincia',
                         'ConsultarTiposOperacion',
                         'BuscarLocalidades',
-                        'AnalizarXml', 'ObtenerTagXml',
-                        'SetParametro', 'GetParametro',
+                        'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
+                        'SetParametros', 'SetParametro', 'GetParametro', 
                         'CargarFormatoPDF', 'AgregarCampoPDF', 'AgregarDatoPDF',
                         'CrearPlantillaPDF', 'ProcesarPlantillaPDF', 
                         'GenerarPDF', 'MostrarPDF',

@@ -16,9 +16,9 @@ a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2013 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.06c"
 
 import datetime
 import decimal
@@ -39,10 +39,11 @@ class WSBFEv1(BaseWS):
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID',
                         'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
-                        'Dummy', 'Conectar', ]
+                        'SetParametros', 'SetTicketAcceso', 'GetParametro',
+                        'Dummy', 'Conectar', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version', 'LanzarExcepciones',
+        'XmlRequest', 'XmlResponse', 'Version',
         'Resultado', 'Obs', 'Reproceso', 'FechaCAE',
         'CAE','Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg', 'FchVencCAE',
         'Excepcion', 'LanzarExcepciones', 'Traceback', "InstallDir",

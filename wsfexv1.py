@@ -10,14 +10,16 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para obtener código de autorización de impresión o 
-electrónico del web service WSFEXv1 de AFIP (Factura Electrónica Exportación V1)
+"""Módulo para obtener CAE, código de autorización de impresión o electrónico, 
+del web service WSFEXv1 de AFIP (Factura Electrónica Exportación Versión 1)
+según RG2758/2010 (Registros Especiales Aduaneros) y RG3689/14 (servicios)
+http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08c"
+__version__ = "1.08d"
 
 import datetime
 import decimal
@@ -39,10 +41,12 @@ class WSFEXv1(BaseWS):
                         'GetParamIncoterms', 'GetParamDstCUIT',
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
-                        'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID' ]
+                        'SetParametros', 'SetTicketAcceso', 'GetParametro',
+                        'GetLastCMP', 'GetLastID',
+                        'Dummy', 'Conectar', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'XmlRequest', 'XmlResponse', 'Version', 'LanzarExcepciones',
+        'XmlRequest', 'XmlResponse', 'Version',
         'Resultado', 'Obs', 'Reproceso',
         'CAE','Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg', 'FchVencCAE',
         'Excepcion', 'LanzarExcepciones', 'Traceback', "InstallDir",
