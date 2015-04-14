@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.24e"
+__version__ = "1.25a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1882,7 +1882,8 @@ class WSLPG(BaseWS):
         return True
     
     @inicializar_y_capturar_excepciones
-    def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None):
+    def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None, 
+                                   pdf=None):
         "Consulta una liquidación por No de orden"
         if coe:
             ret = self.client.liquidacionXCoeConsultar(
@@ -1890,6 +1891,7 @@ class WSLPG(BaseWS):
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         coe=coe,
+                        pdf='S' if pdf else 'N',
                         )
         else:
             ret = self.client.liquidacionXNroOrdenConsultar(
@@ -1905,10 +1907,14 @@ class WSLPG(BaseWS):
             aut = ret['autorizacion']
             liq = ret['liquidacion']
             self.AnalizarLiquidacion(aut, liq)
+        # guardo el PDF si se indico archivo y vino en la respuesta:
+        if pdf and 'pdf' in ret:
+            open(pdf, "w").write(ret['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConsultarLiquidacionSecundaria(self, pto_emision=None, nro_orden=None, coe=None):
+    def ConsultarLiquidacionSecundaria(self, pto_emision=None, nro_orden=None, 
+                                             coe=None, pdf=None):
         "Consulta una liquidación sequndaria por No de orden o coe"
         if coe:
             ret = self.client.lsgConsultarXCoe(
@@ -1916,6 +1922,7 @@ class WSLPG(BaseWS):
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         coe=coe,
+                        pdf='S' if pdf else 'N',
                         )
         else:
             ret = self.client.lsgConsultarXNroOrden(
@@ -1931,10 +1938,14 @@ class WSLPG(BaseWS):
             aut = ret['autorizacion']
             liq = ret['liquidacion']
             self.AnalizarLiquidacion(aut, liq)
+        # guardo el PDF si se indico archivo y vino en la respuesta:
+        if pdf and 'pdf' in ret:
+            open(pdf, "w").write(ret['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCertificacion(self, pto_emision=None, nro_orden=None, coe=None):
+    def ConsultarCertificacion(self, pto_emision=None, nro_orden=None, 
+                                     coe=None, pdf=None):
         "Consulta una certificacion por No de orden o COE"
         if coe:
             ret = self.client.cgConsultarXCoe(
@@ -1942,6 +1953,7 @@ class WSLPG(BaseWS):
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         coe=coe,
+                        pdf='S' if pdf else 'N',
                         )
         else:
             ret = self.client.cgConsultarXNroOrden(
@@ -1955,6 +1967,9 @@ class WSLPG(BaseWS):
         self.__analizar_errores(ret)
         if 'autorizacion' in ret:
             self.AnalizarAutorizarCertificadoResp(ret)
+        # guardo el PDF si se indico archivo y vino en la respuesta:
+        if pdf and 'pdf' in ret:
+            open(pdf, "w").write(ret['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
@@ -3415,11 +3430,12 @@ if __name__ == '__main__':
         if '--consultar' in sys.argv:
             pto_emision = None
             nro_orden = 0
-            coe = None
+            coe = pdf = None
             try:
                 pto_emision = sys.argv[sys.argv.index("--consultar") + 1]
                 nro_orden = sys.argv[sys.argv.index("--consultar") + 2]
                 coe = sys.argv[sys.argv.index("--consultar") + 3]
+                pdf = sys.argv[sys.argv.index("--consultar") + 4]
             except IndexError:
                 pass
             if '--testing' in sys.argv:
@@ -3428,11 +3444,11 @@ if __name__ == '__main__':
                 wslpg.LoadTestXML("wslpg_cons_test.xml")     # cargo prueba
             print "Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe)
             if '--lsg' in sys.argv:
-                ret = wslpg.ConsultarLiquidacionSecundaria(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
+                ret = wslpg.ConsultarLiquidacionSecundaria(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             if '--cg' in sys.argv:
-                ret = wslpg.ConsultarCertificacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
+                ret = wslpg.ConsultarCertificacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             else:
-                ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe)
+                ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores
