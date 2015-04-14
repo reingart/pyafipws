@@ -1,7 +1,7 @@
 httplib2>=0.7
-pysimplesoap==1.08.7
+pysimplesoap==1.08.8
 m2crypto>=0.18
 fpdf>=1.7.2
-dbf>=0.96.003
+dbf>=0.88.019
 Pillow>=2.0.0
 #pywin32==219
