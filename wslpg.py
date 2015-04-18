@@ -726,8 +726,8 @@ class WSLPG(BaseWS):
         # limpio campos opcionales:
         if not peso_neto_total_certificado:
             peso_neto_total_certificado = None  # 0 no es válido
-        # coe_certificado_deposito no es para LPG
-        if int(tipo_certificado_deposito) == 332:
+        # coe_certificado_deposito no es para LPG, unificar en futuras versiones
+        if tipo_certificado_deposito and int(tipo_certificado_deposito) == 332:
             if coe_certificado_deposito and long(coe_certificado_deposito):
                 nro_certificado_deposito = coe_certificado_deposito
                 coe_certificado_deposito = None
