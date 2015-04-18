@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25b"
+__version__ = "1.25c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -728,7 +728,7 @@ class WSLPG(BaseWS):
             peso_neto_total_certificado = None  # 0 no es válido
         # coe_certificado_deposito no es para LPG
         if int(tipo_certificado_deposito) == 332:
-            if long(coe_certificado_deposito):
+            if coe_certificado_deposito and long(coe_certificado_deposito):
                 nro_certificado_deposito = coe_certificado_deposito
                 coe_certificado_deposito = None
         cert = dict(
