@@ -1909,7 +1909,7 @@ class WSLPG(BaseWS):
             self.AnalizarLiquidacion(aut, liq)
         # guardo el PDF si se indico archivo y vino en la respuesta:
         if pdf and 'pdf' in ret:
-            open(pdf, "w").write(ret['pdf'])
+            open(pdf, "wb").write(ret['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1940,7 +1940,7 @@ class WSLPG(BaseWS):
             self.AnalizarLiquidacion(aut, liq)
         # guardo el PDF si se indico archivo y vino en la respuesta:
         if pdf and 'pdf' in ret:
-            open(pdf, "w").write(ret['pdf'])
+            open(pdf, "wb").write(ret['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1969,7 +1969,7 @@ class WSLPG(BaseWS):
             self.AnalizarAutorizarCertificadoResp(ret)
         # guardo el PDF si se indico archivo y vino en la respuesta:
         if pdf and 'pdf' in ret:
-            open(pdf, "w").write(ret['pdf'])
+            open(pdf, "wb").write(ret['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
