@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16c"
+__version__ = "1.16d"
 
 import datetime
 import decimal
@@ -65,7 +65,7 @@ class WSFEv1(BaseWS):
         'CAE','Vencimiento', 'Eventos', 'Errores', 'ErrCode', 'ErrMsg',
         'Reprocesar', 'Reproceso', 'EmisionTipo', 'CAEA',
         'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte', 
-        'ImpTotal', 'ImpNeto', 'ImptoLiq', 'ImpOpEx'
+        'ImpTotal', 'ImpNeto', 'ImptoLiq',
         'ImpIVA', 'ImpOpEx', 'ImpTrib',]
         
     _reg_progid_ = "WSFEv1"
