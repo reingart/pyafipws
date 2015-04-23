@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33b"
+__version__ = "1.33c"
 
 import datetime
 import os
@@ -117,6 +117,17 @@ OPCIONAL = [
     ('valor', 250, A), 
     ]
 
+# Constantes (tablas de parámetros):
+
+TIPO_CBTE = {1: "FAC A", 2: "N/D A", 3: "N/C A", 6: "FAC B", 7: "N/D B",
+             8: "N/C B", 4: "REC A", 5: "NV A", 9: "REC B",             
+             10: "NV B", 11: "FAC C", 12: "N/D C", 13: "N/C C", 15: "REC C",
+             49: "BIENES USADOS",
+             60: "LIQ PROD A", 61: "LIQ PROD B", 63: "LIQ A", 64: "LIQ B", 
+            }
+
+TIPO_DOC = {80: 'CUIT', 86: 'CUIL', 96: 'DNI', 99: '', 87: u"CDI"} 
+
 
 def autorizar(ws, entrada, salida, informar_caea=False):
     tributos = []
@@ -188,6 +199,11 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         else:
             cae = ws.CAEARegInformativo()
             dic = ws.factura
+        print "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f" % (
+            TIPO_CBTE.get(dic['tipo_cbte'], dic['tipo_cbte']), 
+            dic['punto_vta'], dic['cbt_desde'], dic['cbt_hasta'], 
+            TIPO_DOC.get(dic['tipo_doc'], dic['tipo_doc']), dic['nro_doc'], 
+            dic['imp_total'], dic['imp_iva']) 
         dic.update(encabezado)         # preservar la estructura leida
         dic.update({
             'cae': cae and str(cae) or '',
