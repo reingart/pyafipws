@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.08b"
+__version__ = "2.09a"
 
 import hashlib, datetime, email, os, sys, time, traceback
 from php import date
@@ -130,11 +130,12 @@ class WSAA(BaseWS):
     "Interfaz para el WebService de Autenticación y Autorización"
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
                         'AnalizarXml', 'ObtenerTagXml', 'Expirado', 'Autenticar',
-                        'DebugLog',
+                        'DebugLog', 'AnalizarCertificado',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 
                       'InstallDir', 'Traceback', 'Excepcion',
+                      'Identidad', 'Caducidad', 'Emisor',
                       'SoapFault', 'LanzarExcepciones',
                     ]
     _readonly_attrs_ = _public_attrs_[:-1]
@@ -155,7 +156,25 @@ class WSAA(BaseWS):
     def CreateTRA(self, service="wsfe", ttl=2400):
         "Crear un Ticket de Requerimiento de Acceso (TRA)"
         return create_tra(service,ttl)
-        
+
+    @inicializar_y_capturar_excepciones
+    def AnalizarCertificado(self, crt, binary=False):
+        "Carga un certificado digital y extrae los campos más importantes"
+        from M2Crypto import BIO, EVP, RSA, X509
+        if binary:
+            bio = BIO.MemoryBuffer(cert)
+            x509 = X509.load_cert_bio(bio, X509.FORMAT_DER)
+        elif crt.startswith("-----BEGIN CERTIFICATE-----"):
+            bio = BIO.MemoryBuffer(crt)
+            x509 = X509.load_cert_bio(bio, X509.FORMAT_PEM)
+        else:
+            x509 = X509.load_cert(crt, 1)
+        if x509:
+            self.Identidad = x509.get_subject().as_text()
+            self.Caducidad = x509.get_not_after().get_datetime()
+            self.Emisor = x509.get_issuer().as_text()
+        return True
+    
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
@@ -308,6 +327,12 @@ if __name__=="__main__":
             print >> sys.stderr, "Usando PROXY:", proxy
         else:
             proxy = None
+
+        if '--analizar' in sys.argv:
+            wsaa.AnalizarCertificado(crt)
+            print wsaa.Identidad
+            print wsaa.Caducidad
+            print wsaa.Emisor
 
         ta = wsaa.Autenticar(service, crt, key, url, proxy, wrapper, cacert)
         if not ta:
