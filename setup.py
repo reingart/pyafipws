@@ -195,7 +195,7 @@ if 'py2exe' in sys.argv:
             ]
         data_files += [
             WX_DLL, 
-            ("plantillas", ["plantillas/logo.png", ]),
+            ("plantillas", ["plantillas/logo.png", "plantillas/factura.csv", ]),
             ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", ])
             ]
         data_files.append((".", pycard_resources))
