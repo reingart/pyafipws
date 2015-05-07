@@ -90,10 +90,11 @@ if sys.version_info > (2, 7):
             )]
     # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
     # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
+	import win32com.gen_py
     data_files += [(
             r"win32com\gen_py", 
-            [r"c:\Python27\Lib\site-packages\win32com\gen_py\__init__.py",
-             r"c:\Python27\Lib\site-packages\win32com\gen_py\dicts.dat", ],
+            [os.path.join(win32com.gen_py.__path__[0], "__init__.py"),
+             os.path.join(win32com.gen_py.__path__[0], "dicts.dat")],
             )]
     
     sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
