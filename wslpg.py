@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25d"
+__version__ = "1.25e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -3559,7 +3559,7 @@ if __name__ == '__main__':
                     opcionales=[{'codigo': 1, 
                                  'descripcion': 'previsto para info adic.'}],
                 )
-                escribir_archivo(dic, ENTRADA, agrega=False)
+                escribir_archivo(dic, ENTRADA, agrega=('--agrega' in sys.argv))
             dic = leer_archivo(ENTRADA)
             
             # cargo la liquidación:
@@ -3682,7 +3682,7 @@ if __name__ == '__main__':
                             )
                     dic.update(pre)
 
-                escribir_archivo(dic, ENTRADA, agrega=False)
+                escribir_archivo(dic, ENTRADA, agrega=('--agrega' in sys.argv))
             dic = leer_archivo(ENTRADA)
             
             # cargar los datos según el tipo de certificación:
