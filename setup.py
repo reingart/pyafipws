@@ -36,7 +36,7 @@ import wsmtx, recem
 import pyfepdf
 import pyemail
 import pyi25
-#import wsctgv2
+#import wsctgv3
 #import wslpg
 #import wscoc
 #import wscdc
@@ -317,15 +317,15 @@ if 'py2exe' in sys.argv:
             Target(module=designer, script="designer.py", dest_base="designer"),
             ]
             
-    if 'wsctgv2' in globals():
+    if 'wsctgv3' in globals():
         kwargs['com_server'] += [
-            Target(module=wsctgv2, modules="wsctgv2"), 
+            Target(module=wsctgv3, modules="wsctgv3"), 
             ]
         kwargs['console'] += [
-            Target(module=wsctgv2, script='wsctgv2.py', dest_base="wsctgv2_cli"),
+            Target(module=wsctgv3, script='wsctgv3.py', dest_base="wsctgv3_cli"),
             ]
-        __version__ += "+wsctgv2_" + wsctgv2.__version__
-        HOMO &= wsctgv2.HOMO
+        __version__ += "+wsctgv3_" + wsctgv3.__version__
+        HOMO &= wsctgv3.HOMO
 
     if 'wslpg' in globals():
         kwargs['com_server'] += [

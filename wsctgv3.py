@@ -84,7 +84,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v3.0?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsctg.ini"
-HOMO = True
+HOMO = False
 
 # definición del formato del archivo de intercambio:
 
