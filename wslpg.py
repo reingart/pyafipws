@@ -3459,6 +3459,10 @@ if __name__ == '__main__':
             if DEBUG: 
                 pprint.pprint(wslpg.params_out)
 
+            if '--mostrar' in sys.argv and pdf:
+                wslpg.MostrarPDF(archivo=pdf,
+                                 imprimir='--imprimir' in sys.argv)
+
         if '--consultar_ajuste' in sys.argv:
             pto_emision = None
             nro_orden = 0
