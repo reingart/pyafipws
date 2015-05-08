@@ -648,6 +648,8 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                     longitud = 17
                 tipo = "N(%s,0)" % longitud 
             elif tipo == I:
+                if longitud >= 18:
+                    longitud = 17
                 if longitud - 2 <= dec:
                     longitud += longitud - dec + 1      # ajusto long. decimales 
                 tipo = "N(%s,%s)" % (longitud, dec)
