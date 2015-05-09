@@ -1021,9 +1021,11 @@ if __name__ == '__main__':
     config.read(CONFIG_FILE)
     if not len(config.sections()):
         if os.path.exists(CONFIG_FILE):
-            print "Error al cargar datos desde el archivo: ",CONFIG_FILE
+            gui.alert(u"Error al cargar archivo de configuración: %s" % 
+                        CONFIG_FILE, "PyRece: Imposible Continuar")
         else:
-            print "No se encuentra el archivo: ",CONFIG_FILE
+            gui.alert(u"No se encuentra archivo de configuración: %s" % 
+                        CONFIG_FILE, "PyRece: Imposible Continuar")
         sys.exit(1)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
