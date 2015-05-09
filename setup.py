@@ -81,6 +81,10 @@ data_files = [
     ("cache", glob.glob("cache/*")),
     ]
 
+# incluyo mis certificados para homologación (si existen)
+if os.path.exists("reingart.crt"):
+    data_files.append(("conf", ["reingart.crt", "reingart.key"]))
+    
 if sys.version_info > (2, 7):
     # add "Microsoft Visual C++ 2008 Redistributable Package (x86)"
     if os.path.exists(r"c:\Program Files\Mercurial"):

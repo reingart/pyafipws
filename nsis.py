@@ -81,9 +81,15 @@ notistalled:
     SectionIn RO
     SetOutPath $INSTDIR
     File /r dist\*.*
-    IfFileExists $INSTDIR\\rece.ini.dist 0 +3
+    IfFileExists $INSTDIR\\conf\\rece.ini 0 +3
         IfFileExists $INSTDIR\\rece.ini +2 0
-        CopyFiles $INSTDIR\\rece.ini.dist $INSTDIR\\rece.ini
+        CopyFiles $INSTDIR\\conf\\rece.ini $INSTDIR\\rece.ini
+    IfFileExists $INSTDIR\\conf\\reingart.crt 0 +3
+        IfFileExists $INSTDIR\\reingart.crt +2 0
+        CopyFiles $INSTDIR\\conf\\reingart.crt $INSTDIR\\reingart.crt
+    IfFileExists $INSTDIR\\conf\\reingart.key 0 +3
+        IfFileExists $INSTDIR\\reingart.key +2 0
+        CopyFiles $INSTDIR\\conf\\reingart.key $INSTDIR\\reingart.key
     WriteRegStr HKLM SOFTWARE\%(reg_key)s "Install_Dir" "$INSTDIR"
     ; Write the uninstall keys for Windows
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "DisplayName" "%(description)s (solo eliminar)"
@@ -93,12 +99,15 @@ notistalled:
     ;To Register a DLL
     %(register_com_servers_dll)s
     %(register_com_servers_exe)s
-    IfFileExists $INSTDIR\\pyrece.exe 0 +3
-        ;create start-menu items
+    ;create start-menu items
+    IfFileExists $INSTDIR\\pyrece.exe 0 +4
         CreateDirectory "$SMPROGRAMS\%(name)s"
         CreateShortCut "$SMPROGRAMS\%(name)s\PyRece.lnk" "$INSTDIR\pyrece.exe" "" "$INSTDIR\pyrece.exe" 0
         CreateShortCut "$SMPROGRAMS\%(name)s\Designer.lnk" "$INSTDIR\designer.exe" "" "$INSTDIR\designer.exe" 0
         ;CreateShortCut "$SMPROGRAMS\%(name)s\Uninstall.lnk" "$INSTDIR\Uninst.exe" "" "$INSTDIR\Uninst.exe" 0
+    IfFileExists $INSTDIR\\factura.exe 0 +3
+        CreateDirectory "$SMPROGRAMS\%(name)s"
+        CreateShortCut "$SMPROGRAMS\%(name)s\PyFactura.lnk" "$INSTDIR\factura.exe" "" "$INSTDIR\factura.exe" 0
   
 SectionEnd
 
