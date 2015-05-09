@@ -303,7 +303,7 @@ def escribir(regs, archivo):
             it['tipo_reg'] = 9
             f_salida.write(escribir_linea_txt(it, DATO))
 
-        f_salida.close()
+    f_salida.close()
     
     
 def ayuda():
