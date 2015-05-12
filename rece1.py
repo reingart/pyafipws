@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33c"
+__version__ = "1.33d"
 
 import datetime
 import os
@@ -142,7 +142,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ('Tributo', TRIBUTO, tributos), 
                     ('Iva', IVA, ivas), 
                     ('Comprobante Asociado', CMP_ASOC, cbtasocs),
-                    ('Datos Adicionales', OPCIONAL, opcionales),
+                    ('Datos Opcionales', OPCIONAL, opcionales),
                     ]
         dic = leer_dbf(formatos, conf_dbf)
         encabezado = encabezado[0]
