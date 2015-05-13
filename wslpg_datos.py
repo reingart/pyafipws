@@ -37,7 +37,7 @@ PROVINCIAS = {1: 'BUENOS AIRES', 0: 'CAPITAL FEDERAL',
               12: 'SANTA FE', 13: 'SANTIAGO DEL ESTERO',
               24: 'TIERRA DEL FUEGO', 14: u'TUCUMÁN'}
 
-TIPO_CERT_DEP = {1: "F1116/RT", 5: "F1116/A", 332: u"Certificado Electrónico de Depósito"}
+TIPO_CERT_DEP = {1: "F1116/RT", 5: "F1116/A", 332: u"Cert.Elec."}
 
 CAMPANIAS = {1213: "2012/2013", 1112: "2011/2012", 1011: "2010/2011",
              910: "2009/2010", 809: "2008/2009", 708: "2007/2008",

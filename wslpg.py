@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25e"
+__version__ = "1.25f"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -108,7 +108,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
-HOMO = True
+HOMO = False
 
 # definición del formato del archivo de intercambio:
 
@@ -3000,7 +3000,7 @@ if __name__ == '__main__':
                     actua_corredor="S", liquida_corredor="S", 
                     cuit_corredor=wslpg.Cuit, # uso Cuit representado
                     comision_corredor=1, nro_ing_bruto_corredor=wslpg.Cuit,
-                    fecha_precio_operacion="2013-02-07",
+                    fecha_precio_operacion="2014-02-07",
                     precio_ref_tn=2000,
                     cod_grado_ref="G1",
                     cod_grado_ent="FG",
@@ -3008,7 +3008,7 @@ if __name__ == '__main__':
                     precio_flete_tn=10,
                     cont_proteico=20,
                     alic_iva_operacion=10.5,
-                    campania_ppal=1213,
+                    campania_ppal=1314,
                     cod_localidad_procedencia=5544,
                     cod_prov_procedencia=12,
                     nro_contrato=0,
@@ -3017,13 +3017,13 @@ if __name__ == '__main__':
                     precio_operacion=None,  # para probar ajustar
                     total_peso_neto=1000,   # para probar ajustar
                     certificados=[dict(   
-                        tipo_certificado_deposito=5,  # 332 p/ cert. electronico
-                        nro_certificado_deposito=555501200729,
+                        tipo_certificado_deposito=332,  # cert. electronico
+                        nro_certificado_deposito=332000000466,
                         peso_neto=1000,
                         cod_localidad_procedencia=3,
                         cod_prov_procedencia=1,
-                        campania=1213,
-                        fecha_cierre="2013-01-13",)],
+                        campania=1314,
+                        fecha_cierre="2014-01-13",)],
                     retenciones=[dict(
                             codigo_concepto="RI",
                             detalle_aclaratorio="DETALLE DE IVA",
