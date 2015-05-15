@@ -144,16 +144,20 @@ def inicializar_y_capturar_excepciones(func):
             self.params_in = {}
             self.params_out = {}
             # llamo a la función (con reintentos)
-            retry = self.reintentos
+            retry = self.reintentos + 1
             while retry:
                 try:
                     retry -= 1
                     return func(self, *args, **kwargs)
                 except socket.error, e:
-                    if e[0] != 10054:
+                    if e[0] not in (10054, 10053):
                         # solo reintentar si el error es de conexión
                         # (10054, 'Connection reset by peer')
+                        # (10053, 'Software caused connection abort')
                         raise
+                    else:
+                        if DEBUG: print e, "Reintentando..."
+                        self.log(exception_info().get("msg", ""))
 
         except SoapFault, e:
             # guardo destalle de la excepción SOAP
@@ -163,10 +167,10 @@ def inicializar_y_capturar_excepciones(func):
             if self.LanzarExcepciones:
                 raise
         except Exception, e:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
-            self.Traceback = ''.join(ex)
+            ex = exception_info()
+            self.Traceback = ex.get("tb", "")
             try:
-                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+                self.Excepcion = ex.get("msg", "")
             except:
                 self.Excepcion = u"<no disponible>"
             if self.LanzarExcepciones:
