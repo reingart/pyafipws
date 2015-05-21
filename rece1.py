@@ -99,7 +99,7 @@ TRIBUTO = [
     ]
 
 IVA = [
-    ('tipo_reg', 1, N), # 2: tributo
+    ('tipo_reg', 1, N), # 2: alicuota de IVA
     ('iva_id', 16, N),
     ('base_imp', 15, I, 2), 
     ('importe', 15, I, 2), 
