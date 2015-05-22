@@ -13,9 +13,9 @@
 "Módulo para generar PDF de facturas electrónicas"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2011 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07m"
+__version__ = "1.07n"
 
 DEBUG = False
 HOMO = False
@@ -23,7 +23,7 @@ CONFIG_FILE = "rece.ini"
 
 LICENCIA = u"""
 pyfepdf.py: Interfaz para generar Facturas Electrónica en formato PDF
-Copyright (C) 2011 Mariano Reingart reingart@gmail.com
+Copyright (C) 2011-2015 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -45,6 +45,7 @@ Opciones:
   --grabar: graba un archivo de salida (txt) con los datos de los comprobantes procesados
   --pdf: genera la imágen de factura en PDF
   --dbf: utiliza tablas DBF en lugar del archivo de entrada TXT
+  --json: utiliza el formato JSON para el archivo de entrada
 
 Ver rece.ini para parámetros de configuración "
 """
@@ -469,10 +470,14 @@ class FEPDF:
             # divido las observaciones por linea:
             if fact.get('obs_generales') and not f.has_key('obs') and not f.has_key('ObservacionesGenerales1'):
                 obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
+                # limpiar texto (campos dbf) y reemplazar saltos de linea:
+                obs = obs.replace('\x00', '').replace('<br/>', '\n')
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
             if fact.get('obs_comerciales') and not f.has_key('obs_comerciales'):
                 obs="\n<U>Observaciones Comerciales:</U>\n\n" + fact['obs_comerciales']
+                # limpiar texto (campos dbf) y reemplazar saltos de linea:
+                obs = obs.replace('\x00', '').replace('<br/>', '\n')
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
 
@@ -902,8 +907,8 @@ if __name__ == '__main__':
             # Fechas del período del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
-            obs_generales = "Observaciones Generales, texto libre"
-            obs_comerciales = "Observaciones Comerciales, texto libre"
+            obs_generales = "Observaciones Generales<br/>texto libre"
+            obs_comerciales = "Observaciones Comerciales<br/>texto libre"
 
             nombre_cliente = 'Joao Da Silva'
             domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
