@@ -216,11 +216,13 @@ def modificar(fact, db, schema={}, webservice="wsfev1", ids=None, conf_db={}):
         pass
 
 
-def leer(db, schema={}, webservice="wsfev1", ids=None):
+def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
     from formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
     tablas, campos, campos_rev = configurar(schema)
     cur = db.cursor()
-    if not ids:
+    if kwargs:
+        query = ("SELECT * FROM %(encabezado)s" % tablas)
+    elif not ids:
         query = ("SELECT * FROM %(encabezado)s WHERE (%%(resultado)s IS NULL OR %%(resultado)s='' OR %%(resultado)s=' ') AND (%%(id)s IS NOT NULL) AND %%(webservice)s=? ORDER BY %%(tipo_cbte)s, %%(punto_vta)s, %%(cbte_nro)s" % tablas) % campos["encabezado"]
         ids = [webservice]
     else:

@@ -577,6 +577,10 @@ class RG1361AFIP():
             self.factura = facts[0]
         return True
 
+    def Consultar(self, **kwargs):
+        from formatos.formato_sql import leer
+        return leer(self.db, **kwargs)
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = RG1361AFIP.InstallDir = get_install_dir()
