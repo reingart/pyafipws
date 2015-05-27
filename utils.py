@@ -18,6 +18,7 @@ __license__ = "GPL 3.0"
 
 import functools
 import inspect
+import locale
 import socket
 import sys
 import os

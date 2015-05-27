@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04b"
+__version__ = "1.04c"
 
 
 import json
@@ -29,7 +29,7 @@ import urllib2
 import zipfile
 from email.utils import formatdate
 import sys
-from utils import leer, escribir, N, A, I, get_install_dir, \
+from utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
                   inicializar_y_capturar_excepciones_simple, WebClient
 
 
@@ -335,6 +335,8 @@ class PadronAFIP():
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
 if __name__ == "__main__":
+
+    safe_console()
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
