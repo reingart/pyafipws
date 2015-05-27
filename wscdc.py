@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.02d"
 
 import sys, os, time
 from ConfigParser import SafeConfigParser
@@ -83,7 +83,7 @@ class WSCDC(BaseWS):
                     ]
     _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "WSCDC"
-    _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
+    _reg_clsid_ = "{D1B97BDD-A78C-4D51-8999-1D9A5034EC10}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
