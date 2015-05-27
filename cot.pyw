@@ -15,14 +15,19 @@ import time
 import os
 import fnmatch
 import shelve
-
-# establecer la configuración regional por defecto:
-import locale
-locale.setlocale(locale.LC_ALL, "")
+import sys
 
 # importar gui2py (atajos)
 
 import gui          
+
+# establecer la configuración regional por defecto:
+import wx, locale
+if sys.platform == "win32":
+    locale.setlocale(locale.LC_ALL, 'Spanish_Argentina.1252')
+elif sys.platform == "linux2":
+    locale.setlocale(locale.LC_ALL, 'es_AR.utf8')
+loc = wx.Locale(wx.LANGUAGE_DEFAULT, wx.LOCALE_LOAD_DEFAULT)
 
 # importar el módulo principal de pyafipws para remito electrónico:
 
@@ -139,7 +144,7 @@ def listar_archivos(evt=None):
         fecha = panel['fecha'].value.strftime("%Y%m%d")
     else:
         fecha = None
-    carpeta = panel['carpeta'].text
+    carpeta = panel['carpeta'].text or "."
     for fn in os.listdir(carpeta):
         if fnmatch.fnmatch(fn, 'TB_???????????_*.txt'):
             # filtro por fecha (si esta tildado):
