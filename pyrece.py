@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26b"
+__version__ = "1.26c"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -198,8 +198,8 @@ class PyRece(gui.Controller):
             raise RuntimeError()
 
     def on_btnMarcarTodo_click(self, event):
-        for i in range(len(self.__items)):
-            self.components.lvwListado.SetSelection(i)
+        for it in self.components.lvwListado.items:
+            it.selected = True
 
     def on_menu_consultas_dummy_click(self, event):
         ##self.verifica_ws()
