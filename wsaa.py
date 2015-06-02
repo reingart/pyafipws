@@ -209,7 +209,7 @@ class WSAA(BaseWS):
         x509name.add_entry_by_txt(field='C', entry='AR', **kwargs)
         x509name.add_entry_by_txt(field='O', entry=empresa, **kwargs)
         x509name.add_entry_by_txt(field='CN', entry=nombre, **kwargs)
-        x509name.add_entry_by_txt(field='serialNumber', entry=cuit, **kwargs)     
+        x509name.add_entry_by_txt(field='serialNumber', entry="CUIT %s" % cuit, **kwargs)     
         self.x509_req.set_subject_name(x509name)
 
         # sign the request with the previously created key (CrearClavePrivada)
