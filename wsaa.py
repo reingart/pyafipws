@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.10a"
+__version__ = "2.10b"
 
 import hashlib, datetime, email, os, sys, time, traceback
 import unicodedata
@@ -375,6 +375,13 @@ if __name__=="__main__":
         print "Se crearon los archivos:"
         print clave_privada
         print pedido_cert
+        # convertir a terminación de linea windows y abrir con bloc de notas
+        if sys.platform == "win32":
+            txt = open(pedido_cert + ".txt", "wb")
+            for linea in open(pedido_cert, "r"):
+                txt.write("%s\r\n" % linea)
+            txt.close()
+            os.startfile(pedido_cert + ".txt")
     else:
         
         # Leer argumentos desde la linea de comando (si no viene tomar default)
