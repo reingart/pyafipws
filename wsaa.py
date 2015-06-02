@@ -19,9 +19,10 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.09a"
+__version__ = "2.10a"
 
 import hashlib, datetime, email, os, sys, time, traceback
+import unicodedata
 from php import date
 from pysimplesoap.client import SimpleXMLElement
 from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
@@ -131,6 +132,7 @@ class WSAA(BaseWS):
     _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
                         'AnalizarXml', 'ObtenerTagXml', 'Expirado', 'Autenticar',
                         'DebugLog', 'AnalizarCertificado',
+                        'CrearClavePrivada', 'CrearPedidoCertificado',
                         ]
     _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 
@@ -175,6 +177,47 @@ class WSAA(BaseWS):
             self.Emisor = x509.get_issuer().as_text()
         return True
     
+    @inicializar_y_capturar_excepciones
+    def CrearClavePrivada(self, filename="privada.key", key_length=1024, 
+                                pub_exponent=0x10001, passphrase=""):
+        "Crea una clave privada (private key)"
+        from M2Crypto import RSA, EVP
+        
+        # only protect if passphrase was given (it will fail otherwise)
+        callback = lambda *args, **kwarg: passphrase
+        chiper = None if not passphrase else "aes_128_cbc"
+        # create the RSA key pair (and save the result to a file):
+        rsa_key_pair = RSA.gen_key(key_length, pub_exponent, callback)
+        rsa_key_pair.save_key(filename, chiper, callback)
+        # create a public key to sign the certificate request:
+        self.pkey = EVP.PKey(md='sha1')
+        self.pkey.assign_rsa(rsa_key_pair)
+
+    @inicializar_y_capturar_excepciones
+    def CrearPedidoCertificado(self, cuit="", empresa="", nombre="pyafipws",
+                                     filename="empresa.csr"):
+        "Crear un certificate signing request (X509 CSR)"
+        from M2Crypto import RSA, EVP, X509
+
+        # create the certificate signing request (CSR):
+        self.x509_req = X509.Request ()
+
+        # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
+        x509name = X509.X509_Name ()
+        # default OpenSSL parameters:
+        kwargs = {"type": 0x1000 | 1, "len": -1, "loc": -1, "set": 0}
+        x509name.add_entry_by_txt(field='C', entry='AR', **kwargs)
+        x509name.add_entry_by_txt(field='O', entry=empresa, **kwargs)
+        x509name.add_entry_by_txt(field='CN', entry=nombre, **kwargs)
+        x509name.add_entry_by_txt(field='serialNumber', entry=cuit, **kwargs)     
+        self.x509_req.set_subject_name(x509name)
+
+        # sign the request with the previously created key (CrearClavePrivada)
+        self.x509_req.set_pubkey (pkey=self.pkey)
+        self.x509_req.sign(pkey=self.pkey, md='sha256')
+        # save the CSR result to a file:
+        self.x509_req.save_pem(filename)
+        
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
@@ -300,6 +343,38 @@ if __name__=="__main__":
         #win32com.server.localserver.main()
         # start the server.
         win32com.server.localserver.serve([WSAA._reg_clsid_])
+    elif "--crear_pedido_cert" in sys.argv:
+        # instanciar el helper y revisar los parámetros
+        wsaa = WSAA()
+        args = [arg for arg in sys.argv if not arg.startswith("--")]
+        # obtengo el CUIT y lo normalizo:
+        cuit = len(args)>1 and args[1] or raw_input("Ingrese un CUIT: ")
+        cuit = ''.join([c for c in cuit if c.isdigit()])
+        # consultar el padrón online de AFIP si no se especificó razón social:
+        empresa = len(args)>2 and args[2] or ""
+        if not empresa:
+            from padron import PadronAFIP
+            padron = PadronAFIP()
+            ok = padron.Consultar(cuit)
+            if ok and padron.denominacion:
+                print u"Denominación según AFIP:", padron.denominacion
+                empresa = padron.denominacion
+            else:
+                print u"CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion)
+                empresa = raw_input("Empresa: ")
+        # normalizar encoding (reemplazar acentos, eñe, etc.)
+        if isinstance(empresa, unicode):
+            empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII')
+        nombre = len(args)>3 and args[3] or "PyAfipWs"
+        # generar los archivos (con fecha para no pisarlo)
+        ts = datetime.datetime.now().strftime("%Y%m%d%M%S")
+        clave_privada = "clave_privada_%s_%s.key" % (cuit, ts)
+        pedido_cert = "pedido_cert_%s_%s.csr" % (cuit, ts)
+        wsaa.CrearClavePrivada(clave_privada)
+        wsaa.CrearPedidoCertificado(cuit, empresa, nombre, pedido_cert)
+        print "Se crearon los archivos:"
+        print clave_privada
+        print pedido_cert
     else:
         
         # Leer argumentos desde la linea de comando (si no viene tomar default)
