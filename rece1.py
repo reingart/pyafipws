@@ -229,8 +229,8 @@ def escribir_factura(dic, archivo, agrega=False):
             for it in dic['tributos']:
                 it['tipo_reg'] = 1
                 archivo.write(escribir(it, TRIBUTO))
-        if 'iva' in dic:
-            for it in dic['iva']:
+        if 'iva' in dic or 'ivas' in dic:
+            for it in dic.get('iva', dic.get('ivas')):
                 it['tipo_reg'] = 2
                 archivo.write(escribir(it, IVA))
         if 'cbtes_asoc' in dic:
