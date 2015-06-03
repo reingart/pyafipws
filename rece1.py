@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33d"
+__version__ = "1.33e"
 
 import datetime
 import os
@@ -203,7 +203,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             TIPO_CBTE.get(dic['tipo_cbte'], dic['tipo_cbte']), 
             dic['punto_vta'], dic['cbt_desde'], dic['cbt_hasta'], 
             TIPO_DOC.get(dic['tipo_doc'], dic['tipo_doc']), dic['nro_doc'], 
-            dic['imp_total'], dic['imp_iva']) 
+            float(dic['imp_total']), float(dic['imp_iva'])) 
         dic.update(encabezado)         # preservar la estructura leida
         dic.update({
             'cae': cae and str(cae) or '',
