@@ -253,7 +253,7 @@ class NSISScript:
             'copyright': self.copyright,
             'install_dir': self.name,
             'reg_key': self.name,
-            'out_file': "%s-%s.exe" % (self.name, self.version),
+            'out_file': "%s-%s.exe" % (self.name, self.version if len(self.version)<100 else (self.version[:14] + self.version[-5:])),
             'install_vcredist': install_vcredist if sys.version_info > (2, 7) else "",
             'register_com_servers_exe': ''.join([register_com_server_exe % comserver for comserver in self.comserver_files_exe]),
             'register_com_servers_dll': ''.join([register_com_server_dll % comserver for comserver in self.comserver_files_dll]),
