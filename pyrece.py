@@ -13,9 +13,9 @@
 "Aplicativo AdHoc Para generación de Facturas Electrónicas"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2009 Mariano Reingart"
+__copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26c"
+__version__ = "1.27a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -433,6 +433,7 @@ class PyRece(gui.Controller):
         wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
                         "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
                         "Archivos JSON (*.json)|*.json",
+                        "Planillas Excel (*.xlsx)|*.xlsx",
                         ]
         if entrada.endswith("xml"):
             wildcard.sort(reverse=True)
@@ -453,7 +454,7 @@ class PyRece(gui.Controller):
         try:
             items = []
             for fn in self.paths:
-                if fn.lower().endswith(".csv"):
+                if fn.lower().endswith(".csv") or fn.lower().endswith(".xlsx"):
                     filas = formato_csv.leer(fn)
                     items.extend(filas)
                 elif fn.lower().endswith(".xml"):
@@ -472,10 +473,11 @@ class PyRece(gui.Controller):
                     self.error(u'Formato de archivo desconocido: %s', unicode(fn))
             if len(items) < 2:
                 gui.alert(u'El archivo no tiene datos válidos', 'Advertencia')
-            cols = items and [str(it).strip() for it in items[0]] or []
+            cols = items and [str(it).strip() for it in items[0] if it] or []
             if DEBUG: print "Cols",cols
             # armar diccionario por cada linea
-            items = [dict([(cols[i],v) for i,v in enumerate(item)]) for item in items[1:]]
+            items = [dict([(col,item[i]) for i, col in enumerate(cols)]) 
+                                for item in items[1:]]
             self.cols = cols
             self.items = items
         except Exception,e:
@@ -487,6 +489,7 @@ class PyRece(gui.Controller):
             wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
                         "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
                         "Archivos JSON (*.json)|*.json",
+                        "Planillas Excel (*.xlsx)|*.xlsx",
                         ]
             if entrada.endswith("xml"):
                 wildcard.sort(reverse=True)
@@ -511,7 +514,7 @@ class PyRece(gui.Controller):
                     fn = salida
             elif not fn:
                 raise RuntimeError("Debe indicar un nombre de archivo para grabar")
-            if fn.endswith(".csv"):
+            if fn.lower().endswith(".csv") or fn.lower().endswith(".xlsx"):
                 formato_csv.escribir([self.cols] + [[item[k] for k in self.cols] for item in self.items], fn)
             else:
                 regs = formato_csv.desaplanar([self.cols] + [[item[k] for k in self.cols] for item in self.items])
@@ -524,7 +527,7 @@ class PyRece(gui.Controller):
                 elif fn.endswith(".json"):
                     formato_json.escribir(regs, fn)
                 else:
-                    self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
+                    self.error(u'Formato de archivo desconocido', unicode(fn))
             gui.alert(u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
         except Exception, e:
             self.error(u'Excepción',unicode(e))
