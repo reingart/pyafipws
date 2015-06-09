@@ -68,7 +68,7 @@ try {
 		
 	# Recupero último número de comprobante para un punto venta/tipo (opcional)
 	$tipo_cbte = 1; $punto_vta = 1;
-	$ult = $WSFEv1->CompUltimoAutorizado($punto_vta, $tipo_cbte);
+	$ult = $WSFEv1->CompUltimoAutorizado($tipo_cbte, $punto_vta);
 	
 	# Establezco los valores de la factura o lote a autorizar:
 	$fecha = date("Ymd");
