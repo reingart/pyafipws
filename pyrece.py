@@ -44,7 +44,7 @@ CONFIG_FILE = "rece.ini"
 
 ACERCA_DE = u"""
 PyRece: Aplicativo AdHoc para generar Facturas Electrónicas
-Copyright (C) 2008/2009/2010/2011/2012 Mariano Reingart reingart@gmail.com
+Copyright (C) 2008-2015 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -430,15 +430,17 @@ class PyRece(gui.Controller):
     
     def examinar(self):
         filename = entrada
-        wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
-                        "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
-                        "Archivos JSON (*.json)|*.json",
-                        "Planillas Excel (*.xlsx)|*.xlsx",
-                        ]
+        wildcard = ["Planillas Excel (*.xlsx)|*.xlsx", 
+                    "Archivos CSV (*.csv)|*.csv", 
+                    "Archivos XML (*.xml)|*.xml", 
+                    "Archivos TXT (*.txt)|*.txt", 
+                    "Archivos DBF (*.dbf)|*.dbf",
+                    "Archivos JSON (*.json)|*.json",
+                   ]
         if entrada.endswith("xml"):
             wildcard.sort(reverse=True)
 
-        result = gui.open_file('Abrir', '', filename, '|'.join(wildcard))
+        result = gui.open_file('Abrir', 'datos', filename, '|'.join(wildcard))
         if not result:
             return
         self.paths = [result]
@@ -473,6 +475,7 @@ class PyRece(gui.Controller):
                     self.error(u'Formato de archivo desconocido: %s', unicode(fn))
             if len(items) < 2:
                 gui.alert(u'El archivo no tiene datos válidos', 'Advertencia')
+            # extraer los nombres de columnas (ignorar vacios de XLSX)
             cols = items and [str(it).strip() for it in items[0] if it] or []
             if DEBUG: print "Cols",cols
             # armar diccionario por cada linea
