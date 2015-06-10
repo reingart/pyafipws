@@ -203,8 +203,10 @@ if 'py2exe' in sys.argv:
         data_files += [
             WX_DLL, 
             ("plantillas", ["plantillas/logo.png", "plantillas/factura.csv", ]),
-            ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", ])
+            ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", "datos/facturas.xlsx", ])
             ]
+        if os.path.exists("logo-pyafipws.png"):
+            data_files.append((".", ['logo-pyafipws.png', 'logo-sistemasagiles.png']))
         data_files.append((".", pycard_resources))
 
         __version__ += "+pyrece_" + pyrece.__version__
@@ -478,6 +480,10 @@ if 'py2exe' in sys.argv:
     # agrego tag de homologación (testing - modo evaluación):
     __version__ += "-homo" if HOMO else "-full"
     
+    # agrego ejemplos
+    ##if HOMO:
+    ##     data_files += [("ejemplos", glob.glob("ejemplos/*"))]
+
 else:
     desc = ("Interfases, tools and apps for Argentina's gov't. webservices "
             "(soap, com/dll, pdf, dbf, xml, etc.)")
