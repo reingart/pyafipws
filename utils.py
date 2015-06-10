@@ -245,8 +245,15 @@ class BaseWS:
             elif cacert is True:
                 # usar certificados predeterminados que vienen en la biblioteca
                 cacert = os.path.join(httplib2.__path__[0], 'cacerts.txt')
-                if not os.path.exists(cacert):
-                    cacert = None   # wrong version, certificates not found...
+            elif not os.path.exists(cacert):
+                self.log("Buscando CACERT en conf...")
+                cacert = os.path.join(self.InstallDir, "conf", os.path.basename(cacert))
+            if cacert and not os.path.exists(cacert):
+                self.log("No se encuentra CACERT: %s" % str(cacert))
+                cacert = None   # wrong version, certificates not found...
+                raise RuntimeError("Error de configuracion CACERT ver DebugLog")
+                return False
+                    
             self.log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
             # analizar espacio de nombres (axis vs .net):
             ns = 'ser' if self.WSDL[-5:] == "?wsdl" else None
@@ -288,6 +295,8 @@ class BaseWS:
             self.Log = StringIO()
         self.Log.write(msg)
         self.Log.write('\n\r')
+        if DEBUG:
+            warnings.warn(msg)
 
     def DebugLog(self):
         "Devolver y limpiar la bitácora de depuración"
