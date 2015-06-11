@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33e"
+__version__ = "1.33f"
 
 import datetime
 import os
@@ -365,14 +365,22 @@ if __name__ == "__main__":
                                  ('Tributo', TRIBUTO), ('Iva', IVA), 
                                  ('Comprobante Asociado', CMP_ASOC),
                                  ('Opcionales', OPCIONAL)]:
-                comienzo = 1
-                print "== %s ==" % msg
-                for fmt in formato:
-                    clave, longitud, tipo = fmt[0:3]
-                    dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                    print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                        clave, comienzo, longitud, tipo, dec)
-                    comienzo += longitud
+                if not '/dbf' in sys.argv:
+                    comienzo = 1
+                    print "== %s ==" % msg
+                    for fmt in formato:
+                        clave, longitud, tipo = fmt[0:3]
+                        dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                        print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                            clave, comienzo, longitud, tipo, dec)
+                        comienzo += longitud
+                else:
+                    from formatos.formato_dbf import definir_campos
+                    filename =  "%s.dbf" % msg.lower()[:8]
+                    print "==== %s (%s) ====" % (msg, filename)
+                    claves, campos = definir_campos(formato)
+                    for campo in campos:
+                        print " * Campo: %s" % (campo,)
             sys.exit(0)
 
         # obteniendo el TA
