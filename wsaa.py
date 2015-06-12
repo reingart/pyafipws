@@ -350,8 +350,9 @@ if __name__=="__main__":
         # obtengo el CUIT y lo normalizo:
         cuit = len(args)>1 and args[1] or raw_input("Ingrese un CUIT: ")
         cuit = ''.join([c for c in cuit if c.isdigit()])
+        nombre = len(args)>2 and args[2] or "PyAfipWs"
         # consultar el padrón online de AFIP si no se especificó razón social:
-        empresa = len(args)>2 and args[2] or ""
+        empresa = len(args)>3 and args[3] or ""
         if not empresa:
             from padron import PadronAFIP
             padron = PadronAFIP()
@@ -365,7 +366,6 @@ if __name__=="__main__":
         # normalizar encoding (reemplazar acentos, eñe, etc.)
         if isinstance(empresa, unicode):
             empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII')
-        nombre = len(args)>3 and args[3] or "PyAfipWs"
         # generar los archivos (con fecha para no pisarlo)
         ts = datetime.datetime.now().strftime("%Y%m%d%M%S")
         clave_privada = "clave_privada_%s_%s.key" % (cuit, ts)
