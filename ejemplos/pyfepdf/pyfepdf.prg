@@ -119,7 +119,7 @@ ok = PyFEPDF.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, ;
         dato_a, dato_b, dato_c, dato_d, dato_e)
 
 *-- Agrego datos adicionales fijos:
-ok = PyFEPDF.AgregarDato("logo", PyFEPDF.InstallDir + "\fpdf.png")
+ok = PyFEPDF.AgregarDato("logo", PyFEPDF.InstallDir + "\plantillas\logo.png")
 ok = PyFEPDF.AgregarDato("EMPRESA", "Empresa de Prueba")
 ok = PyFEPDF.AgregarDato("MEMBRETE1", "Direccion de Prueba")
 ok = PyFEPDF.AgregarDato("MEMBRETE2", "Capital Federal")
