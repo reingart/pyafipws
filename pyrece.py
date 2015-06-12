@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27a"
+__version__ = "1.27b"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -466,7 +466,7 @@ class PyRece(gui.Controller):
                     regs = formato_txt.leer(fn)
                     items.extend(formato_csv.aplanar(regs))
                 elif fn.lower().endswith(".dbf"):
-                    reg = formato_dbf.leer({'Encabezado': fn})
+                    reg = formato_dbf.leer({}, carpeta=os.path.dirname(fn))
                     items.extend(formato_csv.aplanar(reg.values()))
                 elif fn.lower().endswith(".json"):
                     regs = formato_json.leer(fn)
@@ -526,7 +526,7 @@ class PyRece(gui.Controller):
                 elif fn.endswith(".txt"):
                     formato_txt.escribir(regs, fn)
                 elif fn.endswith(".dbf"):
-                    formato_dbf.escribir(regs, {'Encabezado': fn})
+                    formato_dbf.escribir(regs, {}, carpeta=os.path.dirname(fn))
                 elif fn.endswith(".json"):
                     formato_json.escribir(regs, fn)
                 else:

@@ -17,6 +17,7 @@ __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
 
 from decimal import Decimal
+import os
 
 CODEPAGE = 'cp437'
 
@@ -92,7 +93,7 @@ def dar_nombre_campo(clave):
     return nombre.lower()
 
 
-def leer(archivos=None):
+def leer(archivos=None, carpeta=None):
     "Leer las tablas dbf y devolver una lista de diccionarios con las facturas"
     if DEBUG: print "Leyendo DBF..."
     if archivos is None: archivos = {}
@@ -109,6 +110,9 @@ def leer(archivos=None):
         filename = archivos.get(nombre.lower(), "%s.dbf" % nombre[:8]).strip()
         if not filename:
             continue
+        # construir ruta absoluta si se especifica carpeta
+        if carpeta is not None:
+            filename = os.path.join(carpeta, filename)
         if DEBUG: print "leyendo tabla", nombre, filename
         tabla = dbf.Table(filename, codepage=CODEPAGE)
         for reg in tabla:
@@ -136,7 +140,7 @@ def leer(archivos=None):
     return regs
 
 
-def escribir(regs, archivos=None):
+def escribir(regs, archivos=None, carpeta=None):
     "Grabar en talbas dbf la lista de diccionarios con la factura"
     if DEBUG: print "Creando DBF..."
     if not archivos: filenames = {}
@@ -153,6 +157,9 @@ def escribir(regs, archivos=None):
         for nombre, formato, l in formatos:
             claves, campos = definir_campos(formato)
             filename = archivos.get(nombre.lower(), "%s.dbf" % nombre[:8])
+            # construir ruta absoluta si se especifica carpeta
+            if carpeta is not None:
+                filename = os.path.join(carpeta, filename)
             if DEBUG: print "leyendo tabla", nombre, filename
             tabla = dbf.Table(filename, campos)
 
