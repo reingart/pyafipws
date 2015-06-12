@@ -200,7 +200,7 @@ def escribir_linea_txt(dic, formato):
             if not isinstance(valor, basestring):
                 valor = str(valor)
             if isinstance(valor, unicode):
-                valor = valor.encode(CHARSET)
+                valor = valor.encode(CHARSET, "replace")
             if valor == 'None':
                 valor = ''
             if tipo == N and valor and valor!="NULL":
