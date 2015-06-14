@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33f"
+__version__ = "1.33g"
 
 import datetime
 import os
@@ -149,7 +149,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     elif '/json' in sys.argv:
         import json
         encabezado = json.load(entrada)[0]
-        ivas = encabezado.get('ivas', [])
+        ivas = encabezado.get('ivas', encabezado.get('iva', []))
         tributos = encabezado.get('tributos', [])
         cbtasocs = encabezado.get('cbtasocs', [])
         opcionales = encabezado.get('opcionales', [])
@@ -221,7 +221,10 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 def escribir_factura(dic, archivo, agrega=False):
     if '/json' in sys.argv:
         import json
-        json.dump([dic], archivo, sort_keys=True, indent=4)
+        factura = dic.copy()
+        factura['ivas'] = factura.get('iva', [])
+        del factura['iva']
+        json.dump([factura], archivo, sort_keys=True, indent=4)
     else:
         dic['tipo_reg'] = 0
         archivo.write(escribir(dic, ENCABEZADO))
