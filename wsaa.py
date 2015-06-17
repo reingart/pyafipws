@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.10b"
+__version__ = "2.10c"
 
 import hashlib, datetime, email, os, sys, time, traceback
 import unicodedata
@@ -83,14 +83,17 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
         # soporte de contraseña de encriptación (clave privada, opcional)
         callback = lambda *args, **kwarg: passphrase
         # Cargar clave privada y certificado
-        if privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
-            key_bio = BIO.MemoryBuffer(privatekey)
-            crt_bio = BIO.MemoryBuffer(cert)
-            s.load_key_bio(key_bio, crt_bio, callback)  # (desde buffer)
-        elif os.path.exists(privatekey) and os.path.exists(cert):
-            s.load_key(privatekey, cert, callback)      # (desde archivo)
-        else:
-            raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
+        if not privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
+            # leer contenido desde archivo (evitar problemas Applink / MSVCRT)
+            if os.path.exists(privatekey) and os.path.exists(cert):
+                privatekey = open(privatekey).read()
+                cert = open(cert).read()
+            else:
+                raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
+        # crear buffers en memoria de la clave privada y certificado:
+        key_bio = BIO.MemoryBuffer(privatekey)
+        crt_bio = BIO.MemoryBuffer(cert)
+        s.load_key_bio(key_bio, crt_bio, callback)  # (desde buffer)
         p7 = s.sign(buf,0)                      # Firmar el buffer
         out = BIO.MemoryBuffer()                # Crear un buffer para la salida 
         s.write(out, p7)                        # Generar p7 en formato mail
@@ -166,11 +169,11 @@ class WSAA(BaseWS):
         if binary:
             bio = BIO.MemoryBuffer(cert)
             x509 = X509.load_cert_bio(bio, X509.FORMAT_DER)
-        elif crt.startswith("-----BEGIN CERTIFICATE-----"):
+        else:
+            if not crt.startswith("-----BEGIN CERTIFICATE-----"):
+                crt = open(crt).read()
             bio = BIO.MemoryBuffer(crt)
             x509 = X509.load_cert_bio(bio, X509.FORMAT_PEM)
-        else:
-            x509 = X509.load_cert(crt, 1)
         if x509:
             self.Identidad = x509.get_subject().as_text()
             self.Caducidad = x509.get_not_after().get_datetime()
@@ -188,7 +191,11 @@ class WSAA(BaseWS):
         chiper = None if not passphrase else "aes_128_cbc"
         # create the RSA key pair (and save the result to a file):
         rsa_key_pair = RSA.gen_key(key_length, pub_exponent, callback)
-        rsa_key_pair.save_key(filename, chiper, callback)
+        bio = BIO.MemoryBuffer()
+        rsa_key_pair.save_key_bio(bio, chiper, callback)
+        f = open(filename, "w")
+        f.write(bio.read())
+        f.close()
         # create a public key to sign the certificate request:
         self.pkey = EVP.PKey(md='sha1')
         self.pkey.assign_rsa(rsa_key_pair)
@@ -216,7 +223,9 @@ class WSAA(BaseWS):
         self.x509_req.set_pubkey (pkey=self.pkey)
         self.x509_req.sign(pkey=self.pkey, md='sha256')
         # save the CSR result to a file:
-        self.x509_req.save_pem(filename)
+        f = open(filename, "w")
+        f.write(self.x509_req.as_pem())
+        f.close()
         
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
