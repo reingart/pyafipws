@@ -21,15 +21,19 @@ __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "2.10c"
 
-import hashlib, datetime, email, os, sys, time, traceback
+import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
 from php import date
 from pysimplesoap.client import SimpleXMLElement
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, exception_info
 try:
-    from M2Crypto import BIO, Rand, SMIME, SSL
+    from M2Crypto import BIO, Rand, SMIME, SSL,a
 except ImportError:
+    ex = exception_info()
+    warnings.warn("No es posible importar M2Crypto (OpenSSL)")
+    warnings.warn(ex['msg'])            # revisar instalación y DLLs de OpenSSL
     BIO = Rand = SMIME = SSL = None
+    # utilizar alternativa (ejecutar proceso por separado) 
     from subprocess import Popen, PIPE
     from base64 import b64encode
 
@@ -107,13 +111,18 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
                 return part.get_payload(decode=False)   # devolver CMS
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
-        out = Popen(["openssl", "smime", "-sign", 
-                     "-signer", cert, "-inkey", privatekey,
-                     "-outform","DER", "-nodetach"], 
-                    stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
-        return b64encode(out)
+        try:
+            out = Popen(["openssl", "smime", "-sign", 
+                         "-signer", cert, "-inkey", privatekey,
+                         "-outform","DER", "-nodetach"], 
+                        stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
+            return b64encode(out)
+        except Exception as e:
+            if e.errno == 2:
+                warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
+            raise
 
-                
+
 def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
     "Llamar web service con CMS para obtener ticket de autorización (TA)"
 
