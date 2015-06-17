@@ -27,7 +27,7 @@ from php import date
 from pysimplesoap.client import SimpleXMLElement
 from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, exception_info
 try:
-    from M2Crypto import BIO, Rand, SMIME, SSL,a
+    from M2Crypto import BIO, Rand, SMIME, SSL
 except ImportError:
     ex = exception_info()
     warnings.warn("No es posible importar M2Crypto (OpenSSL)")
