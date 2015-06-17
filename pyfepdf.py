@@ -116,11 +116,11 @@ class FEPDF:
 
     tributos_ds = {1: 'Impuestos nacionales', 2: 'Impuestos provinciales', 3: 'Impuestos municipales', 4: 'Impuestos Internos', 99: 'Otro'}
 
-    tipos_fact = { 
-        (1, 6, 11, 19): u'Factura', 
-        (2, 7, 12, 20): u'Nota de Débito', 
-        (3, 8, 13, 21): u'Nota de Crédito',
-        (4, 9): u'Recibo', 
+    tipos_fact = {
+        (1, 6, 11, 19, 51): u'Factura', 
+        (2, 7, 12, 20, 52): u'Nota de Débito', 
+        (3, 8, 13, 21, 53): u'Nota de Crédito',
+        (4, 9, 15, 54): u'Recibo', 
         (10, 5): u'Nota de Venta al contado', 
         (60, 61): u'Cuenta de Venta y Líquido producto',
         (63, 64): u'Liquidación',
@@ -129,7 +129,8 @@ class FEPDF:
 
     letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63): 'A',
                    (6, 7, 8, 9, 10, 40, 61, 64): 'B',
-                   (11, 12, 13): 'C',
+                   (11, 12, 13, 15): 'C',
+                   (51, 52, 53, 54): 'M',
                    (19, 20, 21): 'E',
                    (91, ): 'R',
                 }
