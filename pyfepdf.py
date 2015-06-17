@@ -972,8 +972,9 @@ if __name__ == '__main__':
             imp_iva = 21.00
             importe = 121.00
             despacho = u'Nº 123456'
+            dato_a = "Dato A"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
-                    precio, bonif, iva_id, imp_iva, importe, despacho)
+                    precio, bonif, iva_id, imp_iva, importe, despacho, dato_a)
 
             fepdf.AgregarDato("pedido", "1234")
             print "Prueba!"
