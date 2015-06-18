@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27b"
+__version__ = "1.27c"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -466,7 +466,7 @@ class PyRece(gui.Controller):
                     regs = formato_txt.leer(fn)
                     items.extend(formato_csv.aplanar(regs))
                 elif fn.lower().endswith(".dbf"):
-                    reg = formato_dbf.leer({}, carpeta=os.path.dirname(fn))
+                    reg = formato_dbf.leer(conf_dbf, carpeta=os.path.dirname(fn))
                     items.extend(formato_csv.aplanar(reg.values()))
                 elif fn.lower().endswith(".json"):
                     regs = formato_json.leer(fn)
@@ -526,7 +526,7 @@ class PyRece(gui.Controller):
                 elif fn.endswith(".txt"):
                     formato_txt.escribir(regs, fn)
                 elif fn.endswith(".dbf"):
-                    formato_dbf.escribir(regs, {}, carpeta=os.path.dirname(fn))
+                    formato_dbf.escribir(regs, conf_dbf, carpeta=os.path.dirname(fn))
                 elif fn.endswith(".json"):
                     formato_json.escribir(regs, fn)
                 else:
@@ -1054,6 +1054,12 @@ if __name__ == '__main__':
     
     conf_pdf = dict(config.items('PDF'))
     conf_mail = dict(config.items('MAIL'))
+
+    if config.has_section('DBF'):
+        conf_dbf = dict(config.items('DBF'))
+    else:
+        conf_dbf = {}
+
       
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')
