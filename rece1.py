@@ -288,8 +288,12 @@ if __name__ == "__main__":
         DEBUG = True
         print "VERSION", __version__, "HOMO", HOMO
 
-    if len(sys.argv)>1 and sys.argv[1][0] not in "-/":
-        CONFIG_FILE = sys.argv.pop(1)
+    if len(sys.argv)>1:
+        if sys.argv[1][0] not in "-/":
+            CONFIG_FILE = sys.argv.pop(1)
+        elif sys.argv[1] not in ['/ayuda','/dbf','/json','/testing','/dummy','/prueba','/ult','/debug','/formato','/get','/xml','/entrada','/x','/solicitarcaea','/consultarcaea','/ptosventa']:
+            if os.path.isfile(sys.argv[1]):
+                CONFIG_FILE = sys.argv.pop(1)
     if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
 
     config = SafeConfigParser()
