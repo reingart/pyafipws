@@ -86,6 +86,11 @@ def aplanar(regs):
                     'imp_iva%s' % li: det.get('imp_iva'),
                     'bonif%s' % li: det.get('bonif'),
                     'numero_despacho%s' % li: det.get('despacho'),
+                    'dato_a%s' % li: det.get('dato_a'),
+                    'dato_b%s' % li: det.get('dato_b'),
+                    'dato_c%s' % li: det.get('dato_c'),
+                    'dato_d%s' % li: det.get('dato_d'),
+                    'dato_e%s' % li: det.get('dato_e'),
                     })
         for i, iva in enumerate(reg['ivas']):
             li = i+1
@@ -168,6 +173,12 @@ def desaplanar(filas):
                 'imp_iva': ('imp_iva%s' % li) in dic and dic.pop('imp_iva%s'% li) or None,
                 'bonif': ('bonif%s' % li) in dic and dic.pop('bonif%s'% li) or None,
                 'despacho': ('numero_despacho%s' % li) in dic and dic.pop('numero_despacho%s'% li),
+                'dato_a': ('dato_a%s' % li) in dic and dic.pop('dato_a%s' % li),
+                'dato_b': ('dato_b%s' % li) in dic and dic.pop('dato_b%s' % li),
+                'dato_c': ('dato_c%s' % li) in dic and dic.pop('dato_c%s' % li),
+                'dato_d': ('dato_d%s' % li) in dic and dic.pop('dato_d%s' % li),
+                'dato_e': ('dato_e%s' % li) in dic and dic.pop('dato_e%s' % li),
+
                 } for li in xrange(1, max_li("cantidad")) 
                   if dic['cantidad%s' % li] is not None]
                 
