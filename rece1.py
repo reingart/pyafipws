@@ -222,7 +222,7 @@ def escribir_factura(dic, archivo, agrega=False):
     if '/json' in sys.argv:
         import json
         factura = dic.copy()
-        if "iva" in factura:
+        if 'iva' in factura:
             factura['ivas'] = factura.get('iva', [])
             del factura['iva']
         json.dump([factura], archivo, sort_keys=True, indent=4)
