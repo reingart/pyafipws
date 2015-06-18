@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33g"
+__version__ = "1.33h"
 
 import datetime
 import os
@@ -426,12 +426,19 @@ if __name__ == "__main__":
             
             if '--proyectos' in sys.argv:
                 ws.AgregarOpcional(2, "1234")  # identificador del proyecto
-                     # datos opcionales para RG 3668 Impuesto al Valor Agregado - Art.12:
+            
+            # datos opcionales para RG 3668 Impuesto al Valor Agregado - Art.12:
             if '--rg3668' in sys.argv:
                 ws.AgregarOpcional(5, "02")             # IVA Excepciones
                 ws.AgregarOpcional(61, "80")            # Firmante Doc Tipo
                 ws.AgregarOpcional(62, "20267565393")   # Firmante Doc Nro
                 ws.AgregarOpcional(7, "01")             # Carácter del Firmante
+
+            # RG 3.368 Establecimientos de educación pública de gestión privada
+            if '--rg3749' in sys.argv:
+                ws.AgregarOpcional(10, "1")             # Actividad Comprendida
+                ws.AgregarOpcional(1011, "80")            # Tipo de Documento
+                ws.AgregarOpcional(1012, "20267565393")   # Número de Documento
                 
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
