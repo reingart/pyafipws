@@ -941,6 +941,10 @@ class PyRece(gui.Controller):
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
 
+        # establezco formatos (cantidad de decimales) según configuración:
+        fepdf.FmtCantidad = conf_fact.get("fmt_cantidad", "0.2")
+        fepdf.FmtPrecio = conf_fact.get("fmt_precio", "0.2")
+        
         # datos fijos:
         fepdf.CUIT = cuit  # CUIT del emisor para código de barras
         for k, v in conf_pdf.items():
