@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33h"
+__version__ = "1.33i"
 
 import datetime
 import os
@@ -179,6 +179,14 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
     if not encabezado:
         raise RuntimeError("No se pudieron leer los registros de la entrada")
+
+    # ajusto datos para pruebas en depuración (nro de cbte. / fecha)
+    if '--testing' in sys.argv and DEBUG:
+        cbte_nro = int(ws.CompUltimoAutorizado(encabezado['tipo_cbte'], 
+                                               encabezado['punto_vta'])) + 1
+        encabezado['cbt_desde'] = cbte_nro
+        encabezado['cbt_hasta'] = cbte_nro
+        encabezado['fecha_cbte'] = datetime.datetime.now().strftime("%Y%m%d")
 
     ws.CrearFactura(**encabezado)
     for tributo in tributos:
