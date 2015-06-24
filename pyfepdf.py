@@ -616,8 +616,12 @@ class FEPDF:
                         k = k + 1
                         if k > hoja * (lineas_max - 1):
                             break
+                        # acumular subtotal (sin IVA facturas A):
                         if it['importe']:
                             subtotal += Decimal("%.6f" % float(it['importe']))
+                            if letra_fact in ('A', 'M') and it['imp_iva']:
+                                subtotal -= Decimal("%.2f" % float(it['imp_iva']))
+                        # agregar el item si encuadra en la hoja especificada:
                         if k > (hoja - 1) * (lineas_max - 1):
                             if DEBUG: print "it", it
                             li += 1
@@ -673,23 +677,30 @@ class FEPDF:
                             if it['importe'] is not None:
                                 f.set('Tributo.Importe%02d' % lit, self.fmt_imp(it['importe']))
 
+                        # mostrar descuento general solo si se utiliza:
                         if 'descuento' in fact and fact['descuento']:
                             descuento = Decimal("%.6f" % float(fact['descuento']))
                             f.set('descuento', self.fmt_imp(descuento))
                             subtotal -= descuento
                         f.set('subtotal', self.fmt_imp(subtotal))
+                        
+                        # importes generales de IVA y netos gravado / no gravado
                         f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
                         f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
+                        f.set('impto_liq_nri', self.fmt_imp(fact.get('impto_liq_nri')))
+                        f.set('imp_iva', self.fmt_imp(fact.get('imp_iva')))
                         f.set('imp_total', self.fmt_imp(fact['imp_total']))
                         f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
                         f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
-
+                        
+                        # campos antiguos (por compatibilidad hacia atrás)
                         f.set('IMPTO_PERC', self.fmt_imp(fact.get('impto_perc')))
                         f.set('IMP_OP_EX', self.fmt_imp(fact.get('imp_op_ex')))
                         f.set('IMP_IIBB', self.fmt_imp(fact.get('imp_iibb')))
                         f.set('IMPTO_PERC_MUN', self.fmt_imp(fact.get('impto_perc_mun')))
                         f.set('IMP_INTERNOS', self.fmt_imp(fact.get('imp_internos')))
 
+                        # mostrar u ocultar el IVA discriminado si es clase A/B:
                         if letra_fact in ('A', 'M'):
                             f.set('NETO', self.fmt_imp(fact['imp_neto']))
                             f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
@@ -712,7 +723,7 @@ class FEPDF:
                     else:
                         for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc', 
                                   'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
-                                  'NETO', 'IVA21', 'IVA10.5', 'IVA27'):
+                                  'NETO', 'IVA21', 'IVA10.5', 'IVA27', 'IVA5', 'IVA9', 'IVA2.5'):
                             f.set(k,"")
                         f.set('NETO.L',"")
                         f.set('IVA.L',"")
@@ -723,6 +734,7 @@ class FEPDF:
                     f.set('cmps_asoc_ds', cmps_asoc_ds)
                     f.set('permisos_ds', permisos_ds)
 
+                    # Datos del pie de factura (obtenidos desde AFIP):
                     f.set('motivos_ds', motivos_ds)
                     if f.has_key('motivos_ds1') and motivos_ds:
                         if letra_fact in ('A', 'M'):
