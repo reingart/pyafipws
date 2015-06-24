@@ -899,7 +899,7 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv:
             # creo una factura de ejemplo
-            tipo_cbte = 2
+            tipo_cbte = 1
             punto_vta = 4000
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
@@ -940,6 +940,8 @@ if __name__ == '__main__':
 
             ok = fepdf.EstablecerParametro("localidad_cliente", "Hurlingham")
             ok = fepdf.EstablecerParametro("provincia_cliente", "Buenos Aires")
+            ok = fepdf.EstablecerParametro("custom-pedido", "1234")
+            ok = fepdf.EstablecerParametro("custom-remito", "12345")
 
             tipo = 91
             pto_vta = 2
@@ -968,10 +970,16 @@ if __name__ == '__main__':
             ds = "Descripcion del producto P0001\n" + "Lorem ipsum sit amet " * 10
             qty = 1.00
             umed = 7
-            precio = 100.00
+            if tipo_cbte in (1, 2, 3, 4, 5, 34, 39, 51, 52, 53, 54, 60, 64):
+                # discriminar IVA si es clase A
+                precio = 100.00
+                imp_iva = 21.00
+            else:
+                # no discriminar IVA si es clase B (importe final iva incluido)
+                precio = 121.00
+                imp_iva = None
             bonif = 0.00
             iva_id = 5
-            imp_iva = 21.00
             importe = 121.00
             despacho = u'Nº 123456'
             dato_a = "Dato A"
