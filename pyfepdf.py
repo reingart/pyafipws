@@ -14,7 +14,7 @@
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
-__liceFnse__ = "GPL 3.0"
+__license__ = "GPL 3.0"
 __version__ = "1.07q"
 
 DEBUG = False
@@ -689,6 +689,7 @@ class FEPDF:
                         f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
                         f.set('impto_liq_nri', self.fmt_imp(fact.get('impto_liq_nri')))
                         f.set('imp_iva', self.fmt_imp(fact.get('imp_iva')))
+                        f.set('imp_trib', self.fmt_imp(fact.get('imp_trib')))
                         f.set('imp_total', self.fmt_imp(fact['imp_total']))
                         f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
                         f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
@@ -722,6 +723,7 @@ class FEPDF:
                         f.set('TOTAL', self.fmt_imp(fact['imp_total']))
                     else:
                         for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc', 
+                                  'imp_iva', 'impto_liq_nri', 'imp_trib',
                                   'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
                                   'NETO', 'IVA21', 'IVA10.5', 'IVA27', 'IVA5', 'IVA9', 'IVA2.5'):
                             f.set(k,"")
