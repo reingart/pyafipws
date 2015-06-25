@@ -1002,10 +1002,12 @@ if __name__ == '__main__':
                 obs_comerciales, obs_generales, forma_pago, incoterms, 
                 idioma_cbte, motivo_obs)
 
+            ok = fepdf.EstablecerParametro("custom-nro-cli", "Cod.123")
             ok = fepdf.EstablecerParametro("localidad_cliente", "Hurlingham")
             ok = fepdf.EstablecerParametro("provincia_cliente", "Buenos Aires")
             ok = fepdf.EstablecerParametro("custom-pedido", "1234")
             ok = fepdf.EstablecerParametro("custom-remito", "12345")
+            ok = fepdf.EstablecerParametro("custom-transporte", "Camiones Ej.")
 
             ok = fepdf.EstablecerParametro("resultado", "A")
 
