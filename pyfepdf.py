@@ -397,7 +397,16 @@ class FEPDF:
         if HOMO:
             self.AgregarCampo("homo", 'T', 100, 250, 0, 0,
                               size=70, rotate=45, foreground=0x808080, priority=-1)
-           
+
+        # sanity check:
+        for field in self.elements:
+            # si la imagen no existe, eliminar nombre para que no falle fpdf
+            if field['type'] == 'I' and not os.path.exists(field["text"]):
+                field['text'] = ""
+                ##field['type'] = "T"
+                ##field['font'] = ""
+                ##field['foreground'] = 0xff0000
+
         # genero el renderizador con propiedades del PDF
         t = Template(elements=self.elements,
                  format=papel, orientation=orientacion,
