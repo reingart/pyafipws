@@ -537,7 +537,7 @@ class FEPDF:
 
             if letra_fact in ('A', 'M'):
                 msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
-                if not f.has_key('leyenda_credito_fiscal'):
+                if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
                     motivos_ds += msg_no_iva
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
@@ -768,7 +768,9 @@ class FEPDF:
                                 f.set('leyenda_credito_fiscal', msg_no_iva)
                         for i, txt in enumerate(f.split_multicell(motivos_ds, 'motivos_ds1')):
                             f.set('motivos_ds%d' % (i+1), txt)
-                        
+                    if not motivos_ds:
+                        f.set("motivos_ds.L", "")
+                    
                     f.set('CAE', fact['cae'])
                     f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
                     if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
