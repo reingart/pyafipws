@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02d"
+__version__ = "1.02e"
 
 import sys, os, time
 from ConfigParser import SafeConfigParser
@@ -336,14 +336,14 @@ def main():
                 dic = dict(
                     cbte_modo="CAE",
                     cuit_emisor="20267565393",
-                    pto_vta=4002,
-                    cbte_tipo=1,
-                    cbte_nro=109,
-                    cbte_fch="20131227",
-                    imp_total="121.0",
-                    cod_autorizacion="63523178385550",
-                    doc_tipo_receptor=80 ,
-                    doc_nro_receptor="30628789661",
+                    pto_vta=3,
+                    cbte_tipo=6, 
+                    cbte_nro=1,
+                    cbte_fch="20131231",
+                    imp_total="1.21",
+                    cod_autorizacion="63533727749637",
+                    doc_tipo_receptor=99 ,
+                    doc_nro_receptor=0,
                     )
                 # escribir archivo de intercambio con datos de prueba:
                 escribir_archivo(dic, ENTRADA)

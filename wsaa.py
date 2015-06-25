@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.10c"
+__version__ = "2.10d"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
@@ -218,6 +218,12 @@ class WSAA(BaseWS):
         # create the certificate signing request (CSR):
         self.x509_req = X509.Request ()
 
+        # normalizar encoding (reemplazar acentos, eñe, etc.)
+        if isinstance(empresa, unicode):
+            empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII')
+        if isinstance(nombre, unicode):
+            nombre = unicodedata.normalize('NFKD', nombre).encode('ASCII')
+
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
         x509name = X509.X509_Name ()
         # default OpenSSL parameters:
@@ -381,9 +387,6 @@ if __name__=="__main__":
             else:
                 print u"CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion)
                 empresa = raw_input("Empresa: ")
-        # normalizar encoding (reemplazar acentos, eñe, etc.)
-        if isinstance(empresa, unicode):
-            empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII')
         # generar los archivos (con fecha para no pisarlo)
         ts = datetime.datetime.now().strftime("%Y%m%d%M%S")
         clave_privada = "clave_privada_%s_%s.key" % (cuit, ts)

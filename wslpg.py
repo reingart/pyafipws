@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25f"
+__version__ = "1.25g"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1973,7 +1973,8 @@ class WSLPG(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConsultarAjuste(self, pto_emision=None, nro_orden=None, nro_contrato=None):
+    def ConsultarAjuste(self, pto_emision=None, nro_orden=None, nro_contrato=None,
+                              coe=None, pdf=None):
         "Consulta un ajuste de liquidación por No de orden o numero de contrato"
         if nro_contrato:
             ret = self.client.ajustePorContratoConsultar(
@@ -1983,19 +1984,33 @@ class WSLPG(BaseWS):
                         nroContrato=nro_contrato,
                         )
             ret = ret['ajusteContratoReturn']
-        else:
+        elif coe is None or pdf is None:
             ret = self.client.ajusteXNroOrdenConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         ptoEmision=pto_emision,
                         nroOrden=nro_orden,
+                        pdf='S' if pdf else 'N',
                         )
             ret = ret['ajusteXNroOrdenConsReturn']
+        else:
+            ret = self.client.ajusteXCoeConsultar(
+                       auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        pdf='S' if pdf else 'N',
+                        )
+            ret = ret['ajusteConsReturn']
+
         self.__analizar_errores(ret)
         if 'ajusteUnificado' in ret:
             aut = ret['ajusteUnificado']
             self.AnalizarAjuste(aut)
+        # guardo el PDF si se indico archivo y vino en la respuesta:
+        if pdf and 'pdf' in ret:
+            open(pdf, "wb").write(ret['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
@@ -3467,15 +3482,18 @@ if __name__ == '__main__':
             pto_emision = None
             nro_orden = 0
             nro_contrato = None
+            coe = pdf = None
             try:
                 pto_emision = int(sys.argv[sys.argv.index("--consultar_ajuste") + 1])
                 nro_orden = int(sys.argv[sys.argv.index("--consultar_ajuste") + 2])
                 nro_contrato = int(sys.argv[sys.argv.index("--consultar_ajuste") + 3])
+                coe = sys.argv[sys.argv.index("--consultar_ajuste") + 4]
+                pdf = sys.argv[sys.argv.index("--consultar_ajuste") + 5]
             except IndexError:
                 pass
             print "Consultando: pto_emision=%s nro_orden=%s nro_contrato=%s" % (
                     pto_emision, nro_orden, nro_contrato)
-            wslpg.ConsultarAjuste(pto_emision, nro_orden, nro_contrato)
+            wslpg.ConsultarAjuste(pto_emision, nro_orden, nro_contrato, coe, pdf)
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
             print "Errores:", wslpg.Errores

@@ -618,7 +618,7 @@ def escribir(dic, formato, contraer_fechas=False):
             if tipo == N and valor and valor!="NULL":
                 valor = ("%%0%dd" % longitud) % long(valor)
             elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % long(float(valor)*(10**dec))
+                valor = ("%%0%d.%df" % (longitud+1, dec) % float(valor)).replace(".", "")
             elif contraer_fechas and clave.lower().startswith("fec") and longitud <= 8 and valor:
                 valor = valor.replace("-", "")
             else:
