@@ -633,12 +633,15 @@ class FEPDF:
                                 f.set('Item.Umed%02d' % li, it['umed'])
                                 if it['umed']:
                                     f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(int(it['umed'])))
-                            if it.get('iva_id') is not None:
-                                f.set('Item.IvaId%02d' % li, it['iva_id'])
-                                if it['iva_id']:
-                                    f.set('Item.AlicuotaIva%02d' % li, self.ivas_ds.get(int(it['iva_id'])))
-                            if it.get('imp_iva') is not None:
-                                f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
+                            # solo discriminar IVA en A/M (mostrar tasa en B)
+                            if letra_fact in ('A', 'M', 'B'):
+                                if it.get('iva_id') is not None:
+                                    f.set('Item.IvaId%02d' % li, it['iva_id'])
+                                    if it['iva_id']:
+                                        f.set('Item.AlicuotaIva%02d' % li, self.ivas_ds.get(int(it['iva_id'])))
+                            if letra_fact in ('A', 'M'):
+                                if it.get('imp_iva') is not None:
+                                    f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
                             if it.get('despacho') is not None:
                                 f.set('Item.Numero_Despacho%02d' % li, it['despacho'])
                             if it.get('bonif') is not None:
@@ -722,6 +725,9 @@ class FEPDF:
                                 f.set('IVA%s' % a, self.fmt_imp(iva['importe']))
 
                         else:
+                            # Factura C y E no llevan columna IVA (B solo tasa)
+                            if letra_fact in ('C', 'E'):
+                                f.set('Item.AlicuotaIVA',"")
                             f.set('NETO.L',"")
                             f.set('IVA.L',"")
                             f.set('LeyendaIVA', "")
