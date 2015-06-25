@@ -682,7 +682,16 @@ class FEPDF:
                             descuento = Decimal("%.6f" % float(fact['descuento']))
                             f.set('descuento', self.fmt_imp(descuento))
                             subtotal -= descuento
-                        f.set('subtotal', self.fmt_imp(subtotal))
+                        # al subtotal neto sumo exento y no gravado:
+                        if fact['imp_tot_conc']:
+                            subtotal += Decimal("%.6f" % float(fact['imp_tot_conc']))
+                        if fact['imp_op_ex']:
+                            subtotal += Decimal("%.6f" % float(fact['imp_op_ex']))
+                        # si no se envia subtotal, usar el calculado:
+                        if fact.get('imp_subtotal'):
+                            f.set('subtotal', self.fmt_imp(fact.get('imp_subtotal')))
+                        else:
+                            f.set('subtotal', self.fmt_imp(subtotal))
                         
                         # importes generales de IVA y netos gravado / no gravado
                         f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
@@ -691,6 +700,7 @@ class FEPDF:
                         f.set('imp_iva', self.fmt_imp(fact.get('imp_iva')))
                         f.set('imp_trib', self.fmt_imp(fact.get('imp_trib')))
                         f.set('imp_total', self.fmt_imp(fact['imp_total']))
+                        f.set('imp_subtotal', self.fmt_imp(fact.get('imp_subtotal')))
                         f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
                         f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
                         
@@ -715,20 +725,19 @@ class FEPDF:
                             f.set('NETO.L',"")
                             f.set('IVA.L',"")
                             f.set('LeyendaIVA', "")
-                            f.set('IVA21.L',"")
-                            f.set('IVA10.5.L',"")
-                            f.set('IVA27.L',"")
-
+                            for iva in fact['ivas']:
+                                a = {3: '0', 4: '10.5', 5: '21', 6: '27', 8: '5', 9: '2.5'}[int(iva['iva_id'])]
+                                f.set('IVA%s.L' % a, "")
                         f.set('Total.L', 'Total:')
                         f.set('TOTAL', self.fmt_imp(fact['imp_total']))
                     else:
                         for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc', 
-                                  'imp_iva', 'impto_liq_nri', 'imp_trib',
+                                  'imp_iva', 'impto_liq_nri', 'imp_trib', 'imp_op_ex', 'imp_tot_conc',
                                   'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
+                                  'NGRA.L', 'EXENTO.L', 'descuento.L', 'descuento', 'subtotal.L',
+                                  'NETO.L', 'IVA21.L', 'IVA10.5.L', 'IVA27.L', 'IVA5.L', 'IVA9.L', 'IVA2.5.L'
                                   'NETO', 'IVA21', 'IVA10.5', 'IVA27', 'IVA5', 'IVA9', 'IVA2.5'):
                             f.set(k,"")
-                        f.set('NETO.L',"")
-                        f.set('IVA.L',"")
                         f.set('LeyendaIVA', "")
                         f.set('Total.L', 'Subtotal:')
                         f.set('TOTAL', self.fmt_imp(subtotal))
@@ -919,9 +928,9 @@ if __name__ == '__main__':
             concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
             cbte_nro = 12345678
-            imp_total = "122.00"; imp_tot_conc = "3.00"
+            imp_total = "127.00"; imp_tot_conc = "3.00"
             imp_neto = "100.00"; imp_iva = "21.00"
-            imp_trib = "1.00"; imp_op_ex = "2.00"; imp_subtotal = "100.00"
+            imp_trib = "1.00"; imp_op_ex = "2.00"; imp_subtotal = "105.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
             # Fechas del período del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
@@ -973,10 +982,20 @@ if __name__ == '__main__':
             importe = "1.00"
             fepdf.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
+            tributo_id = 4
+            desc = 'Impuestos Internos'
+            base_imp = None
+            alic = None
+            importe = "0.00"
+            fepdf.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+
             iva_id = 5 # 21%
             base_imp = 100
             importe = 21
             fepdf.AgregarIva(iva_id, base_imp, importe)
+
+            for id in (4, 6, 8, 9):
+                fepdf.AgregarIva(iva_id=id, base_imp=0.00, importe=0.00)
             
             u_mtx = 123456
             cod_mtx = 1234567890123
