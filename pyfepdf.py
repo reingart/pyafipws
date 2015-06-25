@@ -773,6 +773,17 @@ class FEPDF:
                     f.set('CodigoBarras', barras)
                     f.set('CodigoBarrasLegible', barras)
 
+                    if not HOMO and barras and fact.get("resultado") == 'A':
+                        f.set('estado', "Comprobante Autorizado")
+                    elif fact.get("resultado") == 'R':
+                        f.set('estado', "Comprobante Rechazado")
+                    elif fact.get("resultado") == 'O':
+                        f.set('estado', "Comprobante Observado")
+                    elif fact.get("resultado"):
+                        f.set('estado', "Comprobante No Autorizado")
+                    else:
+                        f.set('estado', "") # compatibilidad hacia atras
+                        
                     if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
                             f.set('ObservacionesGenerales%d' % (i+1), txt)
@@ -971,6 +982,8 @@ if __name__ == '__main__':
             ok = fepdf.EstablecerParametro("provincia_cliente", "Buenos Aires")
             ok = fepdf.EstablecerParametro("custom-pedido", "1234")
             ok = fepdf.EstablecerParametro("custom-remito", "12345")
+
+            ok = fepdf.EstablecerParametro("resultado", "A")
 
             tipo = 91
             pto_vta = 2
