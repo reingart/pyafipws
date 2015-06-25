@@ -938,7 +938,7 @@ if __name__ == '__main__':
             forma_pago = '30 dias'
             incoterms = 'FOB'
             idioma_cbte = 1
-            motivo = "11"
+            motivo_obs = "Factura individual, DocTipo: 80, DocNro 30000000007 no se encuentra registrado en los padrones de AFIP."
 
             cae = "61123022925855"
             fch_venc_cae = "20110320"
@@ -950,7 +950,7 @@ if __name__ == '__main__':
                 moneda_id, moneda_ctz, cae, fch_venc_cae, id_impositivo,
                 nombre_cliente, domicilio_cliente, pais_dst_cmp, 
                 obs_comerciales, obs_generales, forma_pago, incoterms, 
-                idioma_cbte, motivo)
+                idioma_cbte, motivo_obs)
 
             ok = fepdf.EstablecerParametro("localidad_cliente", "Hurlingham")
             ok = fepdf.EstablecerParametro("provincia_cliente", "Buenos Aires")
