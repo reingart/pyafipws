@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06e"
+__version__ = "1.06f"
 
 import os
 import sys
@@ -74,6 +74,11 @@ class PyEmail:
                 # inicio una sesión segura (TLS)
                 self.smtp.starttls()
             if usuario and clave:
+                # convertir a string (hmac necesita string "bytes")
+                if isinstance(usuario, unicode):
+                    usuario = usuario.encode("utf8")
+                if isinstance(clave, unicode):
+                    clave = clave.encode("utf8")
                 self.smtp.login(usuario, clave)
             return True
         except Exception, e:
