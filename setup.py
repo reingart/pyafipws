@@ -283,7 +283,7 @@ if 'py2exe' in sys.argv:
         #    ]
         data_files += [
             WX_DLL, 
-            ("plantillas", ["plantillas/logo.png", 
+            ("plantillas", ["plantillas/logo.png", "plantillas/afip.png",
                             "plantillas/factura.csv",
                             "plantillas/recibo.csv"]),
             ]
