@@ -963,6 +963,8 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv:
             # creo una factura de ejemplo
+            
+            # datos generales del encabezado:
             tipo_cbte = 1
             punto_vta = 4000
             fecha = datetime.datetime.now().strftime("%Y%m%d")
@@ -975,21 +977,23 @@ if __name__ == '__main__':
             fecha_cbte = fecha; fecha_venc_pago = fecha
             # Fechas del período del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
-            moneda_id = 'PES'; moneda_ctz = '1.000'
-            obs_generales = "Observaciones Generales<br/>texto libre"
-            obs_comerciales = "Observaciones Comerciales<br/>texto libre"
+            moneda_id = 'PES'                   # p/exportación (ej): DOL
+            moneda_ctz = 1                      # p/exportación (ej): 8.98
+            incoterms = 'FOB'                   # solo exportación
+            idioma_cbte = 1                     # 1: es, 2: en, 3: pt
 
+            # datos adicionales del encabezado:
             nombre_cliente = 'Joao Da Silva'
             domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
-            pais_dst_cmp = 16
-            id_impositivo = 'PJ54482221-l'
-            moneda_id = '012'
-            moneda_ctz = 0.5
+            pais_dst_cmp = 16                   # 200: Argentina, ver tabla
+            id_impositivo = 'PJ54482221-l'      # cat. iva (mercado interno)
             forma_pago = '30 dias'
-            incoterms = 'FOB'
-            idioma_cbte = 1
-            motivo_obs = "Factura individual, DocTipo: 80, DocNro 30000000007 no se encuentra registrado en los padrones de AFIP."
 
+            obs_generales = "Observaciones Generales<br/>texto libre"
+            obs_comerciales = "Observaciones Comerciales<br/>texto libre"
+            
+            # datos devueltos por el webservice (WSFEv1, WSMTXCA, etc.):
+            motivo_obs = "Factura individual, DocTipo: 80, DocNro 30000000007 no se encuentra registrado en los padrones de AFIP."
             cae = "61123022925855"
             fch_venc_cae = "20110320"
             
@@ -1002,24 +1006,25 @@ if __name__ == '__main__':
                 obs_comerciales, obs_generales, forma_pago, incoterms, 
                 idioma_cbte, motivo_obs)
 
-            ok = fepdf.EstablecerParametro("custom-nro-cli", "Cod.123")
+            # completo campos extra del encabezado:
             ok = fepdf.EstablecerParametro("localidad_cliente", "Hurlingham")
             ok = fepdf.EstablecerParametro("provincia_cliente", "Buenos Aires")
-            ok = fepdf.EstablecerParametro("custom-pedido", "1234")
-            ok = fepdf.EstablecerParametro("custom-remito", "12345")
-            ok = fepdf.EstablecerParametro("custom-transporte", "Camiones Ej.")
 
+            # imprimir leyenda "Comprobante Autorizado" (constatar con WSCDC!)
             ok = fepdf.EstablecerParametro("resultado", "A")
-
-            tipo = 91
-            pto_vta = 2
-            nro = 1234
-            fepdf.AgregarCmpAsoc(tipo, pto_vta, nro)
+            
+            # agrego remitos y otros comprobantes asociados:
+            for i in range(3):
+                tipo = 91
+                pto_vta = 2
+                nro = 1234 + i
+                fepdf.AgregarCmpAsoc(tipo, pto_vta, nro)
             tipo = 5
             pto_vta = 2
             nro = 1234
             fepdf.AgregarCmpAsoc(tipo, pto_vta, nro)
             
+            # tributos adicionales:
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
             base_imp = "100.00"
@@ -1034,6 +1039,7 @@ if __name__ == '__main__':
             importe = "0.00"
             fepdf.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
+            # subtotales por alícuota de IVA:
             iva_id = 5 # 21%
             base_imp = 100
             importe = 21
@@ -1042,6 +1048,7 @@ if __name__ == '__main__':
             for id in (4, 6):
                 fepdf.AgregarIva(iva_id=id, base_imp=0.00, importe=0.00)
             
+            # detalle de artículos:
             u_mtx = 123456
             cod_mtx = 1234567890123
             codigo = "P0001"
@@ -1049,7 +1056,7 @@ if __name__ == '__main__':
             qty = 1.00
             umed = 7
             if tipo_cbte in (1, 2, 3, 4, 5, 34, 39, 51, 52, 53, 54, 60, 64):
-                # discriminar IVA si es clase A
+                # discriminar IVA si es clase A / M
                 precio = 100.00
                 imp_iva = 21.00
             else:
@@ -1064,7 +1071,11 @@ if __name__ == '__main__':
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, despacho, dato_a)
 
-            fepdf.AgregarDato("pedido", "1234")
+            # completo campos personalizados de la plantilla:
+            fepdf.AgregarDato("custom-nro-cli", "Cod.123")
+            fepdf.AgregarDato("custom-pedido", "1234")
+            fepdf.AgregarDato("custom-remito", "12345")
+            fepdf.AgregarDato("custom-transporte", "Camiones Ej.")
             print "Prueba!"
 
         # grabar muestra en dbf:
