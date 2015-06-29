@@ -19,7 +19,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08d"
+__version__ = "1.08e"
 
 import datetime
 import decimal
@@ -205,13 +205,13 @@ class WSFEXv1(BaseWS):
         if 'FEXResultAuth' in result:
             auth = result['FEXResultAuth']
             # Resultado: A: Aceptado, R: Rechazado
-            self.Resultado = auth['Resultado']
+            self.Resultado = auth.get('Resultado', "")
             # Obs:
-            self.Obs = auth['Motivos_Obs']
-            self.Reproceso = auth['Reproceso']
-            self.CAE = auth['Cae']
-            self.CbteNro  = auth['Cbte_nro']
-            vto = str(auth['Fch_venc_Cae'])
+            self.Obs = auth.get('Motivos_Obs', "")
+            self.Reproceso = auth.get('Reproceso', "")
+            self.CAE = auth.get('Cae', "")
+            self.CbteNro  = auth.get('Cbte_nro', "")
+            vto = str(auth.get('Fch_venc_Cae', ""))
             self.FchVencCAE = vto
             self.Vencimiento = "%s/%s/%s" % (vto[6:8], vto[4:6], vto[0:4])
             return self.CAE
