@@ -206,7 +206,8 @@ def escribir_linea_txt(dic, formato):
             if tipo == N and valor and valor!="NULL":
                 valor = ("%%0%dd" % longitud) % int(valor)
             elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % (float(valor)*(10**decimales))
+                valor = ("%%0%d.%df" % (longitud+1, decimales) % float(valor)).replace(".", "")
+                print "valor", valor
             else:
                 valor = ("%%-%ds" % longitud) % valor.replace("\n","\v") # reemplazo salto de linea
             # reemplazo saltos de linea por tabulaci{on vertical
@@ -290,7 +291,7 @@ def escribir(regs, archivo):
         for it in reg.get('permisos', []):
             it['tipo_reg'] = 2
             f_salida.write(escribir_linea_txt(it, PERMISO))
-        for it in reg.get('cbtasocs', []):
+        for it in reg.get('cbtasocs', reg.get('cbtes_asoc', [])):
             it['tipo_reg'] = 3
             f_salida.write(escribir_linea_txt(it, CMP_ASOC))
         for it in reg.get('ivas', []):
