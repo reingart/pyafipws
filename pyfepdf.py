@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07q"
+__version__ = "1.07r"
 
 DEBUG = False
 HOMO = False
@@ -639,7 +639,7 @@ class FEPDF:
                         if it['importe']:
                             subtotal += Decimal("%.6f" % float(it['importe']))
                             if letra_fact in ('A', 'M') and it['imp_iva']:
-                                subtotal -= Decimal("%.2f" % float(it['imp_iva']))
+                                subtotal -= Decimal("%.6f" % float(it['imp_iva']))
                         # agregar el item si encuadra en la hoja especificada:
                         if k > (hoja - 1) * (lineas_max - 1):
                             if DEBUG: print "it", it
@@ -699,6 +699,9 @@ class FEPDF:
                             if it['importe'] is not None:
                                 f.set('Tributo.Importe%02d' % lit, self.fmt_imp(it['importe']))
 
+                        # reiniciar el subtotal neto, independiente de detalles:
+                        if fact['imp_neto']:
+                            subtotal = Decimal("%.6f" % float(fact['imp_neto']))
                         # mostrar descuento general solo si se utiliza:
                         if 'descuento' in fact and fact['descuento']:
                             descuento = Decimal("%.6f" % float(fact['descuento']))
@@ -899,6 +902,7 @@ if __name__ == '__main__':
         from ConfigParser import SafeConfigParser
 
         DEBUG = '--debug' in sys.argv
+        utils.safe_console()
                 
         # leeo configuración (primer argumento o rece.ini por defecto)
         if len(sys.argv)>1 and not sys.argv[1].startswith("--"):
