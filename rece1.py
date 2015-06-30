@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33i"
+__version__ = "1.33j"
 
 import datetime
 import os
@@ -182,6 +182,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
     # ajusto datos para pruebas en depuración (nro de cbte. / fecha)
     if '--testing' in sys.argv and DEBUG:
+        encabezado['punto_vta'] = 9998
         cbte_nro = int(ws.CompUltimoAutorizado(encabezado['tipo_cbte'], 
                                                encabezado['punto_vta'])) + 1
         encabezado['cbt_desde'] = cbte_nro
@@ -200,7 +201,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
     if DEBUG:
         print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
-    if not DEBUG or raw_input("Facturar?")=="S":
+    if not DEBUG or raw_input("Facturar (S/n)?")=="S":
         if not informar_caea:
             cae = ws.CAESolicitar()
             dic = ws.factura
@@ -211,7 +212,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             TIPO_CBTE.get(dic['tipo_cbte'], dic['tipo_cbte']), 
             dic['punto_vta'], dic['cbt_desde'], dic['cbt_hasta'], 
             TIPO_DOC.get(dic['tipo_doc'], dic['tipo_doc']), dic['nro_doc'], 
-            float(dic['imp_total']), float(dic['imp_iva'])) 
+            float(dic['imp_total']), 
+            float(dic['imp_iva'] if dic['imp_iva'] is not None else 'NaN')) 
         dic.update(encabezado)         # preservar la estructura leida
         dic.update({
             'cae': cae and str(cae) or '',
@@ -230,8 +232,9 @@ def escribir_factura(dic, archivo, agrega=False):
     if '/json' in sys.argv:
         import json
         factura = dic.copy()
-        factura['ivas'] = factura.get('iva', [])
-        del factura['iva']
+        if 'iva' in factura:
+            factura['ivas'] = factura.get('iva', [])
+            del factura['iva']
         json.dump([factura], archivo, sort_keys=True, indent=4)
     else:
         dic['tipo_reg'] = 0
