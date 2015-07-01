@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07r"
+__version__ = "1.07s"
 
 DEBUG = False
 HOMO = False
@@ -702,6 +702,9 @@ class FEPDF:
                         # reiniciar el subtotal neto, independiente de detalles:
                         if fact['imp_neto']:
                             subtotal = Decimal("%.6f" % float(fact['imp_neto']))
+                        # agregar IVA al subtotal si no es factura A
+                        if not letra_fact in ('A', 'M') and fact['imp_iva']:
+                            subtotal += Decimal("%.6f" % float(fact['imp_iva']))
                         # mostrar descuento general solo si se utiliza:
                         if 'descuento' in fact and fact['descuento']:
                             descuento = Decimal("%.6f" % float(fact['descuento']))
