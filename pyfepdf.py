@@ -949,7 +949,7 @@ if __name__ == '__main__':
                 from formatos import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
                 if DEBUG: print "conf_dbf", conf_dbf
-                regs = formato_dbf.leer(conf_dbf)
+                regs = formato_dbf.leer(conf_dbf).values()
             elif '--json' in sys.argv:
                 from formatos import formato_json
                 entrada = conf_fact.get("entrada", "entrada.txt")
