@@ -19,13 +19,14 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.10d"
+__version__ = "2.10e"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
 from php import date
 from pysimplesoap.client import SimpleXMLElement
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, exception_info
+from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
+     exception_info, safe_console
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
 except ImportError:
@@ -342,6 +343,8 @@ INSTALL_DIR = WSAA.InstallDir = get_install_dir()
 
 
 if __name__=="__main__":
+
+    safe_console()
     
     if '--register' in sys.argv or '--unregister' in sys.argv:
         import pythoncom
