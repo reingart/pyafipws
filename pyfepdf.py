@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07s"
+__version__ = "1.07t"
 
 DEBUG = False
 HOMO = False
@@ -1127,7 +1127,10 @@ if __name__ == '__main__':
             salida = fact['pdf']
         else:
             # genero el nombre de archivo según datos de factura
-            d = os.path.join(conf_fact.get('directorio', "."), fact['fecha_cbte'])
+            d = conf_fact.get('directorio', ".")
+            clave_subdir = conf_fact.get('subdirectorio','fecha_cbte')
+            if clave_subdir:
+                d = os.path.join(d, fact[clave_subdir])
             if not os.path.isdir(d):
                 os.makedirs(d)
             fs = conf_fact.get('archivo','numero').split(",")
@@ -1141,6 +1144,8 @@ if __name__ == '__main__':
             fn = u''.join([unicode(it.get(ff,ff)) for ff in fs])
             fn = fn.encode('ascii', 'replace').replace('?','_')
             salida = os.path.join(d, "%s.pdf" % fn)
+        if DEBUG:
+            print "archivo generado", salida
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
             fepdf.MostrarPDF(archivo=salida,imprimir='--imprimir' in sys.argv)
