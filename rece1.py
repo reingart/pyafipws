@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33j"
+__version__ = "1.33k"
 
 import datetime
 import os
@@ -232,6 +232,8 @@ def escribir_factura(dic, archivo, agrega=False):
     if '/json' in sys.argv:
         import json
         factura = dic.copy()
+        # ajsutes por compatibilidad hacia atras y con pyfepdf
+        factura['fecha_vto'] = factura.get('fch_venc_cae')
         if 'iva' in factura:
             factura['ivas'] = factura.get('iva', [])
             del factura['iva']
