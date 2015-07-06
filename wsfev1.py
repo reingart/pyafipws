@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16d"
+__version__ = "1.16f"
 
 import datetime
 import decimal
@@ -389,6 +389,10 @@ class WSFEv1(BaseWS):
                 self.CAE = cod_aut
             elif self.EmisionTipo=='CAEA':
                 self.CAEA = cod_aut
+            # Obs:
+            for obs in resultget.get('Observaciones', []):
+                self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+            self.Obs = '\n'.join(self.Observaciones)
 
         self.__analizar_errores(result)
         if not difs:
