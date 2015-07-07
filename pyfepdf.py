@@ -412,10 +412,14 @@ class FEPDF:
         for field in self.elements:
             # si la imagen no existe, eliminar nombre para que no falle fpdf
             if field['type'] == 'I' and not os.path.exists(field["text"]):
-                field['text'] = ""
-                ##field['type'] = "T"
-                ##field['font'] = ""
-                ##field['foreground'] = 0xff0000
+                # ajustar rutas relativas a las imágenes predeterminadas:
+                if os.path.exists(os.path.join(self.InstallDir, field["text"])):
+                    field['text'] = os.path.join(self.InstallDir, field["text"])
+                else:
+                    field['text'] = ""
+                    ##field['type'] = "T"
+                    ##field['font'] = ""
+                    ##field['foreground'] = 0xff0000
 
         # genero el renderizador con propiedades del PDF
         t = Template(elements=self.elements,
