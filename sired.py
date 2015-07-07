@@ -204,17 +204,17 @@ def format_as_dict(format):
     return dict([(k[0], None) for k in format])
 
 
-def leer_planilla(entrada):
+def leer_planilla(entrada, sep=','):
     "Convierte una planilla CSV a una lista de diccionarios [{'col': celda}]"
     
     items = []
-    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=",")
+    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=sep)
     for row in csv_reader:
         items.append(row)
     if len(items) < 2:
         raise RuntimeError('El archivo no tiene filas validos')
     if len(items[0]) < 2:
-        raise RuntimeError('El archivo no tiene columnas (usar coma de separador)')
+        raise RuntimeError('El archivo no tiene columnas (usar %s de separador)' % sep)
     cols = [str(it).strip() for it in items[0]]
 
     # armar diccionario por cada linea
@@ -223,8 +223,8 @@ def leer_planilla(entrada):
     return items
 
 
-def leer_json(entrada):
-    "Carga los datos de json [{'col': celda}]"
+def leer_json(entrada="sired.json"):
+    "Carga los datos en formato JSON [{'col': celda}]"
         
     import json
     items = json.load(open(entrada))
@@ -232,11 +232,11 @@ def leer_json(entrada):
     return items
 
 
-def grabar_json(salida):
-    "Guarda los datos json"
+def grabar_json(salida="sired.json"):
+    "Guarda los datos en formato JSON"
     
     import json
-    json.dump(items, open("sired.json", "w"), sort_keys=True, indent=4)
+    json.dump(items, open(salida, "w"), sort_keys=True, indent=4)
 
 
 def generar_encabezado(items):
@@ -311,7 +311,7 @@ def generar_detalle(items):
             vals['imp_ajuste'] = it.get('ajuste', '0.00')
             vals['imp_total'] = it.get('importe', '0.00')
             # iva
-            if 'iva_id' in it:
+            if 'iva_id' in it and it['iva_id']:
                 # mapear alicuota de iva según código usado en MTX
                 iva_id = int(it['iva_id'])
                 if iva_id in (1, 2):
@@ -592,10 +592,14 @@ if __name__ == '__main__':
             p=os.path.dirname(os.path.abspath(sys.executable))
             os.chdir(p)
         ##sys.stdout = open("salida.txt", "a")
-        if len(sys.argv)>1:
-            entrada = sys.argv[1]
-        else:
-            entrada = 'facturas3.csv'
+        entrada = {}
+        for i, k in enumerate(('encabezados', 'detalles', 'ivas', 'tributos')):
+            if len(sys.argv) > i+1:
+                filename = sys.argv[i+1]
+                if not filename.startswith("--") and os.path.exists(filename):
+                    entrada[k] = filename
+        if not entrada:
+            entrada['encabezado'] = 'facturas3.csv'
 
         if '--prueba' in sys.argv:
             sired = SIRED()
@@ -727,10 +731,61 @@ if __name__ == '__main__':
                     csv.writerow(datos)
             f.close()
         else:
-            if '--json' in sys.argv:
-                items = leer_json(entrada)
-            else:
-                items = leer_planilla(entrada)
+            # cargar datos desde planillas CSV separadas o JSON:
+            if entrada['encabezados'].lower().endswith("csv"):
+                facturas = items = leer_planilla(entrada['encabezados'], ";")
+                if 'detalles' in entrada:
+                    detalles = leer_planilla(entrada['detalles'], ";")
+
+                # pre-procesar:
+                for factura in facturas:
+                    for k, v in factura.items():
+                        # convertir tipos de datos desde los strings del CSV
+                        if k.startswith("imp"):
+                            factura[k] = float(v)
+                        if k in ('cbt_desde', 'cbt_hasta', 'concepto', 
+                                 'punto_vta', 'tipo_cbte', 'tipo_doc', 
+                                 'nro_doc'):
+                            factura[k] = int(v)
+
+                alicuotas = {3:0, 4: 10.5, 5: 21., 6: 27}
+                ivas = {}
+                imp_iva = 0.00
+
+                for det in detalles:
+                    iva_id = det['iva_id']
+                    
+                    if iva_id:
+                        iva_id = int(iva_id)
+                        if iva_id not in ivas:
+                            ivas[iva_id] = {"base_imp": 0, "importe": 0, "iva_id": iva_id}
+
+                        importe = round(float(det['importe'].replace(",", ".")), 2)
+                        neto = round(importe / ((100 + alicuotas[iva_id]) / 100), 2)
+                        iva = importe - neto
+                        print "importe", importe, iva
+                        imp_iva += iva
+                        ivas[iva_id]['importe'] += iva
+                        ivas[iva_id]['base_imp'] += neto
+                        det['imp_iva'] = iva
+
+                # rearmar estructuras internas:
+                facturas[0]['detalles'] = detalles
+                facturas[0]['ivas'] = ivas.values()
+                facturas[0]['datos'] = []
+                facturas[0]['tributos'] = []
+                facturas[0]['imp_iva'] = imp_iva
+                facturas[0]['cbte_nro'] = facturas[0]['cbt_desde']
+
+                # limpio campos que no correspondan (productos vs servicios):
+                if facturas[0]['concepto'] == 1:
+                    facturas[0]['fecha_venc_pago'] = None
+
+
+            elif entrada['encabezados'].lower().endswith('.json'):
+                items = leer_json(entrada['encabezados'])
+
+                
             print "Generando encabezado..."
             generar_encabezado(items)
             print "Generando detalle..."
@@ -738,7 +793,8 @@ if __name__ == '__main__':
             print "Generando ventas..."
             generar_ventas(items)
             if '--json' in sys.argv:
-                grabar_json(entrada)
+                grabar_json()
+
         print "Hecho."
     except Exception, e:
         if '--debug' in sys.argv:
