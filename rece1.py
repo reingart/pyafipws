@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33k"
+__version__ = "1.34a"
 
 import datetime
 import os
@@ -521,16 +521,29 @@ if __name__ == "__main__":
             print ws.ErrMsg 
 
             depurar_xml(ws.client)
-            escribir_factura({'tipo_cbte': tipo_cbte, 
+            # grabar todos los datos devueltos por AFIP:
+            factura = ws.factura.copy()
+            # actulizar los campos básicos:
+            factura.update({'tipo_cbte': tipo_cbte, 
                               'punto_vta': ws.PuntoVenta, 
-                              'cbt_desde': ws.CbteNro, 
+                              'cbt_desde': ws.CbtDesde, 
+                              'cbt_hasta': ws.CbtHasta, 
                               'fecha_cbte': ws.FechaCbte, 
+                              'tipo_doc': ws.ObtenerCampoFactura('tipo_doc'),
+                              'nro_doc': ws.ObtenerCampoFactura('nro_doc'),
                               'imp_total': ws.ImpTotal, 
+                              'imp_neto': ws.ImpNeto,
+                              'imp_iva': ws.ImpOpEx,
+                              'imp_trib': ws.ImpTrib,
+                              'imp_op_ex': ws.ImpTrib,
                               'cae': str(ws.CAE), 
                               'fch_venc_cae': ws.Vencimiento,  
                               'emision_tipo': ws.EmisionTipo, 
+                              'resultado': ws.Resultado,
                               'err_msg': ws.ErrMsg,
-                            }, open(salida,"w"))
+                              'motivos_obs': ws.Obs,
+                            })
+            escribir_factura(factura, open(salida,"w"))
 
             sys.exit(0)
 
