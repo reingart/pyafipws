@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16f"
+__version__ = "1.17a"
 
 import datetime
 import decimal
@@ -56,7 +56,7 @@ class WSFEv1(BaseWS):
                         'ParamGetPtosVenta',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro', 
-                        'EstablecerCampoFactura',
+                        'EstablecerCampoFactura', 'ObtenerCampoFactura',
                         'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -119,6 +119,8 @@ class WSFEv1(BaseWS):
         self.AuthServerStatus = result['AuthServer']
         return True
 
+    # los siguientes métodos no están decorados para no limpiar propiedades
+
     def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
             cbt_desde=0, cbt_hasta=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago=None, 
@@ -180,6 +182,23 @@ class WSFEv1(BaseWS):
         op = { 'opcional_id': opcional_id, 'valor': valor }
         self.factura['opcionales'].append(op)
         return True
+
+    def ObtenerCampoFactura(self, *campos):
+        "Obtener el valor devuelto de AFIP para un campo de factura"
+        # cada campo puede ser una clave string (dict) o una posición (list)
+        ret = self.factura
+        for campo in campos:
+            if isinstance(ret, dict) and isinstance(campo, basestring):
+                ret = ret.get(campo)
+            elif isinstance(ret, list) and len(ret) > campo:
+                ret = ret[campo]
+            else:
+                self.Excepcion = u"El campo %s solicitado no existe" % campo
+                ret = None
+            if ret is None:
+                break
+        return ret
+
 
     @inicializar_y_capturar_excepciones
     def CAESolicitar(self):
@@ -338,9 +357,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': float(f['moneda_ctz']),
                     'CbtesAsoc': [
@@ -370,6 +386,64 @@ class WSFEv1(BaseWS):
                 if difs:
                     print "Diferencias:", difs
                     self.log("Diferencias: %s" % difs)
+            else:
+                # guardo los datos de AFIP (reconstruyo estructura interna)
+                self.factura = {
+                    'concepto': resultget.get('Concepto'),
+                    'tipo_doc': resultget.get('DocTipo'),
+                    'nro_doc': resultget.get('DocNro'),
+                    'cbt_desde': resultget.get('CbteDesde'),
+                    'cbt_hasta': resultget.get('CbteHasta'),
+                    'fecha_cbte': resultget.get('CbteFch'),
+                    'imp_total': resultget.get('ImpTotal'),
+                    'imp_tot_conc': resultget.get('ImpTotConc'),
+                    'imp_neto': resultget.get('ImpNeto'),
+                    'imp_op_ex': resultget.get('ImpOpEx'),
+                    'imp_trib': resultget.get('ImpTrib'),
+                    'imp_iva': resultget.get('ImpIVA'),
+                    'fecha_serv_desde': resultget.get('FchServDesde'),
+                    'fecha_serv_hasta': resultget.get('FchServHasta'),
+                    'fecha_venc_pago': resultget.get('FchVtoPago'),
+                    'moneda_id': resultget.get('MonId'),
+                    'moneda_ctz': resultget.get('MonCotiz'),
+                    'cbtes_asoc': [
+                            {
+                            'tipo': cbte_asoc['CbteAsoc']['Tipo'],
+                            'pto_vta': cbte_asoc['CbteAsoc']['PtoVta'], 
+                            'nro': cbte_asoc['CbteAsoc']['Nro']}
+                        for cbte_asoc in resultget.get('CbtesAsoc', [])],
+                    'tributos': [
+                            {
+                            'tributo_id': tributo['Tributo']['Id'], 
+                            'desc': tributo['Tributo']['Desc'],
+                            'base_imp': tributo['Tributo'].get('BaseImp'),
+                            'alic': tributo['Tributo'].get('Alic'),
+                            'importe': tributo['Tributo']['Importe'],
+                            }
+                        for tributo in resultget.get('Tributos', [])],
+                    'iva': [ 
+                            {
+                            'iva_id': iva['AlicIva']['Id'],
+                            'base_imp': iva['AlicIva']['BaseImp'],
+                            'importe': iva['AlicIva']['Importe'],
+                            }
+                        for iva in resultget.get('Iva', [])],
+                    'opcionales': [ 
+                            {
+                            'opcional_id': obs['Opcional']['Id'],
+                            'valor': obs['Opcional']['Valor'],
+                            }
+                        for obs in resultget.get('Opcionales', [])],
+                    'cae': resultget.get('CodAutorizacion'),
+                    'resultado': resultget.get('Resultado'),
+                    'obs': [ 
+                            {
+                            'code': obs['Obs']['Code'],
+                            'msg': obs['Obs']['Msg'],
+                            }
+                        for obs in resultget.get('Observaciones', [])],
+                    }
+            
             self.FechaCbte = resultget['CbteFch'] #.strftime("%Y/%m/%d")
             self.CbteNro = resultget['CbteHasta'] # 1L
             self.PuntoVenta = resultget['PtoVta'] # 4000
@@ -809,7 +883,7 @@ def main():
         fecha = datetime.datetime.now().strftime("%Y%m%d")
         concepto = 2 if '--usados' not in sys.argv else 1
         tipo_doc = 80 if '--usados' not in sys.argv else 30
-        nro_doc = "30500010912" # CUIT BNA
+        nro_doc = "30000000001"
         cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
         imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
         imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
@@ -836,18 +910,18 @@ def main():
             wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro)
         
         # otros tributos:
-        id = 99
+        tributo_id = 99
         desc = 'Impuesto Municipal Matanza'
         base_imp = 100
         alic = 1
         importe = 1
-        wsfev1.AgregarTributo(id, desc, base_imp, alic, importe)
+        wsfev1.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
         # subtotales por alicuota de IVA:
-        id = 5 # 21%
+        iva_id = 5 # 21%
         base_imp = 100
         importe = 21
-        wsfev1.AgregarIva(id, base_imp, importe)
+        wsfev1.AgregarIva(iva_id, base_imp, importe)
 
         # datos opcionales para proyectos promovidos:
         if '--proyectos' in sys.argv:
@@ -883,13 +957,34 @@ def main():
         wsfev1.AnalizarXml("XmlResponse")
         p_assert_eq(wsfev1.ObtenerTagXml('CAE'), str(wsfev1.CAE))
         p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '2')
-        p_assert_eq(wsfev1.ObtenerTagXml('Obs',0,'Code'), "10063")
+        p_assert_eq(wsfev1.ObtenerTagXml('Obs',0,'Code'), "10017")
         print wsfev1.ObtenerTagXml('Obs',0,'Msg')
 
         if "--reprocesar" in sys.argv:
             print "reprocesando...."
             wsfev1.Reproceso = True
             wsfev1.CAESolicitar()
+
+        if "--consultar" in sys.argv:
+            cae = wsfev1.CAE
+            cae2 = wsfev1.CompConsultar(tipo_cbte, punto_vta, cbt_desde)
+            p_assert_eq(cae, cae2)
+            # comparar datos del encabezado
+            p_assert_eq(wsfev1.ObtenerCampoFactura('cae'), str(wsfev1.CAE))
+            p_assert_eq(wsfev1.ObtenerCampoFactura('nro_doc'), long(nro_doc))
+            p_assert_eq(wsfev1.ObtenerCampoFactura('imp_total'), float(imp_total))
+            # comparar primer alicuota de IVA
+            p_assert_eq(wsfev1.ObtenerCampoFactura('iva', 0, 'importe'), 21)
+            # comparar primer tributo
+            p_assert_eq(wsfev1.ObtenerCampoFactura('tributos', 0, 'importe'), 1)
+            # comparar primer opcional
+            if '--rg3668' in sys.argv:
+                p_assert_eq(wsfev1.ObtenerCampoFactura('opcionales', 0, 'valor'), "02")
+            # comparar primer observacion de AFIP
+            p_assert_eq(wsfev1.ObtenerCampoFactura('obs', 0, 'code'), 10017)
+            # pruebo la segunda observacion inexistente
+            p_assert_eq(wsfev1.ObtenerCampoFactura('obs', 1, 'code'), None)
+            p_assert_eq(wsfev1.Excepcion, u"El campo 1 solicitado no existe")
     
     if "--get" in sys.argv:
         tipo_cbte = 2
