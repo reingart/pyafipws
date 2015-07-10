@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25g"
+__version__ = "1.25h"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -954,7 +954,7 @@ class WSLPG(BaseWS):
                 # analizar detalle de importes ajustados discriminados por alicuota
                 # (por compatibildiad y consistencia se usan los mismos campos)
                 for it in liq.get("importes"):
-                    it = it['importeReturn']
+                    it = it['importeReturn'][0]     # TODO: revisar SOAP
                     tasa = "iva_%s" % str(it['alicuota']).replace(".", "").strip()
                     self.params_out["concepto_importe_%s" % tasa] = it['concepto']
                     self.params_out["importe_ajustar_%s" % tasa] = it['importe']
@@ -3491,6 +3491,10 @@ if __name__ == '__main__':
                 pdf = sys.argv[sys.argv.index("--consultar_ajuste") + 5]
             except IndexError:
                 pass
+            if '--testing' in sys.argv:
+                # mensaje de prueba (no realiza llamada remota), 
+                # usar solo si no está operativo
+                wslpg.LoadTestXML("wslpg_cons_ajuste_test.xml")   # cargo prueba
             print "Consultando: pto_emision=%s nro_orden=%s nro_contrato=%s" % (
                     pto_emision, nro_orden, nro_contrato)
             wslpg.ConsultarAjuste(pto_emision, nro_orden, nro_contrato, coe, pdf)
