@@ -47,6 +47,7 @@ import pyi25
 #import trazafito
 #import trazavet
 #import padron
+#import sired
 
 # herramientas opcionales a compilar y empaquetar:
 try:
@@ -184,7 +185,7 @@ if 'py2exe' in sys.argv:
     # legacy webservices & utilities:
     if 'pyafipws' in globals():
         kwargs['com_server'] += ["pyafipws"]
-        kwargs['console'] += ['rece.py', 'receb.py', 'recex.py', 'rg1361.py', 'wsaa.py', 'wsfex.py', 'wsbfe.py']
+        kwargs['console'] += ['rece.py', 'receb.py', 'recex.py', 'wsaa.py', 'wsfex.py', 'wsbfe.py']
 
     # visual application
     if 'pyrece' in globals():
@@ -464,6 +465,15 @@ if 'py2exe' in sys.argv:
                 ])]
         __version__ += "+padron_" + padron.__version__
         #HOMO &= padron.HOMO
+
+    if 'sired' in globals():
+        kwargs['com_server'] += [
+            Target(module=sired, modules="sired", create_exe=True, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=sired, script='sired.py', dest_base="sired_cli"), 
+            ]
+        __version__ += "+sired_" + sired.__version__
 
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
