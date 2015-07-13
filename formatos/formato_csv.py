@@ -67,7 +67,8 @@ def aplanar(regs):
         for k in MAP_ENC:
             fila[k] = reg.get(k)
 
-        fila['forma_pago']=reg['forma_pago']
+        fila['forma_pago'] = reg['forma_pago']
+        fila['pdf'] = reg['pdf']
         
         # por compatibilidad con pyrece:
         if reg.get('cbte_nro'):
