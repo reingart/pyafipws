@@ -10,16 +10,17 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Almacenamiento de duplicados electrÃ³nicos RG1361/02"
+"Almacenamiento de duplicados electrónicos RG1361/02 y RG1579/03 AFIP"
 
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
-__copyright__ = "Copyright (C) 2009 Mariano Reingart"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
+__copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20a"
+__version__ = "1.21a"
 
 LICENCIA = """
-rg1361.py: Generador de archivos ventas para SIRED/SIAP RG1361/02
-Copyright (C) 2009 Mariano Reingart reingart@gmail.com
+sired.py: Generador de archivos ventas para SIRED/SIAP RG1361/02 RG1579/03
+(Sistema Resúmen Electrónico de Datos / Almacenamiento de Duplicados)
+Copyright (C) 2009-2015 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -53,8 +54,8 @@ categorias = {"responsable inscripto": "01", # IVA Responsable Inscripto
               "no categorizado": "07", # Sujeto no Categorizado
               "importador": "08", # Importador del Exterior
               "exterior": "09", # Cliente del Exterior
-              "liberado": "10", # IVA Liberado â€“ Ley NÂº 19.640
-              "responsable inscripto - agente de percepciÃ³n": "11", # IVA Responsable Inscripto - Agente de Percepcion
+              "liberado": "10", # IVA Liberado Ley Nº 19.640
+              "responsable inscripto - agente de percepción": "11", # IVA Responsable Inscripto - Agente de Percepcion
 }
 
 codigos_operacion = { 
@@ -203,17 +204,17 @@ def format_as_dict(format):
     return dict([(k[0], None) for k in format])
 
 
-def leer_planilla(entrada):
+def leer_planilla(entrada, sep=','):
     "Convierte una planilla CSV a una lista de diccionarios [{'col': celda}]"
     
     items = []
-    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=",")
+    csv_reader = csv.reader(open(entrada), dialect='excel', delimiter=sep)
     for row in csv_reader:
         items.append(row)
     if len(items) < 2:
-        raise RuntimeError('El archivo no tiene filas vÃ¡lidos')
+        raise RuntimeError('El archivo no tiene filas validos')
     if len(items[0]) < 2:
-        raise RuntimeError('El archivo no tiene columnas (usar coma de separador)')
+        raise RuntimeError('El archivo no tiene columnas (usar %s de separador)' % sep)
     cols = [str(it).strip() for it in items[0]]
 
     # armar diccionario por cada linea
@@ -222,8 +223,8 @@ def leer_planilla(entrada):
     return items
 
 
-def leer_json(entrada):
-    "Carga los datos de json [{'col': celda}]"
+def leer_json(entrada="sired.json"):
+    "Carga los datos en formato JSON [{'col': celda}]"
         
     import json
     items = json.load(open(entrada))
@@ -231,11 +232,11 @@ def leer_json(entrada):
     return items
 
 
-def grabar_json(salida):
-    "Guarda los datos json"
+def grabar_json(salida="sired.json"):
+    "Guarda los datos en formato JSON"
     
     import json
-    json.dump(items, open("rg1361.json", "w"), sort_keys=True, indent=4)
+    json.dump(items, open(salida, "w"), sort_keys=True, indent=4)
 
 
 def generar_encabezado(items):
@@ -310,7 +311,7 @@ def generar_detalle(items):
             vals['imp_ajuste'] = it.get('ajuste', '0.00')
             vals['imp_total'] = it.get('importe', '0.00')
             # iva
-            if 'iva_id' in it:
+            if 'iva_id' in it and it['iva_id']:
                 # mapear alicuota de iva según código usado en MTX
                 iva_id = int(it['iva_id'])
                 if iva_id in (1, 2):
@@ -417,8 +418,8 @@ def generar_ventas(items):
     out.close()
 
 
-class RG1361AFIP():
-    "Componente para almacenamiento de duplicados digitales (RG1361/02)"
+class SIRED():
+    "Componente para Sistema Resúmen Electrónico de Datos RG1361/02 RG1579/03"
 
     _public_methods_ = ['CrearBD', 
                         'CrearFactura', 
@@ -430,11 +431,11 @@ class RG1361AFIP():
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
                      ]
     _readonly_attrs_ = _public_attrs_
-    _reg_progid_ = "RG1361AFIP"
+    _reg_progid_ = "SIRED"
     _reg_clsid_ = "{3DC74AD5-939F-42AB-8381-FCA7AF783C77}"
 
     def __init__(self):
-        self.db_path = os.path.join(self.InstallDir, "rg1361.db")
+        self.db_path = os.path.join(self.InstallDir, "sired.db")
         self.Version = __version__
         # Abrir la base de datos
         crear = not os.path.exists(self.db_path)
@@ -583,7 +584,7 @@ class RG1361AFIP():
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-INSTALL_DIR = RG1361AFIP.InstallDir = get_install_dir()
+INSTALL_DIR = SIRED.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     try:
@@ -591,13 +592,17 @@ if __name__ == '__main__':
             p=os.path.dirname(os.path.abspath(sys.executable))
             os.chdir(p)
         ##sys.stdout = open("salida.txt", "a")
-        if len(sys.argv)>1:
-            entrada = sys.argv[1]
-        else:
-            entrada = 'facturas3.csv'
+        entrada = {}
+        for i, k in enumerate(('encabezados', 'detalles', 'ivas', 'tributos')):
+            if len(sys.argv) > i+1:
+                filename = sys.argv[i+1]
+                if not filename.startswith("--") and os.path.exists(filename):
+                    entrada[k] = filename
+        if not entrada:
+            entrada['encabezado'] = 'facturas3.csv'
 
         if '--prueba' in sys.argv:
-            rg1361 = RG1361AFIP()
+            sired = SIRED()
             
             # creo una factura de ejemplo
             tipo_cbte = 2
@@ -630,7 +635,7 @@ if __name__ == '__main__':
             cae = None
             fch_venc_cae = None
             
-            rg1361.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
+            sired.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
                 cbte_nro, imp_total, imp_tot_conc, imp_neto,
                 imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
                 fecha_serv_desde, fecha_serv_hasta, 
@@ -642,23 +647,23 @@ if __name__ == '__main__':
             tipo = 91
             pto_vta = 2
             nro = 1234
-            rg1361.AgregarCmpAsoc(tipo, pto_vta, nro)
+            sired.AgregarCmpAsoc(tipo, pto_vta, nro)
             tipo = 5
             pto_vta = 2
             nro = 1234
-            rg1361.AgregarCmpAsoc(tipo, pto_vta, nro)
+            sired.AgregarCmpAsoc(tipo, pto_vta, nro)
             
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
             base_imp = "100.00"
             alic = "1.00"
             importe = "1.00"
-            rg1361.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+            sired.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
             iva_id = 5 # 21%
             base_imp = 100
             importe = 21
-            rg1361.AgregarIva(iva_id, base_imp, importe)
+            sired.AgregarIva(iva_id, base_imp, importe)
             
             u_mtx = 123456
             cod_mtx = 1234567890123
@@ -672,15 +677,15 @@ if __name__ == '__main__':
             imp_iva = 21.00
             importe = 121.00
             despacho = u'Nº 123456'
-            rg1361.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
+            sired.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, despacho)
 
-            rg1361.AgregarDato("prueba", "1234")
+            sired.AgregarDato("prueba", "1234")
             print "Prueba!"
-            id_factura = rg1361.GuardarFactura()
-            fact = rg1361.factura.copy()
-            ok = rg1361.ObtenerFactura(id_factura)
-            f = rg1361.factura
+            id_factura = sired.GuardarFactura()
+            fact = sired.factura.copy()
+            ok = sired.ObtenerFactura(id_factura)
+            f = sired.factura
             
             # verificar que los datos se hayan grabado y leido correctamente:
             difs = []
@@ -706,12 +711,12 @@ if __name__ == '__main__':
             for dif in difs:
                 print dif
                 
-            rg1361.EstablecerParametro("cae", "61123022925855")
-            rg1361.EstablecerParametro("fch_venc_cae", "20110320")
-            rg1361.EstablecerParametro("motivo_obs", "")
-            ok = rg1361.ActualizarFactura(id_factura)
-            ok = rg1361.ObtenerFactura(id_factura)
-            assert rg1361.factura["cae"] == "61123022925855"
+            sired.EstablecerParametro("cae", "61123022925855")
+            sired.EstablecerParametro("fch_venc_cae", "20110320")
+            sired.EstablecerParametro("motivo_obs", "")
+            ok = sired.ActualizarFactura(id_factura)
+            ok = sired.ObtenerFactura(id_factura)
+            assert sired.factura["cae"] == "61123022925855"
 
             sys.exit(0)
 
@@ -726,10 +731,61 @@ if __name__ == '__main__':
                     csv.writerow(datos)
             f.close()
         else:
-            if '--json' in sys.argv:
-                items = leer_json(entrada)
-            else:
-                items = leer_planilla(entrada)
+            # cargar datos desde planillas CSV separadas o JSON:
+            if entrada['encabezados'].lower().endswith("csv"):
+                facturas = items = leer_planilla(entrada['encabezados'], ";")
+                if 'detalles' in entrada:
+                    detalles = leer_planilla(entrada['detalles'], ";")
+
+                # pre-procesar:
+                for factura in facturas:
+                    for k, v in factura.items():
+                        # convertir tipos de datos desde los strings del CSV
+                        if k.startswith("imp"):
+                            factura[k] = float(v)
+                        if k in ('cbt_desde', 'cbt_hasta', 'concepto', 
+                                 'punto_vta', 'tipo_cbte', 'tipo_doc', 
+                                 'nro_doc'):
+                            factura[k] = int(v)
+
+                alicuotas = {3:0, 4: 10.5, 5: 21., 6: 27}
+                ivas = {}
+                imp_iva = 0.00
+
+                for det in detalles:
+                    iva_id = det['iva_id']
+                    
+                    if iva_id:
+                        iva_id = int(iva_id)
+                        if iva_id not in ivas:
+                            ivas[iva_id] = {"base_imp": 0, "importe": 0, "iva_id": iva_id}
+
+                        importe = round(float(det['importe'].replace(",", ".")), 2)
+                        neto = round(importe / ((100 + alicuotas[iva_id]) / 100), 2)
+                        iva = importe - neto
+                        print "importe", importe, iva
+                        imp_iva += iva
+                        ivas[iva_id]['importe'] += iva
+                        ivas[iva_id]['base_imp'] += neto
+                        det['imp_iva'] = iva
+
+                # rearmar estructuras internas:
+                facturas[0]['detalles'] = detalles
+                facturas[0]['ivas'] = ivas.values()
+                facturas[0]['datos'] = []
+                facturas[0]['tributos'] = []
+                facturas[0]['imp_iva'] = imp_iva
+                facturas[0]['cbte_nro'] = facturas[0]['cbt_desde']
+
+                # limpio campos que no correspondan (productos vs servicios):
+                if facturas[0]['concepto'] == 1:
+                    facturas[0]['fecha_venc_pago'] = None
+
+
+            elif entrada['encabezados'].lower().endswith('.json'):
+                items = leer_json(entrada['encabezados'])
+
+                
             print "Generando encabezado..."
             generar_encabezado(items)
             print "Generando detalle..."
@@ -737,7 +793,8 @@ if __name__ == '__main__':
             print "Generando ventas..."
             generar_ventas(items)
             if '--json' in sys.argv:
-                grabar_json(entrada)
+                grabar_json()
+
         print "Hecho."
     except Exception, e:
         if '--debug' in sys.argv:

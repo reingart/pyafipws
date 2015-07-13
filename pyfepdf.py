@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07t"
+__version__ = "1.07u"
 
 DEBUG = False
 HOMO = False
@@ -412,10 +412,14 @@ class FEPDF:
         for field in self.elements:
             # si la imagen no existe, eliminar nombre para que no falle fpdf
             if field['type'] == 'I' and not os.path.exists(field["text"]):
-                field['text'] = ""
-                ##field['type'] = "T"
-                ##field['font'] = ""
-                ##field['foreground'] = 0xff0000
+                # ajustar rutas relativas a las imágenes predeterminadas:
+                if os.path.exists(os.path.join(self.InstallDir, field["text"])):
+                    field['text'] = os.path.join(self.InstallDir, field["text"])
+                else:
+                    field['text'] = ""
+                    ##field['type'] = "T"
+                    ##field['font'] = ""
+                    ##field['foreground'] = 0xff0000
 
         # genero el renderizador con propiedades del PDF
         t = Template(elements=self.elements,
@@ -769,7 +773,7 @@ class FEPDF:
                                   'imp_iva', 'impto_liq_nri', 'imp_trib', 'imp_op_ex', 'imp_tot_conc',
                                   'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
                                   'NGRA.L', 'EXENTO.L', 'descuento.L', 'descuento', 'subtotal.L',
-                                  'NETO.L', 'IVA21.L', 'IVA10.5.L', 'IVA27.L', 'IVA5.L', 'IVA9.L', 'IVA2.5.L'
+                                  'NETO.L', 'IVA21.L', 'IVA10.5.L', 'IVA27.L', 'IVA5.L', 'IVA9.L', 'IVA2.5.L',
                                   'NETO', 'IVA21', 'IVA10.5', 'IVA27', 'IVA5', 'IVA9', 'IVA2.5'):
                             f.set(k,"")
                         f.set('LeyendaIVA', "")
