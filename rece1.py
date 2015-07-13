@@ -264,13 +264,13 @@ def escribir_factura(dic, archivo, agrega=False):
         guardar_dbf(formatos, agrega, conf_dbf)
 
 
-def depurar_xml(client):
+def depurar_xml(client, ruta="."):
     if XML:
         fecha = time.strftime("%Y%m%d%H%M%S")
-        f=open("request-%s.xml" % fecha,"w")
+        f=open(os.path.join(ruta, "request-%s.xml" % fecha),"w")
         f.write(client.xml_request)
         f.close()
-        f=open("response-%s.xml" % fecha,"w")
+        f=open(os.path.join(ruta, "response-%s.xml" % fecha),"w")
         f.write(client.xml_response)
         f.close()
 
