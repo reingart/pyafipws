@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26a"
+__version__ = "1.26b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1287,7 +1287,7 @@ class WSLPG(BaseWS):
         "Ajustar Liquidación realizada en un formulario F1116 B / C (papel)"
         
         # limpiar arrays no enviados:
-        if not self.ajuste['certificados']:
+        if not self.ajuste['ajusteBase']['certificados']:
             del self.ajuste['ajusteBase']['certificados']
         for k1 in ('ajusteCredito', 'ajusteDebito'):
             for k2 in ('retenciones', 'deducciones'):
@@ -3406,7 +3406,7 @@ if __name__ == '__main__':
             wslpg.CrearAjusteBase(pto_emision=dic['pto_emision'], 
                               nro_orden=dic['nro_orden'], 
                               coe_ajustado=dic['coe_ajustado'],
-                              cod_localidad=dic['cod_localidad_procedencia'],
+                              cod_localidad=dic['cod_prov_procedencia'],
                               cod_provincia=dic['cod_provincia_procedencia'],
                               )
             
