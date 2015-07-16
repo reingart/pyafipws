@@ -13,9 +13,9 @@
 "Aplicativo AdHoc Para generación de Facturas Electrónicas"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2009 Mariano Reingart"
+__copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26c"
+__version__ = "1.27d"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -44,7 +44,7 @@ CONFIG_FILE = "rece.ini"
 
 ACERCA_DE = u"""
 PyRece: Aplicativo AdHoc para generar Facturas Electrónicas
-Copyright (C) 2008/2009/2010/2011/2012 Mariano Reingart reingart@gmail.com
+Copyright (C) 2008-2015 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -430,14 +430,17 @@ class PyRece(gui.Controller):
     
     def examinar(self):
         filename = entrada
-        wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
-                        "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
-                        "Archivos JSON (*.json)|*.json",
-                        ]
+        wildcard = ["Planillas Excel (*.xlsx)|*.xlsx", 
+                    "Archivos CSV (*.csv)|*.csv", 
+                    "Archivos XML (*.xml)|*.xml", 
+                    "Archivos TXT (*.txt)|*.txt", 
+                    "Archivos DBF (*.dbf)|*.dbf",
+                    "Archivos JSON (*.json)|*.json",
+                   ]
         if entrada.endswith("xml"):
             wildcard.sort(reverse=True)
 
-        result = gui.open_file('Abrir', '', filename, '|'.join(wildcard))
+        result = gui.open_file('Abrir', 'datos', filename, '|'.join(wildcard))
         if not result:
             return
         self.paths = [result]
@@ -453,7 +456,7 @@ class PyRece(gui.Controller):
         try:
             items = []
             for fn in self.paths:
-                if fn.lower().endswith(".csv"):
+                if fn.lower().endswith(".csv") or fn.lower().endswith(".xlsx"):
                     filas = formato_csv.leer(fn)
                     items.extend(filas)
                 elif fn.lower().endswith(".xml"):
@@ -463,7 +466,7 @@ class PyRece(gui.Controller):
                     regs = formato_txt.leer(fn)
                     items.extend(formato_csv.aplanar(regs))
                 elif fn.lower().endswith(".dbf"):
-                    reg = formato_dbf.leer({'Encabezado': fn})
+                    reg = formato_dbf.leer(conf_dbf, carpeta=os.path.dirname(fn))
                     items.extend(formato_csv.aplanar(reg.values()))
                 elif fn.lower().endswith(".json"):
                     regs = formato_json.leer(fn)
@@ -472,10 +475,12 @@ class PyRece(gui.Controller):
                     self.error(u'Formato de archivo desconocido: %s', unicode(fn))
             if len(items) < 2:
                 gui.alert(u'El archivo no tiene datos válidos', 'Advertencia')
-            cols = items and [str(it).strip() for it in items[0]] or []
+            # extraer los nombres de columnas (ignorar vacios de XLSX)
+            cols = items and [str(it).strip() for it in items[0] if it] or []
             if DEBUG: print "Cols",cols
             # armar diccionario por cada linea
-            items = [dict([(cols[i],v) for i,v in enumerate(item)]) for item in items[1:]]
+            items = [dict([(col,item[i]) for i, col in enumerate(cols)]) 
+                                for item in items[1:]]
             self.cols = cols
             self.items = items
         except Exception,e:
@@ -487,6 +492,7 @@ class PyRece(gui.Controller):
             wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
                         "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
                         "Archivos JSON (*.json)|*.json",
+                        "Planillas Excel (*.xlsx)|*.xlsx",
                         ]
             if entrada.endswith("xml"):
                 wildcard.sort(reverse=True)
@@ -511,7 +517,7 @@ class PyRece(gui.Controller):
                     fn = salida
             elif not fn:
                 raise RuntimeError("Debe indicar un nombre de archivo para grabar")
-            if fn.endswith(".csv"):
+            if fn.lower().endswith(".csv") or fn.lower().endswith(".xlsx"):
                 formato_csv.escribir([self.cols] + [[item[k] for k in self.cols] for item in self.items], fn)
             else:
                 regs = formato_csv.desaplanar([self.cols] + [[item[k] for k in self.cols] for item in self.items])
@@ -520,11 +526,11 @@ class PyRece(gui.Controller):
                 elif fn.endswith(".txt"):
                     formato_txt.escribir(regs, fn)
                 elif fn.endswith(".dbf"):
-                    formato_dbf.escribir(regs, {'Encabezado': fn})
+                    formato_dbf.escribir(regs, conf_dbf, carpeta=os.path.dirname(fn))
                 elif fn.endswith(".json"):
                     formato_json.escribir(regs, fn)
                 else:
-                    self.error(u'Formato de archivo desconocido: %s' % unicode(fn))
+                    self.error(u'Formato de archivo desconocido', unicode(fn))
             gui.alert(u'Se guardó con éxito el archivo:\n%s' % (unicode(fn),), 'Guardar')
         except Exception, e:
             self.error(u'Excepción',unicode(e))
@@ -935,6 +941,10 @@ class PyRece(gui.Controller):
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
 
+        # establezco formatos (cantidad de decimales) según configuración:
+        fepdf.FmtCantidad = conf_fact.get("fmt_cantidad", "0.2")
+        fepdf.FmtPrecio = conf_fact.get("fmt_precio", "0.2")
+        
         # datos fijos:
         fepdf.CUIT = cuit  # CUIT del emisor para código de barras
         for k, v in conf_pdf.items():
@@ -1048,6 +1058,12 @@ if __name__ == '__main__':
     
     conf_pdf = dict(config.items('PDF'))
     conf_mail = dict(config.items('MAIL'))
+
+    if config.has_section('DBF'):
+        conf_dbf = dict(config.items('DBF'))
+    else:
+        conf_dbf = {}
+
       
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')

@@ -18,27 +18,40 @@ __license__ = "GPL 3.0"
 
 import csv
 from decimal import Decimal
+import os
 
 
 def leer(fn="entrada.csv", delimiter=";"):
     "Analiza un archivo CSV y devuelve un diccionario (aplanado)"
+    ext = os.path.splitext(fn)[1].lower()
     items = []
-    csvfile = open(fn, "rb")
-    # deducir dialecto y delimitador
-    try:
-        dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
-    except csv.Error:
-        dialect = csv.excel
-        dialect.delimiter=delimiter
-    csvfile.seek(0)
-    csv_reader = csv.reader(csvfile, dialect)
-    for row in csv_reader:
-        r = []
-        for c in row:
-            if isinstance(c, basestring):
-                c=c.strip()
-            r.append(c)
-        items.append(r)
+    if ext == '.csv':
+        csvfile = open(fn, "rb")
+        # deducir dialecto y delimitador
+        try:
+            dialect = csv.Sniffer().sniff(csvfile.read(256), delimiters=[';',','])
+        except csv.Error:
+            dialect = csv.excel
+            dialect.delimiter=delimiter
+        csvfile.seek(0)
+        csv_reader = csv.reader(csvfile, dialect)
+        for row in csv_reader:
+            r = []
+            for c in row:
+                if isinstance(c, basestring):
+                    c=c.strip()
+                r.append(c)
+            items.append(r)
+    elif ext == '.xlsx':
+        # extraigo los datos de la planilla Excel
+        from openpyxl import load_workbook
+        wb = load_workbook(filename=fn)
+        ws1 = wb.get_active_sheet()
+        for row in ws1.rows:
+            fila = []
+            for cell in row:
+                fila.append(cell.value)
+            items.append(fila)    
     return items
     # TODO: return desaplanar(items)
 
@@ -54,7 +67,8 @@ def aplanar(regs):
         for k in MAP_ENC:
             fila[k] = reg.get(k)
 
-        fila['forma_pago']=reg['forma_pago']
+        fila['forma_pago'] = reg['forma_pago']
+        fila['pdf'] = reg['pdf']
         
         # por compatibilidad con pyrece:
         if reg.get('cbte_nro'):
@@ -73,6 +87,11 @@ def aplanar(regs):
                     'imp_iva%s' % li: det.get('imp_iva'),
                     'bonif%s' % li: det.get('bonif'),
                     'numero_despacho%s' % li: det.get('despacho'),
+                    'dato_a%s' % li: det.get('dato_a'),
+                    'dato_b%s' % li: det.get('dato_b'),
+                    'dato_c%s' % li: det.get('dato_c'),
+                    'dato_d%s' % li: det.get('dato_d'),
+                    'dato_e%s' % li: det.get('dato_e'),
                     })
         for i, iva in enumerate(reg['ivas']):
             li = i+1
@@ -155,6 +174,12 @@ def desaplanar(filas):
                 'imp_iva': ('imp_iva%s' % li) in dic and dic.pop('imp_iva%s'% li) or None,
                 'bonif': ('bonif%s' % li) in dic and dic.pop('bonif%s'% li) or None,
                 'despacho': ('numero_despacho%s' % li) in dic and dic.pop('numero_despacho%s'% li),
+                'dato_a': ('dato_a%s' % li) in dic and dic.pop('dato_a%s' % li),
+                'dato_b': ('dato_b%s' % li) in dic and dic.pop('dato_b%s' % li),
+                'dato_c': ('dato_c%s' % li) in dic and dic.pop('dato_c%s' % li),
+                'dato_d': ('dato_d%s' % li) in dic and dic.pop('dato_d%s' % li),
+                'dato_e': ('dato_e%s' % li) in dic and dic.pop('dato_e%s' % li),
+
                 } for li in xrange(1, max_li("cantidad")) 
                   if dic['cantidad%s' % li] is not None]
                 
@@ -192,15 +217,24 @@ def desaplanar(filas):
 
 def escribir(filas, fn="salida.csv", delimiter=";"):
     "Dado una lista de comprobantes (diccionarios), aplana y escribe"
-    f = open(fn,"wb")
-    csv_writer = csv.writer(f, dialect='excel', delimiter=";")
-    # TODO: filas = aplanar(regs)
-    for fila in filas:
-        # convertir a ISO-8859-1 (evita error de encoding de csv writer):
-        fila = [celda.encode("latin1") if isinstance(celda, unicode) else celda
-                for celda in fila]
-        csv_writer.writerow(fila)
-    f.close()
+    ext = os.path.splitext(fn)[1].lower()
+    if ext == '.csv':
+        f = open(fn,"wb")
+        csv_writer = csv.writer(f, dialect='excel', delimiter=";")
+        # TODO: filas = aplanar(regs)
+        for fila in filas:
+            # convertir a ISO-8859-1 (evita error de encoding de csv writer):
+            fila = [celda.encode("latin1") if isinstance(celda, unicode) else celda
+                    for celda in fila]
+            csv_writer.writerow(fila)
+        f.close()
+    elif ext == '.xlsx':
+        from openpyxl import Workbook
+        wb = Workbook()
+        ws1 = wb.get_active_sheet()
+        for fila in filas:
+            ws1.append(fila)
+        wb.save(filename=fn)
 
     
 # pruebas básicas
@@ -213,3 +247,10 @@ if __name__ == '__main__':
     print filas1
     print filas1 == filas
     escribir(filas1, "facturas-wsfev1-bis-sal.csv")
+    escribir(filas1, "facturas-wsfev1-bis-sal.xlsx")
+    filas2 = leer("facturas-wsfev1-bis-sal.xlsx")
+    for fila1, fila2 in zip(filas1, filas2):
+        for celda1, celda2 in zip(fila1, fila2):
+            if celda1 != celda2:
+                print celda1, celda2
+

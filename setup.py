@@ -47,6 +47,7 @@ import pyi25
 #import trazafito
 #import trazavet
 #import padron
+#import sired
 
 # herramientas opcionales a compilar y empaquetar:
 try:
@@ -184,7 +185,7 @@ if 'py2exe' in sys.argv:
     # legacy webservices & utilities:
     if 'pyafipws' in globals():
         kwargs['com_server'] += ["pyafipws"]
-        kwargs['console'] += ['rece.py', 'receb.py', 'recex.py', 'rg1361.py', 'wsaa.py', 'wsfex.py', 'wsbfe.py']
+        kwargs['console'] += ['rece.py', 'receb.py', 'recex.py', 'wsaa.py', 'wsfex.py', 'wsbfe.py']
 
     # visual application
     if 'pyrece' in globals():
@@ -203,8 +204,10 @@ if 'py2exe' in sys.argv:
         data_files += [
             WX_DLL, 
             ("plantillas", ["plantillas/logo.png", "plantillas/factura.csv", ]),
-            ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", ])
+            ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", "datos/facturas.xlsx", ])
             ]
+        if os.path.exists("logo-pyafipws.png"):
+            data_files.append((".", ['logo-pyafipws.png', 'logo-sistemasagiles.png']))
         data_files.append((".", pycard_resources))
 
         __version__ += "+pyrece_" + pyrece.__version__
@@ -281,7 +284,7 @@ if 'py2exe' in sys.argv:
         #    ]
         data_files += [
             WX_DLL, 
-            ("plantillas", ["plantillas/logo.png", 
+            ("plantillas", ["plantillas/logo.png", "plantillas/afip.png",
                             "plantillas/factura.csv",
                             "plantillas/recibo.csv"]),
             ]
@@ -463,6 +466,15 @@ if 'py2exe' in sys.argv:
         __version__ += "+padron_" + padron.__version__
         #HOMO &= padron.HOMO
 
+    if 'sired' in globals():
+        kwargs['com_server'] += [
+            Target(module=sired, modules="sired", create_exe=True, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=sired, script='sired.py', dest_base="sired_cli"), 
+            ]
+        __version__ += "+sired_" + sired.__version__
+
     # custom installer:
     kwargs['cmdclass'] = {"py2exe": build_installer}
 
@@ -478,6 +490,10 @@ if 'py2exe' in sys.argv:
     # agrego tag de homologación (testing - modo evaluación):
     __version__ += "-homo" if HOMO else "-full"
     
+    # agrego ejemplos
+    ##if HOMO:
+    ##     data_files += [("ejemplos", glob.glob("ejemplos/*"))]
+
 else:
     desc = ("Interfases, tools and apps for Argentina's gov't. webservices "
             "(soap, com/dll, pdf, dbf, xml, etc.)")

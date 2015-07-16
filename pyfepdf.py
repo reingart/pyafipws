@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07o"
+__version__ = "1.07u"
 
 DEBUG = False
 HOMO = False
@@ -108,7 +108,7 @@ class FEPDF:
             96: u'packs', 97: u'seña/anticipo', 
             99: u'bonificaci\xf3n', 98: u'otras unidades'}
 
-    ivas_ds = {3: '0%', 4: '10.5%', 5: '21%', 6: '27%'}
+    ivas_ds = {3: 0, 4: 10.5, 5: 21, 6: 27, 8: 5, 9: 2.5}
 
     paises = {512: u'FIJI, ISLAS', 513: u'PAPUA NUEVA GUINEA', 514: u'KIRIBATI, ISLAS', 515: u'MICRONESIA,EST.FEDER', 516: u'PALAU', 517: u'TUVALU', 518: u'SALOMON,ISLAS', 519: u'TONGA', 520: u'MARSHALL,ISLAS', 521: u'MARIANAS,ISLAS', 597: u'RESTO OCEANIA', 598: u'INDET.(OCEANIA)', 101: u'BURKINA FASO', 102: u'ARGELIA', 103: u'BOTSWANA', 104: u'BURUNDI', 105: u'CAMERUN', 107: u'REP. CENTROAFRICANA.', 108: u'CONGO', 109: u'REP.DEMOCRAT.DEL CONGO EX ZAIRE', 110: u'COSTA DE MARFIL', 111: u'CHAD', 112: u'BENIN', 113: u'EGIPTO', 115: u'GABON', 116: u'GAMBIA', 117: u'GHANA', 118: u'GUINEA', 119: u'GUINEA ECUATORIAL', 120: u'KENYA', 121: u'LESOTHO', 122: u'LIBERIA', 123: u'LIBIA', 124: u'MADAGASCAR', 125: u'MALAWI', 126: u'MALI', 127: u'MARRUECOS', 128: u'MAURICIO,ISLAS', 129: u'MAURITANIA', 130: u'NIGER', 131: u'NIGERIA', 132: u'ZIMBABWE', 133: u'RWANDA', 134: u'SENEGAL', 135: u'SIERRA LEONA', 136: u'SOMALIA', 137: u'SWAZILANDIA', 138: u'SUDAN', 139: u'TANZANIA', 140: u'TOGO', 141: u'TUNEZ', 142: u'UGANDA', 144: u'ZAMBIA', 145: u'TERRIT.VINCULADOS AL R UNIDO', 146: u'TERRIT.VINCULADOS A ESPA\xd1A', 147: u'TERRIT.VINCULADOS A FRANCIA', 149: u'ANGOLA', 150: u'CABO VERDE', 151: u'MOZAMBIQUE', 152: u'SEYCHELLES', 153: u'DJIBOUTI', 155: u'COMORAS', 156: u'GUINEA BISSAU', 157: u'STO.TOME Y PRINCIPE', 158: u'NAMIBIA', 159: u'SUDAFRICA', 160: u'ERITREA', 161: u'ETIOPIA', 197: u'RESTO (AFRICA)', 198: u'INDETERMINADO (AFRICA)', 200: u'ARGENTINA', 201: u'BARBADOS', 202: u'BOLIVIA', 203: u'BRASIL', 204: u'CANADA', 205: u'COLOMBIA', 206: u'COSTA RICA', 207: u'CUBA', 208: u'CHILE', 209: u'REP\xdaBLICA DOMINICANA', 210: u'ECUADOR', 211: u'EL SALVADOR', 212: u'ESTADOS UNIDOS', 213: u'GUATEMALA', 214: u'GUYANA', 215: u'HAITI', 216: u'HONDURAS', 217: u'JAMAICA', 218: u'MEXICO', 219: u'NICARAGUA', 220: u'PANAMA', 221: u'PARAGUAY', 222: u'PERU', 223: u'PUERTO RICO', 224: u'TRINIDAD Y TOBAGO', 225: u'URUGUAY', 226: u'VENEZUELA', 227: u'TERRIT.VINCULADO AL R.UNIDO', 228: u'TER.VINCULADOS A DINAMARCA', 229: u'TERRIT.VINCULADOS A FRANCIA AMERIC.', 230: u'TERRIT. HOLANDESES', 231: u'TER.VINCULADOS A ESTADOS UNIDOS', 232: u'SURINAME', 233: u'DOMINICA', 234: u'SANTA LUCIA', 235: u'SAN VICENTE Y LAS GRANADINAS', 236: u'BELICE', 237: u'ANTIGUA Y BARBUDA', 238: u'S.CRISTOBAL Y NEVIS', 239: u'BAHAMAS', 240: u'GRENADA', 241: u'ANTILLAS HOLANDESAS', 250: u'AAE Tierra del Fuego - ARGENTINA', 251: u'ZF La Plata - ARGENTINA', 252: u'ZF Justo Daract - ARGENTINA', 253: u'ZF R\xedo Gallegos - ARGENTINA', 254: u'Islas Malvinas - ARGENTINA', 255: u'ZF Tucum\xe1n - ARGENTINA', 256: u'ZF C\xf3rdoba - ARGENTINA', 257: u'ZF Mendoza - ARGENTINA', 258: u'ZF General Pico - ARGENTINA', 259: u'ZF Comodoro Rivadavia - ARGENTINA', 260: u'ZF Iquique', 261: u'ZF Punta Arenas', 262: u'ZF Salta - ARGENTINA', 263: u'ZF Paso de los Libres - ARGENTINA', 264: u'ZF Puerto Iguaz\xfa - ARGENTINA', 265: u'SECTOR ANTARTICO ARG.', 270: u'ZF Col\xf3n - REP\xdaBLICA DE PANAM\xc1', 271: u'ZF Winner (Sta. C. de la Sierra) - BOLIVIA', 280: u'ZF Colonia - URUGUAY', 281: u'ZF Florida - URUGUAY', 282: u'ZF Libertad - URUGUAY', 283: u'ZF Zonamerica - URUGUAY', 284: u'ZF Nueva Helvecia - URUGUAY', 285: u'ZF Nueva Palmira - URUGUAY', 286: u'ZF R\xedo Negro - URUGUAY', 287: u'ZF Rivera - URUGUAY', 288: u'ZF San Jos\xe9 - URUGUAY', 291: u'ZF Manaos - BRASIL', 295: u'MAR ARG ZONA ECO.EX', 296: u'RIOS ARG NAVEG INTER', 297: u'RESTO AMERICA', 298: u'INDETERMINADO (AMERICA)', 301: u'AFGANISTAN', 302: u'ARABIA SAUDITA', 303: u'BAHREIN', 304: u'MYANMAR (EX-BIRMANIA)', 305: u'BUTAN', 306: u'CAMBODYA (EX-KAMPUCHE)', 307: u'SRI LANKA', 308: u'COREA DEMOCRATICA', 309: u'COREA REPUBLICANA', 310: u'CHINA', 312: u'FILIPINAS', 313: u'TAIWAN', 315: u'INDIA', 316: u'INDONESIA', 317: u'IRAK', 318: u'IRAN', 319: u'ISRAEL', 320: u'JAPON', 321: u'JORDANIA', 322: u'QATAR', 323: u'KUWAIT', 324: u'LAOS', 325: u'LIBANO', 326: u'MALASIA', 327: u'MALDIVAS ISLAS', 328: u'OMAN', 329: u'MONGOLIA', 330: u'NEPAL', 331: u'EMIRATOS ARABES UNIDOS', 332: u'PAKIST\xc1N', 333: u'SINGAPUR', 334: u'SIRIA', 335: u'THAILANDIA', 337: u'VIETNAM', 341: u'HONG KONG', 344: u'MACAO', 345: u'BANGLADESH', 346: u'BRUNEI', 348: u'REPUBLICA DE YEMEN', 349: u'ARMENIA', 350: u'AZERBAIJAN', 351: u'GEORGIA', 352: u'KAZAJSTAN', 353: u'KIRGUIZISTAN', 354: u'TAYIKISTAN', 355: u'TURKMENISTAN', 356: u'UZBEKISTAN', 357: u'TERR. AU. PALESTINOS', 397: u'RESTO DE ASIA', 398: u'INDET.(ASIA)', 401: u'ALBANIA', 404: u'ANDORRA', 405: u'AUSTRIA', 406: u'BELGICA', 407: u'BULGARIA', 409: u'DINAMARCA', 410: u'ESPA\xd1A', 411: u'FINLANDIA', 412: u'FRANCIA', 413: u'GRECIA', 414: u'HUNGRIA', 415: u'IRLANDA', 416: u'ISLANDIA', 417: u'ITALIA', 418: u'LIECHTENSTEIN', 419: u'LUXEMBURGO', 420: u'MALTA', 421: u'MONACO', 422: u'NORUEGA', 423: u'PAISES BAJOS', 424: u'POLONIA', 425: u'PORTUGAL', 426: u'REINO UNIDO', 427: u'RUMANIA', 428: u'SAN MARINO', 429: u'SUECIA', 430: u'SUIZA', 431: u'VATICANO(SANTA SEDE)', 433: u'POS.BRIT.(EUROPA)', 435: u'CHIPRE', 436: u'TURQUIA', 438: u'ALEMANIA,REP.FED.', 439: u'BIELORRUSIA', 440: u'ESTONIA', 441: u'LETONIA', 442: u'LITUANIA', 443: u'MOLDAVIA', 444: u'RUSIA', 445: u'UCRANIA', 446: u'BOSNIA HERZEGOVINA', 447: u'CROACIA', 448: u'ESLOVAQUIA', 449: u'ESLOVENIA', 450: u'MACEDONIA', 451: u'REP. CHECA', 453: u'MONTENEGRO', 454: u'SERBIA', 997: u'RESTO CONTINENTE', 998: u'INDET.(CONTINENTE)', 497: u'RESTO EUROPA', 498: u'INDET.(EUROPA)', 501: u'AUSTRALIA', 503: u'NAURU', 504: u'NUEVA ZELANDIA', 505: u'VANATU', 506: u'SAMOA OCCIDENTAL', 507: u'TERRITORIO VINCULADOS A AUSTRALIA', 508: u'TERRITORIOS VINCULADOS AL R. UNIDO', 509: u'TERRITORIOS VINCULADOS A FRANCIA', 510: u'TER VINCULADOS A NUEVA. ZELANDA', 511: u'TER. VINCULADOS A ESTADOS UNIDOS'}
 
@@ -116,11 +116,11 @@ class FEPDF:
 
     tributos_ds = {1: 'Impuestos nacionales', 2: 'Impuestos provinciales', 3: 'Impuestos municipales', 4: 'Impuestos Internos', 99: 'Otro'}
 
-    tipos_fact = { 
-        (1, 6, 11, 19): u'Factura', 
-        (2, 7, 12, 20): u'Nota de Débito', 
-        (3, 8, 13, 21): u'Nota de Crédito',
-        (4, 9): u'Recibo', 
+    tipos_fact = {
+        (1, 6, 11, 19, 51): u'Factura', 
+        (2, 7, 12, 20, 52): u'Nota de Débito', 
+        (3, 8, 13, 21, 53): u'Nota de Crédito',
+        (4, 9, 15, 54): u'Recibo', 
         (10, 5): u'Nota de Venta al contado', 
         (60, 61): u'Cuenta de Venta y Líquido producto',
         (63, 64): u'Liquidación',
@@ -129,7 +129,8 @@ class FEPDF:
 
     letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63): 'A',
                    (6, 7, 8, 9, 10, 40, 61, 64): 'B',
-                   (11, 12, 13): 'C',
+                   (11, 12, 13, 15): 'C',
+                   (51, 52, 53, 54): 'M',
                    (19, 20, 21): 'E',
                    (91, ): 'R',
                 }
@@ -293,6 +294,16 @@ class FEPDF:
     fmt_qty = lambda self, i: self.fmt_num(i, "%" + self.FmtCantidad + "f", False)
     fmt_pre = lambda self, i: self.fmt_num(i, "%" + self.FmtPrecio + "f")
 
+    def fmt_iva(self, i):
+        if int(i) in self.ivas_ds:
+            p = self.ivas_ds[int(i)]
+            if p == int(p):
+                return self.fmt_num(p, "%d") + "%"
+            else:
+                return self.fmt_num(p, "%.1f") + "%"
+        else:
+            return ""
+
     def fmt_cuit(self, c):
         if c is not None and str(c):
             c=str(c)
@@ -396,7 +407,20 @@ class FEPDF:
         if HOMO:
             self.AgregarCampo("homo", 'T', 100, 250, 0, 0,
                               size=70, rotate=45, foreground=0x808080, priority=-1)
-           
+
+        # sanity check:
+        for field in self.elements:
+            # si la imagen no existe, eliminar nombre para que no falle fpdf
+            if field['type'] == 'I' and not os.path.exists(field["text"]):
+                # ajustar rutas relativas a las imágenes predeterminadas:
+                if os.path.exists(os.path.join(self.InstallDir, field["text"])):
+                    field['text'] = os.path.join(self.InstallDir, field["text"])
+                else:
+                    field['text'] = ""
+                    ##field['type'] = "T"
+                    ##field['font'] = ""
+                    ##field['foreground'] = 0xff0000
+
         # genero el renderizador con propiedades del PDF
         t = Template(elements=self.elements,
                  format=papel, orientation=orientacion,
@@ -513,6 +537,8 @@ class FEPDF:
             if HOMO:
                 self.AgregarDato("homo", u"HOMOLOGACIÓN")
 
+            # mostrar las validaciones no excluyentes de AFIP (observaciones)
+            
             if fact.get('motivos_obs') and fact['motivos_obs']<>'00':
                 if not f.has_key('motivos_ds.L'):
                     motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
@@ -522,6 +548,11 @@ class FEPDF:
                 motivos_ds = u"Ejemplo Sin validez fiscal - Homologación - Testing"
             else:
                 motivos_ds = ""
+
+            if letra_fact in ('A', 'M'):
+                msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
+                if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
+                    motivos_ds += msg_no_iva
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
 
@@ -608,8 +639,12 @@ class FEPDF:
                         k = k + 1
                         if k > hoja * (lineas_max - 1):
                             break
+                        # acumular subtotal (sin IVA facturas A):
                         if it['importe']:
                             subtotal += Decimal("%.6f" % float(it['importe']))
+                            if letra_fact in ('A', 'M') and it['imp_iva']:
+                                subtotal -= Decimal("%.6f" % float(it['imp_iva']))
+                        # agregar el item si encuadra en la hoja especificada:
                         if k > (hoja - 1) * (lineas_max - 1):
                             if DEBUG: print "it", it
                             li += 1
@@ -621,12 +656,15 @@ class FEPDF:
                                 f.set('Item.Umed%02d' % li, it['umed'])
                                 if it['umed']:
                                     f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(int(it['umed'])))
-                            if it.get('iva_id') is not None:
-                                f.set('Item.IvaId%02d' % li, it['iva_id'])
-                                if it['iva_id']:
-                                    f.set('Item.AlicuotaIva%02d' % li, self.ivas_ds.get(int(it['iva_id'])))
-                            if it.get('imp_iva') is not None:
-                                f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
+                            # solo discriminar IVA en A/M (mostrar tasa en B)
+                            if letra_fact in ('A', 'M', 'B'):
+                                if it.get('iva_id') is not None:
+                                    f.set('Item.IvaId%02d' % li, it['iva_id'])
+                                    if it['iva_id']:
+                                        f.set('Item.AlicuotaIva%02d' % li, self.fmt_iva(it['iva_id']))
+                            if letra_fact in ('A', 'M'):
+                                if it.get('imp_iva') is not None:
+                                    f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
                             if it.get('despacho') is not None:
                                 f.set('Item.Numero_Despacho%02d' % li, it['despacho'])
                             if it.get('bonif') is not None:
@@ -665,49 +703,80 @@ class FEPDF:
                             if it['importe'] is not None:
                                 f.set('Tributo.Importe%02d' % lit, self.fmt_imp(it['importe']))
 
+                        # reiniciar el subtotal neto, independiente de detalles:
+                        subtotal = Decimal(0)
+                        if fact['imp_neto']:
+                            subtotal += Decimal("%.6f" % float(fact['imp_neto']))
+                        # agregar IVA al subtotal si no es factura A
+                        if not letra_fact in ('A', 'M') and fact['imp_iva']:
+                            subtotal += Decimal("%.6f" % float(fact['imp_iva']))
+                        # mostrar descuento general solo si se utiliza:
                         if 'descuento' in fact and fact['descuento']:
                             descuento = Decimal("%.6f" % float(fact['descuento']))
                             f.set('descuento', self.fmt_imp(descuento))
                             subtotal -= descuento
-                        f.set('subtotal', self.fmt_imp(subtotal))
+                        # al subtotal neto sumo exento y no gravado:
+                        if fact['imp_tot_conc']:
+                            subtotal += Decimal("%.6f" % float(fact['imp_tot_conc']))
+                        if fact['imp_op_ex']:
+                            subtotal += Decimal("%.6f" % float(fact['imp_op_ex']))
+                        # si no se envia subtotal, usar el calculado:
+                        if fact.get('imp_subtotal'):
+                            f.set('subtotal', self.fmt_imp(fact.get('imp_subtotal')))
+                        else:
+                            f.set('subtotal', self.fmt_imp(subtotal))
+                        
+                        # importes generales de IVA y netos gravado / no gravado
                         f.set('imp_neto', self.fmt_imp(fact['imp_neto']))
                         f.set('impto_liq', self.fmt_imp(fact.get('impto_liq')))
+                        f.set('impto_liq_nri', self.fmt_imp(fact.get('impto_liq_nri')))
+                        f.set('imp_iva', self.fmt_imp(fact.get('imp_iva')))
+                        f.set('imp_trib', self.fmt_imp(fact.get('imp_trib')))
                         f.set('imp_total', self.fmt_imp(fact['imp_total']))
+                        f.set('imp_subtotal', self.fmt_imp(fact.get('imp_subtotal')))
                         f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
                         f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
-
+                        
+                        # campos antiguos (por compatibilidad hacia atrás)
                         f.set('IMPTO_PERC', self.fmt_imp(fact.get('impto_perc')))
                         f.set('IMP_OP_EX', self.fmt_imp(fact.get('imp_op_ex')))
                         f.set('IMP_IIBB', self.fmt_imp(fact.get('imp_iibb')))
                         f.set('IMPTO_PERC_MUN', self.fmt_imp(fact.get('impto_perc_mun')))
                         f.set('IMP_INTERNOS', self.fmt_imp(fact.get('imp_internos')))
 
-                        if letra_fact=='A':
+                        # mostrar u ocultar el IVA discriminado si es clase A/B:
+                        if letra_fact in ('A', 'M'):
                             f.set('NETO', self.fmt_imp(fact['imp_neto']))
                             f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
                             f.set('LeyendaIVA',"")
                             
+                            # limpio etiquetas y establezco subtotal de iva liq.
+                            for p in self.ivas_ds.values():
+                                f.set('IVA%s.L' % p, "")
                             for iva in fact['ivas']:
-                                a = {3: '0', 4: '10.5', 5: '21', 6: '27'}[int(iva['iva_id'])]
-                                f.set('IVA%s' % a, self.fmt_imp(iva['importe']))
-
+                                p = self.ivas_ds[int(iva['iva_id'])]
+                                f.set('IVA%s' % p, self.fmt_imp(iva['importe']))
+                                f.set('IVA%s.L' % p, "IVA %s" % self.fmt_iva(iva['iva_id']))
                         else:
+                            # Factura C y E no llevan columna IVA (B solo tasa)
+                            if letra_fact in ('C', 'E'):
+                                f.set('Item.AlicuotaIVA',"")
                             f.set('NETO.L',"")
                             f.set('IVA.L',"")
                             f.set('LeyendaIVA', "")
-                            f.set('IVA21.L',"")
-                            f.set('IVA10.5.L',"")
-                            f.set('IVA27.L',"")
-
+                            for p in self.ivas_ds.values():
+                                f.set('IVA%s.L' % p, "")
                         f.set('Total.L', 'Total:')
                         f.set('TOTAL', self.fmt_imp(fact['imp_total']))
                     else:
+                        # limpio todas las etiquetas (no es la última hoja)
                         for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc', 
+                                  'imp_iva', 'impto_liq_nri', 'imp_trib', 'imp_op_ex', 'imp_tot_conc',
                                   'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
-                                  'NETO', 'IVA21', 'IVA10.5', 'IVA27'):
+                                  'NGRA.L', 'EXENTO.L', 'descuento.L', 'descuento', 'subtotal.L',
+                                  'NETO.L', 'IVA21.L', 'IVA10.5.L', 'IVA27.L', 'IVA5.L', 'IVA9.L', 'IVA2.5.L',
+                                  'NETO', 'IVA21', 'IVA10.5', 'IVA27', 'IVA5', 'IVA9', 'IVA2.5'):
                             f.set(k,"")
-                        f.set('NETO.L',"")
-                        f.set('IVA.L',"")
                         f.set('LeyendaIVA', "")
                         f.set('Total.L', 'Subtotal:')
                         f.set('TOTAL', self.fmt_imp(subtotal))
@@ -715,17 +784,17 @@ class FEPDF:
                     f.set('cmps_asoc_ds', cmps_asoc_ds)
                     f.set('permisos_ds', permisos_ds)
 
+                    # Datos del pie de factura (obtenidos desde AFIP):
                     f.set('motivos_ds', motivos_ds)
                     if f.has_key('motivos_ds1') and motivos_ds:
-                        if letra_fact=='A':
-                            msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
-                            if not f.has_key('leyenda_credito_fiscal'):
-                                motivos_ds += msg_no_iva
-                            else:
+                        if letra_fact in ('A', 'M'):
+                            if f.has_key('leyenda_credito_fiscal'):
                                 f.set('leyenda_credito_fiscal', msg_no_iva)
                         for i, txt in enumerate(f.split_multicell(motivos_ds, 'motivos_ds1')):
                             f.set('motivos_ds%d' % (i+1), txt)
-                        
+                    if not motivos_ds:
+                        f.set("motivos_ds.L", "")
+                    
                     f.set('CAE', fact['cae'])
                     f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
                     if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
@@ -739,6 +808,17 @@ class FEPDF:
                     f.set('CodigoBarras', barras)
                     f.set('CodigoBarrasLegible', barras)
 
+                    if not HOMO and barras and fact.get("resultado") == 'A':
+                        f.set('estado', "Comprobante Autorizado")
+                    elif fact.get("resultado") == 'R':
+                        f.set('estado', "Comprobante Rechazado")
+                    elif fact.get("resultado") == 'O':
+                        f.set('estado', "Comprobante Observado")
+                    elif fact.get("resultado"):
+                        f.set('estado', "Comprobante No Autorizado")
+                    else:
+                        f.set('estado', "") # compatibilidad hacia atras
+                        
                     if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
                             f.set('ObservacionesGenerales%d' % (i+1), txt)
@@ -830,6 +910,7 @@ if __name__ == '__main__':
         from ConfigParser import SafeConfigParser
 
         DEBUG = '--debug' in sys.argv
+        utils.safe_console()
                 
         # leeo configuración (primer argumento o rece.ini por defecto)
         if len(sys.argv)>1 and not sys.argv[1].startswith("--"):
@@ -873,7 +954,7 @@ if __name__ == '__main__':
                 from formatos import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
                 if DEBUG: print "conf_dbf", conf_dbf
-                regs = formato_dbf.leer(conf_dbf)
+                regs = formato_dbf.leer(conf_dbf).values()
             elif '--json' in sys.argv:
                 from formatos import formato_json
                 entrada = conf_fact.get("entrada", "entrada.txt")
@@ -894,33 +975,37 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv:
             # creo una factura de ejemplo
-            tipo_cbte = 2
+            
+            # datos generales del encabezado:
+            tipo_cbte = 1
             punto_vta = 4000
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
             cbte_nro = 12345678
-            imp_total = "122.00"; imp_tot_conc = "3.00"
+            imp_total = "127.00"; imp_tot_conc = "3.00"
             imp_neto = "100.00"; imp_iva = "21.00"
-            imp_trib = "1.00"; imp_op_ex = "2.00"; imp_subtotal = "100.00"
+            imp_trib = "1.00"; imp_op_ex = "2.00"; imp_subtotal = "105.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
             # Fechas del período del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
-            moneda_id = 'PES'; moneda_ctz = '1.000'
-            obs_generales = "Observaciones Generales<br/>texto libre"
-            obs_comerciales = "Observaciones Comerciales<br/>texto libre"
+            moneda_id = 'PES'                   # p/exportación (ej): DOL
+            moneda_ctz = 1                      # p/exportación (ej): 8.98
+            incoterms = 'FOB'                   # solo exportación
+            idioma_cbte = 1                     # 1: es, 2: en, 3: pt
 
+            # datos adicionales del encabezado:
             nombre_cliente = 'Joao Da Silva'
             domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
-            pais_dst_cmp = 16
-            id_impositivo = 'PJ54482221-l'
-            moneda_id = '012'
-            moneda_ctz = 0.5
+            pais_dst_cmp = 16                   # 200: Argentina, ver tabla
+            id_impositivo = 'PJ54482221-l'      # cat. iva (mercado interno)
             forma_pago = '30 dias'
-            incoterms = 'FOB'
-            idioma_cbte = 1
-            motivo = "11"
 
+            obs_generales = "Observaciones Generales<br/>texto libre"
+            obs_comerciales = "Observaciones Comerciales<br/>texto libre"
+            
+            # datos devueltos por el webservice (WSFEv1, WSMTXCA, etc.):
+            motivo_obs = "Factura individual, DocTipo: 80, DocNro 30000000007 no se encuentra registrado en los padrones de AFIP."
             cae = "61123022925855"
             fch_venc_cae = "20110320"
             
@@ -931,20 +1016,27 @@ if __name__ == '__main__':
                 moneda_id, moneda_ctz, cae, fch_venc_cae, id_impositivo,
                 nombre_cliente, domicilio_cliente, pais_dst_cmp, 
                 obs_comerciales, obs_generales, forma_pago, incoterms, 
-                idioma_cbte, motivo)
+                idioma_cbte, motivo_obs)
 
+            # completo campos extra del encabezado:
             ok = fepdf.EstablecerParametro("localidad_cliente", "Hurlingham")
             ok = fepdf.EstablecerParametro("provincia_cliente", "Buenos Aires")
 
-            tipo = 91
-            pto_vta = 2
-            nro = 1234
-            fepdf.AgregarCmpAsoc(tipo, pto_vta, nro)
+            # imprimir leyenda "Comprobante Autorizado" (constatar con WSCDC!)
+            ok = fepdf.EstablecerParametro("resultado", "A")
+            
+            # agrego remitos y otros comprobantes asociados:
+            for i in range(3):
+                tipo = 91
+                pto_vta = 2
+                nro = 1234 + i
+                fepdf.AgregarCmpAsoc(tipo, pto_vta, nro)
             tipo = 5
             pto_vta = 2
             nro = 1234
             fepdf.AgregarCmpAsoc(tipo, pto_vta, nro)
             
+            # tributos adicionales:
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
             base_imp = "100.00"
@@ -952,27 +1044,50 @@ if __name__ == '__main__':
             importe = "1.00"
             fepdf.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
+            tributo_id = 4
+            desc = 'Impuestos Internos'
+            base_imp = None
+            alic = None
+            importe = "0.00"
+            fepdf.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+
+            # subtotales por alícuota de IVA:
             iva_id = 5 # 21%
             base_imp = 100
             importe = 21
             fepdf.AgregarIva(iva_id, base_imp, importe)
+
+            for id in (4, 6):
+                fepdf.AgregarIva(iva_id=id, base_imp=0.00, importe=0.00)
             
+            # detalle de artículos:
             u_mtx = 123456
             cod_mtx = 1234567890123
             codigo = "P0001"
             ds = "Descripcion del producto P0001\n" + "Lorem ipsum sit amet " * 10
             qty = 1.00
             umed = 7
-            precio = 100.00
+            if tipo_cbte in (1, 2, 3, 4, 5, 34, 39, 51, 52, 53, 54, 60, 64):
+                # discriminar IVA si es clase A / M
+                precio = 100.00
+                imp_iva = 21.00
+            else:
+                # no discriminar IVA si es clase B (importe final iva incluido)
+                precio = 121.00
+                imp_iva = None
             bonif = 0.00
             iva_id = 5
-            imp_iva = 21.00
             importe = 121.00
             despacho = u'Nº 123456'
+            dato_a = "Dato A"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
-                    precio, bonif, iva_id, imp_iva, importe, despacho)
+                    precio, bonif, iva_id, imp_iva, importe, despacho, dato_a)
 
-            fepdf.AgregarDato("pedido", "1234")
+            # completo campos personalizados de la plantilla:
+            fepdf.AgregarDato("custom-nro-cli", "Cod.123")
+            fepdf.AgregarDato("custom-pedido", "1234")
+            fepdf.AgregarDato("custom-remito", "12345")
+            fepdf.AgregarDato("custom-transporte", "Camiones Ej.")
             print "Prueba!"
 
         # grabar muestra en dbf:
@@ -1017,7 +1132,10 @@ if __name__ == '__main__':
             salida = fact['pdf']
         else:
             # genero el nombre de archivo según datos de factura
-            d = os.path.join(conf_fact.get('directorio', "."), fact['fecha_cbte'])
+            d = conf_fact.get('directorio', ".")
+            clave_subdir = conf_fact.get('subdirectorio','fecha_cbte')
+            if clave_subdir:
+                d = os.path.join(d, fact[clave_subdir])
             if not os.path.isdir(d):
                 os.makedirs(d)
             fs = conf_fact.get('archivo','numero').split(",")
@@ -1031,6 +1149,8 @@ if __name__ == '__main__':
             fn = u''.join([unicode(it.get(ff,ff)) for ff in fs])
             fn = fn.encode('ascii', 'replace').replace('?','_')
             salida = os.path.join(d, "%s.pdf" % fn)
+        if DEBUG:
+            print "archivo generado", salida
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
             fepdf.MostrarPDF(archivo=salida,imprimir='--imprimir' in sys.argv)

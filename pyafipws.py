@@ -15,17 +15,14 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31a"
+__version__ = "1.31b"
 
 import sys
-import wsfe, wsbfe, wsfex, wsctg, wdigdepfiel
+import wsfe, wsbfe, wsfex, wdigdepfiel
 from php import SimpleXMLElement, SoapFault, SoapClient, parse_proxy
 import traceback
 from httplib2 import socks
 import warnings
-
-warnings.warn("Este modulo es obsoleto (mantenido por compatibilidad).\n"
-              "Usar modulos individuales: wsaa, wsfev1, wsfexv1, wsbfev1, etc.")
 
 try:
     from win32com.server.exception import COMException
@@ -1036,6 +1033,10 @@ class wDigDepFiel:
 
 
 if __name__ == '__main__':
+
+    warnings.warn("Este modulo es obsoleto (mantenido por compatibilidad).\n"
+              "Usar modulos individuales: wsaa, wsfev1, wsfexv1, wsbfev1, etc.")
+
     if len(sys.argv)==1:
         sys.argv.append("/register")
 

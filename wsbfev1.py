@@ -18,7 +18,7 @@ a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.06d"
 
 import datetime
 import decimal
@@ -251,7 +251,7 @@ class WSBFEv1(BaseWS):
     @inicializar_y_capturar_excepciones
     def GetParamUMed(self):
         ret = self.client.BFEGetPARAM_UMed(
-            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+            auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['BFEGetPARAM_UMedResult']
         self.__analizar_errores(result)
      
@@ -277,7 +277,7 @@ class WSBFEv1(BaseWS):
     @inicializar_y_capturar_excepciones
     def GetParamMon(self):
         ret = self.client.BFEGetPARAM_MON(
-            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+            auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['BFEGetPARAM_MONResult']
         self.__analizar_errores(result)
      
@@ -285,12 +285,12 @@ class WSBFEv1(BaseWS):
         for m in result['BFEResultGet']:
             m = m['ClsBFEResponse_Mon']
             try:
-                mon = {'id': u.get('Mon_Id'), 'ds': u.get('Mon_Ds'), 
-                        'vig_desde': u.get('Mon_vig_desde'), 
-                        'vig_hasta': u.get('Mon_vig_hasta')}
+                mon = {'id': m.get('Mon_Id'), 'ds': m.get('Mon_Ds'), 
+                        'vig_desde': m.get('Mon_vig_desde'), 
+                        'vig_hasta': m.get('Mon_vig_hasta')}
             except Exception, e:
-                print e
-                if u is None:
+                raise
+                if m is None:
                     # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
                     mon = {'id':'', 'ds':'','vig_desde':'','vig_hasta':''}
                     #import pdb; pdb.set_trace()
@@ -302,7 +302,7 @@ class WSBFEv1(BaseWS):
     def GetParamTipoIVA(self):
         "Recuperar lista de valores referenciales de tipos de IVA (alícuotas)"
         ret = self.client.BFEGetPARAM_Tipo_IVA(
-            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+            auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['BFEGetPARAM_Tipo_IVAResult']
         self.__analizar_errores(result)
      
@@ -313,29 +313,30 @@ class WSBFEv1(BaseWS):
                 iva = {'id': i.get('IVA_Id'), 'ds': i.get('IVA_Ds'), 
                         'vig_desde': i.get('IVA_vig_desde'), 
                         'vig_hasta': i.get('IVA_vig_hasta')}
-                umeds.append(iva)
+                ivas.append(iva)
             except Exception, e:
                 pass
+                raise
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in ivas]
 
     def GetParamTipoCbte(self):
         "Recuperar lista de valores referenciales de Tipos de Comprobantes"
         ret = self.client.BFEGetPARAM_Tipo_Cbte(
-            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+            auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['BFEGetPARAM_Tipo_CbteResult']
         self.__analizar_errores(result)
      
-        tipos = [] # tipos de iva
+        tipos = [] # tipos de comprobantes
         for t in result['BFEResultGet']:
             t = t['ClsBFEResponse_Tipo_Cbte']
             try:
-                tipo = {'id': t.get('Zon_Id'), 'ds': t.get('Zon_Ds'), 
-                        'vig_desde': t.get('Zon_vig_desde'), 
-                        'vig_hasta': t.get('Zon_vig_hasta')}
+                tipo = {'id': t.get('Cbte_Id'), 'ds': t.get('Cbte_Ds'), 
+                        'vig_desde': t.get('Cbte_vig_desde'), 
+                        'vig_hasta': t.get('Cbte_vig_hasta')}
                 tipos.append(tipo)
             except Exception, e:
                 pass
-        return ['%(codigo)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in tipos]
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in tipos]
 
     def GetParamNCM(self):
         "Recuperar lista de valores referenciales de códigos del Nomenclador Común del Mercosur"
@@ -344,26 +345,26 @@ class WSBFEv1(BaseWS):
         result = ret['BFEGetPARAM_NCMResult']
         self.__analizar_errores(result)
      
-        ncms = [] # tipos de iva
+        ncms = [] # nomenclador comun del mercosur
         for n in result['BFEResultGet']:
             n = n['ClsBFEResponse_NCM']
             try:
-                ncm = {'id': n.get('NCM_Id'), 'ds': n.get('NCM_Ds'), 
+                ncm = {'id': n.get('NCM_Codigo'), 'ds': n.get('NCM_Ds'), 
                         'vig_desde': n.get('NCM_vig_desde'), 
                         'vig_hasta': n.get('NCM_vig_hasta')}
                 ncms.append(ncm)
             except Exception, e:
                 pass
-        return ['%(codigo)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in ncms]
+        return [u'%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in ncms]
 
     def GetParamZonas(self):
         "Recuperar lista de valores referenciales de Zonas"
         ret = self.client.BFEGetPARAM_Zonas(
-            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+            auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['BFEGetPARAM_ZonasResult']
         self.__analizar_errores(result)
      
-        zonas = [] # tipos de iva
+        zonas = [] # zonas
         for z in result['BFEResultGet']:
             z = z['ClsBFEResponse_Zon']
             try:
@@ -373,13 +374,13 @@ class WSBFEv1(BaseWS):
                 zonas.append(zona)
             except Exception, e:
                 pass
-        return ['%(codigo)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in zonas]
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in zonas]
 
     @inicializar_y_capturar_excepciones
     def GetParamCtz(self, moneda_id):
         "Recuperador de cotización de moneda"
         ret = self.client.BFEGetPARAM_Ctz(
-            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             MonId=moneda_id,
             )
         self.__analizar_errores(ret['BFEGetPARAM_CtzResult'])
@@ -575,7 +576,7 @@ if __name__ == "__main__":
             print "=== Unidades de medida ==="
             print u'\n'.join(wsbfev1.GetParamUMed())
 
-            print "=== Códigos NCM ==="
+            print u"=== Códigos NCM ==="
             print u'\n'.join(wsbfev1.GetParamNCM())
             
         if "--ctz" in sys.argv:

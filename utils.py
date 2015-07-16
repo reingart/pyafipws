@@ -100,8 +100,6 @@ def exception_info(current_filename=None, index=-1):
             if os.path.normpath(os.path.abspath(filename)) == current_filename:
                 ret = {'filename': filename, 'lineno': lineno, 
                        'function_name': fn, 'code': text}
-            else:
-                print filename
     except Exception, e:
         pass
     # obtengo el mensaje de excepcion tal cual lo formatea python:
@@ -245,8 +243,19 @@ class BaseWS:
             elif cacert is True:
                 # usar certificados predeterminados que vienen en la biblioteca
                 cacert = os.path.join(httplib2.__path__[0], 'cacerts.txt')
-                if not os.path.exists(cacert):
+            elif cacert.startswith("-----BEGIN CERTIFICATE-----"):
+                pass
+            else:
+                if not os.path.exists(cacert): 
+                    self.log("Buscando CACERT en conf...")
+                    cacert = os.path.join(self.InstallDir, "conf", os.path.basename(cacert))
+                if cacert and not os.path.exists(cacert):
+                    self.log("No se encuentra CACERT: %s" % str(cacert))
+                    warnings.warn("No se encuentra CACERT: %s" % str(cacert))
                     cacert = None   # wrong version, certificates not found...
+                    raise RuntimeError("Error de configuracion CACERT ver DebugLog")
+                    return False
+                    
             self.log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
             # analizar espacio de nombres (axis vs .net):
             ns = 'ser' if self.WSDL[-5:] == "?wsdl" else None
@@ -288,6 +297,8 @@ class BaseWS:
             self.Log = StringIO()
         self.Log.write(msg)
         self.Log.write('\n\r')
+        if DEBUG:
+            warnings.warn(msg)
 
     def DebugLog(self):
         "Devolver y limpiar la bitácora de depuración"
@@ -454,6 +465,8 @@ class WebClient:
         "Perform a GET/POST request and return the response"
 
         location = self.location
+        if isinstance(location, unicode):
+            location = location.encode("utf8")
         # extend the base URI with additional components
         if args:
             location += "/".join(args)
@@ -605,7 +618,7 @@ def escribir(dic, formato, contraer_fechas=False):
             if tipo == N and valor and valor!="NULL":
                 valor = ("%%0%dd" % longitud) % long(valor)
             elif tipo == I and valor:
-                valor = ("%%0%dd" % longitud) % long(float(valor)*(10**dec))
+                valor = ("%%0%d.%df" % (longitud+1, dec) % float(valor)).replace(".", "")
             elif contraer_fechas and clave.lower().startswith("fec") and longitud <= 8 and valor:
                 valor = valor.replace("-", "")
             else:
