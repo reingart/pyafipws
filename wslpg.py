@@ -437,6 +437,7 @@ class WSLPG(BaseWS):
                         'AjustarLiquidacionUnificado',
                         'AjustarLiquidacionUnificadoPapel',
                         'AjustarLiquidacionContrato',
+                        'AjustarLiquidacionSecundaria',
                         'AnalizarAjusteDebito', 'AnalizarAjusteCredito',
                         'AsociarLiquidacionAContrato', 'ConsultarAjuste',
                         'ConsultarLiquidacionesPorContrato', 
@@ -1152,6 +1153,10 @@ class WSLPG(BaseWS):
                         }
         # para compatibilidad con AgregarCertificado
         self.liquidacion = self.ajuste['ajusteBase']
+        # inicializar temporales
+        self.__ajuste_base = None
+        self.__ajuste_debito = None
+        self.__ajuste_credito = None
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1190,12 +1195,15 @@ class WSLPG(BaseWS):
             'importeAjustarIva21': importe_ajustar_iva_21,
             'deducciones': [],
             'retenciones': [],
+            'percepciones': [],
             }
         # vinculación con AgregarOpcional:
         self.opcionales = self.ajuste['ajusteCredito']['opcionales']
         # vinculación con AgregarRetencion y AgregarDeduccion
         self.deducciones = self.ajuste['ajusteCredito']['deducciones']
         self.retenciones = self.ajuste['ajusteCredito']['retenciones']
+        # para LSG:
+        self.percepciones = self.ajuste['ajusteCredito']['percepciones']
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1234,12 +1242,15 @@ class WSLPG(BaseWS):
             'importeAjustarIva21': importe_ajustar_iva_21,
             'deducciones': [],
             'retenciones': [],
+            'percepciones': [],
             }
         # vinculación con AgregarOpcional:
         self.opcionales = self.ajuste['ajusteDebito']['opcionales']
         # vinculación con AgregarRetencion y AgregarDeduccion
         self.deducciones = self.ajuste['ajusteDebito']['deducciones']
         self.retenciones = self.ajuste['ajusteDebito']['retenciones']
+        # para LSG:
+        self.percepciones = self.ajuste['ajusteCredito']['percepciones']
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1276,7 +1287,7 @@ class WSLPG(BaseWS):
         "Ajustar Liquidación realizada en un formulario F1116 B / C (papel)"
         
         # limpiar arrays no enviados:
-        if not self.ajuste['ajusteBase']['certificados']:
+        if not self.ajuste['certificados']:
             del self.ajuste['ajusteBase']['certificados']
         for k1 in ('ajusteCredito', 'ajusteDebito'):
             for k2 in ('retenciones', 'deducciones'):
@@ -1320,8 +1331,51 @@ class WSLPG(BaseWS):
             self.AnalizarAjuste(aut)
         return True
 
+
+    @inicializar_y_capturar_excepciones
+    def AjustarLiquidacionSecundaria(self):
+        "Ajustar Liquidación Secundaria de Granos"
+        
+        # limpiar estructuras no utilizadas (si no hay deducciones / retenciones)
+        for k in ('ajusteDebito', 'ajusteCredito'):
+            if not any(self.ajuste[k].values()):
+                del self.ajuste[k]
+            else:
+                # ajustar cambios de nombre entre LSG y LPG
+                for tasa in ("0", "105", "21"):
+                    self.ajuste[k]['importeAjustar%s' % tasa] = self.ajuste[k]['importeAjustarIva%s' % tasa]
+                    self.ajuste[k]['conceptoImporte%s' % tasa] = self.ajuste[k]['conceptoImporteIva%s' % tasa]
+                if not self.ajuste[k]['percepciones']:
+                    del self.ajuste[k]['percepciones']
+
+        base = self.ajuste['ajusteBase']
+        base['coe'] = base['coeAjustado']
+        base['codProvincia'] = base['codProv']
+
+        # llamar al webservice:
+        
+        ret = self.client.lsgAjustarXCoe(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        ajusteCredito=self.ajuste['ajusteCredito'],
+                        ajusteDebito=self.ajuste['ajusteDebito'],
+                        **base
+                        )
+        # analizar el resultado:
+        ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        if 'ajusteUnificado' in ret:
+            self.AnalizarAjuste(ret)
+        return True
+
+
     def AnalizarAjuste(self, aut, base=True):
         "Método interno para analizar la respuesta de AFIP (ajustes)"
+
+        self.__ajuste_base = None
+        self.__ajuste_debito = None
+        self.__ajuste_credito = None
         
         # para compatibilidad con la generacion de PDF (completo datos)
         if hasattr(self, "liquidacion") and self.liquidacion and base:
@@ -1377,10 +1431,6 @@ class WSLPG(BaseWS):
                 self.__ajuste_base = aut
                 self.__ajuste_debito = aut.get('ajusteDebito') or {}
                 self.__ajuste_credito = aut.get('ajusteCredito') or {}
-        else:
-            self.__ajuste_base = None
-            self.__ajuste_debito = None
-            self.__ajuste_credito = None
         return True
     
     @inicializar_y_capturar_excepciones
@@ -1392,10 +1442,10 @@ class WSLPG(BaseWS):
             liq.update(self.liquidacion)
         if hasattr(self, "ajuste") and 'ajusteDebito' in self.ajuste:
             liq.update(self.ajuste['ajusteDebito'])
-
-        liq.update(self.__ajuste_debito)
-        self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=liq, ajuste=True)
-        self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
+        if self.__ajuste_debito:
+            liq.update(self.__ajuste_debito)
+            self.AnalizarLiquidacion(aut=self.__ajuste_debito, liq=liq, ajuste=True)
+            self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1406,9 +1456,10 @@ class WSLPG(BaseWS):
             liq.update(self.liquidacion)
         if hasattr(self, "ajuste") and 'ajusteCredito' in self.ajuste:
             liq.update(self.ajuste['ajusteCredito'])
-        liq.update(self.__ajuste_credito)
-        self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=liq, ajuste=True)
-        self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
+        if self.__ajuste_credito:
+            liq.update(self.__ajuste_credito)
+            self.AnalizarLiquidacion(aut=self.__ajuste_credito, liq=liq, ajuste=True)
+            self.AnalizarAjuste(self.__ajuste_base, base=False)  # datos generales
         return True
 
     @inicializar_y_capturar_excepciones
@@ -3356,7 +3407,7 @@ if __name__ == '__main__':
                               nro_orden=dic['nro_orden'], 
                               coe_ajustado=dic['coe_ajustado'],
                               cod_localidad=dic['cod_localidad_procedencia'],
-                              cod_provincia=dic['cod_prov_procedencia'],
+                              cod_provincia=dic['cod_provincia_procedencia'],
                               )
             
             for cert in dic.get('certificados', []):
@@ -3643,6 +3694,113 @@ if __name__ == '__main__':
             dic.update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
             
+        if '--ajustar-lsg' in sys.argv:
+            print "Ajustando LSG..."
+            if '--prueba' in sys.argv:
+                # genero una liquidación de ejemplo:
+                dic = dict(
+                    pto_emision=55, nro_orden=0, coe_ajustado='330100025869',
+                    cod_localidad_procedencia=5544, cod_prov_procedencia=12,
+                    cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
+                    cod_grano=2,
+                    ajuste_credito=dict(
+                        concepto_importe_iva_0='Alicuota Cero',
+                        importe_ajustar_Iva_0=900,
+                        concepto_importe_iva_105='Alicuota Diez',
+                        importe_ajustar_Iva_105=800,
+                        concepto_importe_iva_21='Alicuota Veintiuno',
+                        importe_ajustar_Iva_21=700,
+                        percepciones=[{'detalle_aclaratoria': 'percepcion 1',
+                                      'base_calculo': 1000, 'alicuota_iva': 21}],
+                        estado=None,
+                        coe_ajustado=None,
+                        datos_adicionales='AJUSTE CRED LSG',
+                        ),
+                    ajuste_debito=dict(
+                        concepto_importe_iva_0='Alic 0',
+                        importe_ajustar_Iva_0=250,
+                        concepto_importe_iva_105='Alic 10.5',
+                        importe_ajustar_Iva_105=200,
+                        concepto_importe_iva_21='Alicuota 21',
+                        importe_ajustar_Iva_21=50,
+                        percepciones=[{'detalle_aclaratoria': 'percepcion 1',
+                                      'base_calculo': 1000, 'alicuota_iva': 21}],
+                        datos_adicionales='AJUSTE DEB LSG',
+                        ),
+                    )
+                if '--contrato' in sys.argv:
+                    dic.update(
+                        {'nro_contrato': 27,
+                         'cuit_comprador': 20400000000,
+                         'cuit_vendedor': 23000000019,
+                         'cuit_corredor': 20267565393,  #opcional
+                         'cod_grano': 2,
+                        })
+                escribir_archivo(dic, ENTRADA)
+            
+            dic = leer_archivo(ENTRADA)
+                            
+            if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
+                # consulto el último número de orden emitido:
+                ok = wslpg.ConsultarLiquidacionSecundariaUltNroOrden(dic['pto_emision'])
+                if ok:
+                    dic['nro_orden'] = wslpg.NroOrden + 1
+            
+            if '--contrato' in sys.argv:
+                for k in ("nro_contrato", "nro_act_comprador", "cod_grano", 
+                          "cuit_vendedor", "cuit_comprador", "cuit_corredor", 
+                          ):
+                    v = dic.get(k)
+                    if v:
+                        wslpg.SetParametro(k, v)
+                        
+            wslpg.CrearAjusteBase(pto_emision=dic['pto_emision'], 
+                              nro_orden=dic['nro_orden'], 
+                              coe_ajustado=dic['coe_ajustado'],
+                              cod_localidad=dic['cod_localidad_procedencia'],
+                              cod_provincia=dic['cod_prov_procedencia'],
+                              )
+            
+            liq = dic['ajuste_credito']
+            wslpg.CrearAjusteCredito(**liq)
+            for per in dic.get("percepciones", []):
+                wslpg.AgregarPercepcion(**per)
+            
+            liq = dic['ajuste_debito']
+            wslpg.CrearAjusteDebito(**liq)
+            for per in dic.get("percepciones", []):
+                wslpg.AgregarPercepcion(**per)
+            
+            if '--testing' in sys.argv:
+                wslpg.LoadTestXML("tests/wslpg_ajuste_secundaria.xml")
+
+            ret = wslpg.AjustarLiquidacionSecundaria()
+            
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
+            print "Errores:", wslpg.Errores
+            print "COE", wslpg.COE
+            print "Subtotal", wslpg.Subtotal
+            print "TotalIva105", wslpg.TotalIva105
+            print "TotalIva21", wslpg.TotalIva21
+            print "TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias
+            print "TotalRetencionesIVA", wslpg.TotalRetencionesIVA
+            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
+            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+            
+            # actualizo el archivo de salida con los datos devueltos
+            dic.update(wslpg.params_out)            
+            ok = wslpg.AnalizarAjusteCredito()
+            dic['ajuste_credito'].update(wslpg.params_out)
+            ok = wslpg.AnalizarAjusteDebito()
+            dic['ajuste_debito'].update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
+
+            if DEBUG: 
+                pprint.pprint(dic)
+
         if '--autorizar-cg' in sys.argv:
         
             if '--prueba' in sys.argv:
