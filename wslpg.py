@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25h"
+__version__ = "1.26a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -428,6 +428,7 @@ class WSLPG(BaseWS):
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion', 'AgregarPercepcion',
                         'AgregarOpcional', 'AgregarCalidad',
+                        'AgregarFacturaPapel',
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'ConsultarLiquidacionSecundaria',
                         'ConsultarLiquidacionSecundariaUltNroOrden',
@@ -710,6 +711,7 @@ class WSLPG(BaseWS):
         self.deducciones = []
         self.percepciones = []
         self.opcionales = []
+        self.factura_papel = None
         return True
 
     @inicializar_y_capturar_excepciones
@@ -833,6 +835,17 @@ class WSLPG(BaseWS):
         return True
     
     @inicializar_y_capturar_excepciones
+    def AgregarFacturaPapel(self, nro_cai=None, nro_factura_papel=None,
+                                  fecha_factura=None, tipo_comprobante=None,
+                                  **kwargs):
+        self.factura_papel = dict(
+            nroCAI=nro_cai,
+            nroFacturaPapel=nro_factura_papel,
+            fechaFactura=fecha_factura,
+            tipoComprobante=tipo_comprobante,
+            )
+
+    @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
         "Autorizar Liquidación Primaria Electrónica de Granos"
         
@@ -887,6 +900,7 @@ class WSLPG(BaseWS):
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         liqSecundariaBase=self.liquidacion,
+                        facturaPapel=self.factura_papel,
                         )
 
         # analizo la respusta
@@ -3597,6 +3611,9 @@ if __name__ == '__main__':
                 wslpg.AgregarPercepcion(**per)
             for opc in dic.get("opcionales", []):
                 wslpg.AgregarOpcional(**opc)
+
+            ##wslpg.AgregarFacturaPapel(nro_cai="1234", nro_factura_papel=1,
+            ##                   fecha_factura="2015-01-01", tipo_comprobante=1)
 
             print "Liquidacion Secundaria: pto_emision=%s nro_orden=%s" % (
                     wslpg.liquidacion['ptoEmision'],
