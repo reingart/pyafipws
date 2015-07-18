@@ -704,8 +704,9 @@ class FEPDF:
                                 f.set('Tributo.Importe%02d' % lit, self.fmt_imp(it['importe']))
 
                         # reiniciar el subtotal neto, independiente de detalles:
+                        subtotal = Decimal(0)
                         if fact['imp_neto']:
-                            subtotal = Decimal("%.6f" % float(fact['imp_neto']))
+                            subtotal += Decimal("%.6f" % float(fact['imp_neto']))
                         # agregar IVA al subtotal si no es factura A
                         if not letra_fact in ('A', 'M') and fact['imp_iva']:
                             subtotal += Decimal("%.6f" % float(fact['imp_iva']))

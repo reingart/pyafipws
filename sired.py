@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21a"
+__version__ = "1.21b"
 
 LICENCIA = """
 sired.py: Generador de archivos ventas para SIRED/SIAP RG1361/02 RG1579/03
@@ -734,8 +734,6 @@ if __name__ == '__main__':
             # cargar datos desde planillas CSV separadas o JSON:
             if entrada['encabezados'].lower().endswith("csv"):
                 facturas = items = leer_planilla(entrada['encabezados'], ";")
-                if 'detalles' in entrada:
-                    detalles = leer_planilla(entrada['detalles'], ";")
 
                 # pre-procesar:
                 for factura in facturas:
@@ -745,42 +743,71 @@ if __name__ == '__main__':
                             factura[k] = float(v)
                         if k in ('cbt_desde', 'cbt_hasta', 'concepto', 
                                  'punto_vta', 'tipo_cbte', 'tipo_doc', 
-                                 'nro_doc'):
+                                 'nro_doc', 'cbt_numero'):
                             factura[k] = int(v)
 
-                alicuotas = {3:0, 4: 10.5, 5: 21., 6: 27}
-                ivas = {}
-                imp_iva = 0.00
+                    alicuotas = {3:0, 4: 10.5, 5: 21., 6: 27}
+                    ivas = {}
+                    imp_iva = 0.00
 
-                for det in detalles:
-                    iva_id = det['iva_id']
-                    
-                    if iva_id:
-                        iva_id = int(iva_id)
-                        if iva_id not in ivas:
-                            ivas[iva_id] = {"base_imp": 0, "importe": 0, "iva_id": iva_id}
+                    ruta = os.path.dirname(entrada['encabezados'])
+                    prefijos = ("%(tipo_cbte)02d%(cbt_numero)08d",
+                               "%(tipo_cbte)02d%(cbt_numero)06d",
+                               "%(tipo_cbte)02d%(punto_vta)04d%(cbt_numero)08d",
+                               )
+                    for prefijo in prefijos:
+                        fn = os.path.join(ruta, "%s.csv" % (prefijo % factura))
+                        print "Detalle: ", fn
+                        if os.path.exists(fn):
+                            det = fn
+                            print "encontrado!"
+                            break
+                    else:
+                        if 'detalles' in entrada:
+                            det = entrada['detalles']
+                        else:
+                            det = None
 
-                        importe = round(float(det['importe'].replace(",", ".")), 2)
-                        neto = round(importe / ((100 + alicuotas[iva_id]) / 100), 2)
-                        iva = importe - neto
-                        print "importe", importe, iva
-                        imp_iva += iva
-                        ivas[iva_id]['importe'] += iva
-                        ivas[iva_id]['base_imp'] += neto
-                        det['imp_iva'] = iva
+                    if det:
+                        detalles = leer_planilla(det, ";")
 
-                # rearmar estructuras internas:
-                facturas[0]['detalles'] = detalles
-                facturas[0]['ivas'] = ivas.values()
-                facturas[0]['datos'] = []
-                facturas[0]['tributos'] = []
-                facturas[0]['imp_iva'] = imp_iva
-                facturas[0]['cbte_nro'] = facturas[0]['cbt_desde']
+                    for det in detalles:
+                        iva_id = det.get('iva_id', 5)
+                        if isinstance(det.get('ds'), str):
+                            det['ds'] = det['ds'].decode("ascii", "ignore")
+                        print det
+                        if iva_id:
+                            iva_id = int(iva_id)
+                            if iva_id not in ivas:
+                                ivas[iva_id] = {"base_imp": 0, "importe": 0, "iva_id": iva_id}
 
-                # limpio campos que no correspondan (productos vs servicios):
-                if facturas[0]['concepto'] == 1:
-                    facturas[0]['fecha_venc_pago'] = None
+                            importe = det.get('importe', det.get('total'))
+                            if importe:
+                                importe = round(float(importe.replace(",", ".")), 2)
+                                neto = round(importe / ((100 + alicuotas[iva_id]) / 100), 2)
+                                iva = importe - neto
+                                print "importe", importe, iva
+                                imp_iva += iva
+                                ivas[iva_id]['importe'] += iva
+                                ivas[iva_id]['base_imp'] += neto
+                                det['imp_iva'] = iva
 
+                    # rearmar estructuras internas:
+                    factura['detalles'] = detalles
+                    factura['ivas'] = ivas.values()
+                    factura['datos'] = []
+                    factura['tributos'] = []
+                    factura['imp_iva'] = imp_iva
+                    if 'cbt_numero' in factura:
+                        factura['cbt_desde'] = factura['cbt_numero']
+                        factura['cbt_hasta'] = factura['cbt_numero']
+                    factura['cbte_nro'] = factura['cbt_desde']
+                    if not 'concepto' in factura:
+                        factura['concepto'] = 1
+
+                    # limpio campos que no correspondan (productos vs servicios):
+                    if factura['concepto'] == 1:
+                        factura['fecha_venc_pago'] = None
 
             elif entrada['encabezados'].lower().endswith('.json'):
                 items = leer_json(entrada['encabezados'])
