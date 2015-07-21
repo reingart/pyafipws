@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26b"
+__version__ = "1.26c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1354,14 +1354,19 @@ class WSLPG(BaseWS):
 
         # llamar al webservice:
         
-        ret = self.client.lsgAjustarXCoe(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        ajusteCredito=self.ajuste['ajusteCredito'],
-                        ajusteDebito=self.ajuste['ajusteDebito'],
-                        **base
-                        )
+        if base['nroContrato'] is not None and long(base['nroContrato']):
+            metodo = self.client.lsgAjustarXContrato
+        else:
+            metodo = self.client.lsgAjustarXCoe
+        
+        ret = metodo(
+                    auth={
+                        'token': self.Token, 'sign': self.Sign,
+                        'cuit': self.Cuit, },
+                    ajusteCredito=self.ajuste['ajusteCredito'],
+                    ajusteDebito=self.ajuste['ajusteDebito'],
+                    **base
+                    )
         # analizar el resultado:
         ret = ret['oReturn']
         self.__analizar_errores(ret)
@@ -3703,6 +3708,7 @@ if __name__ == '__main__':
                     cod_localidad_procedencia=5544, cod_prov_procedencia=12,
                     cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
                     cod_grano=2,
+                    nro_contrato='1234' if '--contrato' in sys.argv else 0,
                     ajuste_credito=dict(
                         concepto_importe_iva_0='Alicuota Cero',
                         importe_ajustar_Iva_0=900,
