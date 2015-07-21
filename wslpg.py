@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26c"
+__version__ = "1.27a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -441,6 +441,8 @@ class WSLPG(BaseWS):
                         'AnalizarAjusteDebito', 'AnalizarAjusteCredito',
                         'AsociarLiquidacionAContrato', 'ConsultarAjuste',
                         'ConsultarLiquidacionesPorContrato', 
+                        'ConsultarLiquidacionesSecundariasPorContrato',
+                        'AsociarLiquidacionSecunariaAContrato',
                         'CrearCertificacionCabecera', 
                         'AgregarCertificacionPrimaria',
                         'AgregarCertificacionRetiroTransferencia',
@@ -2014,6 +2016,62 @@ class WSLPG(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
+    def ConsultarLiquidacionesSecundariasPorContrato(self, nro_contrato=None, 
+                                                cuit_comprador=None, 
+                                                cuit_vendedor=None,
+                                                cuit_corredor=None,
+                                                cod_grano=None,
+                                                **kwargs):
+        "Obtener los COE de liquidaciones relacionadas a un contrato"
+        ret = self.client.lsgConsultarXContrato(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        nroContrato=nro_contrato,
+                        cuitComprador=cuit_comprador,
+                        cuitVendedor=cuit_vendedor,
+                        cuitCorredor=cuit_corredor,
+                        codGrano=cod_grano,
+                        )
+        ret = ret['liqPorContratoCons']
+        self.__analizar_errores(ret)
+        if 'coeRelacionados' in ret:
+            # analizo la respuesta = [{'coe': "...."}]
+            self.DatosLiquidacion = sorted(ret['coeRelacionados'])  
+            # establezco el primer COE
+            self.LeerDatosLiquidacion()
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AsociarLiquidacionSecundariaAContrato(self, coe=None, nro_contrato=None, 
+                                          cuit_comprador=None, 
+                                          cuit_vendedor=None,
+                                          cuit_corredor=None,
+                                          cod_grano=None,
+                                    **kwargs):
+        "Asociar una Liquidación a un contrato"
+        
+        ret = self.client.lsgAsociarAContrato(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        nroContrato=nro_contrato,
+                        cuitComprador=cuit_comprador,
+                        cuitVendedor=cuit_vendedor,
+                        cuitCorredor=cuit_corredor,
+                        codGrano=cod_grano,
+                        )
+        ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        if 'liquidacion' in ret:
+            # analizo la respusta
+            liq = ret['liquidacion']
+            aut = ret['autorizacion']
+            self.AnalizarLiquidacion(aut, liq)
+        return True
+    
+    @inicializar_y_capturar_excepciones
     def ConsultarCertificacion(self, pto_emision=None, nro_orden=None, 
                                      coe=None, pdf=None):
         "Consulta una certificacion por No de orden o COE"
@@ -3480,7 +3538,10 @@ if __name__ == '__main__':
             print ', '.join(sorted(["%s=%s" % (k, v) for k,v in dic.items() 
                                     if k in ("nro_contrato", "coe") or 
                                     k.startswith("cuit")]))
-            wslpg.AsociarLiquidacionAContrato(**dic)
+            if not '--lsg' in sys.argv:
+                wslpg.AsociarLiquidacionAContrato(**dic)
+            else:
+                wslpg.AsociarLiquidacionSecundariaAContrato(**dic)
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
             print "Estado", wslpg.Estado
@@ -3594,7 +3655,10 @@ if __name__ == '__main__':
             dic = leer_archivo(ENTRADA)
             print ', '.join(sorted(["%s=%s" % (k, v) for k,v in dic.items() 
                              if k == "nro_contrato" or k.startswith("cuit")]))
-            wslpg.ConsultarLiquidacionesPorContrato(**dic)
+            if not '--lsg' in sys.argv:
+                wslpg.ConsultarLiquidacionesPorContrato(**dic)
+            else:
+                wslpg.ConsultarLiquidacionesSecundariasPorContrato(**dic)
             print "Errores:", wslpg.Errores
             while wslpg.COE:
                 print "COE", wslpg.COE
