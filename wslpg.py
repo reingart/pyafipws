@@ -442,7 +442,7 @@ class WSLPG(BaseWS):
                         'AsociarLiquidacionAContrato', 'ConsultarAjuste',
                         'ConsultarLiquidacionesPorContrato', 
                         'ConsultarLiquidacionesSecundariasPorContrato',
-                        'AsociarLiquidacionSecunariaAContrato',
+                        'AsociarLiquidacionSecundariaAContrato',
                         'CrearCertificacionCabecera', 
                         'AgregarCertificacionPrimaria',
                         'AgregarCertificacionRetiroTransferencia',
