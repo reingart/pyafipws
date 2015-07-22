@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27b"
+__version__ = "1.27c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1347,7 +1347,8 @@ class WSLPG(BaseWS):
                 # ajustar cambios de nombre entre LSG y LPG
                 for tasa in ("0", "105", "21"):
                     self.ajuste[k]['importeAjustar%s' % tasa] = self.ajuste[k]['importeAjustarIva%s' % tasa]
-                    self.ajuste[k]['conceptoImporte%s' % tasa] = self.ajuste[k]['conceptoImporteIva%s' % tasa]
+                    self.ajuste[k]['conceptoIva%s' % tasa] = self.ajuste[k]['conceptoImporteIva%s' % tasa]
+                # no enviar tag percepciones vacio
                 if not self.ajuste[k]['percepciones']:
                     del self.ajuste[k]['percepciones']
 
@@ -3776,11 +3777,11 @@ if __name__ == '__main__':
                     nro_contrato='1234' if '--contrato' in sys.argv else 0,
                     ajuste_credito=dict(
                         concepto_importe_iva_0='Alicuota Cero',
-                        importe_ajustar_Iva_0=900,
+                        importe_ajustar_iva_0=900,
                         concepto_importe_iva_105='Alicuota Diez',
-                        importe_ajustar_Iva_105=800,
+                        importe_ajustar_iva_105=800,
                         concepto_importe_iva_21='Alicuota Veintiuno',
-                        importe_ajustar_Iva_21=700,
+                        importe_ajustar_iva_21=700,
                         percepciones=[{'detalle_aclaratoria': 'percepcion 1',
                                       'base_calculo': 1000, 'alicuota_iva': 21}],
                         estado=None,
@@ -3789,11 +3790,11 @@ if __name__ == '__main__':
                         ),
                     ajuste_debito=dict(
                         concepto_importe_iva_0='Alic 0',
-                        importe_ajustar_Iva_0=250,
+                        importe_ajustar_iva_0=250,
                         concepto_importe_iva_105='Alic 10.5',
-                        importe_ajustar_Iva_105=200,
+                        importe_ajustar_iva_105=200,
                         concepto_importe_iva_21='Alicuota 21',
-                        importe_ajustar_Iva_21=50,
+                        importe_ajustar_iva_21=50,
                         percepciones=[{'detalle_aclaratoria': 'percepcion 1',
                                       'base_calculo': 1000, 'alicuota_iva': 21}],
                         datos_adicionales='AJUSTE DEB LSG',
