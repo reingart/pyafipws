@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27c"
+__version__ = "1.27d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1346,8 +1346,9 @@ class WSLPG(BaseWS):
             else:
                 # ajustar cambios de nombre entre LSG y LPG
                 for tasa in ("0", "105", "21"):
-                    self.ajuste[k]['importeAjustar%s' % tasa] = self.ajuste[k]['importeAjustarIva%s' % tasa]
-                    self.ajuste[k]['conceptoIva%s' % tasa] = self.ajuste[k]['conceptoImporteIva%s' % tasa]
+                    tasa_lsg = "10" if tasa == "105" else tasa 
+                    self.ajuste[k]['importeAjustar%s' % tasa_lsg] = self.ajuste[k]['importeAjustarIva%s' % tasa]
+                    self.ajuste[k]['conceptoIva%s' % tasa_lsg] = self.ajuste[k]['conceptoImporteIva%s' % tasa]
                 # no enviar tag percepciones vacio
                 if not self.ajuste[k]['percepciones']:
                     del self.ajuste[k]['percepciones']
