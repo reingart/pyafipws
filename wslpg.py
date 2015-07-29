@@ -979,8 +979,10 @@ class WSLPG(BaseWS):
                     )
                 # analizar detalle de importes ajustados discriminados por alicuota
                 # (por compatibildiad y consistencia se usan los mismos campos)
-                for it in liq.get("importes"):
-                    it = it['importeReturn'][0]     # TODO: revisar SOAP
+                for it in liq.get("importes", liq.get("importe")):
+                    # en ajustes LSG no se agrupan los importes en un subtipo...
+                    if 'importeReturn' in it:
+                        it = it['importeReturn'][0]     # TODO: revisar SOAP
                     tasa = "iva_%s" % str(it['alicuota']).replace(".", "").strip()
                     self.params_out["concepto_importe_%s" % tasa] = it['concepto']
                     self.params_out["importe_ajustar_%s" % tasa] = it['importe']
@@ -1387,7 +1389,7 @@ class WSLPG(BaseWS):
         # analizar el resultado:
         ret = ret['oReturn']
         self.__analizar_errores(ret)
-        if 'ajusteUnificado' in ret:
+        if ret:
             self.AnalizarAjuste(ret)
         return True
 
