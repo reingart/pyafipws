@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27e"
+__version__ = "1.27f"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -397,6 +397,14 @@ CALIDAD = [             # para cgAutorizar y cgInformarCalidad (WSLPGv1.10)
     ('valor_grado', 4, I, 3),                   # solo para cod_grado F1 F2 ...
     ('valor_contenido_proteico', 5, I, 3),
     ('valor_factor', 6, I, 3),
+]
+
+FACTURA_PAPEL = [                       # para lsgAjustar (WSLPGv1.15)
+    ('tipo_reg', 1, A), # F: factura papel
+    ('nro_cai', 14, N),
+    ('nro_factura_papel', 12, N),
+    ('fecha_factura', 10, A),
+    ('tipo_comprobante', 3, N),
 ]
 
 EVENTO = [
@@ -2860,6 +2868,7 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
                     ('CTG', CTG, dic.get('ctgs', [])),
                     ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
                     ('Calidad', CALIDAD, dic.get('calidad', [])),
+                    ('FacturaPapel', FACTURA_PAPEL, dic.get('factura_papel', [])),
                     ('Dato', DATO, dic.get('datos', [])),
                     ('Error', ERROR, dic.get('errores', [])),
                     ]
@@ -2919,6 +2928,10 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['calidad']:
                 it['tipo_reg'] = 'Q'
                 archivo.write(escribir(it, CALIDAD))
+        if 'factura_papel' in dic:
+            for it in dic['factura_papel']:
+                it['tipo_reg'] = 'F'
+                archivo.write(escribir(it, FACTURA_PAPEL))
         if 'datos' in dic:
             for it in dic['datos']:
                 it['tipo_reg'] = 9
@@ -2951,6 +2964,7 @@ def leer_archivo(nombre_archivo):
                     ('CTG', CTG, dic.get('ctgs', [])),
                     ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
                     ('Calidad', CALIDAD, dic.get('calidad', [])),
+                    ('FacturaPapel', FACTURA_PAPEL, dic.get('factura_papel', [])),
                     ('Dato', DATO, dic['datos']),
                     ]
         leer_dbf(formatos, conf_dbf)
@@ -2959,6 +2973,7 @@ def leer_archivo(nombre_archivo):
                'percepciones': [], 'opcionales': [],
                'datos': [], 'ajuste_credito': {}, 'ajuste_debito': {}, 
                'ctgs': [], 'det_muestra_analisis': [], 'calidad': [],
+               'factura_papel': [],
                }
         for linea in archivo:
             if str(linea[0])=='0':
@@ -3007,6 +3022,8 @@ def leer_archivo(nombre_archivo):
                 dic['det_muestra_analisis'].append(leer(linea, DET_MUESTRA_ANALISIS))
             elif str(linea[0])=='Q':
                 dic['calidad'].append(leer(linea, CALIDAD))
+            elif str(linea[0])=='F':
+                dic['factura_papel'].append(leer(linea, FACTURA_PAPEL))
             elif str(linea[0])=='9':
                 dic['datos'].append(leer(linea, DATO))
             else:
@@ -3725,6 +3742,9 @@ if __name__ == '__main__':
                                   'base_calculo': 1000, 'alicuota_iva': 21}],
                     opcionales=[{'codigo': 1, 
                                  'descripcion': 'previsto para info adic.'}],
+                    factura_papel=[{'nro_cai': "1234", 'nro_factura_papel': 1,
+                                    'fecha_factura': "2015-01-01", 
+                                    'tipo_comprobante': 1}],
                 )
                 escribir_archivo(dic, ENTRADA, agrega=('--agrega' in sys.argv))
             dic = leer_archivo(ENTRADA)
@@ -3739,8 +3759,8 @@ if __name__ == '__main__':
             for opc in dic.get("opcionales", []):
                 wslpg.AgregarOpcional(**opc)
 
-            ##wslpg.AgregarFacturaPapel(nro_cai="1234", nro_factura_papel=1,
-            ##                   fecha_factura="2015-01-01", tipo_comprobante=1)
+            for fp in dic.get('factura_papel', []):
+                wslpg.AgregarFacturaPapel(**fp)
 
             print "Liquidacion Secundaria: pto_emision=%s nro_orden=%s" % (
                     wslpg.liquidacion['ptoEmision'],
