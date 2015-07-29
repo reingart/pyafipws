@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27f"
+__version__ = "1.27g"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -60,6 +60,8 @@ Opciones:
     --lsg --anular: Anula una LSG (lsgAnular)
     --lsg --consular: Consulta una LSG por pto_emision, nro_orden o COE
     --lsg --ult: Consulta el último Nº LSG emitida (lsgConsultarUltimoNroOrden)
+    --lsg --asociar: Asocia una liq. sec. a un contrato (lsgAsociarAContrato)
+  --ajustar-lsg: Ajusta una liquidación secundaria (lsgAjustar por COE/Contrato)
   --autorizar-cg: Autorizar Certificación de Granos (cgAutorizar)
     --cg --anular: Solicita anulación de un CG (cgSolicitarAnulacion)
     --cg --consultar: Consulta una CG por pto_emision, nro_orden o COE
@@ -3062,6 +3064,7 @@ if __name__ == '__main__':
                              ('CTG', CTG),
                              ('Det. Muestra Analisis', DET_MUESTRA_ANALISIS),
                              ('Calidad', CALIDAD),
+                             ('Factura Papel', FACTURA_PAPEL),
                              ('Evento', EVENTO), ('Error', ERROR), 
                              ('Dato', DATO)]:
             comienzo = 1
