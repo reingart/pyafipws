@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27d"
+__version__ = "1.27e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1253,7 +1253,7 @@ class WSLPG(BaseWS):
         self.deducciones = self.ajuste['ajusteDebito']['deducciones']
         self.retenciones = self.ajuste['ajusteDebito']['retenciones']
         # para LSG:
-        self.percepciones = self.ajuste['ajusteCredito']['percepciones']
+        self.percepciones = self.ajuste['ajusteDebito']['percepciones']
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1341,7 +1341,11 @@ class WSLPG(BaseWS):
         
         # limpiar estructuras no utilizadas (si no hay deducciones / retenciones)
         for k in ('ajusteDebito', 'ajusteCredito'):
-            if not any(self.ajuste[k].values()):
+            if k not in self.ajuste:
+                # ignorar si no se agrego estructura ajuste credito / debito
+                continue
+            elif not any(self.ajuste[k].values()):
+                # eliminar estructura vacia credito / debito
                 del self.ajuste[k]
             else:
                 # ajustar cambios de nombre entre LSG y LPG
@@ -1368,8 +1372,8 @@ class WSLPG(BaseWS):
                     auth={
                         'token': self.Token, 'sign': self.Sign,
                         'cuit': self.Cuit, },
-                    ajusteCredito=self.ajuste['ajusteCredito'],
-                    ajusteDebito=self.ajuste['ajusteDebito'],
+                    ajusteCredito=self.ajuste.get('ajusteCredito'),
+                    ajusteDebito=self.ajuste.get('ajusteDebito'),
                     **base
                     )
         # analizar el resultado:
@@ -3833,16 +3837,17 @@ if __name__ == '__main__':
                               cod_localidad=dic['cod_localidad_procedencia'],
                               cod_provincia=dic['cod_prov_procedencia'],
                               )
+            if 'ajuste_credito' in dic:
+                liq = dic['ajuste_credito']
+                wslpg.CrearAjusteCredito(**liq)
+                for per in dic.get("percepciones", []):
+                    wslpg.AgregarPercepcion(**per)
             
-            liq = dic['ajuste_credito']
-            wslpg.CrearAjusteCredito(**liq)
-            for per in dic.get("percepciones", []):
-                wslpg.AgregarPercepcion(**per)
-            
-            liq = dic['ajuste_debito']
-            wslpg.CrearAjusteDebito(**liq)
-            for per in dic.get("percepciones", []):
-                wslpg.AgregarPercepcion(**per)
+            if 'ajuste_debito' in dic:
+                liq = dic['ajuste_debito']
+                wslpg.CrearAjusteDebito(**liq)
+                for per in dic.get("percepciones", []):
+                    wslpg.AgregarPercepcion(**per)
             
             if '--testing' in sys.argv:
                 wslpg.LoadTestXML("tests/wslpg_ajuste_secundaria.xml")
