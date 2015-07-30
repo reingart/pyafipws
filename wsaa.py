@@ -118,7 +118,7 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
                          "-outform","DER", "-nodetach"], 
                         stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
             return b64encode(out)
-        except Exception as e:
+        except Exception, e:
             if e.errno == 2:
                 warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
             raise
