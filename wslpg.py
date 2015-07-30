@@ -2025,9 +2025,12 @@ class WSLPG(BaseWS):
                         )
         ret = ret['oReturn']
         self.__analizar_errores(ret)
-        if 'liquidacion' in ret:
-            aut = ret['autorizacion']
-            liq = ret['liquidacion']
+        for it in ret['liquidaciones']:
+            aut = it['autorizacion']
+            if 'liquidacion' in it:
+                liq = it['liquidacion']
+            elif 'ajuste' in it:
+                liq = it['ajuste']
             self.AnalizarLiquidacion(aut, liq)
         # guardo el PDF si se indico archivo y vino en la respuesta:
         if pdf and 'pdf' in ret:
@@ -3620,7 +3623,7 @@ if __name__ == '__main__':
             print "Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe)
             if '--lsg' in sys.argv:
                 ret = wslpg.ConsultarLiquidacionSecundaria(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
-            if '--cg' in sys.argv:
+            elif '--cg' in sys.argv:
                 ret = wslpg.ConsultarCertificacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             else:
                 ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
