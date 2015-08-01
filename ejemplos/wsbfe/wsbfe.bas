@@ -26,15 +26,16 @@ Sub Main()
     Debug.Print cms
     
     ' Llamar al web service para autenticar:
-    ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") ' Homologación
+    ok = WSAA.Conectar("", "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl")  ' Homologación
+    ta = WSAA.LoginCMS(cms)
 
     ' Imprimir el ticket de acceso, ToKen y Sign de autorización
     Debug.Print ta
     Debug.Print "Token:", WSAA.Token
     Debug.Print "Sign:", WSAA.Sign
     
-    ' Una vez obtenido, se puede usar el mismo token y sign por 24 horas
-    ' (este período se puede cambiar)
+    ' Una vez obtenido, se puede usar el mismo token y sign por 12 horas
+    ' (ver reutilizaciòn de ticket de acceso en el manual)
     
     ' Crear objeto interface Web Service de Factura Electrónica
     Set WSBFE = CreateObject("WSBFEv1")
@@ -46,10 +47,10 @@ Sub Main()
     WSBFE.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    ok = WSBFE.Conectar("", "http://wswhomo.afip.gov.ar/wsbfev1/service.asmx") ' homologación
+    ok = WSBFE.Conectar("", "http://wswhomo.afip.gov.ar/wsbfev1/service.asmx?WSDL") ' homologación
     
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
-    'WSBFE.Dummy
+    WSBFE.Dummy
     Debug.Print "appserver status", WSBFE.AppServerStatus
     Debug.Print "dbserver status", WSBFE.DbServerStatus
     Debug.Print "authserver status", WSBFE.AuthServerStatus
@@ -73,12 +74,7 @@ Sub Main()
     imp_perc = "0.00": imp_iibb = "0.00": imp_perc_mun = "0.00": imp_internos = "0.00"
     imp_moneda_id = "PES" ' Ver tabla de tipos de moneda
     Imp_moneda_ctz = "1" ' cotización de la moneda (respecto al peso argentino?)
-    
-    'imp_total = "471.9": imp_tot_conc = "0.00": imp_neto = "390"
-    'impto_liq = "81.9": impto_liq_rni = "0.00": imp_op_ex = "0.00"
-    'imp_perc = "0.00": imp_iibb = "0.00": imp_perc_mun = "0.00": imp_internos = "0.00"
-    'fecha_cbte = "20090527"
-    
+        
     ' Creo una factura (internamente, no se llama al WebService):
     ok = WSBFE.CrearFactura(tipo_doc, nro_doc, _
             zona, tipo_cbte, punto_vta, cbte_nro, fecha_cbte, _
@@ -93,12 +89,11 @@ Sub Main()
     ds = "prueba anafe economico" ' Descripción completa del artículo (hasta 4000 caracteres)
     umed = 7 ' un, Ver tabla de unidades de medida
     qty = "2.0" ' cantidad
-    precio = "27.50" ' precio neto (facturas A), precio final (facturas B)
+    precio = "20.00" ' precio neto (facturas A), precio final (facturas B)
     bonif = "5.00" ' descuentos (en positivo)
     iva_id = 5 ' 21%, ver tabla alícuota de iva
     Imp_total = "60.50" ' importe total final del artículo (sin descuentos, iva incluido)
     ' lo agrego a la factura (internamente, no se llama al WebService):
-    'precio = "100.00": bonif = 0: qty = 2: umed = 7: imp_total = 200
     ok = WSBFE.AgregarItem(ncm, sec, ds, qty, umed, precio, bonif, iva_id, Imp_total)
     
     ' agrego otro item:
@@ -112,7 +107,6 @@ Sub Main()
     iva_id = 5 ' 21%, ver tabla alícuota de iva
     Imp_total = "60.50" ' importe total final del artículo (sin descuentos, iva incluido)
     ' lo agrego a la factura (internamente, no se llama al WebService):
-    'precio = "50.00": bonif = 0: qty = "4": umed = 7: imp_total = 200
     ok = WSBFE.AgregarItem(ncm, sec, ds, qty, umed, precio, bonif, iva_id, Imp_total)
     
     ' Verifico que no haya rechazo o advertencia al generar el CAE
