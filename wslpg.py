@@ -4021,7 +4021,7 @@ if __name__ == '__main__':
             
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
-                wslpg.LoadTestXML("wslpg_cert_autorizar_resp.xml")
+                wslpg.LoadTestXML("tests/wslpg_cert_autorizar_resp.xml")
             
             wslpg.AutorizarCertificacion()
             
