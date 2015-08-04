@@ -21,10 +21,12 @@ ok = WSAA.Conectar("", "")
 tra = WSAA.CreateTRA("wslpg")
 
 *-- obtengo el path actual de los certificados para pasarle a la interfase
-cCurrentProcedure = SYS(16,1) 
-nPathStart = AT(":",cCurrentProcedure)- 1
-nLenOfPath = RAT("\", cCurrentProcedure) - (nPathStart)
-ruta = (SUBSTR(cCurrentProcedure, nPathStart, nLenofPath)) + "\"
+&& cCurrentProcedure = SYS(16,1) 
+&& nPathStart = AT(":",cCurrentProcedure)- 1
+&& nLenOfPath = RAT("\", cCurrentProcedure) - (nPathStart)
+&& ruta = (SUBSTR(cCurrentProcedure, nPathStart, nLenofPath)) + "\"
+*-- usar la ruta a las credenciales predeterminadas para homologaciòn
+ruta = WSAA.InstallDir + "\"
 ? "ruta",ruta
 
 *-- Generar el mensaje firmado (CMS) 
@@ -144,7 +146,7 @@ DO CASE
         ok = WSLPG.AgregarDetalleMuestraAnalisis( ;
             descripcion_rubro, tipo_rubro, porcentaje, valor)
 
-        nro_ctg = "436"
+        nro_ctg = "437"
         nro_carta_porte = "530305318"
         porcentaje_secado_humedad = 0
         importe_secado = 0
@@ -153,7 +155,7 @@ DO CASE
         importe_zarandeo = 0
         peso_neto_merma_zarandeo = 0
         tarifa_zarandeo = 0
-        peso_neto_confirmado_definitivo = 1000
+        peso_neto_confirmado_definitivo = 1
         ok = WSLPG.AgregarCTG( ;
             nro_ctg, nro_carta_porte, ;
             porcentaje_secado_humedad, importe_secado, ;
@@ -194,6 +196,11 @@ DO CASE
 
 ENDCASE
 
+*-- cargar respuesta predeterminada de prueba (solo usar en evaluacion/testing)
+If .F. Then
+	ok = WSLPG.LoadTestXML("z:\pyafipws\tests\wslpg_cert_autorizar_resp.xml")
+Endif
+
 *-- Llamo al metodo remoto cgAutorizar:
 
 ok = WSLPG.AutorizarCertificacion()
@@ -201,7 +208,9 @@ ok = WSLPG.AutorizarCertificacion()
 IF ok THEN
     *-- muestro los resultados devueltos por el webservice:
     
-    ? "COE", WSLPG.COE, WSLPG.Estado
+    coe = WSLPG.GetParametro("coe")   && obtener string, valor long (WSLPG.COE) no soportado en algunas versiones de VFP
+    ? "COE", coe
+    ? "Estado", WSLPG.Estado
     ? "Fecha", WSLPG.GetParametro("fecha_certificacion")
 
     *-- Planta (opcional):
@@ -229,8 +238,8 @@ IF ok THEN
 	    ? WSLPG.XmlRequest
     	? WSLPG.XmlResponse
     ELSE
-        ch = MESSAGEBOX("COE: " + STR(WSLPG.COE), 5, "Autorizar Certificación:")
-        ok = WSLPG.AnularCertificacion(WSLPG.COE)
+        ch = MESSAGEBOX("COE: " + coe, 5, "Autorizar Certificación:")
+        ok = WSLPG.AnularCertificacion(coe)
         ? "Estado Anulado", WSLPG.Estado
    	ENDIF
 
