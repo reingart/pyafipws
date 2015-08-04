@@ -198,7 +198,7 @@ ENDCASE
 
 *-- cargar respuesta predeterminada de prueba (solo usar en evaluacion/testing)
 If .F. Then
-	ok = WSLPG.LoadTestXML("z:\pyafipws\tests\wslpg_cert_autorizar_resp.xml")
+	ok = WSLPG.LoadTestXML(WSLPG.InstallDir + "\tests\wslpg_cert_autorizar_resp.xml")
 Endif
 
 *-- Llamo al metodo remoto cgAutorizar:
