@@ -20,6 +20,10 @@ Sub Main()
     ' CUIT del emisor
     PyFEPDF.CUIT = "33693450239"
     
+    ' Formato numérico (cantidad decimales)
+    PyFEPDF.FmtCantidad = "0.4"
+    PyFEPDF.FmtPrecio = "0.2"
+    
     tipo_cbte = 1       ' Factura A
     punto_vta = 4000    ' prefijo
     cbte_nro = 12345678 ' número de factura
@@ -67,6 +71,12 @@ Sub Main()
         obs_comerciales, obs_generales, forma_pago, incoterms, _
         idioma_cbte, motivo_obs, descuento)
     
+    ok = PyFEPDF.EstablecerParametro("localidad_cliente", "Hurlingham2")
+    ok = PyFEPDF.EstablecerParametro("provincia_cliente", "Buenos Aires3")
+
+    ' Logotipo AFIP Comprobante Autorizado (cambiar resultado="A")
+    ok = PyFEPDF.EstablecerParametro("resultado", "N")
+
     ' Agregar comprobantes asociados (si es una NC/ND):
     'tipo = 19
     'pto_vta = 2
@@ -111,6 +121,7 @@ Sub Main()
 
     ' Agrego datos adicionales fijos:
     ok = PyFEPDF.AgregarDato("logo", PyFEPDF.InstallDir + "\plantillas\logo.png")
+    'ok = PyFEPDF.AgregarDato("afip", PyFEPDF.InstallDir + "\plantillas\afip.png")
     ok = PyFEPDF.AgregarDato("EMPRESA", "Empresa de Prueba")
     ok = PyFEPDF.AgregarDato("MEMBRETE1", "Direccion de Prueba")
     ok = PyFEPDF.AgregarDato("MEMBRETE2", "Capital Federal")
@@ -124,7 +135,7 @@ Sub Main()
 
     ' Cargo el formato desde el archivo CSV (opcional)
     ' (carga todos los campos a utilizar desde la planilla)
-    ok = PyFEPDF.CargarFormato(PyFEPDF.InstallDir + "\factura.csv")
+    ok = PyFEPDF.CargarFormato(PyFEPDF.InstallDir + "\plantillas\factura.csv")
     
     ' Agrego campos manualmente (opcional):
     nombre = "prueba": tipo = "T"           ' "T" texto, "L" lineas, "I" imagen, etc.
@@ -145,11 +156,11 @@ Sub Main()
     ok = PyFEPDF.CrearPlantilla(papel, orientacion)
     num_copias = 3  ' original, duplicado y triplicado
     lineas_max = 24 ' cantidad de linas de items por página
-    qty_pos = "izq" ' (cantidad a la izquierda de la descripción del artículo)
+    qty_pos = "der" ' (cantidad a la izquierda de la descripción del artículo)
     ' Proceso la plantilla
     ok = PyFEPDF.ProcesarPlantilla(num_copias, lineas_max, qty_pos)
     ' Genero el PDF de salida según la plantilla procesada
-    salida = "factura.pdf"
+    salida = CurDir() + "\factura.pdf"
     ok = PyFEPDF.GenerarPDF(salida)
     
     ' Abro el visor de PDF y muestro lo generado
