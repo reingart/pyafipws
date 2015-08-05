@@ -877,7 +877,7 @@ def main():
     if "--prueba" in sys.argv:
         print wsfev1.client.help("FECAESolicitar").encode("latin1")
 
-        tipo_cbte = 2 if '--usados' not in sys.argv else 49
+        tipo_cbte = 1 if '--usados' not in sys.argv else 49
         punto_vta = 4001
         cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
@@ -902,6 +902,12 @@ def main():
             fecha_serv_desde, fecha_serv_hasta, #--
             moneda_id, moneda_ctz)
         
+        if '--caea' in sys.argv:
+            periodo = datetime.datetime.today().strftime("%Y%M")
+            orden = 1 if datetime.datetime.today().day < 15 else 2
+            caea = wsfev1.CAEAConsultar(periodo, orden)
+            wsfev1.EstablecerCampoFactura("caea", caea)
+
         # comprobantes asociados (notas de crédito / débito)
         if tipo_cbte in (1, 2, 3, 6, 7, 8, 11, 12, 13):
             tipo = 3
@@ -940,7 +946,10 @@ def main():
 
         import time
         t0 = time.time()
-        wsfev1.CAESolicitar()
+        if not '--caea' in sys.argv:
+            wsfev1.CAESolicitar()
+        else:
+            wsfev1.CAEARegInformativo()
         t1 = time.time()
         
         print "Resultado", wsfev1.Resultado
