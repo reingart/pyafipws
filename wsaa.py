@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.10e"
+__version__ = "2.10f"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
@@ -221,9 +221,9 @@ class WSAA(BaseWS):
 
         # normalizar encoding (reemplazar acentos, eñe, etc.)
         if isinstance(empresa, unicode):
-            empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII')
+            empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII', 'ignore')
         if isinstance(nombre, unicode):
-            nombre = unicodedata.normalize('NFKD', nombre).encode('ASCII')
+            nombre = unicodedata.normalize('NFKD', nombre).encode('ASCII', 'ignore')
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
         x509name = X509.X509_Name ()
