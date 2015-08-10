@@ -436,6 +436,7 @@ class WSFEv1(BaseWS):
                         for obs in resultget.get('Opcionales', [])],
                     'cae': resultget.get('CodAutorizacion'),
                     'resultado': resultget.get('Resultado'),
+                    'fch_venc_cae': resultget.get('FchVto'),
                     'obs': [ 
                             {
                             'code': obs['Obs']['Code'],
