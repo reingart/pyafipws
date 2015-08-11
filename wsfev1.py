@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17a"
+__version__ = "1.17b"
 
 import datetime
 import decimal
@@ -197,7 +197,7 @@ class WSFEv1(BaseWS):
                 ret = None
             if ret is None:
                 break
-        return ret
+        return str(ret)
 
 
     @inicializar_y_capturar_excepciones
@@ -436,6 +436,7 @@ class WSFEv1(BaseWS):
                         for obs in resultget.get('Opcionales', [])],
                     'cae': resultget.get('CodAutorizacion'),
                     'resultado': resultget.get('Resultado'),
+                    'fch_venc_cae': resultget.get('FchVto'),
                     'obs': [ 
                             {
                             'code': obs['Obs']['Code'],
@@ -877,7 +878,7 @@ def main():
     if "--prueba" in sys.argv:
         print wsfev1.client.help("FECAESolicitar").encode("latin1")
 
-        tipo_cbte = 2 if '--usados' not in sys.argv else 49
+        tipo_cbte = 1 if '--usados' not in sys.argv else 49
         punto_vta = 4001
         cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
@@ -902,6 +903,12 @@ def main():
             fecha_serv_desde, fecha_serv_hasta, #--
             moneda_id, moneda_ctz)
         
+        if '--caea' in sys.argv:
+            periodo = datetime.datetime.today().strftime("%Y%M")
+            orden = 1 if datetime.datetime.today().day < 15 else 2
+            caea = wsfev1.CAEAConsultar(periodo, orden)
+            wsfev1.EstablecerCampoFactura("caea", caea)
+
         # comprobantes asociados (notas de crédito / débito)
         if tipo_cbte in (1, 2, 3, 6, 7, 8, 11, 12, 13):
             tipo = 3
@@ -940,7 +947,10 @@ def main():
 
         import time
         t0 = time.time()
-        wsfev1.CAESolicitar()
+        if not '--caea' in sys.argv:
+            wsfev1.CAESolicitar()
+        else:
+            wsfev1.CAEARegInformativo()
         t1 = time.time()
         
         print "Resultado", wsfev1.Resultado

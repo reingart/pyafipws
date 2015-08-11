@@ -178,6 +178,11 @@ Sub Main()
     
     End Select
 
+    ' cargar respuesta predeterminada de prueba (solo usar en evaluacion/testing)
+    If Flase Then
+        ok = WSLPG.LoadTestXML(WSLPG.InstallDir + "\tests\wslpg_cert_autorizar_resp.xml")
+    End If
+
     ' Llamo al metodo remoto cgAutorizar:
     
     ok = WSLPG.AutorizarCertificacion()

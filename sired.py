@@ -721,13 +721,38 @@ if __name__ == '__main__':
             sys.exit(0)
 
         if '--leer' in sys.argv:
-            claves = [clave for clave, pos, leng in VENTAS_TIPO1 if clave not in ('tipo','info_adic')]
+            if '--completar_padron' in sys.argv:
+                from padron import PadronAFIP
+                padron = PadronAFIP()
+                padron.Conectar(trace="--trace" in sys.argv)
+                from formatos import formato_txt
+                formato = formato_txt.ENCABEZADO
+                categorias_iva = dict([(int(v), k) for k, v in categorias.items()])
+
+            else:
+                formato = VENTAS_TIPO1
+             
+            claves = [clave for clave, pos, leng in formato if clave not in ('tipo','info_adic')]
             csv = csv.DictWriter(open("ventas.csv","wb"), claves, extrasaction='ignore')
             csv.writerow(dict([(k, k) for k in claves]))
             f = open("VENTAS.txt")
             for linea in f:
                 if str(linea[0])=='1':
                     datos = leer(linea, VENTAS_TIPO1)
+
+                    if '--completar_padron' in sys.argv:
+                        cuit = datos['nro_doc']
+                        print "Consultando AFIP online...", cuit,
+                        ok = padron.Consultar(cuit)
+                        print padron.direccion, padron.provincia
+                        datos["nombre_cliente"] = padron.denominacion.encode("latin1")
+                        datos["domicilio_cliente"] = padron.direccion.encode("latin1")
+                        datos["localidad_cliente"] = "%s (CP %s) " % (
+                                                        padron.localidad.encode("latin1"), 
+                                                        padron.cod_postal.encode("latin1")) 
+                        datos["provincia_cliente"] = padron.provincia.encode("latin1")
+                        datos['cbte_nro'] = datos['cbt_numero']
+                        datos['id_impositivo'] = categorias_iva[int(datos['categoria'])]
                     csv.writerow(datos)
             f.close()
         else:

@@ -52,14 +52,14 @@ Sub Main()
     
     pto_emision = 99
     nro_orden = 1
-    nro_contrato = 100001232
+    nro_contrato = Null '100001232
     cuit_comprador = "20111111112"
     nro_ing_bruto_comprador = "123"
     cod_puerto = 14
     des_puerto_localidad = "DETALLE PUERTO"
     cod_grano = 2
     cantidad_tn = 100
-    cuit_vendedor = "20222222223"
+    cuit_vendedor = "20267565393"
     nro_act_vendedor = 29
     nro_ing_bruto_vendedor = 123456
     actua_corredor = "S"

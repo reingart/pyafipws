@@ -15,11 +15,11 @@ Sub Main()
     Debug.Print tra
     
     ' Especificar la ubicacion de los archivos certificado y clave privada
-    Path = CurDir() + "\"
+    Path = WSAA.InstallDir + "\" ' directorio predeterminado, o usar CurDir()
     ' Certificado: certificado es el firmado por la AFIP
     ' ClavePrivada: la clave privada usada para crear el certificado
-    Certificado = "..\..\reingart.crt" ' certificado de prueba
-    ClavePrivada = "..\..\reingart.key" ' clave privada de prueba
+    Certificado = "reingart.crt" ' certificado de prueba
+    ClavePrivada = "reingart.key" ' clave privada de prueba
     
     ' Generar el mensaje firmado (CMS)
     cms = WSAA.SignTRA(tra, Path + Certificado, Path + ClavePrivada)
@@ -37,7 +37,7 @@ Sub Main()
     ' (este período se puede cambiar)
     
     ' Crear objeto interface Web Service de Factura Electrónica
-    Set WSBFE = CreateObject("WSBFE")
+    Set WSBFE = CreateObject("WSBFEv1")
     ' Setear tocken y sing de autorización (pasos previos)
     WSBFE.Token = WSAA.Token
     WSBFE.Sign = WSAA.Sign
@@ -46,7 +46,7 @@ Sub Main()
     WSBFE.Cuit = "20267565393"
     
     ' Conectar al Servicio Web de Facturación
-    ok = WSBFE.Conectar("http://wswhomo.afip.gov.ar/wsbfe/service.asmx") ' homologación
+    ok = WSBFE.Conectar("", "http://wswhomo.afip.gov.ar/wsbfe/service.asmx") ' homologación
     
     ' Prueba de tablas referenciales de parámetros
         

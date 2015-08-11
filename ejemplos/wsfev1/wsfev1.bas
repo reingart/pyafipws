@@ -27,11 +27,11 @@ Sub Main()
     Debug.Print tra
     
     ' Especificar la ubicacion de los archivos certificado y clave privada
-    Path = CurDir() + "\"
+    Path = WSAA.InstallDir + "\"    ' para ruta actual, usar CurDir()
     ' Certificado: certificado es el firmado por la AFIP
     ' ClavePrivada: la clave privada usada para crear el certificado
-    Certificado = "..\..\reingart.crt" ' certificado de prueba
-    ClavePrivada = "..\..\reingart.key" ' clave privada de prueba
+    Certificado = "reingart.crt" ' certificado de prueba
+    ClavePrivada = "reingart.key" ' clave privada de prueba
     
     ' Generar el mensaje firmado (CMS)
     cms = WSAA.SignTRA(tra, Path + Certificado, Path + ClavePrivada)
@@ -102,7 +102,7 @@ Sub Main()
        
     ' Establezco los valores de la factura a autorizar:
     tipo_cbte = 6
-    punto_vta = 4002
+    punto_vta = 4004
     cbte_nro = WSFEv1.CompUltimoAutorizado(tipo_cbte, punto_vta)
     ControlarExcepcion WSFEv1
     For Each v In WSFEv1.errores

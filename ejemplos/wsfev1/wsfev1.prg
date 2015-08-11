@@ -14,20 +14,19 @@ WSAA = CREATEOBJECT("WSAA")
 *-- Generar un Ticket de Requerimiento de Acceso (TRA)
 tra = WSAA.CreateTRA()
 
-*-- obtengo el path actual de los certificados para pasarle a la interfase
-cCurrentProcedure = SYS(16,1) 
-nPathStart = AT(":",cCurrentProcedure)- 1
-nLenOfPath = RAT("\", cCurrentProcedure) - (nPathStart)
-ruta = (SUBSTR(cCurrentProcedure, nPathStart, nLenofPath)) + "\"
-? "ruta",ruta
+*-- uso la ruta de los certificados predeterminados (homologacion)
+
+ruta = WSAA.InstallDir + "\"
 
 *-- Generar el mensaje firmado (CMS) 
 cms = WSAA.SignTRA(tra, ruta + "reingart.crt", ruta + "reingart.key") && Cert. Demo
-*-- cms = WSAA.SignTRA(tra, ruta + "homo.crt", ruta + "homo.key") 
+
+*-- Conectarse con el webservice
+ok = WSAA.Conectar("", "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") && Homologación
 
 *-- Llamar al web service para autenticar
 *-- Producción usar: ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") && Producción
-ta = WSAA.CallWSAA(cms, "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") && Homologación
+ta = WSAA.LoginCMS(cms) 
 
 ON ERROR DO errhand2;
 
