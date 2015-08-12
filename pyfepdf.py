@@ -982,6 +982,7 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv:
             # creo una factura de ejemplo
+            HOMO = True
             
             # datos generales del encabezado:
             tipo_cbte = 1
