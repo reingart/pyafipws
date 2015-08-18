@@ -171,7 +171,7 @@ class TrazaFito(BaseWS):
                         for it in ret.get('errores', [])]
         self.Resultado = ret.get('resultado')
 
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=None):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
         # Conecto usando el método estandard:
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
                               soap_server="jetty")

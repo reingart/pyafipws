@@ -525,7 +525,7 @@ class WSLPG(BaseWS):
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=None):
+    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=30):
         "Establecer la conexión a los servidores de la AFIP"
         # llamo al constructor heredado:
         ok = BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)

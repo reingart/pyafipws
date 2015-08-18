@@ -230,7 +230,7 @@ class WSCOC:
         return msg    
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=None):
+    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
         # cliente soap del web service
         if timeout:
             self.__log("Estableciendo timeout=%s" % (timeout, ))
