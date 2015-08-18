@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27g"
+__version__ = "1.27h"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -4074,7 +4074,7 @@ if __name__ == '__main__':
                          if not e.startswith("--")])
             tipo_certificado = argv.get(0, "P") # P
             cuit_depositante = argv.get(1)      # 
-            nro_planta = argv.get(2, 3091)      
+            nro_planta = argv.get(2, 3091) or None  # opcional si no es primaria
             cod_grano  = argv.get(3, 2)
             campania = argv.get(4, 1314)
             ret = wslpg.BuscarCTG(tipo_certificado, cuit_depositante, 
