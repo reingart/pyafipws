@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21b"
+__version__ = "1.22a"
 
 LICENCIA = """
 sired.py: Generador de archivos ventas para SIRED/SIAP RG1361/02 RG1579/03
@@ -197,6 +197,41 @@ VENTAS_TIPO2 = [
     ('impto_perc_mun', 15, I),
     ('imp_internos', 15, I),
     ('relleno', 122, B),
+    ]
+
+# Regimen de informacion de compras y ventas
+
+REGINFO_CV_VENTAS_CBTE = [
+    ('fecha_cbte', 8, N),
+    ('tipo_cbte', 3, N),
+    ('punto_vta', 5, N),
+    ('cbt_numero_desde', 20, N),
+    ('cbt_numero_hasta', 20, N),
+    ('tipo_doc', 2, N),
+    ('nro_doc', 20, N),
+    ('nombre', 30, A),
+    ('imp_total', 15, I),
+    ('imp_tot_conc', 15, I),
+    ('impto_liq_rni', 15, I),
+    ('imp_op_ex', 15, I),
+    ('impto_perc', 15, I),
+    ('imp_iibb', 15, I),
+    ('impto_perc_mun', 15, I),
+    ('imp_internos', 15, I),
+    ('imp_moneda_id', 3, A),
+    ('imp_moneda_ctz', 10, I),
+    ('cant_alicuota_iva', 1, N),
+    ('codigo_operacion', 1, C),
+    ('imp_trib', 15, I),
+    ]
+
+REGINFO_CV_VENTAS_CBTE_ALICUOTA = [
+    ('tipo_cbte', 3, N),
+    ('punto_vta', 5, N),
+    ('cbt_numero', 20, N),
+    ('imp_neto', 15, I),
+    ('alicuota_iva', 4, I),
+    ('impto_liq', 15, I),
     ]
 
 
@@ -737,8 +772,8 @@ if __name__ == '__main__':
             csv.writerow(dict([(k, k) for k in claves]))
             f = open("VENTAS.txt")
             for linea in f:
-                if str(linea[0])=='1':
-                    datos = leer(linea, VENTAS_TIPO1)
+                if str(linea[0])=='2':
+                    datos = leer(linea, REGINFO_CV_VENTAS_CBTE)
 
                     if '--completar_padron' in sys.argv:
                         cuit = datos['nro_doc']
@@ -751,8 +786,8 @@ if __name__ == '__main__':
                                                         padron.localidad.encode("latin1"), 
                                                         padron.cod_postal.encode("latin1")) 
                         datos["provincia_cliente"] = padron.provincia.encode("latin1")
-                        datos['cbte_nro'] = datos['cbt_numero']
-                        datos['id_impositivo'] = categorias_iva[int(datos['categoria'])]
+                        datos['cbte_nro'] = datos['cbt_numero_desde']
+                        #datos['id_impositivo'] = categorias_iva[int(datos['categoria'])]
                     csv.writerow(datos)
             f.close()
         else:
