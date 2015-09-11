@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22a"
+__version__ = "1.22b"
 
 LICENCIA = """
 sired.py: Generador de archivos ventas para SIRED/SIAP RG1361/02 RG1579/03
@@ -35,6 +35,7 @@ import datetime
 from decimal import Decimal
 import os
 import sys
+import unicodedata
 import sqlite3
 import traceback
 
@@ -798,6 +799,12 @@ if __name__ == '__main__':
                 # pre-procesar:
                 for factura in facturas:
                     for k, v in factura.items():
+                        # decodificar strings (evitar problemas unicode)
+                        if isinstance(v, basestring):
+                            if isinstance(v, str):
+                                v = v.decode("latin1", "ignore")
+                            factura[k] = unicodedata.normalize('NFKD', v).encode('ASCII', 'ignore')
+                            print k,factura[k]
                         # convertir tipos de datos desde los strings del CSV
                         if k.startswith("imp"):
                             factura[k] = float(v)
@@ -834,7 +841,9 @@ if __name__ == '__main__':
                     for det in detalles:
                         iva_id = det.get('iva_id', 5)
                         if isinstance(det.get('ds'), str):
-                            det['ds'] = det['ds'].decode("ascii", "ignore")
+                            det['ds'] = det['ds'].decode("latin1", "ignore")
+                        if 'ds' in det:
+                            det['ds'] = unicodedata.normalize('NFKD', det['ds']).encode('ASCII', 'ignore')
                         print det
                         if iva_id:
                             iva_id = int(iva_id)
@@ -861,6 +870,9 @@ if __name__ == '__main__':
                     if 'cbt_numero' in factura:
                         factura['cbt_desde'] = factura['cbt_numero']
                         factura['cbt_hasta'] = factura['cbt_numero']
+                    if 'nombre' in factura:
+                        factura['nombre_cliente'] = factura['nombre']
+                        factura['domicilio_cliente'] = factura['domicilio']
                     factura['cbte_nro'] = factura['cbt_desde']
                     if not 'concepto' in factura:
                         factura['concepto'] = 1
