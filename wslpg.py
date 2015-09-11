@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27h"
+__version__ = "1.27i"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1882,6 +1882,8 @@ class WSLPG(BaseWS):
             self.params_out['cac_certificado_deposito_preexistente'] = pre.get('cacCertificadoDepositoPreexistente')
             self.params_out['fecha_emision_certificado_deposito_preexistente'] = pre.get('fechaEmisionCertificadoDepositoPreexistente')
             self.params_out['peso_neto'] = pre.get('pesoNeto')
+        
+        self.params_out['errores'] = self.errores
 
     @inicializar_y_capturar_excepciones
     def InformarCalidadCertificacion(self, coe):
