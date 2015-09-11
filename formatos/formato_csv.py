@@ -67,8 +67,8 @@ def aplanar(regs):
         for k in MAP_ENC:
             fila[k] = reg.get(k)
 
-        fila['forma_pago'] = reg['forma_pago']
-        fila['pdf'] = reg['pdf']
+        fila['forma_pago'] = reg.get('forma_pago', "")
+        fila['pdf'] = reg.get('pdf', "")
         
         # por compatibilidad con pyrece:
         if reg.get('cbte_nro'):
@@ -77,12 +77,12 @@ def aplanar(regs):
         for i, det in enumerate(reg['detalles']):
             li = i+1
             fila.update({
-                    'codigo%s' % li: det['codigo'],
-                    'descripcion%s' % li: det['ds'],
+                    'codigo%s' % li: det.get('codigo', ""),
+                    'descripcion%s' % li: det.get('ds', ""),
                     'umed%s' % li: det.get('umed'),
-                    'cantidad%s' % li: det['qty'],
+                    'cantidad%s' % li: det.get('qty'),
                     'precio%s' % li: det.get('precio'),
-                    'importe%s' % li: det['importe'],
+                    'importe%s' % li: det.get('importe'),
                     'iva_id%s' % li: det.get('iva_id'),
                     'imp_iva%s' % li: det.get('imp_iva'),
                     'bonif%s' % li: det.get('bonif'),
