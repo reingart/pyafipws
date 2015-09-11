@@ -76,6 +76,31 @@ Section %(name)s
     StrCmp $R0 "" notistalled
     ExecWait '$R0 /S _?=$INSTDIR' 
 
+    ; clean up executable files
+    Delete $INSTDIR\*.pyc
+    Delete $INSTDIR\*.pyd
+    Delete $INSTDIR\*.pyo
+    Delete $INSTDIR\*.dll
+    Delete $INSTDIR\*.exe
+    
+    ; clean up subdirectories
+    FindFirst $0 $1 $INSTDIR\*
+    cleanup_loop:
+        StrCmp $1 "" cleanup_done
+        StrCmp $1 "." cleanup_next
+        StrCmp $1 ".." cleanup_next
+        StrCmp $1 "conf" cleanup_next
+        StrCmp $1 "datos" cleanup_next
+        StrCmp $1 "plantillas" cleanup_next
+        IfFileExists $INSTDIR\$1\*.* 0 +2
+            RMDir /r $INSTDIR\$1
+    cleanup_next:
+        FindNext $0 $1
+        Goto cleanup_loop
+    cleanup_done:
+    FindClose $0
+    
+
 notistalled:
 
     SectionIn RO
@@ -121,7 +146,6 @@ Section "Uninstall"
     Delete "$INSTDIR\Uninst.exe"
     DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\%(reg_key)s"
     DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s"
-    RMDir "$INSTDIR"
 
 SectionEnd
 
