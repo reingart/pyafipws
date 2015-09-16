@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27d"
+__version__ = "1.27e"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -23,6 +23,7 @@ import os
 import sys
 import wx
 import gui
+import unicodedata
 import traceback
 from ConfigParser import SafeConfigParser
 import wsaa, wsfe, wsfev1, wsfexv1
@@ -978,8 +979,9 @@ class PyRece(gui.Controller):
             it['numero'] = numero_fact
             it['mes'] = item['fecha_cbte'][4:6]
             it['año'] = item['fecha_cbte'][0:4]
-            fn = ''.join([str(it.get(ff,ff)) for ff in fs])
-            fn = fn.decode('latin1').encode('ascii', 'replace').replace('?','_')
+            # remover acentos, ñ del nombre de archivo (vía unicode):
+            fn = u''.join([unicode(it.get(ff,ff)) for ff in fs])
+            fn = unicodedata.normalize('NFKD', fn).encode('ASCII', 'ignore') 
             salida = os.path.join(d, "%s.pdf" % fn)
         fepdf.GenerarPDF(archivo=salida)
         if mostrar:
