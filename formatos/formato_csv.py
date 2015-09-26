@@ -64,11 +64,19 @@ def aplanar(regs):
     filas = []
     for reg in regs:
         fila = {}
+        
+        # recorrer campos obligatorios:
         for k in MAP_ENC:
             fila[k] = reg.get(k)
 
         fila['forma_pago'] = reg.get('forma_pago', "")
         fila['pdf'] = reg.get('pdf', "")
+
+        # datos adicionales (escalares):            
+        for k, v in reg.items():
+            if k not in MAP_ENC and isinstance(k, (basestring, int, long)):
+                fila[k] = v
+
         
         # por compatibilidad con pyrece:
         if reg.get('cbte_nro'):
