@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22b"
+__version__ = "1.22c"
 
 LICENCIA = """
 sired.py: Generador de archivos ventas para SIRED/SIAP RG1361/02 RG1579/03
@@ -852,10 +852,23 @@ if __name__ == '__main__':
 
                             importe = det.get('importe', det.get('total'))
                             if importe:
+                                iva = det.get('imp_iva', None)
                                 importe = round(float(importe.replace(",", ".")), 2)
-                                neto = round(importe / ((100 + alicuotas[iva_id]) / 100), 2)
-                                iva = importe - neto
-                                print "importe", importe, iva
+                                if iva is None:
+                                    # extraer IVA incluido factura B:
+                                    if factura["tipo_cbte"] in (6, 7, 8):
+                                        neto = round(importe / ((100 + alicuotas[iva_id]) / 100.), 2)
+                                        iva = importe - neto
+                                    else:
+                                        neto = importe
+                                        iva = round(neto * alicuotas[iva_id] /100., 2)
+                                    print "importe iva calc:", importe, iva
+                                else:
+                                    iva = round(float(iva), 2)
+                                    neto = importe
+                                    # descontar IVA incluido factura B:
+                                    if factura["tipo_cbte"] in (6, 7, 8):
+                                        neto = neto - iva
                                 imp_iva += iva
                                 ivas[iva_id]['importe'] += iva
                                 ivas[iva_id]['base_imp'] += neto
@@ -866,7 +879,9 @@ if __name__ == '__main__':
                     factura['ivas'] = ivas.values()
                     factura['datos'] = []
                     factura['tributos'] = []
-                    factura['imp_iva'] = imp_iva
+                    if 'imp_iva' not in factura or factura['imp_iva'] == "":
+                        print "debe agregar el IVA total en el encabezado..."
+                        factura['imp_iva'] = imp_iva
                     if 'cbt_numero' in factura:
                         factura['cbt_desde'] = factura['cbt_numero']
                         factura['cbt_hasta'] = factura['cbt_numero']
