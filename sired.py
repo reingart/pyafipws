@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22c"
+__version__ = "1.22d"
 
 LICENCIA = """
 sired.py: Generador de archivos ventas para SIRED/SIAP RG1361/02 RG1579/03
@@ -854,7 +854,10 @@ if __name__ == '__main__':
                             if importe:
                                 iva = det.get('imp_iva', None)
                                 importe = round(float(importe.replace(",", ".")), 2)
-                                if iva is None:
+                                if not iva is None:
+                                    iva = round(float(iva.replace(",", ".")), 2)
+                                # si el iva es incorrecto o no está, liquidar:                                
+                                if not iva and iva_id > 3:
                                     # extraer IVA incluido factura B:
                                     if factura["tipo_cbte"] in (6, 7, 8):
                                         neto = round(importe / ((100 + alicuotas[iva_id]) / 100.), 2)
@@ -864,7 +867,6 @@ if __name__ == '__main__':
                                         iva = round(neto * alicuotas[iva_id] /100., 2)
                                     print "importe iva calc:", importe, iva
                                 else:
-                                    iva = round(float(iva), 2)
                                     neto = importe
                                     # descontar IVA incluido factura B:
                                     if factura["tipo_cbte"] in (6, 7, 8):
