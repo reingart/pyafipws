@@ -13,15 +13,16 @@
 "Módulo de Intefase para archivos de texto (mercado interno versión 1)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.34a"
+__version__ = "1.35a"
 
 import datetime
 import os
 import sys
 import time
 import traceback
+import warnings
 from ConfigParser import SafeConfigParser
 
 # revisar la instalación de pyafip.ws:
@@ -130,45 +131,64 @@ TIPO_DOC = {80: 'CUIT', 86: 'CUIL', 96: 'DNI', 99: '', 87: u"CDI"}
 
 
 def autorizar(ws, entrada, salida, informar_caea=False):
-    tributos = []
-    ivas = []
-    cbtasocs = []
-    encabezado = []
-    opcionales = []
+    encabezados = []
     if '/dbf' in sys.argv:
+        tributos = []
+        ivas = []
+        cbtasocs = []
+        encabezados = []
+        opcionales = []
         if DEBUG: print "Leyendo DBF..."
 
-        formatos = [('Encabezado', ENCABEZADO, encabezado), 
+        formatos = [('Encabezado', ENCABEZADO, encabezados), 
                     ('Tributo', TRIBUTO, tributos), 
                     ('Iva', IVA, ivas), 
                     ('Comprobante Asociado', CMP_ASOC, cbtasocs),
                     ('Datos Opcionales', OPCIONAL, opcionales),
                     ]
         dic = leer_dbf(formatos, conf_dbf)
-        encabezado = encabezado[0]
+        
+        # rearmar estructura asociando id (comparando, si se útiliza)
+        for encabezado in encabezados:
+            for tributo in tributos:
+                if tributo.get("id") == encabezado.get("id"):
+                    encabezado.setdefault("tributos", []).append(tributo)
+            for iva in ivas:
+                if iva.get("id") == encabezado.get("id"):
+                    encabezado.setdefault("ivas", []).append(iva)
+            for cbtasoc in cbtasocs:
+                if cbtasoc.get("id") == encabezado.get("id"):
+                    encabezado.setdefault("cbtasocs", []).append(cbtasoc)
+            for opcional in opcionales:
+                if opcional.get("id") == encabezado.get("id"):
+                    encabezado.setdefault("opcionales", []).append(opcional)
+            if encabezado.get("id") is None and len(encabezados) > 1:
+                # compatibilidad hacia atrás, descartar si hay más de 1 factura
+                warnings.warn("Para múltiples registros debe usar campo id!")
+                break
     elif '/json' in sys.argv:
+        # ya viene estructurado
         import json
-        encabezado = json.load(entrada)[0]
-        ivas = encabezado.get('ivas', encabezado.get('iva', []))
-        tributos = encabezado.get('tributos', [])
-        cbtasocs = encabezado.get('cbtasocs', [])
-        opcionales = encabezado.get('opcionales', [])
+        encabezados = json.load(entrada)
     else:
+        # la estructura está implícita en el órden de los registros (líneas)
         for linea in entrada:
             if str(linea[0])=='0':
                 encabezado = leer(linea, ENCABEZADO)
+                encabezados.append(encabezado)
+                if DEBUG: print len(encabezados), "Leida factura %(cbt_desde)s" % encabezado 
             elif str(linea[0])=='1':
                 tributo = leer(linea, TRIBUTO)
-                tributos.append(tributo)
+                encabezado.setdefault("tributos", []).append(tributo)
             elif str(linea[0])=='2':
                 iva = leer(linea, IVA)
-                ivas.append(iva)
+                encabezado.setdefault("ivas", []).append(iva)
             elif str(linea[0])=='3':
                 cbtasoc = leer(linea, CMP_ASOC)
-                cbtasocs.append(cbtasoc)
+                encabezado.setdefault("cbtasocs", []).append(cbtasoc)
             elif str(linea[0])=='6':
                 opcional = leer(linea, OPCIONAL)
-                opcionales.append(opcional)
+                encabezado.setdefault("opcionales", []).append(opcional)
             else:
                 print "Tipo de registro incorrecto:", linea[0]
 
@@ -177,7 +197,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             encabezado['cae'] = '21073372218437'
         encabezado['caea'] = encabezado['cae']
 
-    if not encabezado:
+    if not encabezados:
         raise RuntimeError("No se pudieron leer los registros de la entrada")
 
     # ajusto datos para pruebas en depuración (nro de cbte. / fecha)
@@ -189,77 +209,92 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         encabezado['cbt_hasta'] = cbte_nro
         encabezado['fecha_cbte'] = datetime.datetime.now().strftime("%Y%m%d")
 
-    ws.CrearFactura(**encabezado)
-    for tributo in tributos:
-        ws.AgregarTributo(**tributo)
-    for iva in ivas:
-        ws.AgregarIva(**iva)
-    for cbtasoc in cbtasocs:
-        ws.AgregarCmpAsoc(**cbtasoc)
-    for opcional in opcionales:
-        ws.AgregarOpcional(**opcional)
+    # recorrer los registros para obtener CAE (dicts tendrá los procesados)
+    dicts = []
+    for encabezado in encabezados:
+        # extraer sub-registros:
+        ivas = encabezado.get('ivas', encabezado.get('iva', []))
+        tributos = encabezado.get('tributos', [])
+        cbtasocs = encabezado.get('cbtasocs', [])
+        opcionales = encabezado.get('opcionales', [])
 
-    if DEBUG:
-        print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
-    if not DEBUG or raw_input("Facturar (S/n)?")=="S":
-        if not informar_caea:
-            cae = ws.CAESolicitar()
-            dic = ws.factura
-        else:
-            cae = ws.CAEARegInformativo()
-            dic = ws.factura
-        print "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f" % (
-            TIPO_CBTE.get(dic['tipo_cbte'], dic['tipo_cbte']), 
-            dic['punto_vta'], dic['cbt_desde'], dic['cbt_hasta'], 
-            TIPO_DOC.get(dic['tipo_doc'], dic['tipo_doc']), dic['nro_doc'], 
-            float(dic['imp_total']), 
-            float(dic['imp_iva'] if dic['imp_iva'] is not None else 'NaN')) 
-        dic.update(encabezado)         # preservar la estructura leida
-        dic.update({
-            'cae': cae and str(cae) or '',
-            'fch_venc_cae': ws.Vencimiento and str(ws.Vencimiento) or '',
-            'resultado': ws.Resultado,
-            'motivos_obs': ws.Obs,
-            'err_code': str(ws.ErrCode),
-            'err_msg': ws.ErrMsg,
-            'reproceso': ws.Reproceso,
-            'emision_tipo': ws.EmisionTipo,
-            })
-        escribir_factura(dic, salida)
-        print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
+        ws.CrearFactura(**encabezado)
+        for tributo in tributos:
+            ws.AgregarTributo(**tributo)
+        for iva in ivas:
+            ws.AgregarIva(**iva)
+        for cbtasoc in cbtasocs:
+            ws.AgregarCmpAsoc(**cbtasoc)
+        for opcional in opcionales:
+            ws.AgregarOpcional(**opcional)
 
-def escribir_factura(dic, archivo, agrega=False):
+        if DEBUG:
+            print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
+        if not DEBUG or raw_input("Facturar (S/n)?")=="S":
+            if not informar_caea:
+                cae = ws.CAESolicitar()
+                dic = ws.factura
+            else:
+                cae = ws.CAEARegInformativo()
+                dic = ws.factura
+            print "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f" % (
+                TIPO_CBTE.get(dic['tipo_cbte'], dic['tipo_cbte']), 
+                dic['punto_vta'], dic['cbt_desde'], dic['cbt_hasta'], 
+                TIPO_DOC.get(dic['tipo_doc'], dic['tipo_doc']), dic['nro_doc'], 
+                float(dic['imp_total']), 
+                float(dic['imp_iva'] if dic['imp_iva'] is not None else 'NaN')) 
+            dic.update(encabezado)         # preservar la estructura leida
+            dic.update({
+                'cae': cae and str(cae) or '',
+                'fch_venc_cae': ws.Vencimiento and str(ws.Vencimiento) or '',
+                'resultado': ws.Resultado,
+                'motivos_obs': ws.Obs,
+                'err_code': str(ws.ErrCode),
+                'err_msg': ws.ErrMsg,
+                'reproceso': ws.Reproceso,
+                'emision_tipo': ws.EmisionTipo,
+                })
+            dicts.append(dic)
+            print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
+    if dicts:
+        escribir_facturas(dicts, salida)
+
+def escribir_facturas(encabezados, archivo, agrega=False):
     if '/json' in sys.argv:
         import json
-        factura = dic.copy()
-        # ajsutes por compatibilidad hacia atras y con pyfepdf
-        factura['fecha_vto'] = factura.get('fch_venc_cae')
-        if 'iva' in factura:
-            factura['ivas'] = factura.get('iva', [])
-            del factura['iva']
-        json.dump([factura], archivo, sort_keys=True, indent=4)
+        facturas = []
+        for dic in encabezados:
+            factura = dic.copy()
+            facturas.append(factura)
+            # ajsutes por compatibilidad hacia atras y con pyfepdf
+            factura['fecha_vto'] = factura.get('fch_venc_cae')
+            if 'iva' in factura:
+                factura['ivas'] = factura.get('iva', [])
+                del factura['iva']
+        json.dump(facturas, archivo, sort_keys=True, indent=4)
     else:
-        dic['tipo_reg'] = 0
-        archivo.write(escribir(dic, ENCABEZADO))
-        if 'tributos' in dic:
-            for it in dic['tributos']:
-                it['tipo_reg'] = 1
-                archivo.write(escribir(it, TRIBUTO))
-        if 'iva' in dic or 'ivas' in dic:
-            for it in dic.get('iva', dic.get('ivas')):
-                it['tipo_reg'] = 2
-                archivo.write(escribir(it, IVA))
-        if 'cbtes_asoc' in dic:
-            for it in dic['cbtes_asoc']:
-                it['tipo_reg'] = 3
-                archivo.write(escribir(it, CMP_ASOC))
-        if 'opcionales' in dic:
-            for it in dic['opcionales']:
-                it['tipo_reg'] = 6
-                archivo.write(escribir(it, OPCIONAL))
+        for dic in encabezados:
+            dic['tipo_reg'] = 0
+            archivo.write(escribir(dic, ENCABEZADO))
+            if 'tributos' in dic:
+                for it in dic['tributos']:
+                    it['tipo_reg'] = 1
+                    archivo.write(escribir(it, TRIBUTO))
+            if 'iva' in dic or 'ivas' in dic:
+                for it in dic.get('iva', dic.get('ivas')):
+                    it['tipo_reg'] = 2
+                    archivo.write(escribir(it, IVA))
+            if 'cbtes_asoc' in dic:
+                for it in dic['cbtes_asoc']:
+                    it['tipo_reg'] = 3
+                    archivo.write(escribir(it, CMP_ASOC))
+            if 'opcionales' in dic:
+                for it in dic['opcionales']:
+                    it['tipo_reg'] = 6
+                    archivo.write(escribir(it, OPCIONAL))
 
     if '/dbf' in sys.argv:
-        formatos = [('Encabezado', ENCABEZADO, [dic]), 
+        formatos = [('Encabezado', ENCABEZADO, encabezados), 
                     ('Tributo', TRIBUTO, dic.get('tributos', [])), 
                     ('Iva', IVA, dic.get('iva', [])), 
                     ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])),
@@ -358,8 +393,8 @@ if __name__ == "__main__":
         if proxy_dict: print "proxy_dict=",proxy_dict
 
     if '/x' in sys.argv:
-        escribir_factura({'err_msg': "Prueba",
-                     }, open("x.txt","w"))
+        escribir_facturas([{'err_msg': "Prueba",
+                     }], open("x.txt","w"))
 
     try:
         ws = wsfev1.WSFEv1()
@@ -473,7 +508,7 @@ if __name__ == "__main__":
                 print ws.factura
 
             dic = ws.factura
-            escribir_factura(dic, f_entrada, agrega=True)
+            escribir_facturas([dic], f_entrada, agrega=True)
             f_entrada.close()
       
         if '/ult' in sys.argv:
@@ -489,12 +524,12 @@ if __name__ == "__main__":
             print "Ultimo numero: ", ult_cbte
             print ws.ErrMsg
             depurar_xml(ws.client, RUTA_XML)
-            escribir_factura({'tipo_cbte': tipo_cbte, 
+            escribir_facturas([{'tipo_cbte': tipo_cbte, 
                               'punto_vta': punto_vta, 
                               'cbt_desde': ult_cbte, 
                               'fecha_cbte': ws.FechaCbte, 
                               'err_msg': ws.ErrMsg,
-                              }, open(salida,"w"))
+                              }], open(salida,"w"))
             sys.exit(0)
 
         if '/get' in sys.argv:
@@ -545,7 +580,7 @@ if __name__ == "__main__":
                               'err_msg': ws.ErrMsg,
                               'motivos_obs': ws.Obs,
                             })
-            escribir_factura(factura, open(salida,"w"))
+            escribir_facturas([factura], open(salida,"w"))
 
             sys.exit(0)
 
@@ -585,9 +620,9 @@ if __name__ == "__main__":
                 print "FchTopeInf:", ws.FchTopeInf 
                 print "FchProceso:", ws.FchProceso
 
-            escribir_factura({'cae': str(caea), 
+            escribir_facturas([{'cae': str(caea), 
                               'emision_tipo': "CAEA", 
-                             }, open(salida,"w"))
+                             }], open(salida,"w"))
                               
             sys.exit(0)
 
@@ -653,8 +688,8 @@ if __name__ == "__main__":
         if not e_str:
             e_str = repr(e)
         print "Excepcion:", e_str
-        escribir_factura({'err_msg': e_str,
-                         }, open(salida,"w"))
+        escribir_facturas([{'err_msg': e_str,
+                         }], open(salida,"w"))
         ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
         open("traceback.txt", "wb").write('\n'.join(ex))
 
