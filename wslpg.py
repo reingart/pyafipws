@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27i"
+__version__ = "1.28a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -48,6 +48,7 @@ Opciones:
   --autorizar: Autorizar Liquidación Primaria de Granos (liquidacionAutorizar)
   --ajustar: Ajustar Liquidación Primaria de Granos (liquidacionAjustar)
   --anular: Anular una Liquidación Primaria de Granos (liquidacionAnular)
+  --autorizar-anticipo: Autoriza un Anticipo (lpgAutorizarAnticipo)
   --consultar: Consulta una liquidación (parámetros: nro de orden y COE)
   --ult: Consulta el último número de orden registrado en AFIP 
          (liquidacionUltimoNroOrdenConsultar)
@@ -434,6 +435,7 @@ class WSLPG(BaseWS):
                         'AutorizarLiquidacion',
                         'AutorizarLiquidacionSecundaria', 
                         'AnularLiquidacionSecundaria','AnularLiquidacion',
+                        'AutorizarAnticipo',
                         'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion', 'AgregarPercepcion',
@@ -679,6 +681,7 @@ class WSLPG(BaseWS):
         # inicializo las listas que contentran las retenciones y deducciones:
         self.retenciones = []
         self.deducciones = []
+        self.opcionales = []        # para anticipo
         # limpio las estructuras internas no utilizables en este caso
         self.certificacion = None
         return True
@@ -919,6 +922,37 @@ class WSLPG(BaseWS):
 
         # analizo la respusta
         ret = ret['oReturn']
+        self.__analizar_errores(ret)
+        self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AutorizarAnticipo(self):
+        "Autorizar Anticipo de una Liquidación Primaria Electrónica de Granos"
+
+        # extraer y adaptar los campos para el anticipo
+        anticipo = {"liquidacion": self.liquidacion}
+        liq = anticipo["liquidacion"] 
+        liq["campaniaPpal"] = self.liquidacion["campaniaPPal"]
+        liq["codLocProcedencia"] = self.liquidacion["codLocalidadProcedencia"]
+        liq["descPuertoLocalidad"] = self.liquidacion["desPuertoLocalidad"]
+        
+        if self.opcionales:
+            liq['opcionales'] = self.opcionales
+
+        if self.retenciones:
+            anticipo['retenciones'] = self.retenciones
+        
+        # llamo al webservice:
+        ret = self.client.lpgAutorizarAnticipo(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        anticipo=anticipo,
+                        )
+
+        # analizo la respusta
+        ret = ret['liqReturn']
         self.__analizar_errores(ret)
         self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
         return True
@@ -3350,7 +3384,7 @@ if __name__ == '__main__':
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
             print "COEAjustado", wslpg.COEAjustado
-            print "TootalDeduccion", wslpg.TotalDeduccion
+            print "TotalDeduccion", wslpg.TotalDeduccion
             print "TotalRetencion", wslpg.TotalRetencion
             print "TotalRetencionAfip", wslpg.TotalRetencionAfip
             print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
@@ -3908,6 +3942,80 @@ if __name__ == '__main__':
 
             if DEBUG: 
                 pprint.pprint(dic)
+
+        if '--autorizar-anticipo' in sys.argv:
+        
+            if '--prueba' in sys.argv:
+                # genero una liquidación de ejemplo:
+                dic = dict(
+                    pto_emision=33,
+                    nro_orden=1, 
+                    cuit_comprador='20400000000',  
+                    nro_act_comprador='40',
+                    nro_ing_bruto_comprador='123',
+                    cod_tipo_operacion=2,
+                    cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
+                    cod_grano=1, 
+                    peso_neto_sin_certificado=100,
+                    cuit_vendedor="30000000006",
+                    nro_ing_bruto_vendedor=123456,
+                    actua_corredor="S", liquida_corredor="S",
+                    cuit_corredor=wslpg.Cuit, # uso Cuit representado
+                    nro_ing_bruto_corredor=wslpg.Cuit,
+                    comision_corredor="20.6",
+                    fecha_precio_operacion="2015-10-10",
+                    precio_ref_tn=567,  ## precio_operacion=150,
+                    alic_iva_operacion="10.5", campania_ppal=1415,
+                    cod_localidad_procedencia=197,
+                    cod_prov_procedencia=10,
+                    datos_adicionales="Prueba",
+                    retenciones=[dict(codigo_concepto="RI",
+                                      detalle_aclaratorio="Retenciones IVA",
+                                      base_calculo=100,
+                                      alicuota=10.5, ),
+                                 dict(codigo_concepto="RG",
+                                      detalle_aclaratorio="Retenciones GAN",
+                                      base_calculo=100,
+                                      alicuota=2, )],
+                )
+                escribir_archivo(dic, ENTRADA, agrega=('--agrega' in sys.argv))
+            dic = leer_archivo(ENTRADA)
+            
+            # cargo la liquidación:
+            wslpg.CrearLiquidacion(**dic)
+            
+            for ret in dic.get('retenciones', []):
+                wslpg.AgregarRetencion(**ret)
+
+            print "Liquidacion Primaria (Ant): pto_emision=%s nro_orden=%s" % (
+                    wslpg.liquidacion['ptoEmision'],
+                    wslpg.liquidacion['nroOrden'],
+                    )
+            
+            if '--testing' in sys.argv:
+                # mensaje de prueba (no realiza llamada remota), 
+                wslpg.LoadTestXML("wslpg_autorizar_ant_resp.xml")
+            
+            wslpg.AutorizarAnticipo()
+            
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
+            print "Errores:", wslpg.Errores
+            print "COE", wslpg.COE
+            print wslpg.GetParametro("cod_tipo_operacion")
+            print wslpg.GetParametro("fecha_liquidacion") 
+            print "TootalDeduccion", wslpg.TotalDeduccion
+            print "TotalRetencion", wslpg.TotalRetencion
+            print "TotalRetencionAfip", wslpg.TotalRetencionAfip
+            print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
+            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
+            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+
+            # actualizo el archivo de salida con los datos devueltos
+            dic.update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
 
         if '--autorizar-cg' in sys.argv:
         
