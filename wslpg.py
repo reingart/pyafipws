@@ -369,6 +369,10 @@ CERTIFICACION = [
     ('cuit_titular_planta', 11, N),
     ('razon_social_titular_planta', 11, A),
 
+    # campos no documentados por AFIP (agregados luego de WSLPGv1.15 a fines Sept)
+    ('servicios_conceptos_no_gravados', 10, I, 2),
+    ('servicios_percepciones_iva', 10, I, 2),
+    ('servicios_otras_percepciones', 10, I, 2),
 ]
 
 CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
@@ -1891,6 +1895,10 @@ class WSLPG(BaseWS):
             self.params_out['servicios_zarandeo'] = pri.get('serviciosZarandeo')
             self.params_out['servicios_otros'] = pri.get('serviciosOtros')
             self.params_out['servicios_forma_de_pago'] = pri.get('serviciosFormaDePago')
+            # otros campos no documentados:
+            self.params_out['servicios_conceptos_no_gravados'] = pri.get("serviciosConceptosNoGravados")
+            self.params_out['servicios_percepciones_iva'] = pri.get("serviciosPercepcionesIVA")
+            self.params_out['servicios_otras_percepciones'] = pri.get("serviciosOtrasPercepciones")            
             # sub estructuras:
             self.params_out['ctgs'] = []
             self.params_out['det_muestra_analisis'] = []
