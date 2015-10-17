@@ -49,7 +49,8 @@ Opciones:
   --ajustar: Ajustar Liquidación Primaria de Granos (liquidacionAjustar)
   --anular: Anular una Liquidación Primaria de Granos (liquidacionAnular)
   --autorizar-anticipo: Autoriza un Anticipo (lpgAutorizarAnticipo)
-  --consultar: Consulta una liquidación (parámetros: nro de orden y COE)
+  --consultar: Consulta una liquidación (parámetros: nro de orden, COE, pdf)
+    --cancelar-anticipo: anteponer para anticipos (lpgCancelarAnticipo)
   --ult: Consulta el último número de orden registrado en AFIP 
          (liquidacionUltimoNroOrdenConsultar)
 
@@ -435,7 +436,7 @@ class WSLPG(BaseWS):
                         'AutorizarLiquidacion',
                         'AutorizarLiquidacionSecundaria', 
                         'AnularLiquidacionSecundaria','AnularLiquidacion',
-                        'AutorizarAnticipo',
+                        'AutorizarAnticipo', 'CancelarAnticipo',
                         'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion', 'AgregarPercepcion',
@@ -955,6 +956,34 @@ class WSLPG(BaseWS):
         ret = ret['liqReturn']
         self.__analizar_errores(ret)
         self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def CancelarAnticipo(self, pto_emision=None, nro_orden=None, coe=None, 
+                               pdf=None):
+        "Cancelar Anticipo de una Liquidación Primaria Electrónica de Granos"
+        
+        # llamo al webservice:
+        ret = self.client.lpgCancelarAnticipo(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        ptoEmision=pto_emision,
+                        nroOrden=nro_orden,
+                        pdf="S" if pdf else "N",
+                        )
+
+        # analizo la respusta
+        ret = ret['liqConsReturn']
+        self.__analizar_errores(ret)
+        if 'liquidacion' in ret:
+            aut = ret['autorizacion']
+            liq = ret['liquidacion']
+            self.AnalizarLiquidacion(aut, liq)
+        # guardo el PDF si se indico archivo y vino en la respuesta:
+        if pdf and 'pdf' in ret:
+            open(pdf, "wb").write(ret['pdf'])
         return True
 
     def AnalizarLiquidacion(self, aut, liq=None, ajuste=False):
@@ -3661,6 +3690,8 @@ if __name__ == '__main__':
                 ret = wslpg.ConsultarLiquidacionSecundaria(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             elif '--cg' in sys.argv:
                 ret = wslpg.ConsultarCertificacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
+            elif '--cancelar-anticipo' in sys.argv:
+                ret = wslpg.CancelarAnticipo(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             else:
                 ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             print "COE", wslpg.COE
