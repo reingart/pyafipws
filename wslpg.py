@@ -1829,7 +1829,7 @@ class WSLPG(BaseWS):
             self.PtoEmision = aut['ptoEmision']
             self.NroOrden = aut['nroOrden']
             self.FechaCertificacion = str(aut.get('fechaCertificacion', ""))
-            self.COE = aut['coe']
+            self.COE = str(aut['coe'])
             self.Estado = aut['estado']
             # actualizo parámetros de salida:
             self.params_out['coe'] = self.COE
