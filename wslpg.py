@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28a"
+__version__ = "1.28b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1432,9 +1432,14 @@ class WSLPG(BaseWS):
                     tasa_lsg = "10" if tasa == "105" else tasa 
                     self.ajuste[k]['importeAjustar%s' % tasa_lsg] = self.ajuste[k]['importeAjustarIva%s' % tasa]
                     self.ajuste[k]['conceptoIva%s' % tasa_lsg] = self.ajuste[k]['conceptoImporteIva%s' % tasa]
-                # no enviar tag percepciones vacio
-                if not self.ajuste[k]['percepciones']:
-                    del self.ajuste[k]['percepciones']
+                # no enviar tag percepciones vacio (no agrupar en subtipo)
+                if self.ajuste[k]['percepciones']:
+                    self.ajuste[k]['percepcion'] = [ 
+                        per["percepcion"] for per 
+                        in self.ajuste[k]['percepciones']]
+                del self.ajuste[k]['percepciones']
+                    
+                
 
         base = self.ajuste['ajusteBase']
         base['coe'] = base['coeAjustado']
@@ -2987,6 +2992,9 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['ajuste_debito'].get('deducciones', []):
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
+            for it in dic['ajuste_debito'].get('percepciones', []):
+                it['tipo_reg'] = "P"
+                archivo.write(escribir(it, PERCEPCION))
         if 'ajuste_credito' in dic:
             dic['ajuste_credito']['tipo_reg'] = 5
             archivo.write(escribir(dic['ajuste_credito'], AJUSTE))
@@ -2996,6 +3004,9 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['ajuste_credito'].get('deducciones', []):
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
+            for it in dic['ajuste_credito'].get('percepciones', []):
+                it['tipo_reg'] = "P"
+                archivo.write(escribir(it, PERCEPCION))
         if 'ctgs' in dic:
             for it in dic['ctgs']:
                 it['tipo_reg'] = 'C'
@@ -3086,11 +3097,11 @@ def leer_archivo(nombre_archivo):
                 liq['opcionales'].append(leer(linea, OPCIONAL))
             elif str(linea[0])=='4':
                 liq = leer(linea, AJUSTE)
-                liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
+                liq.update({'retenciones': [], 'deducciones': [], 'percepciones': [], 'datos': []})
                 dic['ajuste_debito'] = liq
             elif str(linea[0])=='5':
                 liq = leer(linea, AJUSTE)
-                liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
+                liq.update({'retenciones': [], 'deducciones': [], 'percepciones': [], 'datos': []})
                 dic['ajuste_credito'] = liq
             elif str(linea[0])=='7':
                 # actualizo con cabecera para certificaciones de granos:
@@ -3903,7 +3914,7 @@ if __name__ == '__main__':
                         importe_ajustar_iva_105=200,
                         concepto_importe_iva_21='Alicuota 21',
                         importe_ajustar_iva_21=50,
-                        percepciones=[{'detalle_aclaratoria': 'percepcion 1',
+                        percepciones=[{'detalle_aclaratoria': 'percepcion 2',
                                       'base_calculo': 1000, 'alicuota_iva': 21}],
                         datos_adicionales='AJUSTE DEB LSG',
                         ),
@@ -3919,7 +3930,7 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA)
             
             dic = leer_archivo(ENTRADA)
-                            
+            
             if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
                 # consulto el último número de orden emitido:
                 ok = wslpg.ConsultarLiquidacionSecundariaUltNroOrden(dic['pto_emision'])
@@ -3943,13 +3954,13 @@ if __name__ == '__main__':
             if 'ajuste_credito' in dic:
                 liq = dic['ajuste_credito']
                 wslpg.CrearAjusteCredito(**liq)
-                for per in dic.get("percepciones", []):
+                for per in liq.get("percepciones", []):
                     wslpg.AgregarPercepcion(**per)
             
             if 'ajuste_debito' in dic:
                 liq = dic['ajuste_debito']
                 wslpg.CrearAjusteDebito(**liq)
-                for per in dic.get("percepciones", []):
+                for per in liq.get("percepciones", []):
                     wslpg.AgregarPercepcion(**per)
             
             if '--testing' in sys.argv:
