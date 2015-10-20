@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28b"
+__version__ = "1.28c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1631,6 +1631,18 @@ class WSLPG(BaseWS):
                 serviciosOtros=servicios_otros or None,
                 serviciosFormaDePago=servicios_forma_de_pago or None,
             )
+        # si se pasan campos no documentados por AFIP, intentar enviarlo:
+        for k, kk in {
+            'servicios_conceptos_no_gravados': 'serviciosConceptosNoGravados', 
+            'servicios_percepciones_iva': 'serviciosPercepcionesIva',
+            'servicios_otras_percepciones': 'serviciosOtrasPercepciones',
+            }.items():
+            v = kwargs.get(k)
+            # cuidado: si AFIP retira el campo, puede fallar si se pasa en 0
+            if isinstance(v, basestring) and v and not v.isalpha():
+                v = float(v)
+            if v:
+                self.certificacion['primaria'][kk] = v
         return True
 
     
@@ -4102,6 +4114,10 @@ if __name__ == '__main__':
                         peso_neto_certificado=21, servicios_secado=22,  
                         servicios_zarandeo=23, servicios_otros=24, 
                         servicios_forma_de_pago=25,
+                        # campos no documentados por AFIP:
+                        servicios_conceptos_no_gravados=26, 
+                        servicios_percepciones_iva=27,
+                        servicios_otras_percepciones=0,     # no enviar si es 0
                         )
                     dic.update(dep)
                     
