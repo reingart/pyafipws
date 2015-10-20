@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15g"
+__version__ = "1.16a"
 
 import os
 import socket
@@ -654,6 +654,49 @@ class TrazaMed(BaseWS):
             self.HayError = ret.get('hay_error')
             return [it for it in ret.get('list', [])]
 
+    @inicializar_y_capturar_excepciones
+    def GetConsultaStock(self, usuario, password, 
+                         id_medicamento=None, id_agente=None, descripcion=None, 
+                         cantidad=None, presentacion=None, 
+                         lote=None, numero_serial=None, 
+                         nro_pag=1, cant_reg=100,
+                        ):
+        "Permite consultar el stock actual del agente."
+
+        # preparo los parametros de entrada opcionales:
+        kwargs = {}
+        if id_medicamento is not None:
+            kwargs['arg2'] = id_medicamento
+        if id_agente is not None:
+            kwargs['arg3'] = id_agente
+        if descripcion is not None: 
+            kwargs['arg4'] = descripcion
+        if cantidad is not None: 
+            kwargs['arg5'] = cantidad
+        if presentacion is not None: 
+            kwargs['arg6'] = presentacion
+        if lote is not None: 
+            kwargs['arg7'] = lote
+        if numero_serial is not None: 
+            kwargs['arg8'] = numero_serial
+        if nro_pag is not None: 
+            kwargs['arg9'] = nro_pag
+        if cant_reg is not None: 
+            kwargs['arg10'] = cant_reg
+
+        # llamo al webservice
+        res = self.client.getConsultaStock(
+            arg0=usuario, 
+            arg1=password,
+            **kwargs
+        )
+        ret = res['return']
+        if ret:
+            self.__analizar_errores(ret)
+            self.CantPaginas = ret.get('cantPaginas')
+            self.HayError = ret.get('hay_error')
+            return [it for it in ret.get('list', [])]
+            
     def SetUsername(self, username):
         "Establezco el nombre de usuario"        
         self.Username = username
@@ -828,6 +871,11 @@ def main():
             ws.GetTransaccionesWS(
                                 *sys.argv[sys.argv.index("--movimientos")+1:]
                                 )
+        elif '--stock' in sys.argv:
+            ret = ws.GetConsultaStock(
+                                *sys.argv[sys.argv.index("--stock")+1:]
+                                )
+            print "\n".join([str(s) for s in ret])
         else:
             ws.GetTransaccionesNoConfirmadas(
                                 *sys.argv[sys.argv.index("--consulta")+1:]
