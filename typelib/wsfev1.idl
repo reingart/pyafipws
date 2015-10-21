@@ -171,12 +171,41 @@ interface IWSFEv1 : IDispatch
                           [in] BSTR sign, 
                           [out, retval] BOOL * ok);
 
+    [id(64)] HRESULT GetParametro(
+                          [in] BSTR clave,
+                          [out, retval] BSTR * ok);
+
+    [id(65)] HRESULT SetParametro(
+                          [in] BSTR clave,
+                          [in] BSTR valor,
+                          [out, retval] BSTR * ok);
+
+    [id(66)] HRESULT EstablecerCampoFactura(
+                                   [in] BSTR campo,
+                                   [in] BSTR valor,
+                                   [out, retval] BOOL * ok);
+    
+    [id(67)] HRESULT ObtenerCampoFactura(
+                                   [in] BSTR campo,
+                                   [out, retval] BSTR * valor);
+    
+    [id(68)] HRESULT SetTicketAcceso(
+                      [in] BSTR ta,
+                      [out, retval] BOOL * ok);
+
+    [id(69)] HRESULT AgregarOpcional(
+                                [in] BSTR opcional_id, 
+                                [in] BSTR valor, 
+                                [out, retval] BOOL * ok);
+
+    [propget, id(70)] HRESULT ImpIVA( [out, retval] BSTR * val);
+
 };  //end interface def
 
 [
 	uuid(B1D7283C-3EC2-463E-89B4-11F5228E2A15),
-	version(1.13),
-	helpstring("PyAfipWs WSFEv1 1.13 Type Library"),
+	version(1.17),
+	helpstring("PyAfipWs WSFEv1 1.17 Type Library"),
 ] library PyAfipWsWSFEv1Lib
 {
 	importlib("stdole32.tlb");

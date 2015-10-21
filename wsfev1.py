@@ -73,7 +73,7 @@ class WSFEv1(BaseWS):
 
     if TYPELIB:
         _typelib_guid_ = '{B1D7283C-3EC2-463E-89B4-11F5228E2A15}'
-        _typelib_version_ = 1, 13
+        _typelib_version_ = 1, 17
         _com_interfaces_ = ['IWSFEv1']
         ##_reg_class_spec_ = "wsfev1.WSFEv1"
         
