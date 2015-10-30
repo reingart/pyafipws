@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16a"
+__version__ = "1.16b"
 
 import os
 import socket
@@ -115,7 +115,7 @@ class TrazaMed(BaseWS):
                         'SendMedicamentosFraccion',
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
                         'GetTransaccionesNoConfirmadas',
-                        'GetEnviosPropiosAlertados',
+                        'GetEnviosPropiosAlertados', 'GetConsultaStock',
                         'GetTransaccionesWS', 'GetCatalogoElectronicoByGTIN',
                         'Conectar', 'LeerError', 'LeerTransaccion',
                         'SetUsername', 'SetPassword',
@@ -652,7 +652,11 @@ class TrazaMed(BaseWS):
             self.__analizar_errores(ret)
             self.CantPaginas = ret.get('cantPaginas')
             self.HayError = ret.get('hay_error')
-            return [it for it in ret.get('list', [])]
+            self.params_out = dict([(i, it) for i, it
+                                            in  enumerate(ret.get('list', []))])
+            return len(self.params_out)
+        else:
+            return 0
 
     @inicializar_y_capturar_excepciones
     def GetConsultaStock(self, usuario, password, 
@@ -695,7 +699,11 @@ class TrazaMed(BaseWS):
             self.__analizar_errores(ret)
             self.CantPaginas = ret.get('cantPaginas')
             self.HayError = ret.get('hay_error')
-            return [it for it in ret.get('list', [])]
+            self.params_out = dict([(i, it) for i, it
+                                            in  enumerate(ret.get('list', []))])
+            return len(self.params_out)
+        else:
+            return 0
             
     def SetUsername(self, username):
         "Establezco el nombre de usuario"        
@@ -871,11 +879,6 @@ def main():
             ws.GetTransaccionesWS(
                                 *sys.argv[sys.argv.index("--movimientos")+1:]
                                 )
-        elif '--stock' in sys.argv:
-            ret = ws.GetConsultaStock(
-                                *sys.argv[sys.argv.index("--stock")+1:]
-                                )
-            print "\n".join([str(s) for s in ret])
         else:
             ws.GetTransaccionesNoConfirmadas(
                                 *sys.argv[sys.argv.index("--consulta")+1:]
@@ -915,8 +918,13 @@ def main():
         ret = ws.GetCatalogoElectronicoByGTIN(
                                 *sys.argv[sys.argv.index("--catalogo")+1:]
                                 )
-        for catalogo in ret:
-            print ret        # imprimo cada fila
+        for catalogo in ws.params_out.values():
+            print catalogo        # imprimo cada fila
+    elif '--stock' in sys.argv:
+        ret = ws.GetConsultaStock(
+                            *sys.argv[sys.argv.index("--stock")+1:]
+                            )
+        print "\n".join([str(s) for s in ws.params_out.values()])
     else:
         argv = [argv for argv in sys.argv if not argv.startswith("--")]
         if not medicamentos:
