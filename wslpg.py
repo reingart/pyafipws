@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28c"
+__version__ = "1.28d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -3597,8 +3597,8 @@ if __name__ == '__main__':
             wslpg.CrearAjusteBase(pto_emision=dic['pto_emision'], 
                               nro_orden=dic['nro_orden'], 
                               coe_ajustado=dic['coe_ajustado'],
-                              cod_localidad=dic['cod_prov_procedencia'],
-                              cod_provincia=dic['cod_provincia_procedencia'],
+                              cod_localidad=dic['cod_localidad_procedencia'],
+                              cod_provincia=dic['cod_prov_procedencia'],
                               )
             
             for cert in dic.get('certificados', []):
