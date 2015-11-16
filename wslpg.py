@@ -3501,8 +3501,8 @@ if __name__ == '__main__':
             wslpg.CrearAjusteBase(pto_emision=dic['pto_emision'], 
                               nro_orden=dic['nro_orden'], 
                               coe_ajustado=dic['coe_ajustado'],
-                              cod_localidad=dic['cod_prov_procedencia'],
-                              cod_provincia=dic['cod_provincia_procedencia'],
+                              cod_localidad=dic['cod_localidad_procedencia'],
+                              cod_provincia=dic['cod_prov_procedencia'],
                               )
             
             for cert in dic.get('certificados', []):
