@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27h"
+__version__ = "1.28d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -48,7 +48,9 @@ Opciones:
   --autorizar: Autorizar Liquidación Primaria de Granos (liquidacionAutorizar)
   --ajustar: Ajustar Liquidación Primaria de Granos (liquidacionAjustar)
   --anular: Anular una Liquidación Primaria de Granos (liquidacionAnular)
-  --consultar: Consulta una liquidación (parámetros: nro de orden y COE)
+  --autorizar-anticipo: Autoriza un Anticipo (lpgAutorizarAnticipo)
+  --consultar: Consulta una liquidación (parámetros: nro de orden, COE, pdf)
+    --cancelar-anticipo: anteponer para anticipos (lpgCancelarAnticipo)
   --ult: Consulta el último número de orden registrado en AFIP 
          (liquidacionUltimoNroOrdenConsultar)
 
@@ -367,6 +369,10 @@ CERTIFICACION = [
     ('cuit_titular_planta', 11, N),
     ('razon_social_titular_planta', 11, A),
 
+    # campos no documentados por AFIP (agregados luego de WSLPGv1.15 a fines Sept)
+    ('servicios_conceptos_no_gravados', 10, I, 2),
+    ('servicios_percepciones_iva', 10, I, 2),
+    ('servicios_otras_percepciones', 10, I, 2),
 ]
 
 CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
@@ -434,6 +440,7 @@ class WSLPG(BaseWS):
                         'AutorizarLiquidacion',
                         'AutorizarLiquidacionSecundaria', 
                         'AnularLiquidacionSecundaria','AnularLiquidacion',
+                        'AutorizarAnticipo', 'CancelarAnticipo',
                         'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion', 'AgregarPercepcion',
@@ -679,6 +686,7 @@ class WSLPG(BaseWS):
         # inicializo las listas que contentran las retenciones y deducciones:
         self.retenciones = []
         self.deducciones = []
+        self.opcionales = []        # para anticipo
         # limpio las estructuras internas no utilizables en este caso
         self.certificacion = None
         return True
@@ -921,6 +929,65 @@ class WSLPG(BaseWS):
         ret = ret['oReturn']
         self.__analizar_errores(ret)
         self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AutorizarAnticipo(self):
+        "Autorizar Anticipo de una Liquidación Primaria Electrónica de Granos"
+
+        # extraer y adaptar los campos para el anticipo
+        anticipo = {"liquidacion": self.liquidacion}
+        liq = anticipo["liquidacion"] 
+        liq["campaniaPpal"] = self.liquidacion["campaniaPPal"]
+        liq["codLocProcedencia"] = self.liquidacion["codLocalidadProcedencia"]
+        liq["descPuertoLocalidad"] = self.liquidacion["desPuertoLocalidad"]
+        
+        if self.opcionales:
+            liq['opcionales'] = self.opcionales
+
+        if self.retenciones:
+            anticipo['retenciones'] = self.retenciones
+        
+        # llamo al webservice:
+        ret = self.client.lpgAutorizarAnticipo(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        anticipo=anticipo,
+                        )
+
+        # analizo la respusta
+        ret = ret['liqReturn']
+        self.__analizar_errores(ret)
+        self.AnalizarLiquidacion(ret.get('autorizacion'), self.liquidacion)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def CancelarAnticipo(self, pto_emision=None, nro_orden=None, coe=None, 
+                               pdf=None):
+        "Cancelar Anticipo de una Liquidación Primaria Electrónica de Granos"
+        
+        # llamo al webservice:
+        ret = self.client.lpgCancelarAnticipo(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        coe=coe,
+                        ptoEmision=pto_emision,
+                        nroOrden=nro_orden,
+                        pdf="S" if pdf else "N",
+                        )
+
+        # analizo la respusta
+        ret = ret['liqConsReturn']
+        self.__analizar_errores(ret)
+        if 'liquidacion' in ret:
+            aut = ret['autorizacion']
+            liq = ret['liquidacion']
+            self.AnalizarLiquidacion(aut, liq)
+        # guardo el PDF si se indico archivo y vino en la respuesta:
+        if pdf and 'pdf' in ret:
+            open(pdf, "wb").write(ret['pdf'])
         return True
 
     def AnalizarLiquidacion(self, aut, liq=None, ajuste=False):
@@ -1365,9 +1432,14 @@ class WSLPG(BaseWS):
                     tasa_lsg = "10" if tasa == "105" else tasa 
                     self.ajuste[k]['importeAjustar%s' % tasa_lsg] = self.ajuste[k]['importeAjustarIva%s' % tasa]
                     self.ajuste[k]['conceptoIva%s' % tasa_lsg] = self.ajuste[k]['conceptoImporteIva%s' % tasa]
-                # no enviar tag percepciones vacio
-                if not self.ajuste[k]['percepciones']:
-                    del self.ajuste[k]['percepciones']
+                # no enviar tag percepciones vacio (no agrupar en subtipo)
+                if self.ajuste[k]['percepciones']:
+                    self.ajuste[k]['percepcion'] = [ 
+                        per["percepcion"] for per 
+                        in self.ajuste[k]['percepciones']]
+                del self.ajuste[k]['percepciones']
+                    
+                
 
         base = self.ajuste['ajusteBase']
         base['coe'] = base['coeAjustado']
@@ -1559,6 +1631,18 @@ class WSLPG(BaseWS):
                 serviciosOtros=servicios_otros or None,
                 serviciosFormaDePago=servicios_forma_de_pago or None,
             )
+        # si se pasan campos no documentados por AFIP, intentar enviarlo:
+        for k, kk in {
+            'servicios_conceptos_no_gravados': 'serviciosConceptosNoGravados', 
+            'servicios_percepciones_iva': 'serviciosPercepcionesIva',
+            'servicios_otras_percepciones': 'serviciosOtrasPercepciones',
+            }.items():
+            v = kwargs.get(k)
+            # cuidado: si AFIP retira el campo, puede fallar si se pasa en 0
+            if isinstance(v, basestring) and v and not v.isalpha():
+                v = float(v)
+            if v:
+                self.certificacion['primaria'][kk] = v
         return True
 
     
@@ -1766,7 +1850,7 @@ class WSLPG(BaseWS):
             self.PtoEmision = aut['ptoEmision']
             self.NroOrden = aut['nroOrden']
             self.FechaCertificacion = str(aut.get('fechaCertificacion', ""))
-            self.COE = aut['coe']
+            self.COE = str(aut['coe'])
             self.Estado = aut['estado']
             # actualizo parámetros de salida:
             self.params_out['coe'] = self.COE
@@ -1828,6 +1912,10 @@ class WSLPG(BaseWS):
             self.params_out['servicios_zarandeo'] = pri.get('serviciosZarandeo')
             self.params_out['servicios_otros'] = pri.get('serviciosOtros')
             self.params_out['servicios_forma_de_pago'] = pri.get('serviciosFormaDePago')
+            # otros campos no documentados:
+            self.params_out['servicios_conceptos_no_gravados'] = pri.get("serviciosConceptosNoGravados")
+            self.params_out['servicios_percepciones_iva'] = pri.get("serviciosPercepcionesIVA")
+            self.params_out['servicios_otras_percepciones'] = pri.get("serviciosOtrasPercepciones")            
             # sub estructuras:
             self.params_out['ctgs'] = []
             self.params_out['det_muestra_analisis'] = []
@@ -1882,6 +1970,8 @@ class WSLPG(BaseWS):
             self.params_out['cac_certificado_deposito_preexistente'] = pre.get('cacCertificadoDepositoPreexistente')
             self.params_out['fecha_emision_certificado_deposito_preexistente'] = pre.get('fechaEmisionCertificadoDepositoPreexistente')
             self.params_out['peso_neto'] = pre.get('pesoNeto')
+        
+        self.params_out['errores'] = self.errores
 
     @inicializar_y_capturar_excepciones
     def InformarCalidadCertificacion(self, coe):
@@ -2914,6 +3004,9 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['ajuste_debito'].get('deducciones', []):
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
+            for it in dic['ajuste_debito'].get('percepciones', []):
+                it['tipo_reg'] = "P"
+                archivo.write(escribir(it, PERCEPCION))
         if 'ajuste_credito' in dic:
             dic['ajuste_credito']['tipo_reg'] = 5
             archivo.write(escribir(dic['ajuste_credito'], AJUSTE))
@@ -2923,6 +3016,9 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['ajuste_credito'].get('deducciones', []):
                 it['tipo_reg'] = 3
                 archivo.write(escribir(it, DEDUCCION))
+            for it in dic['ajuste_credito'].get('percepciones', []):
+                it['tipo_reg'] = "P"
+                archivo.write(escribir(it, PERCEPCION))
         if 'ctgs' in dic:
             for it in dic['ctgs']:
                 it['tipo_reg'] = 'C'
@@ -3013,11 +3109,11 @@ def leer_archivo(nombre_archivo):
                 liq['opcionales'].append(leer(linea, OPCIONAL))
             elif str(linea[0])=='4':
                 liq = leer(linea, AJUSTE)
-                liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
+                liq.update({'retenciones': [], 'deducciones': [], 'percepciones': [], 'datos': []})
                 dic['ajuste_debito'] = liq
             elif str(linea[0])=='5':
                 liq = leer(linea, AJUSTE)
-                liq.update({'retenciones': [], 'deducciones': [], 'datos': []})
+                liq.update({'retenciones': [], 'deducciones': [], 'percepciones': [], 'datos': []})
                 dic['ajuste_credito'] = liq
             elif str(linea[0])=='7':
                 # actualizo con cabecera para certificaciones de granos:
@@ -3348,7 +3444,7 @@ if __name__ == '__main__':
             print "Errores:", wslpg.Errores
             print "COE", wslpg.COE
             print "COEAjustado", wslpg.COEAjustado
-            print "TootalDeduccion", wslpg.TotalDeduccion
+            print "TotalDeduccion", wslpg.TotalDeduccion
             print "TotalRetencion", wslpg.TotalRetencion
             print "TotalRetencionAfip", wslpg.TotalRetencionAfip
             print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
@@ -3625,6 +3721,8 @@ if __name__ == '__main__':
                 ret = wslpg.ConsultarLiquidacionSecundaria(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             elif '--cg' in sys.argv:
                 ret = wslpg.ConsultarCertificacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
+            elif '--cancelar-anticipo' in sys.argv:
+                ret = wslpg.CancelarAnticipo(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             else:
                 ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             print "COE", wslpg.COE
@@ -3828,7 +3926,7 @@ if __name__ == '__main__':
                         importe_ajustar_iva_105=200,
                         concepto_importe_iva_21='Alicuota 21',
                         importe_ajustar_iva_21=50,
-                        percepciones=[{'detalle_aclaratoria': 'percepcion 1',
+                        percepciones=[{'detalle_aclaratoria': 'percepcion 2',
                                       'base_calculo': 1000, 'alicuota_iva': 21}],
                         datos_adicionales='AJUSTE DEB LSG',
                         ),
@@ -3844,7 +3942,7 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA)
             
             dic = leer_archivo(ENTRADA)
-                            
+            
             if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
                 # consulto el último número de orden emitido:
                 ok = wslpg.ConsultarLiquidacionSecundariaUltNroOrden(dic['pto_emision'])
@@ -3868,13 +3966,13 @@ if __name__ == '__main__':
             if 'ajuste_credito' in dic:
                 liq = dic['ajuste_credito']
                 wslpg.CrearAjusteCredito(**liq)
-                for per in dic.get("percepciones", []):
+                for per in liq.get("percepciones", []):
                     wslpg.AgregarPercepcion(**per)
             
             if 'ajuste_debito' in dic:
                 liq = dic['ajuste_debito']
                 wslpg.CrearAjusteDebito(**liq)
-                for per in dic.get("percepciones", []):
+                for per in liq.get("percepciones", []):
                     wslpg.AgregarPercepcion(**per)
             
             if '--testing' in sys.argv:
@@ -3906,6 +4004,80 @@ if __name__ == '__main__':
 
             if DEBUG: 
                 pprint.pprint(dic)
+
+        if '--autorizar-anticipo' in sys.argv:
+        
+            if '--prueba' in sys.argv:
+                # genero una liquidación de ejemplo:
+                dic = dict(
+                    pto_emision=33,
+                    nro_orden=1, 
+                    cuit_comprador='20400000000',  
+                    nro_act_comprador='40',
+                    nro_ing_bruto_comprador='123',
+                    cod_tipo_operacion=2,
+                    cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
+                    cod_grano=1, 
+                    peso_neto_sin_certificado=100,
+                    cuit_vendedor="30000000006",
+                    nro_ing_bruto_vendedor=123456,
+                    actua_corredor="S", liquida_corredor="S",
+                    cuit_corredor=wslpg.Cuit, # uso Cuit representado
+                    nro_ing_bruto_corredor=wslpg.Cuit,
+                    comision_corredor="20.6",
+                    fecha_precio_operacion="2015-10-10",
+                    precio_ref_tn=567,  ## precio_operacion=150,
+                    alic_iva_operacion="10.5", campania_ppal=1415,
+                    cod_localidad_procedencia=197,
+                    cod_prov_procedencia=10,
+                    datos_adicionales="Prueba",
+                    retenciones=[dict(codigo_concepto="RI",
+                                      detalle_aclaratorio="Retenciones IVA",
+                                      base_calculo=100,
+                                      alicuota=10.5, ),
+                                 dict(codigo_concepto="RG",
+                                      detalle_aclaratorio="Retenciones GAN",
+                                      base_calculo=100,
+                                      alicuota=2, )],
+                )
+                escribir_archivo(dic, ENTRADA, agrega=('--agrega' in sys.argv))
+            dic = leer_archivo(ENTRADA)
+            
+            # cargo la liquidación:
+            wslpg.CrearLiquidacion(**dic)
+            
+            for ret in dic.get('retenciones', []):
+                wslpg.AgregarRetencion(**ret)
+
+            print "Liquidacion Primaria (Ant): pto_emision=%s nro_orden=%s" % (
+                    wslpg.liquidacion['ptoEmision'],
+                    wslpg.liquidacion['nroOrden'],
+                    )
+            
+            if '--testing' in sys.argv:
+                # mensaje de prueba (no realiza llamada remota), 
+                wslpg.LoadTestXML("wslpg_autorizar_ant_resp.xml")
+            
+            wslpg.AutorizarAnticipo()
+            
+            if wslpg.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
+                if DEBUG: print >> sys.stderr, wslpg.Traceback
+            print "Errores:", wslpg.Errores
+            print "COE", wslpg.COE
+            print wslpg.GetParametro("cod_tipo_operacion")
+            print wslpg.GetParametro("fecha_liquidacion") 
+            print "TootalDeduccion", wslpg.TotalDeduccion
+            print "TotalRetencion", wslpg.TotalRetencion
+            print "TotalRetencionAfip", wslpg.TotalRetencionAfip
+            print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
+            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
+            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+
+            # actualizo el archivo de salida con los datos devueltos
+            dic.update(wslpg.params_out)
+            escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
 
         if '--autorizar-cg' in sys.argv:
         
@@ -3942,6 +4114,10 @@ if __name__ == '__main__':
                         peso_neto_certificado=21, servicios_secado=22,  
                         servicios_zarandeo=23, servicios_otros=24, 
                         servicios_forma_de_pago=25,
+                        # campos no documentados por AFIP:
+                        servicios_conceptos_no_gravados=26, 
+                        servicios_percepciones_iva=27,
+                        servicios_otras_percepciones=0,     # no enviar si es 0
                         )
                     dic.update(dep)
                     

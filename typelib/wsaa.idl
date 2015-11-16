@@ -43,12 +43,53 @@ interface IWSAA : IDispatch
 	[propget, id(17)] HRESULT LanzarExcepciones( [out, retval] BOOL *  val); 
 	[propget, id(18)] HRESULT XmlRequest( [out, retval] BSTR *  val); 
 
+    [id(19)] HRESULT AnalizarCertificado(
+                          [in] BSTR crt,
+                          [in] BOOL binary,
+                          [out, retval] BOOL * ok);
+
+	[propget, id(20)] HRESULT Identidad( [out, retval] BSTR *  val); 
+	[propget, id(21)] HRESULT Caducidad( [out, retval] BSTR *  val); 
+	[propget, id(22)] HRESULT Emisor( [out, retval] BSTR *  val); 
+
+    [id(23)] HRESULT CrearClavePrivada(
+                          [in] BSTR filename,
+                          [in] int key_length,
+                          [in] long pub_exponent,
+                          [in] BSTR passphrase,
+                          [out, retval] void
+                          );
+
+    [id(24)] HRESULT CrearPedidoCertificado(
+                          [in] BSTR cuit,
+                          [in] BSTR empresa,
+                          [in] BSTR nombre,
+                          [in] BSTR filename,
+                          [out, retval] void
+                          );
+                          
+    [id(25)] HRESULT SetParametro(
+                          [in] BSTR clave,
+                          [in] BSTR valor,
+                          [out, retval] BSTR * ok);
+    
+    [id(26)] HRESULT Autenticar(
+                          [in] BSTR service,
+                          [in] BSTR crt,
+                          [in] BSTR key,
+                          [in] BSTR wsdl,
+                          [in] BSTR proxy,
+                          [in] BSTR wrapper,
+                          [in] BSTR cacert,
+                          [in] BOOL debug,
+                          [out, retval] BSTR * TA);
+    
 };  //end interface def
 
 [
 	uuid(30E9C94B-7385-4534-9A80-DF50FD169253),
-	version(2.4),
-	helpstring("PyAfipWs WSAA 2.04 Type Library"),
+	version(2.10),
+	helpstring("PyAfipWs WSAA 2.10 Type Library"),
 ] library PyAfipWsWSAALib
 {
 	importlib("stdole32.tlb");

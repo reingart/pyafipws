@@ -107,32 +107,35 @@ def redondear(formato, clave, valor):
     from formato_txt import A, N, I
     # corregir redondeo (aparentemente sqlite no guarda correctamente los decimal)
     import decimal
-    long = [fmt[1] for fmt in formato if fmt[0]==clave]
-    tipo = [fmt[2] for fmt in formato if fmt[0]==clave]
-    if not tipo:
-        return valor
-    tipo = tipo[0]
-    if DEBUG: print "tipo", tipo, clave, valor, long
-    if valor is None:
-        return None
-    if valor == "":
-        return ""
-    if tipo == A:
-        return valor
-    if tipo == N:
-        return int(valor)
-    if isinstance(valor, (int, float)):
-        valor = str(valor)
-    if isinstance(valor, basestring):
-        valor = Decimal(valor) 
-    if long and isinstance(long[0], (tuple, list)):
-        decimales = Decimal('1')  / Decimal(10**(long[0][1]))
-    else:
-        decimales = Decimal('.01')
-    valor1 = valor.quantize(decimales, rounding=decimal.ROUND_DOWN)
-    if valor != valor1 and DEBUG:
-        print "REDONDEANDO ", clave, decimales, valor, valor1
-    return valor1
+    try:
+        long = [fmt[1] for fmt in formato if fmt[0]==clave]
+        tipo = [fmt[2] for fmt in formato if fmt[0]==clave]
+        if not tipo:
+            return valor
+        tipo = tipo[0]
+        if DEBUG: print "tipo", tipo, clave, valor, long
+        if valor is None:
+            return None
+        if valor == "":
+            return ""
+        if tipo == A:
+            return valor
+        if tipo == N:
+            return int(valor)
+        if isinstance(valor, (int, float)):
+            valor = str(valor)
+        if isinstance(valor, basestring):
+            valor = Decimal(valor) 
+        if long and isinstance(long[0], (tuple, list)):
+            decimales = Decimal('1')  / Decimal(10**(long[0][1]))
+        else:
+            decimales = Decimal('.01')
+        valor1 = valor.quantize(decimales, rounding=decimal.ROUND_DOWN)
+        if valor != valor1 and DEBUG:
+            print "REDONDEANDO ", clave, decimales, valor, valor1
+        return valor1
+    except Exception as e:
+        print "IMPOSIBLE REDONDEAR:", clave, valor, e
 
 
 def escribir(facts, db, schema={}, commit=True):

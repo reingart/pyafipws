@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.21b"
+__version__ = "1.22d"
 
 LICENCIA = """
 sired.py: Generador de archivos ventas para SIRED/SIAP RG1361/02 RG1579/03
@@ -35,6 +35,7 @@ import datetime
 from decimal import Decimal
 import os
 import sys
+import unicodedata
 import sqlite3
 import traceback
 
@@ -197,6 +198,41 @@ VENTAS_TIPO2 = [
     ('impto_perc_mun', 15, I),
     ('imp_internos', 15, I),
     ('relleno', 122, B),
+    ]
+
+# Regimen de informacion de compras y ventas
+
+REGINFO_CV_VENTAS_CBTE = [
+    ('fecha_cbte', 8, N),
+    ('tipo_cbte', 3, N),
+    ('punto_vta', 5, N),
+    ('cbt_numero_desde', 20, N),
+    ('cbt_numero_hasta', 20, N),
+    ('tipo_doc', 2, N),
+    ('nro_doc', 20, N),
+    ('nombre', 30, A),
+    ('imp_total', 15, I),
+    ('imp_tot_conc', 15, I),
+    ('impto_liq_rni', 15, I),
+    ('imp_op_ex', 15, I),
+    ('impto_perc', 15, I),
+    ('imp_iibb', 15, I),
+    ('impto_perc_mun', 15, I),
+    ('imp_internos', 15, I),
+    ('imp_moneda_id', 3, A),
+    ('imp_moneda_ctz', 10, I),
+    ('cant_alicuota_iva', 1, N),
+    ('codigo_operacion', 1, C),
+    ('imp_trib', 15, I),
+    ]
+
+REGINFO_CV_VENTAS_CBTE_ALICUOTA = [
+    ('tipo_cbte', 3, N),
+    ('punto_vta', 5, N),
+    ('cbt_numero', 20, N),
+    ('imp_neto', 15, I),
+    ('alicuota_iva', 4, I),
+    ('impto_liq', 15, I),
     ]
 
 
@@ -737,8 +773,8 @@ if __name__ == '__main__':
             csv.writerow(dict([(k, k) for k in claves]))
             f = open("VENTAS.txt")
             for linea in f:
-                if str(linea[0])=='1':
-                    datos = leer(linea, VENTAS_TIPO1)
+                if str(linea[0])=='2':
+                    datos = leer(linea, REGINFO_CV_VENTAS_CBTE)
 
                     if '--completar_padron' in sys.argv:
                         cuit = datos['nro_doc']
@@ -751,8 +787,8 @@ if __name__ == '__main__':
                                                         padron.localidad.encode("latin1"), 
                                                         padron.cod_postal.encode("latin1")) 
                         datos["provincia_cliente"] = padron.provincia.encode("latin1")
-                        datos['cbte_nro'] = datos['cbt_numero']
-                        datos['id_impositivo'] = categorias_iva[int(datos['categoria'])]
+                        datos['cbte_nro'] = datos['cbt_numero_desde']
+                        #datos['id_impositivo'] = categorias_iva[int(datos['categoria'])]
                     csv.writerow(datos)
             f.close()
         else:
@@ -763,6 +799,12 @@ if __name__ == '__main__':
                 # pre-procesar:
                 for factura in facturas:
                     for k, v in factura.items():
+                        # decodificar strings (evitar problemas unicode)
+                        if isinstance(v, basestring):
+                            if isinstance(v, str):
+                                v = v.decode("latin1", "ignore")
+                            factura[k] = unicodedata.normalize('NFKD', v).encode('ASCII', 'ignore')
+                            print k,factura[k]
                         # convertir tipos de datos desde los strings del CSV
                         if k.startswith("imp"):
                             factura[k] = float(v)
@@ -799,7 +841,9 @@ if __name__ == '__main__':
                     for det in detalles:
                         iva_id = det.get('iva_id', 5)
                         if isinstance(det.get('ds'), str):
-                            det['ds'] = det['ds'].decode("ascii", "ignore")
+                            det['ds'] = det['ds'].decode("latin1", "ignore")
+                        if 'ds' in det:
+                            det['ds'] = unicodedata.normalize('NFKD', det['ds']).encode('ASCII', 'ignore')
                         print det
                         if iva_id:
                             iva_id = int(iva_id)
@@ -808,10 +852,25 @@ if __name__ == '__main__':
 
                             importe = det.get('importe', det.get('total'))
                             if importe:
+                                iva = det.get('imp_iva', None)
                                 importe = round(float(importe.replace(",", ".")), 2)
-                                neto = round(importe / ((100 + alicuotas[iva_id]) / 100), 2)
-                                iva = importe - neto
-                                print "importe", importe, iva
+                                if not iva is None:
+                                    iva = round(float(iva.replace(",", ".")), 2)
+                                # si el iva es incorrecto o no está, liquidar:                                
+                                if not iva and iva_id > 3:
+                                    # extraer IVA incluido factura B:
+                                    if factura["tipo_cbte"] in (6, 7, 8):
+                                        neto = round(importe / ((100 + alicuotas[iva_id]) / 100.), 2)
+                                        iva = importe - neto
+                                    else:
+                                        neto = importe
+                                        iva = round(neto * alicuotas[iva_id] /100., 2)
+                                    print "importe iva calc:", importe, iva
+                                else:
+                                    neto = importe
+                                    # descontar IVA incluido factura B:
+                                    if factura["tipo_cbte"] in (6, 7, 8):
+                                        neto = neto - iva
                                 imp_iva += iva
                                 ivas[iva_id]['importe'] += iva
                                 ivas[iva_id]['base_imp'] += neto
@@ -822,10 +881,15 @@ if __name__ == '__main__':
                     factura['ivas'] = ivas.values()
                     factura['datos'] = []
                     factura['tributos'] = []
-                    factura['imp_iva'] = imp_iva
+                    if 'imp_iva' not in factura or factura['imp_iva'] == "":
+                        print "debe agregar el IVA total en el encabezado..."
+                        factura['imp_iva'] = imp_iva
                     if 'cbt_numero' in factura:
                         factura['cbt_desde'] = factura['cbt_numero']
                         factura['cbt_hasta'] = factura['cbt_numero']
+                    if 'nombre' in factura:
+                        factura['nombre_cliente'] = factura['nombre']
+                        factura['domicilio_cliente'] = factura['domicilio']
                     factura['cbte_nro'] = factura['cbt_desde']
                     if not 'concepto' in factura:
                         factura['concepto'] = 1

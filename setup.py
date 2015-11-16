@@ -17,8 +17,8 @@ import subprocess
 import warnings
 import sys
 
-try:
-    rev = subprocess.check_output(['hg', 'id', '--num']).strip().rstrip("+")
+try:  
+    rev = subprocess.check_output(['hg', 'tip', '--template', '{rev}']).strip()
 except:
     rev = 0
 

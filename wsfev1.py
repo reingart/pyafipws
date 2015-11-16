@@ -73,7 +73,7 @@ class WSFEv1(BaseWS):
 
     if TYPELIB:
         _typelib_guid_ = '{B1D7283C-3EC2-463E-89B4-11F5228E2A15}'
-        _typelib_version_ = 1, 13
+        _typelib_version_ = 1, 17
         _com_interfaces_ = ['IWSFEv1']
         ##_reg_class_spec_ = "wsfev1.WSFEv1"
         
@@ -910,7 +910,7 @@ def main():
             wsfev1.EstablecerCampoFactura("caea", caea)
 
         # comprobantes asociados (notas de crédito / débito)
-        if tipo_cbte in (1, 2, 3, 6, 7, 8, 11, 12, 13):
+        if tipo_cbte in (2, 3, 7, 8, 12, 13):
             tipo = 3
             pto_vta = 2
             nro = 1234
@@ -919,8 +919,8 @@ def main():
         # otros tributos:
         tributo_id = 99
         desc = 'Impuesto Municipal Matanza'
-        base_imp = 100
-        alic = 1
+        base_imp = None
+        alic = None
         importe = 1
         wsfev1.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
