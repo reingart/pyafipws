@@ -124,13 +124,13 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
             raise
 
 
-def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False):
+def call_wsaa(cms, location = WSAAURL, proxy=None, trace=False, cacert=None):
     "Llamar web service con CMS para obtener ticket de autorización (TA)"
 
     # creo la nueva clase
     wsaa = WSAA()
     try:
-        wsaa.Conectar(proxy=proxy, wsdl=location, cache="")
+        wsaa.Conectar(proxy=proxy, wsdl=location, cache="", cacert=cacert)
         ta = wsaa.LoginCMS(cms)
         if not ta:
             raise RuntimeError(wsaa.Excepcion)
@@ -159,7 +159,7 @@ class WSAA(BaseWS):
 
     if TYPELIB:
         _typelib_guid_ = '{30E9C94B-7385-4534-9A80-DF50FD169253}'
-        _typelib_version_ = 2, 4
+        _typelib_version_ = 2, 10
         _com_interfaces_ = ['IWSAA']
 
     # Variables globales para BaseWS:

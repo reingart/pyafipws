@@ -306,10 +306,14 @@ class PadronAFIP():
             self.denominacion = data.get("nombre")
             # analizo el domicilio
             domicilio = data.get("domicilioFiscal")
-            self.direccion = domicilio.get("direccion", "")
-            self.localidad = domicilio.get("localidad", "")  # no usado en CABA
-            self.provincia = PROVINCIAS.get(domicilio.get("idProvincia"), "")
-            self.cod_postal = domicilio.get("codPostal")
+            if domicilio:
+                self.direccion = domicilio.get("direccion", "")
+                self.localidad = domicilio.get("localidad", "")  # no usado en CABA
+                self.provincia = PROVINCIAS.get(domicilio.get("idProvincia"), "")
+                self.cod_postal = domicilio.get("codPostal")
+            else:
+                self.direccion = self.localidad = self.provincia = ""
+                self.cod_postal = ""
             # retrocompatibilidad:
             self.domicilios = ["%s - %s (%s) - %s" % (
                                     self.direccion, self.localidad, 

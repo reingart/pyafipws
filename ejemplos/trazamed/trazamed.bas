@@ -315,4 +315,53 @@ Sub Main()
         MsgBox TrazaMed.Traceback, vbCritical, TrazaMed.Excepcion
     End If
 
+    ' chequeo la versión mínima para especificación técnica v2 (2015):
+    Debug.Assert TrazaMed.Version >= "1.16b  1.08a"
+
+    ' consultar stock:
+    id_medicamento = Null
+    id_agente = Null
+    descripcion = Null
+    cantidad = Null
+    presentacion = Null
+    lote = Null
+    numero_serial = Null
+    nro_pag = 1
+    cant_reg = 100
+    cant = TrazaMed.GetConsultaStock(usuario, password, _
+                         id_medicamento, id_agente, descripcion, _
+                         cantidad, presentacion, _
+                         lote, numero_serial, _
+                         nro_pag, cant_reg)
+    ' revisar si hubo errores:
+    Debug.Print TrazaMed.XmlRequest, TrazaMed.XmlResponse, Err.Description
+    If ok Then
+    ' recorro las transacciones devueltas (TransaccionPlainWS)
+        For i = 0 To cant
+            If MsgBox( _
+                    "GLN: " & TrazaMed.GetParametro(i, "gln") & vbCrLf & _
+                    "GTIN: " & TrazaMed.GetParametro(i, "gtin") & vbCrLf & _
+                    "Forma: " & TrazaMed.GetParametro(i, "forma") & vbCrLf & _
+                    "Nombre: " & TrazaMed.GetParametro(i, "nombre") & vbCrLf & _
+                    "P.Unidades: " & TrazaMed.GetParametro(i, "p_unidades") & vbCrLf & _
+                    "Presentacion: " & TrazaMed.GetParametro(i, "presentacion") & vbCrLf & _
+                    "Lote: " & TrazaMed.GetParametro(i, "lote") & vbCrLf & _
+                    "Serie: " & TrazaMed.GetParametro(i, "serie"), _
+                    vbInformation + vbOKCancel, "GetConsultaStock") = vbCancel Then
+                Exit For
+            End If
+            Debug.Print TrazaMed.GetParametro(i, "forma")
+            Debug.Print TrazaMed.GetParametro(i, "gln")
+            Debug.Print TrazaMed.GetParametro(i, "gtin")
+            Debug.Print TrazaMed.GetParametro(i, "lote")
+            Debug.Print TrazaMed.GetParametro(i, "nombre")
+            Debug.Print TrazaMed.GetParametro(i, "p_unidades")
+            Debug.Print TrazaMed.GetParametro(i, "presentacion")
+            Debug.Print TrazaMed.GetParametro(i, "serie")
+        Next
+    Else
+        MsgBox TrazaMed.Traceback, vbCritical, TrazaMed.Excepcion
+    End If
+
+
 End Sub
