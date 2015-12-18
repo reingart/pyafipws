@@ -18,7 +18,7 @@ productos) según RG2904 (opción A con detalle) y RG2926/10 (CAE anticipado).
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12b"
+__version__ = "1.12c"
 
 import datetime
 import decimal
@@ -884,22 +884,32 @@ class WSMTXCA(BaseWS):
             return str(ret['cotizacionMoneda'])
 
     @inicializar_y_capturar_excepciones
-    def ConsultarPuntosVentaCAE(self):
+    def ConsultarPuntosVentaCAE(self, fmt="%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s"):
         "Este método permite consultar los puntos de venta habilitados para CAE en este WS"
-        ret = self.client.consultarPuntosVentaCAE(
+        res = self.client.consultarPuntosVentaCAE(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
-        return ["%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % p
-                 for p in ret['arrayPuntosVenta']]
+        ret = []
+        for p in res['arrayPuntosVenta']:
+            p = p['puntoVenta']
+            if 'fechaBaja' not in p:
+                p['fechaBaja'] = ""
+            ret.append(fmt % p if fmt else p)
+        return ret
 
     @inicializar_y_capturar_excepciones
-    def ConsultarPuntosVentaCAEA(self):
+    def ConsultarPuntosVentaCAEA(self, fmt="%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s"):
         "Este método permite consultar los puntos de venta habilitados para CAEA en este WS"
-        ret = self.client.consultarPuntosVentaCAEA(
+        res = self.client.consultarPuntosVentaCAEA(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
-        return ["%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % p
-                 for p in ret['arrayPuntosVenta']]
+        ret = []
+        for p in res['arrayPuntosVenta']:
+            p = p['puntoVenta']
+            if 'fechaBaja' not in p:
+                p['fechaBaja'] = ""
+            ret.append(fmt % p if fmt else p)
+        return ret
 
     @inicializar_y_capturar_excepciones
     def ConsultarPtosVtaCAEANoInformados(self, caea):

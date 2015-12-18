@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31a"
+__version__ = "1.31b"
 
 import datetime
 import os
@@ -360,6 +360,8 @@ if __name__ == "__main__":
             print "Consultando puntos de venta CAE..."
             print '\n'.join(ws.ConsultarPuntosVentaCAE())
             print "Consultando puntos de venta CAEA..."
+            if "--testing" in sys.argv:
+                ws.LoadTestXML("tests/wsmtx_ptosvta_caea_resp.xml")
             print '\n'.join(ws.ConsultarPuntosVentaCAEA())
             sys.exit(0)
             
