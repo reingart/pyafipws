@@ -191,6 +191,12 @@ def desaplanar(filas):
                 } for li in xrange(1, max_li("cantidad")) 
                   if dic['cantidad%s' % li] is not None]
                 
+        # descartar filas espurias vacias al final
+        for det in reg['detalles'][::-1]:
+            if any(det.values()):               # algun campo tiene dato termina
+                break
+            del reg['detalles'][-1]             # sino, borro último elemento
+        
         reg['tributos'] = [{
                 'tributo_id': dic.pop('tributo_id_%s'  % li),
                 'desc': dic.pop('tributo_desc_%s'  % li),
