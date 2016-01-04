@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04c"
+__version__ = "1.05a"
 
 
 import json
@@ -71,6 +71,7 @@ class PadronAFIP():
 
     _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
                         'ConsultarDomicilios', 'Consultar', 'Conectar',
+                        'DescargarConstancia', 'MostrarPDF',
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
                       'cuit', 'dni', 'denominacion', 'imp_ganancias', 'imp_iva',  
@@ -335,6 +336,30 @@ class PadronAFIP():
         return True
 
 
+    @inicializar_y_capturar_excepciones_simple
+    def DescargarConstancia(self, nro_doc, filename="constancia.pdf"):
+        "Llama a la API para descargar una constancia de inscripcion (PDF)"
+        if not self.client:
+            self.Conectar()
+        self.response = self.client("sr-padron", "v1", "constancia", str(nro_doc))
+        if self.response.startswith("{"):
+            result = json.loads(self.response)
+            assert not result["success"]
+            self.Excepcion = error['mensaje']
+        else:
+             with open(filename, "wb") as f:
+                f.write(self.response)
+        return True
+
+    @inicializar_y_capturar_excepciones_simple
+    def MostrarPDF(self, archivo, imprimir=False):
+        if sys.platform.startswith(("linux2", 'java')):
+            os.system("evince ""%s""" % archivo)
+        else:
+            operation = imprimir and "print" or ""
+            os.startfile(archivo, operation)
+        return True
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
@@ -374,6 +399,12 @@ if __name__ == "__main__":
             print "IVA", padron.imp_iva
             print "MT", padron.monotributo, padron.actividad_monotributo
             print "Empleador", padron.empleador
+        elif '--constancia' in sys.argv:
+            filename = sys.argv[2]
+            padron.DescargarConstancia(cuit, filename)
+            if '--mostrar' in sys.argv:
+                padron.MostrarPDF(archivo=filename,
+                                 imprimir='--imprimir' in sys.argv)
         else:
             ok = padron.Buscar(cuit)
             if ok:
