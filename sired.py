@@ -52,6 +52,7 @@ categorias = {"responsable inscripto": "01", # IVA Responsable Inscripto
               "exento": "04", # IVA Sujeto Exento
               "consumidor final": "05", # Consumidor Final
               "monotributo": "06", # Responsable Monotributo
+              "responsable monotributo": "06", # Responsable Monotributo
               "no categorizado": "07", # Sujeto no Categorizado
               "importador": "08", # Importador del Exterior
               "exterior": "09", # Cliente del Exterior
