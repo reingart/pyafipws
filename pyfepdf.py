@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07w"
+__version__ = "1.07x"
 
 DEBUG = False
 HOMO = False
@@ -654,9 +654,11 @@ class FEPDF:
                             if it['codigo'] is not None:
                                 f.set('Item.Codigo%02d' % li, it['codigo'])
                             if it['umed'] is not None:
-                                f.set('Item.Umed%02d' % li, it['umed'])
                                 if it['umed']:
-                                    f.set('Item.Umed_ds%02d' % li, self.umeds_ds.get(int(it['umed'])))
+                                    # recortar descripción:
+                                    umed_ds = self.umeds_ds.get(int(it['umed']))
+                                    s = f.split_multicell(umed_ds, 'Item.Umed_ds01')
+                                    f.set('Item.Umed_ds%02d' % li, s[0])
                             # solo discriminar IVA en A/M (mostrar tasa en B)
                             if letra_fact in ('A', 'M', 'B'):
                                 if it.get('iva_id') is not None:
@@ -1077,19 +1079,34 @@ if __name__ == '__main__':
             umed = 7
             if tipo_cbte in (1, 2, 3, 4, 5, 34, 39, 51, 52, 53, 54, 60, 64):
                 # discriminar IVA si es clase A / M
-                precio = 100.00
-                imp_iva = 21.00
+                precio = 110.00
+                imp_iva = 23.10
             else:
                 # no discriminar IVA si es clase B (importe final iva incluido)
-                precio = 121.00
+                precio = 133.10
                 imp_iva = None
             bonif = 0.00
             iva_id = 5
-            importe = 121.00
+            importe = 133.10
             despacho = u'Nº 123456'
             dato_a = "Dato A"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, despacho, dato_a)
+            
+            # descuento general (a tasa 21%):
+            u_mtx = cod_mtx = codigo = None
+            ds = "Bonificación/Descuento 10%"
+            qty = precio = bonif = None
+            umed = 99
+            iva_id = 5
+            if tipo_cbte in (1, 2, 3, 4, 5, 34, 39, 51, 52, 53, 54, 60, 64):
+                # discriminar IVA si es clase A / M
+                imp_iva = -2.21
+            else:
+                imp_iva = None
+            importe = -12.10
+            fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
+                    precio, bonif, iva_id, imp_iva, importe, "")
 
             # completo campos personalizados de la plantilla:
             fepdf.AgregarDato("custom-nro-cli", "Cod.123")
