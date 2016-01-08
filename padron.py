@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 
 import json
@@ -345,11 +345,12 @@ class PadronAFIP():
         if self.response.startswith("{"):
             result = json.loads(self.response)
             assert not result["success"]
-            self.Excepcion = error['mensaje']
+            self.Excepcion = result['error']['mensaje']
+            return False
         else:
-             with open(filename, "wb") as f:
+            with open(filename, "wb") as f:
                 f.write(self.response)
-        return True
+            return True
 
     @inicializar_y_capturar_excepciones_simple
     def MostrarPDF(self, archivo, imprimir=False):
@@ -401,7 +402,9 @@ if __name__ == "__main__":
             print "Empleador", padron.empleador
         elif '--constancia' in sys.argv:
             filename = sys.argv[2]
-            padron.DescargarConstancia(cuit, filename)
+            print "Descargando constancia AFIP online...", cuit, filename
+            ok = padron.DescargarConstancia(cuit, filename)
+            print 'ok' if ok else "error", padron.Excepcion
             if '--mostrar' in sys.argv:
                 padron.MostrarPDF(archivo=filename,
                                  imprimir='--imprimir' in sys.argv)
