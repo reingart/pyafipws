@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.35a"
+__version__ = "1.36a"
 
 import datetime
 import os
@@ -661,6 +661,24 @@ if __name__ == "__main__":
             print u'\n'.join(ws.ParamGetPtosVenta())
             sys.exit(0)
 
+        if '/informarcaeanoutilizadoptovta' in sys.argv:
+            i = sys.argv.index('/informarcaeanoutilizadoptovta') 
+            if i+2 < len(sys.argv):
+                caea = sys.argv[i+1]
+                pto_vta = sys.argv[i+2]
+            else:
+                caea = raw_input("CAEA: ")
+                pto_vta = raw_input("Punto de Venta: ")
+            if DEBUG: 
+                print "Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta)
+            ok = ws.CAEASinMovimientoInformar(pto_vta, caea)
+            print "Resultado:", ok
+            print "FchProceso:", ws.FchProceso            
+            if ws.Errores:
+                print "Errores:"
+                for error in ws.Errores:
+                    print error
+            sys.exit(0)
 
         ws.LanzarExcepciones = False
         f_entrada = f_salida = None
