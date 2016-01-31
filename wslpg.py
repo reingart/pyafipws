@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28d"
+__version__ = "1.28e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -97,6 +97,7 @@ import os, sys, shelve
 import decimal, datetime
 import traceback
 import pprint
+import warnings
 from pysimplesoap.client import SoapFault
 from fpdf import Template
 import utils
@@ -1605,6 +1606,17 @@ class WSLPG(BaseWS):
             servicios_zarandeo=None, servicios_otros=None, 
             servicios_forma_de_pago=None,
             **kwargs):
+        
+        # compatibilidad hacia atras: utilizar nuevos campos mas amplio
+        v = None
+        if 'servicio_otros' in kwargs: 
+            v = kwargs.get('servicio_otros')
+            if isinstance(v, basestring) and v and not v.isalpha():
+                v = float(v)
+            if v:
+                servicios_otros = v
+        if not v:
+            warnings.warn("Usar servicio_otros para mayor cantidad de digitos")
         
         self.certificacion['primaria'] = dict(
                 nroActDepositario=nro_act_depositario,
@@ -4112,7 +4124,7 @@ if __name__ == '__main__':
                         porcentaje_merma_secado=17, peso_neto_merma_secado=18, 
                         porcentaje_merma_zarandeo=19, peso_neto_merma_zarandeo=20,
                         peso_neto_certificado=21, servicios_secado=22,  
-                        servicios_zarandeo=23, servicios_otros=24, 
+                        servicios_zarandeo=23, servicio_otros=240000, 
                         servicios_forma_de_pago=25,
                         # campos no documentados por AFIP:
                         servicios_conceptos_no_gravados=26, 
