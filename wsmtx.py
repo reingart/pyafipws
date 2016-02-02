@@ -28,7 +28,7 @@ from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_inst
 
 HOMO = False
 LANZAR_EXCEPCIONES = True
-WSDL="https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
+WSDL = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
     
 class WSMTXCA(BaseWS):
@@ -937,7 +937,12 @@ def main():
     wsmtxca.SetTicketAcceso(ta)
     wsmtxca.Cuit = "20267565393"
 
-    wsmtxca.Conectar()
+    cache = ""
+    if "--prod" in sys.argv:
+        wsdl = "https://serviciosjava.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
+    else:
+        wsdl = WSDL
+    wsmtxca.Conectar(cache, wsdl)
     
     if "--dummy" in sys.argv:
         print wsmtxca.client.help("dummy")

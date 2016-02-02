@@ -847,10 +847,13 @@ def main():
     wsfev1.LanzarExcepciones = True
 
     cache = None
-    wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
+    if "--prod" in sys.argv:
+        wsdl = "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL"
+    else:
+        wsdl = WSDL
     proxy = ""
     wrapper = "" #"pycurl"
-    cacert = None #geotrust.crt"
+    cacert = True #geotrust.crt"
 
     ok = wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
     
