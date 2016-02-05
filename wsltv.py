@@ -605,7 +605,7 @@ if __name__ == '__main__':
                 puerta, nro_tarjeta, horas, control,
                 nro_interno, iibb_emisor=None)
             
-            wsltv.AgregarCondicionVenta(codigo=1, descripcion="otra")            
+            wsltv.AgregarCondicionVenta(codigo=99, descripcion="otra")            
 
             # datos del receptor:
             cuit = 20111111112
@@ -630,16 +630,13 @@ if __name__ == '__main__':
             wsltv.AgregarPrecioClase(clase_tabaco, precio)
 
             # retencion:
-            descripcion = "retencion"
-            cod_retencion = 12
-            importe = 12
-            wsltv.AgregarRetencion(cod_retencion, descripcion, importe)
-            cod_retencion = 14
+            descripcion = "otra retencion"
+            cod_retencion = 99
             importe = 12
             wsltv.AgregarRetencion(cod_retencion, descripcion, importe)
 
             # tributo:
-            codigo_tributo = 4
+            codigo_tributo = 99
             descripcion = "Ganancias"
             base_imponible = 15000
             alicuota = 8
