@@ -200,7 +200,7 @@ class WSLTV(BaseWS):
                    )
                     
         self.solicitud = dict(liquidacion=liq,
-                              receptor=[],
+                              receptor={},
                               romaneo=[],
                               precioClase=[],
                               retencion=[],
@@ -220,7 +220,7 @@ class WSLTV(BaseWS):
     def AgregarReceptor(self, cuit, iibb, nro_socio, nro_fet, **kwargs):
         "Agrego un receptor a la liq."
         rcpt = dict(cuit=cuit, iibb=iibb, nroSocio=nro_socio, nroFET=nro_fet)
-        self.solicitud['receptor'].append(rcpt)
+        self.solicitud['receptor'] = rcpt
         return True
 
     @inicializar_y_capturar_excepciones
@@ -235,7 +235,7 @@ class WSLTV(BaseWS):
     def AgregarFardo(self, cod_trazabilidad, clase_tabaco, peso, **kwargs):
         "Agrego un fardo al último romaneo agregado a la liq."
         fardo = dict(codTrazabilidad=cod_trazabilidad, claseTabaco=clase_tabaco, peso=peso)
-        self.solicitud['romaneo']['fardo'][-1].append(fardo)
+        self.solicitud['romaneo'][-1]['fardo'].append(fardo)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -249,7 +249,7 @@ class WSLTV(BaseWS):
     def AgregarRetencion(self, cod_retencion, descripcion, importe, **kwargs):
         "Agrega la información referente a las retenciones de la liquidación"
         ret = dict(codRetencion=cod_retencion, descripcion=descripcion, importe=importe)
-        self.retenciones['retencion'].append(ret)
+        self.solicitud['retencion'].append(ret)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -535,26 +535,79 @@ if __name__ == '__main__':
 
         if '--autorizar' in sys.argv:
         
-            if '--prueba' in sys.argv:
-                pto_vta = 99
-                # genero una liquidación de ejemplo:
-                
-            if int(dic['nro_cbte']) == 0 and not '--testing' in sys.argv:
+            # genero una liquidación de ejemplo:
+
+            tipo_cbte = 150
+            pto_vta = 2002
+            
+            if not '--prueba' in sys.argv:
                 # consulto el último número de orden emitido:
-                ok = wsltv.ConsultarUltNroOrden(dic['tipo_cbte'], dic['pto_vta'])
+                ok = wsltv.ConsultarUltNroOrden(tipo_cbte, pto_vta)
                 if ok:
-                    dic['nro_cbte'] = wsltv.NroComprobante + 1
-
-            # establezco los parametros (se pueden pasar directamente al metodo)
-            for k, v in sorted(dic.items()):
-                if DEBUG: print "%s = %s" % (k, v)
-                wsltv.SetParametro(k, v)
+                    nro_cbte = wsltv.NroComprobante + 1
+            else:
+                nro_cbte = 1
                 
+            # datos de la cabecera:
+            fecha = '2016-01-01'
+            cod_deposito_acopio = 207
+            tipo_compra = 'CPS'
+            variedad_tabaco = 'BR'
+            cod_provincia_origen_tabaco = 1
+            puerta = 22
+            nro_tarjeta = 6569866
+            horas = 12
+            control = "FFAA"
+            nro_interno = "77888"
+            
             # cargo la liquidación:
-            wsltv.CrearLiquidacion()
+            wsltv.CrearLiquidacion(tipo_cbte, pto_vta, nro_cbte, fecha, 
+                cod_deposito_acopio, tipo_compra,
+                variedad_tabaco, cod_provincia_origen_tabaco,
+                puerta, nro_tarjeta, horas, control,
+                nro_interno, iibb_emisor=None)
+            
+            wsltv.AgregarCondicionVenta(codigo=1, descripcion="otra")            
 
-            for ret in dic.get('retenciones', []):
-                wsltv.AgregarRetencion(**ret)
+            # datos del receptor:
+            cuit = 20111111112
+            iibb = 123456
+            nro_socio = 11223   
+            nro_fet = 22
+            wsltv.AgregarReceptor(cuit, iibb, nro_socio, nro_fet)
+            
+
+            # datos romaneo:
+            nro_romaneo = 321
+            fecha_romaneo = "2015-12-10"
+            wsltv.AgregarRomaneo(nro_romaneo, fecha_romaneo)
+            # fardo:
+            cod_trazabilidad = 355
+            clase_tabaco = 4
+            peso= 900
+            wsltv.AgregarFardo(cod_trazabilidad, clase_tabaco, peso)
+            
+            # precio clase:
+            precio = 190
+            wsltv.AgregarPrecioClase(clase_tabaco, precio)
+
+            # retencion:
+            descripcion = "retencion"
+            cod_retencion = 12
+            importe = 12
+            wsltv.AgregarRetencion(cod_retencion, descripcion, importe)
+            cod_retencion = 14
+            importe = 12
+            wsltv.AgregarRetencion(cod_retencion, descripcion, importe)
+
+            # tributo:
+            codigo_tributo = 4
+            descripcion = "Ganancias"
+            base_imponible = 15000
+            alicuota = 8
+            importe = 1200
+            wsltv.AgregarTributo(codigo_tributo, descripcion, base_imponible, alicuota, importe)
+            
 
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
