@@ -421,6 +421,44 @@ class WSLTV(BaseWS):
                      it['descripcion']) 
                for it in array]
 
+    def ConsultarCondicionesVenta(self, sep="||"):
+        "Retorna un listado de códigos y descripciones de las condiciones de ventas"
+        ret = self.client.consultarCondicionesVenta(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        array = ret.get('condicionVenta', [])
+        if sep is None:
+            return dict([(int(it['codigo']), 
+                              it['descripcion']) 
+                         for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], 
+                     it['descripcion']) 
+               for it in array]
+
+    def ConsultarTributos(self, sep="||"):
+        "Retorna un listado de tributos con código, descripción y signo."
+        ret = self.client.consultarTributos(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        array = ret.get('tributo', [])
+        if sep is None:
+            return dict([(int(it['codigo']), 
+                              it['descripcion']) 
+                         for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], 
+                     it['descripcion']) 
+               for it in array]
+
     def MostrarPDF(self, archivo, imprimir=False):
         try:
             if sys.platform=="linux2":
@@ -695,6 +733,13 @@ if __name__ == '__main__':
             ret = wsltv.ConsultarProvincias()
             print "\n".join(ret)
 
+        if '--condicionesventa' in sys.argv:
+            ret = wsltv.ConsultarCondicionesVenta()
+            print "\n".join(ret)
+
+        if '--tributos' in sys.argv:
+            ret = wsltv.ConsultarTributos()
+            print "\n".join(ret)
 
         print "hecho."
         
