@@ -139,7 +139,7 @@ class WSLTV(BaseWS):
         self.AlicuotaIVA = ""
         self.TotalRetenciones = ""
         self.TotalTributos = ""
-        self.Total = ""
+        self.Subtotal = self.Total = ""
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
@@ -190,7 +190,6 @@ class WSLTV(BaseWS):
             nro_interno=None, iibb_emisor=None,
             **kwargs):
         "Inicializa internamente los datos de una liquidación para autorizar"
-
         # creo el diccionario con los campos generales de la liquidación:
         liq = dict(tipoComprobante=tipo_cbte, 
                    nroComprobante=nro_cbte, 
@@ -271,7 +270,6 @@ class WSLTV(BaseWS):
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
         "Autorizar Liquidación Electrónica de Tabaco Verde"
-                
         # llamo al webservice:
         ret = self.client.generarLiquidacion(
                         auth={
@@ -279,7 +277,6 @@ class WSLTV(BaseWS):
                             'cuit': self.Cuit, },
                         solicitud=self.solicitud,
                         )
-
         # analizo la respusta
         ret = ret['respuesta']
         self.__analizar_errores(ret)
@@ -389,7 +386,6 @@ class WSLTV(BaseWS):
             iibb_emisor=None, iibb_receptor=None, 
             **kwargs):
         "Inicializa internamente los datos de una liquidación para ajustar"
-
         # creo el diccionario con los campos generales de la liquidación:
         liq = dict(tipoComprobante=tipo_cbte, 
                    nroComprobante=nro_cbte, 
@@ -402,7 +398,6 @@ class WSLTV(BaseWS):
                    iibbEmisor=iibb_emisor,
                    comprobanteAAjustar=[],
                    )
-                    
         self.solicitud = dict(liquidacion=liq,
                               receptor=[],
                               romaneo=[],
@@ -410,7 +405,6 @@ class WSLTV(BaseWS):
                               retencion=[],
                               tributo=[],
                              )
-                              
         return True
 
     @inicializar_y_capturar_excepciones
@@ -757,7 +751,6 @@ if __name__ == '__main__':
             nro_fet = 22
             wsltv.AgregarReceptor(cuit, iibb, nro_socio, nro_fet)
             
-
             # datos romaneo:
             nro_romaneo = 321
             fecha_romaneo = "2015-12-10"
@@ -786,7 +779,6 @@ if __name__ == '__main__':
             importe = 1200
             wsltv.AgregarTributo(codigo_tributo, descripcion, base_imponible, alicuota, importe)
             
-
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo respuesta:
@@ -826,7 +818,6 @@ if __name__ == '__main__':
                 assert wsltv.GetParametro("emisor", "razon_social") == u'JOCKER'
                 assert wsltv.GetParametro("receptor", "domicilio") == u'Calle 1'
                 assert wsltv.GetParametro("receptor", "razon_social") == u'CUIT PF de Prueba gen\xe9rica'
-
                 assert wsltv.GetParametro("romaneos", 0, "detalle_clase", 0, "cantidad_fardos") == "1"
                 assert wsltv.GetParametro("romaneos", 0, "detalle_clase", 0, "cod_clase") == "4"
                 assert wsltv.GetParametro("romaneos", 0, "detalle_clase", 0, "importe") == "171000.0"
@@ -837,7 +828,6 @@ if __name__ == '__main__':
 
             if DEBUG: 
                 pprint.pprint(wsltv.params_out)
-
 
             
         if '--consultar' in sys.argv:
