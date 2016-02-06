@@ -110,6 +110,7 @@ class WSLTV(BaseWS):
         'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
         'CAE', 'NroComprobante', 'FechaLiquidacion',
         'ImporteNeto', 'TotalRetenciones', 'TotalTributos', 'Total',
+        'AlicuotaIVA', 'ImporteIVA', 'Subtotal',
         ]
     _reg_progid_ = "WSLTV"
     _reg_clsid_ = "{C6EEAE8A-7560-4538-B29C-76434A8C2DC3}"
@@ -127,6 +128,8 @@ class WSLTV(BaseWS):
         self.CAE = ""
         self.NroComprobante = self.FechaLiquidacion = ''
         self.ImporteNeto = ""
+        self.ImporteIVA = ""
+        self.AlicuotaIVA = ""
         self.TotalRetenciones = ""
         self.TotalTributos = ""
         self.Total = ""
@@ -275,19 +278,105 @@ class WSLTV(BaseWS):
         # analizo la respusta
         ret = ret['respuesta']
         self.__analizar_errores(ret)
-        self.AnalizarLiquidacion(ret.get('liquidacion'), self.liquidacion)
+        self.AnalizarLiquidacion(ret.get('liquidacion'))
         return True
 
 
-    def AnalizarLiquidacion(self, resp, liq=None, ajuste=False):
+    def AnalizarLiquidacion(self, liq):
         "Método interno para analizar la respuesta de AFIP"
         # proceso los datos básicos de la liquidación (devuelto por consultar):
         if liq:
+            cab = liq['cabecera']
+            self.CAE = str(cab['cae'])
+            self.FechaLiquidacion = cab['fechaLiquidacion']
+            self.NroComprobante = cab['nroComprobante']
+            tot = liq['totalesOperacion']
+            self.AlicuotaIVA = tot['alicuotaIVA']
+            self.ImporteNeto = tot['importeNeto']
+            self.ImporteIVA = tot['importeIVA']
+            self.Subtotal = tot['subtotal']
+            self.TotalRetenciones = tot['totalRetenciones']
+            self.TotalTributos = tot['totalTributos']
+            self.Total = tot['total']
+
+            # parámetros de salida:
             self.params_out = dict(
-                    )
-
+                tipo_cbte=liq['cabecera']['tipoComprobante'],
+                pto_vta=liq['cabecera']['puntoVenta'],
+                nro_cbte=liq['cabecera']['nroComprobante'],
+                fecha=liq['cabecera']['fechaLiquidacion'],
+                cod_deposito_acopio=liq['cabecera']['codDepositoAcopio'],
+                cae=str(liq['cabecera']['cae']),
+                domicilio_punto_venta=liq['cabecera']['domicilioPuntoVenta'],
+                domicilio_deposito_acopio=liq['cabecera']['domicilioDepositoAcopio'],
+                emisor=dict(
+                    cuit=liq['emisor']['cuit'],
+                    razon_social=liq['emisor']['razonSocial'],
+                    situacion_iva=liq['emisor']['situacionIVA'],
+                    domicilio=liq['emisor']['domicilio'],
+                    fecha_inicio_actividad=liq['emisor']['fechaInicioActividad'],
+                    ),
+                receptor=dict(
+                    cuit=liq['receptor']['cuit'],
+                    razon_social=liq['receptor']['razonSocial'],
+                    nro_fet=liq['receptor']['nroFET'],
+                    nro_socio=liq['receptor']['nroSocio'],
+                    situacion_iva=liq['receptor']['situacionIVA'],
+                    domicilio=liq['receptor']['domicilio'],
+                    iibb=liq['receptor']['iibb'],
+                    ),
+                control=liq['datosOperacion']['control'],
+                nro_interno=liq['datosOperacion']['nroInterno'],
+                condicion_venta=liq['datosOperacion']['condicionVenta'],
+                variedad_tabaco=liq['datosOperacion']['variedadTabaco'],
+                puerta=liq['datosOperacion']['puerta'],
+                nro_tarjeta=liq['datosOperacion']['nroTarjeta'],
+                horas=liq['datosOperacion']['horas'],
+                cod_provincia_origen_tabaco=liq['datosOperacion']['codProvinciaOrigenTabaco'],
+                tipo_compra=liq['datosOperacion']['tipoCompra'],
+                peso_total_fardos_kg=liq['detalleOperacion']['pesoTotalFardosKg'],
+                cantidad_total_fardos=liq['detalleOperacion']['cantidadTotalFardos'],
+                romaneos=[],
+                alicuota_iva=liq['totalesOperacion']['alicuotaIVA'],
+                importe_iva=liq['totalesOperacion']['importeIVA'],
+                importe_neto=liq['totalesOperacion']['importeNeto'],
+                subtotal=liq['totalesOperacion']['subtotal'],
+                total_retenciones=liq['totalesOperacion']['totalRetenciones'],
+                total_tributos=liq['totalesOperacion']['totalTributos'],
+                total=liq['totalesOperacion']['total'],
+                retenciones=[],
+                tributos=[],               
+                pdf=liq.get('pdf'),
+                )
+            for romaneo in liq['detalleOperacion']['romaneo']:
+                self.params_out['romaneos'].append(dict(
+                    fecha_romaneo=romaneo['fechaRomaneo'],
+                    nro_romaneo=romaneo['nroRomaneo'],
+                    detalle_clase=[dict(
+                        cantidad_fardos=det['cantidadFardos'],
+                        cod_clase=det['codClase'],
+                        importe=det['importe'],
+                        peso_fardos_kg=det['pesoFardosKg'],
+                        precio_x_kg_fardo=det['precioXKgFardo'],
+                        ) for det in romaneo['detalleClase']],
+                    ))
+            for ret in liq['retencion']:
+                self.params_out['retenciones'].append(dict(
+                    retencion_codigo=ret['codigo'],
+                    retencion_importe=ret['importe'],
+                    ))
+            for trib in liq['tributo']:
+                self.params_out['tributos'].append(dict(
+                    tributo_descripcion=trib['descripcion'],
+                    tributo_base_imponible=trib['baseImponible'],
+                    tributo_alicuota=trib['alicuota'],
+                    tributo_codigo=trib['codigo'],
+                    tributo_importe=trib['importe'],
+                    ))
+            if DEBUG:
+                import pprint
+                pprint.pprint(self.params_out)
         self.params_out['errores'] = self.errores
-
 
     @inicializar_y_capturar_excepciones
     def CrearAjuste(self, tipo_cbte, pto_vta, nro_cbte, fecha, 
@@ -647,7 +736,7 @@ if __name__ == '__main__':
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo respuesta:
-                wsltv.LoadTestXML("test/xml/wsltv_aut_test.xml")
+                wsltv.LoadTestXML("tests/xml/wsltv_aut_test.xml")
 
             print "Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
                     wsltv.solicitud['liquidacion']['puntoVenta'],
@@ -667,13 +756,30 @@ if __name__ == '__main__':
             print "FechaLiquidacion", wsltv.FechaLiquidacion
             print "NroComprobante", wsltv.NroComprobante
             print "ImporteNeto", wsltv.ImporteNeto
+            print "AlicuotaIVA", wsltv.AlicuotaIVA
+            print "ImporteIVA", wsltv.ImporteIVA
+            print "Subtotal", wsltv.Subtotal
             print "TotalRetenciones", wsltv.TotalRetenciones
             print "TotalTributos", wsltv.TotalTributos
             print "Total", wsltv.Total
-            if False and '--testing' in sys.argv:
+            if '--testing' in sys.argv:
                 assert wsltv.CAE == "85523002502850"
                 assert wsltv.Total == 205685.46
-                assert wsltv.GetParametro("fecha_liquidacion") == "2016-01-01"
+                assert wsltv.GetParametro("fecha") == "2016-01-01"
+                assert wsltv.GetParametro("peso_total_fardos_kg") == "900"
+                assert wsltv.GetParametro("cantidad_total_fardos") == "1"
+                assert wsltv.GetParametro("emisor", "domicilio") == u'Peru 100'
+                assert wsltv.GetParametro("emisor", "razon_social") == u'JOCKER'
+                assert wsltv.GetParametro("receptor", "domicilio") == u'Calle 1'
+                assert wsltv.GetParametro("receptor", "razon_social") == u'CUIT PF de Prueba gen\xe9rica'
+
+                assert wsltv.GetParametro("romaneos", 0, "detalle_clase", 0, "cantidad_fardos") == "1"
+                assert wsltv.GetParametro("romaneos", 0, "detalle_clase", 0, "cod_clase") == "4"
+                assert wsltv.GetParametro("romaneos", 0, "detalle_clase", 0, "importe") == "171000.0"
+                assert wsltv.GetParametro("romaneos", 0, "detalle_clase", 0, "peso_fardos_kg") == "900"
+                assert wsltv.GetParametro("romaneos", 0, "detalle_clase", 0, "precio_x_kg_fardo") == "190.0"
+                assert wsltv.GetParametro("romaneos", 0, "nro_romaneo") == "321"
+                assert wsltv.GetParametro("romaneos", 0, "fecha_romaneo") == "2015-12-10"
 
             if DEBUG: 
                 pprint.pprint(wsltv.params_out)
