@@ -78,7 +78,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsltv.ini"
-HOMO = False
+HOMO = True
 
 
 class WSLTV(BaseWS):
@@ -501,14 +501,10 @@ class WSLTV(BaseWS):
         self.__analizar_errores(ret)
         array = ret.get('provincia', [])
         if sep is None:
-            return dict([(int(it['codigo']), 
-                              it['descripcion']) 
-                         for it in array])
+            return dict([(it['codigo'], it['descripcion']) for it in array])
         else:
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
-                    (it['codigo'], 
-                     it['descripcion']) 
-               for it in array]
+                    (it['codigo'], it['descripcion']) for it in array]
 
     def ConsultarCondicionesVenta(self, sep="||"):
         "Retorna un listado de códigos y descripciones de las condiciones de ventas"
@@ -520,14 +516,10 @@ class WSLTV(BaseWS):
         self.__analizar_errores(ret)
         array = ret.get('condicionVenta', [])
         if sep is None:
-            return dict([(int(it['codigo']), 
-                              it['descripcion']) 
-                         for it in array])
+            return dict([(it['codigo'], it['descripcion']) for it in array])
         else:
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
-                    (it['codigo'], 
-                     it['descripcion']) 
-               for it in array]
+                    (it['codigo'], it['descripcion']) for it in array]
 
     def ConsultarTributos(self, sep="||"):
         "Retorna un listado de tributos con código, descripción y signo."
@@ -539,14 +531,71 @@ class WSLTV(BaseWS):
         self.__analizar_errores(ret)
         array = ret.get('tributo', [])
         if sep is None:
-            return dict([(int(it['codigo']), 
-                              it['descripcion']) 
-                         for it in array])
+            return dict([(it['codigo'], it['descripcion']) for it in array])
         else:
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
-                    (it['codigo'], 
-                     it['descripcion']) 
-               for it in array]
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarVariedadesClasesTabaco(self, sep="||"):
+        "Retorna un listado de variedades y clases de tabaco"
+        ret = self.client.consultarVariedadesClasesTabaco(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        array = ret.get('variedad', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarRetencionesTabacaleras(self, sep="||"):
+        "Retorna un listado de retenciones tabacaleras con código y descripción"
+        ret = self.client.consultarRetencionesTabacaleras(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        array = ret.get('retencion', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarDepositosAcopio(self, sep="||"):
+        "Retorna los depósitos de acopio pertenencientes al contribuyente"
+        ret = self.client.consultarDepositosAcopio(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        array = ret.get('acopio', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarPuntosVentas(self, sep="||"):
+        "Retorna los puntos de ventas autorizados para la utilizacion de WS"
+        ret = self.client.consultarPuntosVentas(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        array = ret.get('puntoVenta', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
 
     def MostrarPDF(self, archivo, imprimir=False):
         try:
@@ -842,6 +891,22 @@ if __name__ == '__main__':
 
         if '--tributos' in sys.argv:
             ret = wsltv.ConsultarTributos()
+            print "\n".join(ret)
+
+        if '--retenciones' in sys.argv:
+            ret = wsltv.ConsultarRetencionesTabacaleras()
+            print "\n".join(ret)
+
+        if '--variedades' in sys.argv:
+            ret = wsltv.ConsultarVariedadesClasesTabaco()
+            print "\n".join(ret)
+
+        if '--depositos' in sys.argv:
+            ret = wsltv.ConsultarDepositosAcopio()
+            print "\n".join(ret)
+
+        if '--puntosventa' in sys.argv:
+            ret = wsltv.ConsultarPuntosVentas()
             print "\n".join(ret)
 
         print "hecho."
