@@ -45,19 +45,26 @@ Opciones:
   --json: utilizar formato json para el archivo de intercambio
   --dummy: consulta estado de servidores
   
-  --autorizar: Autorizar Liquidación de Tabaco Verde (liquidacionAutorizar)
-  --ajustar: Ajustar Liquidación de Tabaco Verde (liquidacionAjustar)
+  --autorizar: Autorizar Liquidación de Tabaco Verde (generarLiquidacion)
+  --ajustar: Ajustar Liquidación de Tabaco Verde (ajustarLiquidacion)
   --ult: Consulta el último número de orden registrado en AFIP 
-         (liquidacionUltimoNroOrdenConsultar)
+         (consultarUltimoComprobanteXPuntoVenta)
+  --consultar: Consulta una liquidación registrada en AFIP 
+         (consultarLiquidacionXNroComprobante / consultarLiquidacionXCAE)
 
-  --pdf: genera el formulario C 1116 B en formato PDF
+  --pdf: descarga la liquidación en formato PDF
   --mostrar: muestra el documento PDF generado (usar con --pdf)
   --imprimir: imprime el documento PDF generado (usar con --mostrar y --pdf)
 
-  --provincias: obtiene el listado de provincias
+  --provincias: obtiene el listado de provincias (código/descripción)
+  --condicionesventa: obtiene el listado de las condiciones de venta
+  --tributos: obtiene el listado de los tributos
+  --retenciones: obtiene el listado de las retenciones de tabaco
+  --variedades: obtiene el listado de las variedades y especies de tabaco
+  --depositos: obtiene el listado de los depositos de acopio (para el contrib.)
+  --puntosventa: obtiene el listado de puntos de venta habilitados
 
-
-Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
+Ver wsltv.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, shelve
@@ -89,7 +96,7 @@ class WSLTV(BaseWS):
                         'AgregarCondicionVenta', 'AgregarReceptor', 
                         'AgregarRomaneo', 'AgregarFardo', 'AgregarPrecioClase',
                         'AgregarRetencion', 'AgregarTributo',
-                        'ConsultarLiquidacion', 'ConsultarUltNroOrden',
+                        'ConsultarLiquidacion', 'ConsultarUltimoComprobante',
                         'CrearAjuste', 'AgregarComprobanteAAjustar',
                         'AjustarLiquidacion',
                         'LeerDatosLiquidacion',
@@ -201,7 +208,6 @@ class WSLTV(BaseWS):
                    control=control, 
                    nroInterno=nro_interno,
                    )
-                    
         self.solicitud = dict(liquidacion=liq,
                               receptor={},
                               romaneo=[],
@@ -209,7 +215,6 @@ class WSLTV(BaseWS):
                               retencion=[],
                               tributo=[],
                              )
-                              
         return True
 
     @inicializar_y_capturar_excepciones
@@ -475,7 +480,7 @@ class WSLTV(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConsultarUltNroOrden(self, tipo_cbte=151, pto_vta=1):
+    def ConsultarUltimoComprobante(self, tipo_cbte=151, pto_vta=1):
         "Consulta el último No de Comprobante registrado"
         ret = self.client.consultarUltimoComprobanteXPuntoVenta(
                     auth={
@@ -718,7 +723,7 @@ if __name__ == '__main__':
             
             if not '--prueba' in sys.argv:
                 # consulto el último número de orden emitido:
-                ok = wsltv.ConsultarUltNroOrden(tipo_cbte, pto_vta)
+                ok = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
                 if ok:
                     nro_cbte = wsltv.NroComprobante + 1
             else:
@@ -871,7 +876,7 @@ if __name__ == '__main__':
                 pass
 
             print "Consultando ultimo nro_cbte para pto_vta=%s" % pto_vta,
-            ret = wsltv.ConsultarUltNroOrden(tipo_cbte, pto_vta)
+            ret = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
             if wsltv.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wsltv.Excepcion
                 if DEBUG: print >> sys.stderr, wsltv.Traceback
