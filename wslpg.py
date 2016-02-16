@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28e"
+__version__ = "1.29a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -251,6 +251,7 @@ PERCEPCION = [
     ('detalle_aclaratoria', 50, A), # max 50 por WSLPGv1.8
     ('base_calculo', 10, I, 2),  # 8.2
     ('alicuota', 6, I, 2),  # 3.2
+    ('importe_final', 19, I, 2), # 17.2 (LPG WSLPGv1.16)
     ]
 
 OPCIONAL = [
@@ -687,6 +688,7 @@ class WSLPG(BaseWS):
         # inicializo las listas que contentran las retenciones y deducciones:
         self.retenciones = []
         self.deducciones = []
+        self.percepciones = []
         self.opcionales = []        # para anticipo
         # limpio las estructuras internas no utilizables en este caso
         self.certificacion = None
@@ -834,15 +836,18 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarPercepcion(self, codigo_concepto=None, detalle_aclaratoria=None,
-                               base_calculo=None, alicuota=None, **kwargs):
-        "Agrega la información referente a las percepciones de la liq. sec."
+                               base_calculo=None, alicuota=None, importe_final=None,
+                               **kwargs):
+        "Agrega la información referente a las percepciones de la liquidación"
+        # liquidación secundaria (sin importe final)
         self.percepciones.append(dict(
-                                    percepcion=dict(
-                                        detalleAclaratoria=detalle_aclaratoria,
-                                        baseCalculo=base_calculo,
-                                        alicuota=alicuota,
-                                    ))
-                            )
+                                percepcion=dict(
+                                    detalleAclaratoria=detalle_aclaratoria,
+                                    baseCalculo=base_calculo,
+                                    alicuota=alicuota,
+                                    importeFinal=importe_final,
+                                ))
+                        )            
         return True
 
     @inicializar_y_capturar_excepciones
@@ -879,6 +884,14 @@ class WSLPG(BaseWS):
             self.retenciones = None
         if not self.deducciones:
             self.deducciones = None
+        if not self.percepciones:
+            self.percepciones = None
+        else:
+            # ajustar los nombres de campos que varian entre LPG y LSG
+            for percepcion in self.percepciones:
+               per['descripcion'] = per.pop("detalleAclaratorio")
+               del per['baseCalculo']
+               del per['alicuota']
         
         # llamo al webservice:
         ret = self.client.liquidacionAutorizar(
@@ -888,6 +901,7 @@ class WSLPG(BaseWS):
                         liquidacion=self.liquidacion,
                         retenciones=self.retenciones,
                         deducciones=self.deducciones,
+                        percepciones=self.percepciones,
                         )
 
         # analizo la respusta
@@ -948,6 +962,9 @@ class WSLPG(BaseWS):
 
         if self.retenciones:
             anticipo['retenciones'] = self.retenciones
+
+        if self.deducciones:
+            anticipo['deducciones'] = self.deducciones
         
         # llamo al webservice:
         ret = self.client.lpgAutorizarAnticipo(
@@ -1121,6 +1138,7 @@ class WSLPG(BaseWS):
             # sub estructuras:
             self.params_out['retenciones'] = []
             self.params_out['deducciones'] = []
+            self.params_out['percepciones'] = []
             for retret in aut.get("retenciones", []):
                 retret = retret['retencionReturn']
                 self.params_out['retenciones'].append({
@@ -1145,6 +1163,14 @@ class WSLPG(BaseWS):
                      'dias_almacenaje': dedret['deduccion'].get('diasAlmacenaje'),
                      'precio_pkg_diario': dedret['deduccion'].get('precioPKGdiario'),
                      'comision_gastos_adm': dedret['deduccion'].get('comisionGastosAdm'),
+                    })
+            for perret in aut.get("percepciones", []):
+                dedret = dedret['percepcionReturn']
+                self.params_out['percepciones'].append({
+                     'importe_final': perret['percepcion']['importeFinal'],
+                     'alicuota': perret['percepcion'].get('alicuota'),
+                     'base_calculo': perret['percepcion'].get('baseCalculo'),
+                     'descripcion': perret['percepcion'].get('descripcion', "").replace("\n", ""),
                     })
         
 
