@@ -17,7 +17,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -537,6 +537,7 @@ class WSLTV(BaseWS):
 
     def ConsultarVariedadesClasesTabaco(self, sep="||"):
         "Retorna un listado de variedades y clases de tabaco"
+        #  El listado es una estructura anidada (varias clases por variedad)
         ret = self.client.consultarVariedadesClasesTabaco(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -545,10 +546,25 @@ class WSLTV(BaseWS):
         self.__analizar_errores(ret)
         array = ret.get('variedad', [])
         if sep is None:
-            return dict([(it['codigo'], it['descripcion']) for it in array])
+            # sin separador, devuelve un diccionario con clave cod_variadedad
+            # y valor: {"descripcion": ds_variedad, "clases": lista_clases}
+            # siendo lista_clases = [{'codigo': ..., 'descripcion': ...}]
+            return dict([(it['codigo'], {'descripcion': it['descripcion'], 
+                                         'clases': it['clase']}) 
+                         for it in array])
         else:
-            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
-                    (it['codigo'], it['descripcion']) for it in array]
+            # con separador, devuelve una lista de strings:
+            # || cod.variedad || desc.variedad || desc.clase || cod.clase ||
+            ret = []
+            for it in array:
+                for clase in it['clase']:
+                    ret.append(
+                        ("%s %%s %s %%s %s %%s %s %%s %s" % 
+                            (sep, sep, sep, sep, sep)) %
+                        (it['codigo'], it['descripcion'], 
+                         clase['descripcion'], clase['codigo']) 
+                        )
+            return ret
 
     def ConsultarRetencionesTabacaleras(self, sep="||"):
         "Retorna un listado de retenciones tabacaleras con código y descripción"
