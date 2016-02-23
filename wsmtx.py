@@ -939,10 +939,10 @@ def main():
 
     cache = ""
     if "--prod" in sys.argv:
-        wsdl = "https://serviciosjava.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
+        wsdl = "https://serviciosjava.afip.gob.ar/wsmtxca/services/MTXCAService?wsdl"
     else:
         wsdl = WSDL
-    wsmtxca.Conectar(cache, wsdl)
+    wsmtxca.Conectar(cache, wsdl, cacert="conf/afip_ca_info.crt")
     
     if "--dummy" in sys.argv:
         print wsmtxca.client.help("dummy")
