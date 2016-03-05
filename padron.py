@@ -323,7 +323,14 @@ class PadronAFIP():
             # analizo impuestos:
             self.impuestos = data.get("impuestos", [])
             self.actividades = data.get("actividades", [])
-            self.imp_iva = "S" if 30 in self.impuestos else "N"
+            if 32 in self.impuestos:
+                self.imp_iva = "EX"
+            elif 33 in self.impuestos:
+                self.imp_iva = "NI"
+            elif 34 in self.impuestos:
+                self.imp_iva = "NA"
+            else:
+                self.imp_iva = "S" if 30 in self.impuestos else "N"
             mt = data.get("categoriasMonotributo", {})
             self.monotributo = "S" if mt else "N"
             self.actividad_monotributo = "" # TODO: mt[0].get("idCategoria")
