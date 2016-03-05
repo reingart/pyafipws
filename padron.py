@@ -370,7 +370,7 @@ class PadronAFIP():
         return True
 
     @inicializar_y_capturar_excepciones_simple
-    def ObtenerTablaParametros(self, tipo_recurso):
+    def ObtenerTablaParametros(self, tipo_recurso, sep="||"):
         "Devuelve un array de elementos que tienen id y descripción"        
         if not self.client:
             self.Conectar()
@@ -388,7 +388,10 @@ class PadronAFIP():
         else:
             error = result['error']
             self.Excepcion = error['mensaje']
-        return ret
+        if sep:
+            return ["%s%%s%s%%s%s" % (sep, sep, sep) % it for it in sorted(ret.items())]
+        else:
+            return ret
         
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -416,17 +419,17 @@ if __name__ == "__main__":
                 sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
                 sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
             print "=== Impuestos ==="
-            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("impuestos").items())])
+            print u'\n'.join(padron.ObtenerTablaParametros("impuestos"))
             print "=== Conceptos ==="
-            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("conceptos").items())])
+            print u'\n'.join(padron.ObtenerTablaParametros("conceptos"))
             print "=== Actividades ==="
-            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("actividades").items())])
+            print u'\n'.join(padron.ObtenerTablaParametros("actividades"))
             print "=== Caracterizaciones ==="
-            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("caracterizaciones").items())])
+            print u'\n'.join(padron.ObtenerTablaParametros("caracterizaciones"))
             print "=== Categorias Monotributo ==="
-            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("categoriasMonotributo").items())])
+            print u'\n'.join(padron.ObtenerTablaParametros("categoriasMonotributo"))
             print "=== Categorias Autonomos ==="
-            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("categoriasAutonomo").items())])
+            print u'\n'.join(padron.ObtenerTablaParametros("categoriasAutonomo"))
 
         cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
         # consultar un cuit:
