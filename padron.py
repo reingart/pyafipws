@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.06a"
 
 
 import json
@@ -71,7 +71,8 @@ class PadronAFIP():
 
     _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
                         'ConsultarDomicilios', 'Consultar', 'Conectar',
-                        'DescargarConstancia', 'MostrarPDF',
+                        'DescargarConstancia', 'MostrarPDF', 
+                        "ObtenerTablaParametros",
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
                       'cuit', 'dni', 'denominacion', 'imp_ganancias', 'imp_iva',  
@@ -361,6 +362,28 @@ class PadronAFIP():
             os.startfile(archivo, operation)
         return True
 
+    @inicializar_y_capturar_excepciones_simple
+    def ObtenerTablaParametros(self, tipo_recurso):
+        "Devuelve un array de elementos que tienen id y descripción"        
+        if not self.client:
+            self.Conectar()
+        self.response = self.client("parametros", "v1", tipo_recurso)
+        result = json.loads(self.response)
+        ret = {}
+        if result['success']:
+            data = result['data']
+            # armo un diccionario con los datos devueltos:
+            key = [k for k in data[0].keys() if k.startswith("id")][0]
+            val = [k for k in data[0].keys() if k.startswith("desc")][0]
+            for it in data:
+                ret[it[key]] = it[val]
+            self.data = data
+        else:
+            error = result['error']
+            self.Excepcion = error['mensaje']
+        return ret
+        
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
@@ -380,6 +403,24 @@ if __name__ == "__main__":
             padron.Descargar()
         if "--procesar" in sys.argv:
             padron.Procesar(borrar='--borrar' in sys.argv)
+        if "--parametros" in sys.argv:
+            import codecs, locale, traceback
+            if sys.stdout.encoding is None:
+                sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
+                sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
+            print "=== Impuestos ==="
+            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("impuestos").items())])
+            print "=== Conceptos ==="
+            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("conceptos").items())])
+            print "=== Actividades ==="
+            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("actividades").items())])
+            print "=== Caracterizaciones ==="
+            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("caracterizaciones").items())])
+            print "=== Categorias Monotributo ==="
+            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("categoriasMonotributo").items())])
+            print "=== Categorias Autonomos ==="
+            print u'\n'.join(["||%s||%s||" % it for it in sorted(padron.ObtenerTablaParametros("categoriasAutonomo").items())])
+
         cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
         # consultar un cuit:
         if '--online' in sys.argv:
