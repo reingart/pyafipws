@@ -17,7 +17,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -270,6 +270,10 @@ class WSLTV(BaseWS):
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
         "Autorizar Liquidación Electrónica de Tabaco Verde"
+        # limpio los elementos que no correspondan por estar vacios:
+        for campo in ["tributo", "retencion"]:
+            if not self.solicitud[campo]:
+                del self.solicitud[campo]
         # llamo al webservice:
         ret = self.client.generarLiquidacion(
                         auth={
@@ -591,10 +595,11 @@ class WSLTV(BaseWS):
         self.__analizar_errores(ret)
         array = ret.get('acopio', [])
         if sep is None:
-            return dict([(it['codigo'], it['descripcion']) for it in array])
+            return array
         else:
-            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
-                    (it['codigo'], it['descripcion']) for it in array]
+            return [("%s %%s %s %%s %s %%s %s %%s %s" % (sep, sep, sep, sep, sep)) %
+                    (it['codigo'], it['direccion'], it['localidad'], it['codigoPostal']) 
+                    for it in array]
 
     def ConsultarPuntosVentas(self, sep="||"):
         "Retorna los puntos de ventas autorizados para la utilizacion de WS"
@@ -729,7 +734,7 @@ if __name__ == '__main__':
             # genero una liquidación de ejemplo:
 
             tipo_cbte = 150
-            pto_vta = 2002
+            pto_vta = 6
             
             if not '--prueba' in sys.argv:
                 # consulto el último número de orden emitido:
@@ -740,8 +745,8 @@ if __name__ == '__main__':
                 nro_cbte = 1
                 
             # datos de la cabecera:
-            fecha = '2016-01-01'
-            cod_deposito_acopio = 207
+            fecha = '2016-02-29'
+            cod_deposito_acopio = 1000
             tipo_compra = 'CPS'
             variedad_tabaco = 'BR'
             cod_provincia_origen_tabaco = 1
@@ -772,7 +777,7 @@ if __name__ == '__main__':
             fecha_romaneo = "2015-12-10"
             wsltv.AgregarRomaneo(nro_romaneo, fecha_romaneo)
             # fardo:
-            cod_trazabilidad = 355
+            cod_trazabilidad = 356
             clase_tabaco = 4
             peso= 900
             wsltv.AgregarFardo(cod_trazabilidad, clase_tabaco, peso)
@@ -783,7 +788,7 @@ if __name__ == '__main__':
 
             # retencion:
             descripcion = "otra retencion"
-            cod_retencion = 99
+            cod_retencion = 15
             importe = 12
             wsltv.AgregarRetencion(cod_retencion, descripcion, importe)
 
