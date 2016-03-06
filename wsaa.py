@@ -75,7 +75,7 @@ def create_tra(service=SERVICE,ttl=2400):
     tra.header.add_child('generationTime',str(date('c',date('U')-ttl)))
     tra.header.add_child('expirationTime',str(date('c',date('U')+ttl)))
     tra.add_child('service',service)
-    return tra.as_xml()
+    return tra.as_xml().decode("utf8")
 
 def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
@@ -113,13 +113,14 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
+            tra = tra.encode("latin1")
             out = Popen(["openssl", "smime", "-sign", 
                          "-signer", cert, "-inkey", privatekey,
                          "-outform","DER", "-nodetach"], 
                         stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
-            return b64encode(out)
-        except Exception, e:
-            if e.errno == 2:
+            return b64encode(out).decode("latin1")
+        except Exception as e:
+            if isinstance(e, IOError) and e.errno == 2:
                 warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
             raise
 
@@ -220,9 +221,9 @@ class WSAA(BaseWS):
         self.x509_req = X509.Request ()
 
         # normalizar encoding (reemplazar acentos, eñe, etc.)
-        if isinstance(empresa, unicode):
+        if isinstance(empresa, str):
             empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII', 'ignore')
-        if isinstance(nombre, unicode):
+        if isinstance(nombre, str):
             nombre = unicodedata.normalize('NFKD', nombre).encode('ASCII', 'ignore')
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
@@ -246,13 +247,13 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
-        return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'),passphrase.encode("utf8"))
+        return sign_tra(tra,cert.encode('latin1'),privatekey.encode('latin1'),passphrase.encode("utf8"))
 
     @inicializar_y_capturar_excepciones
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
         results = self.client.loginCms(in0=str(cms))
-        ta_xml = results['loginCmsReturn'].encode("utf-8")
+        ta_xml = results['loginCmsReturn']
         self.xml = ta = SimpleXMLElement(ta_xml)
         self.Token = str(ta.credentials.token)
         self.Sign = str(ta.credentials.sign)
@@ -287,7 +288,8 @@ class WSAA(BaseWS):
                 if not os.access(filename,os.R_OK):
                     raise RuntimeError("Imposible abrir %s\n" % filename)
             # creo el nombre para el archivo del TA (según credenciales y ws) 
-            fn = "TA-%s.xml" % hashlib.md5(service + crt + key).hexdigest()
+            hash = service + crt + key
+            fn = "TA-%s.xml" % hashlib.md5(hash.encode("latin1")).hexdigest()
             if cache:
                 fn = os.path.join(cache, fn)
             else:
@@ -297,30 +299,30 @@ class WSAA(BaseWS):
             if not os.path.exists(fn) or os.path.getsize(fn) == 0 or \
                os.path.getmtime(fn) + (DEFAULT_TTL) < time.time():    
                 # ticket de acceso (TA) vencido, crear un nuevo req. (TRA) 
-                if DEBUG: print "Creando TRA..."
+                if DEBUG: print("Creando TRA...")
                 tra = self.CreateTRA(service=service, ttl=DEFAULT_TTL)
                 # firmarlo criptográficamente
-                if DEBUG: print "Frimando TRA..."
+                if DEBUG: print("Frimando TRA...")
                 cms = self.SignTRA(tra, crt, key)
                 # concectar con el servicio web:
-                if DEBUG: print "Conectando a WSAA..."
+                if DEBUG: print("Conectando a WSAA...")
                 ok = self.Conectar(cache, wsdl, proxy, wrapper, cacert)
                 if not ok or self.Excepcion:
-                    raise RuntimeError(u"Fallo la conexión: %s" % self.Excepcion)
+                    raise RuntimeError("Fallo la conexión: %s" % self.Excepcion)
                 # llamar al método remoto para solicitar el TA
-                if DEBUG: print "Llamando WSAA..."
+                if DEBUG: print("Llamando WSAA...")
                 ta = self.LoginCMS(cms)
                 if not ta:
                     raise RuntimeError("Ticket de acceso vacio: %s" % WSAA.Excepcion)
                 # grabar el ticket de acceso para poder reutilizarlo luego
-                if DEBUG: print "Grabando TA en %s..." % fn
+                if DEBUG: print("Grabando TA en %s..." % fn)
                 try:
                     open(fn, "w").write(ta)
-                except IOError, e:
-                    self.Excepcion = u"Imposible grabar ticket de accesso: %s" % fn                
+                except IOError as e:
+                    self.Excepcion = "Imposible grabar ticket de accesso: %s" % fn                
             else:
                 # leer el ticket de acceso del archivo en cache
-                if DEBUG: print "Leyendo TA de %s..." % fn
+                if DEBUG: print("Leyendo TA de %s..." % fn)
                 ta = open(fn, "r").read()
             # analizar el ticket de acceso y extraer los datos relevantes 
             self.AnalizarXml(xml=ta)
@@ -330,8 +332,8 @@ class WSAA(BaseWS):
             ta = ""
             if not self.Excepcion:
                 # avoid encoding problem when reporting exceptions to the user:
-                self.Excepcion = traceback.format_exception_only(sys.exc_type, 
-                                                          sys.exc_value)[0]
+                self.Excepcion = traceback.format_exception_only(sys.exc_info()[0], 
+                                                          sys.exc_info()[1])[0]
                 self.Traceback = ""
             if DEBUG or debug:
                 raise
@@ -351,7 +353,7 @@ if __name__=="__main__":
         if TYPELIB: 
             if '--register' in sys.argv:
                 tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "wsaa.tlb"))
-                print "Registering %s" % (tlb,)
+                print("Registering %s" % (tlb,))
                 tli=pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)
             elif '--unregister' in sys.argv:
@@ -361,7 +363,7 @@ if __name__=="__main__":
                                             k._typelib_version_[1], 
                                             0, 
                                             pythoncom.SYS_WIN32)
-                print "Unregistered typelib"
+                print("Unregistered typelib")
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSAA)
     elif "/Automate" in sys.argv:
@@ -375,30 +377,30 @@ if __name__=="__main__":
         wsaa = WSAA()
         args = [arg for arg in sys.argv if not arg.startswith("--")]
         # obtengo el CUIT y lo normalizo:
-        cuit = len(args)>1 and args[1] or raw_input("Ingrese un CUIT: ")
+        cuit = len(args)>1 and args[1] or input("Ingrese un CUIT: ")
         cuit = ''.join([c for c in cuit if c.isdigit()])
         nombre = len(args)>2 and args[2] or "PyAfipWs"
         # consultar el padrón online de AFIP si no se especificó razón social:
         empresa = len(args)>3 and args[3] or ""
         if not empresa:
-            from padron import PadronAFIP
+            from .padron import PadronAFIP
             padron = PadronAFIP()
             ok = padron.Consultar(cuit)
             if ok and padron.denominacion:
-                print u"Denominación según AFIP:", padron.denominacion
+                print("Denominación según AFIP:", padron.denominacion)
                 empresa = padron.denominacion
             else:
-                print u"CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion)
-                empresa = raw_input("Empresa: ")
+                print("CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion))
+                empresa = input("Empresa: ")
         # generar los archivos (con fecha para no pisarlo)
         ts = datetime.datetime.now().strftime("%Y%m%d%M%S")
         clave_privada = "clave_privada_%s_%s.key" % (cuit, ts)
         pedido_cert = "pedido_cert_%s_%s.csr" % (cuit, ts)
         wsaa.CrearClavePrivada(clave_privada)
         wsaa.CrearPedidoCertificado(cuit, empresa, nombre, pedido_cert)
-        print "Se crearon los archivos:"
-        print clave_privada
-        print pedido_cert
+        print("Se crearon los archivos:")
+        print(clave_privada)
+        print(pedido_cert)
         # convertir a terminación de linea windows y abrir con bloc de notas
         if sys.platform == "win32":
             txt = open(pedido_cert + ".txt", "wb")
@@ -420,43 +422,43 @@ if __name__=="__main__":
         cacert = len(argv)>7 and argv[7] or CACERT
         DEBUG = "--debug" in args
 
-        print >> sys.stderr, "Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl)
+        print("Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl), file=sys.stderr)
 
         # creo el objeto para comunicarme con el ws
         wsaa = WSAA()
         wsaa.LanzarExcepciones = True
 
-        print >> sys.stderr, "WSAA Version %s %s" % (WSAA.Version, HOMO)
+        print("WSAA Version %s %s" % (WSAA.Version, HOMO), file=sys.stderr)
         
         if '--proxy' in args:
             proxy = sys.argv[sys.argv.index("--proxy")+1]
-            print >> sys.stderr, "Usando PROXY:", proxy
+            print("Usando PROXY:", proxy, file=sys.stderr)
         else:
             proxy = None
 
         if '--analizar' in sys.argv:
             wsaa.AnalizarCertificado(crt)
-            print wsaa.Identidad
-            print wsaa.Caducidad
-            print wsaa.Emisor
+            print(wsaa.Identidad)
+            print(wsaa.Caducidad)
+            print(wsaa.Emisor)
 
         ta = wsaa.Autenticar(service, crt, key, url, proxy, wrapper, cacert)
         if not ta:
             if DEBUG:
-                print >> sys.stderr, wsaa.Traceback
-            sys.exit(u"Excepcion: %s" % wsaa.Excepcion)
+                print(wsaa.Traceback, file=sys.stderr)
+            sys.exit("Excepcion: %s" % wsaa.Excepcion)
                 
         else:
-            print ta
+            print(ta)
         
         if wsaa.Excepcion:
-            print >> sys.stderr, wsaa.Excepcion
+            print(wsaa.Excepcion, file=sys.stderr)
 
         if DEBUG:
-            print "Source:", wsaa.ObtenerTagXml('source')
-            print "UniqueID Time:", wsaa.ObtenerTagXml('uniqueId')
-            print "Generation Time:", wsaa.ObtenerTagXml('generationTime')
-            print "Expiration Time:", wsaa.ObtenerTagXml('expirationTime')
-            print "Expiro?", wsaa.Expirado()
+            print("Source:", wsaa.ObtenerTagXml('source'))
+            print("UniqueID Time:", wsaa.ObtenerTagXml('uniqueId'))
+            print("Generation Time:", wsaa.ObtenerTagXml('generationTime'))
+            print("Expiration Time:", wsaa.ObtenerTagXml('expirationTime'))
+            print("Expiro?", wsaa.Expirado())
             ##import time; time.sleep(10)
             ##print "Expiro?", wsaa.Expirado()

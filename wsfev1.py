@@ -188,12 +188,12 @@ class WSFEv1(BaseWS):
         # cada campo puede ser una clave string (dict) o una posición (list)
         ret = self.factura
         for campo in campos:
-            if isinstance(ret, dict) and isinstance(campo, basestring):
+            if isinstance(ret, dict) and isinstance(campo, str):
                 ret = ret.get(campo)
             elif isinstance(ret, list) and len(ret) > campo:
                 ret = ret[campo]
             else:
-                self.Excepcion = u"El campo %s solicitado no existe" % campo
+                self.Excepcion = "El campo %s solicitado no existe" % campo
                 ret = None
             if ret is None:
                 break
@@ -384,7 +384,7 @@ class WSFEv1(BaseWS):
                     }
                 verifica(verificaciones, resultget.copy(), difs)
                 if difs:
-                    print "Diferencias:", difs
+                    print("Diferencias:", difs)
                     self.log("Diferencias: %s" % difs)
             else:
                 # guardo los datos de AFIP (reconstruyo estructura interna)
@@ -743,7 +743,7 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposCbteResult']
-        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['CbteTipo']).replace("\t", sep)
+        return [("%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['CbteTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
@@ -753,7 +753,7 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposConceptoResult']
-        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['ConceptoTipo']).replace("\t", sep)
+        return [("%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['ConceptoTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
                 
 
@@ -764,7 +764,7 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposDocResult']
-        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['DocTipo']).replace("\t", sep)
+        return [("%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['DocTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
@@ -774,7 +774,7 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposIvaResult']
-        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['IvaTipo']).replace("\t", sep)
+        return [("%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['IvaTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
@@ -784,7 +784,7 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposMonedasResult']
-        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['Moneda']).replace("\t", sep)
+        return [("%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['Moneda']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
@@ -794,7 +794,7 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposOpcionalResult']
-        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['OpcionalTipo']).replace("\t", sep)
+        return [("%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['OpcionalTipo']).replace("\t", sep)
                  for p in res.get('ResultGet', [])]
 
     @inicializar_y_capturar_excepciones
@@ -805,7 +805,7 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposTributosResult']
-        return [(u"%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['TributoTipo']).replace("\t", sep)
+        return [("%(Id)s\t%(Desc)s\t%(FchDesde)s\t%(FchHasta)s" % p['TributoTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
@@ -826,12 +826,12 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret.get('FEParamGetPtosVentaResult', {})
-        return [(u"%(Nro)s\tEmisionTipo:%(EmisionTipo)s\tBloqueado:%(Bloqueado)s\tFchBaja:%(FchBaja)s" % p['PtoVenta']).replace("\t", sep)
+        return [("%(Nro)s\tEmisionTipo:%(EmisionTipo)s\tBloqueado:%(Bloqueado)s\tFchBaja:%(FchBaja)s" % p['PtoVenta']).replace("\t", sep)
                  for p in res.get('ResultGet', [])]
 
         
 def p_assert_eq(a,b):
-    print a, a==b and '==' or '!=', b
+    print(a, a==b and '==' or '!=', b)
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -841,7 +841,7 @@ def main():
 
     if DEBUG:
         from pysimplesoap.client import __version__ as soapver
-        print "pysimplesoap.__version__ = ", soapver
+        print("pysimplesoap.__version__ = ", soapver)
 
     wsfev1 = WSFEv1()
     wsfev1.LanzarExcepciones = True
@@ -853,7 +853,7 @@ def main():
         wsdl = WSDL
     proxy = ""
     wrapper = "" #"pycurl"
-    cacert = True #geotrust.crt"
+    cacert = "conf/afip_ca_info.crt" #geotrust.crt"
 
     ok = wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
     
@@ -861,29 +861,29 @@ def main():
         raise RuntimeError(wsfev1.Excepcion)
 
     if DEBUG:
-        print "LOG: ", wsfev1.DebugLog()
+        print("LOG: ", wsfev1.DebugLog())
         
     if "--dummy" in sys.argv:
-        print wsfev1.client.help("FEDummy")
+        print(wsfev1.client.help("FEDummy"))
         wsfev1.Dummy()
-        print "AppServerStatus", wsfev1.AppServerStatus
-        print "DbServerStatus", wsfev1.DbServerStatus
-        print "AuthServerStatus", wsfev1.AuthServerStatus
+        print("AppServerStatus", wsfev1.AppServerStatus)
+        print("DbServerStatus", wsfev1.DbServerStatus)
+        print("AuthServerStatus", wsfev1.AuthServerStatus)
         sys.exit(0)
 
 
     # obteniendo el TA para pruebas
     from wsaa import WSAA
-    ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", debug=True)
+    ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", cacert=cacert, debug=True)
     wsfev1.SetTicketAcceso(ta)
     wsfev1.Cuit = "20267565393"
     
     if "--prueba" in sys.argv:
-        print wsfev1.client.help("FECAESolicitar").encode("latin1")
+        print(wsfev1.client.help("FECAESolicitar").encode("latin1"))
 
         tipo_cbte = 1 if '--usados' not in sys.argv else 49
         punto_vta = 4001
-        cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
+        cbte_nro = int(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
         concepto = 2 if '--usados' not in sys.argv else 1
         tipo_doc = 80 if '--usados' not in sys.argv else 30
@@ -956,14 +956,14 @@ def main():
             wsfev1.CAEARegInformativo()
         t1 = time.time()
         
-        print "Resultado", wsfev1.Resultado
-        print "Reproceso", wsfev1.Reproceso
-        print "CAE", wsfev1.CAE
-        print "Vencimiento", wsfev1.Vencimiento
+        print("Resultado", wsfev1.Resultado)
+        print("Reproceso", wsfev1.Reproceso)
+        print("CAE", wsfev1.CAE)
+        print("Vencimiento", wsfev1.Vencimiento)
         if DEBUG:
-            print "t0", t0
-            print "t1", t1
-            print "lapso", t1-t0
+            print("t0", t0)
+            print("t1", t1)
+            print("lapso", t1-t0)
             open("xmlrequest.xml","wb").write(wsfev1.XmlRequest)
             open("xmlresponse.xml","wb").write(wsfev1.XmlResponse)
 
@@ -971,10 +971,10 @@ def main():
         p_assert_eq(wsfev1.ObtenerTagXml('CAE'), str(wsfev1.CAE))
         p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '2')
         p_assert_eq(wsfev1.ObtenerTagXml('Obs',0,'Code'), "10017")
-        print wsfev1.ObtenerTagXml('Obs',0,'Msg')
+        print(wsfev1.ObtenerTagXml('Obs',0,'Msg'))
 
         if "--reprocesar" in sys.argv:
-            print "reprocesando...."
+            print("reprocesando....")
             wsfev1.Reproceso = True
             wsfev1.CAESolicitar()
 
@@ -984,7 +984,7 @@ def main():
             p_assert_eq(cae, cae2)
             # comparar datos del encabezado
             p_assert_eq(wsfev1.ObtenerCampoFactura('cae'), str(wsfev1.CAE))
-            p_assert_eq(wsfev1.ObtenerCampoFactura('nro_doc'), long(nro_doc))
+            p_assert_eq(wsfev1.ObtenerCampoFactura('nro_doc'), int(nro_doc))
             p_assert_eq(wsfev1.ObtenerCampoFactura('imp_total'), float(imp_total))
             # comparar primer alicuota de IVA
             p_assert_eq(wsfev1.ObtenerCampoFactura('iva', 0, 'importe'), 21)
@@ -997,7 +997,7 @@ def main():
             p_assert_eq(wsfev1.ObtenerCampoFactura('obs', 0, 'code'), 10017)
             # pruebo la segunda observacion inexistente
             p_assert_eq(wsfev1.ObtenerCampoFactura('obs', 1, 'code'), None)
-            p_assert_eq(wsfev1.Excepcion, u"El campo 1 solicitado no existe")
+            p_assert_eq(wsfev1.Excepcion, "El campo 1 solicitado no existe")
     
     if "--get" in sys.argv:
         tipo_cbte = 2
@@ -1006,13 +1006,13 @@ def main():
 
         wsfev1.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
 
-        print "FechaCbte = ", wsfev1.FechaCbte
-        print "CbteNro = ", wsfev1.CbteNro
-        print "PuntoVenta = ", wsfev1.PuntoVenta
-        print "ImpTotal =", wsfev1.ImpTotal
-        print "CAE = ", wsfev1.CAE
-        print "Vencimiento = ", wsfev1.Vencimiento
-        print "EmisionTipo = ", wsfev1.EmisionTipo
+        print("FechaCbte = ", wsfev1.FechaCbte)
+        print("CbteNro = ", wsfev1.CbteNro)
+        print("PuntoVenta = ", wsfev1.PuntoVenta)
+        print("ImpTotal =", wsfev1.ImpTotal)
+        print("CAE = ", wsfev1.CAE)
+        print("Vencimiento = ", wsfev1.Vencimiento)
+        print("EmisionTipo = ", wsfev1.EmisionTipo)
         
         wsfev1.AnalizarXml("XmlResponse")
         p_assert_eq(wsfev1.ObtenerTagXml('CodAutorizacion'), str(wsfev1.CAE))
@@ -1028,80 +1028,80 @@ def main():
             sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
             sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
 
-        print u'\n'.join(wsfev1.ParamGetTiposDoc())
-        print "=== Tipos de Comprobante ==="
-        print u'\n'.join(wsfev1.ParamGetTiposCbte())
-        print "=== Tipos de Concepto ==="
-        print u'\n'.join(wsfev1.ParamGetTiposConcepto())
-        print "=== Tipos de Documento ==="
-        print u'\n'.join(wsfev1.ParamGetTiposDoc())
-        print "=== Alicuotas de IVA ==="
-        print u'\n'.join(wsfev1.ParamGetTiposIva())
-        print "=== Monedas ==="
-        print u'\n'.join(wsfev1.ParamGetTiposMonedas())
-        print "=== Tipos de datos opcionales ==="
-        print u'\n'.join(wsfev1.ParamGetTiposOpcional())
-        print "=== Tipos de Tributo ==="
-        print u'\n'.join(wsfev1.ParamGetTiposTributos())
-        print "=== Puntos de Venta ==="
-        print u'\n'.join(wsfev1.ParamGetPtosVenta())
+        print('\n'.join(wsfev1.ParamGetTiposDoc()))
+        print("=== Tipos de Comprobante ===")
+        print('\n'.join(wsfev1.ParamGetTiposCbte()))
+        print("=== Tipos de Concepto ===")
+        print('\n'.join(wsfev1.ParamGetTiposConcepto()))
+        print("=== Tipos de Documento ===")
+        print('\n'.join(wsfev1.ParamGetTiposDoc()))
+        print("=== Alicuotas de IVA ===")
+        print('\n'.join(wsfev1.ParamGetTiposIva()))
+        print("=== Monedas ===")
+        print('\n'.join(wsfev1.ParamGetTiposMonedas()))
+        print("=== Tipos de datos opcionales ===")
+        print('\n'.join(wsfev1.ParamGetTiposOpcional()))
+        print("=== Tipos de Tributo ===")
+        print('\n'.join(wsfev1.ParamGetTiposTributos()))
+        print("=== Puntos de Venta ===")
+        print('\n'.join(wsfev1.ParamGetPtosVenta()))
 
     if "--cotizacion" in sys.argv:
-        print wsfev1.ParamGetCotizacion('DOL')
+        print(wsfev1.ParamGetCotizacion('DOL'))
 
     if "--comptox" in sys.argv:
-        print wsfev1.CompTotXRequest()
+        print(wsfev1.CompTotXRequest())
         
     if "--ptosventa" in sys.argv:
-        print wsfev1.ParamGetPtosVenta()
+        print(wsfev1.ParamGetPtosVenta())
 
     if "--solicitar-caea" in sys.argv:
         periodo = sys.argv[sys.argv.index("--solicitar-caea")+1]
         orden = sys.argv[sys.argv.index("--solicitar-caea")+2]
 
         if DEBUG: 
-            print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
+            print("Solicitando CAEA para periodo %s orden %s" % (periodo, orden))
         
         caea = wsfev1.CAEASolicitar(periodo, orden)
-        print "CAEA:", caea
+        print("CAEA:", caea)
 
         if wsfev1.Errores:
-            print "Errores:"
+            print("Errores:")
             for error in wsfev1.Errores:
-                print error
+                print(error)
             
         if DEBUG:
-            print "periodo:", wsfev1.Periodo 
-            print "orden:", wsfev1.Orden 
-            print "fch_vig_desde:", wsfev1.FchVigDesde 
-            print "fch_vig_hasta:", wsfev1.FchVigHasta 
-            print "fch_tope_inf:", wsfev1.FchTopeInf 
-            print "fch_proceso:", wsfev1.FchProceso
+            print("periodo:", wsfev1.Periodo) 
+            print("orden:", wsfev1.Orden) 
+            print("fch_vig_desde:", wsfev1.FchVigDesde) 
+            print("fch_vig_hasta:", wsfev1.FchVigHasta) 
+            print("fch_tope_inf:", wsfev1.FchTopeInf) 
+            print("fch_proceso:", wsfev1.FchProceso)
 
         if not caea:
-            print 'Consultando CAEA'
+            print('Consultando CAEA')
             caea = wsfev1.CAEAConsultar(periodo, orden)
-            print "CAEA:", caea
+            print("CAEA:", caea)
             if wsfev1.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in wsfev1.Errores:
-                    print error
+                    print(error)
 
     if "--sinmovimiento-caea" in sys.argv:
         punto_vta = sys.argv[sys.argv.index("--sinmovimiento-caea")+1]
         caea = sys.argv[sys.argv.index("--sinmovimiento-caea")+2]
 
         if DEBUG: 
-            print "Informando Punto Venta %s CAEA %s SIN MOVIMIENTO" % (punto_vta, caea)
+            print("Informando Punto Venta %s CAEA %s SIN MOVIMIENTO" % (punto_vta, caea))
         
         resultado = wsfev1.CAEASinMovimientoInformar(punto_vta, caea)
-        print "Resultado:", resultado
-        print "fch_proceso:", wsfev1.FchProceso
+        print("Resultado:", resultado)
+        print("fch_proceso:", wsfev1.FchProceso)
 
         if wsfev1.Errores:
-            print "Errores:"
+            print("Errores:")
             for error in wsfev1.Errores:
-                print error
+                print(error)
 
                 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -1115,7 +1115,7 @@ if __name__ == '__main__':
         if TYPELIB: 
             if '--register' in sys.argv:
                 tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "wsfev1.tlb"))
-                print "Registering %s" % (tlb,)
+                print("Registering %s" % (tlb,))
                 tli=pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)
             elif '--unregister' in sys.argv:
@@ -1125,7 +1125,7 @@ if __name__ == '__main__':
                                             k._typelib_version_[1], 
                                             0, 
                                             pythoncom.SYS_WIN32)
-                print "Unregistered typelib"
+                print("Unregistered typelib")
         import win32com.server.register
         #print "_reg_class_spec_", WSFEv1._reg_class_spec_
         win32com.server.register.UseCommandLine(WSFEv1)

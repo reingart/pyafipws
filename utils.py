@@ -25,19 +25,20 @@ import os
 import stat
 import traceback
 import warnings
-from cStringIO import StringIO
+from io import StringIO
 from decimal import Decimal
-from urllib import urlencode
-import mimetools, mimetypes
-from HTMLParser import HTMLParser
-from Cookie import SimpleCookie
+from urllib.parse import urlencode
+#import mimetools, mimetypes
+from email.generator import _make_boundary 
+from html.parser import HTMLParser
+from http.cookies import SimpleCookie
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 try:
     import dbf
 except ImportError:
-    print "para soporte de DBF debe instalar dbf 0.88.019 o superior"
+    print("para soporte de DBF debe instalar dbf 0.88.019 o superior")
 
 try:
     import json
@@ -45,7 +46,7 @@ except ImportError:
     try:
         import simplejson as json 
     except:
-        print "para soporte de JSON debe instalar simplejson"
+        print("para soporte de JSON debe instalar simplejson")
         json = None
 
 try:
@@ -69,7 +70,7 @@ try:
         httplib2._ssl_wrap_socket = _ssl_wrap_socket
 
 except:
-    print "para soporte de WebClient debe instalar httplib2"
+    print("para soporte de WebClient debe instalar httplib2")
 
 
 DEBUG = False
@@ -100,7 +101,7 @@ def exception_info(current_filename=None, index=-1):
             if os.path.normpath(os.path.abspath(filename)) == current_filename:
                 ret = {'filename': filename, 'lineno': lineno, 
                        'function_name': fn, 'code': text}
-    except Exception, e:
+    except Exception as e:
         pass
     # obtengo el mensaje de excepcion tal cual lo formatea python:
     # (para evitar errores de encoding)
@@ -148,30 +149,30 @@ def inicializar_y_capturar_excepciones(func):
                 try:
                     retry -= 1
                     return func(self, *args, **kwargs)
-                except socket.error, e:
+                except socket.error as e:
                     if e[0] not in (10054, 10053):
                         # solo reintentar si el error es de conexión
                         # (10054, 'Connection reset by peer')
                         # (10053, 'Software caused connection abort')
                         raise
                     else:
-                        if DEBUG: print e, "Reintentando..."
+                        if DEBUG: print(e, "Reintentando...")
                         self.log(exception_info().get("msg", ""))
 
-        except SoapFault, e:
+        except SoapFault as e:
             # guardo destalle de la excepción SOAP
-            self.ErrCode = unicode(e.faultcode)
-            self.ErrMsg = unicode(e.faultstring)
-            self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
+            self.ErrCode = str(e.faultcode)
+            self.ErrMsg = str(e.faultstring)
+            self.Excepcion = "%s: %s" % (e.faultcode, e.faultstring, )
             if self.LanzarExcepciones:
                 raise
-        except Exception, e:
+        except Exception as e:
             ex = exception_info()
             self.Traceback = ex.get("tb", "")
             try:
                 self.Excepcion = ex.get("msg", "")
             except:
-                self.Excepcion = u"<no disponible>"
+                self.Excepcion = "<no disponible>"
             if self.LanzarExcepciones:
                 raise
             else:
@@ -270,8 +271,8 @@ class BaseWS:
             self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
             self.wsdl = wsdl    # utilizado por TrazaMed (para corregir el location)
             # corrijo ubicación del servidor (puerto http 80 en el WSDL AFIP)
-            for service in self.client.services.values():
-                for port  in service['ports'].values():
+            for service in list(self.client.services.values()):
+                for port  in list(service['ports'].values()):
                     location = port['location']
                     if location and location.startswith("http://"):
                         warnings.warn("Corrigiendo WSDL ... %s" % location)
@@ -279,20 +280,20 @@ class BaseWS:
                         port['location'] = location
             return True
         except:
-            ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+            ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
             self.Traceback = ''.join(ex)
             try:
-                self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+                self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
             except:
-                self.Excepcion = u"<no disponible>"
+                self.Excepcion = "<no disponible>"
             if self.LanzarExcepciones:
                 raise
             return False
 
     def log(self, msg):
         "Dejar mensaje en bitacora de depuración (método interno)"
-        if not isinstance(msg, unicode):
-            msg = unicode(msg, 'utf8', 'ignore')
+        if not isinstance(msg, str):
+            msg = str(msg, 'utf8', 'ignore')
         if not self.Log:
             self.Log = StringIO()
         self.Log.write(msg)
@@ -308,7 +309,7 @@ class BaseWS:
             self.Log.close()
             self.Log = None
         else:
-            msg = u''
+            msg = ''
         return msg    
 
     def LoadTestXML(self, xml):
@@ -340,8 +341,8 @@ class BaseWS:
                 xml = self.XmlRequest 
             self.xml = SimpleXMLElement(xml)
             return True
-        except Exception, e:
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+        except Exception as e:
+            self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
             return False
 
     def ObtenerTagXml(self, *tags):
@@ -355,8 +356,8 @@ class BaseWS:
                     xml = xml(tag) # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
                 return str(xml)
-        except Exception, e:
-            self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+        except Exception as e:
+            self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
 
     def SetParametros(self, cuit, token, sign):
         "Establece un parámetro general"
@@ -389,14 +390,14 @@ class BaseWS:
         # busco datos "anidados" (listas / diccionarios)
         for clave in (clave1, clave2, clave3, clave4):
             if clave is not None and valor is not None:
-                if isinstance(clave1, basestring) and clave.isdigit():
+                if isinstance(clave1, str) and clave.isdigit():
                     clave = int(clave)
                 try:
                     valor = valor[clave]
                 except (KeyError, IndexError):
                     valor = None
         if valor is not None:
-            if isinstance(valor, basestring):
+            if isinstance(valor, str):
                 return valor
             else:
                 return str(valor)
@@ -435,9 +436,9 @@ class WebClient:
 
     def multipart_encode(self, vars):
         "Enconde form data (vars dict)"
-        boundary = mimetools.choose_boundary()
+        boundary = _make_boundary()
         buf = StringIO()
-        for key, value in vars.items():
+        for key, value in list(vars.items()):
             if not isinstance(value, file):
                 buf.write('--%s\r\n' % boundary)
                 buf.write('Content-Disposition: form-data; name="%s"' % key)
@@ -461,7 +462,7 @@ class WebClient:
         "Perform a GET/POST request and return the response"
 
         location = self.location
-        if isinstance(location, unicode):
+        if isinstance(location, str):
             location = location.encode("utf8")
         # extend the base URI with additional components
         if args:
@@ -492,10 +493,10 @@ class WebClient:
             headers['Referer'] = self.referer
 
         if self.trace:
-            print "-"*80
-            print "%s %s" % (self.method, location)
-            print '\n'.join(["%s: %s" % (k,v) for k,v in headers.items()])
-            print "\n%s" % body
+            print("-"*80)
+            print("%s %s" % (self.method, location))
+            print('\n'.join(["%s: %s" % (k,v) for k,v in list(headers.items())]))
+            print("\n%s" % body)
         
         # send the request to the server and store the result:
         response, content = self.http.request(
@@ -504,10 +505,10 @@ class WebClient:
         self.content = content
 
         if self.trace: 
-            print 
-            print '\n'.join(["%s: %s" % (k,v) for k,v in response.items()])
-            print content
-            print "="*80
+            print() 
+            print('\n'.join(["%s: %s" % (k,v) for k,v in list(response.items())]))
+            print(content)
+            print("="*80)
 
         # Parse and store the cookies (if any)
         if "set-cookie" in self.response:
@@ -539,7 +540,7 @@ class HTMLFormParser(HTMLParser):
             name = None
         if tag == 'form':
             form = AttrDict()
-            for k, v in attrs.items():
+            for k, v in list(attrs.items()):
                 setattr(form, "_%s" % k, v)
             self.form = self.forms[name or len(self.forms)] = form
         elif tag == 'input':
@@ -562,7 +563,7 @@ def leer(linea, formato, expandir_fechas=False):
                 valor = None        # nulo
             elif tipo == N:
                 if valor:
-                    valor = long(valor)
+                    valor = int(valor)
                 else:
                     valor = 0
             elif tipo == I:
@@ -572,7 +573,7 @@ def leer(linea, formato, expandir_fechas=False):
                                 valor = float(valor)
                         else:
                             valor = valor.strip(" ")
-                            valor = float(("%%s.%%0%sd" % dec) % (long(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
+                            valor = float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
                     except ValueError:
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
@@ -586,7 +587,7 @@ def leer(linea, formato, expandir_fechas=False):
                 valor = valor.decode("ascii","ignore")
             dic[clave] = valor
             comienzo += longitud
-        except Exception, e:
+        except Exception as e:
             raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return dic
@@ -603,7 +604,7 @@ def escribir(dic, formato, contraer_fechas=False):
             if clave.capitalize() in dic:
                 clave = clave.capitalize()
             s = dic.get(clave,"")
-            if isinstance(s, unicode):
+            if isinstance(s, str):
                 s = s.encode("latin1")
             if s is None:
                 valor = ""
@@ -612,7 +613,7 @@ def escribir(dic, formato, contraer_fechas=False):
             # reemplazo saltos de linea por tabulaci{on vertical
             valor = valor.replace("\n\r", "\v").replace("\n", "\v").replace("\r", "\v")
             if tipo == N and valor and valor!="NULL":
-                valor = ("%%0%dd" % longitud) % long(valor)
+                valor = ("%%0%dd" % longitud) % int(valor)
             elif tipo == I and valor:
                 valor = ("%%0%d.%df" % (longitud+1, dec) % float(valor)).replace(".", "")
             elif contraer_fechas and clave.lower().startswith("fec") and longitud <= 8 and valor:
@@ -621,7 +622,7 @@ def escribir(dic, formato, contraer_fechas=False):
                 valor = ("%%-0%ds" % longitud) % valor
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
-        except Exception, e:
+        except Exception as e:
             raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return linea + "\n"
@@ -642,14 +643,14 @@ B = A               # 9 (blanco)
 
 def guardar_dbf(formatos, agrega=False, conf_dbf=None):
     import dbf
-    if DEBUG: print "Creando DBF..."
+    if DEBUG: print("Creando DBF...")
 
     tablas = {}
     for nombre, formato, l in formatos:
         campos = []
         claves = []
         filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
-        if DEBUG: print "=== tabla %s (%s) ===" %  (nombre, filename)
+        if DEBUG: print("=== tabla %s (%s) ===" %  (nombre, filename))
         for fmt in formato:
             clave, longitud, tipo = fmt[0:3]
             dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
@@ -669,10 +670,10 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                 tipo = "N(%s,%s)" % (longitud, dec)
             clave_dbf = dar_nombre_campo_dbf(clave, claves)
             campo = "%s %s" % (clave_dbf, tipo)
-            if DEBUG: print " * %s : %s" %  (campo, clave)
+            if DEBUG: print(" * %s : %s" %  (campo, clave))
             campos.append(campo)
             claves.append(clave_dbf)
-        if DEBUG: print "leyendo tabla", nombre, filename
+        if DEBUG: print("leyendo tabla", nombre, filename)
         if agrega:
             tabla = dbf.Table(filename, campos)
         else:
@@ -681,7 +682,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
         for d in l:
             # si no es un diccionario, ignorar ya que seguramente va en otra 
             # tabla (por ej. retenciones tiene su propio formato)
-            if isinstance(d, basestring):
+            if isinstance(d, str):
                 continue
             r = {}
             claves = []
@@ -689,17 +690,17 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                 clave, longitud, tipo = fmt[0:3]
                 if agrega or clave in d:
                     v = d.get(clave, None)
-                    if DEBUG: print clave,v, tipo
+                    if DEBUG: print(clave,v, tipo)
                     if v is None and tipo == A:
                         v = ''
                     if (v is None or v=='') and tipo in (I, N):
                         v = 0
                     if tipo == A:
-                        if isinstance(v, unicode):
+                        if isinstance(v, str):
                             v = v.encode("ascii", "replace")
                         if isinstance(v, str):
                             v = v.decode("ascii", "replace").encode("ascii", "replace")
-                        if not isinstance(v, basestring):
+                        if not isinstance(v, str):
                             v = str(v)
                         if len(v) > longitud:
                             v = v[:longitud]  # recorto el string para que quepa
@@ -708,30 +709,30 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                     r[clave_dbf] = v
             # agregar si lo solicitaron o si la tabla no tiene registros:
             if agrega or not tabla:
-                if DEBUG: print "Agregando !!!", r
+                if DEBUG: print("Agregando !!!", r)
                 registro = tabla.append(r)
             else:
-                if DEBUG: print "Actualizando ", r
+                if DEBUG: print("Actualizando ", r)
                 reg = tabla.current()
-                for k, v in reg.scatter_fields().items():
+                for k, v in list(reg.scatter_fields().items()):
                     if k not in r:
                         r[k] = v
-                if DEBUG: print "Actualizando ", r
+                if DEBUG: print("Actualizando ", r)
                 reg.write_record(**r)
                 # mover de registro para no actualizar siempre el primero:
                 if not tabla.eof() and len(l) > 1:
-                    if DEBUG: print "Moviendo al próximo registro ", tabla.record_number
-                    tabla.next()
+                    if DEBUG: print("Moviendo al próximo registro ", tabla.record_number)
+                    next(tabla)
         tabla.close()
 
 
 def leer_dbf(formatos, conf_dbf):
     import dbf
-    if DEBUG: print "Leyendo DBF..."
+    if DEBUG: print("Leyendo DBF...")
     
     for nombre, formato, ld in formatos:
         filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
-        if DEBUG: print "leyendo tabla", nombre, filename
+        if DEBUG: print("leyendo tabla", nombre, filename)
         if not os.path.exists(filename):
             continue
         tabla = dbf.Table(filename)
@@ -766,11 +767,11 @@ def dar_nombre_campo_dbf(clave, claves):
 
 def verifica(ver_list, res_dict, difs):
     "Verificar que dos diccionarios sean iguales, actualiza lista diferencias"
-    for k, v in ver_list.items():
+    for k, v in list(ver_list.items()):
         # normalizo a float para poder comparar numericamente:
-        if isinstance(v, (Decimal, int, long)):
+        if isinstance(v, (Decimal, int)):
             v = float(v)
-        if isinstance(res_dict.get(k), (Decimal, int, long)):
+        if isinstance(res_dict.get(k), (Decimal, int)):
             res_dict[k] = float(res_dict[k])
         if isinstance(v, list):
             # verifico que ambas listas tengan la misma cantidad de elementos:
@@ -804,7 +805,7 @@ def verifica(ver_list, res_dict, difs):
             # comparar numericamente
             if float(res_dict.get(k)) != float(v):
                 difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
-        elif unicode(res_dict.get(k)) != unicode(v):
+        elif str(res_dict.get(k)) != str(v):
             # tipos diferentes, comparo la representación  
             difs.append("%s: str %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
         else:
@@ -813,7 +814,7 @@ def verifica(ver_list, res_dict, difs):
 
 
 def safe_console():
-    if True or sys.stdout.encoding is None:
+    if False or sys.stdout.encoding is None:
         class SafeWriter:
             def __init__(self, target):
                 self.target = target
@@ -825,13 +826,13 @@ def safe_console():
             def flush(self):
                 self.target.flush()
             def intercept(self, s):
-                if not isinstance(s, unicode):
+                if not isinstance(s, str):
                     s = s.decode(self.encode_to, self.errors)
                 return s.encode(self.encoding, self.errors)
 
         sys.stdout = SafeWriter(sys.stdout)
         #sys.stderr = SafeWriter(sys.stderr)
-        print "Encodign in %s" % locale.getpreferredencoding()    
+        print("Encodign in %s" % locale.getpreferredencoding())
 
 
 def get_install_dir():
@@ -853,12 +854,12 @@ def get_install_dir():
 
         
 if __name__ == "__main__":
-    print get_install_dir()
+    print(get_install_dir())
     try:
         1/0
     except:
         ex = exception_info()
-        print ex
+        print(ex)
         assert ex['name'] == "ZeroDivisionError"
         assert ex['lineno'] == 73
         assert ex['tb']

@@ -95,7 +95,7 @@ class SoapClient(object):
         request = SimpleXMLElement(xml,namespace=self.__ns and self.namespace, prefix=self.__ns)
         # parsear argumentos
         if kwargs:
-            parameters = kwargs.items()
+            parameters = list(kwargs.items())
         else:
             parameters = args
         for k,v in parameters: # dict: tag=valor
@@ -104,7 +104,7 @@ class SoapClient(object):
         self.xml_response = self.send(method, self.xml_request)
         response = SimpleXMLElement(self.xml_response, namespace=self.namespace)
         if self.exceptions and ("soapenv:Fault" in response or "soap:Fault" in response):
-            raise SoapFault(unicode(response.faultcode), unicode(response.faultstring))
+            raise SoapFault(str(response.faultcode), str(response.faultstring))
         return response
     
     def parse(self, node, tag, value, add_child=True):
@@ -112,7 +112,7 @@ class SoapClient(object):
         ns = self.__soap_ns!='soapenv' # not add ns to childs in for soap1.1
         if isinstance(value, dict):  # serializar diccionario (<key>value</key>)
             child = add_child and node.add_child(tag,ns=ns) or node
-            for k,v in value.items():
+            for k,v in list(value.items()):
                 self.parse(child, k, v)
         elif isinstance(value, tuple):  # serializar tupla(<key>value</key>)
             child = add_child and node.add_child(tag,ns=ns) or node
@@ -122,7 +122,7 @@ class SoapClient(object):
             child=node.add_child(tag,ns=ns)
             for t in value:
                 self.parse(child,tag,t, False)
-        elif isinstance(value, basestring): # no volver a convertir los strings y unicodes
+        elif isinstance(value, str): # no volver a convertir los strings y unicodes
             node.add_child(tag,value,ns=ns)
         else: # el resto de los objetos se convierten a string
             if value is not None:
@@ -138,19 +138,19 @@ class SoapClient(object):
                 "SOAPAction": "\"%s%s\"" % (self.action,method)
                 }
         if self.trace:
-            print "-"*80
-            print "POST %s" % location
-            print '\n'.join(["%s: %s" % (k,v) for k,v in headers.items()])
-            print u"\n%s" % xml.decode("utf8","ignore")
+            print("-"*80)
+            print("POST %s" % location)
+            print('\n'.join(["%s: %s" % (k,v) for k,v in list(headers.items())]))
+            print("\n%s" % xml.decode("utf8","ignore"))
         response, content = self.http.request(
             location,"POST", body=xml, headers=headers )
         self.response = response
         self.content = content
         if self.trace: 
-            print 
-            print '\n'.join(["%s: %s" % (k,v) for k,v in response.items()])
-            print content.decode("utf8","ignore")
-            print "="*80
+            print() 
+            print('\n'.join(["%s: %s" % (k,v) for k,v in list(response.items())]))
+            print(content.decode("utf8","ignore"))
+            print("="*80)
         return content
 
 
@@ -181,9 +181,9 @@ if __name__=="__main__":
     
     response = client.dummy()
     result = response.dummyResponse
-    print str(result.appserver)
-    print str(result.dbserver)
-    print str(result.authserver)
+    print(str(result.appserver))
+    print(str(result.dbserver))
+    print(str(result.authserver))
 
     sys.exit(0)
 
@@ -198,7 +198,7 @@ if __name__=="__main__":
     dt1 = datetime.today() - timedelta(days=60)
     dt2 = datetime.today() + timedelta(days=60)
     feriadosXML = client.FeriadosEntreFechasAsXml(dt1=dt1.isoformat(), dt2=dt2.isoformat());
-    print feriadosXML
+    print(feriadosXML)
 
     
     
@@ -209,7 +209,7 @@ if __name__=="__main__":
     # Demo & Test:
     token = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYW"
     sign = "gXVvzVwRrfkUAZKoy8ZqA3AL8IZgVxUvOHQH6g1/XzZJns1/k0lUdJslkzW"
-    cuit = long(30199999)
+    cuit = int(30199999)
     id = 1234
     cbte =199
     client = SoapClient(
@@ -218,10 +218,10 @@ if __name__=="__main__":
         namespace = "http://ar.gov.afip.dif.facturaelectronica/",
         trace = True)
     results = client.FERecuperaQTYRequest(
-        argAuth= {"Token": token, "Sign": sign, "cuit":long(cuit)}
+        argAuth= {"Token": token, "Sign": sign, "cuit":int(cuit)}
     )
     if int(results.FERecuperaQTYRequestResult.RError.percode) != 0:
-        print "Percode: %s" % results.FERecuperaQTYRequestResult.RError.percode
-        print "MSGerror: %s" % results.FERecuperaQTYRequestResult.RError.perrmsg
+        print("Percode: %s" % results.FERecuperaQTYRequestResult.RError.percode)
+        print("MSGerror: %s" % results.FERecuperaQTYRequestResult.RError.perrmsg)
     else:
-        print int(results.FERecuperaQTYRequestResult.qty.value)
+        print(int(results.FERecuperaQTYRequestResult.qty.value))
