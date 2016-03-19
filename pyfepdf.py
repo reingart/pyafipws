@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07x"
+__version__ = "1.07y"
 
 DEBUG = False
 HOMO = False
@@ -654,7 +654,7 @@ class FEPDF:
                             if it['codigo'] is not None:
                                 f.set('Item.Codigo%02d' % li, it['codigo'])
                             if it['umed'] is not None:
-                                if it['umed']:
+                                if it['umed'] and f.has_key("Item.Umed_ds01"):
                                     # recortar descripción:
                                     umed_ds = self.umeds_ds.get(int(it['umed']))
                                     s = f.split_multicell(umed_ds, 'Item.Umed_ds01')
@@ -1095,7 +1095,7 @@ if __name__ == '__main__':
             
             # descuento general (a tasa 21%):
             u_mtx = cod_mtx = codigo = None
-            ds = "Bonificación/Descuento 10%"
+            ds = u"Bonificación/Descuento 10%"
             qty = precio = bonif = None
             umed = 99
             iva_id = 5
