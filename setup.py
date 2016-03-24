@@ -38,6 +38,7 @@ import pyemail
 import pyi25
 #import wsctgv3
 #import wslpg
+#import wsltv
 #import wscoc
 #import wscdc
 #import cot
@@ -355,6 +356,21 @@ if 'py2exe' in sys.argv:
         __version__ += "+wslpg_" + wslpg.__version__
         HOMO &= wslpg.HOMO
     
+    if 'wsltv' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsltv, modules="wsltv"),
+            ]
+        kwargs['console'] += [
+            Target(module=wsltv, script='wsltv.py', dest_base="wsltv_cli"),
+            ]
+        data_files += [
+            ("conf", ["conf/wsltv.ini"]),
+            ("plantillas", [ 
+                ]),
+            ]
+        __version__ += "+wsltv_" + wsltv.__version__
+        HOMO &= wsltv.HOMO
+
     if 'wscoc' in globals():
         kwargs['com_server'] += [
             Target(module=wscoc,modules="wscoc"),
