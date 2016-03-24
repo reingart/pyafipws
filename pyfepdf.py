@@ -523,7 +523,7 @@ class FEPDF:
                 obs="\n<U>Comprobantes Asociados:</U>\n\n" + '\n'.join(cmps_asoc)
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-            cmps_asoc_ds = ', '.join(permisos)
+            cmps_asoc_ds = ', '.join(cmps_asoc)
 
             # calcular cantidad de páginas:
             lineas = len(li_items)
@@ -761,6 +761,7 @@ class FEPDF:
                             for iva in fact['ivas']:
                                 p = self.ivas_ds[int(iva['iva_id'])]
                                 f.set('IVA%s' % p, self.fmt_imp(iva['importe']))
+                                f.set('NETO%s' % p, self.fmt_imp(iva['base_imp']))
                                 f.set('IVA%s.L' % p, "IVA %s" % self.fmt_iva(iva['iva_id']))
                         else:
                             # Factura C y E no llevan columna IVA (B solo tasa)
@@ -771,6 +772,7 @@ class FEPDF:
                             f.set('LeyendaIVA', "")
                             for p in self.ivas_ds.values():
                                 f.set('IVA%s.L' % p, "")
+                                f.set('NETO%s.L' % p,"")
                         f.set('Total.L', 'Total:')
                         f.set('TOTAL', self.fmt_imp(fact['imp_total']))
                     else:
@@ -779,10 +781,11 @@ class FEPDF:
                                   'imp_iva', 'impto_liq_nri', 'imp_trib', 'imp_op_ex', 'imp_tot_conc',
                                   'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
                                   'NGRA.L', 'EXENTO.L', 'descuento.L', 'descuento', 'subtotal.L',
-                                  'NETO.L', 'IVA21.L', 'IVA10.5.L', 'IVA27.L', 'IVA5.L', 'IVA9.L', 'IVA2.5.L',
-                                  'NETO', 'IVA21', 'IVA10.5', 'IVA27', 'IVA5', 'IVA9', 'IVA2.5'):
+                                  'NETO.L', 'NETO', 'IVA.L', 'LeyendaIVA'):
                             f.set(k,"")
-                        f.set('LeyendaIVA', "")
+                        for p in self.ivas_ds.values():
+                            f.set('IVA%s.L' % p, "")
+                            f.set('NETO%s.L' % p,"")
                         f.set('Total.L', 'Subtotal:')
                         f.set('TOTAL', self.fmt_imp(subtotal))
 
