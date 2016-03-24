@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31b"
+__version__ = "1.32a"
 
 import datetime
 import os
@@ -602,6 +602,14 @@ if __name__ == "__main__":
                     print error
             sys.exit(0)
             
+        if '/ptosventa' in sys.argv:
+
+            print "=== Puntos de Venta CAE ==="
+            print u'\n'.join(ws.ConsultarPuntosVentaCAE())
+            print "=== Puntos de Venta CAEA ==="
+            print u'\n'.join(ws.ConsultarPuntosVentaCAEA())
+            sys.exit(0)
+
         f_entrada = f_salida = None
         try:
             f_entrada = open(entrada,"r")
