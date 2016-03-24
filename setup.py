@@ -221,7 +221,7 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")]
         if wsaa.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
-            data_files.append((".", ["wsaa.tlb"]))
+            data_files.append(("typelib", ["typelib/wsaa.tlb"]))
             
         __version__ += "+wsaa_" + wsaa.__version__
         HOMO &= wsaa.HOMO
@@ -236,7 +236,7 @@ if 'py2exe' in sys.argv:
             ]             
         if wsfev1.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
-            data_files.append((".", ["wsfev1.tlb"]))
+            data_files.append(("typelib", ["typelib/wsfev1.tlb"]))
         __version__ += "+wsfev1_" + wsfev1.__version__
         HOMO &= wsfev1.HOMO
 
