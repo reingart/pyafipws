@@ -203,39 +203,7 @@ VENTAS_TIPO2 = [
 
 # Regimen de informacion de compras y ventas
 
-REGINFO_CV_VENTAS_CBTE = [
-    ('fecha_cbte', 8, N),
-    ('tipo_cbte', 3, N),
-    ('punto_vta', 5, N),
-    ('cbt_numero_desde', 20, N),
-    ('cbt_numero_hasta', 20, N),
-    ('tipo_doc', 2, N),
-    ('nro_doc', 20, N),
-    ('nombre', 30, A),
-    ('imp_total', 15, I),
-    ('imp_tot_conc', 15, I),
-    ('impto_liq_rni', 15, I),
-    ('imp_op_ex', 15, I),
-    ('impto_perc', 15, I),
-    ('imp_iibb', 15, I),
-    ('impto_perc_mun', 15, I),
-    ('imp_internos', 15, I),
-    ('imp_moneda_id', 3, A),
-    ('imp_moneda_ctz', 10, I),
-    ('cant_alicuota_iva', 1, N),
-    ('codigo_operacion', 1, C),
-    ('imp_trib', 15, I),
-    ]
-
-REGINFO_CV_VENTAS_CBTE_ALICUOTA = [
-    ('tipo_cbte', 3, N),
-    ('punto_vta', 5, N),
-    ('cbt_numero', 20, N),
-    ('imp_neto', 15, I),
-    ('alicuota_iva', 4, I),
-    ('impto_liq', 15, I),
-    ]
-
+from rg3685 import REGINFO_CV_VENTAS_CBTE, REGINFO_CV_VENTAS_CBTE_ALICUOTA
 
 def format_as_dict(format):
     return dict([(k[0], None) for k in format])
