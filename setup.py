@@ -29,7 +29,7 @@ __version__ = "%s.%s.%s" % (sys.version_info[0:2] + (rev, ))
 #import pyafipws
 #import pyrece
 import wsaa
-import wsfev1, rece1
+import wsfev1, rece1, rg3685
 import wsfexv1, recex1
 import wsbfev1, receb1
 import wsmtx, recem
@@ -233,6 +233,7 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
             Target(module=rece1, script='rece1.py'), 
+            Target(module=rg3685, script='rg3685.py'), 
             ]             
         if wsfev1.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
