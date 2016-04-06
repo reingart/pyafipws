@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.36a"
+__version__ = "1.36b"
 
 import datetime
 import os
@@ -192,11 +192,6 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             else:
                 print "Tipo de registro incorrecto:", linea[0]
 
-    if informar_caea:
-        if '/testing' in sys.argv:
-            encabezado['cae'] = '21073372218437'
-        encabezado['caea'] = encabezado['cae']
-
     if not encabezados:
         raise RuntimeError("No se pudieron leer los registros de la entrada")
 
@@ -212,6 +207,10 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     # recorrer los registros para obtener CAE (dicts tendrá los procesados)
     dicts = []
     for encabezado in encabezados:
+        if informar_caea:
+            if '/testing' in sys.argv:
+                encabezado['cae'] = '21073372218437'
+            encabezado['caea'] = encabezado['cae']
         # extraer sub-registros:
         ivas = encabezado.get('ivas', encabezado.get('iva', []))
         tributos = encabezado.get('tributos', [])
