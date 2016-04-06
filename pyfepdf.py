@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07y"
+__version__ = "1.07z"
 
 DEBUG = False
 HOMO = False
@@ -95,7 +95,7 @@ class FEPDF:
                  24: u"CI Tierra del Fuego",
                 }
 
-    umeds_ds = {0: u' ', 1: u'kg', 2: u'm', 3: u'm2', 4: u'm3', 5: u'l', 
+    umeds_ds = {0: '', 1: u'kg', 2: u'm', 3: u'm2', 4: u'm3', 5: u'l', 
              6: u'1000 kWh', 7: u'u', 
              8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 
             14: u'g', 15: u'mm', 16: u'mm3', 17: u'km', 18: u'hl', 20: u'cm', 
@@ -461,6 +461,9 @@ class FEPDF:
                 qty = qty_pos=='izq' and it['qty'] or None
                 codigo = it['codigo']
                 umed = it['umed']
+                # si umed es 0 (desc.), no imprimir cant/importes en 0
+                if umed is not None and umed <> "":
+                    umed = int(umed)
                 ds = it['ds'] or ""
                 if '\x00' in ds:
                     # limpiar descripción (campos dbf):
@@ -474,19 +477,24 @@ class FEPDF:
                 for ds in f.split_multicell(ds, 'Item.Descripcion01'):
                     if DEBUG: print "multicell", ds
                     # agrego un item por linea (sin precio ni importe):
-                    li_items.append(dict(codigo=codigo, ds=ds, qty=qty, umed=umed, precio=None, importe=None))
+                    li_items.append(dict(codigo=codigo, ds=ds, qty=qty, 
+                                         umed=umed if not n_li else None, 
+                                         precio=None, importe=None))
                     # limpio cantidad y código (solo en el primero)
-                    umed = qty = codigo = None
+                    qty = codigo = None
                     n_li += 1
                 # asigno el precio a la última línea del item 
-                li_items[-1].update(importe = it['importe'],
+                li_items[-1].update(importe = it['importe'] if float(it['importe'] or 0) or umed else None,
                                     despacho = it.get('despacho'),
-                                    precio = it['precio'],
+                                    precio = it['precio'] if float(it['precio'] or 0) or umed else None,
                                     qty = (n_li==1 or qty_pos=='der') and it['qty'] or None,
-                                    bonif = it.get('bonif'),
-                                    iva_id = it.get('iva_id'), imp_iva = it.get('imp_iva'),
-                                    dato_a = it.get('dato_a'), dato_b = it.get('dato_b'),
-                                    dato_c = it.get('dato_c'), dato_d= it.get('dato_d'),
+                                    bonif = it.get('bonif') if float(it['bonif'] or 0) or umed else None,
+                                    iva_id = it.get('iva_id'),
+                                    imp_iva = it.get('imp_iva'),
+                                    dato_a = it.get('dato_a'), 
+                                    dato_b = it.get('dato_b'),
+                                    dato_c = it.get('dato_c'), 
+                                    dato_d= it.get('dato_d'),
                                     dato_e = it.get('dato_e'),
                                     u_mtx = it.get('u_mtx'),
                                     cod_mtx = it.get('cod_mtx'),
@@ -1108,6 +1116,14 @@ if __name__ == '__main__':
             else:
                 imp_iva = None
             importe = -12.10
+            fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
+                    precio, bonif, iva_id, imp_iva, importe, "")
+
+            # descripción (sin importes ni cantidad):
+            u_mtx = cod_mtx = codigo = None
+            qty = precio = bonif = iva_id = imp_iva = importe = None
+            umed = 0
+            ds = u"Descripción Ejemplo"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, "")
 
