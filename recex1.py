@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27b"
+__version__ = "1.27c"
 
 import datetime
 import os
@@ -267,6 +267,15 @@ if __name__ == "__main__":
     else:
         wsfexv1_url = ""
 
+    CACERT = config.has_option('WSFEXv1', 'CACERT') and config.get('WSFEXv1', 'CACERT') or None
+    WRAPPER = config.has_option('WSFEXv1', 'WRAPPER') and config.get('WSFEXv1', 'WRAPPER') or None
+
+    if config.has_section('PROXY') and not HOMO:
+        proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))
+        proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
+    else:
+        proxy_dict = {}
+
     if config.has_section('DBF'):
         conf_dbf = dict(config.items('DBF'))
         if DEBUG: print "conf_dbf", conf_dbf
@@ -287,7 +296,7 @@ if __name__ == "__main__":
     
     try:
         ws = wsfexv1.WSFEXv1()
-        ws.Conectar("", wsfexv1_url)
+        ws.Conectar("", wsfexv1_url, cacert=CACERT, wrapper=WRAPPER)
         ws.Cuit = cuit
 
         if '/dummy' in sys.argv:
@@ -323,7 +332,7 @@ if __name__ == "__main__":
         # obteniendo el TA
         from wsaa import WSAA
         wsaa = WSAA()
-        ta = wsaa.Autenticar("wsfex", cert, privatekey, wsaa_url)
+        ta = wsaa.Autenticar("wsfex", cert, privatekey, wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
         if not ta:
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
         ws.SetTicketAcceso(ta)
