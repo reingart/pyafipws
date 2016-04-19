@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29a"
+__version__ = "1.29b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -888,7 +888,7 @@ class WSLPG(BaseWS):
             self.percepciones = None
         else:
             # ajustar los nombres de campos que varian entre LPG y LSG
-            for percepcion in self.percepciones:
+            for per in self.percepciones:
                per['descripcion'] = per.pop("detalleAclaratorio")
                del per['baseCalculo']
                del per['alicuota']
