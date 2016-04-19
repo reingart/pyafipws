@@ -17,7 +17,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.02b"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -101,7 +101,7 @@ class WSLTV(BaseWS):
                         'AjustarLiquidacion',
                         'LeerDatosLiquidacion',
                         'ConsultarVariedadesClasesTabaco',
-                        'ConsultarTipoTributos',
+                        'ConsultarTributos',
                         'ConsultarRetencionesTabacaleras',
                         'ConsultarDepositosAcopio',
                         'ConsultarPuntosVentas', 
@@ -187,7 +187,7 @@ class WSLTV(BaseWS):
             cod_deposito_acopio, tipo_compra,
             variedad_tabaco, cod_provincia_origen_tabaco,
             puerta=None, nro_tarjeta=None, horas=None, control=None,
-            nro_interno=None, iibb_emisor=None,
+            nro_interno=None, iibb_emisor=None, fecha_inicio_actividad=None,
             **kwargs):
         "Inicializa internamente los datos de una liquidación para autorizar"
         # creo el diccionario con los campos generales de la liquidación:
@@ -206,6 +206,7 @@ class WSLTV(BaseWS):
                    horas=horas, 
                    control=control, 
                    nroInterno=nro_interno,
+                   fechaInicioActividad=fecha_inicio_actividad,
                    )
         self.solicitud = dict(liquidacion=liq,
                               receptor={},
@@ -745,7 +746,7 @@ if __name__ == '__main__':
                 nro_cbte = 1
                 
             # datos de la cabecera:
-            fecha = '2016-02-29'
+            fecha = '2016-04-18'
             cod_deposito_acopio = 1000
             tipo_compra = 'CPS'
             variedad_tabaco = 'BR'
@@ -755,13 +756,15 @@ if __name__ == '__main__':
             horas = 12
             control = "FFAA"
             nro_interno = "77888"
+            fecha_inicio_actividad = "2016-04-01"
             
             # cargo la liquidación:
             wsltv.CrearLiquidacion(tipo_cbte, pto_vta, nro_cbte, fecha, 
                 cod_deposito_acopio, tipo_compra,
                 variedad_tabaco, cod_provincia_origen_tabaco,
                 puerta, nro_tarjeta, horas, control,
-                nro_interno, iibb_emisor=None)
+                nro_interno, iibb_emisor=None, 
+                fecha_inicio_actividad=fecha_inicio_actividad)
             
             wsltv.AgregarCondicionVenta(codigo=99, descripcion="otra")            
 
@@ -804,6 +807,9 @@ if __name__ == '__main__':
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo respuesta:
                 wsltv.LoadTestXML("tests/xml/wsltv_aut_test.xml")
+                import json
+                with open("wsltv.json", "w") as f:
+                    json.dump(wsltv.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
 
             print "Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
                     wsltv.solicitud['liquidacion']['puntoVenta'],
