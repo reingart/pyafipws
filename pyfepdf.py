@@ -516,7 +516,7 @@ class FEPDF:
 
             # agrego permisos a descripciones (si corresponde)
             permisos =  [u'Codigo de Despacho %s - Destino de la mercadería: %s' % (
-                         p['Permiso']['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
+                         p['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
                          for p in fact.get('permisos',[])]
             if not f.has_key('permisos') and permisos:
                 obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
