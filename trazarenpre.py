@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0+"
-__version__ = "1.11a"
+__version__ = "1.12a"
 
 #http://renpre.servicios.pami.org.ar/portal_traza_renpre/paso5.html
 
@@ -40,7 +40,7 @@ LOCATION = "https://servicios.pami.org.ar/trazamed.WebServiceSDRN?wsdl"
 class TrazaRenpre(BaseWS):
     "Interfaz para el WebService de Trazabilidad de Precursores Quimicos SEDRONAR SNT"
     _public_methods_ = ['SaveTransacciones',
-                        'SendCancelacTransacc',
+                        'SendCancelacTransacc', 'GetTransaccionesWS',
                         'Conectar', 'LeerError', 'LeerTransaccion',
                         'SetUsername', 
                         'SetParametro', 'GetParametro',
@@ -197,6 +197,66 @@ class TrazaRenpre(BaseWS):
         self.__analizar_errores(ret)
         return True
 
+    @inicializar_y_capturar_excepciones
+    def GetTransaccionesWS(self, usuario, password, 
+                p_id_transaccion_global=None,
+                id_agente_origen=None, id_agente_destino=None, 
+                id_agente_informador=None,
+                gtin=None, id_evento=None, cant_analitica=None, 
+                fecha_desde_op=None, fecha_hasta_op=None, 
+                fecha_desde_t=None, fecha_hasta_t=None, 
+                id_tipo=None, 
+                id_estado=None, nro_pag=1, cant_reg=100,
+                ):
+        "Obtiene los movimientos realizados y permite filtros de búsqueda"
+
+        # preparo los parametros de entrada opcionales:
+        kwargs = {}
+        if p_id_transaccion_global is not None:
+            kwargs['arg2'] = p_id_transaccion_global
+        if id_agente_origen is not None:
+            kwargs['arg3'] = id_agente_origen
+        if id_agente_destino is not None: 
+            kwargs['arg4'] = id_agente_destino
+        if id_agente_destino is not None: 
+            kwargs['arg5'] = id_agente_informador
+        if gtin is not None: 
+            kwargs['arg6'] = gtin
+        if id_evento is not None: 
+            kwargs['arg7'] = id_evento
+        if cant_analitica is not None: 
+            kwargs['arg8'] = cant_analitica
+        if fecha_desde_op is not None: 
+            kwargs['arg9'] = fecha_desde_op
+        if fecha_hasta_op is not None: 
+            kwargs['arg10'] = fecha_hasta_op
+        if fecha_desde_t is not None: 
+            kwargs['arg11'] = fecha_desde_t
+        if fecha_hasta_t is not None: 
+            kwargs['arg12'] = fecha_hasta_t
+        if id_tipo is not None: 
+            kwargs['arg13'] = id_tipo
+        if id_estado is not None: 
+            kwargs['arg14'] = id_estado
+        if nro_pag is not None: 
+            kwargs['arg15'] = nro_pag
+        if cant_reg is not None: 
+            kwargs['arg16'] = cant_reg
+
+        # llamo al webservice
+        res = self.client.getTransaccionesWs(
+            arg0=usuario, 
+            arg1=password,
+            **kwargs
+        )
+        ret = res['return']
+        if ret:
+            self.__analizar_errores(ret)
+            self.CantPaginas = ret.get('cantPaginas')
+            self.HayError = ret.get('hay_error')
+            self.TransaccionPlainWS = [it for it in ret.get('list', [])]
+        return True
+
     def SetUsername(self, username):
         "Establezco el nombre de usuario"        
         self.Username = username
@@ -262,6 +322,11 @@ def main():
         print "Erroes", ws.Errores
     elif '--cancela' in sys.argv:
         ws.SendCancelacTransacc(*sys.argv[sys.argv.index("--cancela")+1:])
+    elif '--consulta' in sys.argv:
+        if '--movimientos' in sys.argv:
+            ws.GetTransaccionesWS(
+                                *sys.argv[sys.argv.index("--movimientos")+1:]
+                                )
     else:
         ws.SaveTransacciones(*sys.argv[1:])
     print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (

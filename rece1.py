@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.35a"
+__version__ = "1.36b"
 
 import datetime
 import os
@@ -192,11 +192,6 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             else:
                 print "Tipo de registro incorrecto:", linea[0]
 
-    if informar_caea:
-        if '/testing' in sys.argv:
-            encabezado['cae'] = '21073372218437'
-        encabezado['caea'] = encabezado['cae']
-
     if not encabezados:
         raise RuntimeError("No se pudieron leer los registros de la entrada")
 
@@ -212,6 +207,10 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     # recorrer los registros para obtener CAE (dicts tendrá los procesados)
     dicts = []
     for encabezado in encabezados:
+        if informar_caea:
+            if '/testing' in sys.argv:
+                encabezado['cae'] = '21073372218437'
+            encabezado['caea'] = encabezado['cae']
         # extraer sub-registros:
         ivas = encabezado.get('ivas', encabezado.get('iva', []))
         tributos = encabezado.get('tributos', [])
@@ -335,12 +334,10 @@ if __name__ == "__main__":
         DEBUG = True
         print "VERSION", __version__, "HOMO", HOMO
 
-    if len(sys.argv)>1:
-        if sys.argv[1][0] not in "-/":
-            CONFIG_FILE = sys.argv.pop(1)
-        elif sys.argv[1] not in ['/ayuda','/dbf','/json','/testing','/dummy','/prueba','/ult','/debug','/formato','/get','/xml','/entrada','/salida','/x','/solicitarcaea','/consultarcaea','/ptosventa']:
-            if os.path.isfile(sys.argv[1]):
-                CONFIG_FILE = sys.argv.pop(1)
+    # si se pasa el archivo de configuración por parámetro, confirmar que exista
+    # y descartar que sea una opción
+    if len(sys.argv)>1 and (sys.argv[1][0] not in "-/" or os.path.exists(sys.argv[1])):
+        CONFIG_FILE = sys.argv.pop(1)
     if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
 
     config = SafeConfigParser()
@@ -669,6 +666,24 @@ if __name__ == "__main__":
             print u'\n'.join(ws.ParamGetPtosVenta())
             sys.exit(0)
 
+        if '/informarcaeanoutilizadoptovta' in sys.argv:
+            i = sys.argv.index('/informarcaeanoutilizadoptovta') 
+            if i+2 < len(sys.argv):
+                caea = sys.argv[i+1]
+                pto_vta = sys.argv[i+2]
+            else:
+                caea = raw_input("CAEA: ")
+                pto_vta = raw_input("Punto de Venta: ")
+            if DEBUG: 
+                print "Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta)
+            ok = ws.CAEASinMovimientoInformar(pto_vta, caea)
+            print "Resultado:", ok
+            print "FchProceso:", ws.FchProceso            
+            if ws.Errores:
+                print "Errores:"
+                for error in ws.Errores:
+                    print error
+            sys.exit(0)
 
         ws.LanzarExcepciones = False
         f_entrada = f_salida = None

@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17b"
+__version__ = "1.17c"
 
 import datetime
 import decimal
@@ -108,7 +108,7 @@ class WSFEv1(BaseWS):
             self.ErrMsg = '\n'.join(self.Errores)
         if 'Events' in ret:
             events = ret['Events']
-            self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+            self.Eventos = ['%s: %s' % (evt['Evt']['Code'], evt['Evt']['Msg']) for evt in events]
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
@@ -847,10 +847,13 @@ def main():
     wsfev1.LanzarExcepciones = True
 
     cache = None
-    wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
+    if "--prod" in sys.argv:
+        wsdl = "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL"
+    else:
+        wsdl = WSDL
     proxy = ""
     wrapper = "" #"pycurl"
-    cacert = None #geotrust.crt"
+    cacert = True #geotrust.crt"
 
     ok = wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
     

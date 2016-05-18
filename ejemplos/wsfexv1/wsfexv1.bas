@@ -100,7 +100,7 @@ Sub Main()
     obs = "Sin observaciones"
     forma_pago = "takataka"
     incoterms = "FOB" ' (ver tabla de parámetros)
-    incoterms_ds = "Información complementaria del incoterm" ' (opcional) Nuevo!
+    incoterms_ds = "Info complementaria" ' (opcional) Nuevo! 20 caracteres
     idioma_cbte = 1 ' (ver tabla de parámetros)
     imp_total = "250.00"
    
@@ -110,7 +110,7 @@ Sub Main()
             cliente, cuit_pais_cliente, domicilio_cliente, _
             id_impositivo, moneda_id, moneda_ctz, _
             obs_comerciales, obs, forma_pago, incoterms, _
-            idioma_cbte, icoterms_ds)
+            idioma_cbte, incoterms_ds)
     
     ' Agrego un item:
     codigo = "PRO1"

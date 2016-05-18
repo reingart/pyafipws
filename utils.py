@@ -382,23 +382,19 @@ class BaseWS:
         self.params_in[str(clave)] = valor
         return True
 
-    def GetParametro(self, clave, clave1=None, clave2=None):
+    def GetParametro(self, clave, clave1=None, clave2=None, clave3=None, clave4=None):
         "Devuelve un parámetro de salida (establecido por llamada anterior)"
         # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
         valor = self.params_out.get(clave)
         # busco datos "anidados" (listas / diccionarios)
-        if clave1 is not None and valor is not None:
-            if isinstance(clave1, basestring) and clave1.isdigit():
-                clave1 = int(clave1)
-            try:
-                valor = valor[clave1]
-            except (KeyError, IndexError):
-                valor = None
-        if clave2 is not None and valor is not None:
-            try:
-                valor = valor.get(clave2)
-            except KeyError:
-                valor = None
+        for clave in (clave1, clave2, clave3, clave4):
+            if clave is not None and valor is not None:
+                if isinstance(clave1, basestring) and clave.isdigit():
+                    clave = int(clave)
+                try:
+                    valor = valor[clave]
+                except (KeyError, IndexError):
+                    valor = None
         if valor is not None:
             if isinstance(valor, basestring):
                 return valor
