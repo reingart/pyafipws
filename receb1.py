@@ -18,6 +18,7 @@ __license__ = "GPL 3.0"
 __version__ = "1.18a"
 
 import datetime
+import os
 import sys
 import time
 import traceback
@@ -209,6 +210,16 @@ if __name__ == "__main__":
         print
         print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
         sys.exit(0)
+
+    if '/debug'in sys.argv:
+        DEBUG = True
+        print "VERSION", __version__, "HOMO", HOMO
+
+    # si se pasa el archivo de configuración por parámetro, confirmar que exista
+    # y descartar que sea una opción
+    if len(sys.argv)>1 and (sys.argv[1][0] not in "-/" or os.path.exists(sys.argv[1])):
+        CONFIG_FILE = sys.argv.pop(1)
+    if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
 
     config = SafeConfigParser()
     config.read(CONFIG_FILE)

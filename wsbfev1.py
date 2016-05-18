@@ -16,9 +16,9 @@ a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06d"
+__version__ = "1.06e"
 
 import datetime
 import decimal
@@ -36,6 +36,7 @@ class WSBFEv1(BaseWS):
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamUMed', 
                         'GetParamTipoIVA', 'GetParamNCM', 'GetParamZonas',
+                        'GetParamTipoDoc',
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID',
                         'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
@@ -319,6 +320,27 @@ class WSBFEv1(BaseWS):
                 raise
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in ivas]
 
+    @inicializar_y_capturar_excepciones
+    def GetParamTipoDoc(self):
+        "Recuperar lista de valores referenciales de tipos de documentos"
+        ret = self.client.BFEGetPARAM_Tipo_doc(
+            auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['BFEGetPARAM_Tipo_docResult']
+        self.__analizar_errores(result)
+     
+        docs = [] # tipos de documentos
+        for d in result['BFEResultGet']:
+            d = d['ClsBFEResponse_Tipo_doc']
+            try:
+                doc = {'id': d.get('Doc_Id'), 'ds': d.get('Doc_Ds'), 
+                        'vig_desde': d.get('Doc_vig_desde'), 
+                        'vig_hasta': d.get('Doc_vig_hasta')}
+                docs.append(doc)
+            except Exception, e:
+                pass
+                raise
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % d for d in docs]
+
     def GetParamTipoCbte(self):
         "Recuperar lista de valores referenciales de Tipos de Comprobantes"
         ret = self.client.BFEGetPARAM_Tipo_Cbte(
@@ -569,6 +591,9 @@ if __name__ == "__main__":
                 
             print "=== Monedas ==="
             print u'\n'.join(wsbfev1.GetParamMon())
+
+            print "=== Tipos de Documentos ==="
+            print u'\n'.join(wsbfev1.GetParamTipoDoc())
 
             print "=== Tipos de IVA ==="
             print u'\n'.join(wsbfev1.GetParamTipoIVA())

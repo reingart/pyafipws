@@ -29,7 +29,7 @@ __version__ = "%s.%s.%s" % (sys.version_info[0:2] + (rev, ))
 #import pyafipws
 #import pyrece
 import wsaa
-import wsfev1, rece1
+import wsfev1, rece1, rg3685
 import wsfexv1, recex1
 import wsbfev1, receb1
 import wsmtx, recem
@@ -38,6 +38,7 @@ import pyemail
 import pyi25
 #import wsctgv3
 #import wslpg
+#import wsltv
 #import wscoc
 #import wscdc
 #import cot
@@ -220,7 +221,7 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")]
         if wsaa.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
-            data_files.append((".", ["wsaa.tlb"]))
+            data_files.append(("typelib", ["typelib/wsaa.tlb"]))
             
         __version__ += "+wsaa_" + wsaa.__version__
         HOMO &= wsaa.HOMO
@@ -232,10 +233,11 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
             Target(module=rece1, script='rece1.py'), 
+            Target(module=rg3685, script='rg3685.py'), 
             ]             
         if wsfev1.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
-            data_files.append((".", ["wsfev1.tlb"]))
+            data_files.append(("typelib", ["typelib/wsfev1.tlb"]))
         __version__ += "+wsfev1_" + wsfev1.__version__
         HOMO &= wsfev1.HOMO
 
@@ -355,6 +357,21 @@ if 'py2exe' in sys.argv:
         __version__ += "+wslpg_" + wslpg.__version__
         HOMO &= wslpg.HOMO
     
+    if 'wsltv' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsltv, modules="wsltv"),
+            ]
+        kwargs['console'] += [
+            Target(module=wsltv, script='wsltv.py', dest_base="wsltv_cli"),
+            ]
+        data_files += [
+            ("conf", ["conf/wsltv.ini"]),
+            ("plantillas", [ 
+                ]),
+            ]
+        __version__ += "+wsltv_" + wsltv.__version__
+        HOMO &= wsltv.HOMO
+
     if 'wscoc' in globals():
         kwargs['com_server'] += [
             Target(module=wscoc,modules="wscoc"),

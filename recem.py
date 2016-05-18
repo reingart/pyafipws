@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31a"
+__version__ = "1.32a"
 
 import datetime
 import os
@@ -270,7 +270,9 @@ if __name__ == "__main__":
         DEBUG = True
         print "VERSION", __version__, "HOMO", HOMO
 
-    if len(sys.argv)>1 and sys.argv[1][0] not in "-/":
+    # si se pasa el archivo de configuración por parámetro, confirmar que exista
+    # y descartar que sea una opción
+    if len(sys.argv)>1 and (sys.argv[1][0] not in "-/" or os.path.exists(sys.argv[1])):
         CONFIG_FILE = sys.argv.pop(1)
     if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
 
@@ -360,6 +362,8 @@ if __name__ == "__main__":
             print "Consultando puntos de venta CAE..."
             print '\n'.join(ws.ConsultarPuntosVentaCAE())
             print "Consultando puntos de venta CAEA..."
+            if "--testing" in sys.argv:
+                ws.LoadTestXML("tests/wsmtx_ptosvta_caea_resp.xml")
             print '\n'.join(ws.ConsultarPuntosVentaCAEA())
             sys.exit(0)
             
@@ -598,6 +602,14 @@ if __name__ == "__main__":
                     print error
             sys.exit(0)
             
+        if '/ptosventa' in sys.argv:
+
+            print "=== Puntos de Venta CAE ==="
+            print u'\n'.join(ws.ConsultarPuntosVentaCAE())
+            print "=== Puntos de Venta CAEA ==="
+            print u'\n'.join(ws.ConsultarPuntosVentaCAEA())
+            sys.exit(0)
+
         f_entrada = f_salida = None
         try:
             f_entrada = open(entrada,"r")

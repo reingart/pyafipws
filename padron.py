@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04c"
+__version__ = "1.06a"
 
 
 import json
@@ -71,6 +71,8 @@ class PadronAFIP():
 
     _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
                         'ConsultarDomicilios', 'Consultar', 'Conectar',
+                        'DescargarConstancia', 'MostrarPDF', 
+                        "ObtenerTablaParametros",
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
                       'cuit', 'dni', 'denominacion', 'imp_ganancias', 'imp_iva',  
@@ -321,7 +323,14 @@ class PadronAFIP():
             # analizo impuestos:
             self.impuestos = data.get("impuestos", [])
             self.actividades = data.get("actividades", [])
-            self.imp_iva = "S" if 30 in self.impuestos else "N"
+            if 32 in self.impuestos:
+                self.imp_iva = "EX"
+            elif 33 in self.impuestos:
+                self.imp_iva = "NI"
+            elif 34 in self.impuestos:
+                self.imp_iva = "NA"
+            else:
+                self.imp_iva = "S" if 30 in self.impuestos else "N"
             mt = data.get("categoriasMonotributo", {})
             self.monotributo = "S" if mt else "N"
             self.actividad_monotributo = "" # TODO: mt[0].get("idCategoria")
@@ -334,6 +343,56 @@ class PadronAFIP():
             self.Excepcion = error['mensaje']
         return True
 
+
+    @inicializar_y_capturar_excepciones_simple
+    def DescargarConstancia(self, nro_doc, filename="constancia.pdf"):
+        "Llama a la API para descargar una constancia de inscripcion (PDF)"
+        if not self.client:
+            self.Conectar()
+        self.response = self.client("sr-padron", "v1", "constancia", str(nro_doc))
+        if self.response.startswith("{"):
+            result = json.loads(self.response)
+            assert not result["success"]
+            self.Excepcion = result['error']['mensaje']
+            return False
+        else:
+            with open(filename, "wb") as f:
+                f.write(self.response)
+            return True
+
+    @inicializar_y_capturar_excepciones_simple
+    def MostrarPDF(self, archivo, imprimir=False):
+        if sys.platform.startswith(("linux2", 'java')):
+            os.system("evince ""%s""" % archivo)
+        else:
+            operation = imprimir and "print" or ""
+            os.startfile(archivo, operation)
+        return True
+
+    @inicializar_y_capturar_excepciones_simple
+    def ObtenerTablaParametros(self, tipo_recurso, sep="||"):
+        "Devuelve un array de elementos que tienen id y descripción"        
+        if not self.client:
+            self.Conectar()
+        self.response = self.client("parametros", "v1", tipo_recurso)
+        result = json.loads(self.response)
+        ret = {}
+        if result['success']:
+            data = result['data']
+            # armo un diccionario con los datos devueltos:
+            key = [k for k in data[0].keys() if k.startswith("id")][0]
+            val = [k for k in data[0].keys() if k.startswith("desc")][0]
+            for it in data:
+                ret[it[key]] = it[val]
+            self.data = data
+        else:
+            error = result['error']
+            self.Excepcion = error['mensaje']
+        if sep:
+            return ["%s%%s%s%%s%s" % (sep, sep, sep) % it for it in sorted(ret.items())]
+        else:
+            return ret
+        
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
@@ -354,6 +413,24 @@ if __name__ == "__main__":
             padron.Descargar()
         if "--procesar" in sys.argv:
             padron.Procesar(borrar='--borrar' in sys.argv)
+        if "--parametros" in sys.argv:
+            import codecs, locale, traceback
+            if sys.stdout.encoding is None:
+                sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
+                sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
+            print "=== Impuestos ==="
+            print u'\n'.join(padron.ObtenerTablaParametros("impuestos"))
+            print "=== Conceptos ==="
+            print u'\n'.join(padron.ObtenerTablaParametros("conceptos"))
+            print "=== Actividades ==="
+            print u'\n'.join(padron.ObtenerTablaParametros("actividades"))
+            print "=== Caracterizaciones ==="
+            print u'\n'.join(padron.ObtenerTablaParametros("caracterizaciones"))
+            print "=== Categorias Monotributo ==="
+            print u'\n'.join(padron.ObtenerTablaParametros("categoriasMonotributo"))
+            print "=== Categorias Autonomos ==="
+            print u'\n'.join(padron.ObtenerTablaParametros("categoriasAutonomo"))
+
         cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
         # consultar un cuit:
         if '--online' in sys.argv:
@@ -374,6 +451,14 @@ if __name__ == "__main__":
             print "IVA", padron.imp_iva
             print "MT", padron.monotributo, padron.actividad_monotributo
             print "Empleador", padron.empleador
+        elif '--constancia' in sys.argv:
+            filename = sys.argv[2]
+            print "Descargando constancia AFIP online...", cuit, filename
+            ok = padron.DescargarConstancia(cuit, filename)
+            print 'ok' if ok else "error", padron.Excepcion
+            if '--mostrar' in sys.argv:
+                padron.MostrarPDF(archivo=filename,
+                                 imprimir='--imprimir' in sys.argv)
         else:
             ok = padron.Buscar(cuit)
             if ok:

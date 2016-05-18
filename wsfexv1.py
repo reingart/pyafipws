@@ -579,8 +579,11 @@ if __name__ == "__main__":
         # CUIT del emisor (debe estar registrado en la AFIP)
         wsfexv1.Cuit = "20267565393"
 
-        # Conectar al Servicio Web de Facturación (homologación)
-        wsdl = "http://wswhomo.afip.gov.ar/WSFEXv1/service.asmx"
+        # Conectar al Servicio Web de Facturación (producción u homologación)
+        if "--prod" in sys.argv:
+            wsdl = "https://servicios1.afip.gov.ar/wsfexv1/service.asmx?WSDL"
+        else:
+            wsdl = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
         cache = proxy = ""
         wrapper = "httplib2"
         cacert = open("conf/afip_ca_info.crt").read()
