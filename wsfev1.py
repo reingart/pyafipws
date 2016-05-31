@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17c"
+__version__ = "1.17d"
 
 import datetime
 import decimal
@@ -345,6 +345,7 @@ class WSFEv1(BaseWS):
                     'Concepto': f['concepto'],
                     'DocTipo': f['tipo_doc'],
                     'DocNro': f['nro_doc'],
+                    'CbteTipo': f['tipo_cbte'],
                     'CbteDesde': f['cbt_desde'],
                     'CbteHasta': f['cbt_hasta'],
                     'CbteFch': f['fecha_cbte'],
@@ -392,6 +393,8 @@ class WSFEv1(BaseWS):
                     'concepto': resultget.get('Concepto'),
                     'tipo_doc': resultget.get('DocTipo'),
                     'nro_doc': resultget.get('DocNro'),
+                    'tipo_cbte': resultget.get('CbteTipo'),
+                    'punto_vta': resultget.get('PtoVta'),
                     'cbt_desde': resultget.get('CbteDesde'),
                     'cbt_hasta': resultget.get('CbteHasta'),
                     'fecha_cbte': resultget.get('CbteFch'),
