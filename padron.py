@@ -16,9 +16,9 @@
 #    http://www.sistemasagiles.com.ar/trac/wiki/PadronContribuyentesAFIP
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2014 Mariano Reingart"
+__copyright__ = "Copyright (C) 2014-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 
 import json
@@ -254,6 +254,21 @@ class PadronAFIP():
             self.cuit = self.nro_doc
         elif self.tipo_doc == 96:
             self.dni = self.nro_doc
+        # determinar categoría de IVA (tentativa)
+        try:
+            cat_iva = int(self.cat_iva)
+        except ValueError:
+            cat_iva = None
+        if cat_iva:
+            pass
+        elif self.imp_iva in ('AC', 'S'):
+            self.cat_iva = 1  # RI
+        elif self.imp_iva == 'EX':
+            self.cat_iva = 4  # EX
+        elif self.monotributo:
+            self.cat_iva = 6  # MT
+        else:
+            self.cat_iva = 5  # CF
         return True if row else False
 
     @inicializar_y_capturar_excepciones_simple
