@@ -212,6 +212,19 @@ def desaplanar(filas):
                 'importe': dic.pop('iva_importe_%s'  % li),
                 } for li in xrange(1, max_li("iva_id_"))
                   if dic['iva_id_%s'  % li]]
+
+        reg['permisos'] = [{
+                'id_permiso': dic.pop('id_permiso_%s'  % li),
+                'dst_merc': dic.pop('dst_merc_%s'  % li),
+                } for li in xrange(1, max_li("id_permiso_"))
+                  if dic['id_permiso_%s'  % li]]
+                  
+        reg['cbtes_asoc'] = [{
+                'cbte_tipo': dic.pop('cbte_tipo_%s'  % li),
+                'cbte_punto_vta': dic.pop('cbte_punto_vta_%s'  % li),
+                'cbte_nro': dic.pop('cbte_nro_%s'  % li),
+                } for li in xrange(1, max_li("cbte_tipo_"))
+                  if dic['cbte_tipo_%s'  % li]]
                 
         reg['forma_pago'] = dic.pop('forma_pago')
 
