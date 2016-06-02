@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29b"
+__version__ = "1.29c"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -888,10 +888,11 @@ class WSLPG(BaseWS):
             self.percepciones = None
         else:
             # ajustar los nombres de campos que varian entre LPG y LSG
-            for per in self.percepciones:
-               per['descripcion'] = per.pop("detalleAclaratorio")
-               del per['baseCalculo']
-               del per['alicuota']
+            for it in self.percepciones:
+                per = it['percepcion']
+                per['descripcion'] = per.pop("detalleAclaratoria")
+                del per['baseCalculo']
+                del per['alicuota']
         
         # llamo al webservice:
         ret = self.client.liquidacionAutorizar(
@@ -3368,6 +3369,8 @@ if __name__ == '__main__':
                             comision_gastos_adm=0.0,
                             alicuota=21.0,
                         ),],
+                    percepciones=[{'detalle_aclaratoria': 'percepcion 1',
+                                  'base_calculo': 1000, 'alicuota_iva': 21}],
                     datos=[
                         dict(campo="nombre_comprador", valor="NOMBRE 1"),
                         dict(campo="domicilio1_comprador", valor="DOMICILIO 1"),
@@ -3441,6 +3444,9 @@ if __name__ == '__main__':
 
             for ret in dic.get('retenciones', []):
                 wslpg.AgregarRetencion(**ret)
+
+            for per in dic.get('percepciones', []):
+                wslpg.AgregarPercepcion(**per)
 
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
