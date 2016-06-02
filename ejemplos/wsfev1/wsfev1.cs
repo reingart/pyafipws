@@ -86,7 +86,7 @@ namespace ConsoleApplication2
             
              if(WSAA.Excepcion != "")
                 //MsgBox(WSAA.Traceback, vbExclamation, WSAA.Excepcion)
-                Console.WriteLine(WSAA.Exception);
+                Console.WriteLine(WSAA.Excepcion);
             
             }
             
