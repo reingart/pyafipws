@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.06c"
 
 
 import json
@@ -479,6 +479,12 @@ if __name__ == "__main__":
             if ok:
                 print "Denominacion:", padron.denominacion
                 print "IVA:", padron.imp_iva
+                print "Ganancias:", padron.imp_ganancias
+                print "Monotributo:", padron.monotributo
+                print "Integrante Soc.:", padron.integrante_soc
+                print "Empleador", padron.empleador
+                print "Actividad Monotributo:", padron.actividad_monotributo
+                print "Categoria IVA:", padron.cat_iva
                 padron.ConsultarDomicilios(cuit)
                 for dom in padron.domicilios:
                     print dom
