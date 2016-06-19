@@ -350,8 +350,11 @@ if __name__ == "__main__":
         entrada = sys.argv[sys.argv.index("/entrada")+1]
     else:
         entrada = config.get('WSFEv1','ENTRADA')
-    salida = config.get('WSFEv1','SALIDA')
-    
+    if '/salida' in sys.argv:
+        salida = sys.argv[sys.argv.index("/salida")+1]
+    else:
+        salida = config.get('WSFEv1','SALIDA')
+
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')
     else:
