@@ -977,12 +977,18 @@ if __name__ == '__main__':
                 regs = formato_dbf.leer(conf_dbf).values()
             elif '--json' in sys.argv:
                 from formatos import formato_json
-                entrada = conf_fact.get("entrada", "entrada.txt")
+                if '--entrada' in sys.argv:
+                    entrada = sys.argv[sys.argv.index("--entrada")+1]
+                else:
+                    entrada = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print "entrada", entrada
                 regs = formato_json.leer(entrada)
             else:
                 from formatos import formato_txt
-                entrada = conf_fact.get("entrada", "entrada.txt")
+                if '--entrada' in sys.argv:
+                    entrada = sys.argv[sys.argv.index("--entrada")+1]
+                else:
+                    entrada = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print "entrada", entrada
                 regs = formato_txt.leer(entrada)
             if DEBUG: 
