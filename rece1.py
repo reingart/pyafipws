@@ -303,13 +303,14 @@ def escribir_facturas(encabezados, archivo, agrega=False):
 
 
 def depurar_xml(client, ruta="."):
-    fecha = time.strftime("%Y%m%d%H%M%S")
-    f=open(os.path.join(ruta, "request-%s.xml" % fecha),"w")
-    f.write(client.xml_request)
-    f.close()
-    f=open(os.path.join(ruta, "response-%s.xml" % fecha),"w")
-    f.write(client.xml_response)
-    f.close()
+    if XML:
+        fecha = time.strftime("%Y%m%d%H%M%S")
+        f=open(os.path.join(ruta, "request-%s.xml" % fecha),"w")
+        f.write(client.xml_request)
+        f.close()
+        f=open(os.path.join(ruta, "response-%s.xml" % fecha),"w")
+        f.write(client.xml_response)
+        f.close()
 
 if __name__ == "__main__":
     if '/ayuda' in sys.argv:
