@@ -17,7 +17,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.02d"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -85,7 +85,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsltv.ini"
-HOMO = True
+HOMO = False
 
 
 class WSLTV(BaseWS):
@@ -285,7 +285,9 @@ class WSLTV(BaseWS):
         # analizo la respusta
         ret = ret['respuesta']
         self.__analizar_errores(ret)
-        self.AnalizarLiquidacion(ret.get('liquidacion'))
+        liqs = ret.get('liquidacion', [])
+        liq = liqs[0] if liqs else None
+        self.AnalizarLiquidacion(liq)
         return True
 
 
@@ -367,14 +369,14 @@ class WSLTV(BaseWS):
                         precio_x_kg_fardo=det['precioXKgFardo'],
                         ) for det in romaneo['detalleClase']],
                     ))
-            for ret in liq['retencion']:
+            for ret in liq.get('retencion', []):
                 self.params_out['retenciones'].append(dict(
                     retencion_codigo=ret['codigo'],
                     retencion_importe=ret['importe'],
                     ))
-            for trib in liq['tributo']:
+            for trib in liq.get('tributo',[]):
                 self.params_out['tributos'].append(dict(
-                    tributo_descripcion=trib['descripcion'],
+                    tributo_descripcion=trib.get('descripcion', ""),
                     tributo_base_imponible=trib['baseImponible'],
                     tributo_alicuota=trib['alicuota'],
                     tributo_codigo=trib['codigo'],
@@ -444,7 +446,7 @@ class WSLTV(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, pto_vta=None, nro_cbte=None, cae=None, 
-                                   pdf=True):
+                                   pdf="liq.pdf"):
         "Consulta una liquidación por No de Comprobante o CAE"
         if cae:
             ret = self.client.consultarLiquidacionXCAE(
@@ -453,7 +455,7 @@ class WSLTV(BaseWS):
                             'cuit': self.Cuit, },
                         solicitud={
                             'cae': cae,
-                            'pdf': pdf,
+                            'pdf': pdf and True or False,
                             },
                         )
         else:
@@ -465,17 +467,18 @@ class WSLTV(BaseWS):
                             'puntoVenta': pto_vta,
                             'nroComprobante': nro_cbte,
                             'tipoComprobante': tipo_cbte,
-                            'pdf': pdf,
+                            'pdf': pdf and True or False,
                             },
                         )
         ret = ret['respuesta']
         self.__analizar_errores(ret)
         if 'liquidacion' in ret:
-            liq = ret['liquidacion']
+            liqs = ret.get('liquidacion', [])
+            liq = liqs[0] if liqs else None
             self.AnalizarLiquidacion(liq)
-        # guardo el PDF si se indico archivo y vino en la respuesta:
-        if pdf and 'pdf' in ret:
-            open(pdf, "wb").write(ret['pdf'])
+            # guardo el PDF si se indico archivo y vino en la respuesta:
+            if pdf and 'pdf' in liq:
+                open(pdf, "wb").write(liq['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
@@ -806,7 +809,7 @@ if __name__ == '__main__':
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo respuesta:
-                wsltv.LoadTestXML("tests/xml/wsltv_aut_test.xml")
+                wsltv.LoadTestXML("tests/xml/wsltv_aut_test_pdf.xml")
                 import json
                 with open("wsltv.json", "w") as f:
                     json.dump(wsltv.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
@@ -835,6 +838,11 @@ if __name__ == '__main__':
             print "TotalRetenciones", wsltv.TotalRetenciones
             print "TotalTributos", wsltv.TotalTributos
             print "Total", wsltv.Total
+
+            pdf = wsltv.GetParametro("pdf")
+            if pdf:
+                open("liq.pdf", "wb").write(pdf)
+
             if '--testing' in sys.argv:
                 assert wsltv.CAE == "85523002502850"
                 assert wsltv.Total == 205685.46
