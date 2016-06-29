@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29c"
+__version__ = "1.29d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1166,7 +1166,7 @@ class WSLPG(BaseWS):
                      'comision_gastos_adm': dedret['deduccion'].get('comisionGastosAdm'),
                     })
             for perret in aut.get("percepciones", []):
-                dedret = dedret['percepcionReturn']
+                perret = perret.get('percepcionReturn', perret)
                 self.params_out['percepciones'].append({
                      'importe_final': perret['percepcion']['importeFinal'],
                      'alicuota': perret['percepcion'].get('alicuota'),
