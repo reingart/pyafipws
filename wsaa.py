@@ -191,7 +191,7 @@ class WSAA(BaseWS):
         return True
     
     @inicializar_y_capturar_excepciones
-    def CrearClavePrivada(self, filename="privada.key", key_length=1024, 
+    def CrearClavePrivada(self, filename="privada.key", key_length=4096, 
                                 pub_exponent=0x10001, passphrase=""):
         "Crea una clave privada (private key)"
         from M2Crypto import RSA, EVP
