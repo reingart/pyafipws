@@ -10,6 +10,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+from __future__ import with_statement
+
 """Módulo para obtener código de autorización electrónica (CAE) para 
 Liquidación de Tabaco Verde del web service WSLTV de AFIP
 """
@@ -17,7 +19,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02d"
+__version__ = "1.03a"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -163,7 +165,7 @@ class WSLTV(BaseWS):
         if 'errores' in ret:
             errores.extend(ret['errores'])
         if errores:
-            self.Errores = ["%(codigo)s: %(descripcion)s" % err['error'][0] 
+            self.Errores = ["%(codigo)s: %(descripcion)s" % err['error'][0]
                             for err in errores]
             self.errores = [
                 {'codigo': err['error'][0]['codigo'],
@@ -328,21 +330,21 @@ class WSLTV(BaseWS):
                 receptor=dict(
                     cuit=liq['receptor']['cuit'],
                     razon_social=liq['receptor']['razonSocial'],
-                    nro_fet=liq['receptor']['nroFET'],
-                    nro_socio=liq['receptor']['nroSocio'],
+                    nro_fet=liq['receptor'].get('nroFET'),
+                    nro_socio=liq['receptor'].get('nroSocio'),
                     situacion_iva=liq['receptor']['situacionIVA'],
                     domicilio=liq['receptor']['domicilio'],
                     iibb=liq['receptor']['iibb'],
                     ),
-                control=liq['datosOperacion']['control'],
-                nro_interno=liq['datosOperacion']['nroInterno'],
-                condicion_venta=liq['datosOperacion']['condicionVenta'],
+                control=liq['datosOperacion'].get('control'),
+                nro_interno=liq['datosOperacion'].get('nroInterno'),
+                condicion_venta=liq['datosOperacion'].get('condicionVenta'),
                 variedad_tabaco=liq['datosOperacion']['variedadTabaco'],
-                puerta=liq['datosOperacion']['puerta'],
-                nro_tarjeta=liq['datosOperacion']['nroTarjeta'],
-                horas=liq['datosOperacion']['horas'],
-                cod_provincia_origen_tabaco=liq['datosOperacion']['codProvinciaOrigenTabaco'],
-                tipo_compra=liq['datosOperacion']['tipoCompra'],
+                puerta=liq['datosOperacion'].get('puerta'),
+                nro_tarjeta=liq['datosOperacion'].get('nroTarjeta'),
+                horas=liq['datosOperacion'].get('horas'),
+                cod_provincia_origen_tabaco=liq['datosOperacion'].get('codProvinciaOrigenTabaco'),
+                tipo_compra=liq['datosOperacion'].get('tipoCompra'),
                 peso_total_fardos_kg=liq['detalleOperacion']['pesoTotalFardosKg'],
                 cantidad_total_fardos=liq['detalleOperacion']['cantidadTotalFardos'],
                 romaneos=[],
@@ -357,7 +359,7 @@ class WSLTV(BaseWS):
                 tributos=[],               
                 pdf=liq.get('pdf'),
                 )
-            for romaneo in liq['detalleOperacion']['romaneo']:
+            for romaneo in liq['detalleOperacion'].get('romaneo', []):
                 self.params_out['romaneos'].append(dict(
                     fecha_romaneo=romaneo['fechaRomaneo'],
                     nro_romaneo=romaneo['nroRomaneo'],
@@ -445,8 +447,8 @@ class WSLTV(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConsultarLiquidacion(self, pto_vta=None, nro_cbte=None, cae=None, 
-                                   pdf="liq.pdf"):
+    def ConsultarLiquidacion(self, tipo_cbte=None, pto_vta=None, nro_cbte=None,
+                                   cae=None, pdf="liq.pdf"):
         "Consulta una liquidación por No de Comprobante o CAE"
         if cae:
             ret = self.client.consultarLiquidacionXCAE(
