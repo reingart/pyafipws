@@ -4,7 +4,7 @@
 '<description>
 ' Interfaz PyAfipWs Web Service Factura Electrónica Mercado Interno
 ' Según RG2904 Artículo 4 Opción B (sin detalle, RG2485 Version 1)
-' 2011 (C) Mariano Reingart <reingart@gmail.com>
+' 2011, 2016 (C) Mariano Reingart <reingart@gmail.com>
 ' Licencia: GPLv3
 ' Funcionamiento:
 '   Solicita Ticket de Acceso (WSAA.LoginCMS)
@@ -12,8 +12,12 @@
 '   Obtiene último número de factura autorizado (WSFEv1.CompUltimoAutorizado)
 '   Crea una Factura, agrega IVA, Tributo y Comprobantes Asociados (WSFEv1.CrearFactura et.al.)
 '   Solicita CAE (WSFEv1.CAESolicitar)
+'   Incluye reutilización de ticket de acceso (WSAA), persistiendo Token/Sign
+' Compilación y ejecución (ej. con VB.net 2012):
+'   c:\Windows\Microsoft.NET\Framework\v4.0.30319\vbc wsfev1.vb
+'   wsfev1.exe
 '</description>
-'<version>0.0.1</version>.
+'<version>0.0.2</version>.
 '<platform>.NET Framework 1.1</platform>
 '<disclaimer>
 ' This program is free software; you can redistribute it and/or modify
@@ -32,18 +36,33 @@ Imports System
 
 Public Class MainClass
 
+    ' Declarar el componente WSAA y WSFEv1 como compartidos y privados para
+    ' poder reutilizarlos en los distintos métodos (creados una sola vez)
+    ' de esta forma, las instancias persistiran entre las distintas llamadas
+
+	Private Shared WSAA As Object, WSFEv1 as Object
+
     Shared Sub Main(ByVal args As String())
-		Dim WSAA As Object
-		Dim Path As String
-		Dim tra as string, cms as string, ta as string
-		Dim wsdl as string, proxy as string, cache as string
-		Dim certificado as string, claveprivada as string
-		Dim ok
 
 		Console.WriteLine("DEMO Interfaz PyAfipWs WSFEv1 para vb.net")
-	  
-		' Crear objeto interface Web Service Autenticación y Autorización
-		WSAA = CreateObject("WSAA")
+
+		' Crear objeto interface Web Service Autenticación y Autorización (TA)
+		If WSAA is Nothing Then
+    		WSAA = CreateObject("WSAA")
+    	End If
+
+        ' Autorizar dos facturas electrónicas para probar la reutilización TA
+        ObtenerCAE
+        ObtenerCAE
+        
+    End Sub
+
+    Shared Sub Autenticar()
+		Dim Path As String
+		Dim tra as string, cms as string, ta as string
+		Dim wsdl as string, proxy as string, cache as string = ""
+		Dim certificado as string, claveprivada as string
+	  	    	
 		Console.WriteLine(WSAA.Version)
 
 		Try
@@ -83,22 +102,38 @@ Public Class MainClass
 
 		End Try
 
-		Dim WSFEv1 As Object
+    End Sub
+
+    Shared Sub ObtenerCAE()
+
+		Dim wsdl as string, proxy as string, cache as string
 		Dim concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta, _
 			cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto, _
 			imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, _
 			fecha_serv_desde, fecha_serv_hasta, _
 			moneda_id, moneda_ctz
-		Dim tipo, pto_vta, nro, fecha, cbte_nro
+		Dim fecha, cbte_nro
 		Dim id, Desc, base_imp, alic, importe
 		Dim cae
+		Dim ok
 		
-		Console.WriteLine("Crear objeto interface Web Service de Factura Electrónica de Mercado Interno")
-		WSFEv1 = CreateObject("WSFEv1")
+		If WSFEv1 is Nothing Then
+    		Console.WriteLine("Crear objeto interface Web Service de Factura Electrónica de Mercado Interno")
+    		WSFEv1 = CreateObject("WSFEv1")
+    	End If
 
 		Try
 			Console.WriteLine(WSFEv1.Version)
 			Console.WriteLine(WSFEv1.InstallDir)
+
+            ' Generar un nuevo ticket de acceso si no existe o ha expirado;
+            ' de lo contrario, se reutiliza el solicitado anteriormente
+            ' (el objeto WSAA debe permanecer instanciado en memoria)
+            If WSAA.Token = "" or WSAA.Sign = "" Then
+                Autenticar
+            Else If WSAA.Expirado Then
+                Autenticar
+            End If
 
 			' Setear tocken y sing de autorización (pasos previos)
 			WSFEv1.Token = WSAA.Token
