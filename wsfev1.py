@@ -52,6 +52,7 @@ class WSFEv1(BaseWS):
                         'ParamGetTiposMonedas',
                         'ParamGetTiposOpcional',
                         'ParamGetTiposTributos',
+                        'ParamGetTiposPaises',
                         'ParamGetCotizacion', 
                         'ParamGetPtosVenta',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
@@ -816,6 +817,17 @@ class WSFEv1(BaseWS):
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
+    def ParamGetTiposPaises(self, sep="|"):
+        "Recuperador de valores referenciales de códigos de Paises"
+        "Este método permite consultar los tipos de tributos habilitados en este WS"
+        ret = self.client.FEParamGetTiposPaises(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposPaisesResult']
+        return [(u"%(Id)s\t%(Desc)s" % p['PaisTipo']).replace("\t", sep)
+                 for p in res['ResultGet']]
+
+    @inicializar_y_capturar_excepciones
     def ParamGetCotizacion(self, moneda_id):
         "Recuperador de cotización de moneda"
         ret = self.client.FEParamGetCotizacion(
@@ -1056,6 +1068,8 @@ def main():
         print u'\n'.join(wsfev1.ParamGetTiposOpcional())
         print "=== Tipos de Tributo ==="
         print u'\n'.join(wsfev1.ParamGetTiposTributos())
+        print "=== Tipos de Paises ==="
+        print u'\n'.join(wsfev1.ParamGetTiposPaises())
         print "=== Puntos de Venta ==="
         print u'\n'.join(wsfev1.ParamGetPtosVenta())
 
