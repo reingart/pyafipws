@@ -892,7 +892,7 @@ def main():
         tipo_doc = 80 if '--usados' not in sys.argv else 30
         nro_doc = "30000000001"
         cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
-        imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
+        imp_total = "222.00"; imp_tot_conc = "0.00"; imp_neto = "200.00"
         imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
         fecha_cbte = fecha
         # Fechas del período del servicio facturado y vencimiento de pago:
@@ -929,6 +929,12 @@ def main():
         alic = None
         importe = 1
         wsfev1.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+
+        # subtotales por alicuota de IVA:
+        iva_id = 3 # 0%
+        base_imp = 100
+        importe = 0
+        wsfev1.AgregarIva(iva_id, base_imp, importe)
 
         # subtotales por alicuota de IVA:
         iva_id = 5 # 21%
