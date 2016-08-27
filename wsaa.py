@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.10g"
+__version__ = "2.10h"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
@@ -390,11 +390,18 @@ if __name__=="__main__":
             else:
                 print u"CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion)
                 empresa = raw_input("Empresa: ")
+        # longitud de la clave (2048 predeterminada a partir de 8/2016)
+        key_length = len(args)>4 and args[4] or ""
+        try:
+            key_length = int(key_length)
+        except ValueError:
+            key_length = 2048
         # generar los archivos (con fecha para no pisarlo)
         ts = datetime.datetime.now().strftime("%Y%m%d%M%S")
         clave_privada = "clave_privada_%s_%s.key" % (cuit, ts)
         pedido_cert = "pedido_cert_%s_%s.csr" % (cuit, ts)
-        wsaa.CrearClavePrivada(clave_privada)
+        print "Longitud clave %s (bits)" % key_length
+        wsaa.CrearClavePrivada(clave_privada, key_length)
         wsaa.CrearPedidoCertificado(cuit, empresa, nombre, pedido_cert)
         print "Se crearon los archivos:"
         print clave_privada
