@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17d"
+__version__ = "1.18a"
 
 import datetime
 import decimal
@@ -595,6 +595,10 @@ class WSFEv1(BaseWS):
                 self.FchVigHasta = result['FchVigHasta']
                 self.FchTopeInf = result['FchTopeInf']
                 self.FchProceso = result['FchProceso']
+                # Obs (COMPGv28):
+                for obs in result.get('Observaciones', []):
+                    self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+                self.Obs = '\n'.join(self.Observaciones)
 
         return self.CAEA and str(self.CAEA) or ''
 
@@ -1073,6 +1077,11 @@ def main():
         
         caea = wsfev1.CAEASolicitar(periodo, orden)
         print "CAEA:", caea
+
+        if wsfev1.Observaciones:
+            print "Observaciones:"
+            for obs in wsfev1.Observaciones:
+                print obs
 
         if wsfev1.Errores:
             print "Errores:"
