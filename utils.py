@@ -28,6 +28,7 @@ import warnings
 from cStringIO import StringIO
 from decimal import Decimal
 from urllib import urlencode
+import unicodedata
 import mimetools, mimetypes
 from HTMLParser import HTMLParser
 from Cookie import SimpleCookie
@@ -832,6 +833,15 @@ def safe_console():
         sys.stdout = SafeWriter(sys.stdout)
         #sys.stderr = SafeWriter(sys.stderr)
         print "Encodign in %s" % locale.getpreferredencoding()    
+
+
+def norm(x, encoding="latin1"):
+    "Convertir acentos codificados en ISO 8859-1 u otro, a ASCII regular"
+    if not isinstance(x, basestring):
+        x = unicode(x)
+    elif isinstance(x, str):
+        x = x.decode(encoding, 'ignore')
+    return unicodedata.normalize('NFKD', x).encode('ASCII', 'ignore')
 
 
 def get_install_dir():

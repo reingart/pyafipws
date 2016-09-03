@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.07b"
 
 
 import csv
@@ -31,7 +31,7 @@ import zipfile
 from email.utils import formatdate
 import sys
 from utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
-                  inicializar_y_capturar_excepciones_simple, WebClient
+                  inicializar_y_capturar_excepciones_simple, WebClient, norm
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
@@ -472,7 +472,8 @@ if __name__ == "__main__":
                         print "Consultando AFIP local...", cuit,
                         ok = padron.Buscar(cuit)
                     print 'ok' if ok else "error", padron.Excepcion
-                    csv_writer.writerow([getattr(padron, campo, "")
+                    # domicilio posiblemente esté en Latin1, normalizar
+                    csv_writer.writerow([norm(getattr(padron, campo, ""))
                                          for campo in columnas])
         else:
             cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
