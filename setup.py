@@ -8,7 +8,7 @@
 "Creador de instalador para PyAfipWs"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2008-2014 Mariano Reingart"
+__copyright__ = "Copyright (C) 2008-2016 Mariano Reingart"
 
 from distutils.core import setup
 import glob
@@ -18,104 +18,12 @@ import warnings
 import sys
 
 try:  
-    rev = subprocess.check_output(['hg', 'tip', '--template', '{rev}']).strip()
+    rev = subprocess.check_output(['hg', 'tip', '--template', '{rev}'], 
+                                  stderr=subprocess.PIPE).strip()
 except:
     rev = 0
 
 __version__ = "%s.%s.%s" % (sys.version_info[0:2] + (rev, ))
-
-# modulos a compilar y empaquetar (comentar si no se desea incluir):
-
-#import pyafipws
-#import pyrece
-import wsaa
-import wsfev1, rece1, rg3685
-import wsfexv1, recex1
-import wsbfev1, receb1
-import wsmtx, recem
-import pyfepdf
-import pyemail
-import pyi25
-#import wsctgv3
-#import wslpg
-#import wsltv
-#import wscoc
-#import wscdc
-#import cot
-#import iibb
-#import trazamed
-#import trazarenpre
-#import trazafito
-#import trazavet
-#import padron
-#import sired
-
-# herramientas opcionales a compilar y empaquetar:
-try:
-    if 'pyfepdf' in globals() or 'pyrece' in globals():
-        import designer     
-except ImportError:
-    # el script pyfpdf/tools/designer.py no esta disponible:
-    print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
-
-# parametros para setup:
-kwargs = {}
-
-long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"  
-             "AFIP (Factura Electrónica, Granos, Aduana, etc.), "
-             "ANMAT (Trazabilidad de Medicamentos), "
-             "RENPRE (Trazabilidad de Precursores Químicos), "
-             "ARBA (Remito Electrónico)")
-
-# convert the README and format in restructured text (only when registering)
-if os.path.exists("README.md") and sys.platform == "linux2":
-    try:
-        cmd = ['pandoc', '--from=markdown', '--to=rst', 'README.md']
-        long_desc = subprocess.check_output(cmd).decode("utf8")
-        print "Long DESC", long_desc
-    except Exception as e:
-        warnings.warn("Exception when converting the README format: %s" % e)
-
-
-data_files = [
-    (".", ["licencia.txt",]),
-    ("conf", ["conf/rece.ini", "conf/geotrust.crt", "conf/afip_ca_info.crt", ]),
-    ("cache", glob.glob("cache/*")),
-    ]
-
-# incluyo mis certificados para homologación (si existen)
-if os.path.exists("reingart.crt"):
-    data_files.append(("conf", ["reingart.crt", "reingart.key"]))
-    
-if sys.version_info > (2, 7):
-    # add "Microsoft Visual C++ 2008 Redistributable Package (x86)"
-    if os.path.exists(r"c:\Program Files\Mercurial"):
-        data_files += [(
-            ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll') +
-                 glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
-            )]
-    # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
-    # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
-	# NOTE: on windows 8.1 64 bits, this is stored in C:\Users\REINGART\AppData\\Local\Temp\gen_py\2.7
-	from win32com.client import gencache
-	gen_py_path = gencache.GetGeneratePath() or "C:\Python27\lib\site-packages\win32com\gen_py"
-	data_files += [(
-            r"win32com\gen_py", 
-            [os.path.join(gen_py_path, "__init__.py"),
-             os.path.join(gen_py_path, "dicts.dat")],
-            )]
-    
-    sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
-    WX_DLL = (
-        ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*') +
-             glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest'),
-        )
-else:
-    WX_DLL = (".", [
-        "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
-        "C:\python25\MSVCR71.dll",
-        "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
-        ])
 
 HOMO = True
 
@@ -123,6 +31,83 @@ HOMO = True
 if 'py2exe' in sys.argv:
     import py2exe
     from nsis import build_installer, Target
+
+    # modulos a compilar y empaquetar (comentar si no se desea incluir):
+
+    #import pyafipws
+    #import pyrece
+    import wsaa
+    import wsfev1, rece1, rg3685
+    import wsfexv1, recex1
+    import wsbfev1, receb1
+    import wsmtx, recem
+    import pyfepdf
+    import pyemail
+    import pyi25
+    #import wsctgv3
+    #import wslpg
+    #import wsltv
+    #import wscoc
+    #import wscdc
+    #import cot
+    #import iibb
+    #import trazamed
+    #import trazarenpre
+    #import trazafito
+    #import trazavet
+    #import padron
+    #import sired
+
+    data_files = [
+        (".", ["licencia.txt",]),
+        ("conf", ["conf/rece.ini", "conf/geotrust.crt", "conf/afip_ca_info.crt", ]),
+        ("cache", glob.glob("cache/*")),
+        ]
+
+    # herramientas opcionales a compilar y empaquetar:
+    try:
+        if 'pyfepdf' in globals() or 'pyrece' in globals():
+            import designer     
+    except ImportError:
+        # el script pyfpdf/tools/designer.py no esta disponible:
+        print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
+
+    # parametros para setup:
+    kwargs = {}
+
+    # incluyo mis certificados para homologación (si existen)
+    if os.path.exists("reingart.crt"):
+        data_files.append(("conf", ["reingart.crt", "reingart.key"]))
+        
+    if sys.version_info > (2, 7):
+        # add "Microsoft Visual C++ 2008 Redistributable Package (x86)"
+        if os.path.exists(r"c:\Program Files\Mercurial"):
+            data_files += [(
+                ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll') +
+                     glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
+                )]
+        # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
+        # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
+	    # NOTE: on windows 8.1 64 bits, this is stored in C:\Users\REINGART\AppData\\Local\Temp\gen_py\2.7
+	    from win32com.client import gencache
+	    gen_py_path = gencache.GetGeneratePath() or "C:\Python27\lib\site-packages\win32com\gen_py"
+	    data_files += [(
+                r"win32com\gen_py", 
+                [os.path.join(gen_py_path, "__init__.py"),
+                 os.path.join(gen_py_path, "dicts.dat")],
+                )]
+        
+        sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
+        WX_DLL = (
+            ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*') +
+                 glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest'),
+            )
+    else:
+        WX_DLL = (".", [
+            "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+            "C:\python25\MSVCR71.dll",
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
+            ])
 
     # includes for py2exe
     includes=['email.generator', 'email.iterators', 'email.message', 'email.utils',  'email.mime.text', 'email.mime.application', 'email.mime.multipart']
@@ -512,11 +497,31 @@ if 'py2exe' in sys.argv:
     ##     data_files += [("ejemplos", glob.glob("ejemplos/*"))]
 
 else:
+    import setuptools
+    kwargs = {}
     desc = ("Interfases, tools and apps for Argentina's gov't. webservices "
             "(soap, com/dll, pdf, dbf, xml, etc.)")
     kwargs['package_dir'] = {'pyafipws': '.'}
     kwargs['packages'] = ['pyafipws']
     opts = {}
+    data_files = []
+
+
+long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"  
+             "AFIP (Factura Electrónica, Granos, Aduana, etc.), "
+             "ANMAT (Trazabilidad de Medicamentos), "
+             "RENPRE (Trazabilidad de Precursores Químicos), "
+             "ARBA (Remito Electrónico)")
+
+# convert the README and format in restructured text (only when registering)
+if "sdist" in sys.argv and os.path.exists("README.md") and sys.platform == "linux2":
+    try:
+        cmd = ['pandoc', '--from=markdown', '--to=rst', 'README.md']
+        long_desc = subprocess.check_output(cmd).decode("utf8")
+        open("README.rst", "w").write(long_desc.encode("utf8"))
+    except Exception as e:
+        warnings.warn("Exception when converting the README format: %s" % e)
+
 
 
 setup(name="PyAfipWs",
