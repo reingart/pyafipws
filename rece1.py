@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.36b"
+__version__ = "1.36c"
 
 import datetime
 import os
@@ -34,6 +34,7 @@ from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
 HOMO = wsfev1.HOMO
 DEBUG = False
 XML = False
+TIMEOUT = 30
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
@@ -384,6 +385,9 @@ if __name__ == "__main__":
     CACERT = config.has_option('WSFEv1', 'CACERT') and config.get('WSFEv1', 'CACERT') or None
     WRAPPER = config.has_option('WSFEv1', 'WRAPPER') and config.get('WSFEv1', 'WRAPPER') or None
 
+    if config.has_option('WSFEv1', 'TIMEOUT'):
+        TIMEOUT = int(config.get('WSFEv1', 'TIMEOUT'))
+
     if '/xml'in sys.argv:
         XML = True
 
@@ -392,6 +396,7 @@ if __name__ == "__main__":
     if DEBUG:
         print "wsaa_url %s\nwsfev1_url %s\ncuit %s" % (wsaa_url, wsfev1_url, cuit)
         if proxy_dict: print "proxy_dict=",proxy_dict
+        print "timeout:", TIMEOUT
 
     if '/x' in sys.argv:
         escribir_facturas([{'err_msg': "Prueba",
@@ -400,7 +405,7 @@ if __name__ == "__main__":
     try:
         ws = wsfev1.WSFEv1()
         ws.LanzarExcepciones = True
-        ws.Conectar("", wsfev1_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
+        ws.Conectar("", wsfev1_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER, timeout=TIMEOUT)
         ws.Cuit = cuit
         if wsfev1_reprocesar is not None:
             ws.Reprocesar = wsfev1_reprocesar
