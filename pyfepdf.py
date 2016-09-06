@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08a"
+__version__ = "1.08b"
 
 DEBUG = False
 HOMO = False
@@ -511,7 +511,7 @@ class FEPDF:
             # reemplazar saltos de linea en observaciones:
             for k in ('obs_generales', 'obs_comerciales'):
                 ds = fact.get(k, '')
-                if '<br/>' in ds:
+                if isinstance(ds, basestring) and '<br/>' in ds:
                     fact[k] = ds.replace('<br/>', '\n')
 
             # divido las observaciones por linea:
