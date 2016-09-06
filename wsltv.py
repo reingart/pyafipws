@@ -554,6 +554,7 @@ class WSLTV(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
+        self.XmlResponse = self.client.xml_response
         array = ret.get('variedad', [])
         if sep is None:
             # sin separador, devuelve un diccionario con clave cod_variadedad
