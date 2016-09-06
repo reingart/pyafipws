@@ -17,7 +17,7 @@ del web service WSCTG versión 3.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.13c"
+__version__ = "1.13d"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -272,6 +272,8 @@ class WSCTGv2(BaseWS):
             cuit_canjeador = None         # nulo
         if not remitente_comercial_como_canjeador:
             remitente_comercial_como_canjeador = None
+        if not remitente_comercial_como_productor:
+            remitente_comercial_como_productor = None
 
         ret = self.client.solicitarCTGInicial(request=dict(
                         auth={
