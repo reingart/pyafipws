@@ -37,8 +37,9 @@ def leer(fn="entrada.json"):
     
 def escribir(filas, fn="salida.json"):
     "Dado una lista de comprobantes (diccionarios), escribe JSON"
-    jsonfile = open(fn,"wb")
-    json.dump(filas, jsonfile, sort_keys=True, indent=4)
+    import codecs
+    jsonfile = codecs.open(fn, "w")
+    json.dump(filas, jsonfile, sort_keys=True, indent=4, encoding="utf-8",)
     jsonfile.close()
 
     

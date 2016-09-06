@@ -315,6 +315,7 @@ def ayuda():
         ('Tributo', TRIBUTO), 
         ('Iva', IVA), 
         ('Comprobante Asociado', CMP_ASOC),
+        ('Permiso', PERMISO),
         ('Datos Adicionales', DATO),
         ]
     for msg, formato in tipos_registro:
