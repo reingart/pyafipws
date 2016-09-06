@@ -17,7 +17,7 @@ del web service WSCTG versión 3.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.13b"
+__version__ = "1.13c"
 
 LICENCIA = """
 wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -101,7 +101,7 @@ ENCABEZADO = [
     ('codigo_cosecha', 4, N), 
     ('peso_neto_carga', 5, N), 
     ('cant_horas', 2, N), 
-    ('patente_vehiculo', 6, A), 
+    ('reservado1', 6, A), 
     ('cuit_transportista', 11, N), 
     ('km_a_recorrer', 4, N),                          # km_recorridos (en consulta WSCTGv2)
     ('establecimiento', 6, N),                        # confirmar arribo
@@ -128,7 +128,8 @@ ENCABEZADO = [
     # nuevos campos agregados WSCTGv3:
     ('cuit_corredor', 12, N),
     ('remitente_comercial_como_productor', 1, A),
-    
+    ('patente_vehiculo', 10, A), 
+
     ]        
 
 
