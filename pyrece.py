@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27f"
+__version__ = "1.27g"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -197,6 +197,7 @@ class PyRece(gui.Controller):
         if not self.token or not self.sign:
             gui.alert("Debe autenticarse con AFIP!", 'Advertencia')
             raise RuntimeError()
+        self.ws.Dummy()
 
     def on_btnMarcarTodo_click(self, event):
         for it in self.components.lvwListado.items:
@@ -385,12 +386,12 @@ class PyRece(gui.Controller):
                 service = "wsfe"
             elif self.webservice in ('wsfev1', ):
                 self.log("Conectando WSFEv1... " + wsfev1_url)
-                self.ws.Conectar("",wsfev1_url, proxy_dict)
+                self.ws.Conectar("",wsfev1_url, proxy_dict, timeout=60, cacert=CACERT, wrapper=WRAPPER)
                 self.ws.Cuit = cuit
                 service = "wsfe"
             elif self.webservice in ('wsfex', 'wsfexv1'):
                 self.log("Conectando WSFEXv1... " + wsfexv1_url)
-                self.ws.Conectar("",wsfexv1_url, proxy_dict)
+                self.ws.Conectar("",wsfexv1_url, proxy_dict, cacert=CACERT, wrapper=WRAPPER)
                 self.ws.Cuit = cuit
                 service = "wsfex"
             else:
@@ -403,7 +404,7 @@ class PyRece(gui.Controller):
             self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
             cms = ws.SignTRA(str(tra),str(cert),str(privatekey))
             self.log("Llamando a WSAA... " + wsaa_url)
-            ws.Conectar("", wsdl=wsaa_url, proxy=proxy_dict)
+            ws.Conectar("", wsdl=wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
             self.log("Proxy: %s" % proxy_dict)
             xml = ws.LoginCMS(str(cms))
             self.log("Procesando respuesta...")
@@ -1085,6 +1086,9 @@ if __name__ == '__main__':
         wsfexv1_url = config.get('WSFEXv1','URL')
     else:
         wsfexv1_url = wsfexv1.WSDL
+
+    CACERT = config.has_option('WSAA', 'CACERT') and config.get('WSAA', 'CACERT') or None
+    WRAPPER = config.has_option('WSAA', 'WRAPPER') and config.get('WSAA', 'WRAPPER') or None
 
     DEFAULT_WEBSERVICE = "wsfev1"
     if config.has_section('PYRECE'):
