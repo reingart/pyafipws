@@ -530,9 +530,9 @@ setup(name="PyAfipWs",
       long_description=long_desc,
       author="Mariano Reingart",
       author_email="reingart@gmail.com",
-      url="https://code.google.com/p/pyafipws/" if 'register' in sys.argv 
+      url="https://github.com/reingart/pyafipws" if not 'py2exe' in sys.argv 
           else "http://www.sistemasagiles.com.ar",
-      license="GNU GPL v3",
+      license="GNU GPL v3+",
       options=opts,
       data_files=data_files,
             classifiers = [
