@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.10h"
+__version__ = "2.11a"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
@@ -150,7 +150,7 @@ class WSAA(BaseWS):
     _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 
                       'InstallDir', 'Traceback', 'Excepcion',
-                      'Identidad', 'Caducidad', 'Emisor',
+                      'Identidad', 'Caducidad', 'Emisor', 'CertX509',
                       'SoapFault', 'LanzarExcepciones',
                     ]
     _readonly_attrs_ = _public_attrs_[:-1]
@@ -188,6 +188,7 @@ class WSAA(BaseWS):
             self.Identidad = x509.get_subject().as_text()
             self.Caducidad = x509.get_not_after().get_datetime()
             self.Emisor = x509.get_issuer().as_text()
+            self.CertX509 = x509.as_text()
         return True
     
     @inicializar_y_capturar_excepciones
@@ -446,6 +447,7 @@ if __name__=="__main__":
             print wsaa.Identidad
             print wsaa.Caducidad
             print wsaa.Emisor
+            print wsaa.CertX509
 
         ta = wsaa.Autenticar(service, crt, key, url, proxy, wrapper, cacert)
         if not ta:
