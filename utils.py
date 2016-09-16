@@ -623,7 +623,7 @@ def escribir(dic, formato, contraer_fechas=False):
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
         except Exception, e:
-            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
+            warnings.warn("Error al escribir campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return linea + "\n"
 
