@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.11a"
+__version__ = "2.11b"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
@@ -113,7 +113,14 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
-            out = Popen(["openssl", "smime", "-sign", 
+            if sys.platform == "linux2":
+                openssl = "openssl"
+            else:
+                if sys.maxsize <= 2**32:
+                    openssl = r"c:\OpenSSL-Win32\bin\openssl.exe"
+                else:
+                    openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
+            out = Popen([openssl, "smime", "-sign", 
                          "-signer", cert, "-inkey", privatekey,
                          "-outform","DER", "-nodetach"], 
                         stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
