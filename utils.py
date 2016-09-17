@@ -36,11 +36,6 @@ from Cookie import SimpleCookie
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
 try:
-    import dbf
-except ImportError:
-    print "para soporte de DBF debe instalar dbf 0.88.019 o superior"
-
-try:
     import json
 except ImportError:
     try:
