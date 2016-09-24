@@ -166,7 +166,7 @@ class WSAA(BaseWS):
 
     if TYPELIB:
         _typelib_guid_ = '{30E9C94B-7385-4534-9A80-DF50FD169253}'
-        _typelib_version_ = 2, 10
+        _typelib_version_ = 2, 11
         _com_interfaces_ = ['IWSAA']
 
     # Variables globales para BaseWS:

@@ -83,31 +83,31 @@ interface IWSFEv1 : IDispatch
                                                [out, retval] BOOL * ok);
     [id(12)] HRESULT ParamGetTiposCbte(
                                        [in] BSTR sep, 
-                                       [out, retval] BOOL * ok);
+                                       [out, retval] VARIANT * ret);
     [id(13)] HRESULT ParamGetTiposConcepto(
                                            [in] BSTR sep, 
-                                           [out, retval] BOOL * ok);
+                                           [out, retval] VARIANT * ret);
     [id(14)] HRESULT ParamGetTiposDoc(
                                       [in] BSTR sep, 
-                                      [out, retval] BOOL * ok);
+                                      [out, retval] VARIANT * ret);
     [id(15)] HRESULT ParamGetTiposIva(
                                       [in] BSTR sep, 
-                                      [out, retval] BOOL * ok);
+                                      [out, retval] VARIANT * ret);
     [id(16)] HRESULT ParamGetTiposMonedas(
                                           [in] BSTR sep, 
-                                          [out, retval] BOOL * ok);
+                                          [out, retval] VARIANT * ret);
     [id(17)] HRESULT ParamGetTiposOpcional(
                                            [in] BSTR sep, 
-                                           [out, retval] BOOL * ok);
+                                           [out, retval] VARIANT * ret);
     [id(18)] HRESULT ParamGetTiposTributos(
                                            [in] BSTR sep, 
-                                           [out, retval] BOOL * ok);
+                                           [out, retval] VARIANT * ret);
     [id(19)] HRESULT ParamGetCotizacion(
                                         [in] BSTR moneda_id, 
-                                        [out, retval] BOOL * ok);
+                                        [out, retval] BSTR * ctz);
     [id(20)] HRESULT ParamGetPtosVenta(
                                        [in] BSTR sep, 
-                                       [out, retval] BOOL * ok);
+                                       [out, retval] VARIANT * ret);
     [id(21)] HRESULT AnalizarXml(
                                  [in] BSTR xml, 
                                  [out, retval] BOOL * ok);
@@ -120,13 +120,11 @@ interface IWSFEv1 : IDispatch
                               [in] BSTR wsdl, 
                               [in] BSTR proxy, 
                               [in] BSTR wrapper, 
-                              [in] BSTR cacert, 
+                              [in] BSTR cacert,
+                              [in] int timeout, 
                               [out, retval] BOOL * ok);
     [id(25)] HRESULT DebugLog(
-                              [out, retval] BOOL * ok);
-    [id(26)] HRESULT Eval(
-                          [in] BSTR code, 
-                          [out, retval] BOOL * ok);
+                              [out, retval] BSTR * msg);
 
     [propput, id(27)] HRESULT Token( [in] BSTR val);
     [propput, id(28)] HRESULT Sign( [in] BSTR val);
@@ -141,13 +139,13 @@ interface IWSFEv1 : IDispatch
     [propput, id(37)] HRESULT LanzarExcepciones( [in] BOOL * val);
     [propget, id(38)] HRESULT Resultado( [out, retval] BSTR * val);
     [propget, id(39)] HRESULT Obs( [out, retval] BSTR * val);
-    [propget, id(40)] HRESULT Observaciones( [out, retval] BSTR * val);
+    [propget, id(40)] HRESULT Observaciones( [out, retval] VARIANT * val);
     [propget, id(41)] HRESULT Traceback( [out, retval] BSTR * val);
     [propget, id(42)] HRESULT InstallDir( [out, retval] BSTR * val);
     [propget, id(43)] HRESULT CAE( [out, retval] BSTR * val);
     [propget, id(44)] HRESULT Vencimiento( [out, retval] BSTR * val);
-    [propget, id(45)] HRESULT Eventos( [out, retval] BSTR * val);
-    [propget, id(46)] HRESULT Errores( [out, retval] BSTR * val);
+    [propget, id(45)] HRESULT Eventos( [out, retval] VARIANT * val);
+    [propget, id(46)] HRESULT Errores( [out, retval] VARIANT * val);
     [propget, id(47)] HRESULT ErrCode( [out, retval] BSTR * val);
     [propget, id(48)] HRESULT ErrMsg( [out, retval] BSTR * val);
     [propput, id(49)] HRESULT Reprocesar( [in] BSTR val);
@@ -200,12 +198,19 @@ interface IWSFEv1 : IDispatch
 
     [propget, id(70)] HRESULT ImpIVA( [out, retval] BSTR * val);
 
+
+    [id(71)] HRESULT CAESolicitarX([out, retval] int * cant_reg);
+    [id(72)] HRESULT IniciarFacturasX([out, retval] BOOL * ok);
+    [id(73)] HRESULT AgregarFacturaX([out, retval] BOOL * ok);
+    [id(74)] HRESULT LeerFacturaX([in] int indice,
+                                  [out, retval] BOOL * ok);
+
 };  //end interface def
 
 [
 	uuid(B1D7283C-3EC2-463E-89B4-11F5228E2A15),
-	version(1.17),
-	helpstring("PyAfipWs WSFEv1 1.17 Type Library"),
+	version(1.18),
+	helpstring("PyAfipWs WSFEv1 1.18 Type Library"),
 ] library PyAfipWsWSFEv1Lib
 {
 	importlib("stdole32.tlb");
