@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18a"
+__version__ = "1.18b"
 
 import datetime
 import decimal
@@ -375,8 +375,8 @@ class WSFEv1(BaseWS):
                         {'Tributo': {
                             'Id': tributo['tributo_id'], 
                             'Desc': tributo['desc'],
-                            'BaseImp': float(tributo['base_imp']),
-                            'Alic': float(tributo['alic']),
+                            'BaseImp': float(tributo['base_imp'] or 0),
+                            'Alic': float(tributo['alic'] or 0),
                             'Importe': float(tributo['importe']),
                             }}
                         for tributo in f['tributos']],
