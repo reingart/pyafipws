@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18b"
+__version__ = "1.18c"
 
 import datetime
 import decimal
@@ -118,9 +118,9 @@ class WSFEv1(BaseWS):
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.FEDummy()['FEDummyResult']
-        self.AppServerStatus = result['AppServer']
-        self.DbServerStatus = result['DbServer']
-        self.AuthServerStatus = result['AuthServer']
+        self.AppServerStatus = result.get('AppServer')
+        self.DbServerStatus = result.get('DbServer')
+        self.AuthServerStatus = result.get('AuthServer')
         return True
 
     # los siguientes métodos no están decorados para no limpiar propiedades
