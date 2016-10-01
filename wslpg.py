@@ -4316,7 +4316,7 @@ if __name__ == '__main__':
             fecha_emision_des = argv.get(4)
             fecha_emision_has = argv.get(5)
             if '--testing' in sys.argv:
-                wslpg.LoadTestXML("wslpg_resp_buscar_cert.xml")  # cargo respuesta
+                wslpg.LoadTestXML("tests/xml/wslpg_resp_buscar_cert.xml")  # cargo respuesta
             ret = wslpg.BuscarCertConSaldoDisponible(cuit_depositante,
                         cod_grano, campania, coe, 
                         fecha_emision_des, fecha_emision_has,
