@@ -18,7 +18,7 @@ a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06e"
+__version__ = "1.06f"
 
 import datetime
 import decimal
@@ -188,9 +188,9 @@ class WSBFEv1(BaseWS):
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.BFEDummy()['BFEDummyResult']
         self.__analizar_errores(result)
-        self.AppServerStatus = str(result['AppServer'])
-        self.DbServerStatus = str(result['DbServer'])
-        self.AuthServerStatus = str(result['AuthServer'])
+        self.AppServerStatus = str(result.get('AppServer', ""))
+        self.DbServerStatus = str(result.get('DbServer', ""))
+        self.AuthServerStatus = str(result.get('AuthServer', ""))
         return True
 
     @inicializar_y_capturar_excepciones
@@ -475,8 +475,9 @@ if __name__ == "__main__":
         if '--dummy' in sys.argv:
             #wsbfev1.LanzarExcepciones = False
             print wsbfev1.Dummy()
-            print wsbfev1.XmlRequest
-            print wsbfev1.XmlResponse
+            print "AppServerStatus", wsbfev1.AppServerStatus
+            print "DbServerStatus", wsbfev1.DbServerStatus
+            print "AuthServerStatus", wsbfev1.AuthServerStatus
         
         if "--prueba" in sys.argv:
             try:
