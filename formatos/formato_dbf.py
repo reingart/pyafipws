@@ -23,17 +23,14 @@ CODEPAGE = 'cp437'
 
 try:
     import dbf
-    print "Encoding!"
 except:
-    print "para soporte de DBF debe instalar dbf"
-    print "     http://pypi.python.org/pypi/dbf/"
     dbf = None
     
 CHARSET = 'latin1'
 CODEPAGE = 'cp437'
 DEBUG = True
 
-if dbf:
+if dbf and hasattr(dbf, "encoding"):
     dbf.encoding(CODEPAGE)
 
 # Formato de entrada/salida similar a SIAP RECE, con agregados
