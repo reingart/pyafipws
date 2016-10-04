@@ -33,7 +33,7 @@ Sub Main()
     tipo_doc = 80: nro_doc = "30000000007"
     nombre_cliente = "Joao Da Silva"
     domicilio_cliente = "Rua 76 km 34.5 Alagoas"
-    pais_dst_cmp = 16 ' código para exportación
+    pais_dst_cmp = 200 ' código para exportación
     id_impositivo = "PJ54482221-l"
     ' totales del comprobante:
     imp_total = "122.00": imp_tot_conc = "0.00"
