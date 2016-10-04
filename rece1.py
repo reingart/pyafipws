@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.36c"
+__version__ = "1.36d"
 
 import datetime
 import os
@@ -23,12 +23,11 @@ import sys
 import time
 import traceback
 import warnings
-from ConfigParser import SafeConfigParser
 
 # revisar la instalación de pyafip.ws:
 import wsfev1
 from php import SimpleXMLElement, SoapClient, SoapFault, date
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfev1.HOMO
@@ -334,15 +333,7 @@ if __name__ == "__main__":
         DEBUG = True
         print "VERSION", __version__, "HOMO", HOMO
 
-    # si se pasa el archivo de configuración por parámetro, confirmar que exista
-    # y descartar que sea una opción
-    if len(sys.argv)>1 and (sys.argv[1][0] not in "-/" or os.path.exists(sys.argv[1])):
-        CONFIG_FILE = sys.argv.pop(1)
-    if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
-
-    config = SafeConfigParser()
-    config.read(CONFIG_FILE)
-    #print CONFIG_FILE
+    config = abrir_conf(CONFIG_FILE, DEBUG)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFEv1','CUIT')

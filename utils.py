@@ -32,6 +32,7 @@ import unicodedata
 import mimetools, mimetypes
 from HTMLParser import HTMLParser
 from Cookie import SimpleCookie
+from ConfigParser import SafeConfigParser
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
@@ -857,6 +858,25 @@ def get_install_dir():
     return os.path.dirname(os.path.abspath(basepath))
 
         
+def abrir_conf(config_file, debug=False):
+    "Abrir el archivo de configuración (usar primer parámetro como ruta)"
+    # en principio, usar el nombre de archivo predeterminado
+    # si se pasa el archivo de configuración por parámetro, confirmar que exista
+    # y descartar que sea una opción
+    if len(sys.argv)>1:
+        if os.path.splitext(sys.argv[1])[1].lower() == ".ini":
+            config_file = sys.argv.pop(1)
+    if not os.path.exists(config_file) or not os.path.isfile(config_file):
+        warnings.warn("Archivo de configuracion %s invalido" % config_file)
+
+    if debug: print "CONFIG_FILE:", config_file
+    
+    config = SafeConfigParser()
+    config.read(config_file)
+
+    return config
+
+
 if __name__ == "__main__":
     print get_install_dir()
     try:
