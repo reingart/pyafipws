@@ -27,7 +27,7 @@ import unicodedata
 import traceback
 from ConfigParser import SafeConfigParser
 import wsaa, wsfe, wsfev1, wsfexv1
-from php import SimpleXMLElement, SoapClient, SoapFault, date
+from utils import SimpleXMLElement, SoapClient, SoapFault, date
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart

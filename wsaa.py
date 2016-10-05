@@ -23,10 +23,9 @@ __version__ = "2.11b"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
-from php import date
 from pysimplesoap.client import SimpleXMLElement
 from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
-     exception_info, safe_console
+     exception_info, safe_console, date
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
 except ImportError:

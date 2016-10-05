@@ -26,7 +26,7 @@ import warnings
 
 # revisar la instalación de pyafip.ws:
 import wsfev1
-from php import SimpleXMLElement, SoapClient, SoapFault, date
+from utils import SimpleXMLElement, SoapClient, SoapFault, date
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 

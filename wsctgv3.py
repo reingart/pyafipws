@@ -68,7 +68,7 @@ Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
-from php import date
+from utils import date
 import traceback
 from pysimplesoap.client import SoapFault
 import utils

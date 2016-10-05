@@ -16,6 +16,7 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 
+import datetime
 import functools
 import inspect
 import locale
@@ -23,6 +24,7 @@ import socket
 import sys
 import os
 import stat
+import time
 import traceback
 import warnings
 from cStringIO import StringIO
@@ -838,6 +840,19 @@ def norm(x, encoding="latin1"):
     elif isinstance(x, str):
         x = x.decode(encoding, 'ignore')
     return unicodedata.normalize('NFKD', x).encode('ASCII', 'ignore')
+
+
+def date(fmt=None,timestamp=None):
+    "Manejo de fechas (simil PHP)"
+    if fmt=='U': # return timestamp
+        t = datetime.datetime.now()
+        return int(time.mktime(t.timetuple()))
+    if fmt=='c': # return isoformat 
+        d = datetime.datetime.fromtimestamp(timestamp)
+        return d.isoformat()
+    if fmt=='Ymd':
+        d = datetime.datetime.now()
+        return d.strftime("%Y%m%d")
 
 
 def get_install_dir():

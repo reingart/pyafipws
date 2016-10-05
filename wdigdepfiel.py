@@ -31,7 +31,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
 import os, sys, time
-from php import date, SimpleXMLElement, SoapClient, SoapFault
+from utils import date, SimpleXMLElement, SoapClient, SoapFault
 
 WSDDFURL = "https://testdia.afip.gov.ar/Dia/Ws/wDigDepFiel/wDigDepFiel.asmx"
 SOAP_ACTION = 'ar.gov.afip.dia.serviciosWeb.wDigDepFiel/'
