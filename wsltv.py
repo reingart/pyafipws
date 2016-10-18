@@ -19,7 +19,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.03b"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -548,6 +548,7 @@ class WSLTV(BaseWS):
     def ConsultarVariedadesClasesTabaco(self, sep="||"):
         "Retorna un listado de variedades y clases de tabaco"
         #  El listado es una estructura anidada (varias clases por variedad)
+        #import dbg; dbg.set_trace()
         ret = self.client.consultarVariedadesClasesTabaco(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -737,77 +738,85 @@ if __name__ == '__main__':
             ##sys.exit(0)
 
         if '--autorizar' in sys.argv:
+
+            if '--prueba' in sys.argv:
         
-            # genero una liquidación de ejemplo:
+                # genero una liquidación de ejemplo:
 
-            tipo_cbte = 150
-            pto_vta = 6
-            
-            if not '--prueba' in sys.argv:
-                # consulto el último número de orden emitido:
-                ok = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
-                if ok:
-                    nro_cbte = wsltv.NroComprobante + 1
-            else:
-                nro_cbte = 1
+                tipo_cbte = 150
+                pto_vta = 6
                 
-            # datos de la cabecera:
-            fecha = '2016-04-18'
-            cod_deposito_acopio = 1000
-            tipo_compra = 'CPS'
-            variedad_tabaco = 'BR'
-            cod_provincia_origen_tabaco = 1
-            puerta = 22
-            nro_tarjeta = 6569866
-            horas = 12
-            control = "FFAA"
-            nro_interno = "77888"
-            fecha_inicio_actividad = "2016-04-01"
-            
-            # cargo la liquidación:
-            wsltv.CrearLiquidacion(tipo_cbte, pto_vta, nro_cbte, fecha, 
-                cod_deposito_acopio, tipo_compra,
-                variedad_tabaco, cod_provincia_origen_tabaco,
-                puerta, nro_tarjeta, horas, control,
-                nro_interno, iibb_emisor=None, 
-                fecha_inicio_actividad=fecha_inicio_actividad)
-            
-            wsltv.AgregarCondicionVenta(codigo=99, descripcion="otra")            
+                if not '--prueba' in sys.argv:
+                    # consulto el último número de orden emitido:
+                    ok = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
+                    if ok:
+                        nro_cbte = wsltv.NroComprobante + 1
+                else:
+                    nro_cbte = 1
+                    
+                # datos de la cabecera:
+                fecha = '2016-04-18'
+                cod_deposito_acopio = 1000
+                tipo_compra = 'CPS'
+                variedad_tabaco = 'BR'
+                cod_provincia_origen_tabaco = 1
+                puerta = 22
+                nro_tarjeta = 6569866
+                horas = 12
+                control = "FFAA"
+                nro_interno = "77888"
+                fecha_inicio_actividad = "2016-04-01"
+                
+                # cargo la liquidación:
+                wsltv.CrearLiquidacion(tipo_cbte, pto_vta, nro_cbte, fecha, 
+                    cod_deposito_acopio, tipo_compra,
+                    variedad_tabaco, cod_provincia_origen_tabaco,
+                    puerta, nro_tarjeta, horas, control,
+                    nro_interno, iibb_emisor=None, 
+                    fecha_inicio_actividad=fecha_inicio_actividad)
+                
+                wsltv.AgregarCondicionVenta(codigo=99, descripcion="otra")            
 
-            # datos del receptor:
-            cuit = 20111111112
-            iibb = 123456
-            nro_socio = 11223   
-            nro_fet = 22
-            wsltv.AgregarReceptor(cuit, iibb, nro_socio, nro_fet)
-            
-            # datos romaneo:
-            nro_romaneo = 321
-            fecha_romaneo = "2015-12-10"
-            wsltv.AgregarRomaneo(nro_romaneo, fecha_romaneo)
-            # fardo:
-            cod_trazabilidad = 356
-            clase_tabaco = 4
-            peso= 900
-            wsltv.AgregarFardo(cod_trazabilidad, clase_tabaco, peso)
-            
-            # precio clase:
-            precio = 190
-            wsltv.AgregarPrecioClase(clase_tabaco, precio)
+                # datos del receptor:
+                cuit = 20111111112
+                iibb = 123456
+                nro_socio = 11223   
+                nro_fet = 22
+                wsltv.AgregarReceptor(cuit, iibb, nro_socio, nro_fet)
+                
+                # datos romaneo:
+                nro_romaneo = 321
+                fecha_romaneo = "2015-12-10"
+                wsltv.AgregarRomaneo(nro_romaneo, fecha_romaneo)
+                # fardo:
+                cod_trazabilidad = 356
+                clase_tabaco = 4
+                peso= 900
+                wsltv.AgregarFardo(cod_trazabilidad, clase_tabaco, peso)
+                
+                # precio clase:
+                precio = 190
+                wsltv.AgregarPrecioClase(clase_tabaco, precio)
 
-            # retencion:
-            descripcion = "otra retencion"
-            cod_retencion = 15
-            importe = 12
-            wsltv.AgregarRetencion(cod_retencion, descripcion, importe)
+                # retencion:
+                descripcion = "otra retencion"
+                cod_retencion = 15
+                importe = 12
+                wsltv.AgregarRetencion(cod_retencion, descripcion, importe)
 
-            # tributo:
-            codigo_tributo = 99
-            descripcion = "Ganancias"
-            base_imponible = 15000
-            alicuota = 8
-            importe = 1200
-            wsltv.AgregarTributo(codigo_tributo, descripcion, base_imponible, alicuota, importe)
+                # tributo:
+                codigo_tributo = 99
+                descripcion = "Ganancias"
+                base_imponible = 15000
+                alicuota = 8
+                importe = 1200
+                wsltv.AgregarTributo(codigo_tributo, descripcion, base_imponible, alicuota, importe)
+
+            else:
+                # cargar un archivo de texto:
+                with open("wsltv.json", "r") as f:
+                    wsltv.solicitud = json.load(f, encoding="utf-8")
+                
             
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
