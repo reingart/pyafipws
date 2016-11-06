@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28b"
+__version__ = "1.28c"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -655,10 +655,10 @@ class PyRece(gui.Controller):
                     if self.ws.Obs and self.ws.Obs!='00':
                         gui.alert(self.ws.Obs, u"Observación AFIP")
                         
-                # actuaizo la factura
+                # actualizo la factura
                 for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
                     if kargs.get(k):
-                        item[k] = kargs[key] if kargs[key] is not None else ""
+                        item[k] = kargs[k] if kargs[k] is not None else ""
                 self.items[i] = item
                 self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 procesadas += 1
