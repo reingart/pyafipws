@@ -48,7 +48,7 @@ Opciones:
   --dummy: consulta estado de servidores
   
   --autorizar: Autorizar Liquidación de Tabaco Verde (generarLiquidacion)
-  --ajustar: Ajustar Liquidación de Tabaco Verde (ajustarLiquidacion)
+  --ajustar: Ajustar (ajustarLiquidacion/generarAjusteFisico)
   --ult: Consulta el último número de orden registrado en AFIP 
          (consultarUltimoComprobanteXPuntoVenta)
   --consultar: Consulta una liquidación registrada en AFIP 
@@ -101,7 +101,7 @@ class WSLTV(BaseWS):
                         'AgregarFlete', 'AgregarBonificacion',
                         'ConsultarLiquidacion', 'ConsultarUltimoComprobante',
                         'CrearAjuste', 'AgregarComprobanteAAjustar',
-                        'AjustarLiquidacion',
+                        'AjustarLiquidacion', 'GenerarAjusteFisico',
                         'LeerDatosLiquidacion',
                         'ConsultarVariedadesClasesTabaco',
                         'ConsultarTributos',
@@ -349,7 +349,7 @@ class WSLTV(BaseWS):
                     nro_socio=liq['receptor'].get('nroSocio'),
                     situacion_iva=liq['receptor']['situacionIVA'],
                     domicilio=liq['receptor']['domicilio'],
-                    iibb=liq['receptor']['iibb'],
+                    iibb=liq['receptor'].get('iibb'),
                     ),
                 control=liq['datosOperacion'].get('control'),
                 nro_interno=liq['datosOperacion'].get('nroInterno'),
@@ -372,6 +372,7 @@ class WSLTV(BaseWS):
                 total=liq['totalesOperacion']['total'],
                 retenciones=[],
                 tributos=[],               
+                cae_ajustado=liq.get("caeAjustado"),
                 pdf=liq.get('pdf'),
                 )
             for romaneo in liq['detalleOperacion'].get('romaneo', []):
@@ -406,15 +407,19 @@ class WSLTV(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def CrearAjuste(self, tipo_cbte, pto_vta, nro_cbte, fecha, 
-            cod_deposito_acopio, tipo_ajuste, cuit_receptor, 
-            iibb_emisor=None, iibb_receptor=None, 
+            cod_deposito_acopio=None, tipo_ajuste=None, cuit_receptor=None, 
+            iibb_emisor=None, iibb_receptor=None, fecha_inicio_actividad=None,
             **kwargs):
         "Inicializa internamente los datos de una liquidación para ajustar"
+        # codDepositoAcopio, tipoAjuste, cuitReceptor obligatorio ajustar liq.
+        # WSLTVv1.3 fechaLiquidacion/fechaInicioActividad para ajuste físico
         # creo el diccionario con los campos generales de la liquidación:
         liq = dict(tipoComprobante=tipo_cbte, 
                    nroComprobante=nro_cbte, 
                    puntoVenta=pto_vta, 
                    fechaAjusteLiquidacion=fecha, 
+                   fechaLiquidacion=fecha,
+                   fechaInicioActividad=fecha_inicio_actividad,
                    codDepositoAcopio=cod_deposito_acopio, 
                    tipoAjuste=tipo_ajuste,
                    cuitReceptor=cuit_receptor,
@@ -435,7 +440,7 @@ class WSLTV(BaseWS):
     def AgregarComprobanteAAjustar(self, tipo_cbte, pto_vta, nro_cbte):
         "Agrega comprobante a ajustar"
         cbte = dict(tipoComprobante=tipo_cbte, puntoVenta=pto_vta, nroComprobante=nro_cbte)
-        self.solicitud['liquidacion'].append(cbte)
+        self.solicitud['liquidacion']["comprobanteAAjustar"].append(cbte)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -460,6 +465,30 @@ class WSLTV(BaseWS):
             aut = ret['ajusteUnificado']
             self.AnalizarAjuste(aut)
         return True
+
+    @inicializar_y_capturar_excepciones
+    def GenerarAjusteFisico(self):
+        "Generar Ajuste Físico de Liquidación de Tabaco Verde (WSLTVv1.3)"
+        
+        # renombrar la clave principal de la estructura
+        liq = self.solicitud.pop('liquidacion')
+        self.solicitud = liq
+        
+        # llamar al webservice:
+        ret = self.client.generarAjusteFisico(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        solicitud=self.solicitud,
+                        )
+        # analizar el resultado:
+        ret = ret['respuesta']
+        self.__analizar_errores(ret)
+        liqs = ret.get('liquidacion', [])
+        liq = liqs[0] if liqs else None
+        self.AnalizarLiquidacion(liq)
+        return True
+
 
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, tipo_cbte=None, pto_vta=None, nro_cbte=None,
@@ -901,7 +930,20 @@ if __name__ == '__main__':
             if DEBUG: 
                 pprint.pprint(wsltv.params_out)
 
-            
+
+        if '--ajustar' in sys.argv and '--prueba' in sys.argv:
+            # ejemplo documentación AFIP:
+            if '--testing' in sys.argv:
+                wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test_pdf.xml")
+            wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2, nro_cbte=1, 
+                              fecha='2016-09-09', 
+                              fecha_inicio_actividad="1900-01-01")
+            wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=3697, nro_cbte=2)
+            wsltv.GenerarAjusteFisico()
+            print "CAE Ajustado:", wsltv.GetParametro("cae_ajustado")
+            if '--testing' in sys.argv:
+                assert wsltv.GetParametro("cae_ajustado") == "86029002591067"
+
         if '--consultar' in sys.argv:
             tipo_cbte = 151
             pto_vta = 1
