@@ -19,7 +19,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03b"
+__version__ = "1.04a"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -98,6 +98,7 @@ class WSLTV(BaseWS):
                         'AgregarCondicionVenta', 'AgregarReceptor', 
                         'AgregarRomaneo', 'AgregarFardo', 'AgregarPrecioClase',
                         'AgregarRetencion', 'AgregarTributo',
+                        'AgregarFlete', 'AgregarBonificacion',
                         'ConsultarLiquidacion', 'ConsultarUltimoComprobante',
                         'CrearAjuste', 'AgregarComprobanteAAjustar',
                         'AjustarLiquidacion',
@@ -267,6 +268,20 @@ class WSLTV(BaseWS):
         "Agrega la información referente a las retenciones de la liquidación"
         trib = dict(codigoTributo=codigo_tributo, descripcion=descripcion, baseImponible=base_imponible, alicuota=alicuota, importe=importe)
         self.solicitud['tributo'].append(trib)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarFlete(self, descripcion, importe):
+        "Agrega la información referente al flete de la liquidación (opcional)"
+        flete = dict(descripcion=descripcion, importe=importe)
+        self.solicitud['flete'] = flete
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarBonificacion(self, porcentaje, importe):
+        "Agrega la información referente a las bonificaciones de la liquidación (opcional)"
+        bonif = dict(porcentaje=porcentaje, importe=importe)
+        self.solicitud['bonificacion'] = bonif
         return True
 
 
@@ -811,6 +826,16 @@ if __name__ == '__main__':
                 alicuota = 8
                 importe = 1200
                 wsltv.AgregarTributo(codigo_tributo, descripcion, base_imponible, alicuota, importe)
+
+                # flete:
+                descripcion = "transporte"
+                importe = 1000.00
+                wsltv.AgregarFlete(descripcion, importe)
+
+                # bonificacion:
+                porcentaje = 10.0
+                importe = 100.00
+                wsltv.AgregarBonificacion(porcentaje, importe)
 
             else:
                 # cargar un archivo de texto:
