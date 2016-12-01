@@ -186,10 +186,20 @@ class WSLUM(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def CrearLiquidacion(self, **kwargs):
+    def CrearLiquidacion(self, tipo_cbte, pto_vta, nro_cbte, fecha, periodo,
+                         iibb_adquirente=None, domicilio_sede=None,
+                         inscripcion_registro_publico=None, 
+                         datos_adicionales=None, alicuota_iva=None, **kwargs):
         "Inicializa internamente los datos de una liquidación para autorizar"
         # creo el diccionario con los campos generales de la liquidación:
-        liq = kwargs
+        liq = {'tipoComprobante': tipo_cbte, 'puntoVenta': pto_vta,
+                'nroComprobante': nro_cbte, 'fechaComprobante': fecha, 
+                'periodo': periodo, 'iibbAdquirente': iibb_adquirente, 
+                'domicilioSede': domicilio_sede, 
+                'inscripcionRegistroPublico': inscripcion_registro_publico, 
+                'datosAdicionales': datos_adicionales, 
+                'alicuotaIVA': alicuota_iva, 
+              }
         liq["condicionVenta"] = []
         self.solicitud = dict(liquidacion=liq,
                               bonificacionPenalizacion=[],
@@ -199,36 +209,51 @@ class WSLUM(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarCondicionVenta(self, codigo, descripcion, **kwargs):
+    def AgregarCondicionVenta(self, codigo, descripcion=None, **kwargs):
         "Agrego una o más condicion de venta a la liq."
         cond = {'codigo': codigo, 'descripcion': descripcion}
         self.solicitud['liquidacion']['condicionVenta'].append(cond)
         return True
     
     @inicializar_y_capturar_excepciones
-    def AgregarTambero(self, cuit, iibb, **kwargs):
+    def AgregarTambero(self, cuit, iibb=None, **kwargs):
         "Agrego los datos del productor a la liq."
         tambero = {'cuit': cuit, 'iibb': iibb}
         self.solicitud['liquidacion']['tambero'] = tambero
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarTambo(self, **kwargs):
+    def AgregarTambo(self, nro_tambo_interno, nro_renspa,
+                     fecha_venc_cert_tuberculosis, fecha_venc_cert_brucelosis,
+                     nro_tambo_provincial=None, **kwargs):
         "Agrego los datos del productor a la liq."
-        tambo = kwargs
+        tambo = {'nroTamboInterno': nro_tambo_interno,
+                 'nroTamboProvincial': nro_tambo_provincial, 
+                 'nroRenspa': nro_renspa, 
+                 'ubicacionTambo': {},
+                 'fechaVencCertTuberculosis': fecha_venc_cert_tuberculosis,
+                 'fechaVencCertBrucelosis': fecha_venc_cert_brucelosis}
         self.solicitud['liquidacion']['tambo'] = tambo
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarUbicacionTambo(self, **kwargs):
+    def AgregarUbicacionTambo(self, latitud, longitud, domicilio,
+                              cod_localidad, cod_provincia, codigo_postal,
+                              nombre_partido_depto, **kwargs):
         "Agrego los datos del productor a la liq."
-        ubic_tambo = kwargs
+        ubic_tambo = {'latitud': latitud, 
+                      'longitud': longitud,
+                      'domicilio': domicilio,
+                      'codLocalidad': cod_localidad,
+                      'codProvincia': cod_provincia,
+                      'nombrePartidoDepto': nombre_partido_depto,
+                      'codigoPostal': codigo_postal}
         self.solicitud['liquidacion']['tambo']['ubicacionTambo'] = ubic_tambo
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarBonificacionPenalizacion(self, codigo, detalle, resultado, 
-                                        porcentaje, importe, **kwargs):
+    def AgregarBonificacionPenalizacion(self, codigo, detalle, resultado=None, 
+                                        porcentaje=None, importe=None, **kwargs):
         "Agrega la información referente a las bonificaciones o penalizaciones"
         ret = dict(codBonificacionPenalizacion=codigo, detalle=detalle,
                    porcentajeAAplicar=porcentaje, importe=importe)
@@ -236,10 +261,10 @@ class WSLUM(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarOtroImpuesto(self, tipo, detalle, base_imponible, alicuota):
+    def AgregarOtroImpuesto(self, tipo, base_imponible, alicuota, detalle=None):
         "Agrega la información referente a otros tributos de la liquidación"
-        trib = dict(tipo=tipo, detalle=detalle, baseImponible=base_imponible,
-                    alicuota=alicuota)
+        trib = dict(tipo=tipo, baseImponible=base_imponible, alicuota=alicuota,
+                    detalle=detalle)
         self.solicitud['otroImpuesto'].append(trib)
         return True
 
