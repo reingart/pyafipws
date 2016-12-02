@@ -19,7 +19,7 @@ Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 LICENCIA = """
 wslum.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -446,7 +446,7 @@ class WSLUM(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, tipo_cbte=None, pto_vta=None, nro_cbte=None,
-                                   cae=None, pdf="liq.pdf"):
+                                   cae=None, cuit_comprador=None, pdf="liq.pdf"):
         "Consulta una liquidación por No de Comprobante o CAE"
         if cae:
             ret = self.client.consultarLiquidacionPorCae(
@@ -464,6 +464,7 @@ class WSLUM(BaseWS):
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                         solicitud={
+                            'cuitComprador': cuit_comprador,
                             'puntoVenta': pto_vta,
                             'nroComprobante': nro_cbte,
                             'tipoComprobante': tipo_cbte,
@@ -874,10 +875,12 @@ if __name__ == '__main__':
             tipo_cbte = 27
             pto_vta = 1
             nro_cbte = 0
+            cuit = None
             try:
                 tipo_cbte = sys.argv[sys.argv.index("--consultar") + 1]
                 pto_vta = sys.argv[sys.argv.index("--consultar") + 2]
                 nro_cbte = sys.argv[sys.argv.index("--consultar") + 3]
+                cuit = sys.argv[sys.argv.index("--consultar") + 4]
             except IndexError:
                 pass
             if '--testing' in sys.argv:
@@ -885,7 +888,8 @@ if __name__ == '__main__':
                 # usar solo si no está operativo, cargo prueba:
                 wslum.LoadTestXML("tests/xml/wslum_cons_test.xml")
             print "Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte)
-            ret = wslum.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte)
+            ret = wslum.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte, 
+                                             cuit_comprador=cuit)
             print "CAE", wslum.CAE
             print "Errores:", wslum.Errores
 
