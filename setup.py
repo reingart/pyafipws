@@ -47,6 +47,7 @@ if 'py2exe' in sys.argv:
     #import wsctgv3
     #import wslpg
     #import wsltv
+    #import wslum 
     #import wscoc
     #import wscdc
     #import cot
@@ -113,6 +114,8 @@ if 'py2exe' in sys.argv:
     includes=['email.generator', 'email.iterators', 'email.message', 'email.utils',  'email.mime.text', 'email.mime.application', 'email.mime.multipart']
     if 'pyi25' in globals() or 'pyfepdf' in globals():
         includes.extend(["PIL.Image", "PIL.ImageFont", "PIL.ImageDraw"])
+
+    includes.append("dbf")
 
     # optional modules:
     # required modules for shelve support (not detected by py2exe by default):
@@ -356,6 +359,19 @@ if 'py2exe' in sys.argv:
             ]
         __version__ += "+wsltv_" + wsltv.__version__
         HOMO &= wsltv.HOMO
+
+    if 'wslum' in globals():
+        kwargs['com_server'] += [
+            Target(module=wslum, modules="wslum"),
+            ]
+        kwargs['console'] += [
+            Target(module=wslum, script='wslum.py', dest_base="wslum_cli"),
+            ]
+        data_files += [
+            ("conf", ["conf/wslum.ini"]),
+            ]
+        __version__ += "+wslum_" + wslum.__version__
+        HOMO &= wslum.HOMO
 
     if 'wscoc' in globals():
         kwargs['com_server'] += [
