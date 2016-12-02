@@ -19,7 +19,7 @@ Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 LICENCIA = """
 wslum.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -84,7 +84,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslum/LumService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslum.ini"
-HOMO = False
+HOMO = True
 
 
 class WSLUM(BaseWS):
@@ -252,6 +252,51 @@ class WSLUM(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
+    def AgregarBalanceLitrosPorcentajesSolidos(self, litros_remitidos, litros_decomisados, 
+                                               kg_grasa, kg_proteina, **kwargs):
+        "Agrega balance litros y porcentajes sólidos a la liq. (obligatorio)"
+        d = {'litrosRemitidos': litros_remitidos,
+             'litrosDecomisados': litros_decomisados,
+             'kgGrasa': kg_grasa,
+             'kgProteina': kg_proteina}
+        self.solicitud['balanceLitrosPorcentajesSolidos'].append(d)
+
+    @inicializar_y_capturar_excepciones
+    def AgregarConceptosBasicosMercadoInterno(self, kg_produccion_gb, precio_por_kg_produccion_gb, 
+                                              kg_produccion_pr, precio_por_kg_produccion_pr,
+                                              kg_crecimiento_gb, precio_por_kg_crecimiento_gb,
+                                              kg_crecimiento_pr, precio_por_kg_crecimiento_pr,
+                                               **kwargs):
+        "Agrega balance litros y porcentajes sólidos (mercado interno)"
+        d = {'kgProduccionGB': kg_produccion_gb, 
+             'precioPorKgProduccionGB': precio_por_kg_produccion_gb, 
+             'kgProduccionPR': kg_produccion_pr, 
+             'precioPorKgProduccionPR': precio_por_kg_produccion_pr, 
+             'kgCrecimientoGB': kg_crecimiento_gb, 
+             'precioPorKgCrecimientoGB': precio_por_kg_crecimiento_gb, 
+             'kgCrecimientoPR':kg_crecimiento_pr, 
+             'precioPorKgCrecimientoPR': precio_por_kg_crecimiento_pr}
+        self.solicitud['conceptosBasicosMercadoInterno'].append(d)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarConceptosBasicosMercadoExterno(self, kg_produccion_gb, precio_por_kg_produccion_gb, 
+                                              kg_produccion_pr, precio_por_kg_produccion_pr,
+                                              kg_crecimiento_gb, precio_por_kg_crecimiento_gb,
+                                              kg_crecimiento_pr, precio_por_kg_crecimiento_pr,
+                                               **kwargs):
+        "Agrega balance litros y porcentajes sólidos (mercado externo)"
+        d = {'kgProduccionGB': kg_produccion_gb, 
+             'precioPorKgProduccionGB': precio_por_kg_produccion_gb, 
+             'kgProduccionPR': kg_produccion_pr, 
+             'precioPorKgProduccionPR': precio_por_kg_produccion_pr, 
+             'kgCrecimientoGB': kg_crecimiento_gb, 
+             'precioPorKgCrecimientoGB': precio_por_kg_crecimiento_gb, 
+             'kgCrecimientoPR':kg_crecimiento_pr, 
+             'precioPorKgCrecimientoPR': precio_por_kg_crecimiento_pr}
+        self.solicitud['conceptosBasicosMercadoExterno'].append(d)
+
+    @inicializar_y_capturar_excepciones
     def AgregarBonificacionPenalizacion(self, codigo, detalle, resultado=None, 
                                         porcentaje=None, importe=None, **kwargs):
         "Agrega la información referente a las bonificaciones o penalizaciones"
@@ -268,13 +313,19 @@ class WSLUM(BaseWS):
         self.solicitud['otroImpuesto'].append(trib)
         return True
 
+    @inicializar_y_capturar_excepciones
+    def AgregarRemito(self, nro_remito):
+        "Agrega la información referente a los remitos (multiples)"
+        self.solicitud['remito'].append(nro_remito)
+        return True
+
 
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
         "Generar o ajustar una liquidación única y obtener del CAE"
         # limpio los elementos que no correspondan por estar vacios:
         for campo in ["bonificacionPenalizacion", "otroImpuesto"]:
-            if not self.solicitud[campo]:
+            if campo in self.solicitud and not self.solicitud[campo]:
                 del self.solicitud[campo]
         # llamo al webservice:
         ret = self.client.generarLiquidacion(
