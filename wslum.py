@@ -709,7 +709,6 @@ if __name__ == '__main__':
         wslum = WSLUM()
         wslum.LanzarExcepciones = True
         wslum.Conectar(url=WSLUM_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
-        print wslum.client.help("generarLiquidacion")
         wslum.SetTicketAcceso(ta)
         wslum.Cuit = CUIT
 
@@ -745,7 +744,7 @@ if __name__ == '__main__':
                         #        'puntoVenta': 0}, 
                         #        'caeAAjustar': 0}, 
                         'condicionVenta': [{
-                            'codigo': 0, 'descripcion': ""}]
+                            'codigo': 1, 'descripcion': None}]
                         }, 
                     'tambero': {
                         'cuit': 11111111111, 'iibb': "123456789012345"}, 
@@ -754,11 +753,11 @@ if __name__ == '__main__':
                         'nroTamboProvincial': 100000000, 
                         'nroRenspa': "12.345.6.78901/12", 
                         'ubicacionTambo': {
-                            'latitud': -35.108015, 
-                            'longitud': -64.733910,
+                            'latitud': -34.62987, #-35.108015, 
+                            'longitud': -58.65155, #-64.733910,
                             'domicilio': "Domicilio Tambo",
-                            'codLocalidad': 1123,
-                            'codProvincia': 10,
+                            'codLocalidad': 10109,
+                            'codProvincia': 1,
                             'nombrePartidoDepto': "Partido Tambo",
                             'codigoPostal': 1234},
                         'fechaVencCertTuberculosis': "2015-01-01",
@@ -791,22 +790,17 @@ if __name__ == '__main__':
                         'detalle': "opcional", 
                         'resultado': "400", 
                         'porcentajeAAplicar': 10.00, 
-                        'importe': 0.00}, {
-                        'codBonificacionPenalizacion': 3, 
-                        'detalle': "libre", 
-                        'resultado': "libre", 
-                        'porcentajeAAplicar': 10.00, 
-                        'importe': 0.00}, {
+                        'importe': None}, {
                         'codBonificacionPenalizacion': 10, 
                         'detalle': "opcional", 
                         'resultado': "2.5", 
                         'porcentajeAAplicar': 10.00, 
-                        'importe': 0.00}, {
+                        'importe': None}, {
                         'codBonificacionPenalizacion': 3, 
                         'detalle': "opcional", 
                         'resultado': "En Saneamiento", 
                         'porcentajeAAplicar': 10.00, 
-                        'importe': 0.00}, ], 
+                        'importe': None}, ], 
                     'otroImpuesto': [{
                         'tipo': 1, 
                         'detalle': "", 
