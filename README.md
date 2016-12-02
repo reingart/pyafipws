@@ -16,7 +16,7 @@ General Information:
  * Documentation: https://github.com/reingart/pyafipws/wiki (Spanish/English)
  * Commercial Support: http://www.sistemasagiles.com.ar/ (Spanish)
  * Community Site: http://www.pyafipws.com.ar/ (Spanish)
- * Public Forum: http://groups.google.com/group/pyafipws
+ * Public Forum: http://groups.google.com/group/pyafipws (community support, no-charge "gratis" access)
 
 More information at [Python Argentina Magazine article](http://revista.python.org.ar/2/en/html/pyafip.html) (English) 
 and [JAIIO 2012 paper](http://www.41jaiio.org.ar/sites/default/files/15_JSL_2012.pdf) (Spanish)
@@ -54,6 +54,8 @@ AFIP:
  * [WSFEXv1][14]: foreign trade (electronic invoice) -[English][15]-
  * [WSCTG][16]: agriculture (grain traceability code)
  * [WSLPG][17]: agriculture (grain liquidation - invoice)
+ * [WSLTV][17b]: agriculture (green tobacco - invoice)
+ * [WSLUM][17c]: agriculture (milk - invoice)
  * [wDigDepFiel][18]: customs (faithful depositary)
  * [WSCOC][19]: currency exchange operations autorization
  * [WSCDC][22]: invoice verification
@@ -185,6 +187,8 @@ For more information see the source code installation steps in the
  [15]: https://github.com/reingart/pyafipws/wiki/WSFEX
  [16]: http://www.sistemasagiles.com.ar/trac/wiki/CodigoTrazabilidadGranos
  [17]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
+ [17b]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionTabacoVerde
+ [17c]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionUnicaMensualLecheria
  [18]: http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs#wDigDepFiel:DepositarioFiel
  [19]: http://www.sistemasagiles.com.ar/trac/wiki/ConsultaOperacionesCambiarias
  [20]: http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCotArba
