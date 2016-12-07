@@ -174,11 +174,25 @@ class WSLSP(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def CrearLiquidacion(self, cod_operacion, fecha_cbte, fecha_op,
+    def CrearLiquidacion(self, cod_operacion, fecha_cbte, fecha_op, cod_motivo,
+                         cod_localidad_procedencia, cod_provincia_procedencia, 
+                         cod_localidad_destino, cod_provincia_destino,
+                         lugar_realizacion=None,
+                         fecha_recepcion=None, fecha_faena=None, 
                          datos_adicionales=None, **kwargs):
         "Inicializa internamente los datos de una liquidación para autorizar"
         # creo el diccionario con los campos generales de la liquidación:
-        liq = { 'fechaComprobante': fecha, 'fechaOperacion': fecha_op, 
+        liq = { 'fechaComprobante': fecha_cbte, 'fechaOperacion': fecha_op, 
+                'lugarRealizacion': unicode, 
+                'codMotivo': int, 
+                'codLocalidadProcedencia': int, 
+                'codProvinciaProcedencia': int, 
+                'codLocalidadDestino': int, 
+                'codProvinciaDestino': int, 
+                'fechaRecepcion': datetime.date, 
+                'fechaFaena': datetime.date, 
+                'frigorifico': {'cuit': long, 'nroPlanta': int}
+
               }
         self.solicitud = dict(codOperacion=cod_operacion,
                               emisor={}, receptor={},
@@ -198,7 +212,7 @@ class WSLSP(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarEmisor(self, tipo_cbte, pto_vta, nro_cbte, cod_Caracter,
+    def AgregarEmisor(self, tipo_cbte, pto_vta, nro_cbte, cod_caracter,
                       fecha_inicio_act,
                       iibb=None, nro_ruca=None, nro_renspa=None, **kwargs):
         "Agrego los datos del emisor a la liq."
@@ -232,27 +246,48 @@ class WSLSP(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarItemDetalle(self, **kwargs):
+    def AgregarItemDetalle(self, cuit_cliente, cod_categoria, tipo_liquidacion,
+                           cantidad, precio_unitario, alicuota_iva, cod_raza,
+                           cantidad_cabezas=None, nro_tropa=None, 
+                           cod_corte=None, cantidad_kg_vivo=None,
+                           precio_recupero=None,
+                           **kwargs):
         "Agrega el detalle de item de la liquidación"
-        d = {}
+        d = {'cuitCliente': cuit_cliente,
+             'codCategoria': cod_categoria,
+             'tipoLiquidacion': tipo_liquidacion, 
+             'cantidad': cantidad,
+             'precioUnitario': precio_unitario, 
+             'alicuotaIVA': alicuota_iva, 
+             'cantidadCabezas': cantidad_cabezas, 
+             'codRaza': cod_raza, 
+             'nroTropa': nro_tropa, 
+             'codCorte': cod_corte, 
+             'cantidadKgVivo': cantidad_kg_vivo, 
+             'precioRecupero': precio_recupero,
+             'liquidacionCompraAsociada': [],
+            }
         self.solicitud['itemDetalleLiquidacion'].append(d)
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarCompraAsociada(self, **kwargs):
+    def AgregarCompraAsociada(self, tipo_cbte, pto_vta, nro_cbte, cant_asoc):
         "Agrega la información referente a la liquidación compra asociada"
-        d = {}
+        d = {'tipoComprobante': tipo_cbte, 
+             'puntoVenta': pto_vta,
+             'nroComprobante': nro_cbte, 
+             'cantidadAsociada': cant_asoc}
         item_liq = self.solicitud['itemDetalleLiquidacion'][-1]
-        item_liq['liquidacionCompraAsociada'].append(ret)
+        item_liq['liquidacionCompraAsociada'].append(item_liq)
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarGastos(self, cod_gasto, descripcion=None,     
-                       base_imponible=None, alicuota=None, importe=None):
+    def AgregarGasto(self, cod_gasto, descripcion=None, base_imponible=None,
+                     alicuota=None, importe=None, alicuota_iva=None):
         "Agrega la información referente a los gastos de la liquidación"
         gasto = {'codGasto': cod_gasto, 'descripcion': descripcion, 
                  'baseImponible': base_imponible, 'alicuota': alicuota, 
-                 'importe': importe}
+                 'importe': importe, 'alicuotaIVA': alicuota_iva}
         self.solicitud['gasto'].append(gasto)
         return True
 
@@ -613,12 +648,50 @@ if __name__ == '__main__':
 
         if '--autorizar' in sys.argv:
 
-            print wslsp.client.help("generarLiquidacion")
             if '--prueba' in sys.argv:
+                print wslsp.client.help("generarLiquidacion")
 
-                wslsp.solicitud = {
-                    }
-
+                # Solicitud 1: Cuenta de Venta y Líquido Producto - Hacienda
+                wslsp.CrearLiquidacion(
+                        cod_operacion=1, 
+                        fecha_cbte='2016-11-12', 
+                        fecha_op='2016-11-11', 
+                        cod_motivo=6, 
+                        cod_localidad_procedencia=1, 
+                        cod_provincia_procedencia=8274, 
+                        cod_localidad_destino=8274, 
+                        cod_provincia_destino=1,
+                        lugar_realizacion='CORONEL SUAREZ',
+                        fecha_recepcion=None, fecha_faena=None, 
+                        datos_adicionales=None)
+                if False:
+                    wslsp.AgregarFrigorifico(cuit, nro_planta)
+                wslsp.AgregarEmisor(
+                        tipo_cbte=180, pto_vta=3000, nro_cbte=52, 
+                        cod_caracter=5, fecha_inicio_act='2016-01-01',
+                        iibb='123456789', nro_ruca=305, nro_renspa=None)
+                wslsp.AgregarReceptor(cod_caracter=3)
+                wslsp.AgregarOperador(cuit=12222222222, iibb=3456, 
+                                      nro_renspa='22.123.1.12345/A4')
+                wslsp.AgregarItemDetalle(
+                        cuit_cliente="12345688888",
+                        cod_categoria=51020102,
+                        tipo_liquidacion=1,
+                        cantidad=2,
+                        precio_unitario=10.0,
+                        alicuota_iva=10.5,
+                        cod_raza=1,
+                        )
+                wslsp.AgregarCompraAsociada(tipo_cbte=185, pto_vta=3000,
+                                            nro_cbte=33, cant_asoc=2)
+                wslsp.AgregarGuia(nro_guia=1)
+                wslsp.AgregarDTE(nro_dte="418-1",
+                                 nro_renspa='22.123.1.12345/4500')
+                wslsp.AgregarGasto(cod_gasto=16, base_imponible=230520.60,
+                                   alicuota=3, alicuota_iva=10.5)
+                wslsp.AgregarTributo(cod_tributo=5, base_imponible=230520.60,
+                                     alicuota=2.5)
+                wslsp.AgregarTributo(cod_tributo=3, importe=397)
             else:
                 # cargar un archivo de texto:
                 with open("wslsp.json", "r") as f:
@@ -657,7 +730,7 @@ if __name__ == '__main__':
                 open("liq.pdf", "wb").write(pdf)
 
             if '--testing' in sys.argv:
-                assert wslsp.CAE == "75521002437246"
+                assert wslsp.CAE == "96465021584954"
 
             if DEBUG: 
                 pprint.pprint(wslsp.params_out)
