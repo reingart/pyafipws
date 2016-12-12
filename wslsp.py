@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -519,6 +519,119 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    def ConsultarTiposComprobante(self, sep="||"):
+        "Retorna un listado de tipos de comprobantes con código y descripción"
+        ret = self.client.consultarTiposComprobante(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        self.XmlResponse = self.client.xml_response
+        array = ret.get('tipoComprobante', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarTiposLiquidacion(self, sep="||"):
+        "Retorna un listado de tipos de liquidación con código y descripción"
+        ret = self.client.consultarTiposLiquidacion(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        self.XmlResponse = self.client.xml_response
+        array = ret.get('tipoLiquidacion', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarCaracteres(self, sep="||"):
+        "Retorna listado de caracteres emisor/receptor (código, descripción)"
+        ret = self.client.consultarCaracteresParticipante(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        self.XmlResponse = self.client.xml_response
+        array = ret.get('caracter', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarCategorias(self, sep="||"):
+        "Retorna listado de categorías existentes (código, descripción)"
+        ret = self.client.consultarCategorias(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        self.XmlResponse = self.client.xml_response
+        array = ret.get('categoria', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarMotivos(self, sep="||"):
+        "Retorna listado de motivos existentes (código, descripción)"
+        ret = self.client.consultarMotivos(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        self.XmlResponse = self.client.xml_response
+        array = ret.get('motivo', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarRazas(self, sep="||"):
+        "Retorna listado de razas -vacunas- (código, descripción)"
+        ret = self.client.consultarRazas(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        self.XmlResponse = self.client.xml_response
+        array = ret.get('raza', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+    def ConsultarCortes(self, sep="||"):
+        "Retorna listado de cortes -carnes- (código, descripción)"
+        ret = self.client.consultarCortes(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                            )['respuesta']
+        self.__analizar_errores(ret)
+        self.XmlResponse = self.client.xml_response
+        array = ret.get('corte', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
+
+
     def ConsultarPuntosVentas(self, sep="||"):
         "Retorna los puntos de ventas autorizados para la utilizacion de WS"
         ret = self.client.consultarPuntosVenta(
@@ -811,13 +924,45 @@ if __name__ == '__main__':
             ret = wslsp.ConsultarTributos()
             print "\n".join(ret)
 
+        if '--gastos' in sys.argv:
+            ret = wslsp.ConsultarGastos()
+            print "\n".join(ret)
+
+        if '--tipos_cbte' in sys.argv:
+            ret = wslsp.ConsultarTiposComprobante()
+            print "\n".join(ret)
+
+        if '--tipos_liq' in sys.argv:
+            ret = wslsp.ConsultarTiposLiquidacion()
+            print "\n".join(ret)
+
+        if '--caracteres' in sys.argv:
+            ret = wslsp.ConsultarCaracteres()
+            print "\n".join(ret)
+
+        if '--categorias' in sys.argv:
+            ret = wslsp.ConsultarCategorias()
+            print "\n".join(ret)
+
+        if '--motivos' in sys.argv:
+            ret = wslsp.ConsultarMotivos()
+            print "\n".join(ret)
+
+        if '--razas' in sys.argv:
+            ret = wslsp.ConsultarRazas()
+            print "\n".join(ret)
+
+        if '--cortes' in sys.argv:
+            ret = wslsp.ConsultarCortes()
+            print "\n".join(ret)
+
         if '--puntosventa' in sys.argv:
             ret = wslsp.ConsultarPuntosVentas()
             print "\n".join(ret)
 
         print "hecho."
         
-    except SoapFault,e:
+    except SoapFault, e:
         print >> sys.stderr, "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
         sys.exit(3)
     except Exception, e:
