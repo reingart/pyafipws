@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -110,7 +110,7 @@ class WSLSP(BaseWS):
         'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
         'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
         'CAE', 'NroComprobante', 'FechaComprobante',
-        'NroCodigoBarras', 'NroCodigoBarras', 'FechaProcesoAFIP',
+        'NroCodigoBarras', 'FechaVencimientoCae', 'FechaProcesoAFIP',
         'ImporteBruto', 'ImporteIVASobreBruto', '',
         'ImporteTotalGastos', 'ImporteIVASobreGastos'
         'ImporteTotalTributos' ,'ImporteTotalNeto',
@@ -130,7 +130,10 @@ class WSLSP(BaseWS):
         self.errores = []
         self.CAE = ""
         self.NroComprobante = self.FechaComprobante = ''
-        # todo inicializar "propiedades"
+        self.NroCodigoBarras = self.FechaVencimientoCae = None
+        self.ImporteBruto = self.ImporteIVASobreBruto = None
+        self.ImporteTotalGastos = self.ImporteIVASobreGastos = None
+        self.ImporteTotalTributos = self.ImporteTotalNeto = None
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
@@ -183,20 +186,18 @@ class WSLSP(BaseWS):
         "Inicializa internamente los datos de una liquidación para autorizar"
         # creo el diccionario con los campos generales de la liquidación:
         liq = { 'fechaComprobante': fecha_cbte, 'fechaOperacion': fecha_op, 
-                'lugarRealizacion': unicode, 
-                'codMotivo': int, 
-                'codLocalidadProcedencia': int, 
-                'codProvinciaProcedencia': int, 
-                'codLocalidadDestino': int, 
-                'codProvinciaDestino': int, 
-                'fechaRecepcion': datetime.date, 
-                'fechaFaena': datetime.date, 
-                'frigorifico': {'cuit': long, 'nroPlanta': int}
-
+                'lugarRealizacion': lugar_realizacion, 
+                'codMotivo': cod_motivo, 
+                'codLocalidadProcedencia': cod_localidad_procedencia, 
+                'codProvinciaProcedencia': cod_provincia_procedencia, 
+                'codLocalidadDestino': cod_localidad_destino, 
+                'codProvinciaDestino': cod_provincia_destino, 
+                'fechaRecepcion': fecha_recepcion, 
+                'fechaFaena': fecha_faena, 
               }
         self.solicitud = dict(codOperacion=cod_operacion,
                               emisor={}, receptor={},
-                              datosLiquidacio=liq,
+                              datosLiquidacion=liq,
                               itemDetalleLiquidacion=[],
                               guia=[], dte=[],
                               tributo=[], gasto=[],
@@ -207,7 +208,7 @@ class WSLSP(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarFrigorifico(self, cuit, nro_planta):
         "Agrego el frigorifico a la liquidacíon (opcional)."
-        frig = {'cuit': cuit, 'descripcion': descripcion}
+        frig = {'cuit': cuit, 'nroPlanta': nroPlanta}
         self.solicitud['datosLiquidacio']['frigorifico']  = frig
         return True
 
@@ -278,7 +279,7 @@ class WSLSP(BaseWS):
              'nroComprobante': nro_cbte, 
              'cantidadAsociada': cant_asoc}
         item_liq = self.solicitud['itemDetalleLiquidacion'][-1]
-        item_liq['liquidacionCompraAsociada'].append(item_liq)
+        item_liq['liquidacionCompraAsociada'].append(d)
         return True
 
     @inicializar_y_capturar_excepciones
