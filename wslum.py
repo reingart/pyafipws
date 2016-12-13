@@ -19,7 +19,7 @@ Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.02a"
 
 LICENCIA = """
 wslum.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -349,7 +349,7 @@ class WSLUM(BaseWS):
         if liq:
             cab = liq['encabezado']
             self.CAE = str(cab['cae'])
-            self.FechaComprobante = cab['fechaComprobante']
+            self.FechaComprobante = str(cab['fechaComprobante'])
             self.NroComprobante = cab['nroComprobante']
             tot = liq['resumenTotales']
             self.AlicuotaIVA = tot['alicuotaIVA']
@@ -367,7 +367,7 @@ class WSLUM(BaseWS):
                 tipo_cbte=liq['encabezado']['tipoComprobante'],
                 pto_vta=liq['encabezado']['puntoVenta'],
                 nro_cbte=liq['encabezado']['nroComprobante'],
-                fecha=liq['encabezado']['fechaComprobante'],
+                fecha=str(liq['encabezado']['fechaComprobante']),
                 cae=str(liq['encabezado']['cae']),
                 domicilio_comprador=liq['encabezado']['domicilioComprador'],
                 tambero=dict(
@@ -866,9 +866,11 @@ if __name__ == '__main__':
                 pprint.pprint(wslum.params_out)
 
             if "--guardar" in sys.argv:
-                # cargar un archivo de texto:
+                # grabar un archivo de texto (intercambio) con el resultado:
+                liq = wslum.params_out.copy()
+                del liq["pdf"]                  # eliminador binario
                 with open("wslum_salida.json", "w") as f:
-                    json.dump(wslum.solicitud, f, 
+                    json.dump(liq, f, 
                               indent=2, sort_keys=True, encoding="utf-8")
             
         if '--consultar' in sys.argv:
