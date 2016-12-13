@@ -219,7 +219,7 @@ class WSLUM(BaseWS):
     def AgregarTambero(self, cuit, iibb=None, **kwargs):
         "Agrego los datos del productor a la liq."
         tambero = {'cuit': cuit, 'iibb': iibb}
-        self.solicitud['liquidacion']['tambero'] = tambero
+        self.solicitud['tambero'] = tambero
         return True
 
     @inicializar_y_capturar_excepciones
@@ -233,7 +233,7 @@ class WSLUM(BaseWS):
                  'ubicacionTambo': {},
                  'fechaVencCertTuberculosis': fecha_venc_cert_tuberculosis,
                  'fechaVencCertBrucelosis': fecha_venc_cert_brucelosis}
-        self.solicitud['liquidacion']['tambo'] = tambo
+        self.solicitud['tambo'] = tambo
         return True
 
     @inicializar_y_capturar_excepciones
@@ -248,7 +248,7 @@ class WSLUM(BaseWS):
                       'codProvincia': cod_provincia,
                       'nombrePartidoDepto': nombre_partido_depto,
                       'codigoPostal': codigo_postal}
-        self.solicitud['liquidacion']['tambo']['ubicacionTambo'] = ubic_tambo
+        self.solicitud['tambo']['ubicacionTambo'] = ubic_tambo
         return True
 
     @inicializar_y_capturar_excepciones
@@ -259,7 +259,7 @@ class WSLUM(BaseWS):
              'litrosDecomisados': litros_decomisados,
              'kgGrasa': kg_grasa,
              'kgProteina': kg_proteina}
-        self.solicitud['balanceLitrosPorcentajesSolidos'].append(d)
+        self.solicitud['balanceLitrosPorcentajesSolidos'] = d
 
     @inicializar_y_capturar_excepciones
     def AgregarConceptosBasicosMercadoInterno(self, kg_produccion_gb, precio_por_kg_produccion_gb, 
@@ -276,7 +276,7 @@ class WSLUM(BaseWS):
              'precioPorKgCrecimientoGB': precio_por_kg_crecimiento_gb, 
              'kgCrecimientoPR':kg_crecimiento_pr, 
              'precioPorKgCrecimientoPR': precio_por_kg_crecimiento_pr}
-        self.solicitud['conceptosBasicosMercadoInterno'].append(d)
+        self.solicitud['conceptosBasicosMercadoInterno'] = d
         return True
 
     @inicializar_y_capturar_excepciones
@@ -294,14 +294,15 @@ class WSLUM(BaseWS):
              'precioPorKgCrecimientoGB': precio_por_kg_crecimiento_gb, 
              'kgCrecimientoPR':kg_crecimiento_pr, 
              'precioPorKgCrecimientoPR': precio_por_kg_crecimiento_pr}
-        self.solicitud['conceptosBasicosMercadoExterno'].append(d)
+        self.solicitud['conceptosBasicosMercadoExterno'] = d
 
     @inicializar_y_capturar_excepciones
     def AgregarBonificacionPenalizacion(self, codigo, detalle, resultado=None, 
                                         porcentaje=None, importe=None, **kwargs):
         "Agrega la información referente a las bonificaciones o penalizaciones"
         ret = dict(codBonificacionPenalizacion=codigo, detalle=detalle,
-                   porcentajeAAplicar=porcentaje, importe=importe)
+                   resultado=resultado, porcentajeAAplicar=porcentaje, 
+                   importe=importe)
         self.solicitud['bonificacionPenalizacion'].append(ret)
         return True
 
@@ -724,95 +725,69 @@ if __name__ == '__main__':
 
             if '--prueba' in sys.argv:
 
-                wslum.solicitud = {
-                    'liquidacion': {
-                        'periodo': "2015/12", 
-                        'fechaComprobante': "2015-12-31", 
-                        'puntoVenta': 8, 
-                        'iibbAdquirente': "123456789012345", 
-                        'tipoComprobante': 27, 
-                        'nroComprobante': 25, 
-                        'domicilioSede': "Domicilio Administrativo", 
-                        'inscripcionRegistroPublico': "Nro IGJ", 
-                        'datosAdicionales': "Datos Adicionales Varios", 
-                        'alicuotaIVA': 21.00, 
-                        #'ajuste': {
-                        #    'formularioPapel': {
-                        #        'cai': 10000000000000, 
-                        #        'fechaEmision': "2016-01-01", 
-                        #        'tipoComprobante': 0, 
-                        #        'nroComprobante': 0, 
-                        #        'puntoVenta': 0}, 
-                        #        'caeAAjustar': 0}, 
-                        'condicionVenta': [{
-                            'codigo': 1, 'descripcion': None}]
-                        }, 
-                    'tambero': {
-                        'cuit': 11111111111, 'iibb': "123456789012345"}, 
-                    'tambo': {
-                        'nroTamboInterno': 123456789,
-                        'nroTamboProvincial': 100000000, 
-                        'nroRenspa': "12.345.6.78901/12", 
-                        'ubicacionTambo': {
-                            'latitud': -34.62987, #-35.108015, 
-                            'longitud': -58.65155, #-64.733910,
-                            'domicilio': "Domicilio Tambo",
-                            'codLocalidad': 10109,
-                            'codProvincia': 1,
-                            'nombrePartidoDepto': "Partido Tambo",
-                            'codigoPostal': 1234},
-                        'fechaVencCertTuberculosis': "2015-01-01",
-                        'fechaVencCertBrucelosis': "2015-01-01"},
-                    'balanceLitrosPorcentajesSolidos': {
-                        'litrosRemitidos': 11000,
-                        'litrosDecomisados': 1000,
-                        'kgGrasa': 100.00,
-                        'kgProteina': 100.00}, 
-                    'conceptosBasicosMercadoInterno': {
-                        'kgProduccionGB': 100.00, 
-                        'precioPorKgProduccionGB': 5.00, 
-                        'kgProduccionPR': 100.00, 
-                        'precioPorKgProduccionPR': 5.00, 
-                        'kgCrecimientoGB': 0.00, 
-                        'precioPorKgCrecimientoGB': 0.00, 
-                        'kgCrecimientoPR': 0.00, 
-                        'precioPorKgCrecimientoPR': 0.00}, 
-                    'conceptosBasicosMercadoExterno': {
-                        'kgProduccionGB': 0.00, 
-                        'precioPorKgProduccionGB': 0.00, 
-                        'kgProduccionPR': 0.00, 
-                        'precioPorKgProduccionPR': 0.00, 
-                        'kgCrecimientoGB': 0.00, 
-                        'precioPorKgCrecimientoGB': 0.00, 
-                        'kgCrecimientoPR': 0.00, 
-                        'precioPorKgCrecimientoPR': 0.00}, 
-                    'bonificacionPenalizacion': [{
-                        'codBonificacionPenalizacion': 1, 
-                        'detalle': "opcional", 
-                        'resultado': "400", 
-                        'porcentajeAAplicar': 10.00, 
-                        'importe': None}, {
-                        'codBonificacionPenalizacion': 10, 
-                        'detalle': "opcional", 
-                        'resultado': "2.5", 
-                        'porcentajeAAplicar': 10.00, 
-                        'importe': None}, {
-                        'codBonificacionPenalizacion': 3, 
-                        'detalle': "opcional", 
-                        'resultado': "En Saneamiento", 
-                        'porcentajeAAplicar': 10.00, 
-                        'importe': None}, ], 
-                    'otroImpuesto': [{
-                        'tipo': 1, 
-                        'detalle': "", 
-                        'alicuota': 10.00, 
-                        'baseImponible': 100.00}, {
-                        'tipo': 9, 
-                        'detalle': "Detalle Otras Percepciones", 
-                        'alicuota': 10.00, 
-                        'baseImponible': 100.00}], 
-                    'remito': ["123456789012", "123456789"],
-                    }
+                # Solicitud 1: Alta de liquidación
+                wslum.CrearLiquidacion(tipo_cbte=27, pto_vta=8, nro_cbte=25, 
+                        fecha="2015-12-31", periodo="2015/12",
+                        iibb_adquirente="123456789012345", 
+                        domicilio_sede="Domicilio Administrativo",
+                        inscripcion_registro_publico="Nro IGJ", 
+                        datos_adicionales="Datos Adicionales Varios", 
+                        alicuota_iva=21.00)
+                wslum.AgregarCondicionVenta(codigo=1, descripcion=None)
+                if False:
+                    wslum.AgregarAjuste(cai="10000000000000", 
+                            tipo_cbte=0, pto_vta=0, nro_cbte=0, cae_a_ajustar=0)
+                
+                wslum.AgregarTambero(cuit=11111111111, iibb="123456789012345")
+                
+                wslum.AgregarTambo(nro_tambo_interno=123456789, 
+                        nro_renspa="12.345.6.78901/12",
+                        fecha_venc_cert_tuberculosis="2015-01-01", 
+                        fecha_venc_cert_brucelosis="2015-01-01",
+                        nro_tambo_provincial=100000000)
+                wslum.AgregarUbicacionTambo(
+                        latitud=-34.62987, longitud=-58.65155, 
+                        domicilio="Domicilio Tambo",
+                        cod_localidad=10109, cod_provincia=1, 
+                        codigo_postal=1234, 
+                        nombre_partido_depto='Partido Tambo')
+
+                wslum.AgregarBalanceLitrosPorcentajesSolidos(
+                        litros_remitidos=11000, litros_decomisados=1000, 
+                        kg_grasa=100.00, kg_proteina=100.00)
+                
+                wslum.AgregarConceptosBasicosMercadoInterno(
+                        kg_produccion_gb=100, precio_por_kg_produccion_gb=5.00, 
+                        kg_produccion_pr=100, precio_por_kg_produccion_pr=5.00,
+                        kg_crecimiento_gb=0, precio_por_kg_crecimiento_gb=0.00,
+                        kg_crecimiento_pr=0, precio_por_kg_crecimiento_pr=0.00)
+                
+                wslum.AgregarConceptosBasicosMercadoExterno(
+                        kg_produccion_gb=0, precio_por_kg_produccion_gb=0.00, 
+                        kg_produccion_pr=0, precio_por_kg_produccion_pr=0.00,
+                        kg_crecimiento_gb=0, precio_por_kg_crecimiento_gb=0.00,
+                        kg_crecimiento_pr=0, precio_por_kg_crecimiento_pr=0.00)
+                
+                wslum.AgregarBonificacionPenalizacion(codigo=1,
+                        detalle="opcional", resultado="400", porcentaje=10.00)
+                wslum.AgregarBonificacionPenalizacion(codigo=10,
+                        detalle="opcional", resultado="2.5", porcentaje=10.00)
+                wslum.AgregarBonificacionPenalizacion(codigo=4,
+                        detalle="opcional", resultado="400", porcentaje=10.00)
+                wslum.AgregarBonificacionPenalizacion(codigo=1,
+                        detalle="opcional", resultado="En Saneamiento", 
+                        porcentaje=10.00)
+
+                wslum.AgregarOtroImpuesto(tipo=1, base_imponible=100.00, 
+                                          alicuota=10.00, detalle="")
+                wslum.AgregarOtroImpuesto(tipo=9, base_imponible=100.00, 
+                                          alicuota=10.00, 
+                                          detalle="Detalle Otras Percepciones")
+                wslum.AgregarOtroImpuesto(tipo=1, base_imponible=100.00, 
+                                          alicuota=10.00, detalle="")
+
+                wslum.AgregarRemito(nro_remito="123456789012")
+                wslum.AgregarRemito(nro_remito="123456789")
 
             else:
                 # cargar un archivo de texto:
