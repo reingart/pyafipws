@@ -47,7 +47,8 @@ if 'py2exe' in sys.argv:
     #import wsctgv3
     #import wslpg
     #import wsltv
-    #import wslum 
+    #import wslum
+    #import wslsp
     #import wscoc
     #import wscdc
     #import cot
@@ -372,6 +373,19 @@ if 'py2exe' in sys.argv:
             ]
         __version__ += "+wslum_" + wslum.__version__
         HOMO &= wslum.HOMO
+
+    if 'wslsp' in globals():
+        kwargs['com_server'] += [
+            Target(module=wslsp, modules="wslsp"),
+            ]
+        kwargs['console'] += [
+            Target(module=wslsp, script='wslsp.py', dest_base="wslsp_cli"),
+            ]
+        data_files += [
+            ("conf", ["conf/wslsp.ini"]),
+            ]
+        __version__ += "+wslsp_" + wslsp.__version__
+        HOMO &= wslsp.HOMO
 
     if 'wscoc' in globals():
         kwargs['com_server'] += [
