@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.02a"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -137,7 +137,7 @@ class WSLSP(BaseWS):
         self.datos = {}
 
     @inicializar_y_capturar_excepciones
-    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=30):
+    def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=60):
         "Establecer la conexión a los servidores de la AFIP"
         # llamo al constructor heredado:
         ok = BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
@@ -306,7 +306,7 @@ class WSLSP(BaseWS):
     def AgregarDTE(self, nro_dte, nro_renspa):
         "Agrega la información referente a DTE (multiples)"
         d = {"nroDTE": nro_dte, "nroRenspa": nro_renspa}
-        self.solicitud['guia'].append(d)
+        self.solicitud['dte'].append(d)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -333,37 +333,53 @@ class WSLSP(BaseWS):
         # analizo la respusta
         ret = ret['respuesta']
         self.__analizar_errores(ret)
-        liqs = ret.get('liquidacion', [])
-        liq = liqs[0] if liqs else None
-        self.AnalizarLiquidacion(liq)
+        self.AnalizarLiquidacion(ret)
         return True
 
 
     def AnalizarLiquidacion(self, liq):
         "Método interno para analizar la respuesta de AFIP"
         # proceso los datos básicos de la liquidación (devuelto por consultar):
-        if liq:
-            cab = liq['cabecera']
+        cab = liq.get('cabecera')
+        if cab:
             self.CAE = str(cab['cae'])
-            self.FechaComprobante = liq['fechaComprobante']
+            self.FechaVencimientoCae = str(cab['fechaVencimientoCae'])
+            self.FechaProcesoAFIP = str(cab['fechaProcesoAFIP'])
+            self.NroCodigoBarras =  cab['nroCodigoBarras'] 
             self.NroComprobante = liq['emisor']['nroComprobante']
+            datos = liq['datosLiquidacion']
+            self.FechaComprobante = str(datos['fechaComprobante'])
+            emisor = liq['emisor']
+            self.NroComprobante = emisor['nroComprobante']
             tot = liq['resumenTotales']
+            self.ImporteBruto = tot['importeBruto']
+            self.ImporteTotalGastos = tot['importeTotalGastos']
+            self.ImporteTotalTributos = tot['importeTotalTributos']
             self.ImporteTotalNeto = tot['importeTotalNeto']
             self.ImporteIVASobreBruto = tot['importeIVASobreBruto']
-            self.ImporteIVASobreGasto = tot['importeIVASobreGastos']
+            self.ImporteIVASobreGastos = tot['importeIVASobreGastos']
 
             # parámetros de salida:
             self.params_out = dict(
                 tipo_cbte=liq['emisor']['tipoComprobante'],
                 pto_vta=liq['emisor']['puntoVenta'],
                 nro_cbte=liq['emisor']['nroComprobante'],
-                fecha=liq['fechaComprobante'],
+                fecha=liq['datosLiquidacion']['fechaComprobante'],
                 cae=str(liq['cabecera']['cae']),
                 emisor=dict(
+                    razon_social=liq['emisor']['razonSocial'],
+                    domicilio_punto_venta=liq['emisor']['domicilioPuntoVenta'],
                     ),
-                importe_iva=liq['resumenTotales']['importeIVASobreBruto'],
+                receptor=dict(
+                    nombre=liq['receptor']['nombre'],
+                    domicilio=liq['receptor']['domicilio'],
+                    ),
+                bruto=liq['resumenTotales']['importeBruto'],
+                iva_bruto=liq['resumenTotales']['importeIVASobreBruto'],
+                iva_gastos=liq['resumenTotales']['importeIVASobreGastos'],
                 total_neto=liq['resumenTotales']['importeTotalNeto'],
                 total_tributos=liq['resumenTotales']['importeTotalTributos'],
+                total_gastos=liq['resumenTotales']['importeTotalGastos'],
                 gasto=[],
                 guia=[],
                 tributo=[],
@@ -374,10 +390,10 @@ class WSLSP(BaseWS):
                     importe=ret['importe'],
                     ))
             for trib in liq.get('tributo',[]):
-                self.params_out['otro_impuesto'].append(dict(
+                self.params_out['tributo'].append(dict(
                     descripcion=trib.get('descripcion', ""),
-                    base_imponible=trib['baseImponible'],
-                    alicuota=trib['alicuota'],
+                    base_imponible=trib.get('baseImponible'),
+                    alicuota=trib.get('alicuota'),
                     codigo=trib['codTributo'],
                     importe=trib['importe'],
                     ))
@@ -771,8 +787,8 @@ if __name__ == '__main__':
                         fecha_cbte='2016-11-12', 
                         fecha_op='2016-11-11', 
                         cod_motivo=6, 
-                        cod_localidad_procedencia=1, 
-                        cod_provincia_procedencia=8274, 
+                        cod_localidad_procedencia=8274, 
+                        cod_provincia_procedencia=1, 
                         cod_localidad_destino=8274, 
                         cod_provincia_destino=1,
                         lugar_realizacion='CORONEL SUAREZ',
@@ -781,7 +797,7 @@ if __name__ == '__main__':
                 if False:
                     wslsp.AgregarFrigorifico(cuit, nro_planta)
                 wslsp.AgregarEmisor(
-                        tipo_cbte=180, pto_vta=3000, nro_cbte=52, 
+                        tipo_cbte=180, pto_vta=3000, nro_cbte=1, 
                         cod_caracter=5, fecha_inicio_act='2016-01-01',
                         iibb='123456789', nro_ruca=305, nro_renspa=None)
                 wslsp.AgregarReceptor(cod_caracter=3)
@@ -800,7 +816,7 @@ if __name__ == '__main__':
                                             nro_cbte=33, cant_asoc=2)
                 wslsp.AgregarGuia(nro_guia=1)
                 wslsp.AgregarDTE(nro_dte="418-1",
-                                 nro_renspa='22.123.1.12345/4500')
+                                 nro_renspa='22.123.1.12345/A5')
                 wslsp.AgregarGasto(cod_gasto=16, base_imponible=230520.60,
                                    alicuota=3, alicuota_iva=10.5)
                 wslsp.AgregarTributo(cod_tributo=5, base_imponible=230520.60,
@@ -835,8 +851,14 @@ if __name__ == '__main__':
                 if DEBUG: print >> sys.stderr, wslsp.Traceback
             print "Errores:", wslsp.Errores
             print "CAE", wslsp.CAE
+            print "NroCodigoBarras", wslsp.NroCodigoBarras
+            print "FechaProcesoAFIP", wslsp.FechaProcesoAFIP
             print "FechaComprobante", wslsp.FechaComprobante
             print "NroComprobante", wslsp.NroComprobante
+            print "ImporteBruto", wslsp.ImporteBruto
+            print "ImporteTotalNeto", wslsp.ImporteTotalNeto
+            print "ImporteIVA Sobre Bruto", wslsp.ImporteIVASobreBruto
+            print "ImporteIVA Sobre Gastos", wslsp.ImporteIVASobreGastos
             print "ImporteTotalNeto", wslsp.ImporteTotalNeto
 
             pdf = wslsp.GetParametro("pdf")
