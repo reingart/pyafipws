@@ -726,7 +726,7 @@ if __name__ == '__main__':
             if '--prueba' in sys.argv:
 
                 # Solicitud 1: Alta de liquidación
-                wslum.CrearLiquidacion(tipo_cbte=27, pto_vta=8, nro_cbte=25, 
+                wslum.CrearLiquidacion(tipo_cbte=27, pto_vta=1, nro_cbte=1, 
                         fecha="2015-12-31", periodo="2015/12",
                         iibb_adquirente="123456789012345", 
                         domicilio_sede="Domicilio Administrativo",
@@ -774,7 +774,7 @@ if __name__ == '__main__':
                         detalle="opcional", resultado="2.5", porcentaje=10.00)
                 wslum.AgregarBonificacionPenalizacion(codigo=4,
                         detalle="opcional", resultado="400", porcentaje=10.00)
-                wslum.AgregarBonificacionPenalizacion(codigo=1,
+                wslum.AgregarBonificacionPenalizacion(codigo=5,
                         detalle="opcional", resultado="En Saneamiento", 
                         porcentaje=10.00)
 
@@ -783,7 +783,7 @@ if __name__ == '__main__':
                 wslum.AgregarOtroImpuesto(tipo=9, base_imponible=100.00, 
                                           alicuota=10.00, 
                                           detalle="Detalle Otras Percepciones")
-                wslum.AgregarOtroImpuesto(tipo=1, base_imponible=100.00, 
+                wslum.AgregarOtroImpuesto(tipo=8, base_imponible=100.00, 
                                           alicuota=10.00, detalle="")
 
                 wslum.AgregarRemito(nro_remito="123456789012")
@@ -843,9 +843,10 @@ if __name__ == '__main__':
             if "--guardar" in sys.argv:
                 # grabar un archivo de texto (intercambio) con el resultado:
                 liq = wslum.params_out.copy()
-                del liq["pdf"]                  # eliminador binario
+                if "pdf" in liq:
+                    del liq["pdf"]                  # eliminador binario
                 with open("wslum_salida.json", "w") as f:
-                    json.dump(liq, f, 
+                    json.dump(liq, f, default=str,
                               indent=2, sort_keys=True, encoding="utf-8")
             
         if '--consultar' in sys.argv:
