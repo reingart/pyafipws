@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -129,7 +129,7 @@ class WSLSP(BaseWS):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.errores = []
         self.CAE = ""
-        self.NroComprobante = self.FechaComprobante = ''
+        self.NroComprobante = self.FechaComprobante = self.FechaProcesoAFIP = ''
         self.NroCodigoBarras = self.FechaVencimientoCae = None
         self.ImporteBruto = self.ImporteIVASobreBruto = None
         self.ImporteTotalGastos = self.ImporteIVASobreGastos = None
@@ -872,9 +872,10 @@ if __name__ == '__main__':
                 pprint.pprint(wslsp.params_out)
 
             if "--guardar" in sys.argv:
-                # cargar un archivo de texto:
+                # grabar un archivo de texto (intercambio) con el resultado:
+                liq = wslsp.params_out.copy()
                 with open("wslsp_salida.json", "w") as f:
-                    json.dump(wslsp.solicitud, f, 
+                    json.dump(liq, f,  default=str, 
                               indent=2, sort_keys=True, encoding="utf-8")
             
         if '--consultar' in sys.argv:
