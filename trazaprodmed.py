@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios (17/09/2015)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import os
 import socket
@@ -185,7 +185,7 @@ class TrazaProdMed(BaseWS):
             transaccion=codigo_transaccion, 
             usuario=usuario, 
             password=password,
-            gtin=gtin_medicamento,
+            gtin=gtin,
             serie=numero_serial,
         )
         ret = res['return']
@@ -233,17 +233,17 @@ class TrazaProdMed(BaseWS):
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
-        if id_transaccion_global is not None:
+        if id_transaccion is not None:
             kwargs['idTransaccion'] = id_transaccion
-        if id_agente_origen is not None:
+        if gln_agente_origen is not None:
             kwargs['glnAgenteOrigen'] = gln_agente_origen
-        if id_agente_destino is not None: 
+        if gln_agente_destino is not None: 
             kwargs['glnAgenteDestino'] = gln_agente_destino
-        if id_medicamento is not None: 
+        if gtin is not None: 
             kwargs['gtin'] = gtin
-        if id_evento is not None: 
+        if lote is not None: 
             kwargs['lote'] = lote
-        if id_evento is not None: 
+        if serie is not None: 
             kwargs['serie'] = serie
         if id_evento is not None: 
             kwargs['idEvento'] = id_evento
@@ -263,7 +263,7 @@ class TrazaProdMed(BaseWS):
             kwargs['remito'] = n_remito
         if n_factura is not None: 
             kwargs['factura'] = n_factura
-        if id_estado is not None: 
+        if id_provincia is not None: 
             kwargs['idProvincia'] = id_provincia
         if id_estado is not None: 
             kwargs['idEstadoTransaccion'] = id_estado
@@ -295,7 +295,7 @@ class TrazaProdMed(BaseWS):
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
-        if cuit_fabricante is not None:
+        if cuit is not None:
             kwargs['cuit'] = cuit
         if gtin is not None:
             kwargs['gtin'] = gtin
@@ -305,7 +305,7 @@ class TrazaProdMed(BaseWS):
             kwargs['marca'] = marca
         if modelo is not None: 
             kwargs['modelo'] = modelo
-        if id_monodroga is not None: 
+        if id_nombre_generico is not None: 
             kwargs['id_nombre_generico'] = id_nombre_generico
         if nro_pag is not None: 
             kwargs['pagina'] = nro_pag
@@ -325,7 +325,7 @@ class TrazaProdMed(BaseWS):
             self.CantPaginas = ret.get('cantPaginas')
             self.HayError = ret.get('hay_error')
             self.params_out = dict([(i, it) for i, it
-                                            in  enumerate(ret.get('list', []))])
+                                            in  enumerate(ret.get('lstProductos', []))])
             return len(self.params_out)
         else:
             return 0
@@ -447,15 +447,16 @@ def main():
         ws.SendCancelacTransaccParcial(*sys.argv[sys.argv.index("--cancela_parcial")+1:])
     elif '--consulta' in sys.argv:
         ws.GetTransaccionesWS(
-                            *sys.argv[sys.argv.index("--movimientos")+1:]
+                            *sys.argv[sys.argv.index("--consulta")+1:]
                             )
         print "CantPaginas", ws.CantPaginas
         print "HayError", ws.HayError
         #print "TransaccionPlainWS", ws.TransaccionPlainWS
         # parametros comunes de salida (columnas de la tabla):
-        claves = [k for k, v, l in TRANSACCIONES]
+        TRANSACCIONES = ws.Transacciones[0].keys() if ws.Transacciones else []
+        claves = [k for k in TRANSACCIONES]
         # extiendo la lista de resultado para el archivo de intercambio:
-        transacciones.extend(ws.TransaccionPlainWS)
+        transacciones.extend(ws.Transacciones)
         # encabezado de la tabla:
         print "||", "||".join(["%s" % clave for clave in claves]), "||"
         # recorro los datos devueltos (TransaccionPlainWS):
