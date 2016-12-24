@@ -30,6 +30,7 @@ import warnings
 from cStringIO import StringIO
 from decimal import Decimal
 from urllib import urlencode
+from urlparse import urlparse
 import unicodedata
 import mimetools, mimetypes
 from HTMLParser import HTMLParser
@@ -275,6 +276,12 @@ class BaseWS:
                     if location and location.startswith("http://"):
                         warnings.warn("Corrigiendo WSDL ... %s" % location)
                         location = location.replace("http://", "https://").replace(":80", ":443")
+                        # usar servidor real si en el WSDL figura "localhost"
+                        localhost = 'https://localhost:'
+                        if location.startswith(localhost):
+                            url = urlparse(wsdl)
+                            location = location.replace("localhost", url.hostname)
+                            location = location.replace(":9051", ":443")
                         port['location'] = location
             return True
         except:
