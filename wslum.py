@@ -19,7 +19,7 @@ Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 LICENCIA = """
 wslum.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -117,7 +117,7 @@ class WSLUM(BaseWS):
         'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
         'CAE', 'NroComprobante', 'FechaComprobante',
         'AlicuotaIVA', 'TotalNeto', 'ImporteIVA',
-        'TotalBonificacionesCalidad', 'TotalPenalizacionesCalidad'
+        'TotalBonificacionesCalidad', 'TotalPenalizacionesCalidad',
         'TotalBonificacionesComerciales' ,'TotalDebitosComerciales',
         'TotalOtrosImpuestos', 'Total',
         ]
