@@ -54,6 +54,7 @@ if 'py2exe' in sys.argv:
     #import cot
     #import iibb
     #import trazamed
+    #import trazaprodmed
     #import trazarenpre
     #import trazafito
     #import trazavet
@@ -449,6 +450,16 @@ if 'py2exe' in sys.argv:
             data_files.append((".", ["trazamed.tlb"]))
         __version__ += "+trazamed_"  + trazamed.__version__
         HOMO &= trazamed.HOMO
+
+    if 'trazaprodmed' in globals():
+        kwargs['com_server'] += [
+            Target(module=trazaprodmed, modules="trazaprodmed", create_exe=not trazaprodmed.TYPELIB, create_dll=not trazaprodmed.TYPELIB),
+            ]
+        kwargs['console'] += [
+            Target(module=trazaprodmed, script='trazaprodmed.py', dest_base="trazaprodmed_cli"), 
+            ]
+        __version__ += "+trazaprodmed_"  + trazaprodmed.__version__
+        HOMO &= trazaprodmed.HOMO
 
     if 'trazarenpre' in globals():
         kwargs['com_server'] += [
