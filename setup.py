@@ -299,13 +299,13 @@ if 'py2exe' in sys.argv:
 
     if 'pyi25' in globals():
         kwargs['com_server'] += [
-            Target(module=pyi25, modules="pyi25", create_exe=False, create_dll=True),
+            Target(module=pyi25, modules="pyi25", create_exe=True, create_dll=True),
             ]
         kwargs['console'] += [
-            Target(module=pyi25, script='pyi25.py', dest_base="pyi25"),
+            Target(module=pyi25, script='pyi25.py', dest_base="pyi25_cli"),
             ]
         kwargs['windows'] += [
-            Target(module=pyi25, script="pyi25.py", dest_base="pyi25_com"),
+            Target(module=pyi25, script="pyi25.py", dest_base="pyi25_win"),
             ]
         data_files += [
             ]

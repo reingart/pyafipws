@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02d"
+__version__ = "1.02e"
 
 import os
 import sys
@@ -124,10 +124,22 @@ if __name__ == '__main__':
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(PyI25)
+    elif "/Automate" in sys.argv:
+        try:
+            # MS seems to like /automate to run the class factories.
+            import win32com.server.localserver
+            win32com.server.localserver.serve([PyI25._reg_clsid_])
+        except Exception:
+            raise
     elif "py2exe" in sys.argv:
         from distutils.core import setup
         from nsis import build_installer, Target
         import py2exe
+        import glob
+        VCREDIST = (
+            ".", glob.glob(r'c:\Program Files\Mercurial\mfc*.*') +
+                 glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
+            )
         setup( 
             name="PyI25",
             version=__version__,
@@ -138,9 +150,10 @@ if __name__ == '__main__':
             url="http://www.sistemasagiles.com.ar",
             license="GNU GPL v3",
             com_server = [
-                {'modules': 'pyi25', 'create_exe': False, 'create_dll': True},
+                {'modules': 'pyi25', 'create_exe': True, 'create_dll': True},
                 ],
-            console=['pyi25.py'],
+            console=[Target(module=sys.modules[__name__], script='pyi25.py', dest_base="pyi25_cli")],
+            windows=[Target(module=sys.modules[__name__], script="pyi25.py", dest_base="pyi25_win")],
             options={ 
                 'py2exe': {
                 'includes': [],
@@ -148,7 +161,7 @@ if __name__ == '__main__':
                 'excludes': ["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui","distutils.core","py2exe","nsis"],
                 #'skip_archive': True,
             }},
-            data_files = [(".", ["licencia.txt"]),],
+            data_files = [VCREDIST, (".", ["licencia.txt"]),],
             cmdclass = {"py2exe": build_installer}
         )
     else:
