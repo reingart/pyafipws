@@ -19,7 +19,7 @@ Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.03a"
 
 LICENCIA = """
 wslum.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -47,7 +47,6 @@ Opciones:
   --dummy: consulta estado de servidores
   
   --autorizar: Autorizar Liquidación Única Mensual (lechería) (generarLiquidacion)
-  --ajustar: Ajustar Liquidación Única Mensual (lechería) (ajustarLiquidacion)
   --ult: Consulta el último número de orden registrado en AFIP 
          (consultarUltimoComprobanteXPuntoVenta)
   --consultar: Consulta una liquidación registrada en AFIP 
@@ -420,29 +419,6 @@ class WSLUM(BaseWS):
                     tipoComprobante=tipo_cbte, puntoVenta=pto_vta, 
                     nroComprobante=nro_cbte)
         self.solicitud['liquidacion']['ajuste']['formularioPapel'].append(cbte)
-        return True
-
-    @inicializar_y_capturar_excepciones
-    def AjustarLiquidacion(self):
-        "Ajustar Liquidación Única Mensual (lechería)"
-        
-        # renombrar la clave principal de la estructura
-        liq = self.solicitud.pop('liquidacion')
-        self.solicitud["liquidacionAjuste"] = liq
-        
-        # llamar al webservice:
-        ret = self.client.ajustarLiquidacion(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        solicitud=self.solicitud,
-                        )
-        # analizar el resultado:
-        ret = ret['respuesta']
-        self.__analizar_errores(ret)
-        if 'ajusteUnificado' in ret:
-            aut = ret['ajusteUnificado']
-            self.AnalizarAjuste(aut)
         return True
 
     @inicializar_y_capturar_excepciones
