@@ -19,7 +19,7 @@ Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.03b"
 
 LICENCIA = """
 wslum.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -415,10 +415,14 @@ class WSLUM(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarAjuste(self, cai, tipo_cbte, pto_vta, nro_cbte, cae_a_ajustar):
         "Agrega comprobante a ajustar"
-        cbte = dict(cai=cai, caeAAjustar=cae_a_ajustar, 
-                    tipoComprobante=tipo_cbte, puntoVenta=pto_vta, 
-                    nroComprobante=nro_cbte)
-        self.solicitud['liquidacion']['ajuste']['formularioPapel'].append(cbte)
+        ajuste = self.solicitud['liquidacion']['ajuste'] = {}
+        if cae_a_ajustar:
+            ajuste['caeAAjustar'] = cae_a_ajustar
+        if cai:
+            cbte = dict(cai=cai, caeAAjustar=cae_a_ajustar, 
+                        tipoComprobante=tipo_cbte, puntoVenta=pto_vta, 
+                        nroComprobante=nro_cbte)
+            ajuste['formularioPapel'] = cbte
         return True
 
     @inicializar_y_capturar_excepciones
@@ -710,9 +714,10 @@ if __name__ == '__main__':
                         datos_adicionales="Datos Adicionales Varios", 
                         alicuota_iva=21.00)
                 wslum.AgregarCondicionVenta(codigo=1, descripcion=None)
-                if False:
+                if '--ajuste' in sys.argv:
                     wslum.AgregarAjuste(cai="10000000000000", 
-                            tipo_cbte=0, pto_vta=0, nro_cbte=0, cae_a_ajustar=0)
+                            tipo_cbte=0, pto_vta=0, nro_cbte=0, 
+                            cae_a_ajustar="75521002437246")
                 
                 wslum.AgregarTambero(cuit=11111111111, iibb="123456789012345")
                 
