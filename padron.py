@@ -89,7 +89,7 @@ class PadronAFIP():
     _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
 
     def __init__(self):
-        self.db_path = os.path.join(self.InstallDir, "padron.db")
+        self.db_path = os.path.join("/tmp/padron.db")
         self.Version = __version__
         # Abrir la base de datos
         self.db = sqlite3.connect(self.db_path)
