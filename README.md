@@ -56,6 +56,7 @@ AFIP:
  * [WSLPG][17]: agriculture (grain liquidation - invoice)
  * [WSLTV][17b]: agriculture (green tobacco - invoice)
  * [WSLUM][17c]: agriculture (milk - invoice)
+ * [WSLSP][17d]: agriculture (cattle/livestock - invoice)
  * [wDigDepFiel][18]: customs (faithful depositary)
  * [WSCOC][19]: currency exchange operations autorization
  * [WSCDC][22]: invoice verification
@@ -189,6 +190,7 @@ For more information see the source code installation steps in the
  [17]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
  [17b]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionTabacoVerde
  [17c]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionUnicaMensualLecheria
+ [17d]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionSectorPecuario
  [18]: http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs#wDigDepFiel:DepositarioFiel
  [19]: http://www.sistemasagiles.com.ar/trac/wiki/ConsultaOperacionesCambiarias
  [20]: http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCotArba
