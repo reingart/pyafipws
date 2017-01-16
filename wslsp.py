@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.02c"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -112,7 +112,7 @@ class WSLSP(BaseWS):
         'CAE', 'NroComprobante', 'FechaComprobante',
         'NroCodigoBarras', 'FechaVencimientoCae', 'FechaProcesoAFIP',
         'ImporteBruto', 'ImporteIVASobreBruto', '',
-        'ImporteTotalGastos', 'ImporteIVASobreGastos'
+        'ImporteTotalGastos', 'ImporteIVASobreGastos',
         'ImporteTotalTributos' ,'ImporteTotalNeto',
         ]
     _reg_progid_ = "WSLSP"
