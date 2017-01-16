@@ -130,7 +130,8 @@ ok = wslsp.AgregarReceptor(cod_caracter)
 cuit=12222222222
 iibb=3456
 nro_renspa="22.123.1.12345/A4"
-ok = wslsp.AgregarOperador(cuit, iibb, nro_renspa)
+nro_ruca=null
+ok = wslsp.AgregarOperador(cuit, iibb, nro_ruca, nro_renspa)
 
 cuit_cliente="12345688888"
 cod_categoria=51020102
@@ -156,21 +157,24 @@ nro_renspa="22.123.1.12345/A5"
 ok = wslsp.AgregarDTE(nro_dte, nro_renspa)
 
 cod_gasto=16
+ds=null
 base_imponible=230520.60
 alicuota=3
 alicuota_iva=10.5
-ok = wslsp.AgregarGasto(cod_gasto, base_imponible, alicuota, alicuota_iva)
+ok = wslsp.AgregarGasto(cod_gasto, ds, base_imponible, alicuota, alicuota_iva)
 
 cod_tributo=5
+ds=null                             && descripcion para cod_tributo=99  
 base_imponible=230520.60
 alicuota=2.5
-ok = wslsp.AgregarTributo(cod_tributo, base_imponible, alicuota)
+ok = wslsp.AgregarTributo(cod_tributo, ds, base_imponible, alicuota)
 
 cod_tributo=3
+ds=null                             && descripcion para cod_tributo=99  
 base_imponible=null
 alicuota=null
 importe=397
-ok = wslsp.AgregarTributo(cod_tributo, base_imponible, alicuota, importe)
+ok = wslsp.AgregarTributo(cod_tributo, ds, base_imponible, alicuota, importe)
     
 *-- Cargo respuesta de prueba según documentación de AFIP (Ejemplo 1)
 *-- (descomentar para probar si el ws no esta operativo o no se dispone de datos válidos)
