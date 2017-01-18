@@ -18,7 +18,7 @@ a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06f"
+__version__ = "1.06g"
 
 import datetime
 import decimal
@@ -78,7 +78,7 @@ class WSBFEv1(BaseWS):
             for error in errores:
                 self.Errores.append("%s: %s" % (
                     error['ErrCode'],
-                    error['ErrMsg'],
+                    error.get('ErrMsg', ""),
                     ))
             self.ErrCode = ' '.join([str(error['ErrCode']) for error in errores])
             self.ErrMsg = '\n'.join(self.Errores)
