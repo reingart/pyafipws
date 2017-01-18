@@ -12,10 +12,10 @@
 
 "Módulo de Intefase para archivos de texto (bono fiscal version 1)"
 
-__author__ = "Mariano Reingart (mariano@nsis.com.ar)"
+__author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18b"
+__version__ = "1.19a"
 
 import datetime
 import os
@@ -25,7 +25,7 @@ import traceback
 
 # revisar la instalación de pyafip.ws:
 import wsaa, wsbfev1
-from utils import abrir_conf
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 HOMO = False
 DEBUG = False
@@ -126,16 +126,22 @@ def autorizar(ws, entrada, salida):
    
     detalles = []
     encabezado = {}
-    for linea in entrada:
-        if str(linea[0])=='0':
-            encabezado = leer(linea, ENCABEZADO)
-        elif str(linea[0])=='1':
-            detalle = leer(linea, DETALLE)
-            detalles.append(detalle)
-        else:
-            print "Tipo de registro incorrecto:", linea[0]
+    if '/dbf' in sys.argv:
+        encabezados = []
+        formatos = [('Encabezado', ENCABEZADO, encabezados), ('Detalles', DETALLE, detalles)]
+        dic = leer_dbf(formatos, conf_dbf)
+        encabezado = encabezados[0]
+    else:
+        for linea in entrada:
+            if str(linea[0])=='0':
+                encabezado = leer(linea, ENCABEZADO)
+            elif str(linea[0])=='1':
+                detalle = leer(linea, DETALLE)
+                detalles.append(detalle)
+            else:
+                print "Tipo de registro incorrecto:", linea[0]
 
-    if not encabezado['id'].strip():
+    if isinstance(encabezado['id'], basestring) and not encabezado['id'].strip():
         # TODO: habria que leer y/o grabar el id en el archivo
         ##id += 1 # incremento el nº de transacción 
         # Por el momento, el id se calcula con el tipo, pv y nº de comprobant
@@ -176,12 +182,16 @@ def autorizar(ws, entrada, salida):
         escribir_factura(dic, salida)
         print "ID:", dic['id'], "CAE:",dic['cae'],"Obs:",dic['obs'],"Reproceso:",dic['reproceso']
 
-def escribir_factura(dic, archivo):
+def escribir_factura(dic, archivo, agrega=False):
     dic['tipo_reg'] = 0
     archivo.write(escribir(dic, ENCABEZADO))
     for it in dic['detalles']:
         it['tipo_reg'] = 1
         archivo.write(escribir(it, DETALLE))
+    if '/dbf' in sys.argv:
+        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Detalles', DETALLE, dic.get('detalles', []))]
+        guardar_dbf(formatos, agrega, conf_dbf)
+
 
 def depurar_xml(client):
     fecha = time.strftime("%Y%m%d%H%M%S")
@@ -206,6 +216,7 @@ if __name__ == "__main__":
         print " /formato: muestra el formato de los archivos de entrada/salida"
         print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
         print " /xml: almacena los requerimientos y respuestas XML (depuración)"
+        print " /dbf: lee y almacena la información en tablas DBF"
         print
         print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
         sys.exit(0)
@@ -232,6 +243,12 @@ if __name__ == "__main__":
 
     if '/debug'in sys.argv:
         DEBUG = True
+
+    if config.has_section('DBF'):
+        conf_dbf = dict(config.items('DBF'))
+        if DEBUG: print "conf_dbf", conf_dbf
+    else:
+        conf_dbf = {}
 
     if '/xml'in sys.argv:
         XML = True
@@ -290,7 +307,7 @@ if __name__ == "__main__":
 
             dic = ws.factura
             dic['id'] = ult_id
-            escribir_factura(dic, f_entrada)            
+            escribir_factura(dic, f_entrada, agrega=True)
             f_entrada.close()
         
         if '/ult' in sys.argv:
