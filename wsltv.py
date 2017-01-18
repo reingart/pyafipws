@@ -19,7 +19,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.05a"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -250,9 +250,10 @@ class WSLTV(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarPrecioClase(self, clase_tabaco, precio, **kwargs):
+    def AgregarPrecioClase(self, clase_tabaco, precio, total_kilos=None, total_fardos=None, **kwargs):
         "Agrego un PrecioClase a la liq."
-        precioclase = dict(claseTabaco=clase_tabaco, precio=precio,)
+        precioclase = dict(claseTabaco=clase_tabaco, precio=precio,
+                           total_kilos=total_kilos, total_fardos=total_fardos)
         self.solicitud['precioClase'].append(precioclase)
         return True
 
@@ -428,8 +429,6 @@ class WSLTV(BaseWS):
                    comprobanteAAjustar=[],
                    )
         self.solicitud = dict(liquidacion=liq,
-                              receptor=[],
-                              romaneo=[],
                               precioClase=[],
                               retencion=[],
                               tributo=[],
@@ -458,12 +457,12 @@ class WSLTV(BaseWS):
                             'cuit': self.Cuit, },
                         solicitud=self.solicitud,
                         )
-        # analizar el resultado:
+        # analizo la respusta
         ret = ret['respuesta']
         self.__analizar_errores(ret)
-        if 'ajusteUnificado' in ret:
-            aut = ret['ajusteUnificado']
-            self.AnalizarAjuste(aut)
+        liqs = ret.get('liquidacion', [])
+        liq = liqs[0] if liqs else None
+        self.AnalizarLiquidacion(liq)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -930,19 +929,39 @@ if __name__ == '__main__':
             if DEBUG: 
                 pprint.pprint(wsltv.params_out)
 
-
-        if '--ajustar' in sys.argv and '--prueba' in sys.argv:
+        if '--generar-ajuste-fisico' in sys.argv and '--prueba' in sys.argv:
             # ejemplo documentación AFIP:
             if '--testing' in sys.argv:
                 wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test_pdf.xml")
             wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2, nro_cbte=1, 
                               fecha='2016-09-09', 
-                              fecha_inicio_actividad="1900-01-01")
+                              fecha_inicio_actividad="1900-01-01",
+                             )
             wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=3697, nro_cbte=2)
             wsltv.GenerarAjusteFisico()
             print "CAE Ajustado:", wsltv.GetParametro("cae_ajustado")
             if '--testing' in sys.argv:
                 assert wsltv.GetParametro("cae_ajustado") == "86029002591067"
+
+        if '--ajustar' in sys.argv and '--prueba' in sys.argv:
+            # ejemplo documentación AFIP:
+            if '--testing' in sys.argv:
+                wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test.xml")
+            wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2958, nro_cbte=13, 
+                              fecha='2015-12-31', 
+                              cod_deposito_acopio=201, tipo_ajuste="C",
+                              cuit_receptor=222222222, 
+                              iibb_receptor=2,
+                              fecha_inicio_actividad="2010-01-01"
+                             )
+            wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=4521, nro_cbte=12345678)
+            wsltv.AgregarPrecioClase(clase_tabaco=111, precio=25, total_kilos=41, total_fardos=1)
+            wsltv.AgregarRetencion(cod_retencion=11, descripcion=None, importe=20)
+            wsltv.AgregarTributo(codigo_tributo=99, descripcion="Descripcion otros tributos", base_imponible=2, alicuota=2, importe=10)
+            wsltv.AjustarLiquidacion()
+            print "CAE:", wsltv.CAE
+            if '--testing' in sys.argv:
+                assert wsltv.GetParametro("cae") == "86011002510675"
 
         if '--consultar' in sys.argv:
             tipo_cbte = 151
