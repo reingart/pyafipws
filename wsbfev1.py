@@ -77,8 +77,8 @@ class WSBFEv1(BaseWS):
             errores = [ret['BFEErr']]
             for error in errores:
                 self.Errores.append("%s: %s" % (
-                    error['ErrCode'],
-                    error['ErrMsg'],
+                    error.get('ErrCode', ''),
+                    error.get('ErrMsg', ''),
                     ))
             self.ErrCode = ' '.join([str(error['ErrCode']) for error in errores])
             self.ErrMsg = '\n'.join(self.Errores)
