@@ -19,7 +19,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -253,7 +253,7 @@ class WSLTV(BaseWS):
     def AgregarPrecioClase(self, clase_tabaco, precio, total_kilos=None, total_fardos=None, **kwargs):
         "Agrego un PrecioClase a la liq."
         precioclase = dict(claseTabaco=clase_tabaco, precio=precio,
-                           total_kilos=total_kilos, total_fardos=total_fardos)
+                           totalKilos=total_kilos, totalFardos=total_fardos)
         self.solicitud['precioClase'].append(precioclase)
         return True
 
