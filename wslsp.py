@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.03a"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -208,8 +208,8 @@ class WSLSP(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarFrigorifico(self, cuit, nro_planta):
         "Agrego el frigorifico a la liquidacíon (opcional)."
-        frig = {'cuit': cuit, 'nroPlanta': nroPlanta}
-        self.solicitud['datosLiquidacio']['frigorifico']  = frig
+        frig = {'cuit': cuit, 'nroPlanta': nro_planta}
+        self.solicitud['datosLiquidacion']['frigorifico']  = frig
         return True
 
     @inicializar_y_capturar_excepciones
@@ -251,7 +251,8 @@ class WSLSP(BaseWS):
                            cantidad, precio_unitario, alicuota_iva, cod_raza,
                            cantidad_cabezas=None, nro_tropa=None, 
                            cod_corte=None, cantidad_kg_vivo=None,
-                           precio_recupero=None,
+                           precio_recupero=None, detalle_raza=None,
+                           nro_item=None,
                            **kwargs):
         "Agrega el detalle de item de la liquidación"
         d = {'cuitCliente': cuit_cliente,
@@ -261,22 +262,24 @@ class WSLSP(BaseWS):
              'precioUnitario': precio_unitario, 
              'alicuotaIVA': alicuota_iva, 
              'cantidadCabezas': cantidad_cabezas, 
-             'codRaza': cod_raza, 
+             'raza': {'codRaza': cod_raza, 'detalle': detalle_raza}, 
              'nroTropa': nro_tropa, 
              'codCorte': cod_corte, 
              'cantidadKgVivo': cantidad_kg_vivo, 
              'precioRecupero': precio_recupero,
              'liquidacionCompraAsociada': [],
+             'nroItem': nro_item,
             }
         self.solicitud['itemDetalleLiquidacion'].append(d)
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarCompraAsociada(self, tipo_cbte, pto_vta, nro_cbte, cant_asoc):
+    def AgregarCompraAsociada(self, tipo_cbte, pto_vta, nro_cbte, cant_asoc, nro_item):
         "Agrega la información referente a la liquidación compra asociada"
         d = {'tipoComprobante': tipo_cbte, 
              'puntoVenta': pto_vta,
              'nroComprobante': nro_cbte, 
+             'nroItem': nro_item,
              'cantidadAsociada': cant_asoc}
         item_liq = self.solicitud['itemDetalleLiquidacion'][-1]
         item_liq['liquidacionCompraAsociada'].append(d)
@@ -383,6 +386,7 @@ class WSLSP(BaseWS):
                 gasto=[],
                 guia=[],
                 tributo=[],
+                pdf=liq.get('pdf'),
                 )
             for ret in liq.get('gasto', []):
                 self.params_out['gasto'].append(dict(
@@ -784,8 +788,8 @@ if __name__ == '__main__':
                 # Solicitud 1: Cuenta de Venta y Líquido Producto - Hacienda
                 wslsp.CrearLiquidacion(
                         cod_operacion=1, 
-                        fecha_cbte='2016-11-12', 
-                        fecha_op='2016-11-11', 
+                        fecha_cbte='2017-02-23', 
+                        fecha_op='2017-02-23', 
                         cod_motivo=6, 
                         cod_localidad_procedencia=8274, 
                         cod_provincia_procedencia=1, 
@@ -795,28 +799,34 @@ if __name__ == '__main__':
                         fecha_recepcion=None, fecha_faena=None, 
                         datos_adicionales=None)
                 if False:
-                    wslsp.AgregarFrigorifico(cuit, nro_planta)
+                    wslsp.AgregarFrigorifico(cuit=20160000156, nro_planta=1)
                 wslsp.AgregarEmisor(
                         tipo_cbte=180, pto_vta=3000, nro_cbte=1, 
                         cod_caracter=5, fecha_inicio_act='2016-01-01',
                         iibb='123456789', nro_ruca=305, nro_renspa=None)
                 wslsp.AgregarReceptor(cod_caracter=3)
-                wslsp.AgregarOperador(cuit=12222222222, iibb=3456, 
+                wslsp.AgregarOperador(cuit=30160000011, iibb=3456, 
+                                      ## nro_ruca=1011,  # Validacion AFIP 1003
+                                      ## cuit_autorizado=20160000261,   # 1001 
                                       nro_renspa='22.123.1.12345/A4')
                 wslsp.AgregarItemDetalle(
-                        cuit_cliente="12345688888",
+                        cuit_cliente="20160000199",     # 2403
                         cod_categoria=51020102,
                         tipo_liquidacion=1,
                         cantidad=2,
                         precio_unitario=10.0,
                         alicuota_iva=10.5,
                         cod_raza=1,
+                        #cantidad_cabezas=1,        # Validacion AFIP 2408
                         )
                 wslsp.AgregarCompraAsociada(tipo_cbte=185, pto_vta=3000,
-                                            nro_cbte=33, cant_asoc=2)
+                                            nro_cbte=33, cant_asoc=2, 
+                                            nro_item=1)
                 wslsp.AgregarGuia(nro_guia=1)
                 wslsp.AgregarDTE(nro_dte="418-1",
                                  nro_renspa='22.123.1.12345/A5')
+                wslsp.AgregarDTE(nro_dte="418-2",
+                                 nro_renspa='22.123.1.12346/A5')
                 wslsp.AgregarGasto(cod_gasto=16, base_imponible=230520.60,
                                    alicuota=3, alicuota_iva=10.5)
                 wslsp.AgregarTributo(cod_tributo=5, base_imponible=230520.60,
@@ -831,7 +841,7 @@ if __name__ == '__main__':
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo respuesta:
-                wslsp.LoadTestXML("tests/xml/wslsp_liq_test_response.xml")
+                wslsp.LoadTestXML("tests/xml/wslsp_liq_ok_response.xml")
                 import json
                 with open("wslsp.json", "w") as f:
                     json.dump(wslsp.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
@@ -866,7 +876,7 @@ if __name__ == '__main__':
                 open("liq.pdf", "wb").write(pdf)
 
             if '--testing' in sys.argv:
-                assert wslsp.CAE == "96465021584954"
+                assert wslsp.CAE == "97083467167835"
 
             if DEBUG: 
                 pprint.pprint(wslsp.params_out)
@@ -874,6 +884,8 @@ if __name__ == '__main__':
             if "--guardar" in sys.argv:
                 # grabar un archivo de texto (intercambio) con el resultado:
                 liq = wslsp.params_out.copy()
+                if "pdf" in liq:
+                    del liq["pdf"]                  # eliminador binario
                 with open("wslsp_salida.json", "w") as f:
                     json.dump(liq, f,  default=str, 
                               indent=2, sort_keys=True, encoding="utf-8")
