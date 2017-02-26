@@ -19,7 +19,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.06a"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -447,8 +447,9 @@ class WSLTV(BaseWS):
         "Ajustar Liquidación de Tabaco Verde"
         
         # renombrar la clave principal de la estructura
-        liq = self.solicitud.pop('liquidacion')
-        self.solicitud["liquidacionAjuste"] = liq
+        if 'liquidacion' in self.solicitud:
+            liq = self.solicitud.pop('liquidacion')
+            self.solicitud["liquidacionAjuste"] = liq
         
         # llamar al webservice:
         ret = self.client.ajustarLiquidacion(
@@ -470,8 +471,9 @@ class WSLTV(BaseWS):
         "Generar Ajuste Físico de Liquidación de Tabaco Verde (WSLTVv1.3)"
         
         # renombrar la clave principal de la estructura
-        liq = self.solicitud.pop('liquidacion')
-        self.solicitud = liq
+        if 'liquidacion' in self.solicitud:
+            liq = self.solicitud.pop('liquidacion')
+            self.solicitud = liq
         
         # llamar al webservice:
         ret = self.client.generarAjusteFisico(
@@ -780,6 +782,11 @@ if __name__ == '__main__':
             print "AuthServerStatus", wsltv.AuthServerStatus
             ##sys.exit(0)
 
+        if '--json' in sys.argv and os.path.exists("wsltv.json"):
+            # cargar un archivo de texto:
+            with open("wsltv.json", "r") as f:
+                wsltv.solicitud = json.load(f, encoding="utf-8")
+
         if '--autorizar' in sys.argv:
 
             if '--prueba' in sys.argv:
@@ -863,21 +870,12 @@ if __name__ == '__main__':
                 # bonificacion:
                 porcentaje = 10.0
                 importe = 100.00
-                wsltv.AgregarBonificacion(porcentaje, importe)
-
-            else:
-                # cargar un archivo de texto:
-                with open("wsltv.json", "r") as f:
-                    wsltv.solicitud = json.load(f, encoding="utf-8")
-                
+                wsltv.AgregarBonificacion(porcentaje, importe)                
             
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo respuesta:
                 wsltv.LoadTestXML("tests/xml/wsltv_aut_test_pdf.xml")
-                import json
-                with open("wsltv.json", "w") as f:
-                    json.dump(wsltv.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
 
             print "Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
                     wsltv.solicitud['liquidacion']['puntoVenta'],
@@ -929,35 +927,37 @@ if __name__ == '__main__':
             if DEBUG: 
                 pprint.pprint(wsltv.params_out)
 
-        if '--generar-ajuste-fisico' in sys.argv and '--prueba' in sys.argv:
-            # ejemplo documentación AFIP:
-            if '--testing' in sys.argv:
-                wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test_pdf.xml")
-            wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2, nro_cbte=1, 
-                              fecha='2016-09-09', 
-                              fecha_inicio_actividad="1900-01-01",
-                             )
-            wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=3697, nro_cbte=2)
+        if '--generar-ajuste-fisico' in sys.argv:
+            if '--prueba' in sys.argv:
+                # ejemplo documentación AFIP:
+                if '--testing' in sys.argv:
+                    wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test_pdf.xml")
+                wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2, nro_cbte=1, 
+                                  fecha='2016-09-09', 
+                                  fecha_inicio_actividad="1900-01-01",
+                                 )
+                wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=3697, nro_cbte=2)
             wsltv.GenerarAjusteFisico()
             print "CAE Ajustado:", wsltv.GetParametro("cae_ajustado")
             if '--testing' in sys.argv:
                 assert wsltv.GetParametro("cae_ajustado") == "86029002591067"
 
-        if '--ajustar' in sys.argv and '--prueba' in sys.argv:
-            # ejemplo documentación AFIP:
-            if '--testing' in sys.argv:
-                wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test.xml")
-            wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2958, nro_cbte=13, 
-                              fecha='2015-12-31', 
-                              cod_deposito_acopio=201, tipo_ajuste="C",
-                              cuit_receptor=222222222, 
-                              iibb_receptor=2,
-                              fecha_inicio_actividad="2010-01-01"
-                             )
-            wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=4521, nro_cbte=12345678)
-            wsltv.AgregarPrecioClase(clase_tabaco=111, precio=25, total_kilos=41, total_fardos=1)
-            wsltv.AgregarRetencion(cod_retencion=11, descripcion=None, importe=20)
-            wsltv.AgregarTributo(codigo_tributo=99, descripcion="Descripcion otros tributos", base_imponible=2, alicuota=2, importe=10)
+        if '--ajustar' in sys.argv:
+            if '--prueba' in sys.argv:
+                # ejemplo documentación AFIP:
+                if '--testing' in sys.argv:
+                    wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test.xml")
+                wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2958, nro_cbte=13, 
+                                  fecha='2015-12-31', 
+                                  cod_deposito_acopio=201, tipo_ajuste="C",
+                                  cuit_receptor=222222222, 
+                                  iibb_receptor=2,
+                                  fecha_inicio_actividad="2010-01-01"
+                                 )
+                wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=4521, nro_cbte=12345678)
+                wsltv.AgregarPrecioClase(clase_tabaco=111, precio=25, total_kilos=41, total_fardos=1)
+                wsltv.AgregarRetencion(cod_retencion=11, descripcion=None, importe=20)
+                wsltv.AgregarTributo(codigo_tributo=99, descripcion="Descripcion otros tributos", base_imponible=2, alicuota=2, importe=10)
             wsltv.AjustarLiquidacion()
             print "CAE:", wsltv.CAE
             if '--testing' in sys.argv:
@@ -988,6 +988,11 @@ if __name__ == '__main__':
             if '--mostrar' in sys.argv and pdf:
                 wsltv.MostrarPDF(archivo=pdf,
                                  imprimir='--imprimir' in sys.argv)
+
+        if '--json' in sys.argv:
+            import json
+            with open("wsltv.json", "w") as f:
+                json.dump(wsltv.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
 
         if '--ult' in sys.argv:
             tipo_cbte = 151
