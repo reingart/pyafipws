@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.03b"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -79,7 +79,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslsp.ini"
-HOMO = True
+HOMO = False
 
 
 class WSLSP(BaseWS):
@@ -345,44 +345,44 @@ class WSLSP(BaseWS):
         # proceso los datos básicos de la liquidación (devuelto por consultar):
         cab = liq.get('cabecera')
         if cab:
-            self.CAE = str(cab['cae'])
-            self.FechaVencimientoCae = str(cab['fechaVencimientoCae'])
-            self.FechaProcesoAFIP = str(cab['fechaProcesoAFIP'])
-            self.NroCodigoBarras =  cab['nroCodigoBarras'] 
-            self.NroComprobante = liq['emisor']['nroComprobante']
-            datos = liq['datosLiquidacion']
-            self.FechaComprobante = str(datos['fechaComprobante'])
-            emisor = liq['emisor']
-            self.NroComprobante = emisor['nroComprobante']
-            tot = liq['resumenTotales']
-            self.ImporteBruto = tot['importeBruto']
-            self.ImporteTotalGastos = tot['importeTotalGastos']
-            self.ImporteTotalTributos = tot['importeTotalTributos']
-            self.ImporteTotalNeto = tot['importeTotalNeto']
-            self.ImporteIVASobreBruto = tot['importeIVASobreBruto']
-            self.ImporteIVASobreGastos = tot['importeIVASobreGastos']
+            self.CAE = str(cab.get('cae', ''))
+            self.FechaVencimientoCae = str(cab.get('fechaVencimientoCae', ''))
+            self.FechaProcesoAFIP = str(cab.get('fechaProcesoAFIP', ''))
+            self.NroCodigoBarras =  cab.get('nroCodigoBarras')
+            datos = liq.get('datosLiquidacion', {})
+            self.FechaComprobante = str(datos.get('fechaComprobante', ''))
+            emisor = liq.get('emisor', {})
+            self.NroComprobante = emisor.get('nroComprobante')
+            tot = liq.get('resumenTotales', {})
+            self.ImporteBruto = tot.get('importeBruto')
+            self.ImporteTotalGastos = tot.get('importeTotalGastos')
+            self.ImporteTotalTributos = tot.get('importeTotalTributos')
+            self.ImporteTotalNeto = tot.get('importeTotalNeto')
+            self.ImporteIVASobreBruto = tot.get('importeIVASobreBruto')
+            self.ImporteIVASobreGastos = tot.get('importeIVASobreGastos')
+            receptor = liq.get('receptor', {})
 
             # parámetros de salida:
             self.params_out = dict(
-                tipo_cbte=liq['emisor']['tipoComprobante'],
-                pto_vta=liq['emisor']['puntoVenta'],
-                nro_cbte=liq['emisor']['nroComprobante'],
-                fecha=liq['datosLiquidacion']['fechaComprobante'],
-                cae=str(liq['cabecera']['cae']),
+                tipo_cbte=emisor.get('tipoComprobante'),
+                pto_vta=emisor.get('puntoVenta'),
+                nro_cbte=emisor.get('nroComprobante'),
+                fecha=datos.get('fechaComprobante'),
+                cae=cab.get('cae'),
                 emisor=dict(
-                    razon_social=liq['emisor']['razonSocial'],
-                    domicilio_punto_venta=liq['emisor']['domicilioPuntoVenta'],
+                    razon_social=emisor.get('razonSocial'),
+                    domicilio_punto_venta=emisor.get('domicilioPuntoVenta'),
                     ),
                 receptor=dict(
-                    nombre=liq['receptor']['nombre'],
-                    domicilio=liq['receptor']['domicilio'],
+                    nombre=receptor.get('nombre'),
+                    domicilio=receptor.get('domicilio'),
                     ),
-                bruto=liq['resumenTotales']['importeBruto'],
-                iva_bruto=liq['resumenTotales']['importeIVASobreBruto'],
-                iva_gastos=liq['resumenTotales']['importeIVASobreGastos'],
-                total_neto=liq['resumenTotales']['importeTotalNeto'],
-                total_tributos=liq['resumenTotales']['importeTotalTributos'],
-                total_gastos=liq['resumenTotales']['importeTotalGastos'],
+                bruto=tot.get('importeBruto'),
+                iva_bruto=tot.get('importeIVASobreBruto'),
+                iva_gastos=tot.get('importeIVASobreGastos'),
+                total_neto=tot.get('importeTotalNeto'),
+                total_tributos=tot.get('importeTotalTributos'),
+                total_gastos=tot.get('importeTotalGastos'),
                 gasto=[],
                 guia=[],
                 tributo=[],
