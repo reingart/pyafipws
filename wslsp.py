@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03b"
+__version__ = "1.03c"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -823,10 +823,14 @@ if __name__ == '__main__':
                                             nro_cbte=33, cant_asoc=2, 
                                             nro_item=1)
                 wslsp.AgregarGuia(nro_guia=1)
-                wslsp.AgregarDTE(nro_dte="418-1",
-                                 nro_renspa='22.123.1.12345/A5')
-                wslsp.AgregarDTE(nro_dte="418-2",
-                                 nro_renspa='22.123.1.12346/A5')
+                if True:
+                    wslsp.AgregarDTE(nro_dte="418-1",
+                                     nro_renspa='22.123.1.12345/A5')
+                    wslsp.AgregarDTE(nro_dte="418-2",
+                                     nro_renspa='22.123.1.12346/A5')
+                else:
+                    wslsp.AgregarDTE(nro_dte="418-3", nro_renspa=None)
+                    wslsp.AgregarDTE(nro_dte="418-4", nro_renspa=None)
                 wslsp.AgregarGasto(cod_gasto=16, base_imponible=230520.60,
                                    alicuota=3, alicuota_iva=10.5)
                 wslsp.AgregarTributo(cod_tributo=5, base_imponible=230520.60,
