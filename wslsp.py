@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03c"
+__version__ = "1.03d"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -436,13 +436,10 @@ class WSLSP(BaseWS):
                         )
         ret = ret['respuesta']
         self.__analizar_errores(ret)
-        if 'liquidacion' in ret:
-            liqs = ret.get('liquidacion', [])
-            liq = liqs[0] if liqs else None
-            self.AnalizarLiquidacion(liq)
-            # guardo el PDF si se indico archivo y vino en la respuesta:
-            if pdf and 'pdf' in liq:
-                open(pdf, "wb").write(liq['pdf'])
+        self.AnalizarLiquidacion(ret)
+        # guardo el PDF si se indico archivo y vino en la respuesta:
+        if pdf and 'pdf' in ret:
+            open(pdf, "wb").write(ret['pdf'])
         return True
 
     @inicializar_y_capturar_excepciones
@@ -817,7 +814,13 @@ if __name__ == '__main__':
                         precio_unitario=10.0,
                         alicuota_iva=10.5,
                         cod_raza=1,
-                        #cantidad_cabezas=1,        # Validacion AFIP 2408
+                        cantidad_cabezas=None,        # Validacion AFIP 2408
+                        nro_tropa=None, 
+                        cod_corte=None,
+                        cantidad_kg_vivo=None,
+                        precio_recupero=None,
+                        detalle_raza=None,
+                        nro_item=1,
                         )
                 wslsp.AgregarCompraAsociada(tipo_cbte=185, pto_vta=3000,
                                             nro_cbte=33, cant_asoc=2, 
@@ -885,19 +888,10 @@ if __name__ == '__main__':
             if DEBUG: 
                 pprint.pprint(wslsp.params_out)
 
-            if "--guardar" in sys.argv:
-                # grabar un archivo de texto (intercambio) con el resultado:
-                liq = wslsp.params_out.copy()
-                if "pdf" in liq:
-                    del liq["pdf"]                  # eliminador binario
-                with open("wslsp_salida.json", "w") as f:
-                    json.dump(liq, f,  default=str, 
-                              indent=2, sort_keys=True, encoding="utf-8")
-            
         if '--consultar' in sys.argv:
-            tipo_cbte = 27
-            pto_vta = 1
-            nro_cbte = 0
+            tipo_cbte = 180
+            pto_vta = 3000
+            nro_cbte = 1
             cuit = None
             try:
                 tipo_cbte = sys.argv[sys.argv.index("--consultar") + 1]
@@ -940,6 +934,15 @@ if __name__ == '__main__':
             print "Ultimo Nro de Comprobante", wslsp.NroComprobante
             print "Errores:", wslsp.Errores
             sys.exit(0)
+
+        if "--guardar" in sys.argv:
+            # grabar un archivo de texto (intercambio) con el resultado:
+            liq = wslsp.params_out.copy()
+            if "pdf" in liq:
+                del liq["pdf"]                  # eliminador binario
+            with open("wslsp_salida.json", "w") as f:
+                json.dump(liq, f,  default=str, 
+                          indent=2, sort_keys=True, encoding="utf-8")
 
         # Recuperar parámetros:
         
