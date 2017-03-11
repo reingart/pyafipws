@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03d"
+__version__ = "1.04a"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -47,6 +47,7 @@ Opciones:
   --dummy: consulta estado de servidores
   
   --autorizar: Autorizar Liquidación Única (generarLiquidacion)
+  --ajustar: Ajuste Físico/Monetario/Financiero, Credito/Debito (generarAjuste)
   --ult: Consulta el último número de orden registrado en AFIP 
          (consultarUltimoComprobanteXPuntoVenta)
   --consultar: Consulta una liquidación registrada en AFIP 
@@ -92,6 +93,11 @@ class WSLSP(BaseWS):
                         'AgregarItemDetalle', 'AgregarCompraAsociada',
                         'AgregarGasto', 'AgregarTributo', 'AgregarGuia',
                         'ConsultarLiquidacion', 'ConsultarUltimoComprobante',
+                        'CrearAjuste', 'AgregarComprobanteAAjustar', 
+                        'AgregarItemDetalleAjuste', 
+                        'AgregarAjusteMonetario', 'AgregarAjusteFisico',
+                        'AgregarAjusteFinanciero',
+                        'AjustarLiquidacion',
                         'LeerDatosLiquidacion',
                         'ConsultarOperaciones',
                         'ConsultarTiposComprobante', 
@@ -213,10 +219,11 @@ class WSLSP(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarEmisor(self, tipo_cbte, pto_vta, nro_cbte, cod_caracter,
-                      fecha_inicio_act,
+    def AgregarEmisor(self, tipo_cbte, pto_vta, nro_cbte, cod_caracter=None,
+                      fecha_inicio_act=None,
                       iibb=None, nro_ruca=None, nro_renspa=None, **kwargs):
         "Agrego los datos del emisor a la liq."
+        # cod_caracter y fecha_inicio_act no es requerido para ajustes
         d = {'tipoComprobante': tipo_cbte, 'puntoVenta': pto_vta,
              'nroComprobante': nro_cbte, 
              'codCaracter': cod_caracter,
@@ -281,8 +288,12 @@ class WSLSP(BaseWS):
              'nroComprobante': nro_cbte, 
              'nroItem': nro_item,
              'cantidadAsociada': cant_asoc}
-        item_liq = self.solicitud['itemDetalleLiquidacion'][-1]
-        item_liq['liquidacionCompraAsociada'].append(d)
+        if 'itemDetalleLiquidacion' in self.solicitud:
+            item_liq = self.solicitud['itemDetalleLiquidacion'][-1]
+            item_liq['liquidacionCompraAsociada'].append(d)
+        else:
+            item_liq = self.solicitud['itemDetalleAjusteLiquidacion'][-1]
+            item_liq['ajusteCompraAsociada'].append(d)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -292,7 +303,10 @@ class WSLSP(BaseWS):
         gasto = {'codGasto': cod_gasto, 'descripcion': descripcion, 
                  'baseImponible': base_imponible, 'alicuota': alicuota, 
                  'importe': importe, 'alicuotaIVA': alicuota_iva}
-        self.solicitud['gasto'].append(gasto)
+        if 'ajusteFinanciero' in self.solicitud:
+            self.solicitud['ajusteFinanciero']['gasto'].append(gasto)
+        else:
+            self.solicitud['gasto'].append(gasto)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -302,7 +316,10 @@ class WSLSP(BaseWS):
         trib = {'codTributo': cod_tributo, 'descripcion': descripcion, 
                 'baseImponible': base_imponible, 'alicuota': alicuota, 
                 'importe': importe}
-        self.solicitud['tributo'].append(trib)
+        if 'ajusteFinanciero' in self.solicitud:
+            self.solicitud['ajusteFinanciero']['tributo'].append(trib)
+        else:
+            self.solicitud['tributo'].append(trib)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -401,6 +418,22 @@ class WSLSP(BaseWS):
                     codigo=trib['codTributo'],
                     importe=trib['importe'],
                     ))
+            # analizar datos del ajuste generado:
+            ajuste = liq.get('ajuste', {})
+            if ajuste:
+                self.params_out.update(dict(
+                    tipo_ajuste=ajuste['tipoAjuste'],
+                    modo_ajuste=ajuste['modoAjuste'],
+                    ))
+                ajustado = ajuste.get('comprobanteAjustado')
+                if ajustado:
+                    self.params_out.update(dict(
+                        cbte_ajuste=dict(
+                            tipo_cbte=ajustado['tipoComprobante'],
+                            pto_vta=ajustado['puntoVenta'],
+                            nro_cbte=ajustado['nroComprobante'],
+                            )
+                        ))
             if DEBUG:
                 import pprint
                 pprint.pprint(self.params_out)
@@ -456,6 +489,87 @@ class WSLSP(BaseWS):
         ret = ret['respuesta']
         self.__analizar_errores(ret)
         self.NroComprobante = ret['nroComprobante']
+        return True
+
+
+    @inicializar_y_capturar_excepciones
+    def CrearAjuste(self, tipo_ajuste,  fecha_cbte, datos_adicionales=None, **kwargs):
+        "Inicializa internamente los datos de una liquidación para ajustar"
+        # creo el diccionario con los campos generales de la liquidación:
+        self.solicitud = dict(tipoAjuste=tipo_ajuste, 
+                              fechaComprobante=fecha_cbte,
+                              emisor={},
+                              itemDetalleAjusteLiquidacion=[],
+                              ajusteFinanciero={},
+                              datosAdicionales=datos_adicionales, 
+                             )
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarComprobanteAAjustar(self, tipo_cbte, pto_vta, nro_cbte):
+        "Agrega comprobante a ajustar"
+        cbte = dict(tipoComprobante=tipo_cbte, puntoVenta=pto_vta, nroComprobante=nro_cbte)
+        self.solicitud['emisor']["comprobanteAAjustar"] = cbte
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarItemDetalleAjuste(self, nro_item_ajustar, **kwargs):
+        "Agrega el detalle de item a un ajuste de liquidación"
+        d = {'nroItemAjustar': nro_item_ajustar, 'ajusteCompraAsociada': []}
+        self.solicitud['itemDetalleAjusteLiquidacion'].append(d)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarAjusteFisico(self, cantidad, cantidad_cabezas=None, 
+                            cantidad_kg_vivo=None, **kwargs):
+        "Agrega campos al detalle de item por un ajuste fisico"
+        d = {'cantidad': cantidad,
+             'cantidadCabezas': cantidad_cabezas, 
+             'cantidadKgVivo': cantidad_kg_vivo, 
+            }
+        item_liq = self.solicitud['itemDetalleAjusteLiquidacion'][-1]
+        item_liq['ajusteFisico'] = d
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarAjusteMonetario(self, precio_unitario, precio_recupero=None, 
+                               **kwargs):
+        "Agrega campos al detalle de item por un ajuste monetario"
+        d = {'precioUnitario': precio_unitario, 
+             'precioRecupero': precio_recupero,
+            }
+        item_liq = self.solicitud['itemDetalleAjusteLiquidacion'][-1]
+        item_liq['ajusteMonetario'] = d
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarAjusteFinanciero(self, **kwargs):
+        "Prepara el detalle de item por un ajuste financiero (gastos/tributos)"
+        self.solicitud['ajusteFinanciero'] = {'gasto': [], 'tributo': []}
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AjustarLiquidacion(self):
+        "Generar y ajustar una liquidación para obtener del CAE"
+        # limpio los elementos que no correspondan por estar vacios:
+        for item_liq in self.solicitud['itemDetalleAjusteLiquidacion']:
+            campo = 'ajusteCompraAsociada'
+            if campo in item_liq and not item_liq[campo]:
+                del item_liq[campo]
+        for campo in self.solicitud.get('ajusteFinanciero', []):
+            if not self.solicitud['ajusteFinanciero'][campo]:
+                del self.solicitud['ajusteFinanciero'][campo]
+        # llamo al webservice:
+        ret = self.client.generarAjuste(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        solicitud=self.solicitud,
+                        )
+        # analizo la respusta
+        ret = ret['respuesta']
+        self.__analizar_errores(ret)
+        self.AnalizarLiquidacion(ret)
         return True
 
 
@@ -887,6 +1001,60 @@ if __name__ == '__main__':
 
             if DEBUG: 
                 pprint.pprint(wslsp.params_out)
+
+        if '--ajustar' in sys.argv:
+            if '--prueba' in sys.argv:
+                # ejemplo documentación AFIP:
+                if '--testing' in sys.argv:
+                    wslsp.LoadTestXML("tests/xml/wslsp_ajuste_test.xml")
+                wslsp.CrearAjuste(tipo_ajuste='C', fecha_cbte='2017-01-06', 
+                                  datos_adicionales='Ajuste sobre liquidacion de compra directa'
+                                 )
+                wslsp.AgregarEmisor(tipo_cbte=186, pto_vta=3000, nro_cbte=1)
+                wslsp.AgregarComprobanteAAjustar(tipo_cbte=186, pto_vta=2000, nro_cbte=4)
+                wslsp.AgregarItemDetalleAjuste(nro_item_ajustar=1)
+                wslsp.AgregarCompraAsociada(tipo_cbte=185, pto_vta=3000,
+                                            nro_cbte=33, cant_asoc=2, 
+                                            nro_item=1)
+                # Validación de AFIP 3002: 
+                # No se pueden realizar ajustes fisicos y monetario en un mismo comprobante.
+                wslsp.AgregarAjusteFisico(   
+                        cantidad=1,
+                        cantidad_cabezas=None,
+                        cantidad_kg_vivo=None,
+                        )
+                wslsp.AgregarAjusteMonetario(
+                        precio_unitario=15.995,
+                        precio_recupero=None,
+                        )
+                wslsp.AgregarAjusteFinanciero()
+                wslsp.AgregarGasto(cod_gasto=16, base_imponible=230520.60,
+                                   alicuota=3, alicuota_iva=10.5)
+                wslsp.AgregarTributo(cod_tributo=5, base_imponible=230520.60,
+                                     alicuota=2.5)
+                wslsp.AgregarTributo(cod_tributo=3, importe=397)
+                import json
+                with open("wslsp.json", "w") as f:
+                    json.dump(wslsp.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
+            else:
+                # cargar un archivo de texto:
+                with open("wslsp.json", "r") as f:
+                    wslsp.solicitud = json.load(f, encoding="utf-8")
+
+            wslsp.AjustarLiquidacion()
+            print "CAE:", wslsp.CAE
+            print "Tipo Ajuste:", wslsp.GetParametro("tipo_ajuste")
+            print "Modo Ajuste:", wslsp.GetParametro("modo_ajuste")
+            if '--testing' in sys.argv:
+                assert wslsp.GetParametro("cae") == "97029023118043"
+                assert wslsp.GetParametro("cbte_ajuste", "tipo_cbte") == '186'
+                assert wslsp.GetParametro("cbte_ajuste", "pto_vta") == '2000'
+                assert wslsp.GetParametro("cbte_ajuste", "nro_cbte") == '3'
+
+            pdf = wslsp.GetParametro("pdf")
+            if pdf:
+                open("liq.pdf", "wb").write(pdf)
+
 
         if '--consultar' in sys.argv:
             tipo_cbte = 180
