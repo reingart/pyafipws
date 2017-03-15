@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.11b"
+__version__ = "2.11c"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
@@ -214,8 +214,9 @@ class WSAA(BaseWS):
         f.write(bio.read())
         f.close()
         # create a public key to sign the certificate request:
-        self.pkey = EVP.PKey(md='sha1')
+        self.pkey = EVP.PKey(md='sha256')
         self.pkey.assign_rsa(rsa_key_pair)
+        return True
 
     @inicializar_y_capturar_excepciones
     def CrearPedidoCertificado(self, cuit="", empresa="", nombre="pyafipws",
@@ -239,7 +240,7 @@ class WSAA(BaseWS):
         x509name.add_entry_by_txt(field='C', entry='AR', **kwargs)
         x509name.add_entry_by_txt(field='O', entry=empresa, **kwargs)
         x509name.add_entry_by_txt(field='CN', entry=nombre, **kwargs)
-        x509name.add_entry_by_txt(field='serialNumber', entry="CUIT %s" % cuit, **kwargs)     
+        x509name.add_entry_by_txt(field='serialNumber', entry="CUIT %s" % str(cuit), **kwargs)     
         self.x509_req.set_subject_name(x509name)
 
         # sign the request with the previously created key (CrearClavePrivada)
@@ -249,6 +250,7 @@ class WSAA(BaseWS):
         f = open(filename, "w")
         f.write(self.x509_req.as_pem())
         f.close()
+        return True
         
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
