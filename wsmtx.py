@@ -18,7 +18,7 @@ productos) según RG2904 (opción A con detalle) y RG2926/10 (CAE anticipado).
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.12c"
+__version__ = "1.13a"
 
 import datetime
 import decimal
@@ -148,12 +148,14 @@ class WSMTXCA(BaseWS):
         else:
             return False
 
-    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwargs):
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, **kwargs):
         "Agrego un comprobante asociado a una factura (interna)"
         cmp_asoc = {
             'tipo': tipo, 
             'pto_vta': pto_vta, 
             'nro': nro}
+        if cuit is not None:
+            cmp_asoc['cuit'] = cuit
         self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
@@ -234,6 +236,7 @@ class WSMTXCA(BaseWS):
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
                 'numeroComprobante': cbte_asoc['nro'],
+                'cuit': cbte_asoc.get('cuit'),
                 }} for cbte_asoc in f['cbtes_asoc']] or None,
             'arrayOtrosTributos': f['tributos'] and [ {'otroTributo': {
                 'codigo': tributo['tributo_id'], 
@@ -339,6 +342,7 @@ class WSMTXCA(BaseWS):
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
                 'numeroComprobante': cbte_asoc['nro'],
+                'cuit': cbte_asoc.get('cuit'),
                 }} for cbte_asoc in f['cbtes_asoc']] or None,
             'arrayOtrosTributos': f['tributos'] and [ {'otroTributo': {
                 'codigo': tributo['tributo_id'], 
@@ -505,6 +509,7 @@ class WSMTXCA(BaseWS):
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
                 'numeroComprobante': cbte_asoc['nro'],
+                'cuit': cbte_asoc.get('cuit'),
                 }} for cbte_asoc in f['cbtes_asoc']] or None,
             'arrayOtrosTributos': f['tributos'] and [{'otroTributo': {
                 'codigo': tributo['tributo_id'], 
