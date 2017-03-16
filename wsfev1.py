@@ -21,7 +21,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.18c"
+__version__ = "1.19a"
 
 import datetime
 import decimal
@@ -39,7 +39,7 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 
 
 class WSFEv1(BaseWS):
-    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.5"
+    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.9"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
                         'CompUltimoAutorizado', 'CompConsultar',
@@ -162,9 +162,11 @@ class WSFEv1(BaseWS):
         else:
             return False
 
-    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwarg):
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, **kwarg):
         "Agrego un comprobante asociado a una factura (interna)"
         cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
+        if cuit is not None:
+            cmp_asoc['cuit'] = cuit
         self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
@@ -240,7 +242,9 @@ class WSFEv1(BaseWS):
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
-                            'Nro': cbte_asoc['nro']}}
+                            'Nro': cbte_asoc['nro'],
+                            'Cuit': cbte_asoc.get('cuit'),
+                        }}
                         for cbte_asoc in f['cbtes_asoc']] or None,
                     'Tributos': f['tributos'] and [
                         {'Tributo': {
@@ -369,7 +373,9 @@ class WSFEv1(BaseWS):
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
-                            'Nro': cbte_asoc['nro']}}
+                            'Nro': cbte_asoc['nro'],
+                            'Cuit': cbte_asoc.get('cuit'),
+                        }}
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
                         {'Tributo': {
@@ -418,7 +424,8 @@ class WSFEv1(BaseWS):
                             {
                             'tipo': cbte_asoc['CbteAsoc']['Tipo'],
                             'pto_vta': cbte_asoc['CbteAsoc']['PtoVta'], 
-                            'nro': cbte_asoc['CbteAsoc']['Nro']}
+                            'nro': cbte_asoc['CbteAsoc']['Nro'],
+                            'cuit': cbte_asoc['CbteAsoc'].get('Cuit')}
                         for cbte_asoc in resultget.get('CbtesAsoc', [])],
                     'tributos': [
                             {
@@ -531,7 +538,9 @@ class WSFEv1(BaseWS):
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
-                            'Nro': cbte_asoc['nro']}}
+                            'Nro': cbte_asoc['nro'],
+                            'Cuit': cbte_asoc.get('cuit'),
+                        }}
                         for cbte_asoc in f['cbtes_asoc']] or None,
                     'Tributos': [
                         {'Tributo': {
@@ -721,7 +730,9 @@ class WSFEv1(BaseWS):
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
-                            'Nro': cbte_asoc['nro']}}
+                            'Nro': cbte_asoc['nro'],
+                            'Cuit': cbte_asoc.get('cuit'),
+                        }}
                         for cbte_asoc in f['cbtes_asoc']]
                         if f['cbtes_asoc'] else None,
                     'Tributos': [
@@ -1002,7 +1013,8 @@ def main():
                 tipo = 3
                 pto_vta = 2
                 nro = 1234
-                wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro)
+                cuit = "20267565393"
+                wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit)
             
             # otros tributos:
             tributo_id = 99
@@ -1084,7 +1096,10 @@ def main():
         if "--reprocesar" in sys.argv:
             print "reprocesando...."
             wsfev1.Reproceso = True
+            cae = wsfev1.CAE
             wsfev1.CAESolicitar()
+            assert cae == wsfev1.CAE
+            assert wsfev1.Reproceso == "S"
 
         if "--consultar" in sys.argv:
             cae = wsfev1.CAE
