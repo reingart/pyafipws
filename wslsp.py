@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.05a"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -220,8 +220,8 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarEmisor(self, tipo_cbte, pto_vta, nro_cbte, cod_caracter=None,
-                      fecha_inicio_act=None,
-                      iibb=None, nro_ruca=None, nro_renspa=None, **kwargs):
+                      fecha_inicio_act=None, iibb=None, nro_ruca=None,
+                      nro_renspa=None, cuit_autorizado=None, **kwargs):
         "Agrego los datos del emisor a la liq."
         # cod_caracter y fecha_inicio_act no es requerido para ajustes
         d = {'tipoComprobante': tipo_cbte, 'puntoVenta': pto_vta,
@@ -230,7 +230,8 @@ class WSLSP(BaseWS):
              'fechaInicioActividades': fecha_inicio_act,
              'iibb': iibb,
              'nroRUCA': nro_ruca,
-             'nroRenspa': nro_renspa,}
+             'nroRenspa': nro_renspa,
+             'cuitAutorizado': cuit_autorizado}
         self.solicitud['emisor'].update(d)
         return True
 
