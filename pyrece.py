@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28c"
+__version__ = "1.29a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -984,7 +984,11 @@ class PyRece(gui.Controller):
                     if conf_mail['usuario'] and conf_mail['clave']:
                         self.smtp.ehlo()
                         self.smtp.login(conf_mail['usuario'], conf_mail['clave'])
-                self.smtp.sendmail(msg['From'], msg['To'], msg.as_string())
+                to = [msg['To']]
+                bcc = conf_mail.get('bcc', None)
+                if bcc:
+                    to.append(bcc)
+                self.smtp.sendmail(msg['From'], to, msg.as_string())
             except Exception,e:
                 self.error(u'Excepción',unicode(e))
             
