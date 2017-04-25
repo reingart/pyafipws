@@ -19,7 +19,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.06c"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -731,6 +731,7 @@ if __name__ == '__main__':
         CUIT = config.get('WSLTV','CUIT')
         ENTRADA = config.get('WSLTV','ENTRADA')
         SALIDA = config.get('WSLTV','SALIDA')
+        PDF = config.has_option('WSLTV', 'PDF') and config.get('WSLTV', 'PDF') or "liq.pdf"
         
         if config.has_option('WSAA','URL') and not HOMO:
             WSAA_URL = config.get('WSAA','URL')
@@ -904,7 +905,7 @@ if __name__ == '__main__':
 
             pdf = wsltv.GetParametro("pdf")
             if pdf:
-                open("liq.pdf", "wb").write(pdf)
+                open(PDF, "wb").write(pdf)
 
             if '--testing' in sys.argv:
                 assert wsltv.CAE == "85523002502850"

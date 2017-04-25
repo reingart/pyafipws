@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.05c"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -841,6 +841,7 @@ if __name__ == '__main__':
         CUIT = config.get('WSLSP','CUIT')
         ENTRADA = config.get('WSLSP','ENTRADA')
         SALIDA = config.get('WSLSP','SALIDA')
+        PDF = config.has_option('WSLSP', 'PDF') and config.get('WSLSP', 'PDF') or "liq.pdf"
         
         if config.has_option('WSAA','URL') and not HOMO:
             WSAA_URL = config.get('WSAA','URL')
@@ -900,8 +901,8 @@ if __name__ == '__main__':
                 # Solicitud 1: Cuenta de Venta y Líquido Producto - Hacienda
                 wslsp.CrearLiquidacion(
                         cod_operacion=1, 
-                        fecha_cbte='2017-02-23', 
-                        fecha_op='2017-02-23', 
+                        fecha_cbte='2017-04-23', 
+                        fecha_op='2017-04-23', 
                         cod_motivo=6, 
                         cod_localidad_procedencia=8274, 
                         cod_provincia_procedencia=1, 
@@ -913,7 +914,7 @@ if __name__ == '__main__':
                 if False:
                     wslsp.AgregarFrigorifico(cuit=20160000156, nro_planta=1)
                 wslsp.AgregarEmisor(
-                        tipo_cbte=180, pto_vta=3000, nro_cbte=1, 
+                        tipo_cbte=180, pto_vta=3000, nro_cbte=64, 
                         cod_caracter=5, fecha_inicio_act='2016-01-01',
                         iibb='123456789', nro_ruca=305, nro_renspa=None)
                 wslsp.AgregarReceptor(cod_caracter=3)
@@ -957,7 +958,7 @@ if __name__ == '__main__':
                 wslsp.AgregarTributo(cod_tributo=3, importe=397)
             else:
                 # cargar un archivo de texto:
-                with open("wslsp.json", "r") as f:
+                with open(ENTRADA, "r") as f:
                     wslsp.solicitud = json.load(f, encoding="utf-8")
                 
             
@@ -966,7 +967,7 @@ if __name__ == '__main__':
                 # usar solo si no está operativo, cargo respuesta:
                 wslsp.LoadTestXML("tests/xml/wslsp_liq_ok_response.xml")
                 import json
-                with open("wslsp.json", "w") as f:
+                with open(ENTRADA, "w") as f:
                     json.dump(wslsp.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
 
             print "Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
@@ -996,7 +997,7 @@ if __name__ == '__main__':
 
             pdf = wslsp.GetParametro("pdf")
             if pdf:
-                open("liq.pdf", "wb").write(pdf)
+                open(PDF, "wb").write(pdf)
 
             if '--testing' in sys.argv:
                 assert wslsp.CAE == "97083467167835"
@@ -1036,11 +1037,11 @@ if __name__ == '__main__':
                                      alicuota=2.5)
                 wslsp.AgregarTributo(cod_tributo=3, importe=397)
                 import json
-                with open("wslsp.json", "w") as f:
+                with open(ENTRADA, "w") as f:
                     json.dump(wslsp.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
             else:
                 # cargar un archivo de texto:
-                with open("wslsp.json", "r") as f:
+                with open(ENTRADA, "r") as f:
                     wslsp.solicitud = json.load(f, encoding="utf-8")
 
             wslsp.AjustarLiquidacion()
@@ -1055,7 +1056,7 @@ if __name__ == '__main__':
 
             pdf = wslsp.GetParametro("pdf")
             if pdf:
-                open("liq.pdf", "wb").write(pdf)
+                open(PDF, "wb").write(pdf)
 
 
         if '--consultar' in sys.argv:
@@ -1110,7 +1111,7 @@ if __name__ == '__main__':
             liq = wslsp.params_out.copy()
             if "pdf" in liq:
                 del liq["pdf"]                  # eliminador binario
-            with open("wslsp_salida.json", "w") as f:
+            with open(SALIDA, "w") as f:
                 json.dump(liq, f,  default=str, 
                           indent=2, sort_keys=True, encoding="utf-8")
 
