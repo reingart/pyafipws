@@ -38,12 +38,12 @@ if 'py2exe' in sys.argv:
     #import pyrece
     import wsaa
     import wsfev1, rece1, rg3685
-    import wsfexv1, recex1
-    import wsbfev1, receb1
-    import wsmtx, recem
-    import pyfepdf
-    import pyemail
-    import pyi25
+    #import wsfexv1, recex1
+    #import wsbfev1, receb1
+    #import wsmtx, recem
+    #import pyfepdf
+    #import pyemail
+    #import pyi25
     #import wsctgv3
     #import wslpg
     #import wsltv
@@ -299,13 +299,13 @@ if 'py2exe' in sys.argv:
 
     if 'pyi25' in globals():
         kwargs['com_server'] += [
-            Target(module=pyi25, modules="pyi25", create_exe=True, create_dll=True),
+            Target(module=pyi25, modules="pyi25", create_exe=False, create_dll=True),
             ]
         kwargs['console'] += [
-            Target(module=pyi25, script='pyi25.py', dest_base="pyi25_cli"),
+            Target(module=pyi25, script='pyi25.py', dest_base="pyi25"),
             ]
         kwargs['windows'] += [
-            Target(module=pyi25, script="pyi25.py", dest_base="pyi25_win"),
+            Target(module=pyi25, script="pyi25.py", dest_base="pyi25_com"),
             ]
         data_files += [
             ]
