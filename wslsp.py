@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05c"
+__version__ = "1.05d"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -574,6 +574,7 @@ class WSLSP(BaseWS):
         return True
 
 
+    @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         "Consulta las provincias habilitadas"
         ret = self.client.consultarProvincias(
@@ -589,6 +590,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarLocalidades(self, cod_provincia, sep="||"):
         "Consulta las localidades habilitadas"
         ret = self.client.consultarLocalidadesPorProvincia(
@@ -605,6 +607,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarOperaciones(self, sep="||"):
         "Retorna un listado de código y descripción de operaciones permitidas"
         ret = self.client.consultarOperaciones(
@@ -620,6 +623,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarTributos(self, sep="||"):
         "Retorna un listado de tributos con código, descripción y signo."
         ret = self.client.consultarTributos(
@@ -635,6 +639,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarGastos(self, sep="||"):
         "Retorna un listado de gastos con código y descripción"
         ret = self.client.consultarGastos(
@@ -643,7 +648,6 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        self.XmlResponse = self.client.xml_response
         array = ret.get('gasto', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
@@ -651,6 +655,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarTiposComprobante(self, sep="||"):
         "Retorna un listado de tipos de comprobantes con código y descripción"
         ret = self.client.consultarTiposComprobante(
@@ -659,7 +664,6 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        self.XmlResponse = self.client.xml_response
         array = ret.get('tipoComprobante', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
@@ -667,6 +671,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarTiposLiquidacion(self, sep="||"):
         "Retorna un listado de tipos de liquidación con código y descripción"
         ret = self.client.consultarTiposLiquidacion(
@@ -675,7 +680,6 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        self.XmlResponse = self.client.xml_response
         array = ret.get('tipoLiquidacion', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
@@ -683,6 +687,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarCaracteres(self, sep="||"):
         "Retorna listado de caracteres emisor/receptor (código, descripción)"
         ret = self.client.consultarCaracteresParticipante(
@@ -691,7 +696,6 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        self.XmlResponse = self.client.xml_response
         array = ret.get('caracter', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
@@ -699,6 +703,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarCategorias(self, sep="||"):
         "Retorna listado de categorías existentes (código, descripción)"
         ret = self.client.consultarCategorias(
@@ -707,7 +712,6 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        self.XmlResponse = self.client.xml_response
         array = ret.get('categoria', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
@@ -715,6 +719,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarMotivos(self, sep="||"):
         "Retorna listado de motivos existentes (código, descripción)"
         ret = self.client.consultarMotivos(
@@ -723,7 +728,6 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        self.XmlResponse = self.client.xml_response
         array = ret.get('motivo', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
@@ -731,6 +735,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarRazas(self, sep="||"):
         "Retorna listado de razas -vacunas- (código, descripción)"
         ret = self.client.consultarRazas(
@@ -739,7 +744,6 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        self.XmlResponse = self.client.xml_response
         array = ret.get('raza', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
@@ -747,6 +751,7 @@ class WSLSP(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarCortes(self, sep="||"):
         "Retorna listado de cortes -carnes- (código, descripción)"
         ret = self.client.consultarCortes(
@@ -755,7 +760,6 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        self.XmlResponse = self.client.xml_response
         array = ret.get('corte', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
@@ -764,6 +768,7 @@ class WSLSP(BaseWS):
                     (it['codigo'], it['descripcion']) for it in array]
 
 
+    @inicializar_y_capturar_excepciones
     def ConsultarPuntosVentas(self, sep="||"):
         "Retorna los puntos de ventas autorizados para la utilizacion de WS"
         ret = self.client.consultarPuntosVenta(
