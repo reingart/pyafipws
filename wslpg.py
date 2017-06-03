@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29d"
+__version__ = "1.29e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -1147,7 +1147,7 @@ class WSLPG(BaseWS):
                     'alicuota': retret['retencion'].get('alicuota'),
                     'base_calculo': retret['retencion'].get('baseCalculo'),
                     'codigo_concepto': retret['retencion'].get('codigoConcepto'),
-                    'detalle_aclaratorio': retret['retencion'].get('detalleAclaratorio', "").replace("\n", ""),
+                    'detalle_aclaratorio': (retret['retencion'].get('detalleAclaratorio') or "").replace("\n", ""),
                     'importe_certificado_retencion': retret['retencion'].get('importeCertificadoRetencion'),
                     'nro_certificado_retencion': retret['retencion'].get('nroCertificadoRetencion'),
                     'fecha_certificado_retencion': retret['retencion'].get('fechaCertificadoRetencion'),
@@ -4242,6 +4242,8 @@ if __name__ == '__main__':
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
                 wslpg.LoadTestXML("tests/wslpg_cert_autorizar_resp.xml")
+                wslpg.LoadTestXML("tests/xml/wslpg_cg_err_response.xml")
+            
             
             wslpg.AutorizarCertificacion()
             
