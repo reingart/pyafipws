@@ -18,20 +18,23 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07b"
+__version__ = "1.07e"
 
 
 import csv
 import json
 import os
 import shelve
+import socket
 import sqlite3
 import urllib2
 import zipfile
 from email.utils import formatdate
 import sys
+import warnings
 from utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
-                  inicializar_y_capturar_excepciones_simple, WebClient, norm
+                  inicializar_y_capturar_excepciones_simple, WebClient, norm, \
+                  exception_info
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
@@ -309,9 +312,29 @@ class PadronAFIP():
     @inicializar_y_capturar_excepciones_simple
     def Consultar(self, nro_doc):
         "Llama a la API pública de AFIP para obtener los datos de una persona"
-        if not self.client:
-            self.Conectar()
-        self.response = self.client("sr-padron", "v2", "persona", str(nro_doc))
+        n = 0
+        while n <= 4:
+            n += 1                          # reintentar 3 veces
+            try:
+                if not self.client:
+                    if DEBUG:
+                        warnings.warn("reconectando intento [%d]..." % n)
+                    self.Conectar()
+                self.response = self.client("sr-padron", "v2", "persona", str(nro_doc))
+            except Exception as e:
+                self.client = None
+                ex = exception_info()
+                self.Traceback = ex.get("tb", "")
+                try:
+                    self.Excepcion = norm(ex.get("msg", "").replace("\n", ""))
+                except:
+                    self.Excepcion = "<no disponible>"
+                if DEBUG:
+                    warnings.warn("Error %s [%d]" % (self.Excepcion, n))
+            else:
+                break
+        else:
+            return False
         result = json.loads(self.response)
         if result['success']:
             data = result['data']
@@ -475,6 +498,14 @@ if __name__ == "__main__":
                     # domicilio posiblemente esté en Latin1, normalizar
                     csv_writer.writerow([norm(getattr(padron, campo, ""))
                                          for campo in columnas])
+        elif "--reconex" in sys.argv:
+            padron.Conectar(trace="--trace" in sys.argv)
+            cuit = 20267565393
+            for i in range(10000):
+                t0 = time.time()
+                ok = padron.Consultar(cuit)
+                t1 = time.time()
+                print("%2.4f" % (t1-t0))
         else:
             cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
             # consultar un cuit:
