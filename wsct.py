@@ -62,7 +62,7 @@ class WSCT(BaseWS):
         'CbteNro', 'FechaCbte', 'PuntoVenta', 'ImpTotal']
         
     _reg_progid_ = "WSCT"
-    _reg_clsid_ = "{}"
+    _reg_clsid_ = "{5DE7917D-CE97-4C88-B6C7-DAF8CEB54E93}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -327,12 +327,13 @@ class WSCT(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarComprobante(self, tipo_cbte, punto_vta, cbte_nro, reproceso=False):
         "Recuperar los datos completos de un comprobante ya autorizado"
-        ret = self.client.consultarComprobanteTipoPVentaNro(
+        res = self.client.consultarComprobanteTipoPVentaNro(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             codigoTipoComprobante=tipo_cbte,
             numeroPuntoVenta=punto_vta,
             numeroComprobante=cbte_nro,
             )
+        ret = res.get('consultarComprobanteReturn', {})
         # diferencias si hay reproceso:
         difs = []
         # analizo el resultado:
@@ -344,34 +345,30 @@ class WSCT(BaseWS):
                     verificaciones = {
                         'codigoTipoComprobante': f['tipo_cbte'],
                         'numeroPuntoVenta': f['punto_vta'],
-                        'codigoConcepto': f['concepto'],
                         'codigoTipoDocumento': f['tipo_doc'],
                         'numeroDocumento': f['nro_doc'],
                         'numeroComprobante': f['cbt_desde'],
                         'numeroComprobante': f['cbt_hasta'],
                         'fechaEmision': f['fecha_cbte'],
+                        'idImpositivo': f['id_impositivo'],
+                        'codigoPais': f['cod_pais'], 'domicilioReceptor': f['domicilio'],
+                        'codigoRelacionEmisorReceptor': f['cod_relacion'],
                         'importeTotal': decimal.Decimal(str(f['imp_total'])),
                         'importeNoGravado': decimal.Decimal(str(f['imp_tot_conc'])),
                         'importeGravado': decimal.Decimal(str(f['imp_neto'])),
                         'importeExento': decimal.Decimal(str(f['imp_op_ex'])),
                         'importeOtrosTributos': f['tributos'] and decimal.Decimal(str(f['imp_trib'])) or None,
                         'importeSubtotal': f['imp_subtotal'],
-                        'fechaServicioDesde': f.get('fecha_serv_desde'),
-                        'fechaServicioHasta': f.get('fecha_serv_hasta'),
-                        'fechaVencimientoPago': f.get('fecha_venc_pago'),
+                        'importeReintegro': f['imp_reintegro'],
                         'codigoMoneda': f['moneda_id'],
                         'cotizacionMoneda': str(decimal.Decimal(str(f['moneda_ctz']))),
                         'arrayItems': [
                             {'item': {
-                                'unidadesMtx': it['u_mtx'],
-                                'codigoMtx': it['cod_mtx'],
-                                'codigo': it['codigo'],                
+                                'tipo': it['tipo'],
+                                'codigoTurismo': it['cod_tur'],
+                                'codigo': it['codigo'],
                                 'descripcion': it['ds'],
-                                'cantidad': it['qty'] and decimal.Decimal(str(it['qty'])),
-                                'codigoUnidadMedida': it['umed'],
-                                'precioUnitario': it['precio'] is not None and decimal.Decimal(str(it['precio'])) or None,
-                                #'importeBonificacion': it['bonif'],
-                                'codigoCondicionIVA': decimal.Decimal(str(it['iva_id'])),
+                                'codigoAlicuotaIVA': decimal.Decimal(str(it['iva_id'])),
                                 'importeIVA': decimal.Decimal(str(it['imp_iva'])) if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
                                 'importeItem': decimal.Decimal(str(it['imp_subtotal'])),
                                 }}
