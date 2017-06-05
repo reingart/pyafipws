@@ -87,8 +87,8 @@ class WSCT(BaseWS):
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        if 'arrayErrores' in ret:
-            errores = ret['arrayErrores']
+        for key in ('arrayErrores', 'arrayErroresFormato'):
+            errores = ret.get(key, [])
             for error in errores:
                 self.Errores.append("%s: %s" % (
                     error['codigoDescripcion']['codigo'],
@@ -105,36 +105,35 @@ class WSCT(BaseWS):
         self.AuthServerStatus = result['authserver']
         return True
 
-    def CrearFactura(self, concepto=None, tipo_doc=None, nro_doc=None, tipo_cbte=None, punto_vta=None,
-            cbt_desde=None, cbt_hasta=None, imp_total=None, imp_tot_conc=None, imp_neto=None,
-            imp_subtotal=None, imp_trib=None, imp_op_ex=None, fecha_cbte=None, fecha_venc_pago=None, 
-            fecha_serv_desde=None, fecha_serv_hasta=None, #--
-            moneda_id=None, moneda_ctz=None, observaciones=None, caea=None, fch_venc_cae=None,
+    def CrearFactura(self, tipo_doc=None, nro_doc=None, tipo_cbte=None, punto_vta=None,
+            nro_cbte=None, imp_total=None, imp_tot_conc=None, imp_neto=None,
+            imp_subtotal=None, imp_trib=None, imp_op_ex=None, imp_reintegro=None, 
+            fecha_cbte=None, id_impositivo="", cod_pais=None, domicilio="", cod_relacion="",
+            moneda_id=None, moneda_ctz=None, observaciones=None,
             **kwargs
             ):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
         fact = {'tipo_doc': tipo_doc, 'nro_doc':  nro_doc,
                 'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
-                'cbt_desde': cbt_desde, 'cbt_hasta': cbt_hasta,
+                'nro_cbte': nro_cbte,
+                'id_impositivo': id_impositivo,
+                'cod_pais': cod_pais,
+                'domicilio': domicilio,
+                'cod_relacion': cod_relacion,
                 'imp_total': imp_total, 'imp_tot_conc': imp_tot_conc,
                 'imp_neto': imp_neto,
                 'imp_subtotal': imp_subtotal, # 'imp_iva': imp_iva,
                 'imp_trib': imp_trib, 'imp_op_ex': imp_op_ex,
+                'imp_reintegro': imp_reintegro,
                 'fecha_cbte': fecha_cbte,
-                'fecha_venc_pago': fecha_venc_pago,
                 'moneda_id': moneda_id, 'moneda_ctz': moneda_ctz,
-                'concepto': concepto,
                 'observaciones': observaciones,
                 'cbtes_asoc': [],
                 'tributos': [],
                 'iva': [],
                 'detalles': [],
             }
-        if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
-        if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
-        if caea: fact['caea'] = caea
-        if fch_venc_cae: fact['fch_venc_cae'] = fch_venc_cae
         
         self.factura = fact
         return True
@@ -177,24 +176,21 @@ class WSCT(BaseWS):
         self.factura['iva'].append(iva)
         return True
 
-    def AgregarItem(self, u_mtx=None, cod_mtx=None, codigo=None, ds=None, qty=None, umed=None, precio=None, bonif=None, 
+    def AgregarItem(self, tipo=None, codigo_turismo=None,
+                    codigo=None, ds=None,
                     iva_id=None, imp_iva=None, imp_subtotal=None, **kwargs):
         "Agrego un item a una factura (interna)"
         ##ds = unicode(ds, "latin1") # convierto a latin1
         # Nota: no se calcula neto, iva, etc (deben venir calculados!)
-        umed = int(umed)
-        if umed == 99:
+        tipo = int(tipo)
+        if tipo == 99:
             imp_subtotal = -abs(float(imp_subtotal))
             imp_iva = -abs(float(imp_iva))
         item = {
-                'u_mtx': u_mtx,
-                'cod_mtx': cod_mtx,
-                'codigo': codigo,                
+                'tipo': tipo,
+                'cod_tur': codigo_turismo,
+                'codigo': codigo,
                 'ds': ds,
-                'qty': qty if umed!=99 else None,
-                'umed': umed,
-                'precio': precio if umed!=99 else None,
-                'bonif': bonif if umed!=99 else None,
                 'iva_id': iva_id,
                 'imp_iva': imp_iva,
                 'imp_subtotal': imp_subtotal,
@@ -217,15 +213,17 @@ class WSCT(BaseWS):
         fact = {
             'codigoTipoDocumento': f['tipo_doc'], 'numeroDocumento':f['nro_doc'],
             'codigoTipoComprobante': f['tipo_cbte'], 'numeroPuntoVenta': f['punto_vta'],
-            'numeroComprobante': f['cbt_desde'], 'numeroComprobante': f['cbt_hasta'],
+            'numeroComprobante': f['nro_cbte'],
             'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
+            'idImpositivo': f['id_impositivo'],
+            'codigoPais': f['cod_pais'], 'domicilioReceptor': f['domicilio'],
+            'codigoRelacionEmisorReceptor': f['cod_relacion'],
             'importeGravado': f['imp_neto'],
             'importeSubtotal': f['imp_subtotal'], # 'imp_iva': imp_iva,
             'importeOtrosTributos': f['tributos']  and f['imp_trib'] or None, 
-			'importeExento': f['imp_op_ex'],
+            'importeExento': f['imp_op_ex'], 'importeReintegro': f['imp_reintegro'],
             'fechaEmision': f['fecha_cbte'],
             'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f['moneda_ctz'],
-            'codigoConcepto': f['concepto'],
             'observaciones': f['observaciones'],
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
@@ -234,7 +232,6 @@ class WSCT(BaseWS):
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
                 'numeroComprobante': cbte_asoc['nro'],
-                'cuit': cbte_asoc.get('cuit'),
                 }} for cbte_asoc in f['cbtes_asoc']] or None,
             'arrayOtrosTributos': f['tributos'] and [ {'otroTributo': {
                 'codigo': tributo['tributo_id'], 
@@ -247,24 +244,21 @@ class WSCT(BaseWS):
                 'importe': iva['importe'],
                 }} for iva in f['iva']] or None,
             'arrayItems': f['detalles'] and [{'item':{
-                'unidadesMtx': it['u_mtx'],
-                'codigoMtx': it['cod_mtx'],
+                'tipo': it['tipo'],
+                'codigoTurismo': it['cod_tur'],
                 'codigo': it['codigo'],                
                 'descripcion': it['ds'],
-                'cantidad': it['qty'],
-                'codigoUnidadMedida': it['umed'],
-                'precioUnitario': it['precio'],
-                'importeBonificacion': it['bonif'],
-                'codigoCondicionIVA': it['iva_id'],
+                'codigoAlicuotaIVA': it['iva_id'],
                 'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
             }
                 
-        ret = self.client.autorizarComprobante(
+        res = self.client.autorizarComprobante(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-            comprobanteCAERequest = fact,
-            )
+            comprobanteRequest = fact,
+            )        
+        ret = res.get('autorizarComprobanteReturn', {})
         
         # Reprocesar en caso de error (recuperar CAE emitido anteriormente)
         if self.Reprocesar and ('arrayErrores' in ret):
@@ -284,8 +278,8 @@ class WSCT(BaseWS):
                     self.client.xml_request = xml_request
                     self.client.xml_response = xml_response
                     
-        self.Resultado = ret['resultado'] # u'A'
-        if ret['resultado'] in ("A", "O"):
+        self.Resultado = ret.get('resultado', "") # u'A'
+        if self.Resultado in ("A", "O"):
             cbteresp = ret['comprobanteResponse']
             self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
             self.CbteNro = cbteresp['numeroComprobante'] # 1L
@@ -320,9 +314,8 @@ class WSCT(BaseWS):
     def ConsultarUltimoComprobanteAutorizado(self, tipo_cbte, punto_vta):
         ret = self.client.consultarUltimoComprobanteAutorizado(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-            consultaUltimoComprobanteAutorizadoRequest = {
-                'codigoTipoComprobante': tipo_cbte,
-                'numeroPuntoVenta': punto_vta},
+            codigoTipoComprobante=tipo_cbte,
+            numeroPuntoVenta=punto_vta,
             )
         nro = ret.get('numeroComprobante')
         self.__analizar_errores(ret)
@@ -485,7 +478,6 @@ class WSCT(BaseWS):
         res = self.client.consultarTiposTributo(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
-        print res
         ret = res['consultarTiposTributoReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcionString']
                  for p in ret['arrayTiposTributo']]
@@ -508,7 +500,7 @@ class WSCT(BaseWS):
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
         ret = []
-        for p in res['arrayPuntosVenta']:
+        for p in res['consultarPuntosVentaReturn']['arrayPuntosVenta']:
             p = p['puntoVenta']
             if 'fechaBaja' not in p:
                 p['fechaBaja'] = ""
@@ -533,7 +525,7 @@ def main():
 
     cache = ""
     if "--prod" in sys.argv:
-        wsdl = "https://serviciosjava.afip.gob.ar/wsct/services/MTXCAService?wsdl"
+        wsdl = "https://serviciosjava.afip.gob.ar/wsct/CTService?wsdl"
     else:
         wsdl = WSDL
     wsct.Conectar(cache, wsdl, cacert="conf/afip_ca_info.crt")
@@ -548,38 +540,30 @@ def main():
     if "--prueba" in sys.argv:
         ##print wsct.client.help("autorizarComprobante").encode("latin1")
         try:
-            tipo_cbte = 1
+            tipo_cbte = 195
             punto_vta = 4000
-            cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+            cbte_nro = 0 # wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
-            cbte_nro = long(cbte_nro) + 1
+            nro_cbte = long(cbte_nro) + 1
             cbt_desde = cbte_nro; cbt_hasta = cbt_desde
+            id_impositivo = "Cliente del Exterior"
+            cod_relacion = 1      # Alojamiento Directo a Turista No Residente
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
-            fecha_cbte = fecha; fecha_venc_pago = fecha
-            # Fechas del período del servicio facturado (solo si concepto = 1?)
-            fecha_serv_desde = fecha; fecha_serv_hasta = fecha
+            imp_reintegro = 0
+            cod_pais = 203
+            domicilio = "Rua N.76 km 34.5 Alagoas"
+            fecha_cbte = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
-            if '--caea' in sys.argv:
-                periodo = fecha.replace("-", "")[:6]
-                orden = 1 if fecha[-2:] < 16 else 2
-                caea = wsct.ConsultarCAEA(periodo, orden)
-            else:
-                caea = None
 
-            wsct.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-                imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
-                fecha_serv_desde, fecha_serv_hasta, #--
-                moneda_id, moneda_ctz, obs, caea)
-            
-            #tipo = 19
-            #pto_vta = 2
-            #nro = 1234
-            #wsct.AgregarCmpAsoc(tipo, pto_vta, nro)
+            wsct.CrearFactura(tipo_doc, nro_doc, tipo_cbte, punto_vta,
+                              nro_cbte, imp_total, imp_tot_conc, imp_neto,
+                              imp_subtotal, imp_trib, imp_op_ex, imp_reintegro,
+                              fecha_cbte, id_impositivo, cod_pais, domicilio,
+                              cod_relacion, moneda_id, moneda_ctz, obs)            
             
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
@@ -593,39 +577,25 @@ def main():
             importe = 21
             wsct.AgregarIva(iva_id, base_imp, importe)
             
-            u_mtx = 123456
-            cod_mtx = 1234567890123
-            codigo = "P0001"
+            tipo = 0    # Item General
+            cod_tur = 1 # Servicio de hotelería - alojamiento sin desayuno
+            codigo = "T0001"
             ds = "Descripcion del producto P0001"
-            qty = 2.00
-            umed = 7
-            precio = 100.00
-            bonif = 0.00
             iva_id = 5
             imp_iva = 42.00
             imp_subtotal = 242.00
-            wsct.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
-                        iva_id, imp_iva, imp_subtotal)
-            
-            if not "--caea" in sys.argv:
-                # ejemplo descuento (sin precio unitario)
-                wsct.AgregarItem(None, None, None, 'bonificacion', 
-                                    None, 99, None, None, 5, -21, -121)
-                # ejemplo item solo descripción:                
-                #wsct.AgregarItem(u_mtx, cod_mtx, codigo, ds, 1, umed, 
-                #                    0, 0, iva_id, 0, 0)
+            wsct.AgregarItem(tipo, cod_tur, codigo, ds, 
+                             iva_id, imp_iva, imp_subtotal)
             
             print wsct.factura
             
-            if '--caea' in sys.argv:
-                wsct.InformarComprobanteCAEA()
-            else:
-                wsct.AutorizarComprobante()
+            wsct.AutorizarComprobante()
 
             print "Resultado", wsct.Resultado
             print "CAE", wsct.CAE
             print "Vencimiento", wsct.Vencimiento
             print "Reproceso", wsct.Reproceso
+            print "Errores", wsct.ErrMsg
             
             print wsct.Excepcion
             print wsct.ErrMsg
@@ -651,6 +621,8 @@ def main():
             print wsct.ErrCode
             print wsct.ErrMsg
 
+    if "--ptosventa" in sys.argv:
+        print wsct.ConsultarPuntosVenta()
 
     if "--parametros" in sys.argv:
         print wsct.ConsultarTiposComprobante()
