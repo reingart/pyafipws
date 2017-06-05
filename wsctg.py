@@ -20,7 +20,7 @@ __license__ = "LGPL 3.0"
 __version__ = "1.14a"
 
 LICENCIA = """
-wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
+wsctg.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
 Copyright (C) 2014-2015 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CodigoTrazabilidadGranos
 
@@ -138,7 +138,7 @@ ENCABEZADO = [
 
 
 
-class WSCTGv2(BaseWS):
+class WSCTG(BaseWS):
     "Interfaz para el WebService de Código de Trazabilidad de Granos (Version 3)"    
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
@@ -169,8 +169,8 @@ class WSCTGv2(BaseWS):
         'Patente', 'PesoNeto', 'FechaVencimiento',
         'UsuarioSolicitante', 'UsuarioReal', 'CtcCodigo', 'Turno',
         ]
-    _reg_progid_ = "WSCTGv2"
-    _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
+    _reg_progid_ = "WSCTG"
+    _reg_clsid_ = "{4383E947-57C4-47C5-8419-85221580CB48}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -773,7 +773,11 @@ def escribir_archivo(cols, items, nombre_archivo, agrega=False):
     else:
         raise RuntimeError("Extension de archivo desconocida: %s" % ext)
     archivo.close()
-    
+
+
+class WSCTGv2(BaseWS):
+    _reg_progid_ = "WSCTGv2"
+    _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -784,7 +788,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = WSCTGv2.InstallDir = get_install_dir()
+INSTALL_DIR = WSCTG.InstallDir = WSCTGv2.InstallDir = get_install_dir()
 
 
 if __name__ == '__main__':
@@ -807,6 +811,8 @@ if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
+        win32com.server.register.UseCommandLine(WSCTG)
+        # Compatibilidad hacia atrás:
         win32com.server.register.UseCommandLine(WSCTGv2)
         sys.exit(0)
 
@@ -863,7 +869,7 @@ if __name__ == '__main__':
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
 
         # cliente soap del web service
-        wsctg = WSCTGv2()
+        wsctg = WSCTG()
         wsctg.Conectar(wsdl=wsctg_url)
         wsctg.SetTicketAcceso(ta)
         wsctg.Cuit = CUIT
