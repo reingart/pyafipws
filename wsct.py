@@ -106,7 +106,7 @@ class WSCT(BaseWS):
         return True
 
     def CrearFactura(self, tipo_doc=None, nro_doc=None, tipo_cbte=None, punto_vta=None,
-            nro_cbte=None, imp_total=None, imp_tot_conc=None, imp_neto=None,
+            cbte_nro=None, imp_total=None, imp_tot_conc=None, imp_neto=None,
             imp_subtotal=None, imp_trib=None, imp_op_ex=None, imp_reintegro=None, 
             fecha_cbte=None, id_impositivo="", cod_pais=None, domicilio="", cod_relacion="",
             moneda_id=None, moneda_ctz=None, observaciones=None,
@@ -116,7 +116,7 @@ class WSCT(BaseWS):
         # Creo una factura electronica de exportación 
         fact = {'tipo_doc': tipo_doc, 'nro_doc':  nro_doc,
                 'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
-                'nro_cbte': nro_cbte,
+                'cbte_nro': cbte_nro,
                 'id_impositivo': id_impositivo,
                 'cod_pais': cod_pais,
                 'domicilio': domicilio,
@@ -214,7 +214,7 @@ class WSCT(BaseWS):
             'codigoTipoDocumento': f['tipo_doc'], 'numeroDocumento':f['nro_doc'],
             'codigoTipoComprobante': f['tipo_cbte'], 'numeroPuntoVenta': f['punto_vta'],
             'codigoTipoAutorizacion': 'E',
-            'numeroComprobante': f['nro_cbte'],
+            'numeroComprobante': f['cbte_nro'],
             'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
             'idImpositivo': f['id_impositivo'],
             'codigoPais': f['cod_pais'], 'domicilioReceptor': f['domicilio'],
@@ -545,7 +545,7 @@ def main():
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "50000000059"
-            nro_cbte = long(cbte_nro) + 1
+            cbte_nro = long(cbte_nro) + 1
             cbt_desde = cbte_nro; cbt_hasta = cbt_desde
             id_impositivo = 9     # "Cliente del Exterior"
             cod_relacion = 3      # Alojamiento Directo a Turista No Residente
@@ -559,7 +559,7 @@ def main():
             obs = "Observaciones Comerciales, libre"
 
             wsct.CrearFactura(tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                              nro_cbte, imp_total, imp_tot_conc, imp_neto,
+                              cbte_nro, imp_total, imp_tot_conc, imp_neto,
                               imp_subtotal, imp_trib, imp_op_ex, imp_reintegro,
                               fecha_cbte, id_impositivo, cod_pais, domicilio,
                               cod_relacion, moneda_id, moneda_ctz, obs)            
