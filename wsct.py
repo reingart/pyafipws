@@ -26,7 +26,7 @@ import os
 import sys
 from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
-HOMO = False
+HOMO = True
 LANZAR_EXCEPCIONES = True
 WSDL = "https://fwshomo.afip.gov.ar/wsct/CTService?wsdl"
 
@@ -213,6 +213,7 @@ class WSCT(BaseWS):
         fact = {
             'codigoTipoDocumento': f['tipo_doc'], 'numeroDocumento':f['nro_doc'],
             'codigoTipoComprobante': f['tipo_cbte'], 'numeroPuntoVenta': f['punto_vta'],
+            'codigoTipoAutorizacion': 'E',
             'numeroComprobante': f['nro_cbte'],
             'importeTotal': f['imp_total'], 'importeNoGravado': f['imp_tot_conc'],
             'idImpositivo': f['id_impositivo'],
@@ -497,7 +498,8 @@ class WSCT(BaseWS):
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
         ret = []
-        for p in res['consultarPuntosVentaReturn']['arrayPuntosVenta']:
+        self.__analizar_errores(ret)
+        for p in res['consultarPuntosVentaReturn'].get("arrayPuntosVenta", {}):
             p = p['puntoVenta']
             if 'fechaBaja' not in p:
                 p['fechaBaja'] = ""
@@ -542,14 +544,14 @@ def main():
             cbte_nro = 0 # wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
-            tipo_doc = 80; nro_doc = "30000000007"
+            tipo_doc = 80; nro_doc = "50000000059"
             nro_cbte = long(cbte_nro) + 1
             cbt_desde = cbte_nro; cbt_hasta = cbt_desde
-            id_impositivo = "Cliente del Exterior"
-            cod_relacion = 1      # Alojamiento Directo a Turista No Residente
-            imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
+            id_impositivo = 9     # "Cliente del Exterior"
+            cod_relacion = 3      # Alojamiento Directo a Turista No Residente
+            imp_total = "101.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
-            imp_reintegro = 0
+            imp_reintegro = -21.00      # validación AFIP 346
             cod_pais = 203
             domicilio = "Rua N.76 km 34.5 Alagoas"
             fecha_cbte = fecha
@@ -579,8 +581,8 @@ def main():
             codigo = "T0001"
             ds = "Descripcion del producto P0001"
             iva_id = 5
-            imp_iva = 42.00
-            imp_subtotal = 242.00
+            imp_iva = 21.00
+            imp_subtotal = 121.00
             wsct.AgregarItem(tipo, cod_tur, codigo, ds, 
                              iva_id, imp_iva, imp_subtotal)
             
