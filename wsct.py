@@ -43,7 +43,8 @@ class WSCT(BaseWS):
                         'ConsultarTiposComprobante', 'ConsultarTiposDocumento',
                         'consultarTiposIVA', 'ConsultarCondicionesIVA',
                         'ConsultarMonedas', 'ConsultarCotizacion',
-                        'ConsultarTiposItem', 'ConsultarTiposTributo',
+                        'ConsultarTiposItem', 'ConsultarCodigosItemTurismo',
+                        'ConsultarTiposTributo',
                         'ConsultarCUITsPaises', 'ConsultarPaises',
                         'ConsultarPuntosVenta',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
@@ -468,6 +469,16 @@ class WSCT(BaseWS):
                  for p in ret['arrayTiposItem']]
 
     @inicializar_y_capturar_excepciones
+    def ConsultarCodigosItemTurismo(self):
+        "Este método permite consultar los códigos de los ítems de Turismo"
+        res = self.client.consultarCodigosItemTurismo(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        ret = res['consultarCodigosItemTurismoReturn']
+        return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
+                 for p in ret['arrayCodigosItem']]
+
+    @inicializar_y_capturar_excepciones
     def ConsultarTiposTributo(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         res = self.client.consultarTiposTributo(
@@ -672,6 +683,7 @@ def main():
         print wsct.ConsultarCondicionesIVA()
         print wsct.ConsultarMonedas()
         print wsct.ConsultarTiposItem()
+        print wsct.ConsultarCodigosItemTurismo()
         print wsct.ConsultarTiposTributo()
         print "\n".join(wsct.ConsultarPaises())
         print "\n".join(wsct.ConsultarCUITsPaises())
