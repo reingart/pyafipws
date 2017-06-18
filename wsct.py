@@ -18,7 +18,7 @@ Resolución Conjunta General 3971 y Resolución 566/2016.
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.00a"
+__version__ = "1.01a"
 
 import datetime
 import decimal
@@ -40,14 +40,11 @@ class WSCT(BaseWS):
                         'ConsultarUltimoComprobanteAutorizado', 'CompUltimoAutorizado', 
                         'ConsultarPtosVtaCAEANoInformados',
                         'ConsultarComprobante',
-                        'ConsultarTiposComprobante', 
-                        'ConsultarTiposDocumento',
-                        'consultarTiposIVA',
-                        'ConsultarCondicionesIVA',
-                        'ConsultarMonedas',
-                        'ConsultarTiposItem',
-                        'ConsultarTiposTributo',
-                        'ConsultarCotizacion',
+                        'ConsultarTiposComprobante', 'ConsultarTiposDocumento',
+                        'consultarTiposIVA', 'ConsultarCondicionesIVA',
+                        'ConsultarMonedas', 'ConsultarCotizacion',
+                        'ConsultarTiposItem', 'ConsultarTiposTributo',
+                        'ConsultarCUITsPaises', 'ConsultarPaises',
                         'ConsultarPuntosVenta',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
@@ -506,6 +503,51 @@ class WSCT(BaseWS):
             ret.append(fmt % p if fmt else p)
         return ret
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarPaises(self, sep="|"):
+        "Recuperador de valores referenciales de códigos de Países"
+        ret = self.client.consultarPaises(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit, })
+        result = ret['consultarPaisesReturn']
+        self.__analizar_errores(result)
+     
+        ret = []
+        for u in result['arrayPaises']:
+            u = u['codigoDescripcionString']
+            try:
+                r = {'codigo': u.get('codigo'), 'ds': u.get('descripcion'), }
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarCUITsPaises(self, sep="|"):
+        "Recuperar lista de valores referenciales de CUIT de Países"
+        ret = self.client.consultarCUITsPaises(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit, })
+        result = ret['consultarCUITsPaisesReturn']
+        self.__analizar_errores(result)
+     
+        ret = []
+        for u in result['arrayCuitPaises']:
+            u = u['codigoDescripcionString']
+            try:
+                r = {'codigo': u.get('codigo'), 'ds': u.get('descripcion'), }
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
 
 
 def main():
@@ -631,6 +673,8 @@ def main():
         print wsct.ConsultarMonedas()
         print wsct.ConsultarTiposItem()
         print wsct.ConsultarTiposTributo()
+        print "\n".join(wsct.ConsultarPaises())
+        print "\n".join(wsct.ConsultarCUITsPaises())
 
     if "--cotizacion" in sys.argv:
         print wsct.ConsultarCotizacionMoneda('DOL')
