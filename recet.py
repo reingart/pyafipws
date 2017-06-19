@@ -49,7 +49,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 
 # definición del formato del archivo de intercambio:
 
-TIPOS_REG = '0', '1', '2', '3', '4', '5'
+TIPOS_REG = '0', '1', '2', '3', '4', '5', '6'
 ENCABEZADO = [
     ('tipo_reg', 1, N), # 0: encabezado
     ('fecha_cbte', 10, A),
@@ -119,6 +119,15 @@ CMP_ASOC = [
     ('cuit', 11, N),
     ]
 
+FORMA_PAGO = [
+    ('tipo_reg', 1, N),     # 6: comprobante asociado
+    ('codigo', 3, N),
+    ('tipo_tarjeta', 2, N),
+    ('numero_tarjeta', 6, N),
+    ('swift_code', 11, N),
+    ('tipo_cuenta', 2, N),
+    ('numero_cuenta', 20, N),
+    ]
 
 
 def autorizar(ws, entrada, salida, informar_caea=False):
@@ -127,6 +136,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     cbtasocs = []
     encabezado = []
     detalles = []
+    formas_pago = []
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs), ('Detalles', DETALLE, detalles)]
         dic = leer_dbf(formatos, conf_dbf)
@@ -153,6 +163,12 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 detalles.append(detalle)
                 if 'imp_subtotal' not in detalle:
                     detalle['imp_subtotal'] = detalle['importe']
+            elif str(linea[0])==TIPOS_REG[5]:
+                fp = leer(linea, FORMA_PAGO)
+                formas_pago.append(fp)
+                for campo in fp.keys():
+                    if not fp[campo]:
+                        fp[campo] = None
             else:
                 print "Tipo de registro incorrecto:", linea[0]
        
@@ -174,6 +190,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         ws.AgregarIva(**iva)
     for cbtasoc in cbtasocs:
         ws.AgregarCmpAsoc(**cbtasoc)
+    for fp in formas_pago:
+        ws.AgregarFormaPago(**fp)
 
     if DEBUG:
         print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
@@ -217,9 +235,19 @@ def escribir_factura(dic, archivo, agrega=False):
             it['tipo_reg'] = TIPOS_REG[4]
             it['importe'] = it['imp_subtotal']
             archivo.write(escribir(it, DETALLE))
-            
+    if 'forma_pago' in dic:
+        for it in dic['fp']:
+            it['tipo_reg'] = TIPOS_REG[5]
+            archivo.write(escribir(it, FORMA_PAGO))
+        
     if '/dbf' in sys.argv:
-        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic.get('tributos', [])), ('Iva', IVA, dic.get('iva', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])), ('Detalles', DETALLE, dic.get('detalles', []))]
+        formatos = [('Encabezado', ENCABEZADO, [dic]), 
+                    ('Tributo', TRIBUTO, dic.get('tributos', [])), 
+                    ('Iva', IVA, dic.get('iva', [])), 
+                    ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])),
+                    ('Detalles', DETALLE, dic.get('detalles', [])),
+                    ('Forma Pago', FORMA_PAGO, dic.get('formas_pago', [])),
+                   ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
 def depurar_xml(client):
@@ -343,7 +371,7 @@ if __name__ == "__main__":
             # generar el archivo de prueba para la próxima factura
             tipo_cbte = 195
             punto_vta = 4000
-            cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+            cbte_nro = ws.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "50000000059"
@@ -387,6 +415,15 @@ if __name__ == "__main__":
             ws.AgregarItem(tipo, cod_tur, codigo, ds, 
                              iva_id, imp_iva, imp_subtotal)
             
+            codigo = 68             # tarjeta de crédito
+            tipo_tarjeta = 99       # otra (ver tabla de parámetros)
+            numero_tarjeta = "999999"
+            swift_code = None
+            tipo_cuenta = None
+            numero_cuenta = None
+            ws.AgregarFormaPago(codigo, tipo_tarjeta, numero_tarjeta, 
+                                  swift_code, tipo_cuenta, numero_cuenta)
+
             f_entrada = open(entrada,"w")
             dic = ws.factura
             escribir_factura(dic, f_entrada, agrega=True)            
