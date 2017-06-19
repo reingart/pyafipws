@@ -46,6 +46,8 @@ class WSCT(BaseWS):
                         'ConsultarTiposItem', 'ConsultarCodigosItemTurismo',
                         'ConsultarTiposTributo',
                         'ConsultarCUITsPaises', 'ConsultarPaises',
+                        'ConsultarTiposDatosAdicionales', 'ConsultarFomasPago', 
+                        'ConsultarTiposTarjeta', 'ConsultarTiposCuenta',
                         'ConsultarPuntosVenta',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
@@ -560,6 +562,67 @@ class WSCT(BaseWS):
         else:
             return ret
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarTiposDatosAdicionales(self, sep="|"):
+        "Recuperar lista de los datos adicionales a informar según RG."
+        ret = self.client.consultarTiposDatosAdicionales(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit, })
+        result = ret['consultarTiposDatosAdicionalesReturn']
+        self.__analizar_errores(result)
+        ret = []
+        for u in result['arrayTiposDatosAdicionales']:
+            u = u['codigoDescripcionString']
+            r = {'codigo': u.get('codigo'), 'ds': u.get('descripcion'), }
+            ret.append(r)
+        return [("\t%(codigo)s\t%(ds)s\t"
+                  % it).replace("\t", sep) for it in ret] if sep else ret
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarFomasPago(self, sep="|"):
+        "Recuperar lista de las formas de pago"
+        ret = self.client.consultarFormasPago(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit, })
+        result = ret['consultarFormasPagoReturn']
+        self.__analizar_errores(result)
+        ret = []
+        for u in result['arrayFormasPago']:
+            u = u['codigoDescripcion']
+            r = {'codigo': u.get('codigo'), 'ds': u.get('descripcion'), }
+            ret.append(r)
+        return [("\t%(codigo)s\t%(ds)s\t"
+                  % it).replace("\t", sep) for it in ret] if sep else ret
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarTiposTarjeta(self, forma_pago=None, sep="|"):
+        "Recuperar lista de los tipos de tarjeta habilitados"
+        ret = self.client.consultarTiposTarjeta(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit, },
+            formaPago=forma_pago)
+        result = ret['consultarTiposTarjetaReturn']
+        self.__analizar_errores(result)
+        ret = []
+        for u in result['arrayTiposTarjeta']:
+            u = u['codigoDescripcion']
+            r = {'codigo': u.get('codigo'), 'ds': u.get('descripcion'), }
+            ret.append(r)
+        return [("\t%(codigo)s\t%(ds)s\t"
+                  % it).replace("\t", sep) for it in ret] if sep else ret
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarTiposCuenta(self, sep="|"):
+        "Recuperar lista de los tipos de tarjeta habilitados"
+        ret = self.client.consultarTiposCuenta(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit, })
+        result = ret['consultarTiposCuentaReturn']
+        self.__analizar_errores(result)
+        ret = []
+        for u in result['arrayTiposCuenta']:
+            u = u['codigoDescripcion']
+            r = {'codigo': u.get('codigo'), 'ds': u.get('descripcion'), }
+            ret.append(r)
+        return [("\t%(codigo)s\t%(ds)s\t"
+                  % it).replace("\t", sep) for it in ret] if sep else ret
+
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -594,7 +657,7 @@ def main():
         try:
             tipo_cbte = 195
             punto_vta = 4000
-            cbte_nro = 0 # wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+            cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "50000000059"
@@ -677,6 +740,7 @@ def main():
         print wsct.ConsultarPuntosVenta()
 
     if "--parametros" in sys.argv:
+        print wsct.ConsultarTiposDatosAdicionales()
         print wsct.ConsultarTiposComprobante()
         print wsct.ConsultarTiposDocumento()
         print wsct.ConsultarTiposIVA()
@@ -685,6 +749,10 @@ def main():
         print wsct.ConsultarTiposItem()
         print wsct.ConsultarCodigosItemTurismo()
         print wsct.ConsultarTiposTributo()
+        print wsct.ConsultarFomasPago()
+        for forma_pago in wsct.ConsultarFomasPago(sep=None)[:2]:
+            print wsct.ConsultarTiposTarjeta(forma_pago["codigo"])
+        print wsct.ConsultarTiposCuenta()
         print "\n".join(wsct.ConsultarPaises())
         print "\n".join(wsct.ConsultarCUITsPaises())
 
