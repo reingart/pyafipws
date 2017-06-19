@@ -49,82 +49,75 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 
 # definición del formato del archivo de intercambio:
 
-if not '--pyfepdf' in sys.argv:
-    TIPOS_REG = '0', '1', '2', '3', '4', '5'
-    ENCABEZADO = [
-        ('tipo_reg', 1, N), # 0: encabezado
-        ('fecha_cbte', 10, A),
-        ('tipo_cbte', 3, N),
-        ('punto_vta', 4, N),
-        ('cbte_nro', 8, N), 
-        ('tipo_doc', 2, N), # 80
-        ('nro_doc', 11, N), # 50000000016    
-        ('imp_total', 15, I, 2), 
-        ('imp_tot_conc', 15, I, 2), 
-        ('imp_neto', 15, I, 2), 
-        ('imp_subtotal', 15, I, 2), 
-        ('imp_trib', 15, I, 2), 
-        ('imp_op_ex', 15, I, 2), 
-        ('imp_reintegro', 15, I, 2), 
-        ('moneda_id', 3, A),
-        ('moneda_ctz', 10, I, 6), #10,6
-        ('fecha_venc_pago', 10, A),   # opcional solo conceptos 2 y 3
-        ('id_impositivo', 2, N),
-        ('cod_relacion', 2, N),
-        ('cod_pais', 3, N), # 203
-        ('domicilio', 300, A), # 'Rua 76 km 34.5 Alagoas'
-        ('cae', 14, A),
-        ('fch_venc_cae', 10, A),
-        ('resultado', 1, A), 
-        ('motivos_obs', 1000, A),
-        ('err_code', 6, A),
-        ('err_msg', 1000, A),
-        ('reproceso', 1, A),
-        ('emision_tipo', 4, A),
-        ('observaciones', 1000, A),  # observaciones (opcional)
-        ]
+TIPOS_REG = '0', '1', '2', '3', '4', '5'
+ENCABEZADO = [
+    ('tipo_reg', 1, N), # 0: encabezado
+    ('fecha_cbte', 10, A),
+    ('tipo_cbte', 3, N),
+    ('punto_vta', 4, N),
+    ('cbte_nro', 8, N), 
+    ('tipo_doc', 2, N), # 80
+    ('nro_doc', 11, N), # 50000000016    
+    ('imp_total', 15, I, 2), 
+    ('imp_tot_conc', 15, I, 2), 
+    ('imp_neto', 15, I, 2), 
+    ('imp_subtotal', 15, I, 2), 
+    ('imp_trib', 15, I, 2), 
+    ('imp_op_ex', 15, I, 2), 
+    ('imp_reintegro', 15, I, 2), 
+    ('moneda_id', 3, A),
+    ('moneda_ctz', 10, I, 6), #10,6
+    ('fecha_venc_pago', 10, A),   # opcional solo conceptos 2 y 3
+    ('id_impositivo', 2, N),
+    ('cod_relacion', 2, N),
+    ('cod_pais', 3, N), # 203
+    ('domicilio', 300, A), # 'Rua 76 km 34.5 Alagoas'
+    ('cae', 14, A),
+    ('fch_venc_cae', 10, A),
+    ('resultado', 1, A), 
+    ('motivos_obs', 1000, A),
+    ('err_code', 6, A),
+    ('err_msg', 1000, A),
+    ('reproceso', 1, A),
+    ('emision_tipo', 4, A),
+    ('observaciones', 1000, A),  # observaciones (opcional)
+    ]
 
-    DETALLE = [
-        ('tipo_reg', 1, N),     # 4: detalle item
-        ('tipo', 3, N),
-        ('cod_tur', 30, A),
-        ('codigo', 30, A),
-        ('iva_id', 3, N),
-        ('imp_iva', 15, I, 2),
-        ('imp_subtotal', 15, I, 2),
-        ('ds', 4000, A),
-        ]
+DETALLE = [
+    ('tipo_reg', 1, N),     # 4: detalle item
+    ('tipo', 3, N),
+    ('cod_tur', 30, A),
+    ('codigo', 30, A),
+    ('iva_id', 3, N),
+    ('imp_iva', 15, I, 2),
+    ('imp_subtotal', 15, I, 2),
+    ('ds', 4000, A),
+    ]
 
-    TRIBUTO = [
-        ('tipo_reg', 1, N),     # 1: tributo
-        ('tributo_id', 3, A),   # código de otro tributo
-        ('desc', 100, A),       # descripción
-        ('base_imp', 15, I, 2), 
-        ('alic', 15, I, 2),     # no se usa...
-        ('importe', 15, I, 2),  
-        ]
+TRIBUTO = [
+    ('tipo_reg', 1, N),     # 1: tributo
+    ('tributo_id', 3, A),   # código de otro tributo
+    ('desc', 100, A),       # descripción
+    ('base_imp', 15, I, 2), 
+    ('alic', 15, I, 2),     # no se usa...
+    ('importe', 15, I, 2),  
+    ]
 
-    IVA = [
-        ('tipo_reg', 1, N),     # 2: IVA
-        ('iva_id', 3, A),       # código de alícuota
-        ('base_imp', 15, I, 2), # no se usa... 
-        ('importe', 15, I, 2),  
-        ]
+IVA = [
+    ('tipo_reg', 1, N),     # 2: IVA
+    ('iva_id', 3, A),       # código de alícuota
+    ('base_imp', 15, I, 2), # no se usa... 
+    ('importe', 15, I, 2),  
+    ]
 
-    CMP_ASOC = [
-        ('tipo_reg', 1, N),     # 3: comprobante asociado
-        ('tipo', 3, N),         
-        ('pto_vta', 4, N),
-        ('nro', 8, N), 
-        ('cuit', 11, N),
-        ('cuit', 11, N),
-        ]
-
-else:
-    print "!" * 78
-    print "importando formato segun pyfepdf"
-    from formatos.formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
-    TIPOS_REG = '0', '5', '4', '3', '1'
+CMP_ASOC = [
+    ('tipo_reg', 1, N),     # 3: comprobante asociado
+    ('tipo', 3, N),         
+    ('pto_vta', 4, N),
+    ('nro', 8, N), 
+    ('cuit', 11, N),
+    ('cuit', 11, N),
+    ]
 
 
 
@@ -342,19 +335,15 @@ if __name__ == "__main__":
         ws.SetTicketAcceso(ta)
                 
         if '/puntosventa' in sys.argv:
-            print "Consultando puntos de venta CAE..."
-            print '\n'.join(ws.ConsultarPuntosVentaCAE())
-            print "Consultando puntos de venta CAEA..."
-            if "--testing" in sys.argv:
-                ws.LoadTestXML("tests/wsmtx_ptosvta_caea_resp.xml")
-            print '\n'.join(ws.ConsultarPuntosVentaCAEA())
+            print "Consultando puntos de venta ..."
+            print '\n'.join(ws.ConsultarPuntosVenta())
             sys.exit(0)
             
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             tipo_cbte = 195
             punto_vta = 4000
-            cbte_nro = 0 # wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+            cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "50000000059"
@@ -454,117 +443,6 @@ if __name__ == "__main__":
                               'emision_tipo': ws.EmisionTipo, 
                               }, open(salida,"w"))
 
-            sys.exit(0)
-
-        if '/solicitarcaea' in sys.argv:
-            if len(sys.argv) > sys.argv.index("/solicitarcaea")+1:
-                periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
-                orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
-            else:
-                periodo = raw_input("Periodo (año-mes, ej 201108): ")
-                orden = raw_input("Orden (quincena, 1 u 2): ")
-                
-            if DEBUG: 
-                print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
-            
-            caea = ws.SolicitarCAEA(periodo, orden)
-            print "CAEA:", caea
-
-            if ws.Errores:
-                print "Errores:"
-                for error in ws.Errores:
-                    print error
-
-            depurar_xml(ws.client)
-
-            if not caea:
-                if DEBUG: 
-                    print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
-                caea = ws.ConsultarCAEA(periodo, orden)
-                print "CAEA:", caea
-                
-            if DEBUG:
-                print "Periodo:", ws.Periodo 
-                print "Orden:", ws.Orden 
-                print "FchVigDesde:", ws.FchVigDesde 
-                print "FchVigHasta:", ws.FchVigHasta 
-                print "FchTopeInf:", ws.FchTopeInf 
-                print "FchProceso:", ws.FchProceso
-
-            escribir_factura({'cae': caea, 
-                              'emision_tipo': "CAEA", 
-                             }, open(salida,"w"))
-                              
-            sys.exit(0)
-
-        if '/consultarcaea' in sys.argv:
-            periodo = raw_input("Periodo: ")
-            orden = raw_input("Orden: ")
-
-            if DEBUG: 
-                print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
-            
-            caea = ws.ConsultarCAEA(periodo, orden)
-            print "CAEA:", caea
-
-            if ws.Errores:
-                print "Errores:"
-                for error in ws.Errores:
-                    print error
-                
-            if DEBUG:
-                print "Periodo:", ws.Periodo 
-                print "Orden:", ws.Orden 
-                print "FchVigDesde:", ws.FchVigDesde 
-                print "FchVigHasta:", ws.FchVigHasta 
-                print "FchTopeInf:", ws.FchTopeInf
-                print "FchProceso:", ws.FchProceso
-            sys.exit(0)
-
-            
-        if '/informarcaeanoutilizado' in sys.argv:
-            caea = raw_input("CAEA: ")
-            if DEBUG: 
-                print "Informando CAEA no utilizado: %s" % (caea, )
-            ok = ws.InformarCAEANoUtilizado(caea)
-            print "Resultado:", ok
-            if ws.Errores:
-                print "Errores:"
-                for error in ws.Errores:
-                    print error
-            sys.exit(0)
-
-        if '/informarcaeanoutilizadoptovta' in sys.argv:
-            caea = raw_input("CAEA: ")
-            pto_vta = raw_input("Punto de Venta: ")
-            if DEBUG: 
-                print "Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta)
-            ok = ws.InformarCAEANoUtilizadoPtoVta(caea, pto_vta)
-            print "Resultado:", ok
-            if ws.Errores:
-                print "Errores:"
-                for error in ws.Errores:
-                    print error
-            sys.exit(0)
-
-        if '/consultarptosvtacaeanoinformados' in sys.argv:
-            caea = raw_input("CAEA: ")
-            if DEBUG: 
-                print "Consultando PtosVta CAEA: %s" % (caea)
-            ptos_vta = ws.ConsultarPtosVtaCAEANoInformados(caea)
-            print "Resultado:", '\n'.join(ptos_vta)
-            if ws.Errores:
-                print "Errores:"
-                for error in ws.Errores:
-                    print error
-            sys.exit(0)
-            
-        if '/ptosventa' in sys.argv:
-
-            print "=== Puntos de Venta CAE ==="
-            print u'\n'.join(ws.ConsultarPuntosVentaCAE())
-            print "=== Puntos de Venta CAEA ==="
-            print u'\n'.join(ws.ConsultarPuntosVentaCAEA())
             sys.exit(0)
 
         f_entrada = f_salida = None
