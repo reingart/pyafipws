@@ -34,7 +34,8 @@ WSDL = "https://fwshomo.afip.gov.ar/wsct/CTService?wsdl"
 class WSCT(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Comprobantes Turismo"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
-                        'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 
+                        'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem',
+                        'AgregarDatoAdicional',
                         'AutorizarComprobante', 'CAESolicitar', 
                         'InformarCAEANoUtilizado', 'InformarCAEANoUtilizadoPtoVta',
                         'ConsultarUltimoComprobanteAutorizado', 'CompUltimoAutorizado', 
@@ -133,6 +134,7 @@ class WSCT(BaseWS):
                 'tributos': [],
                 'iva': [],
                 'detalles': [],
+                'adicionales': [],
             }
         
         self.factura = fact
@@ -198,6 +200,13 @@ class WSCT(BaseWS):
         self.factura['detalles'].append(item)
         return True
 
+    def AgregarDatoAdicional(self, t, c1, c2, c3, c4, c5, c6, **kwarg):
+        "Agrego un tipo de dato adicional a una factura (interna)"
+        op = {'t': t, 
+              'c1': c1, 'c2': c2, 'c3': c3, 'c4': c4, 'c5': c5, 'c6': c6,}
+        self.factura['adicionales'].append(op)
+        return True
+
     def EstablecerCampoItem(self, campo, valor):
         if self.factura['detalles'] and campo in self.factura['detalles'][-1]:
             self.factura['detalles'][-1][campo] = valor
@@ -253,6 +262,8 @@ class WSCT(BaseWS):
                 'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
+            'arrayDatosAdicionales': [
+                {'tipoDatoAdicional': ta} for ta in f['adicionales']] or None,
             }
                 
         res = self.client.autorizarComprobante(
