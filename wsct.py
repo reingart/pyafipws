@@ -690,10 +690,8 @@ def main():
             punto_vta = 4000
             cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
-            concepto = 3
             tipo_doc = 80; nro_doc = "50000000059"
             cbte_nro = long(cbte_nro) + 1
-            cbt_desde = cbte_nro; cbt_hasta = cbt_desde
             id_impositivo = 9     # "Cliente del Exterior"
             cod_relacion = 3      # Alojamiento Directo a Turista No Residente
             imp_total = "101.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
