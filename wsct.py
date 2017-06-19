@@ -35,7 +35,7 @@ class WSCT(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Comprobantes Turismo"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem',
-                        'AgregarDatoAdicional',
+                        'AgregarDatoAdicional', 'AgregarFormaPago',
                         'AutorizarComprobante', 'CAESolicitar', 
                         'InformarCAEANoUtilizado', 'InformarCAEANoUtilizadoPtoVta',
                         'ConsultarUltimoComprobanteAutorizado', 'CompUltimoAutorizado', 
@@ -135,6 +135,7 @@ class WSCT(BaseWS):
                 'iva': [],
                 'detalles': [],
                 'adicionales': [],
+                'formas_pago': [],
             }
         
         self.factura = fact
@@ -207,6 +208,16 @@ class WSCT(BaseWS):
         self.factura['adicionales'].append(op)
         return True
 
+    def AgregarFormaPago(self, codigo, tipo_tarjeta=None, numero_tarjeta=None, 
+                         swift_code=None, tipo_cuenta=None, numero_cuenta=None, 
+                         **kwarg):
+        "Agrego una forma de pago a una factura (interna)"
+        fp = {'codigo': codigo, 'tipo_tarjeta': tipo_tarjeta, 
+              'numero_tarjeta': numero_tarjeta, 'swift_code': swift_code, 
+              'tipo_cuenta': tipo_cuenta, 'numero_cuenta': numero_cuenta}
+        self.factura['formas_pago'].append(fp)
+        return True
+
     def EstablecerCampoItem(self, campo, valor):
         if self.factura['detalles'] and campo in self.factura['detalles'][-1]:
             self.factura['detalles'][-1][campo] = valor
@@ -264,6 +275,15 @@ class WSCT(BaseWS):
                 }} for it in f['detalles']] or None,
             'arrayDatosAdicionales': [
                 {'tipoDatoAdicional': ta} for ta in f['adicionales']] or None,
+            'arrayFormasPago': [
+                {'formaPago': {
+                    'codigo': fp['codigo'],
+                    'tipoTarjeta': fp['tipo_tarjeta'],
+                    'numeroTarjeta': fp['numero_tarjeta'],
+                    'swiftCode': fp['swift_code'],
+                    'tipoCuenta': fp['tipo_cuenta'],
+                    'numeroCuenta': fp['numero_cuenta'],
+                }} for fp in f['formas_pago']] or None,
             }
                 
         res = self.client.autorizarComprobante(
@@ -713,6 +733,15 @@ def main():
             wsct.AgregarItem(tipo, cod_tur, codigo, ds, 
                              iva_id, imp_iva, imp_subtotal)
             
+            codigo = 68             # tarjeta de crédito
+            tipo_tarjeta = 99       # otra (ver tabla de parámetros)
+            numero_tarjeta = "999999"
+            swift_code = None
+            tipo_cuenta = None
+            numero_cuenta = None
+            wsct.AgregarFormaPago(codigo, tipo_tarjeta, numero_tarjeta, 
+                                  swift_code, tipo_cuenta, numero_cuenta)
+
             print wsct.factura
             
             wsct.AutorizarComprobante()
