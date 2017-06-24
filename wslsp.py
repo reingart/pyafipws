@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05d"
+__version__ = "1.05e"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -324,7 +324,7 @@ class WSLSP(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarDTE(self, nro_dte, nro_renspa):
+    def AgregarDTE(self, nro_dte, nro_renspa=None):
         "Agrega la información referente a DTE (multiples)"
         d = {"nroDTE": nro_dte, "nroRenspa": nro_renspa}
         self.solicitud['dte'].append(d)
@@ -1053,6 +1053,7 @@ if __name__ == '__main__':
             print "CAE:", wslsp.CAE
             print "Tipo Ajuste:", wslsp.GetParametro("tipo_ajuste")
             print "Modo Ajuste:", wslsp.GetParametro("modo_ajuste")
+            print "Errores:", wslsp.Errores
             if '--testing' in sys.argv:
                 assert wslsp.GetParametro("cae") == "97029023118043"
                 assert wslsp.GetParametro("cbte_ajuste", "tipo_cbte") == '186'
