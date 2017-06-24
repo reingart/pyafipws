@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.00a"
+__version__ = "1.00b"
 
 import datetime
 import os
@@ -36,8 +36,8 @@ XML = False
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
-recem.py: Interfaz de texto para generar Facturas Electrónica MATRIX
-Copyright (C) 2010 Mariano Reingart reingart@gmail.com
+recet.py: Interfaz de texto para generar Facturas Electrónica Turismo
+Copyright (C) 2017 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.

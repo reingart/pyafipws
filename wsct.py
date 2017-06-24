@@ -18,7 +18,7 @@ Resolución Conjunta General 3971 y Resolución 566/2016.
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 import datetime
 import decimal
@@ -326,6 +326,7 @@ class WSCT(BaseWS):
             self.Observaciones.append("%(codigo)s: %(descripcion)s" % (
                 error['codigoDescripcion']))
         self.Obs = '\n'.join(self.Observaciones)
+        self.EmisionTipo = 'CAE'
 
         if 'evento' in ret:
             self.Evento = '%(codigo)s: %(descripcion)s' % ret['evento']
