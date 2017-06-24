@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo de Intefase para archivos de texto (MATRIX mercado interno con detalle)"
+"Módulo de Intefase para archivos de intercambio(Comprobantes Turismo)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -340,16 +340,23 @@ if __name__ == "__main__":
 
         if '/formato' in sys.argv:
             print "Formato:"
-            for msg, formato in [('Encabezado', ENCABEZADO), ('Tributo', TRIBUTO), ('Iva', IVA), ('Comprobante Asociado', CMP_ASOC), ('Detalle', DETALLE)]:
+            for msg, formato in [('Encabezado', ENCABEZADO), 
+                                 ('Tributo', TRIBUTO), 
+                                 ('Iva', IVA), 
+                                 ('Comprobante Asociado', CMP_ASOC), 
+                                 ('Detalle', DETALLE), 
+                                 ('Forma Pago', FORMA_PAGO)]:
                 comienzo = 1
-                print "== %s ==" % msg
+                print "=== %s ===" % msg
+                print "|| %-20s || %-4s || %-4s|| %-15s || %s || ||" % (
+                      "Campo", "Pos.", "Long.", "Tipo", "Decimales")
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
                     if isinstance(longitud, tuple):
                         longitud, dec = longitud
                     else:
                         dec = len(fmt)>3 and fmt[3] or 2
-                    print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    print "|| %-20s || %4d || %4d || %-15s || %s || ||" % (
                         clave, comienzo, longitud, tipo, dec)
                     comienzo += longitud
             sys.exit(0)

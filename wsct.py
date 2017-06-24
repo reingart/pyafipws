@@ -18,7 +18,7 @@ Resolución Conjunta General 3971 y Resolución 566/2016.
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.02a"
 
 import datetime
 import decimal
@@ -82,8 +82,8 @@ class WSCT(BaseWS):
         self.Periodo = self.Orden = ""
         self.FchVigDesde = self.FchVigHasta = ""
         self.FchTopeInf = self.FchProceso = ""
-        self.CbteNro = self.FechaCbte = ImpTotal = None
-        self.EmisionTipo = self.Evento = '' 
+        self.CbteNro = self.FechaCbte = self.ImpTotal = None
+        self.PuntoVenta = self.EmisionTipo = self.Evento = '' 
         self.Reproceso = '' # no implementado
 
     def __analizar_errores(self, ret):
@@ -179,7 +179,7 @@ class WSCT(BaseWS):
         self.factura['iva'].append(iva)
         return True
 
-    def AgregarItem(self, tipo=None, codigo_turismo=None,
+    def AgregarItem(self, tipo=None, cod_tur=None,
                     codigo=None, ds=None,
                     iva_id=None, imp_iva=None, imp_subtotal=None, **kwargs):
         "Agrego un item a una factura (interna)"
@@ -191,7 +191,7 @@ class WSCT(BaseWS):
             imp_iva = -abs(float(imp_iva))
         item = {
                 'tipo': tipo,
-                'cod_tur': codigo_turismo,
+                'cod_tur': cod_tur,
                 'codigo': codigo,
                 'ds': ds,
                 'iva_id': iva_id,
@@ -344,11 +344,12 @@ class WSCT(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltimoComprobanteAutorizado(self, tipo_cbte, punto_vta):
-        ret = self.client.consultarUltimoComprobanteAutorizado(
+        res = self.client.consultarUltimoComprobanteAutorizado(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             codigoTipoComprobante=tipo_cbte,
             numeroPuntoVenta=punto_vta,
             )
+        ret = res.get('consultarUltimoComprobanteAutorizadoReturn', {})
         nro = ret.get('numeroComprobante')
         self.__analizar_errores(ret)
         self.CbteNro = nro
