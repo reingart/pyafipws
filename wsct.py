@@ -18,7 +18,7 @@ Resolución Conjunta General 3971 y Resolución 566/2016.
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.02c"
 
 import datetime
 import decimal
@@ -91,9 +91,13 @@ class WSCT(BaseWS):
         for key in ('arrayErrores', 'arrayErroresFormato'):
             errores = ret.get(key, [])
             for error in errores:
+                for k in ('codigoDescripcion', 'codigoDescripcionString'):
+                    err = error.get(k)
+                    if err:
+                        break
                 self.Errores.append("%s: %s" % (
-                    error['codigoDescripcion']['codigo'],
-                    error['codigoDescripcion']['descripcion'],
+                    err['codigo'],
+                    err['descripcion'],
                     ))
             self.ErrMsg = '\n'.join(self.Errores)
 
