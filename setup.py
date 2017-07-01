@@ -41,6 +41,7 @@ if 'py2exe' in sys.argv:
     #import wsfexv1, recex1
     #import wsbfev1, receb1
     #import wsmtx, recem
+    #import wsct, recet
     #import pyfepdf
     #import pyemail
     #import pyi25
@@ -263,6 +264,17 @@ if 'py2exe' in sys.argv:
             ]             
         __version__ += "+wsmtx_" + wsmtx.__version__
         HOMO &= wsmtx.HOMO
+
+    if 'wsct' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsct, modules="wsct", create_exe=True, create_dll=True)
+            ]
+        kwargs['console'] += [
+            Target(module=wsct, script='wsct.py', dest_base="wsct_cli"), 
+            Target(module=recet, script='recet.py'), 
+            ]
+        __version__ += "+wsct_" + wsct.__version__
+        HOMO &= wsct.HOMO
 
     if 'pyfepdf' in globals():
         kwargs['com_server'] += [
