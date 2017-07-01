@@ -13,11 +13,12 @@
 "Módulo de Intefase para archivos de intercambio(Comprobantes Turismo)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011 Mariano Reingart"
+__copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.00b"
+__version__ = "1.01a"
 
 import datetime
+import json
 import os
 import sys
 import time
@@ -138,9 +139,20 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     detalles = []
     formas_pago = []
     if '/dbf' in sys.argv:
-        formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs), ('Detalles', DETALLE, detalles)]
+        formatos = [('Encabezado', ENCABEZADO, encabezado), 
+                    ('Tributo', TRIBUTO, tributos), 
+                    ('Iva', IVA, ivas), 
+                    ('Comprobante Asociado', CMP_ASOC, cbtasocs), 
+                    ('Detalles', DETALLE, detalles)]
         dic = leer_dbf(formatos, conf_dbf)
         encabezado = encabezado[0]
+    elif '/json' in sys.argv:
+        encabezado = json.load(entrada)
+        for lista, clave in ((detalles, "detalles"), (ivas, "iva"),
+                             (tributos, "tributos"), (cbtasocs, "cbtes_asoc"),
+                             (formas_pago, "formas_pago")):
+            if clave in encabezado:
+                lista.extend(encabezado.pop(clave))
     else:
         for linea in entrada:
             if str(linea[0])==TIPOS_REG[0]:
@@ -153,16 +165,10 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 ivas.append(iva)
             elif str(linea[0])==TIPOS_REG[3]:
                 cbtasoc = leer(linea, CMP_ASOC)
-                if 'cbte_punto_vta' in cbteasoc:
-                    cbtasoc['tipo'] = cbtasoc['cbte_tipo']
-                    cbtasoc['pto_vta'] = cbtasoc['cbte_punto_vta']
-                    cbtasoc['nro'] = cbtasoc['cbte_nro']
                 cbtasocs.append(cbtasoc)
             elif str(linea[0])==TIPOS_REG[4]:
                 detalle = leer(linea, DETALLE)
                 detalles.append(detalle)
-                if 'imp_subtotal' not in detalle:
-                    detalle['imp_subtotal'] = detalle['importe']
             elif str(linea[0])==TIPOS_REG[5]:
                 fp = leer(linea, FORMA_PAGO)
                 formas_pago.append(fp)
@@ -183,12 +189,22 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
     ws.CrearFactura(**encabezado)
     for detalle in detalles:
+        if 'imp_subtotal' not in detalle:
+            detalle['imp_subtotal'] = detalle['importe']
         ws.AgregarItem(**detalle)
     for tributo in tributos:
+        if 'alic' not in tributo:
+            tributo['alic'] = None
         ws.AgregarTributo(**tributo)
     for iva in ivas:
+        if 'base_imp' not in iva:
+            iva['base_imp'] = None
         ws.AgregarIva(**iva)
     for cbtasoc in cbtasocs:
+        if 'cbte_punto_vta' in cbtasoc:
+            cbtasoc['tipo'] = cbtasoc.pop('cbte_tipo')
+            cbtasoc['pto_vta'] = cbtasoc.pop('cbte_punto_vta')
+            cbtasoc['nro'] = cbtasoc.pop('cbte_nro')
         ws.AgregarCmpAsoc(**cbtasoc)
     for fp in formas_pago:
         ws.AgregarFormaPago(**fp)
@@ -216,30 +232,6 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         print "NRO:", dic['cbte_nro'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
 
 def escribir_factura(dic, archivo, agrega=False):
-    dic['tipo_reg'] = TIPOS_REG[0]
-    archivo.write(escribir(dic, ENCABEZADO, contraer_fechas=True))
-    if 'tributos' in dic:
-        for it in dic['tributos']:
-            it['tipo_reg'] = TIPOS_REG[1]
-            archivo.write(escribir(it, TRIBUTO))
-    if 'iva' in dic:
-        for it in dic['iva']:
-            it['tipo_reg'] = TIPOS_REG[2]
-            archivo.write(escribir(it, IVA))
-    if 'cbtes_asoc' in dic:
-        for it in dic['cbtes_asoc']:
-            it['tipo_reg'] = TIPOS_REG[3]
-            archivo.write(escribir(it, CMP_ASOC))
-    if 'detalles' in dic:
-        for it in dic['detalles']:
-            it['tipo_reg'] = TIPOS_REG[4]
-            it['importe'] = it['imp_subtotal']
-            archivo.write(escribir(it, DETALLE))
-    if 'forma_pago' in dic:
-        for it in dic['fp']:
-            it['tipo_reg'] = TIPOS_REG[5]
-            archivo.write(escribir(it, FORMA_PAGO))
-        
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, [dic]), 
                     ('Tributo', TRIBUTO, dic.get('tributos', [])), 
@@ -249,6 +241,33 @@ def escribir_factura(dic, archivo, agrega=False):
                     ('Forma Pago', FORMA_PAGO, dic.get('formas_pago', [])),
                    ]
         guardar_dbf(formatos, agrega, conf_dbf)
+    elif '/json' in sys.argv:
+        json.dump(dic, archivo, sort_keys=True, indent=4)
+    else:
+        dic['tipo_reg'] = TIPOS_REG[0]
+        archivo.write(escribir(dic, ENCABEZADO, contraer_fechas=True))
+        if 'tributos' in dic:
+            for it in dic['tributos']:
+                it['tipo_reg'] = TIPOS_REG[1]
+                archivo.write(escribir(it, TRIBUTO))
+        if 'iva' in dic:
+            for it in dic['iva']:
+                it['tipo_reg'] = TIPOS_REG[2]
+                archivo.write(escribir(it, IVA))
+        if 'cbtes_asoc' in dic:
+            for it in dic['cbtes_asoc']:
+                it['tipo_reg'] = TIPOS_REG[3]
+                archivo.write(escribir(it, CMP_ASOC))
+        if 'detalles' in dic:
+            for it in dic['detalles']:
+                it['tipo_reg'] = TIPOS_REG[4]
+                it['importe'] = it['imp_subtotal']
+                archivo.write(escribir(it, DETALLE))
+        if 'forma_pago' in dic:
+            for it in dic['fp']:
+                it['tipo_reg'] = TIPOS_REG[5]
+                archivo.write(escribir(it, FORMA_PAGO))
+
 
 def depurar_xml(client):
     global wsct_xml_dir
@@ -274,6 +293,7 @@ if __name__ == "__main__":
         print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
         print " /xml: almacena los requerimientos y respuestas XML (depuración)"
         print " /dbf: lee y almacena la información en tablas DBF"
+        print " /json: utiliza el formato JSON para el archivo de entrada"
         print
         print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
         sys.exit(0)
