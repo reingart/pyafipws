@@ -44,7 +44,7 @@ if 'py2exe' in sys.argv:
     #import pyfepdf
     #import pyemail
     #import pyi25
-    #import wsctgv3
+    #import wsctg
     #import wslpg
     #import wsltv
     #import wslum
@@ -316,15 +316,15 @@ if 'py2exe' in sys.argv:
             Target(module=designer, script="designer.py", dest_base="designer"),
             ]
             
-    if 'wsctgv3' in globals():
+    if 'wsctg' in globals():
         kwargs['com_server'] += [
-            Target(module=wsctgv3, modules="wsctgv3"), 
+            Target(module=wsctg, modules="wsctg"), 
             ]
         kwargs['console'] += [
-            Target(module=wsctgv3, script='wsctgv3.py', dest_base="wsctgv3_cli"),
+            Target(module=wsctg, script='wsctg.py', dest_base="wsctg_cli"),
             ]
-        __version__ += "+wsctgv3_" + wsctgv3.__version__
-        HOMO &= wsctgv3.HOMO
+        __version__ += "+wsctgv4_" + wsctg.__version__
+        HOMO &= wsctg.HOMO
 
     if 'wslpg' in globals():
         kwargs['com_server'] += [
