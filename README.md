@@ -27,7 +27,7 @@ Project Structure:
  * [Python library][1] (a helper class for each webservice for easy use of their methods and attributes)
  * [PyAfipWs][7]: [OCX-like][2] Windows Component-Object-Model interface compatible with legacy programming languages (VB, VFP, Delphi, PHP, VB.NET, etc.)
  * [LibPyAfipWs][8]: [DLL/.so][3] compiled shared library (exposing python methods to C/C++/C#) 
- * [Console][4] (command line) tools using simplified input & ouput files 
+ * [Console][4] (command line) tools using simplified input & ouput files (TXT, DBF, JSON)
  * [PyRece][5] GUI and [FacturaLibre][6] WEB apps as complete reference implementations
  * Examples for Java, .NET (C#, VB.NET), Visual Basic, Visual Fox Pro, Delphi, C, PHP. 
  * Minor code fragment samples for SAP (ABAP), PowerBuilder, Fujitsu Net Cobol, Clarion, etc.
@@ -50,6 +50,7 @@ AFIP:
  * [WSAA][10]: authorization & authentication, including digital cryptographic signature
  * [WSFEv1][11]: domestic market (electronic invoice) -[English][12]-
  * [WSMTXCA][22]: domestic market (electronic invoice) -detailing articles and barcodes-
+ * [WSCT][22b]: tourism (electronic invoice) -"tax free" VAT refund for tourists- 
  * [WSBFEv1][13]: tax bonus (electronic invoice)
  * [WSFEXv1][14]: foreign trade (electronic invoice) -[English][15]-
  * [WSCTG][16]: agriculture (grain traceability code)
@@ -196,6 +197,7 @@ For more information see the source code installation steps in the
  [20]: http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCotArba
  [21]: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
  [22]: http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaMTXCAService
+ [22b]: http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaComprobantesTurismo 
  [23]: http://www.sistemasagiles.com.ar/trac/wiki/ConstatacionComprobantes
  [24]: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadPrecursoresQuimicos
  [25]: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosFitosanitarios
