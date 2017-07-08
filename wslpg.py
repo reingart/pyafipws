@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29e"
+__version__ = "1.30a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -209,7 +209,7 @@ CERTIFICADO = [
     ('tipo_reg', 1, A), # 1: Certificado
     ('reservado1', 2, N), 		   # en WSLPGv1.7 se amplio el campo
     ('nro_certificado_deposito', 12, N), 
-    ('peso_neto', 8, N), 
+    ('peso_neto', 8, N),                    # usado peso ajustado WSLPGv1.17
     ('cod_localidad_procedencia', 6, N), 
     ('cod_prov_procedencia', 2, N),
     ('reservado', 2, N),
@@ -767,6 +767,8 @@ class WSLPG(BaseWS):
                         fechaCierre=fecha_cierre,
                         pesoNetoTotalCertificado=peso_neto_total_certificado,
                         coeCertificadoDeposito=coe_certificado_deposito,
+                        coe=coe_certificado_deposito,       # WSLPGv1.17
+                        pesoAjustado=peso_neto,             # WSLPGv1.17
                       )
         if self.liquidacion:
             self.liquidacion['certificados'].append({'certificado': cert})
@@ -1306,6 +1308,7 @@ class WSLPG(BaseWS):
             'deducciones': [],
             'retenciones': [],
             'percepciones': [],
+            'certificados': [],
             }
         # vinculación con AgregarOpcional:
         self.opcionales = self.ajuste['ajusteCredito']['opcionales']
@@ -1314,6 +1317,8 @@ class WSLPG(BaseWS):
         self.retenciones = self.ajuste['ajusteCredito']['retenciones']
         # para LSG:
         self.percepciones = self.ajuste['ajusteCredito']['percepciones']
+        # para compatibilidad con AgregarCertificado (WSLPGv1.17)
+        self.liquidacion = self.ajuste['ajusteCredito']
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1353,6 +1358,7 @@ class WSLPG(BaseWS):
             'deducciones': [],
             'retenciones': [],
             'percepciones': [],
+            'certificados': [],
             }
         # vinculación con AgregarOpcional:
         self.opcionales = self.ajuste['ajusteDebito']['opcionales']
@@ -1361,6 +1367,8 @@ class WSLPG(BaseWS):
         self.retenciones = self.ajuste['ajusteDebito']['retenciones']
         # para LSG:
         self.percepciones = self.ajuste['ajusteDebito']['percepciones']
+        # para compatibilidad con AgregarCertificado (WSLPGv1.17)
+        self.liquidacion = self.ajuste['ajusteDebito']
         return True
 
     @inicializar_y_capturar_excepciones
@@ -3046,6 +3054,9 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['ajuste_debito'].get('percepciones', []):
                 it['tipo_reg'] = "P"
                 archivo.write(escribir(it, PERCEPCION))
+            for it in dic['ajuste_debito'].get('certificados', []):
+                it['tipo_reg'] = 1
+                archivo.write(escribir(it, CERTIFICADO))
         if 'ajuste_credito' in dic:
             dic['ajuste_credito']['tipo_reg'] = 5
             archivo.write(escribir(dic['ajuste_credito'], AJUSTE))
@@ -3058,6 +3069,9 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['ajuste_credito'].get('percepciones', []):
                 it['tipo_reg'] = "P"
                 archivo.write(escribir(it, PERCEPCION))
+            for it in dic['ajuste_credito'].get('certificados', []):
+                it['tipo_reg'] = 1
+                archivo.write(escribir(it, CERTIFICADO))
         if 'ctgs' in dic:
             for it in dic['ctgs']:
                 it['tipo_reg'] = 'C'
@@ -3132,7 +3146,7 @@ def leer_archivo(nombre_archivo):
                 if d['reservado1']:
                     print "ADVERTENCIA: USAR tipo_certificado_deposito (nueva posición)" 
                     d['tipo_certificado_deposito'] = d['reservado1'] 
-                dic['certificados'].append(d)
+                liq['certificados'].append(d)
             elif str(linea[0])=='2':
                 liq['retenciones'].append(leer(linea, RETENCION))
             elif str(linea[0])=='3':
@@ -3148,11 +3162,11 @@ def leer_archivo(nombre_archivo):
                 liq['opcionales'].append(leer(linea, OPCIONAL))
             elif str(linea[0])=='4':
                 liq = leer(linea, AJUSTE)
-                liq.update({'retenciones': [], 'deducciones': [], 'percepciones': [], 'datos': []})
+                liq.update({'retenciones': [], 'deducciones': [], 'percepciones': [], 'datos': [], 'certificados': []})
                 dic['ajuste_debito'] = liq
             elif str(linea[0])=='5':
                 liq = leer(linea, AJUSTE)
-                liq.update({'retenciones': [], 'deducciones': [], 'percepciones': [], 'datos': []})
+                liq.update({'retenciones': [], 'deducciones': [], 'percepciones': [], 'datos': [], 'certificados': []})
                 dic['ajuste_credito'] = liq
             elif str(linea[0])=='7':
                 # actualizo con cabecera para certificaciones de granos:
@@ -3551,6 +3565,8 @@ if __name__ == '__main__':
                                detalle_aclaratorio="Ret IVA",
                                base_calculo=1000,
                                alicuota=10.5, )], 
+                        certificados=[{'peso_neto': 200, 
+                                       'coe_certificado_deposito': '330100025869'}],
                         ),
                     ajuste_debito=dict(
                         diferencia_peso_neto=500, diferencia_precio_operacion=100,
@@ -3574,6 +3590,8 @@ if __name__ == '__main__':
                                detalle_aclaratorio="Ret IVA",
                                base_calculo=100,
                                alicuota=10.5, )],
+                        certificados=[{'peso_neto': 300, 
+                                       'coe_certificado_deposito': '330100025869'}],
                         ),
                     datos=[
                         dict(campo="nombre_comprador", valor="NOMBRE 1"),
@@ -3655,6 +3673,9 @@ if __name__ == '__main__':
                 wslpg.AgregarDeduccion(**ded)
             for ret in liq.get('retenciones', []):
                 wslpg.AgregarRetencion(**ret)
+            for cert in liq.get('certificados', []):
+                if cert:
+                    wslpg.AgregarCertificado(**cert)
             
             liq = dic['ajuste_debito']
             wslpg.CrearAjusteDebito(**liq)
@@ -3662,6 +3683,9 @@ if __name__ == '__main__':
                 wslpg.AgregarDeduccion(**ded)
             for ret in liq.get('retenciones', []):
                 wslpg.AgregarRetencion(**ret)
+            for cert in liq.get('certificados', []):
+                if cert:
+                    wslpg.AgregarCertificado(**cert)
             
             if '--testing' in sys.argv:
                 wslpg.LoadTestXML("tests/wslpg_ajuste_unificado.xml")
