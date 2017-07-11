@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import datetime
 import json
@@ -121,11 +121,11 @@ CMP_ASOC = [
     ]
 
 FORMA_PAGO = [
-    ('tipo_reg', 1, N),     # 6: comprobante asociado
+    ('tipo_reg', 1, N),     # 6: formas de pago
     ('codigo', 3, N),
     ('tipo_tarjeta', 2, N),
     ('numero_tarjeta', 6, N),
-    ('swift_code', 11, N),
+    ('swift_code', 11, A),
     ('tipo_cuenta', 2, N),
     ('numero_cuenta', 20, N),
     ]
