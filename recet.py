@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 import datetime
 import json
@@ -470,7 +470,7 @@ if __name__ == "__main__":
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
                               'punto_vta': punto_vta, 
-                              'cbt_desde': ult_cbte, 
+                              'cbte_nro': ult_cbte, 
                               'fecha_cbte': ws.FechaCbte, 
                               }, open(salida,"w"))
             sys.exit(0)
@@ -499,7 +499,7 @@ if __name__ == "__main__":
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
                               'punto_vta': ws.PuntoVenta, 
-                              'cbt_desde': ws.CbteNro, 
+                              'cbte_nro': ws.CbteNro, 
                               'fecha_cbte': ws.FechaCbte, 
                               'imp_total': ws.ImpTotal, 
                               'cae': ws.CAE, 
