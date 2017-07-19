@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.01d"
 
 import datetime
 import json
@@ -58,7 +58,7 @@ ENCABEZADO = [
     ('punto_vta', 4, N),
     ('cbte_nro', 8, N), 
     ('tipo_doc', 2, N), # 80
-    ('nro_doc', 11, N), # 50000000016    
+    ('nro_doc', 11, A), # 50000000016    
     ('imp_total', 15, I, 2), 
     ('imp_tot_conc', 15, I, 2), 
     ('imp_neto', 15, I, 2), 
