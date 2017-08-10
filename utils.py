@@ -585,7 +585,11 @@ def leer(linea, formato, expandir_fechas=False):
                                 valor = float(valor)
                         else:
                             valor = valor.strip(" ")
-                            sign = -1 if valor[0] == "-" else +1
+                            if valor[0] == "-":
+                                sign = -1
+                                valor = valor[1:] 
+                            else:
+                                sign = +1
                             valor = sign * float(("%%s.%%0%sd" % dec) % (long(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
                     except ValueError:
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
