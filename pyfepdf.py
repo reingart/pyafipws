@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08b"
+__version__ = "1.08c"
 
 DEBUG = False
 HOMO = False
@@ -728,7 +728,9 @@ class FEPDF:
                             if it['desc']:
                                 f.set('Tributo.Descripcion%02d' % lit, it['desc'])
                             else:
-                                f.set('Tributo.Descripcion%02d' % lit, self.tributos_ds[it['tributo_id']])
+                                trib_id = int(it['tributo_id'])
+                                trib_ds = self.tributos_ds[trib_id]
+                                f.set('Tributo.Descripcion%02d' % lit, trib_ds)
                             if it['base_imp'] is not None:
                                 f.set('Tributo.BaseImp%02d' % lit, self.fmt_num(it['base_imp']))
                             if it['alic'] is not None:
