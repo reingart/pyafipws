@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.36d"
+__version__ = "1.37a"
 
 import datetime
 import os
@@ -118,6 +118,13 @@ OPCIONAL = [
     ('valor', 250, A), 
     ]
 
+COMPRADOR = [
+    ('tipo_reg', 1, N), # 7: compradores
+    ('doc_tipo', 3, N),
+    ('doc_nro', 80, N),
+    ('porcentaje', 6, I, 2),
+    ]
+
 # Constantes (tablas de parámetros):
 
 TIPO_CBTE = {1: "FAC A", 2: "N/D A", 3: "N/C A", 6: "FAC B", 7: "N/D B",
@@ -138,6 +145,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         cbtasocs = []
         encabezados = []
         opcionales = []
+        compradores = []
         if DEBUG: print "Leyendo DBF..."
 
         formatos = [('Encabezado', ENCABEZADO, encabezados), 
@@ -145,6 +153,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ('Iva', IVA, ivas), 
                     ('Comprobante Asociado', CMP_ASOC, cbtasocs),
                     ('Datos Opcionales', OPCIONAL, opcionales),
+                    ('Compradores', COMPRADOR, compradores),
                     ]
         dic = leer_dbf(formatos, conf_dbf)
         
@@ -162,6 +171,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             for opcional in opcionales:
                 if opcional.get("id") == encabezado.get("id"):
                     encabezado.setdefault("opcionales", []).append(opcional)
+            for comprador in compradores:
+                if comprador.get("id") == encabezado.get("id"):
+                    encabezado.setdefault("compradores", []).append(comprador)
             if encabezado.get("id") is None and len(encabezados) > 1:
                 # compatibilidad hacia atrás, descartar si hay más de 1 factura
                 warnings.warn("Para múltiples registros debe usar campo id!")
@@ -189,6 +201,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             elif str(linea[0])=='6':
                 opcional = leer(linea, OPCIONAL)
                 encabezado.setdefault("opcionales", []).append(opcional)
+            elif str(linea[0])=='7':
+                comprador = leer(linea, COMPRADOR)
+                encabezado.setdefault("compradores", []).append(comprador)
             else:
                 print "Tipo de registro incorrecto:", linea[0]
 
@@ -216,6 +231,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         tributos = encabezado.get('tributos', [])
         cbtasocs = encabezado.get('cbtasocs', [])
         opcionales = encabezado.get('opcionales', [])
+        compradores = encabezado.get('compradores', [])
 
         ws.CrearFactura(**encabezado)
         for tributo in tributos:
@@ -226,6 +242,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             ws.AgregarCmpAsoc(**cbtasoc)
         for opcional in opcionales:
             ws.AgregarOpcional(**opcional)
+        for comprador in compradores:
+            ws.AgregarComprador(**comprador)
 
         if DEBUG:
             print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
@@ -291,6 +309,10 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                 for it in dic['opcionales']:
                     it['tipo_reg'] = 6
                     archivo.write(escribir(it, OPCIONAL))
+            if 'compradores' in dic:
+                for it in dic['compradores']:
+                    it['tipo_reg'] = 7
+                    archivo.write(escribir(it, COMPRADOR))
 
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, encabezados), 
@@ -298,6 +320,7 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                     ('Iva', IVA, dic.get('iva', [])), 
                     ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])),
                     ('Datos Opcionales', OPCIONAL, dic.get("opcionales", [])),
+                    ('Compradores', COMPRADOR, dic.get("compradores", [])),
                     ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
@@ -414,7 +437,9 @@ if __name__ == "__main__":
             for msg, formato in [('Encabezado', ENCABEZADO), 
                                  ('Tributo', TRIBUTO), ('Iva', IVA), 
                                  ('Comprobante Asociado', CMP_ASOC),
-                                 ('Opcionales', OPCIONAL)]:
+                                 ('Opcionales', OPCIONAL),
+                                 ('Compradores', COMPRADOR),
+                                ]:
                 if not '/dbf' in sys.argv:
                     comienzo = 1
                     print "== %s ==" % msg
@@ -450,7 +475,7 @@ if __name__ == "__main__":
             cbte_nro=int(cbte_nro)
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 1
-            tipo_doc = 80; nro_doc = "30628789661"
+            tipo_doc = 80; nro_doc = "30500010912"
             cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
@@ -486,7 +511,12 @@ if __name__ == "__main__":
                 ws.AgregarOpcional(10, "1")             # Actividad Comprendida
                 ws.AgregarOpcional(1011, "80")            # Tipo de Documento
                 ws.AgregarOpcional(1012, "20267565393")   # Número de Documento
-                
+
+            # datos de compradores RG 4109-E bienes muebles registrables (%)
+            if '--rg4109' in sys.argv:
+                ws.AgregarComprador(80, "30500010912", 99.99)
+                ws.AgregarComprador(80, "30999032083", 0.01)
+
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
             base_imp = 100
