@@ -862,6 +862,9 @@ class FEPDF:
                     if f.has_key('observacionescomerciales1') and 'obs_comerciales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_comerciales'], 'ObservacionesComerciales1')):
                             f.set('ObservacionesComerciales%d' % (i+1), txt)
+                    if f.has_key('enletras1') and 'en_letras' in fact:
+                        for i, txt in enumerate(f.split_multicell(fact['en_letras'], 'EnLetras1')):
+                            f.set('EnLetras%d' % (i+1), txt)
 
             ret = True
         except Exception, e:
