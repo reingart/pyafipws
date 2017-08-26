@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.30a"
+__version__ = "1.31a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -583,6 +583,16 @@ class PyRece(gui.Controller):
                             nro = kargs[k % 'nro']
                             if id:
                                 self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                        else:
+                            break
+
+                    for l in range(1,1000):
+                        k = 'opcional_%%s_%s' % l
+                        if (k % 'id') in kargs:
+                            op_id = kargs[k % 'id']
+                            valor = kargs[k % 'valor']
+                            if op_id:
+                                self.ws.AgregarOpcional(op_id, valor)
                         else:
                             break
                 
