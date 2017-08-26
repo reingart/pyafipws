@@ -11,17 +11,19 @@
 # for more details.
 
 """Módulo para obtener CAE/CAEA, código de autorización electrónico webservice 
-WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.5)
+WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.10)
 Según RG 2485/08, RG 2757/2010, RG 2904/2010 y RG2926/10 (CAE anticipado), 
 RG 3067/2011 (RS - Monotributo), RG 3571/2013 (Responsables inscriptos IVA), 
 RG 3668/2014 (Factura A IVA F.8001), RG 3749/2015 (R.I. y exentos)
+RG 4004-E Alquiler de inmuebles con destino casa habitación).  
+RG 4109-E Venta de bienes muebles registrables.
 Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19a"
+__version__ = "1.20a"
 
 import datetime
 import decimal
@@ -39,9 +41,10 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 
 
 class WSFEv1(BaseWS):
-    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.9"
+    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.10"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
+                        'AgregarComprador',
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
                         'CAEASinMovimientoInformar',
@@ -147,6 +150,7 @@ class WSFEv1(BaseWS):
                 'tributos': [],
                 'iva': [],
                 'opcionales': [],
+                'compradores': [],
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
@@ -187,6 +191,13 @@ class WSFEv1(BaseWS):
         "Agrego un dato opcional a una factura (interna)"
         op = { 'opcional_id': opcional_id, 'valor': valor }
         self.factura['opcionales'].append(op)
+        return True
+
+    def AgregarComprador(self, doc_tipo=80, doc_nro=0, porcentaje=100.00, **kwarg):
+        "Agrego un comprador a una factura (interna) RG 4109-E bienes muebles"
+        comp = { 'doc_tipo': doc_tipo, 'doc_nro': doc_nro,
+                 'porcentaje': porcentaje }
+        self.factura['compradores'].append(comp)
         return True
 
     def ObtenerCampoFactura(self, *campos):
@@ -267,6 +278,12 @@ class WSFEv1(BaseWS):
                             'Id': opcional['opcional_id'],
                             'Valor': opcional['valor'],
                             }} for opcional in f['opcionales']] or None,
+                    'Compradores': [ 
+                        {'Comprador': {
+                            'DocTipo': comprador['doc_tipo'],
+                            'DocNro': comprador['doc_nro'],
+                            'Porcentaje': comprador['porcentaje'],
+                            }} for comprador in f['compradores']] or None,
                     }
                 }]
             })
@@ -393,6 +410,17 @@ class WSFEv1(BaseWS):
                             'Importe': float(iva['importe']),
                             }}
                         for iva in f['iva']],
+                    'Opcionales': [ 
+                        {'Opcional': {
+                            'Id': opcional['opcional_id'],
+                            'Valor': opcional['valor'],
+                            }} for opcional in f['opcionales']],
+                    'Compradores': [ 
+                        {'Comprador': {
+                            'DocTipo': comprador['doc_tipo'],
+                            'DocNro': comprador['doc_nro'],
+                            'Porcentaje': comprador['porcentaje'],
+                            }} for comprador in f['compradores']],
                     }
                 verifica(verificaciones, resultget.copy(), difs)
                 if difs:
@@ -449,6 +477,13 @@ class WSFEv1(BaseWS):
                             'valor': obs['Opcional']['Valor'],
                             }
                         for obs in resultget.get('Opcionales', [])],
+                    'compradores': [ 
+                            {
+                            'doc_tipo': comp['Comprador']['DocTipo'],
+                            'doc_nro': comp['Comprador']['DocNro'],
+                            'porcentaje': comp['Comprador']['Porcentaje'],
+                            }
+                        for comp in resultget.get('Compradores', [])],
                     'cae': resultget.get('CodAutorizacion'),
                     'resultado': resultget.get('Resultado'),
                     'fch_venc_cae': resultget.get('FchVto'),
@@ -971,9 +1006,9 @@ def main():
         punto_vta = 4001
         cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
-        concepto = 2 if '--usados' not in sys.argv else 1
+        concepto = 2 if ('--usados' not in sys.argv and '--rg4109' not in sys.argv) else 1
         tipo_doc = 80 if '--usados' not in sys.argv else 30
-        nro_doc = "30000000001"
+        nro_doc = "30500010912"
         cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
         imp_total = "222.00"; imp_tot_conc = "0.00"; imp_neto = "200.00"
         imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
@@ -1050,6 +1085,10 @@ def main():
                 wsfev1.AgregarOpcional(61, "80")            # Firmante Doc Tipo
                 wsfev1.AgregarOpcional(62, "20267565393")   # Firmante Doc Nro
                 wsfev1.AgregarOpcional(7, "01")             # Carácter del Firmante
+            # datos de compradores RG 4109-E bienes muebles registrables (%)
+            if '--rg4109' in sys.argv:
+                wsfev1.AgregarComprador(80, "30500010912", 99.99)
+                wsfev1.AgregarComprador(80, "30999032083", 0.01)
 
             # agregar la factura creada internamente para solicitud múltiple:
             if "--multiple" in sys.argv:
