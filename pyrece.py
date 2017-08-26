@@ -13,9 +13,9 @@
 "Aplicativo AdHoc Para generación de Facturas Electrónicas"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.29a"
+__version__ = "1.30a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -38,6 +38,12 @@ from pyfepdf import FEPDF
 
 # Formatos de archivos:
 from formatos import formato_xml, formato_csv, formato_dbf, formato_txt, formato_json
+
+try:
+    from numeros import conv_text
+except:
+    conv_text = lambda num: str(num)
+
 
 HOMO = False
 DEBUG = '--debug' in sys.argv
@@ -903,6 +909,11 @@ class PyRece(gui.Controller):
                 fact[d['campo']] = d['valor']
                 
         fepdf.factura = fact
+        
+        # convertir importe total en texto (palabras):
+        moneda_ds = {"PES": "PESOS", "DOL": "DOLAR EEUU"}.get(fact.get("moneda_id", ""), "")
+        fact["en_letras"] = "SON " + moneda_ds + " " + conv_text(float(fact["imp_total"]))
+
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
 
@@ -923,6 +934,7 @@ class PyRece(gui.Controller):
         
         salida = conf_fact.get("salida", "")
         fact = fepdf.factura
+        
         if salida:
             pass
         elif 'pdf' in fact and fact['pdf']:
