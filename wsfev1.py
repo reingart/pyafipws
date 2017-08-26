@@ -1002,7 +1002,7 @@ def main():
     if "--prueba" in sys.argv:
         print wsfev1.client.help("FECAESolicitar").encode("latin1")
 
-        tipo_cbte = 1 if '--usados' not in sys.argv else 49
+        tipo_cbte = 6 if '--usados' not in sys.argv else 49
         punto_vta = 4001
         cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
@@ -1085,6 +1085,11 @@ def main():
                 wsfev1.AgregarOpcional(61, "80")            # Firmante Doc Tipo
                 wsfev1.AgregarOpcional(62, "20267565393")   # Firmante Doc Nro
                 wsfev1.AgregarOpcional(7, "01")             # Carácter del Firmante
+            # datos opcionales para RG 4004-E Alquiler de inmuebles (Ganancias)
+            if '--rg4004' in sys.argv:
+                wsfev1.AgregarOpcional(17, "1")             # Intermediario
+                wsfev1.AgregarOpcional(1801, "30500010912") # CUIT Propietario
+                wsfev1.AgregarOpcional(1802, "BNA")         # Nombr e Titular
             # datos de compradores RG 4109-E bienes muebles registrables (%)
             if '--rg4109' in sys.argv:
                 wsfev1.AgregarComprador(80, "30500010912", 99.99)
