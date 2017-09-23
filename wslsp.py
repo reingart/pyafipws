@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -352,6 +352,9 @@ class WSLSP(BaseWS):
         for campo in ["guia", "dte", "gasto", "tributo"]:
             if campo in self.solicitud and not self.solicitud[campo]:
                 del self.solicitud[campo]
+        for item in self.solicitud['itemDetalleLiquidacion']:
+            if not item.get("liquidacionCompraAsociada", True):
+                del item["liquidacionCompraAsociada"]
         # llamo al webservice:
         ret = self.client.generarLiquidacion(
                         auth={
