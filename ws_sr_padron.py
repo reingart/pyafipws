@@ -17,7 +17,7 @@ de AFIP (WS-SR-PADRON de AFIP). Consulta a Padrón Alcance 4 version 1.1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import datetime
 import decimal
@@ -42,12 +42,13 @@ class WSSrPadronA4(BaseWS):
                         'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit',
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
-        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 'LanzarExcepciones',
+        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 
+        'LanzarExcepciones', 'Excepcion', 'Traceback',
         'Persona', 'data',
-        'cuit', 'dni', 'denominacion', 'imp_ganancias', 'imp_iva',
+        'denominacion', 'imp_ganancias', 'imp_iva',
         'monotributo', 'integrante_soc', 'empleador',
         'actividad_monotributo', 'cat_iva', 'domicilios',
-        'tipo_doc', 'nro_doc', 'LanzarExcepciones',
+        'tipo_doc', 'nro_doc',
         'tipo_persona', 'estado', 'impuestos', 'actividades',
         'direccion', 'localidad', 'provincia', 'cod_postal',
         ]
@@ -102,7 +103,10 @@ class WSSrPadronA4(BaseWS):
             )
         ret = res.get('personaReturn', {})
         # obtengo el resultado de AFIP (dict):
-        self.data = data = ret.get('persona', None)
+        data = ret.get('persona', None)
+        if isinstance(data, list):
+            data = data[0]
+        self.data = data
         # lo serializo
         self.Persona = json.dumps(self.data,
                                   default=json_serializer)
@@ -110,7 +114,7 @@ class WSSrPadronA4(BaseWS):
         self.cuit = data["idPersona"]
         self.tipo_persona = data["tipoPersona"]
         self.tipo_doc = TIPO_CLAVE.get(data["tipoClave"])
-        self.dni = data.get("numeroDocumento")
+        self.nro_doc = data.get("numeroDocumento")
         self.estado = data.get("estadoClave")
         if not "razonSocial" in data:
             self.denominacion = ", ".join([data.get("apellido", ""),
@@ -191,8 +195,7 @@ def main():
         padron = wssrpadron4
         print 'ok' if ok else "error", padron.Excepcion
         print "Denominacion:", padron.denominacion
-        print "CUIT:", padron.cuit
-        print "Tipo:", padron.tipo_persona, padron.tipo_doc, padron.dni
+        print "Tipo:", padron.tipo_persona, padron.tipo_doc, padron.nro_doc
         print "Estado:", padron.estado
         print "Direccion:", padron.direccion
         print "Localidad:", padron.localidad
