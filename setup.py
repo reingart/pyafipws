@@ -42,6 +42,7 @@ if 'py2exe' in sys.argv:
     #import wsbfev1, receb1
     #import wsmtx, recem
     #import wsct, recet
+    #import ws_sr_padron
     #import pyfepdf
     #import pyemail
     #import pyi25
@@ -419,6 +420,16 @@ if 'py2exe' in sys.argv:
             ]
         __version__ += "+wscdc_" + wscdc.__version__
         HOMO &= wscdc.HOMO
+
+    if 'ws_sr_padron' in globals():
+        kwargs['com_server'] += [
+            Target(module=ws_sr_padron,modules="ws_sr_padron", create_exe=True, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=ws_sr_padron, script='ws_sr_padron.py', dest_base="ws_sr_padron_cli"),
+            ]
+        __version__ += "+ws_sr_padron_" + ws_sr_padron.__version__
+        HOMO &= ws_sr_padron.HOMO
 
     if 'cot' in globals():
         kwargs['com_server'] += [
