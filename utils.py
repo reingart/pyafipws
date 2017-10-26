@@ -915,6 +915,13 @@ def abrir_conf(config_file, debug=False):
     return config
 
 
+def json_serializer(obj):
+    if isinstance(obj, (datetime.datetime, datetime.date)):
+        return obj.isoformat()
+    else:
+        return str(obj)
+
+
 if __name__ == "__main__":
     print get_install_dir()
     try:
