@@ -17,7 +17,7 @@ de AFIP (WS-SR-PADRON de AFIP). Consulta a Padrón Alcance 4 version 1.1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.02a"
 
 import datetime
 import decimal
@@ -26,12 +26,14 @@ import os
 import sys
 
 from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer
+from ConfigParser import SafeConfigParser
 from padron import TIPO_CLAVE, PROVINCIAS
 
 
 HOMO = True
 LANZAR_EXCEPCIONES = True
 WSDL = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA4?wsdl"
+CONFIG_FILE = "rece.ini"
 
 
 class WSSrPadronA4(BaseWS):
@@ -157,6 +159,23 @@ class WSSrPadronA4(BaseWS):
 def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
+    global CONFIG_FILE
+    if len(sys.argv)>1 and sys.argv[1][0] in ".\\/":
+        CONFIG_FILE = sys.argv.pop(1)
+    config = SafeConfigParser()
+    config.read(CONFIG_FILE)
+    if config.has_section('WSAA'):
+        crt = config.get('WSAA', 'CERT')
+        key = config.get('WSAA', 'PRIVATEKEY')
+        cuit = config.get('WS-SR-PADRON-A4', 'CUIT')
+    else:
+        crt, key = "reingart.crt", "reingart.key"
+        cuit = "20267565393"
+    url_wsaa = url_wsa4 = None
+    if config.has_option('WSAA','URL'):
+        url_wsaa = config.get('WSAA', 'URL') 
+    if config.has_option('WS-SR-PADRON-A4','URL') and not HOMO:
+        url_wsa4 = config.get('WS-SR-PADRON-A4', 'URL')
 
     DEBUG = '--debug' in sys.argv
 
@@ -164,12 +183,12 @@ def main():
     from wsaa import WSAA
 
     cache = ""
-    ta = WSAA().Autenticar("ws_sr_padron_a4", "reingart.crt", "reingart.key")
+    ta = WSAA().Autenticar("ws_sr_padron_a4", crt, key, url_wsaa)
 
     wssrpadron4 = WSSrPadronA4()
     wssrpadron4.SetTicketAcceso(ta)
-    wssrpadron4.Cuit = "20267565393"
-    wssrpadron4.Conectar(cache, WSDL, cacert="conf/afip_ca_info.crt")
+    wssrpadron4.Cuit = cuit
+    wssrpadron4.Conectar(cache, url_wsa4, cacert="conf/afip_ca_info.crt")
 
     if "--dummy" in sys.argv:
         print wssrpadron4.client.help("dummy")
