@@ -17,7 +17,7 @@ de AFIP (WS-SR-PADRON de AFIP). Consulta a Padrón Alcance 4 version 1.1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 import datetime
 import decimal
@@ -123,9 +123,9 @@ class WSSrPadronA4(BaseWS):
                                           data.get("nombre", "")])
         else:
             self.denominacion = data.get("razonSocial", "")
-        # analizo el domicilio
-        domicilios = [dom for dom in data.get("domicilio", [])
-                      if dom["tipoDomicilio"] == "FISCAL"]
+        # analizo el domicilio, dando prioridad al FISCAL, luego LEGAL/REAL
+        domicilios = data.get("domicilio", [])
+        domicilios.sort(key=lambda item: item["tipoDomicilio"] != "FISCAL")
         if domicilios:
             domicilio = domicilios[0]
             self.direccion = domicilio.get("direccion", "")
