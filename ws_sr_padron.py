@@ -147,9 +147,11 @@ class WSSrPadronA4(BaseWS):
             self.imp_iva = "NA"
         else:
             self.imp_iva = "S" if 30 in self.impuestos else "N"
-        mt = data.get("categoriasMonotributo", {})
+        mt = [cat for cat in data.get("categoria", [])
+              if cat["idImpuesto"] in (20, 21) and cat["estado"] == "ACTIVO"]
+        mt.sort(key=lambda cat: cat["idImpuesto"])
         self.monotributo = "S" if mt else "N"
-        self.actividad_monotributo = "" # TODO: mt[0].get("idCategoria")
+        self.actividad_monotributo = mt[0].get("descripcionCategoria") if mt else ""
         self.integrante_soc = ""
         self.empleador = "S" if 301 in self.impuestos else "N"
         self.cat_iva = ""
