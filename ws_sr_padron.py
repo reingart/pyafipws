@@ -17,7 +17,7 @@ de AFIP (WS-SR-PADRON de AFIP). Consulta a Padrón Alcance 4 version 1.1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.02c"
 
 import datetime
 import decimal
@@ -135,6 +135,11 @@ class WSSrPadronA4(BaseWS):
         else:
             self.direccion = self.localidad = self.provincia = ""
             self.cod_postal = ""
+        # retrocompatibilidad:
+        self.domicilios = domicilios
+        self.domicilio = "%s - %s (%s) - %s" % (
+                            self.direccion, self.localidad, 
+                            self.cod_postal, self.provincia,)
         # analizo impuestos:
         self.impuestos = [imp["idImpuesto"] for imp in data.get("impuesto", [])
                           if imp['estado'] == u'ACTIVO']
@@ -154,7 +159,15 @@ class WSSrPadronA4(BaseWS):
         self.actividad_monotributo = mt[0].get("descripcionCategoria") if mt else ""
         self.integrante_soc = ""
         self.empleador = "S" if 301 in self.impuestos else "N"
-        self.cat_iva = ""
+        # intenta determinar categoría de IVA (confirmar)
+        if self.imp_iva in ('AC', 'S'):
+            self.cat_iva = 1  # RI
+        elif self.imp_iva == 'EX':
+            self.cat_iva = 4  # EX
+        elif self.monotributo == 'S':
+            self.cat_iva = 6  # MT
+        else:
+            self.cat_iva = 5  # CF
         return True
 
 
