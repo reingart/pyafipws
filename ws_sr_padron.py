@@ -17,7 +17,7 @@ de AFIP (WS-SR-PADRON de AFIP). Consulta a Padrón Alcance 4 version 1.1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.02d"
 
 import datetime
 import decimal
@@ -25,7 +25,7 @@ import json
 import os
 import sys
 
-from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer
+from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf
 from ConfigParser import SafeConfigParser
 from padron import TIPO_CLAVE, PROVINCIAS
 
@@ -37,7 +37,7 @@ CONFIG_FILE = "rece.ini"
 
 
 class WSSrPadronA4(BaseWS):
-    "Interfaz para el WebService de Factura Electrónica Comprobantes Turismo"
+    "Interfaz para el WebService de Consulta Padrón Contribuyentes Alcance 4"
     _public_methods_ = ['Consultar',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
@@ -175,10 +175,8 @@ def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
     global CONFIG_FILE
-    if len(sys.argv)>1 and sys.argv[1][0] in ".\\/":
-        CONFIG_FILE = sys.argv.pop(1)
-    config = SafeConfigParser()
-    config.read(CONFIG_FILE)
+    DEBUG = '--debug' in sys.argv
+    config = abrir_conf(CONFIG_FILE, DEBUG)
     if config.has_section('WSAA'):
         crt = config.get('WSAA', 'CERT')
         key = config.get('WSAA', 'PRIVATEKEY')
@@ -191,8 +189,6 @@ def main():
         url_wsaa = config.get('WSAA', 'URL') 
     if config.has_option('WS-SR-PADRON-A4','URL') and not HOMO:
         url_wsa4 = config.get('WS-SR-PADRON-A4', 'URL')
-
-    DEBUG = '--debug' in sys.argv
 
     # obteniendo el TA para pruebas
     from wsaa import WSAA
@@ -219,6 +215,8 @@ def main():
         else:
             id_persona = len(sys.argv)>1 and sys.argv[1] or "20267565393"
 
+        if "--testing" in sys.argv:
+            wssrpadron4.LoadTestXML("tests/xml/ws_sr_padron_a4_resp.xml")
         print "Consultando AFIP online via webservice...",
         ok = wssrpadron4.Consultar(id_persona)
 
