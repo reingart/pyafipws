@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07z"
+__version__ = "1.08c"
 
 DEBUG = False
 HOMO = False
@@ -268,6 +268,14 @@ class FEPDF:
         self.factura['ivas'].append(iva)
         return True
 
+    def AgregarPermiso(self, id_permiso, dst_merc, **kwargs):
+        "Agrego un permiso a una factura (interna)"
+        self.factura['permisos'].append({
+                'id_permiso': id_permiso,
+                'dst_merc': dst_merc,
+                })        
+        return True
+
     # funciones de formateo de strings:
 
     def fmt_date(self, d):
@@ -500,6 +508,12 @@ class FEPDF:
                                     cod_mtx = it.get('cod_mtx'),
                                     )
             
+            # reemplazar saltos de linea en observaciones:
+            for k in ('obs_generales', 'obs_comerciales'):
+                ds = fact.get(k, '')
+                if isinstance(ds, basestring) and '<br/>' in ds:
+                    fact[k] = ds.replace('<br/>', '\n')
+
             # divido las observaciones por linea:
             if fact.get('obs_generales') and not f.has_key('obs') and not f.has_key('ObservacionesGenerales1'):
                 obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
@@ -507,7 +521,7 @@ class FEPDF:
                 obs = obs.replace('\x00', '').replace('<br/>', '\n')
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-            if fact.get('obs_comerciales') and not f.has_key('obs_comerciales'):
+            if fact.get('obs_comerciales') and not f.has_key('obs_comerciales') and not f.has_key('ObservacionesComerciales1'):
                 obs="\n<U>Observaciones Comerciales:</U>\n\n" + fact['obs_comerciales']
                 # limpiar texto (campos dbf) y reemplazar saltos de linea:
                 obs = obs.replace('\x00', '').replace('<br/>', '\n')
@@ -518,7 +532,13 @@ class FEPDF:
             permisos =  [u'Codigo de Despacho %s - Destino de la mercadería: %s' % (
                          p['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
                          for p in fact.get('permisos',[])]
-            if not f.has_key('permisos') and permisos:
+            #import dbg; dbg.set_trace()
+            if f.has_key('permiso.id1') and f.has_key("permiso.delivery1"):
+                for i, p in enumerate(fact.get('permisos', [])):
+                    self.AgregarDato("permiso.id%d" % (i+1), p['id_permiso'])
+                    pais_dst = self.paises.get(p['dst_merc'], p['dst_merc'])
+                    self.AgregarDato("permiso.delivery%d" % (i+1), pais_dst)
+            elif not f.has_key('permisos') and permisos:
                 obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -708,7 +728,9 @@ class FEPDF:
                             if it['desc']:
                                 f.set('Tributo.Descripcion%02d' % lit, it['desc'])
                             else:
-                                f.set('Tributo.Descripcion%02d' % lit, self.tributos_ds[it['tributo_id']])
+                                trib_id = int(it['tributo_id'])
+                                trib_ds = self.tributos_ds[trib_id]
+                                f.set('Tributo.Descripcion%02d' % lit, trib_ds)
                             if it['base_imp'] is not None:
                                 f.set('Tributo.BaseImp%02d' % lit, self.fmt_num(it['base_imp']))
                             if it['alic'] is not None:
@@ -834,22 +856,18 @@ class FEPDF:
                         f.set('estado', "Comprobante No Autorizado")
                     else:
                         f.set('estado', "") # compatibilidad hacia atras
-                        
+
+                    # colocar campos de observaciones (si no van en ds)
                     if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
                             f.set('ObservacionesGenerales%d' % (i+1), txt)
-                            
-                    # evaluo fórmulas (expresiones python)
-                    for field in f.keys:
-                        if field.startswith("="):
-                            formula = f.elements[field]['text']
-                            if DEBUG: print "**** formula: %s %s" % (field, formula)
-                            try:
-                                value = eval(formula,dict(fact=fact))
-                                f.set(field, value)
-                                if DEBUG: print "set(%s,%s)" % (field, value)
-                            except Exception, e:
-                                raise RuntimeError("Error al evaluar %s formula '%s': %s" % (field, formula, e))
+                    if f.has_key('observacionescomerciales1') and 'obs_comerciales' in fact:
+                        for i, txt in enumerate(f.split_multicell(fact['obs_comerciales'], 'ObservacionesComerciales1')):
+                            f.set('ObservacionesComerciales%d' % (i+1), txt)
+                    if f.has_key('enletras1') and 'en_letras' in fact:
+                        for i, txt in enumerate(f.split_multicell(fact['en_letras'], 'EnLetras1')):
+                            f.set('EnLetras%d' % (i+1), txt)
+
             ret = True
         except Exception, e:
             # capturar la excepción manualmente, para imprimirla en el PDF:
@@ -1004,7 +1022,7 @@ if __name__ == '__main__':
             HOMO = True
             
             # datos generales del encabezado:
-            tipo_cbte = 1
+            tipo_cbte = 19 if '--expo' in sys.argv else 1
             punto_vta = 4000
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
@@ -1014,21 +1032,22 @@ if __name__ == '__main__':
             imp_neto = "100.00"; imp_iva = "21.00"
             imp_trib = "1.00"; imp_op_ex = "2.00"; imp_subtotal = "105.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
-            # Fechas del período del servicio facturado (solo si concepto = 1?)
+            # Fechas del período del servicio facturado (solo si concepto> 1)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
-            moneda_id = 'PES'                   # p/exportación (ej): DOL
-            moneda_ctz = 1                      # p/exportación (ej): 8.98
+            # campos p/exportación (ej): DOL para USD, indicando cotización:
+            moneda_id = 'DOL' if '--expo' in sys.argv else 'PES'
+            moneda_ctz = 1 if moneda_id =='PES' else 14.90
             incoterms = 'FOB'                   # solo exportación
             idioma_cbte = 1                     # 1: es, 2: en, 3: pt
 
             # datos adicionales del encabezado:
             nombre_cliente = 'Joao Da Silva'
             domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
-            pais_dst_cmp = 16                   # 200: Argentina, ver tabla
+            pais_dst_cmp = 212                  # 200: Argentina, ver tabla
             id_impositivo = 'PJ54482221-l'      # cat. iva (mercado interno)
             forma_pago = '30 dias'
 
-            obs_generales = "Observaciones Generales<br/>texto libre"
+            obs_generales = "Observaciones Generales<br/>linea2<br/>linea3"
             obs_comerciales = "Observaciones Comerciales<br/>texto libre"
             
             # datos devueltos por el webservice (WSFEv1, WSMTXCA, etc.):
@@ -1132,6 +1151,12 @@ if __name__ == '__main__':
             ds = u"Descripción Ejemplo"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, "")
+
+            # Agrego un permiso (ver manual para el desarrollador WSFEXv1)
+            if '--expo' in sys.argv:
+                id_permiso = "99999AAXX999999A"
+                dst_merc = 225 # país destino de la mercaderia
+                ok = fepdf.AgregarPermiso(id_permiso, dst_merc)
 
             # completo campos personalizados de la plantilla:
             fepdf.AgregarDato("custom-nro-cli", "Cod.123")

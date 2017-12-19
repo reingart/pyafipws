@@ -19,14 +19,13 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.10f"
+__version__ = "2.11c"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
-from php import date
 from pysimplesoap.client import SimpleXMLElement
 from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
-     exception_info, safe_console
+     exception_info, safe_console, date
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
 except ImportError:
@@ -113,7 +112,14 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
-            out = Popen(["openssl", "smime", "-sign", 
+            if sys.platform == "linux2":
+                openssl = "openssl"
+            else:
+                if sys.maxsize <= 2**32:
+                    openssl = r"c:\OpenSSL-Win32\bin\openssl.exe"
+                else:
+                    openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
+            out = Popen([openssl, "smime", "-sign", 
                          "-signer", cert, "-inkey", privatekey,
                          "-outform","DER", "-nodetach"], 
                         stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
@@ -150,7 +156,7 @@ class WSAA(BaseWS):
     _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version', 
                       'XmlRequest', 'XmlResponse', 
                       'InstallDir', 'Traceback', 'Excepcion',
-                      'Identidad', 'Caducidad', 'Emisor',
+                      'Identidad', 'Caducidad', 'Emisor', 'CertX509',
                       'SoapFault', 'LanzarExcepciones',
                     ]
     _readonly_attrs_ = _public_attrs_[:-1]
@@ -159,7 +165,7 @@ class WSAA(BaseWS):
 
     if TYPELIB:
         _typelib_guid_ = '{30E9C94B-7385-4534-9A80-DF50FD169253}'
-        _typelib_version_ = 2, 10
+        _typelib_version_ = 2, 11
         _com_interfaces_ = ['IWSAA']
 
     # Variables globales para BaseWS:
@@ -188,10 +194,11 @@ class WSAA(BaseWS):
             self.Identidad = x509.get_subject().as_text()
             self.Caducidad = x509.get_not_after().get_datetime()
             self.Emisor = x509.get_issuer().as_text()
+            self.CertX509 = x509.as_text()
         return True
     
     @inicializar_y_capturar_excepciones
-    def CrearClavePrivada(self, filename="privada.key", key_length=1024, 
+    def CrearClavePrivada(self, filename="privada.key", key_length=4096, 
                                 pub_exponent=0x10001, passphrase=""):
         "Crea una clave privada (private key)"
         from M2Crypto import RSA, EVP
@@ -207,8 +214,9 @@ class WSAA(BaseWS):
         f.write(bio.read())
         f.close()
         # create a public key to sign the certificate request:
-        self.pkey = EVP.PKey(md='sha1')
+        self.pkey = EVP.PKey(md='sha256')
         self.pkey.assign_rsa(rsa_key_pair)
+        return True
 
     @inicializar_y_capturar_excepciones
     def CrearPedidoCertificado(self, cuit="", empresa="", nombre="pyafipws",
@@ -232,7 +240,7 @@ class WSAA(BaseWS):
         x509name.add_entry_by_txt(field='C', entry='AR', **kwargs)
         x509name.add_entry_by_txt(field='O', entry=empresa, **kwargs)
         x509name.add_entry_by_txt(field='CN', entry=nombre, **kwargs)
-        x509name.add_entry_by_txt(field='serialNumber', entry="CUIT %s" % cuit, **kwargs)     
+        x509name.add_entry_by_txt(field='serialNumber', entry="CUIT %s" % str(cuit), **kwargs)     
         self.x509_req.set_subject_name(x509name)
 
         # sign the request with the previously created key (CrearClavePrivada)
@@ -242,6 +250,7 @@ class WSAA(BaseWS):
         f = open(filename, "w")
         f.write(self.x509_req.as_pem())
         f.close()
+        return True
         
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
@@ -390,11 +399,18 @@ if __name__=="__main__":
             else:
                 print u"CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion)
                 empresa = raw_input("Empresa: ")
+        # longitud de la clave (2048 predeterminada a partir de 8/2016)
+        key_length = len(args)>4 and args[4] or ""
+        try:
+            key_length = int(key_length)
+        except ValueError:
+            key_length = 2048
         # generar los archivos (con fecha para no pisarlo)
         ts = datetime.datetime.now().strftime("%Y%m%d%M%S")
         clave_privada = "clave_privada_%s_%s.key" % (cuit, ts)
         pedido_cert = "pedido_cert_%s_%s.csr" % (cuit, ts)
-        wsaa.CrearClavePrivada(clave_privada)
+        print "Longitud clave %s (bits)" % key_length
+        wsaa.CrearClavePrivada(clave_privada, key_length)
         wsaa.CrearPedidoCertificado(cuit, empresa, nombre, pedido_cert)
         print "Se crearon los archivos:"
         print clave_privada
@@ -439,6 +455,7 @@ if __name__=="__main__":
             print wsaa.Identidad
             print wsaa.Caducidad
             print wsaa.Emisor
+            print wsaa.CertX509
 
         ta = wsaa.Autenticar(service, crt, key, url, proxy, wrapper, cacert)
         if not ta:

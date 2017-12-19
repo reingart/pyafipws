@@ -16,6 +16,7 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 
+import datetime
 import functools
 import inspect
 import locale
@@ -23,21 +24,20 @@ import socket
 import sys
 import os
 import stat
+import time
 import traceback
 import warnings
 from cStringIO import StringIO
 from decimal import Decimal
 from urllib import urlencode
+from urlparse import urlparse
+import unicodedata
 import mimetools, mimetypes
 from HTMLParser import HTMLParser
 from Cookie import SimpleCookie
+from ConfigParser import SafeConfigParser
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-
-try:
-    import dbf
-except ImportError:
-    print "para soporte de DBF debe instalar dbf 0.88.019 o superior"
 
 try:
     import json
@@ -53,9 +53,16 @@ try:
     # corregir temas de negociacion de SSL en algunas versiones de ubuntu:
     import platform
     dist, ver, nick = platform.linux_distribution() if sys.version > (2, 6) else ("", "", "")
+    release, ver, csd, ptype = platform.win32_ver() if sys.version > (2, 6) else ("", "", "", "")
     from pysimplesoap.client import SoapClient
     monkey_patch = httplib2._ssl_wrap_socket.__module__ != "httplib2"
-    if dist == 'Ubuntu' and ver == '14.04' and not monkey_patch:
+    if dist:
+        needs_patch = (dist == 'Ubuntu' and ver == '14.04')
+    elif release:
+        needs_patch = (release in 'XP')
+    else:
+        needs_patch = False 
+    if needs_patch and not monkey_patch:
         import ssl
         def _ssl_wrap_socket(sock, key_file, cert_file,
                              disable_validation, ca_certs):
@@ -65,7 +72,7 @@ try:
                 cert_reqs = ssl.CERT_REQUIRED
             return ssl.wrap_socket(sock, keyfile=key_file, certfile=cert_file,
                            cert_reqs=cert_reqs, ca_certs=ca_certs,
-                           ssl_version=ssl.PROTOCOL_SSLv3)
+                           ssl_version=ssl.PROTOCOL_TLSv1)
         httplib2._ssl_wrap_socket = _ssl_wrap_socket
 
 except:
@@ -276,6 +283,12 @@ class BaseWS:
                     if location and location.startswith("http://"):
                         warnings.warn("Corrigiendo WSDL ... %s" % location)
                         location = location.replace("http://", "https://").replace(":80", ":443")
+                        # usar servidor real si en el WSDL figura "localhost"
+                        localhost = 'https://localhost:'
+                        if location.startswith(localhost):
+                            url = urlparse(wsdl)
+                            location = location.replace("localhost", url.hostname)
+                            location = location.replace(":9051", ":443")
                         port['location'] = location
             return True
         except:
@@ -572,7 +585,12 @@ def leer(linea, formato, expandir_fechas=False):
                                 valor = float(valor)
                         else:
                             valor = valor.strip(" ")
-                            valor = float(("%%s.%%0%sd" % dec) % (long(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
+                            if valor[0] == "-":
+                                sign = -1
+                                valor = valor[1:] 
+                            else:
+                                sign = +1
+                            valor = sign * float(("%%s.%%0%sd" % dec) % (long(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
                     except ValueError:
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
@@ -622,7 +640,7 @@ def escribir(dic, formato, contraer_fechas=False):
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
         except Exception, e:
-            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
+            warnings.warn("Error al escribir campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return linea + "\n"
 
@@ -662,6 +680,10 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                     longitud = 17
                 tipo = "N(%s,0)" % longitud 
             elif tipo == I:
+                if not dec:
+                    dec = 0
+                else:
+                    dec = int(dec)
                 if longitud >= 18:
                     longitud = 17
                 if longitud - 2 <= dec:
@@ -834,6 +856,28 @@ def safe_console():
         print "Encodign in %s" % locale.getpreferredencoding()    
 
 
+def norm(x, encoding="latin1"):
+    "Convertir acentos codificados en ISO 8859-1 u otro, a ASCII regular"
+    if not isinstance(x, basestring):
+        x = unicode(x)
+    elif isinstance(x, str):
+        x = x.decode(encoding, 'ignore')
+    return unicodedata.normalize('NFKD', x).encode('ASCII', 'ignore')
+
+
+def date(fmt=None,timestamp=None):
+    "Manejo de fechas (simil PHP)"
+    if fmt=='U': # return timestamp
+        t = datetime.datetime.now()
+        return int(time.mktime(t.timetuple()))
+    if fmt=='c': # return isoformat 
+        d = datetime.datetime.fromtimestamp(timestamp)
+        return d.isoformat()
+    if fmt=='Ymd':
+        d = datetime.datetime.now()
+        return d.strftime("%Y%m%d")
+
+
 def get_install_dir():
     if not hasattr(sys, "frozen"): 
         basepath = __file__
@@ -852,6 +896,32 @@ def get_install_dir():
     return os.path.dirname(os.path.abspath(basepath))
 
         
+def abrir_conf(config_file, debug=False):
+    "Abrir el archivo de configuración (usar primer parámetro como ruta)"
+    # en principio, usar el nombre de archivo predeterminado
+    # si se pasa el archivo de configuración por parámetro, confirmar que exista
+    # y descartar que sea una opción
+    if len(sys.argv)>1:
+        if os.path.splitext(sys.argv[1])[1].lower() == ".ini":
+            config_file = sys.argv.pop(1)
+    if not os.path.exists(config_file) or not os.path.isfile(config_file):
+        warnings.warn("Archivo de configuracion %s invalido" % config_file)
+
+    if debug: print "CONFIG_FILE:", config_file
+    
+    config = SafeConfigParser()
+    config.read(config_file)
+
+    return config
+
+
+def json_serializer(obj):
+    if isinstance(obj, (datetime.datetime, datetime.date)):
+        return obj.isoformat()
+    else:
+        return str(obj)
+
+
 if __name__ == "__main__":
     print get_install_dir()
     try:

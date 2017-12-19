@@ -18,19 +18,23 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.07e"
 
 
+import csv
 import json
 import os
 import shelve
+import socket
 import sqlite3
 import urllib2
 import zipfile
 from email.utils import formatdate
 import sys
+import warnings
 from utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
-                  inicializar_y_capturar_excepciones_simple, WebClient
+                  inicializar_y_capturar_excepciones_simple, WebClient, norm, \
+                  exception_info
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
@@ -308,9 +312,29 @@ class PadronAFIP():
     @inicializar_y_capturar_excepciones_simple
     def Consultar(self, nro_doc):
         "Llama a la API pública de AFIP para obtener los datos de una persona"
-        if not self.client:
-            self.Conectar()
-        self.response = self.client("sr-padron", "v2", "persona", str(nro_doc))
+        n = 0
+        while n <= 4:
+            n += 1                          # reintentar 3 veces
+            try:
+                if not self.client:
+                    if DEBUG:
+                        warnings.warn("reconectando intento [%d]..." % n)
+                    self.Conectar()
+                self.response = self.client("sr-padron", "v2", "persona", str(nro_doc))
+            except Exception as e:
+                self.client = None
+                ex = exception_info()
+                self.Traceback = ex.get("tb", "")
+                try:
+                    self.Excepcion = norm(ex.get("msg", "").replace("\n", ""))
+                except:
+                    self.Excepcion = "<no disponible>"
+                if DEBUG:
+                    warnings.warn("Error %s [%d]" % (self.Excepcion, n))
+            else:
+                break
+        else:
+            return False
         result = json.loads(self.response)
         if result['success']:
             data = result['data']
@@ -409,6 +433,7 @@ class PadronAFIP():
             return ret
         
 
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
@@ -446,51 +471,87 @@ if __name__ == "__main__":
             print "=== Categorias Autonomos ==="
             print u'\n'.join(padron.ObtenerTablaParametros("categoriasAutonomo"))
 
-        cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
-        # consultar un cuit:
-        if '--online' in sys.argv:
+        if '--csv' in sys.argv:
+            csv_reader = csv.reader(open("entrada.csv", "rU"), 
+                                    dialect='excel', delimiter=",")
+            csv_writer = csv.writer(open("salida.csv", "w"), 
+                                    dialect='excel', delimiter=",")
+            encabezado = next(csv_reader)
+            columnas = ["cuit", "denominacion", "estado", "direccion",
+                        "localidad", "provincia", "cod_postal",
+                        "impuestos", "actividades", "imp_iva", 
+                        "monotributo", "actividad_monotributo", 
+                        "empleador", "imp_ganancias", "integrante_soc"]
+            csv_writer.writerow(columnas)
+            
+            for fila in csv_reader:
+                cuit = (fila[0] if fila else "").replace("-", "")
+                if cuit.isdigit():
+                    if '--online' in sys.argv:
+                        padron.Conectar(trace="--trace" in sys.argv)
+                        print "Consultando AFIP online...", cuit,
+                        ok = padron.Consultar(cuit)
+                    else:
+                        print "Consultando AFIP local...", cuit,
+                        ok = padron.Buscar(cuit)
+                    print 'ok' if ok else "error", padron.Excepcion
+                    # domicilio posiblemente esté en Latin1, normalizar
+                    csv_writer.writerow([norm(getattr(padron, campo, ""))
+                                         for campo in columnas])
+        elif "--reconex" in sys.argv:
             padron.Conectar(trace="--trace" in sys.argv)
-            print "Consultando AFIP online...",
-            ok = padron.Consultar(cuit)
-            print 'ok' if ok else "error", padron.Excepcion
-            print "Denominacion:", padron.denominacion
-            print "CUIT:", padron.cuit 
-            print "Tipo:", padron.tipo_persona, padron.tipo_doc, padron.dni
-            print "Estado:", padron.estado
-            print "Direccion:", padron.direccion
-            print "Localidad:", padron.localidad
-            print "Provincia:", padron.provincia
-            print "Codigo Postal:", padron.cod_postal
-            print "Impuestos:", padron.impuestos
-            print "Actividades:", padron.actividades
-            print "IVA", padron.imp_iva
-            print "MT", padron.monotributo, padron.actividad_monotributo
-            print "Empleador", padron.empleador
-        elif '--constancia' in sys.argv:
-            filename = sys.argv[2]
-            print "Descargando constancia AFIP online...", cuit, filename
-            ok = padron.DescargarConstancia(cuit, filename)
-            print 'ok' if ok else "error", padron.Excepcion
-            if '--mostrar' in sys.argv:
-                padron.MostrarPDF(archivo=filename,
-                                 imprimir='--imprimir' in sys.argv)
+            cuit = 20267565393
+            for i in range(10000):
+                t0 = time.time()
+                ok = padron.Consultar(cuit)
+                t1 = time.time()
+                print("%2.4f" % (t1-t0))
         else:
-            ok = padron.Buscar(cuit)
-            if ok:
+            cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
+            # consultar un cuit:
+            if '--online' in sys.argv:
+                padron.Conectar(trace="--trace" in sys.argv)
+                print "Consultando AFIP online...",
+                ok = padron.Consultar(cuit)
+                print 'ok' if ok else "error", padron.Excepcion
                 print "Denominacion:", padron.denominacion
-                print "IVA:", padron.imp_iva
-                print "Ganancias:", padron.imp_ganancias
-                print "Monotributo:", padron.monotributo
-                print "Integrante Soc.:", padron.integrante_soc
+                print "CUIT:", padron.cuit 
+                print "Tipo:", padron.tipo_persona, padron.tipo_doc, padron.dni
+                print "Estado:", padron.estado
+                print "Direccion:", padron.direccion
+                print "Localidad:", padron.localidad
+                print "Provincia:", padron.provincia
+                print "Codigo Postal:", padron.cod_postal
+                print "Impuestos:", padron.impuestos
+                print "Actividades:", padron.actividades
+                print "IVA", padron.imp_iva
+                print "MT", padron.monotributo, padron.actividad_monotributo
                 print "Empleador", padron.empleador
-                print "Actividad Monotributo:", padron.actividad_monotributo
-                print "Categoria IVA:", padron.cat_iva
-                padron.ConsultarDomicilios(cuit)
-                for dom in padron.domicilios:
-                    print dom
+            elif '--constancia' in sys.argv:
+                filename = sys.argv[2]
+                print "Descargando constancia AFIP online...", cuit, filename
+                ok = padron.DescargarConstancia(cuit, filename)
+                print 'ok' if ok else "error", padron.Excepcion
+                if '--mostrar' in sys.argv:
+                    padron.MostrarPDF(archivo=filename,
+                                     imprimir='--imprimir' in sys.argv)
             else:
-                print padron.Excepcion
-                print padron.Traceback
+                ok = padron.Buscar(cuit)
+                if ok:
+                    print "Denominacion:", padron.denominacion
+                    print "IVA:", padron.imp_iva
+                    print "Ganancias:", padron.imp_ganancias
+                    print "Monotributo:", padron.monotributo
+                    print "Integrante Soc.:", padron.integrante_soc
+                    print "Empleador", padron.empleador
+                    print "Actividad Monotributo:", padron.actividad_monotributo
+                    print "Categoria IVA:", padron.cat_iva
+                    padron.ConsultarDomicilios(cuit)
+                    for dom in padron.domicilios:
+                        print dom
+                else:
+                    print padron.Excepcion
+                    print padron.Traceback
         t1 = time.time()
         if '--trace' in sys.argv:
             print "tiempo", t1 -t0

@@ -19,7 +19,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08e"
+__version__ = "1.08f"
 
 import datetime
 import decimal
@@ -221,9 +221,9 @@ class WSFEXv1(BaseWS):
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.FEXDummy()['FEXDummyResult']
         self.__analizar_errores(result)
-        self.AppServerStatus = str(result['AppServer'])
-        self.DbServerStatus = str(result['DbServer'])
-        self.AuthServerStatus = str(result['AuthServer'])
+        self.AppServerStatus = str(result.get('AppServer', ''))
+        self.DbServerStatus = str(result.get('DbServer', ''))
+        self.AuthServerStatus = str(result.get('AuthServer', ''))
         return True
 
     @inicializar_y_capturar_excepciones
@@ -592,8 +592,9 @@ if __name__ == "__main__":
         if '--dummy' in sys.argv:
             #wsfexv1.LanzarExcepciones = False
             print wsfexv1.Dummy()
-            print wsfexv1.XmlRequest
-            print wsfexv1.XmlResponse
+            print "AppServerStatus", wsfexv1.AppServerStatus
+            print "DbServerStatus", wsfexv1.DbServerStatus
+            print "AuthServerStatus", wsfexv1.AuthServerStatus
         
         if "--prueba" in sys.argv:
             try:

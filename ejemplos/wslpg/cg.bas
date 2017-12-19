@@ -3,9 +3,11 @@ Attribute VB_Name = "Module1"
 ' más info en: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
 ' 2014 (C) Mariano Reingart <reingart@gmail.com>
 
+
 Sub Main()
     Dim WSAA As Object, WSLPG As Object
     Dim ok As Variant
+    Dim ttl, cache, proxy
     
     ttl = 2400 ' tiempo de vida en segundos
     cache = "" ' Directorio para archivos temporales (dejar en blanco para usar predeterminado)
@@ -220,6 +222,8 @@ Sub Main()
                 MsgBox er, vbExclamation, "Error"
             Next
         End If
+        Debug.Print WSLPG.XmlRequest
+        Debug.Print WSLPG.XmlResponse
 
     Else
         ' muestro el mensaje de error
