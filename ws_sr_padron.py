@@ -12,12 +12,13 @@
 
 """Módulo para acceder a los datos de un contribuyente registrado en el Padrón
 de AFIP (WS-SR-PADRON de AFIP). Consulta a Padrón Alcance 4 version 1.1
+Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02d"
+__version__ = "1.03a"
 
 import datetime
 import decimal
@@ -73,7 +74,7 @@ class WSSrPadronA4(BaseWS):
         self.Reproceso = '' # no implementado
         self.cuit = self.dni = 0
         self.tipo_persona = ""                      # FISICA o JURIDICA
-        self.tipo_doc = 0
+        self.tipo_doc = self.nro_doc = 0
         self.estado = ""                            # ACTIVO
         self.denominacion = ""
         self.direccion = self.localidad = self.provincia = self.cod_postal = ""
@@ -83,6 +84,7 @@ class WSSrPadronA4(BaseWS):
         self.imp_iva = self.empleador = self.integrante_soc = self.cat_iva = ""
         self.monotributo = self.actividad_monotributo = ""
         self.data = {}
+        self.errores = []
 
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
@@ -171,6 +173,95 @@ class WSSrPadronA4(BaseWS):
         return True
 
 
+class WSSrPadronA5(WSSrPadronA4):
+    "Interfaz para el WebService de Consulta Padrón Constancia de Inscripción Alcance 5"
+
+    _reg_progid_ = "WSSrPadronA5"
+    _reg_clsid_ = "{DF7447DD-EEF3-4E6B-A93B-F969B5075EC8}"
+
+
+    @inicializar_y_capturar_excepciones
+    def Consultar(self, id_persona):
+        "Devuelve el detalle de todos los datos del contribuyente solicitado"
+        # llamar al webservice:
+        res = self.client.getPersona(
+            sign=self.Sign,
+            token=self.Token,
+            cuitRepresentada=self.Cuit,
+            idPersona=id_persona,
+            )
+        ret = res.get('personaReturn', {})
+        # obtengo el resultado de AFIP (dict):
+        data = ret.get('datosGenerales', {})
+        if isinstance(data, list):
+            data = data[0]
+        self.data = data
+        # lo serializo
+        self.Persona = json.dumps(ret,
+                                  default=json_serializer)
+        for er in 'errorConstancia', 'errorMonotributo', 'errorRegimenGeneral':
+            if er in ret:
+                self.errores.extend(ret[er])
+        self.Excepcion = '\n\r'.join([er["error"] for er in self.errores])
+        # extraigo los campos principales:
+        self.tipo_persona = data.get("tipoPersona")
+        self.tipo_doc = TIPO_CLAVE.get(data.get("tipoClave"))
+        self.nro_doc = data.get("idPersona")
+        self.cuit = self.nro_doc
+        self.estado = data.get("estadoClave")
+        if not "razonSocial" in data:
+            self.denominacion = ", ".join([data.get("apellido", ""),
+                                          data.get("nombre", "")])
+        else:
+            self.denominacion = data.get("razonSocial", "")
+        # analizo el domicilio, dando prioridad al FISCAL, luego LEGAL/REAL
+        domicilio = data.get("domicilioFiscal", [])
+        if domicilio:
+            self.direccion = domicilio.get("direccion", "")
+            self.localidad = domicilio.get("localidad", "")  # no usado en CABA
+            self.provincia = PROVINCIAS.get(domicilio.get("idProvincia"), "")
+            self.cod_postal = domicilio.get("codPostal")
+        else:
+            self.direccion = self.localidad = self.provincia = ""
+            self.cod_postal = ""
+        # retrocompatibilidad:
+        self.domicilios = [domicilio]
+        self.domicilio = "%s - %s (%s) - %s" % (
+                            self.direccion, self.localidad, 
+                            self.cod_postal, self.provincia,)
+        # extraer datos impositivos (inscripción / opción) para unificarlos:
+        data_mt = ret.get("datosMonotributo", {})
+        data_rg = ret.get("datosRegimenGeneral", {})
+        # analizo impuestos:
+        impuestos = data_mt.get("impuesto", []) + data_rg.get("impuesto", [])
+        self.impuestos = [imp["idImpuesto"] for imp in impuestos]
+        actividades = data_rg.get("actividad", []) + data_mt.get("actividadMonotributista", [])
+        self.actividades = [act["idActividad"] for act in actividades]
+        if 32 in self.impuestos:
+            self.imp_iva = "EX"
+        elif 33 in self.impuestos:
+            self.imp_iva = "NI"
+        elif 34 in self.impuestos:
+            self.imp_iva = "NA"
+        else:
+            self.imp_iva = "S" if 30 in self.impuestos else "N"
+        cat_mt = data_mt.get("categoriaMonotributo", {})
+        self.monotributo = "S" if cat_mt else "N"
+        self.actividad_monotributo = cat_mt.get("descripcionCategoria") if cat_mt else ""
+        self.integrante_soc = ""
+        self.empleador = "S" if 301 in self.impuestos else "N"
+        # intenta determinar categoría de IVA (confirmar)
+        if self.imp_iva in ('AC', 'S'):
+            self.cat_iva = 1  # RI
+        elif self.imp_iva == 'EX':
+            self.cat_iva = 4  # EX
+        elif self.monotributo == 'S':
+            self.cat_iva = 6  # MT
+        else:
+            self.cat_iva = 5  # CF
+        return not self.errores
+
+
 def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
@@ -238,6 +329,10 @@ def main():
         print "IVA", padron.imp_iva
         print "MT", padron.monotributo, padron.actividad_monotributo
         print "Empleador", padron.empleador
+
+        if padron.Excepcion:
+            print "Excepcion:", padron.Excepcion
+            # ver padron.errores para el detalle
 
     except:
         raise
