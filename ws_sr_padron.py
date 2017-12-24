@@ -146,6 +146,13 @@ class WSSrPadronA4(BaseWS):
         self.impuestos = [imp["idImpuesto"] for imp in data.get("impuesto", [])
                           if imp['estado'] == u'ACTIVO']
         self.actividades = [act["idActividad"] for act in data.get("actividad", [])]
+        mt = [cat for cat in data.get("categoria", [])
+              if cat["idImpuesto"] in (20, 21) and cat["estado"] == "ACTIVO"]
+        mt.sort(key=lambda cat: cat["idImpuesto"])
+        self.analizar_datos(mt[0] if mt else {})
+
+    def analizar_datos(self, cat_mt):
+        # intenta determinar situación de IVA:
         if 32 in self.impuestos:
             self.imp_iva = "EX"
         elif 33 in self.impuestos:
@@ -154,11 +161,8 @@ class WSSrPadronA4(BaseWS):
             self.imp_iva = "NA"
         else:
             self.imp_iva = "S" if 30 in self.impuestos else "N"
-        mt = [cat for cat in data.get("categoria", [])
-              if cat["idImpuesto"] in (20, 21) and cat["estado"] == "ACTIVO"]
-        mt.sort(key=lambda cat: cat["idImpuesto"])
-        self.monotributo = "S" if mt else "N"
-        self.actividad_monotributo = mt[0].get("descripcionCategoria") if mt else ""
+        self.monotributo = "S" if cat_mt else "N"
+        self.actividad_monotributo = cat_mt.get("descripcionCategoria") if cat_mt else ""
         self.integrante_soc = ""
         self.empleador = "S" if 301 in self.impuestos else "N"
         # intenta determinar categoría de IVA (confirmar)
@@ -238,28 +242,8 @@ class WSSrPadronA5(WSSrPadronA4):
         self.impuestos = [imp["idImpuesto"] for imp in impuestos]
         actividades = data_rg.get("actividad", []) + data_mt.get("actividadMonotributista", [])
         self.actividades = [act["idActividad"] for act in actividades]
-        if 32 in self.impuestos:
-            self.imp_iva = "EX"
-        elif 33 in self.impuestos:
-            self.imp_iva = "NI"
-        elif 34 in self.impuestos:
-            self.imp_iva = "NA"
-        else:
-            self.imp_iva = "S" if 30 in self.impuestos else "N"
         cat_mt = data_mt.get("categoriaMonotributo", {})
-        self.monotributo = "S" if cat_mt else "N"
-        self.actividad_monotributo = cat_mt.get("descripcionCategoria") if cat_mt else ""
-        self.integrante_soc = ""
-        self.empleador = "S" if 301 in self.impuestos else "N"
-        # intenta determinar categoría de IVA (confirmar)
-        if self.imp_iva in ('AC', 'S'):
-            self.cat_iva = 1  # RI
-        elif self.imp_iva == 'EX':
-            self.cat_iva = 4  # EX
-        elif self.monotributo == 'S':
-            self.cat_iva = 6  # MT
-        else:
-            self.cat_iva = 5  # CF
+        self.analizar_datos(cat_mt)
         return not self.errores
 
 
@@ -318,7 +302,7 @@ def main():
             id_persona = len(sys.argv)>1 and sys.argv[1] or "20267565393"
 
         if "--testing" in sys.argv:
-            padron.LoadTestXML("tests/xml/ws_sr_padron_a4_resp.xml")
+            padron.LoadTestXML("tests/xml/%s_resp.xml" % service)
         print "Consultando AFIP online via webservice...",
         ok = padron.Consultar(id_persona)
 
