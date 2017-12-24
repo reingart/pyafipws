@@ -18,7 +18,7 @@ Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.03b"
 
 import datetime
 import decimal
@@ -179,6 +179,7 @@ class WSSrPadronA5(WSSrPadronA4):
     _reg_progid_ = "WSSrPadronA5"
     _reg_clsid_ = "{DF7447DD-EEF3-4E6B-A93B-F969B5075EC8}"
 
+    WSDL = WSDL.replace("personaServiceA4", "personaServiceA5")
 
     @inicializar_y_capturar_excepciones
     def Consultar(self, id_persona):
@@ -266,34 +267,44 @@ def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
     global CONFIG_FILE
+
     DEBUG = '--debug' in sys.argv
+
+    if '--constancia' in sys.argv:
+        padron = WSSrPadronA5()
+        SECTION = 'WS-SR-PADRON-A5'
+        service = "ws_sr_constancia_inscripcion"
+    else:
+        padron = WSSrPadronA4()
+        SECTION = 'WS-SR-PADRON-A4'
+        service = "ws_sr_padron_a4"
+
     config = abrir_conf(CONFIG_FILE, DEBUG)
     if config.has_section('WSAA'):
         crt = config.get('WSAA', 'CERT')
         key = config.get('WSAA', 'PRIVATEKEY')
-        cuit = config.get('WS-SR-PADRON-A4', 'CUIT')
+        cuit = config.get(SECTION, 'CUIT')
     else:
         crt, key = "reingart.crt", "reingart.key"
         cuit = "20267565393"
-    url_wsaa = url_wsa4 = None
+    url_wsaa = url_ws = None
     if config.has_option('WSAA','URL'):
-        url_wsaa = config.get('WSAA', 'URL') 
-    if config.has_option('WS-SR-PADRON-A4','URL') and not HOMO:
-        url_wsa4 = config.get('WS-SR-PADRON-A4', 'URL')
+        url_wsaa = config.get('WSAA', 'URL')
+    if config.has_option(SECTION,'URL') and not HOMO:
+        url_ws = config.get(SECTION, 'URL')
 
     # obteniendo el TA para pruebas
     from wsaa import WSAA
 
     cache = ""
-    ta = WSAA().Autenticar("ws_sr_padron_a4", crt, key, url_wsaa)
+    ta = WSAA().Autenticar(service, crt, key, url_wsaa)
 
-    wssrpadron4 = WSSrPadronA4()
-    wssrpadron4.SetTicketAcceso(ta)
-    wssrpadron4.Cuit = cuit
-    wssrpadron4.Conectar(cache, url_wsa4, cacert="conf/afip_ca_info.crt")
+    padron.SetTicketAcceso(ta)
+    padron.Cuit = cuit
+    padron.Conectar(cache, url_ws, cacert="conf/afip_ca_info.crt")
 
     if "--dummy" in sys.argv:
-        print wssrpadron4.client.help("dummy")
+        print padron.client.help("dummy")
         wssrpadron4.Dummy()
         print "AppServerStatus", wssrpadron4.AppServerStatus
         print "DbServerStatus", wssrpadron4.DbServerStatus
@@ -307,15 +318,14 @@ def main():
             id_persona = len(sys.argv)>1 and sys.argv[1] or "20267565393"
 
         if "--testing" in sys.argv:
-            wssrpadron4.LoadTestXML("tests/xml/ws_sr_padron_a4_resp.xml")
+            padron.LoadTestXML("tests/xml/ws_sr_padron_a4_resp.xml")
         print "Consultando AFIP online via webservice...",
-        ok = wssrpadron4.Consultar(id_persona)
+        ok = padron.Consultar(id_persona)
 
         if DEBUG:
-            print "Persona", wssrpadron4.Persona
-            print wssrpadron4.Excepcion
+            print "Persona", padron.Persona
+            print padron.Excepcion
 
-        padron = wssrpadron4
         print 'ok' if ok else "error", padron.Excepcion
         print "Denominacion:", padron.denominacion
         print "Tipo:", padron.tipo_persona, padron.tipo_doc, padron.nro_doc
@@ -336,12 +346,12 @@ def main():
 
     except:
         raise
-        print wssrpadron4.XmlRequest
-        print wssrpadron4.XmlResponse
+        print padron.XmlRequest
+        print padron.XmlResponse
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-INSTALL_DIR = WSSrPadronA4.InstallDir = get_install_dir()
+INSTALL_DIR = WSSrPadronA4.InstallDir = WSSrPadronA5.InstallDir = get_install_dir()
 
 
 if __name__ == '__main__':
@@ -349,6 +359,7 @@ if __name__ == '__main__':
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSSrPadronA4)
+        win32com.server.register.UseCommandLine(WSSrPadronA5)
     else:
         main()
 
