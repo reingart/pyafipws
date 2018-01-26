@@ -42,6 +42,7 @@ Sub Main()
     WSLTV.Sign = WSAA.Sign
     ' CUIT (debe estar registrado en la AFIP)
     WSLTV.cuit = "20267565393"
+    WSLTV.LanzarExcepciones = False
     
     ' Conectar al Servicio Web
     ok = WSLTV.Conectar("", "", "") ' homologación
@@ -63,8 +64,8 @@ Sub Main()
     
     ' genero una liquidación de ejemplo:
     tipo_cbte = 150
-    pto_vta = 2002
-
+    pto_vta = 10
+    
     ' obtengo el último número de comprobante registrado
     ok = WSLTV.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
     If ok Then
@@ -78,6 +79,29 @@ Sub Main()
         Debug.Print WSLTV.ErrMsg
         MsgBox "No se pudo obtener el último número de orden!"
         nro_cbte = 1                    ' uso el primero
+    End If
+    
+    ' ejemplo para consultar el comprobante anterior
+    ok = WSLTV.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte - 1)
+    If ok Then
+        Debug.Print "NroComprobante", WSLTV.NroComprobante
+        Debug.Print "CAE", WSLTV.CAE
+        Debug.Print "FechaLiquidacion", WSLTV.FechaLiquidacion
+        Debug.Print "ImporteNeto", WSLTV.ImporteNeto
+        Debug.Print "AlicuotaIVA", WSLTV.AlicuotaIVA
+        Debug.Print "ImporteIVA", WSLTV.ImporteIVA
+        Debug.Print "Subtotal", WSLTV.Subtotal
+        Debug.Print "TotalRetenciones", WSLTV.TotalRetenciones
+        Debug.Print "TotalTributos", WSLTV.TotalTributos
+        Debug.Print "Total", WSLTV.Total
+        
+        ' obtengo los datos adcionales desde losparametros de salida:
+        Debug.Print WSLTV.GetParametro("fecha")
+        Debug.Print WSLTV.GetParametro("peso_total_fardos_kg")
+    Else
+        MsgBox "No se pudo consultar el comprobante anterior registrado en AFIP"
+        ' revisar el error, posiblemente no se pueda continuar
+        Debug.Print WSLTV.Traceback
     End If
     
     ' datos de la cabecera:
@@ -209,4 +233,10 @@ Sub Main()
         Debug.Print parametro ' devuelve un string ": codigo : descripcion :"
     Next
             
+    ' Consulto las variedades de tabaco (usando dos puntos como separador)
+    For Each parametro In WSLTV.ConsultarVariedadesClasesTabaco()
+        Debug.Print parametro ' devuelve un string ": codigo : descripcion :"
+    Next
+    
+    Debug.Print WSLTV.XmlResponse, WSLTV.Traceback
 End Sub

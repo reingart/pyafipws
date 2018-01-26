@@ -30,7 +30,7 @@ ta = WSAA.LoginCMS(cms)
 ON ERROR DO errhand2;
 
 *-- Crear objeto interface Web Service de Factura Electrónica Exportación
-WSFEX = CREATEOBJECT("WSFEX") 
+WSFEX = CREATEOBJECT("WSFEXv1") 
 
 ? WSFEX.Version
 ? WSFEX.InstallDir
@@ -45,7 +45,7 @@ WSFEX.Cuit = "20267565393"
 *-- Conectar al Servicio Web de Facturación
 *-- Producción usar: 
 *-- ok = WSFEX.Conectar("", "https://servicios1.afip.gov.ar/WSFEXv1/service.asmx?WSDL") && Producción
-ok = WSFEX.Conectar("")      && Homologación
+ok = WSFEX.Conectar("", "https://wswhomo.afip.gov.ar/WSFEXv1/service.asmx?WSDL")      && Homologación
 
 ? WSFEX.DebugLog()
 
@@ -61,6 +61,11 @@ tipo_cbte = 19 && FC Expo (ver tabla de parámetros)
 punto_vta = 1
 LastCBTE = WSFEX.GetLastCMP(tipo_cbte, punto_vta) 
 ? "Ult. Cbte:", LastCBTE
+
+IF ISNULL(LastCBTE) THEN
+	MESSAGEBOX("No se pudo obtener el ult. nro de comprobante. ErrMsg: " + WSFEX.ErrMsg + " Excepcion: " + WSFEX.Excepcion, 0)
+	CANCEL
+ENDIF
 
 *-- Establezco los valores de la factura o lote a autorizar:
 tipo_expo = 1 && tipo de exportación (ver tabla de parámetros)

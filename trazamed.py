@@ -19,7 +19,7 @@ según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16b"
+__version__ = "1.16c"
 
 import os
 import socket
@@ -776,12 +776,15 @@ def main():
                 formato[2].extend(d)
                 archivo.close()
         else:
-            for formato in formatos[:1]:
-                archivo = open(formato[0].lower() + ".txt", "r")
+            for formato, campos, lista in formatos[:1]:
+                archivo = open(formato.lower() + ".txt", "r")
                 for linea in archivo:
-                    d = leer(linea, formato[1])
-                    formato[2].append(d)
+                    d = leer(linea, campos)
+                    lista.append(d)
                 archivo.close()
+                if DEBUG:
+                    for campo in campos:
+                        print campo[0], "=", lista[0][campo[0]]
         
     ws.Conectar("", WSDL)
     
@@ -988,10 +991,10 @@ def main():
                 json.dump(formato[2], archivo, sort_keys=True, indent=4)
                 archivo.close()
         else:
-            for formato in formatos:
-                archivo = open(formato[0].lower() + ".txt", "w")
-                for it in formato[2]:
-                    archivo.write(escribir(it, formato[1]))
+            for formato, campos, lista in formatos:
+                archivo = open(formato.lower() + ".txt", "w")
+                for it in lista:
+                    archivo.write(escribir(it, campos))
             archivo.close()
 
 

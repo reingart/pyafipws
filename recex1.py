@@ -15,24 +15,24 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27b"
+__version__ = "1.27e"
 
 import datetime
 import os
 import sys
 import time
 import traceback
-from ConfigParser import SafeConfigParser
 
 # revisar la instalación de pyafip.ws:
 import wsfexv1
-from php import SimpleXMLElement, SoapClient, SoapFault, date
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I
+from utils import SimpleXMLElement, SoapClient, SoapFault, date
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfexv1.HOMO
 DEBUG = False
 XML = False
+TIMEOUT = 30
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
@@ -244,14 +244,7 @@ if __name__ == "__main__":
         print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
         sys.exit(0)
 
-    # si se pasa el archivo de configuración por parámetro, confirmar que exista
-    # y descartar que sea una opción
-    if len(sys.argv)>1 and (sys.argv[1][0] not in "-/" or os.path.exists(sys.argv[1])):
-        CONFIG_FILE = sys.argv.pop(1)
-    if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
-    
-    config = SafeConfigParser()
-    config.read(CONFIG_FILE)
+    config = abrir_conf(CONFIG_FILE, DEBUG)
     cert = config.get('WSAA','CERT')
     privatekey = config.get('WSAA','PRIVATEKEY')
     cuit = config.get('WSFEXv1','CUIT')
@@ -267,6 +260,18 @@ if __name__ == "__main__":
     else:
         wsfexv1_url = ""
 
+    CACERT = config.has_option('WSFEXv1', 'CACERT') and config.get('WSFEXv1', 'CACERT') or None
+    WRAPPER = config.has_option('WSFEXv1', 'WRAPPER') and config.get('WSFEXv1', 'WRAPPER') or None
+
+    if config.has_option('WSFEXv1', 'TIMEOUT'):
+        TIMEOUT = int(config.get('WSFEXv1', 'TIMEOUT'))
+
+    if config.has_section('PROXY') and not HOMO:
+        proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))
+        proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
+    else:
+        proxy_dict = {}
+
     if config.has_section('DBF'):
         conf_dbf = dict(config.items('DBF'))
         if DEBUG: print "conf_dbf", conf_dbf
@@ -281,13 +286,15 @@ if __name__ == "__main__":
 
     if DEBUG:
         print "wsaa_url %s\nwsfexv1_url %s" % (wsaa_url, wsfexv1_url)
+        if proxy_dict: print "proxy_dict=",proxy_dict
+        print "timeout:", TIMEOUT
         print "Config_file:", CONFIG_FILE
         print "Entrada: ", entrada
         print "Salida:", salida
     
     try:
         ws = wsfexv1.WSFEXv1()
-        ws.Conectar("", wsfexv1_url)
+        ws.Conectar("", wsfexv1_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER, timeout=TIMEOUT)
         ws.Cuit = cuit
 
         if '/dummy' in sys.argv:
@@ -323,7 +330,7 @@ if __name__ == "__main__":
         # obteniendo el TA
         from wsaa import WSAA
         wsaa = WSAA()
-        ta = wsaa.Autenticar("wsfex", cert, privatekey, wsaa_url)
+        ta = wsaa.Autenticar("wsfex", cert, privatekey, wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
         if not ta:
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
         ws.SetTicketAcceso(ta)
@@ -345,7 +352,7 @@ if __name__ == "__main__":
             domicilio_cliente = "Rua 76 km 34.5 Alagoas"
             id_impositivo = "PJ54482221-l"
             moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de parámetros)
-            moneda_ctz = 8.02
+            moneda_ctz = 19.80
             obs_comerciales = "Observaciones comerciales"
             obs = "Sin observaciones"
             forma_pago = "30 dias"

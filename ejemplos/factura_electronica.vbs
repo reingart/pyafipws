@@ -15,7 +15,10 @@ Wscript.Echo "InstallDir", WSAA.InstallDir, WSAA.Version
 ' Solicitar Ticket de Acceso
 wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms" ' Homologación!
 scriptdir = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)
-ok = WSAA.Autenticar("wsfe", scriptdir & "\..\reingart.crt", scriptdir & "\..\reingart.key", wsdl)
+proxy = ""   ' en caso de ser necesario: "usuario:clave@servidor:puerto"
+wrapper = "" ' usar "pycurl" como transporte alternativo en caso de inconvenientes con SSL
+cacert = ""  ' para verificacion de canal seguro usar: "conf\afip_ca_info.crt"
+ok = WSAA.Autenticar("wsfe", scriptdir & "\..\reingart.crt", scriptdir & "\..\reingart.key",  wsdl, proxy, wrapper, cacert)
 Wscript.Echo "Excepcion", WSAA.Excepcion
 Wscript.Echo "Token", WSAA.Token
 Wscript.Echo "Sign", WSAA.Sign
@@ -32,7 +35,8 @@ WSFEv1.Sign = WSAA.Sign
 
 ' Conectar al websrvice
 wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
-WSFEv1.Conectar "", wsdl
+timeout = 30    ' tiempo de espera predeterminado
+WSFEv1.Conectar "", wsdl, proxy, wrapper, cacert, timeout
 
 ' Consultar último comprobante autorizado en AFIP
 tipo_cbte = 1
@@ -115,3 +119,7 @@ Wscript.Echo "CAE:", WSFEv1.CAE
 Wscript.Echo "EmisionTipo:", WSFEv1.EmisionTipo
 
 MsgBox "Resultado:" & WSFEv1.Resultado & " CAE: " & CAE & " Venc: " & WSFEv1.Vencimiento & " Obs: " & WSFEv1.obs & " Reproceso: " & WSFEv1.Reproceso, vbInformation + vbOKOnly
+
+'For Each evento In WSFEv1.Eventos
+'   MsgBox evento, vbInformation + vbOKOnly, "Eventos AFIP"
+'Next

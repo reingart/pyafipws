@@ -16,9 +16,9 @@ a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06d"
+__version__ = "1.06g"
 
 import datetime
 import decimal
@@ -36,6 +36,7 @@ class WSBFEv1(BaseWS):
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamUMed', 
                         'GetParamTipoIVA', 'GetParamNCM', 'GetParamZonas',
+                        'GetParamTipoDoc',
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID',
                         'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
@@ -77,7 +78,7 @@ class WSBFEv1(BaseWS):
             for error in errores:
                 self.Errores.append("%s: %s" % (
                     error['ErrCode'],
-                    error['ErrMsg'],
+                    error.get('ErrMsg', ""),
                     ))
             self.ErrCode = ' '.join([str(error['ErrCode']) for error in errores])
             self.ErrMsg = '\n'.join(self.Errores)
@@ -187,9 +188,9 @@ class WSBFEv1(BaseWS):
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.BFEDummy()['BFEDummyResult']
         self.__analizar_errores(result)
-        self.AppServerStatus = str(result['AppServer'])
-        self.DbServerStatus = str(result['DbServer'])
-        self.AuthServerStatus = str(result['AuthServer'])
+        self.AppServerStatus = str(result.get('AppServer', ""))
+        self.DbServerStatus = str(result.get('DbServer', ""))
+        self.AuthServerStatus = str(result.get('AuthServer', ""))
         return True
 
     @inicializar_y_capturar_excepciones
@@ -318,6 +319,27 @@ class WSBFEv1(BaseWS):
                 pass
                 raise
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in ivas]
+
+    @inicializar_y_capturar_excepciones
+    def GetParamTipoDoc(self):
+        "Recuperar lista de valores referenciales de tipos de documentos"
+        ret = self.client.BFEGetPARAM_Tipo_doc(
+            auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['BFEGetPARAM_Tipo_docResult']
+        self.__analizar_errores(result)
+     
+        docs = [] # tipos de documentos
+        for d in result['BFEResultGet']:
+            d = d['ClsBFEResponse_Tipo_doc']
+            try:
+                doc = {'id': d.get('Doc_Id'), 'ds': d.get('Doc_Ds'), 
+                        'vig_desde': d.get('Doc_vig_desde'), 
+                        'vig_hasta': d.get('Doc_vig_hasta')}
+                docs.append(doc)
+            except Exception, e:
+                pass
+                raise
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % d for d in docs]
 
     def GetParamTipoCbte(self):
         "Recuperar lista de valores referenciales de Tipos de Comprobantes"
@@ -453,8 +475,9 @@ if __name__ == "__main__":
         if '--dummy' in sys.argv:
             #wsbfev1.LanzarExcepciones = False
             print wsbfev1.Dummy()
-            print wsbfev1.XmlRequest
-            print wsbfev1.XmlResponse
+            print "AppServerStatus", wsbfev1.AppServerStatus
+            print "DbServerStatus", wsbfev1.DbServerStatus
+            print "AuthServerStatus", wsbfev1.AuthServerStatus
         
         if "--prueba" in sys.argv:
             try:
@@ -569,6 +592,9 @@ if __name__ == "__main__":
                 
             print "=== Monedas ==="
             print u'\n'.join(wsbfev1.GetParamMon())
+
+            print "=== Tipos de Documentos ==="
+            print u'\n'.join(wsbfev1.GetParamTipoDoc())
 
             print "=== Tipos de IVA ==="
             print u'\n'.join(wsbfev1.GetParamTipoIVA())

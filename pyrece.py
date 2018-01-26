@@ -13,9 +13,9 @@
 "Aplicativo AdHoc Para generación de Facturas Electrónicas"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27f"
+__version__ = "1.31a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -26,8 +26,8 @@ import gui
 import unicodedata
 import traceback
 from ConfigParser import SafeConfigParser
-import wsaa, wsfe, wsfev1, wsfexv1
-from php import SimpleXMLElement, SoapClient, SoapFault, date
+import wsaa, wsfev1, wsfexv1
+from utils import SimpleXMLElement, SoapClient, SoapFault, date
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -38,6 +38,12 @@ from pyfepdf import FEPDF
 
 # Formatos de archivos:
 from formatos import formato_xml, formato_csv, formato_dbf, formato_txt, formato_json
+
+try:
+    from numeros import conv_text
+except:
+    conv_text = lambda num: str(num)
+
 
 HOMO = False
 DEBUG = '--debug' in sys.argv
@@ -197,6 +203,7 @@ class PyRece(gui.Controller):
         if not self.token or not self.sign:
             gui.alert("Debe autenticarse con AFIP!", 'Advertencia')
             raise RuntimeError()
+        self.ws.Dummy()
 
     def on_btnMarcarTodo_click(self, event):
         for it in self.components.lvwListado.items:
@@ -205,12 +212,7 @@ class PyRece(gui.Controller):
     def on_menu_consultas_dummy_click(self, event):
         ##self.verifica_ws()
         try:
-            if self.webservice=="wsfe":
-                results = self.client.FEDummy()
-                msg = "AppServ %s\nDbServer %s\nAuthServer %s" % (
-                    results.appserver, results.dbserver, results.authserver)
-                location = self.ws.client.location
-            elif self.webservice in ("wsfev1", "wsfexv1"):
+            if self.webservice in ("wsfev1", "wsfexv1"):
                 self.ws.Dummy()
                 msg = "AppServ %s\nDbServer %s\nAuthServer %s" % (
                     self.ws.AppServerStatus, self.ws.DbServerStatus, self.ws.AuthServerStatus)
@@ -238,10 +240,7 @@ class PyRece(gui.Controller):
         ptovta = result
 
         try:
-            if self.webservice=="wsfe":
-                ultcmp = wsfe.recuperar_last_cmp(self.client, self.token, self.sign, 
-                    cuit, ptovta, tipocbte)
-            elif  self.webservice=="wsfev1":
+            if  self.webservice=="wsfev1":
                 ultcmp = "%s (wsfev1)" % self.ws.CompUltimoAutorizado(tipocbte, ptovta) 
             elif  self.webservice=="wsfexv1":
                 ultcmp = "%s (wsfexv1)" % self.ws.GetLastCMP(tipocbte, ptovta) 
@@ -253,8 +252,6 @@ class PyRece(gui.Controller):
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
-        except wsfe.WSFEError,e:
-            self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
@@ -309,8 +306,6 @@ class PyRece(gui.Controller):
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
-        except wsfe.WSFEError,e:
-            self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
             self.error(u'Excepción',unicode(str(e),"latin1","ignore"))
 
@@ -318,11 +313,7 @@ class PyRece(gui.Controller):
     def on_menu_consultas_lastID_click(self, event):
         ##self.verifica_ws()
         try:
-            if self.webservice=="wsfe":
-                ultnro = wsfe.ultnro(self.client, self.token, self.sign, cuit)
-                print "ultnro", ultnro
-                print self.client.xml_response
-            elif self.webservice=="wsfexv1":
+            if self.webservice=="wsfexv1":
                 ultnro = self.ws.GetLastID()
             else: 
                 ultnro = None
@@ -332,8 +323,6 @@ class PyRece(gui.Controller):
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
-        except wsfe.WSFEError,e:
-            self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
             self.error(u'Excepción',unicode(e))
 
@@ -371,10 +360,7 @@ class PyRece(gui.Controller):
         self.token = None
         self.sign = None
         
-        if self.webservice == "wsfe":
-            self.client = SoapClient(wsfe_url, action=wsfe.SOAP_ACTION, namespace=wsfe.SOAP_NS,
-                        trace=False, exceptions=True)
-        elif self.webservice == "wsfev1":
+        if self.webservice == "wsfev1":
             self.ws = wsfev1.WSFEv1()
         elif self.webservice == "wsfexv1":
             self.ws = wsfexv1.WSFEXv1()
@@ -385,12 +371,12 @@ class PyRece(gui.Controller):
                 service = "wsfe"
             elif self.webservice in ('wsfev1', ):
                 self.log("Conectando WSFEv1... " + wsfev1_url)
-                self.ws.Conectar("",wsfev1_url, proxy_dict)
+                self.ws.Conectar("",wsfev1_url, proxy_dict, timeout=60, cacert=CACERT, wrapper=WRAPPER)
                 self.ws.Cuit = cuit
                 service = "wsfe"
             elif self.webservice in ('wsfex', 'wsfexv1'):
                 self.log("Conectando WSFEXv1... " + wsfexv1_url)
-                self.ws.Conectar("",wsfexv1_url, proxy_dict)
+                self.ws.Conectar("",wsfexv1_url, proxy_dict, cacert=CACERT, wrapper=WRAPPER)
                 self.ws.Cuit = cuit
                 service = "wsfex"
             else:
@@ -403,7 +389,7 @@ class PyRece(gui.Controller):
             self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
             cms = ws.SignTRA(str(tra),str(cert),str(privatekey))
             self.log("Llamando a WSAA... " + wsaa_url)
-            ws.Conectar("", wsdl=wsaa_url, proxy=proxy_dict)
+            ws.Conectar("", wsdl=wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
             self.log("Proxy: %s" % proxy_dict)
             xml = ws.LoginCMS(str(cms))
             self.log("Procesando respuesta...")
@@ -551,20 +537,7 @@ class PyRece(gui.Controller):
                 for key in kargs:
                     if isinstance(kargs[key], basestring):
                         kargs[key] = kargs[key].replace(",",".")
-                if self.webservice == 'wsfe':
-                    if 'id' not in kargs or kargs['id'] == "":
-                        id = long(kargs['cbt_desde'])
-                        id += (int(kargs['tipo_cbte'])*10**4 + int(kargs['punto_vta']))*10**8
-                        kargs['id'] = id
-                    if DEBUG:
-                        self.log('\n'.join(["%s='%s'" % (k,v) for k,v in kargs.items()]))
-                    if not cuit in kargs:
-                        kargs['cuit'] = cuit
-                    ret = wsfe.aut(self.client, self.token, self.sign, **kargs)
-                    kargs.update(ret)
-                    del kargs['cbt_desde'] 
-                    del kargs['cbt_hasta']
-                elif self.webservice == 'wsfev1':
+                if self.webservice == 'wsfev1':
                     encabezado = {}
                     for k in ('concepto', 'tipo_doc', 'nro_doc', 'tipo_cbte', 'punto_vta',
                               'cbt_desde', 'cbt_hasta', 'imp_total', 'imp_tot_conc', 'imp_neto',
@@ -610,6 +583,16 @@ class PyRece(gui.Controller):
                             nro = kargs[k % 'nro']
                             if id:
                                 self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                        else:
+                            break
+
+                    for l in range(1,1000):
+                        k = 'opcional_%%s_%s' % l
+                        if (k % 'id') in kargs:
+                            op_id = kargs[k % 'id']
+                            valor = kargs[k % 'valor']
+                            if op_id:
+                                self.ws.AgregarOpcional(op_id, valor)
                         else:
                             break
                 
@@ -688,10 +671,10 @@ class PyRece(gui.Controller):
                     if self.ws.Obs and self.ws.Obs!='00':
                         gui.alert(self.ws.Obs, u"Observación AFIP")
                         
-                # actuaizo la factura
+                # actualizo la factura
                 for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
                     if kargs.get(k):
-                        item[k] = kargs[k]
+                        item[k] = kargs[k] if kargs[k] is not None else ""
                 self.items[i] = item
                 self.log(u"ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 procesadas += 1
@@ -710,8 +693,6 @@ class PyRece(gui.Controller):
             self.grabar()
         except SoapFault, e:
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
-        except wsfe.WSFEError,e:
-            self.error(e.code, e.msg.encode("ascii","ignore"))
         except KeyError, e:
             self.error("Error",u'Campo obligatorio no encontrado: %s' % e)
         except Exception, e:
@@ -872,7 +853,8 @@ class PyRece(gui.Controller):
             
                 for i, item in self.get_selected_items():
                     for key in ('id', 'cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
-                        item[key] = kargs[key]
+                        item[key] = kargs[key] if kargs[key] is not None else ""
+                        self.items[i] = item
                     
                 self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
                 if kargs['resultado'] == "R":
@@ -888,8 +870,6 @@ class PyRece(gui.Controller):
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
             self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
-        except wsfe.WSFEError,e:
-            self.error(e.code, e.msg.encode("ascii","ignore"))
         except Exception, e:
             self.error(u'Excepción',unicode(e))
 
@@ -939,6 +919,11 @@ class PyRece(gui.Controller):
                 fact[d['campo']] = d['valor']
                 
         fepdf.factura = fact
+        
+        # convertir importe total en texto (palabras):
+        moneda_ds = {"PES": "PESOS", "DOL": "DOLAR EEUU"}.get(fact.get("moneda_id", ""), "")
+        fact["en_letras"] = "SON " + moneda_ds + " " + conv_text(float(fact["imp_total"]))
+
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
 
@@ -959,6 +944,7 @@ class PyRece(gui.Controller):
         
         salida = conf_fact.get("salida", "")
         fact = fepdf.factura
+        
         if salida:
             pass
         elif 'pdf' in fact and fact['pdf']:
@@ -1020,7 +1006,11 @@ class PyRece(gui.Controller):
                     if conf_mail['usuario'] and conf_mail['clave']:
                         self.smtp.ehlo()
                         self.smtp.login(conf_mail['usuario'], conf_mail['clave'])
-                self.smtp.sendmail(msg['From'], msg['To'], msg.as_string())
+                to = [msg['To']]
+                bcc = conf_mail.get('bcc', None)
+                if bcc:
+                    to.append(bcc)
+                self.smtp.sendmail(msg['From'], to, msg.as_string())
             except Exception,e:
                 self.error(u'Excepción',unicode(e))
             
@@ -1071,10 +1061,6 @@ if __name__ == '__main__':
         wsaa_url = config.get('WSAA','URL')
     else:
         wsaa_url = wsaa.WSAAURL
-    if config.has_option('WSFE','URL') and not HOMO:
-        wsfe_url = config.get('WSFE','URL')
-    else:
-        wsfe_url = wsfe.WSFEURL
 
     if config.has_option('WSFEv1','URL') and not HOMO:
         wsfev1_url = config.get('WSFEv1','URL')
@@ -1085,6 +1071,9 @@ if __name__ == '__main__':
         wsfexv1_url = config.get('WSFEXv1','URL')
     else:
         wsfexv1_url = wsfexv1.WSDL
+
+    CACERT = config.has_option('WSAA', 'CACERT') and config.get('WSAA', 'CACERT') or None
+    WRAPPER = config.has_option('WSAA', 'WRAPPER') and config.get('WSAA', 'WRAPPER') or None
 
     DEFAULT_WEBSERVICE = "wsfev1"
     if config.has_section('PYRECE'):

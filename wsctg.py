@@ -11,16 +11,16 @@
 # for more details.
 
 """Módulo para obtener Código de Trazabilidad de Granos
-del web service WSCTG versión 3.0 de AFIP (RG3593/14)
+del web service WSCTG versión 4.0 de AFIP (RG3593/14)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.13b"
+__version__ = "1.14a"
 
 LICENCIA = """
-wsctgv2.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
+wsctg.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
 Copyright (C) 2014-2015 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CodigoTrazabilidadGranos
 
@@ -68,7 +68,7 @@ Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
-from php import date
+from utils import date
 import traceback
 from pysimplesoap.client import SoapFault
 import utils
@@ -79,7 +79,7 @@ from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, 
 
 # constantes de configuración (homologación):
 
-WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v3.0?wsdl"
+WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v4.0?wsdl"
 
 DEBUG = False
 XML = False
@@ -101,7 +101,7 @@ ENCABEZADO = [
     ('codigo_cosecha', 4, N), 
     ('peso_neto_carga', 5, N), 
     ('cant_horas', 2, N), 
-    ('patente_vehiculo', 6, A), 
+    ('reservado1', 6, A), 
     ('cuit_transportista', 11, N), 
     ('km_a_recorrer', 4, N),                          # km_recorridos (en consulta WSCTGv2)
     ('establecimiento', 6, N),                        # confirmar arribo
@@ -128,12 +128,17 @@ ENCABEZADO = [
     # nuevos campos agregados WSCTGv3:
     ('cuit_corredor', 12, N),
     ('remitente_comercial_como_productor', 1, A),
+    ('patente_vehiculo', 10, A), 
+
+    # nuevos campos agregados WSCTGv4:
+    ('ctc_codigo', 2, A),
+    ('turno', 20, A),
     
     ]        
 
 
 
-class WSCTGv2(BaseWS):
+class WSCTG(BaseWS):
     "Interfaz para el WebService de Código de Trazabilidad de Granos (Version 3)"    
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
@@ -162,10 +167,10 @@ class WSCTGv2(BaseWS):
         'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
         'TarifaReferencia', 'Destino', 'Destinatario', 'Detalle',
         'Patente', 'PesoNeto', 'FechaVencimiento',
-        'UsuarioSolicitante', 'UsuarioReal',
+        'UsuarioSolicitante', 'UsuarioReal', 'CtcCodigo', 'Turno',
         ]
-    _reg_progid_ = "WSCTGv2"
-    _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
+    _reg_progid_ = "WSCTG"
+    _reg_clsid_ = "{4383E947-57C4-47C5-8419-85221580CB48}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -177,7 +182,7 @@ class WSCTGv2(BaseWS):
         ret = BaseWS.Conectar(self, *args, **kwargs)
         # corregir descripción de servicio WSDL publicado por AFIP
         # kmARecorrer -> kmRecorridos (ConsultarDetalleCTG) 
-        port = self.client.services['CTGService_v3.0']['ports']['CTGServiceHttpSoap20Endpoint']
+        port = self.client.services['CTGService_v4.0']['ports']['CTGServiceHttpSoap20Endpoint']
         msg = port['operations']['consultarDetalleCTG']['output']['consultarDetalleCTGResponse']
         msg['response']['consultarDetalleCTGDatos']['kmRecorridos'] = int
         return ret
@@ -195,6 +200,7 @@ class WSCTGv2(BaseWS):
         self.Detalle = self.Destino = self.Destinatario = ''
         self.Patente = self.PesoNeto = self.FechaVencimiento = ''
         self.UsuarioSolicitante = self.UsuarioReal = ''
+        self.CtcCodigo = self.Turno = ""
 
 
     def __analizar_errores(self, ret):
@@ -263,7 +269,8 @@ class WSCTGv2(BaseWS):
         codigo_localidad_destino, codigo_cosecha, peso_neto_carga, 
         cant_horas=None, patente_vehiculo=None, cuit_transportista=None, 
         km_a_recorrer=None, remitente_comercial_como_canjeador=None, 
-        cuit_corredor=None, remitente_comercial_como_productor=None,
+        cuit_corredor=None, remitente_comercial_como_productor=None, 
+        turno=None,
         **kwargs):
         "Solicitar CTG Desde el Inicio"
         # ajusto parámetros según validaciones de AFIP:
@@ -271,6 +278,8 @@ class WSCTGv2(BaseWS):
             cuit_canjeador = None         # nulo
         if not remitente_comercial_como_canjeador:
             remitente_comercial_como_canjeador = None
+        if not remitente_comercial_como_productor:
+            remitente_comercial_como_productor = None
 
         ret = self.client.solicitarCTGInicial(request=dict(
                         auth={
@@ -293,6 +302,7 @@ class WSCTGv2(BaseWS):
                             kmARecorrer=km_a_recorrer,
                             cuitCorredor=cuit_corredor,
                             remitenteComercialcomoProductor=remitente_comercial_como_productor,
+                            turno=turno,
                             )))['response']
         self.__analizar_errores(ret)
         self.Observaciones = ret['observacion']
@@ -311,7 +321,7 @@ class WSCTGv2(BaseWS):
     
     @inicializar_y_capturar_excepciones
     def SolicitarCTGDatoPendiente(self, numero_carta_de_porte, cant_horas, 
-        patente_vehiculo, cuit_transportista):
+        patente_vehiculo, cuit_transportista, patente=None, turno=None):
         "Solicitud que permite completar los datos faltantes de un Pre-CTG "
         "generado anteriormente a través de la operación solicitarCTGInicial"
         ret = self.client.solicitarCTGDatoPendiente(request=dict(
@@ -322,6 +332,8 @@ class WSCTGv2(BaseWS):
                             cartaPorte=numero_carta_de_porte, 
                             cuitTransportista=cuit_transportista,
                             cantHoras=cant_horas,
+                            patente=patente,
+                            turno=turno,
                             )))['response']
         self.__analizar_errores(ret)
         self.Observaciones = ret['observacion']
@@ -420,7 +432,7 @@ class WSCTGv2(BaseWS):
     def CambiarDestinoDestinatarioCTGRechazado(self, numero_carta_de_porte, 
                             numero_ctg, codigo_localidad_destino=None,
                             cuit_destino=None, cuit_destinatario=None,
-                            km_a_recorrer=None, 
+                            km_a_recorrer=None, turno=None,
                             **kwargs):
         "Tomar acción de Cambio de Destino y Destinatario para CTG rechazado"
         ret = self.client.cambiarDestinoDestinatarioCTGRechazado(request=dict(
@@ -434,6 +446,7 @@ class WSCTGv2(BaseWS):
                             cuitDestino=cuit_destino, 
                             cuitDestinatario=cuit_destinatario,
                             kmARecorrer=km_a_recorrer,
+                            turno=turno,
                             )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
@@ -565,6 +578,8 @@ class WSCTGv2(BaseWS):
             self.FechaVencimiento = datos_ctg.get("fechaVencimiento")
             self.UsuarioSolicitante = datos_ctg.get("usuarioSolicitante")
             self.UsuarioReal = datos_ctg.get("usuarioReal")
+            self.CtcCodigo = datos_ctg.get("ctcCodigo")
+            self.Turno = datos_ctg.get("turno")
             return self.NumeroCTG
         else:
             return ""
@@ -758,7 +773,11 @@ def escribir_archivo(cols, items, nombre_archivo, agrega=False):
     else:
         raise RuntimeError("Extension de archivo desconocida: %s" % ext)
     archivo.close()
-    
+
+
+class WSCTGv2(BaseWS):
+    _reg_progid_ = "WSCTGv2"
+    _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -769,7 +788,7 @@ elif sys.frozen=='dll':
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
     basepath = sys.executable
-INSTALL_DIR = WSCTGv2.InstallDir = get_install_dir()
+INSTALL_DIR = WSCTG.InstallDir = WSCTGv2.InstallDir = get_install_dir()
 
 
 if __name__ == '__main__':
@@ -792,6 +811,8 @@ if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
+        win32com.server.register.UseCommandLine(WSCTG)
+        # Compatibilidad hacia atrás:
         win32com.server.register.UseCommandLine(WSCTGv2)
         sys.exit(0)
 
@@ -848,7 +869,7 @@ if __name__ == '__main__':
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
 
         # cliente soap del web service
-        wsctg = WSCTGv2()
+        wsctg = WSCTG()
         wsctg.Conectar(wsdl=wsctg_url)
         wsctg.SetTicketAcceso(ta)
         wsctg.Cuit = CUIT
@@ -1083,7 +1104,10 @@ if __name__ == '__main__':
                           'patenteVehiculo': 'patente_vehiculo', 
                           'pesoNetoCarga': 'peso_neto_carga',
                           'kmRecorridos': 'km_recorridos', 
-                          'tarifaReferencia': 'tarifa_referencia', }.items():
+                          'tarifaReferencia': 'tarifa_referencia',
+                          'ctcCodigo': 'ctc_codigo',
+                          'turno': 'turno',
+                        }.items():
                     v = wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
                     print k, v
                     if ki.startswith("cuit") and v:

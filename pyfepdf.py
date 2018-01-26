@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07x"
+__version__ = "1.08c"
 
 DEBUG = False
 HOMO = False
@@ -95,7 +95,7 @@ class FEPDF:
                  24: u"CI Tierra del Fuego",
                 }
 
-    umeds_ds = {0: u' ', 1: u'kg', 2: u'm', 3: u'm2', 4: u'm3', 5: u'l', 
+    umeds_ds = {0: '', 1: u'kg', 2: u'm', 3: u'm2', 4: u'm3', 5: u'l', 
              6: u'1000 kWh', 7: u'u', 
              8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 
             14: u'g', 15: u'mm', 16: u'mm3', 17: u'km', 18: u'hl', 20: u'cm', 
@@ -266,6 +266,14 @@ class FEPDF:
         "Agrego un tributo a una factura (interna)"
         iva = { 'iva_id': iva_id, 'base_imp': base_imp, 'importe': importe }
         self.factura['ivas'].append(iva)
+        return True
+
+    def AgregarPermiso(self, id_permiso, dst_merc, **kwargs):
+        "Agrego un permiso a una factura (interna)"
+        self.factura['permisos'].append({
+                'id_permiso': id_permiso,
+                'dst_merc': dst_merc,
+                })        
         return True
 
     # funciones de formateo de strings:
@@ -461,6 +469,9 @@ class FEPDF:
                 qty = qty_pos=='izq' and it['qty'] or None
                 codigo = it['codigo']
                 umed = it['umed']
+                # si umed es 0 (desc.), no imprimir cant/importes en 0
+                if umed is not None and umed <> "":
+                    umed = int(umed)
                 ds = it['ds'] or ""
                 if '\x00' in ds:
                     # limpiar descripción (campos dbf):
@@ -474,24 +485,35 @@ class FEPDF:
                 for ds in f.split_multicell(ds, 'Item.Descripcion01'):
                     if DEBUG: print "multicell", ds
                     # agrego un item por linea (sin precio ni importe):
-                    li_items.append(dict(codigo=codigo, ds=ds, qty=qty, umed=umed, precio=None, importe=None))
+                    li_items.append(dict(codigo=codigo, ds=ds, qty=qty, 
+                                         umed=umed if not n_li else None, 
+                                         precio=None, importe=None))
                     # limpio cantidad y código (solo en el primero)
-                    umed = qty = codigo = None
+                    qty = codigo = None
                     n_li += 1
                 # asigno el precio a la última línea del item 
-                li_items[-1].update(importe = it['importe'],
+                li_items[-1].update(importe = it['importe'] if float(it['importe'] or 0) or umed else None,
                                     despacho = it.get('despacho'),
-                                    precio = it['precio'],
+                                    precio = it['precio'] if float(it['precio'] or 0) or umed else None,
                                     qty = (n_li==1 or qty_pos=='der') and it['qty'] or None,
-                                    bonif = it.get('bonif'),
-                                    iva_id = it.get('iva_id'), imp_iva = it.get('imp_iva'),
-                                    dato_a = it.get('dato_a'), dato_b = it.get('dato_b'),
-                                    dato_c = it.get('dato_c'), dato_d= it.get('dato_d'),
+                                    bonif = it.get('bonif') if float(it['bonif'] or 0) or umed else None,
+                                    iva_id = it.get('iva_id'),
+                                    imp_iva = it.get('imp_iva'),
+                                    dato_a = it.get('dato_a'), 
+                                    dato_b = it.get('dato_b'),
+                                    dato_c = it.get('dato_c'), 
+                                    dato_d= it.get('dato_d'),
                                     dato_e = it.get('dato_e'),
                                     u_mtx = it.get('u_mtx'),
                                     cod_mtx = it.get('cod_mtx'),
                                     )
             
+            # reemplazar saltos de linea en observaciones:
+            for k in ('obs_generales', 'obs_comerciales'):
+                ds = fact.get(k, '')
+                if isinstance(ds, basestring) and '<br/>' in ds:
+                    fact[k] = ds.replace('<br/>', '\n')
+
             # divido las observaciones por linea:
             if fact.get('obs_generales') and not f.has_key('obs') and not f.has_key('ObservacionesGenerales1'):
                 obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
@@ -499,7 +521,7 @@ class FEPDF:
                 obs = obs.replace('\x00', '').replace('<br/>', '\n')
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-            if fact.get('obs_comerciales') and not f.has_key('obs_comerciales'):
+            if fact.get('obs_comerciales') and not f.has_key('obs_comerciales') and not f.has_key('ObservacionesComerciales1'):
                 obs="\n<U>Observaciones Comerciales:</U>\n\n" + fact['obs_comerciales']
                 # limpiar texto (campos dbf) y reemplazar saltos de linea:
                 obs = obs.replace('\x00', '').replace('<br/>', '\n')
@@ -508,9 +530,15 @@ class FEPDF:
 
             # agrego permisos a descripciones (si corresponde)
             permisos =  [u'Codigo de Despacho %s - Destino de la mercadería: %s' % (
-                         p['Permiso']['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
+                         p['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
                          for p in fact.get('permisos',[])]
-            if not f.has_key('permisos') and permisos:
+            #import dbg; dbg.set_trace()
+            if f.has_key('permiso.id1') and f.has_key("permiso.delivery1"):
+                for i, p in enumerate(fact.get('permisos', [])):
+                    self.AgregarDato("permiso.id%d" % (i+1), p['id_permiso'])
+                    pais_dst = self.paises.get(p['dst_merc'], p['dst_merc'])
+                    self.AgregarDato("permiso.delivery%d" % (i+1), pais_dst)
+            elif not f.has_key('permisos') and permisos:
                 obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -523,7 +551,7 @@ class FEPDF:
                 obs="\n<U>Comprobantes Asociados:</U>\n\n" + '\n'.join(cmps_asoc)
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-            cmps_asoc_ds = ', '.join(permisos)
+            cmps_asoc_ds = ', '.join(cmps_asoc)
 
             # calcular cantidad de páginas:
             lineas = len(li_items)
@@ -654,7 +682,7 @@ class FEPDF:
                             if it['codigo'] is not None:
                                 f.set('Item.Codigo%02d' % li, it['codigo'])
                             if it['umed'] is not None:
-                                if it['umed']:
+                                if it['umed'] and f.has_key("Item.Umed_ds01"):
                                     # recortar descripción:
                                     umed_ds = self.umeds_ds.get(int(it['umed']))
                                     s = f.split_multicell(umed_ds, 'Item.Umed_ds01')
@@ -700,7 +728,9 @@ class FEPDF:
                             if it['desc']:
                                 f.set('Tributo.Descripcion%02d' % lit, it['desc'])
                             else:
-                                f.set('Tributo.Descripcion%02d' % lit, self.tributos_ds[it['tributo_id']])
+                                trib_id = int(it['tributo_id'])
+                                trib_ds = self.tributos_ds[trib_id]
+                                f.set('Tributo.Descripcion%02d' % lit, trib_ds)
                             if it['base_imp'] is not None:
                                 f.set('Tributo.BaseImp%02d' % lit, self.fmt_num(it['base_imp']))
                             if it['alic'] is not None:
@@ -761,6 +791,7 @@ class FEPDF:
                             for iva in fact['ivas']:
                                 p = self.ivas_ds[int(iva['iva_id'])]
                                 f.set('IVA%s' % p, self.fmt_imp(iva['importe']))
+                                f.set('NETO%s' % p, self.fmt_imp(iva['base_imp']))
                                 f.set('IVA%s.L' % p, "IVA %s" % self.fmt_iva(iva['iva_id']))
                         else:
                             # Factura C y E no llevan columna IVA (B solo tasa)
@@ -771,6 +802,7 @@ class FEPDF:
                             f.set('LeyendaIVA', "")
                             for p in self.ivas_ds.values():
                                 f.set('IVA%s.L' % p, "")
+                                f.set('NETO%s.L' % p,"")
                         f.set('Total.L', 'Total:')
                         f.set('TOTAL', self.fmt_imp(fact['imp_total']))
                     else:
@@ -779,10 +811,11 @@ class FEPDF:
                                   'imp_iva', 'impto_liq_nri', 'imp_trib', 'imp_op_ex', 'imp_tot_conc',
                                   'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
                                   'NGRA.L', 'EXENTO.L', 'descuento.L', 'descuento', 'subtotal.L',
-                                  'NETO.L', 'IVA21.L', 'IVA10.5.L', 'IVA27.L', 'IVA5.L', 'IVA9.L', 'IVA2.5.L',
-                                  'NETO', 'IVA21', 'IVA10.5', 'IVA27', 'IVA5', 'IVA9', 'IVA2.5'):
+                                  'NETO.L', 'NETO', 'IVA.L', 'LeyendaIVA'):
                             f.set(k,"")
-                        f.set('LeyendaIVA', "")
+                        for p in self.ivas_ds.values():
+                            f.set('IVA%s.L' % p, "")
+                            f.set('NETO%s.L' % p,"")
                         f.set('Total.L', 'Subtotal:')
                         f.set('TOTAL', self.fmt_imp(subtotal))
 
@@ -823,22 +856,18 @@ class FEPDF:
                         f.set('estado', "Comprobante No Autorizado")
                     else:
                         f.set('estado', "") # compatibilidad hacia atras
-                        
+
+                    # colocar campos de observaciones (si no van en ds)
                     if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
                             f.set('ObservacionesGenerales%d' % (i+1), txt)
-                            
-                    # evaluo fórmulas (expresiones python)
-                    for field in f.keys:
-                        if field.startswith("="):
-                            formula = f.elements[field]['text']
-                            if DEBUG: print "**** formula: %s %s" % (field, formula)
-                            try:
-                                value = eval(formula,dict(fact=fact))
-                                f.set(field, value)
-                                if DEBUG: print "set(%s,%s)" % (field, value)
-                            except Exception, e:
-                                raise RuntimeError("Error al evaluar %s formula '%s': %s" % (field, formula, e))
+                    if f.has_key('observacionescomerciales1') and 'obs_comerciales' in fact:
+                        for i, txt in enumerate(f.split_multicell(fact['obs_comerciales'], 'ObservacionesComerciales1')):
+                            f.set('ObservacionesComerciales%d' % (i+1), txt)
+                    if f.has_key('enletras1') and 'en_letras' in fact:
+                        for i, txt in enumerate(f.split_multicell(fact['en_letras'], 'EnLetras1')):
+                            f.set('EnLetras%d' % (i+1), txt)
+
             ret = True
         except Exception, e:
             # capturar la excepción manualmente, para imprimirla en el PDF:
@@ -987,7 +1016,7 @@ if __name__ == '__main__':
             HOMO = True
             
             # datos generales del encabezado:
-            tipo_cbte = 1
+            tipo_cbte = 19 if '--expo' in sys.argv else 1
             punto_vta = 4000
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
@@ -997,21 +1026,22 @@ if __name__ == '__main__':
             imp_neto = "100.00"; imp_iva = "21.00"
             imp_trib = "1.00"; imp_op_ex = "2.00"; imp_subtotal = "105.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
-            # Fechas del período del servicio facturado (solo si concepto = 1?)
+            # Fechas del período del servicio facturado (solo si concepto> 1)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
-            moneda_id = 'PES'                   # p/exportación (ej): DOL
-            moneda_ctz = 1                      # p/exportación (ej): 8.98
+            # campos p/exportación (ej): DOL para USD, indicando cotización:
+            moneda_id = 'DOL' if '--expo' in sys.argv else 'PES'
+            moneda_ctz = 1 if moneda_id =='PES' else 14.90
             incoterms = 'FOB'                   # solo exportación
             idioma_cbte = 1                     # 1: es, 2: en, 3: pt
 
             # datos adicionales del encabezado:
             nombre_cliente = 'Joao Da Silva'
             domicilio_cliente = 'Rua 76 km 34.5 Alagoas'
-            pais_dst_cmp = 16                   # 200: Argentina, ver tabla
+            pais_dst_cmp = 212                  # 200: Argentina, ver tabla
             id_impositivo = 'PJ54482221-l'      # cat. iva (mercado interno)
             forma_pago = '30 dias'
 
-            obs_generales = "Observaciones Generales<br/>texto libre"
+            obs_generales = "Observaciones Generales<br/>linea2<br/>linea3"
             obs_comerciales = "Observaciones Comerciales<br/>texto libre"
             
             # datos devueltos por el webservice (WSFEv1, WSMTXCA, etc.):
@@ -1095,7 +1125,7 @@ if __name__ == '__main__':
             
             # descuento general (a tasa 21%):
             u_mtx = cod_mtx = codigo = None
-            ds = "Bonificación/Descuento 10%"
+            ds = u"Bonificación/Descuento 10%"
             qty = precio = bonif = None
             umed = 99
             iva_id = 5
@@ -1107,6 +1137,20 @@ if __name__ == '__main__':
             importe = -12.10
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, "")
+
+            # descripción (sin importes ni cantidad):
+            u_mtx = cod_mtx = codigo = None
+            qty = precio = bonif = iva_id = imp_iva = importe = None
+            umed = 0
+            ds = u"Descripción Ejemplo"
+            fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
+                    precio, bonif, iva_id, imp_iva, importe, "")
+
+            # Agrego un permiso (ver manual para el desarrollador WSFEXv1)
+            if '--expo' in sys.argv:
+                id_permiso = "99999AAXX999999A"
+                dst_merc = 225 # país destino de la mercaderia
+                ok = fepdf.AgregarPermiso(id_permiso, dst_merc)
 
             # completo campos personalizados de la plantilla:
             fepdf.AgregarDato("custom-nro-cli", "Cod.123")

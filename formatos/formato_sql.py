@@ -79,7 +79,7 @@ def configurar(schema):
     return tablas, campos, campos_rev
 
 def ejecutar(cur, sql, params=None):
-    print sql, params
+    ##print sql, params
     if params is None:
         return cur.execute(sql)
     else:
@@ -98,7 +98,7 @@ def max_id(db, schema={}):
             ret = row[0]
         if not ret:
             ret = 0
-        print "MAX_ID = ", ret
+        ##print "MAX_ID = ", ret
         return ret
     finally:
         cur.close()
@@ -247,7 +247,7 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
                 key = campos_rev["encabezado"].get(k[0], k[0].lower())
                 val = redondear(ENCABEZADO, key, val)                
                 encabezado[key] = val
-            print encabezado
+            ##print encabezado
             detalles = []
             if DEBUG: print ("SELECT * FROM %(detalle)s WHERE %%(id)s = ?" % tablas) % campos["detalle"], [encabezado['id']]
             ejecutar(cur, ("SELECT * FROM %(detalle)s WHERE %%(id)s = ?" % tablas) % campos["detalle"], [encabezado['id']]) 

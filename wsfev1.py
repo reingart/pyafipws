@@ -11,17 +11,19 @@
 # for more details.
 
 """Módulo para obtener CAE/CAEA, código de autorización electrónico webservice 
-WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.5)
+WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.10)
 Según RG 2485/08, RG 2757/2010, RG 2904/2010 y RG2926/10 (CAE anticipado), 
 RG 3067/2011 (RS - Monotributo), RG 3571/2013 (Responsables inscriptos IVA), 
 RG 3668/2014 (Factura A IVA F.8001), RG 3749/2015 (R.I. y exentos)
+RG 4004-E Alquiler de inmuebles con destino casa habitación).  
+RG 4109-E Venta de bienes muebles registrables.
 Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.17b"
+__version__ = "1.20a"
 
 import datetime
 import decimal
@@ -39,12 +41,15 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 
 
 class WSFEv1(BaseWS):
-    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.5"
+    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.10"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
+                        'AgregarComprador',
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
                         'CAEASinMovimientoInformar',
+                        'CAESolicitarX', 
+                        'IniciarFacturasX', 'AgregarFacturaX', 'LeerFacturaX',
                         'ParamGetTiposCbte',
                         'ParamGetTiposConcepto',
                         'ParamGetTiposDoc',
@@ -52,6 +57,7 @@ class WSFEv1(BaseWS):
                         'ParamGetTiposMonedas',
                         'ParamGetTiposOpcional',
                         'ParamGetTiposTributos',
+                        'ParamGetTiposPaises',
                         'ParamGetCotizacion', 
                         'ParamGetPtosVenta',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
@@ -73,7 +79,7 @@ class WSFEv1(BaseWS):
 
     if TYPELIB:
         _typelib_guid_ = '{B1D7283C-3EC2-463E-89B4-11F5228E2A15}'
-        _typelib_version_ = 1, 17
+        _typelib_version_ = 1, 18
         _com_interfaces_ = ['IWSFEv1']
         ##_reg_class_spec_ = "wsfev1.WSFEv1"
         
@@ -84,6 +90,7 @@ class WSFEv1(BaseWS):
     Reprocesar = True   # recuperar automaticamente CAE emitidos
     LanzarExcepciones = LANZAR_EXCEPCIONES
     factura = None
+    facturas = None
     
     def inicializar(self):
         BaseWS.inicializar(self)
@@ -108,15 +115,15 @@ class WSFEv1(BaseWS):
             self.ErrMsg = '\n'.join(self.Errores)
         if 'Events' in ret:
             events = ret['Events']
-            self.Eventos = ['%s: %s' % (evt['code'], evt['msg']) for evt in events]
+            self.Eventos = ['%s: %s' % (evt['Evt']['Code'], evt['Evt']['Msg']) for evt in events]
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.FEDummy()['FEDummyResult']
-        self.AppServerStatus = result['AppServer']
-        self.DbServerStatus = result['DbServer']
-        self.AuthServerStatus = result['AuthServer']
+        self.AppServerStatus = result.get('AppServer')
+        self.DbServerStatus = result.get('DbServer')
+        self.AuthServerStatus = result.get('AuthServer')
         return True
 
     # los siguientes métodos no están decorados para no limpiar propiedades
@@ -143,6 +150,7 @@ class WSFEv1(BaseWS):
                 'tributos': [],
                 'iva': [],
                 'opcionales': [],
+                'compradores': [],
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
@@ -158,9 +166,11 @@ class WSFEv1(BaseWS):
         else:
             return False
 
-    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, **kwarg):
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, **kwarg):
         "Agrego un comprobante asociado a una factura (interna)"
         cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
+        if cuit is not None:
+            cmp_asoc['cuit'] = cuit
         self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
@@ -183,6 +193,13 @@ class WSFEv1(BaseWS):
         self.factura['opcionales'].append(op)
         return True
 
+    def AgregarComprador(self, doc_tipo=80, doc_nro=0, porcentaje=100.00, **kwarg):
+        "Agrego un comprador a una factura (interna) RG 4109-E bienes muebles"
+        comp = { 'doc_tipo': doc_tipo, 'doc_nro': doc_nro,
+                 'porcentaje': porcentaje }
+        self.factura['compradores'].append(comp)
+        return True
+
     def ObtenerCampoFactura(self, *campos):
         "Obtener el valor devuelto de AFIP para un campo de factura"
         # cada campo puede ser una clave string (dict) o una posición (list)
@@ -199,6 +216,7 @@ class WSFEv1(BaseWS):
                 break
         return str(ret)
 
+    # metodos principales para llamar remotamente a AFIP:
 
     @inicializar_y_capturar_excepciones
     def CAESolicitar(self):
@@ -235,7 +253,9 @@ class WSFEv1(BaseWS):
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
-                            'Nro': cbte_asoc['nro']}}
+                            'Nro': cbte_asoc['nro'],
+                            'Cuit': cbte_asoc.get('cuit'),
+                        }}
                         for cbte_asoc in f['cbtes_asoc']] or None,
                     'Tributos': f['tributos'] and [
                         {'Tributo': {
@@ -258,6 +278,12 @@ class WSFEv1(BaseWS):
                             'Id': opcional['opcional_id'],
                             'Valor': opcional['valor'],
                             }} for opcional in f['opcionales']] or None,
+                    'Compradores': [ 
+                        {'Comprador': {
+                            'DocTipo': comprador['doc_tipo'],
+                            'DocNro': comprador['doc_nro'],
+                            'Porcentaje': comprador['porcentaje'],
+                            }} for comprador in f['compradores']] or None,
                     }
                 }]
             })
@@ -345,6 +371,7 @@ class WSFEv1(BaseWS):
                     'Concepto': f['concepto'],
                     'DocTipo': f['tipo_doc'],
                     'DocNro': f['nro_doc'],
+                    'CbteTipo': f['tipo_cbte'],
                     'CbteDesde': f['cbt_desde'],
                     'CbteHasta': f['cbt_hasta'],
                     'CbteFch': f['fecha_cbte'],
@@ -363,14 +390,16 @@ class WSFEv1(BaseWS):
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
-                            'Nro': cbte_asoc['nro']}}
+                            'Nro': cbte_asoc['nro'],
+                            'Cuit': cbte_asoc.get('cuit'),
+                        }}
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
                         {'Tributo': {
                             'Id': tributo['tributo_id'], 
                             'Desc': tributo['desc'],
-                            'BaseImp': float(tributo['base_imp']),
-                            'Alic': float(tributo['alic']),
+                            'BaseImp': float(tributo['base_imp'] or 0),
+                            'Alic': float(tributo['alic'] or 0),
                             'Importe': float(tributo['importe']),
                             }}
                         for tributo in f['tributos']],
@@ -381,6 +410,17 @@ class WSFEv1(BaseWS):
                             'Importe': float(iva['importe']),
                             }}
                         for iva in f['iva']],
+                    'Opcionales': [ 
+                        {'Opcional': {
+                            'Id': opcional['opcional_id'],
+                            'Valor': opcional['valor'],
+                            }} for opcional in f['opcionales']],
+                    'Compradores': [ 
+                        {'Comprador': {
+                            'DocTipo': comprador['doc_tipo'],
+                            'DocNro': comprador['doc_nro'],
+                            'Porcentaje': comprador['porcentaje'],
+                            }} for comprador in f['compradores']],
                     }
                 verifica(verificaciones, resultget.copy(), difs)
                 if difs:
@@ -392,6 +432,8 @@ class WSFEv1(BaseWS):
                     'concepto': resultget.get('Concepto'),
                     'tipo_doc': resultget.get('DocTipo'),
                     'nro_doc': resultget.get('DocNro'),
+                    'tipo_cbte': resultget.get('CbteTipo'),
+                    'punto_vta': resultget.get('PtoVta'),
                     'cbt_desde': resultget.get('CbteDesde'),
                     'cbt_hasta': resultget.get('CbteHasta'),
                     'fecha_cbte': resultget.get('CbteFch'),
@@ -410,7 +452,8 @@ class WSFEv1(BaseWS):
                             {
                             'tipo': cbte_asoc['CbteAsoc']['Tipo'],
                             'pto_vta': cbte_asoc['CbteAsoc']['PtoVta'], 
-                            'nro': cbte_asoc['CbteAsoc']['Nro']}
+                            'nro': cbte_asoc['CbteAsoc']['Nro'],
+                            'cuit': cbte_asoc['CbteAsoc'].get('Cuit')}
                         for cbte_asoc in resultget.get('CbtesAsoc', [])],
                     'tributos': [
                             {
@@ -434,6 +477,13 @@ class WSFEv1(BaseWS):
                             'valor': obs['Opcional']['Valor'],
                             }
                         for obs in resultget.get('Opcionales', [])],
+                    'compradores': [ 
+                            {
+                            'doc_tipo': comp['Comprador']['DocTipo'],
+                            'doc_nro': comp['Comprador']['DocNro'],
+                            'porcentaje': comp['Comprador']['Porcentaje'],
+                            }
+                        for comp in resultget.get('Compradores', [])],
                     'cae': resultget.get('CodAutorizacion'),
                     'resultado': resultget.get('Resultado'),
                     'fch_venc_cae': resultget.get('FchVto'),
@@ -477,20 +527,32 @@ class WSFEv1(BaseWS):
 
 
     @inicializar_y_capturar_excepciones
-    def CAESolicitarLote(self):
-        f = self.factura
+    def CAESolicitarX(self):
+        "Autorizar múltiples facturas (CAE) en una única solicitud"
+        # Ver CompTotXRequest -> cantidad maxima comprobantes (250)
+        # verificar que hay multiples facturas:
+        if not self.facturas:
+            raise RuntimeError("Llamar a IniciarFacturasX y AgregarFacturaX!")
+        # verificar que todas las facturas
+        puntos_vta = set([f['punto_vta'] for f in self.facturas])
+        tipos_cbte = set([f['tipo_cbte'] for f in self.facturas])
+        if len(puntos_vta) > 1:
+            raise RuntimeError("Los comprobantes deben ser del mismo pto_vta!")
+        if len(tipos_cbte) > 1:
+            raise RuntimeError("Los comprobantes deben tener el mismo tipo!")
+        # llamar al webservice:
         ret = self.client.FECAESolicitar(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             FeCAEReq={
-                'FeCabReq': {'CantReg': 250, 
-                    'PtoVta': f['punto_vta'], 
-                    'CbteTipo': f['tipo_cbte']},
+                'FeCabReq': {'CantReg': len(self.facturas), 
+                    'PtoVta': puntos_vta.pop(), 
+                    'CbteTipo': tipos_cbte.pop()},
                 'FeDetReq': [{'FECAEDetRequest': {
                     'Concepto': f['concepto'],
                     'DocTipo': f['tipo_doc'],
                     'DocNro': f['nro_doc'],
-                    'CbteDesde': f['cbt_desde']+k,
-                    'CbteHasta': f['cbt_hasta']+k,
+                    'CbteDesde': f['cbt_desde'],
+                    'CbteHasta': f['cbt_hasta'],
                     'CbteFch': f['fecha_cbte'],
                     'ImpTotal': f['imp_total'],
                     'ImpTotConc': f['imp_tot_conc'],
@@ -511,8 +573,10 @@ class WSFEv1(BaseWS):
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
-                            'Nro': cbte_asoc['nro']}}
-                        for cbte_asoc in f['cbtes_asoc']],
+                            'Nro': cbte_asoc['nro'],
+                            'Cuit': cbte_asoc.get('cuit'),
+                        }}
+                        for cbte_asoc in f['cbtes_asoc']] or None,
                     'Tributos': [
                         {'Tributo': {
                             'Id': tributo['tributo_id'], 
@@ -521,55 +585,95 @@ class WSFEv1(BaseWS):
                             'Alic': tributo['alic'],
                             'Importe': tributo['importe'],
                             }}
-                        for tributo in f['tributos']],
+                        for tributo in f['tributos']] or None,
                     'Iva': [ 
                         {'AlicIva': {
                             'Id': iva['iva_id'],
                             'BaseImp': iva['base_imp'],
                             'Importe': iva['importe'],
                             }}
-                        for iva in f['iva']],
+                        for iva in f['iva']] or None,
                     'Opcionales': [ 
                         {'Opcional': {
                             'Id': opcional['opcional_id'],
                             'Valor': opcional['valor'],
                             }} for opcional in f['opcionales']] or None,
                     }
-                } for k in range (250)]
+                } for f in self.facturas]
             })
         
         result = ret['FECAESolicitarResult']
         if 'FeCabResp' in result:
             fecabresp = result['FeCabResp']
-            fedetresp = result['FeDetResp'][0]['FECAEDetResponse']
-            
-            # Reprocesar en caso de error (recuperar CAE emitido anteriormente)
-            if self.Reprocesar and 'Errors' in result:
-                for error in result['Errors']:
-                    err_code = str(error['Err']['Code'])
-                    if fedetresp['Resultado']=='R' and err_code=='10016':
-                        cae = self.CompConsultar(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
-                        if cae and self.EmisionTipo=='CAEA':
-                            self.Reproceso = 'S'
-                            return cae
-                        self.Reproceso = 'N'
-            
-            self.Resultado = fecabresp['Resultado']
-            # Obs:
-            for obs in fedetresp.get('Observaciones', []):
-                self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
-            self.Obs = '\n'.join(self.Observaciones)
-            self.CAE = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
-            self.EmisionTipo = 'CAE'
-            self.Vencimiento = fedetresp['CAEFchVto']
-            self.FechaCbte = fedetresp['CbteFch'] #.strftime("%Y/%m/%d")
-            self.CbteNro = fedetresp['CbteHasta'] # 1L
-            self.PuntoVenta = fecabresp['PtoVta'] # 4000
-            self.CbtDesde =fedetresp['CbteDesde']
-            self.CbtHasta = fedetresp['CbteHasta']
-            self.__analizar_errores(result)
-        return self.CAE
+            for i, fedetresp in enumerate(result['FeDetResp']):
+                fedetresp = fedetresp['FECAEDetResponse']
+                f = self.facturas[i]
+                # actualizar los campos devueltos por AFIP para cada comp.
+                f["resultado"] = fedetresp['Resultado']
+                f["cae"] = fedetresp['CAE'] and str(fedetresp['CAE']) or ""
+                f["emision_tipo"] = 'CAE'
+                f["fch_venc_cae"] = fedetresp['CAEFchVto']
+                f["obs"] = [
+                        {'code': obs['Obs']['Code'], 'msg': obs['Obs']['Msg']}
+                        for obs in fedetresp.get('Observaciones', [])]
+                # sanity checks:
+                assert str(f["fecha_cbte"]) == str(fedetresp['CbteFch'])
+                assert str(f["cbt_desde"]) == str(fedetresp['CbteDesde'])
+                assert str(f["cbt_hasta"]) == str(fedetresp['CbteHasta'])
+                assert str(f["punto_vta"]) == str(fecabresp['PtoVta'])
+                assert str(f["tipo_cbte"]) == str(fecabresp['CbteTipo'])
+                assert str(f["tipo_doc"]) == str(fedetresp['DocTipo'])
+                assert str(f["nro_doc"]) == str(fedetresp['DocNro'])
+                assert str(f["concepto"]) == str(fedetresp['Concepto'])
 
+            self.__analizar_errores(result)
+            assert fecabresp['CantReg'] == len(self.facturas)
+        return fecabresp['CantReg']
+
+    # metodos auxiliares para soporte de multiples comprobantes por solicitud:
+
+    def IniciarFacturasX(self):
+        "Inicializa lista de facturas para Solicitar multiples CAE"
+        self.facturas = []
+        return True
+
+    def AgregarFacturaX(self):
+        "Agrega una factura a la lista para Solicitar multiples CAE"
+        self.facturas.append(self.factura)
+        return True
+
+    def LeerFacturaX(self, i):
+        "Activa internamente una factura para usar ObtenerCampoFactura"
+        try:
+            # obtengo la factura segun el indice en la lista:
+            f = self.factura = self.facturas[i]
+            # completar propiedades para retro-compatibilidad:
+            self.FechaCbte = f['fecha_cbte']
+            self.PuntoVenta = f['punto_vta']
+            self.Vencimiento = f['fch_venc_cae']
+            self.Resultado = f['resultado']
+            self.CbtDesde =f['cbt_desde']
+            self.CbtHasta = f['cbt_hasta']
+            self.ImpTotal = str(f['imp_total'])
+            self.ImpNeto = str(f.get('imp_neto'))
+            self.ImptoLiq = self.ImpIVA = str(f.get('imp_iva'))
+            self.ImpOpEx = str(f.get('imp_op_ex'))
+            self.ImpTrib = str(f.get('imp_trib'))
+            self.EmisionTipo = f['emision_tipo']
+            if self.EmisionTipo=='CAE':
+                self.CAE = f['cae']
+            elif self.EmisionTipo=='CAEA':
+                self.CAEA = f['caea']
+            # Obs:
+            self.Observaciones = []
+            for obs in f.get('obs', []):
+                self.Observaciones.append("%(code)s: %(msg)s" % (obs))
+            self.Obs = '\n'.join(self.Observaciones)
+            return True
+        except:
+            return False
+
+    # metodos para CAEA:
 
     @inicializar_y_capturar_excepciones
     def CAEASolicitar(self, periodo, orden):
@@ -592,6 +696,10 @@ class WSFEv1(BaseWS):
                 self.FchVigHasta = result['FchVigHasta']
                 self.FchTopeInf = result['FchTopeInf']
                 self.FchProceso = result['FchProceso']
+                # Obs (COMPGv28):
+                for obs in result.get('Observaciones', []):
+                    self.Observaciones.append("%(Code)s: %(Msg)s" % (obs['Obs']))
+                self.Obs = '\n'.join(self.Observaciones)
 
         return self.CAEA and str(self.CAEA) or ''
 
@@ -657,7 +765,9 @@ class WSFEv1(BaseWS):
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
                             'PtoVta': cbte_asoc['pto_vta'], 
-                            'Nro': cbte_asoc['nro']}}
+                            'Nro': cbte_asoc['nro'],
+                            'Cuit': cbte_asoc.get('cuit'),
+                        }}
                         for cbte_asoc in f['cbtes_asoc']]
                         if f['cbtes_asoc'] else None,
                     'Tributos': [
@@ -809,6 +919,17 @@ class WSFEv1(BaseWS):
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
+    def ParamGetTiposPaises(self, sep="|"):
+        "Recuperador de valores referenciales de códigos de Paises"
+        "Este método permite consultar los tipos de tributos habilitados en este WS"
+        ret = self.client.FEParamGetTiposPaises(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetTiposPaisesResult']
+        return [(u"%(Id)s\t%(Desc)s" % p['PaisTipo']).replace("\t", sep)
+                 for p in res['ResultGet']]
+
+    @inicializar_y_capturar_excepciones
     def ParamGetCotizacion(self, moneda_id):
         "Recuperador de cotización de moneda"
         ret = self.client.FEParamGetCotizacion(
@@ -881,15 +1002,15 @@ def main():
     if "--prueba" in sys.argv:
         print(wsfev1.client.help("FECAESolicitar").encode("latin1"))
 
-        tipo_cbte = 1 if '--usados' not in sys.argv else 49
+        tipo_cbte = 6 if '--usados' not in sys.argv else 49
         punto_vta = 4001
         cbte_nro = int(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
-        concepto = 2 if '--usados' not in sys.argv else 1
+        concepto = 2 if ('--usados' not in sys.argv and '--rg4109' not in sys.argv) else 1
         tipo_doc = 80 if '--usados' not in sys.argv else 30
-        nro_doc = "30000000001"
+        nro_doc = "30500010912"
         cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
-        imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
+        imp_total = "222.00"; imp_tot_conc = "0.00"; imp_neto = "200.00"
         imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
         fecha_cbte = fecha
         # Fechas del período del servicio facturado y vencimiento de pago:
@@ -900,66 +1021,108 @@ def main():
             fecha_venc_pago = fecha_serv_desde = fecha_serv_hasta = None
         moneda_id = 'PES'; moneda_ctz = '1.000'
 
-        wsfev1.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-            cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-            imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
-            fecha_serv_desde, fecha_serv_hasta, #--
-            moneda_id, moneda_ctz)
-        
-        if '--caea' in sys.argv:
-            periodo = datetime.datetime.today().strftime("%Y%M")
-            orden = 1 if datetime.datetime.today().day < 15 else 2
-            caea = wsfev1.CAEAConsultar(periodo, orden)
-            wsfev1.EstablecerCampoFactura("caea", caea)
+        # inicializar prueba de multiples comprobantes por solicitud
+        if "--multiple" in sys.argv:
+            wsfev1.IniciarFacturasX()
+            reg_x_req = wsfev1.CompTotXRequest()    # cant max. comprobantes
+        else:
+            reg_x_req = 1                           # un solo comprobante
 
-        # comprobantes asociados (notas de crédito / débito)
-        if tipo_cbte in (2, 3, 7, 8, 12, 13):
-            tipo = 3
-            pto_vta = 2
-            nro = 1234
-            wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro)
-        
-        # otros tributos:
-        tributo_id = 99
-        desc = 'Impuesto Municipal Matanza'
-        base_imp = None
-        alic = None
-        importe = 1
-        wsfev1.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
+        for i in range(reg_x_req):
 
-        # subtotales por alicuota de IVA:
-        iva_id = 5 # 21%
-        base_imp = 100
-        importe = 21
-        wsfev1.AgregarIva(iva_id, base_imp, importe)
+            wsfev1.CrearFactura(concepto, tipo_doc, nro_doc, 
+                tipo_cbte, punto_vta, cbt_desde + i, cbt_hasta + i, 
+                imp_total, imp_tot_conc, imp_neto,
+                imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
+                fecha_serv_desde, fecha_serv_hasta, #--
+                moneda_id, moneda_ctz)
+            
+            if '--caea' in sys.argv:
+                periodo = datetime.datetime.today().strftime("%Y%M")
+                orden = 1 if datetime.datetime.today().day < 15 else 2
+                caea = wsfev1.CAEAConsultar(periodo, orden)
+                wsfev1.EstablecerCampoFactura("caea", caea)
 
-        # datos opcionales para proyectos promovidos:
-        if '--proyectos' in sys.argv:
-            wsfev1.AgregarOpcional(2, "1234")   # identificador del proyecto
-        # datos opcionales para RG Bienes Usados 3411 (del vendedor):
-        if '--usados' in sys.argv:
-            wsfev1.AgregarOpcional(91, "Juan Perez")    # Nombre y Apellido 
-            wsfev1.AgregarOpcional(92, "200")           # Nacionalidad
-            wsfev1.AgregarOpcional(93, "Balcarce 50")   # Domicilio
-        # datos opcionales para RG 3668 Impuesto al Valor Agregado - Art.12:
-        if '--rg3668' in sys.argv:
-            wsfev1.AgregarOpcional(5, "02")             # IVA Excepciones
-            wsfev1.AgregarOpcional(61, "80")            # Firmante Doc Tipo
-            wsfev1.AgregarOpcional(62, "20267565393")   # Firmante Doc Nro
-            wsfev1.AgregarOpcional(7, "01")             # Carácter del Firmante
+            # comprobantes asociados (notas de crédito / débito)
+            if tipo_cbte in (2, 3, 7, 8, 12, 13):
+                tipo = 3
+                pto_vta = 2
+                nro = 1234
+                cuit = "20267565393"
+                wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit)
+            
+            # otros tributos:
+            tributo_id = 99
+            desc = 'Impuesto Municipal Matanza'
+            base_imp = None
+            alic = None
+            importe = 1
+            wsfev1.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
+            # subtotales por alicuota de IVA:
+            iva_id = 3 # 0%
+            base_imp = 100
+            importe = 0
+            wsfev1.AgregarIva(iva_id, base_imp, importe)
+
+            # subtotales por alicuota de IVA:
+            iva_id = 5 # 21%
+            base_imp = 100
+            importe = 21
+            wsfev1.AgregarIva(iva_id, base_imp, importe)
+
+            # datos opcionales para proyectos promovidos:
+            if '--proyectos' in sys.argv:
+                wsfev1.AgregarOpcional(2, "1234")   # identificador del proyecto
+            # datos opcionales para RG Bienes Usados 3411 (del vendedor):
+            if '--usados' in sys.argv:
+                wsfev1.AgregarOpcional(91, "Juan Perez")    # Nombre y Apellido 
+                wsfev1.AgregarOpcional(92, "200")           # Nacionalidad
+                wsfev1.AgregarOpcional(93, "Balcarce 50")   # Domicilio
+            # datos opcionales para RG 3668 Impuesto al Valor Agregado - Art.12:
+            if '--rg3668' in sys.argv:
+                wsfev1.AgregarOpcional(5, "02")             # IVA Excepciones
+                wsfev1.AgregarOpcional(61, "80")            # Firmante Doc Tipo
+                wsfev1.AgregarOpcional(62, "20267565393")   # Firmante Doc Nro
+                wsfev1.AgregarOpcional(7, "01")             # Carácter del Firmante
+            # datos opcionales para RG 4004-E Alquiler de inmuebles (Ganancias)
+            if '--rg4004' in sys.argv:
+                wsfev1.AgregarOpcional(17, "1")             # Intermediario
+                wsfev1.AgregarOpcional(1801, "30500010912") # CUIT Propietario
+                wsfev1.AgregarOpcional(1802, "BNA")         # Nombr e Titular
+            # datos de compradores RG 4109-E bienes muebles registrables (%)
+            if '--rg4109' in sys.argv:
+                wsfev1.AgregarComprador(80, "30500010912", 99.99)
+                wsfev1.AgregarComprador(80, "30999032083", 0.01)
+
+            # agregar la factura creada internamente para solicitud múltiple:
+            if "--multiple" in sys.argv:
+                wsfev1.AgregarFacturaX()
+                
         import time
         t0 = time.time()
         if not '--caea' in sys.argv:
-            wsfev1.CAESolicitar()
+            if not "--multiple" in sys.argv:
+                wsfev1.CAESolicitar()
+            else:
+                cant = wsfev1.CAESolicitarX()
+                print("Cantidad de comprobantes procesados:", cant)
         else:
             wsfev1.CAEARegInformativo()
         t1 = time.time()
-        
-        print("Resultado", wsfev1.Resultado)
-        print("Reproceso", wsfev1.Reproceso)
-        print("CAE", wsfev1.CAE)
-        print("Vencimiento", wsfev1.Vencimiento)
+
+        # revisar los resultados:
+        for i in range(reg_x_req):
+            if "--multiple" in sys.argv:
+                print("Analizando respuesta para factura indice: ", i)
+                ok = wsfev1.LeerFacturaX(i)
+            print("Nro. Cbte. desde-hasta", wsfev1.CbtDesde, wsfev1.CbtHasta)
+            print("Resultado", wsfev1.Resultado)
+            print("Reproceso", wsfev1.Reproceso)
+            print("CAE", wsfev1.CAE)
+            print("Vencimiento", wsfev1.Vencimiento)
+            print("Observaciones", wsfev1.Obs)
+
         if DEBUG:
             print("t0", t0)
             print("t1", t1)
@@ -967,16 +1130,19 @@ def main():
             open("xmlrequest.xml","wb").write(wsfev1.XmlRequest)
             open("xmlresponse.xml","wb").write(wsfev1.XmlResponse)
 
-        wsfev1.AnalizarXml("XmlResponse")
-        p_assert_eq(wsfev1.ObtenerTagXml('CAE'), str(wsfev1.CAE))
-        p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '2')
-        p_assert_eq(wsfev1.ObtenerTagXml('Obs',0,'Code'), "10017")
-        print(wsfev1.ObtenerTagXml('Obs',0,'Msg'))
+            wsfev1.AnalizarXml("XmlResponse")
+            p_assert_eq(wsfev1.ObtenerTagXml('CAE'), str(wsfev1.CAE))
+            p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '2')
+            p_assert_eq(wsfev1.ObtenerTagXml('Obs',0,'Code'), "10017")
+            print(wsfev1.ObtenerTagXml('Obs',0,'Msg'))
 
         if "--reprocesar" in sys.argv:
             print("reprocesando....")
             wsfev1.Reproceso = True
+            cae = wsfev1.CAE
             wsfev1.CAESolicitar()
+            assert cae == wsfev1.CAE
+            assert wsfev1.Reproceso == "S"
 
         if "--consultar" in sys.argv:
             cae = wsfev1.CAE
@@ -1043,6 +1209,8 @@ def main():
         print('\n'.join(wsfev1.ParamGetTiposOpcional()))
         print("=== Tipos de Tributo ===")
         print('\n'.join(wsfev1.ParamGetTiposTributos()))
+        print("=== Tipos de Paises ===")
+        print('\n'.join(wsfev1.ParamGetTiposPaises()))
         print("=== Puntos de Venta ===")
         print('\n'.join(wsfev1.ParamGetPtosVenta()))
 
@@ -1064,6 +1232,11 @@ def main():
         
         caea = wsfev1.CAEASolicitar(periodo, orden)
         print("CAEA:", caea)
+
+        if wsfev1.Observaciones:
+            print("Observaciones:")
+            for obs in wsfev1.Observaciones:
+                print(obs)
 
         if wsfev1.Errores:
             print("Errores:")

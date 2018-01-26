@@ -8,7 +8,7 @@
 "Creador de instalador para PyAfipWs"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2008-2014 Mariano Reingart"
+__copyright__ = "Copyright (C) 2008-2016 Mariano Reingart"
 
 from distutils.core import setup
 import glob
@@ -18,103 +18,12 @@ import warnings
 import sys
 
 try:  
-    rev = subprocess.check_output(['hg', 'tip', '--template', '{rev}']).strip()
+    rev = subprocess.check_output(['hg', 'tip', '--template', '{rev}'], 
+                                  stderr=subprocess.PIPE).strip()
 except:
     rev = 0
 
 __version__ = "%s.%s.%s" % (sys.version_info[0:2] + (rev, ))
-
-# modulos a compilar y empaquetar (comentar si no se desea incluir):
-
-#import pyafipws
-#import pyrece
-import wsaa
-import wsfev1, rece1
-import wsfexv1, recex1
-import wsbfev1, receb1
-import wsmtx, recem
-import pyfepdf
-import pyemail
-import pyi25
-#import wsctgv3
-#import wslpg
-#import wscoc
-#import wscdc
-#import cot
-#import iibb
-#import trazamed
-#import trazarenpre
-#import trazafito
-#import trazavet
-#import padron
-#import sired
-
-# herramientas opcionales a compilar y empaquetar:
-try:
-    if 'pyfepdf' in globals() or 'pyrece' in globals():
-        import designer     
-except ImportError:
-    # el script pyfpdf/tools/designer.py no esta disponible:
-    print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
-
-# parametros para setup:
-kwargs = {}
-
-long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"  
-             "AFIP (Factura Electrónica, Granos, Aduana, etc.), "
-             "ANMAT (Trazabilidad de Medicamentos), "
-             "RENPRE (Trazabilidad de Precursores Químicos), "
-             "ARBA (Remito Electrónico)")
-
-# convert the README and format in restructured text (only when registering)
-if os.path.exists("README.md") and sys.platform == "linux2":
-    try:
-        cmd = ['pandoc', '--from=markdown', '--to=rst', 'README.md']
-        long_desc = subprocess.check_output(cmd).decode("utf8")
-        print "Long DESC", long_desc
-    except Exception as e:
-        warnings.warn("Exception when converting the README format: %s" % e)
-
-
-data_files = [
-    (".", ["licencia.txt",]),
-    ("conf", ["conf/rece.ini", "conf/geotrust.crt", "conf/afip_ca_info.crt", ]),
-    ("cache", glob.glob("cache/*")),
-    ]
-
-# incluyo mis certificados para homologación (si existen)
-if os.path.exists("reingart.crt"):
-    data_files.append(("conf", ["reingart.crt", "reingart.key"]))
-    
-if sys.version_info > (2, 7):
-    # add "Microsoft Visual C++ 2008 Redistributable Package (x86)"
-    if os.path.exists(r"c:\Program Files\Mercurial"):
-        data_files += [(
-            ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll') +
-                 glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
-            )]
-    # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
-    # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
-	# NOTE: on windows 8.1 64 bits, this is stored in C:\Users\REINGART\AppData\\Local\Temp\gen_py\2.7
-	from win32com.client import gencache
-	gen_py_path = gencache.GetGeneratePath() or "C:\Python27\lib\site-packages\win32com\gen_py"
-	data_files += [(
-            r"win32com\gen_py", 
-            [os.path.join(gen_py_path, "__init__.py"),
-             os.path.join(gen_py_path, "dicts.dat")],
-            )]
-    
-    sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
-    WX_DLL = (
-        ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*') +
-             glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest'),
-        )
-else:
-    WX_DLL = (".", [
-        "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
-        "C:\python25\MSVCR71.dll",
-        "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
-        ])
 
 HOMO = True
 
@@ -123,10 +32,94 @@ if 'py2exe' in sys.argv:
     import py2exe
     from nsis import build_installer, Target
 
+    # modulos a compilar y empaquetar (comentar si no se desea incluir):
+
+    #import pyafipws
+    #import pyrece
+    import wsaa
+    import wsfev1, rece1, rg3685
+    #import wsfexv1, recex1
+    #import wsbfev1, receb1
+    #import wsmtx, recem
+    #import wsct, recet
+    #import ws_sr_padron
+    #import pyfepdf
+    #import pyemail
+    #import pyi25
+    #import wsctg
+    #import wslpg
+    #import wsltv
+    #import wslum
+    #import wslsp
+    #import wscoc
+    #import wscdc
+    #import cot
+    #import iibb
+    #import trazamed
+    #import trazaprodmed
+    #import trazarenpre
+    #import trazafito
+    #import trazavet
+    #import padron
+    #import sired
+
+    data_files = [
+        (".", ["licencia.txt",]),
+        ("conf", ["conf/rece.ini", "conf/geotrust.crt", "conf/afip_ca_info.crt", ]),
+        ("cache", glob.glob("cache/*")),
+        ]
+
+    # herramientas opcionales a compilar y empaquetar:
+    try:
+        if 'pyfepdf' in globals() or 'pyrece' in globals():
+            import designer     
+    except ImportError:
+        # el script pyfpdf/tools/designer.py no esta disponible:
+        print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
+
+    # parametros para setup:
+    kwargs = {}
+
+    # incluyo mis certificados para homologación (si existen)
+    if os.path.exists("reingart.crt"):
+        data_files.append(("conf", ["reingart.crt", "reingart.key"]))
+        
+    if sys.version_info > (2, 7):
+        # add "Microsoft Visual C++ 2008 Redistributable Package (x86)"
+        if os.path.exists(r"c:\Program Files\Mercurial"):
+            data_files += [(
+                ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll') +
+                     glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
+                )]
+        # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
+        # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
+	    # NOTE: on windows 8.1 64 bits, this is stored in C:\Users\REINGART\AppData\\Local\Temp\gen_py\2.7
+	    from win32com.client import gencache
+	    gen_py_path = gencache.GetGeneratePath() or "C:\Python27\lib\site-packages\win32com\gen_py"
+	    data_files += [(
+                r"win32com\gen_py", 
+                [os.path.join(gen_py_path, "__init__.py"),
+                 os.path.join(gen_py_path, "dicts.dat")],
+                )]
+        
+        sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
+        WX_DLL = (
+            ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*') +
+                 glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest'),
+            )
+    else:
+        WX_DLL = (".", [
+            "C:\python25\Lib\site-packages\wx-2.8-msw-unicode\wx\MSVCP71.dll",
+            "C:\python25\MSVCR71.dll",
+            "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
+            ])
+
     # includes for py2exe
     includes=['email.generator', 'email.iterators', 'email.message', 'email.utils',  'email.mime.text', 'email.mime.application', 'email.mime.multipart']
     if 'pyi25' in globals() or 'pyfepdf' in globals():
         includes.extend(["PIL.Image", "PIL.ImageFont", "PIL.ImageDraw"])
+
+    includes.append("dbf")
 
     # optional modules:
     # required modules for shelve support (not detected by py2exe by default):
@@ -220,7 +213,7 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")]
         if wsaa.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
-            data_files.append((".", ["wsaa.tlb"]))
+            data_files.append(("typelib", ["typelib/wsaa.tlb"]))
             
         __version__ += "+wsaa_" + wsaa.__version__
         HOMO &= wsaa.HOMO
@@ -232,10 +225,11 @@ if 'py2exe' in sys.argv:
         kwargs['console'] += [
             Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
             Target(module=rece1, script='rece1.py'), 
+            Target(module=rg3685, script='rg3685.py'), 
             ]             
         if wsfev1.TYPELIB:
             kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
-            data_files.append((".", ["wsfev1.tlb"]))
+            data_files.append(("typelib", ["typelib/wsfev1.tlb"]))
         __version__ += "+wsfev1_" + wsfev1.__version__
         HOMO &= wsfev1.HOMO
 
@@ -271,6 +265,17 @@ if 'py2exe' in sys.argv:
             ]             
         __version__ += "+wsmtx_" + wsmtx.__version__
         HOMO &= wsmtx.HOMO
+
+    if 'wsct' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsct, modules="wsct", create_exe=True, create_dll=True)
+            ]
+        kwargs['console'] += [
+            Target(module=wsct, script='wsct.py', dest_base="wsct_cli"), 
+            Target(module=recet, script='recet.py'), 
+            ]
+        __version__ += "+wsct_" + wsct.__version__
+        HOMO &= wsct.HOMO
 
     if 'pyfepdf' in globals():
         kwargs['com_server'] += [
@@ -324,15 +329,15 @@ if 'py2exe' in sys.argv:
             Target(module=designer, script="designer.py", dest_base="designer"),
             ]
             
-    if 'wsctgv3' in globals():
+    if 'wsctg' in globals():
         kwargs['com_server'] += [
-            Target(module=wsctgv3, modules="wsctgv3"), 
+            Target(module=wsctg, modules="wsctg"), 
             ]
         kwargs['console'] += [
-            Target(module=wsctgv3, script='wsctgv3.py', dest_base="wsctgv3_cli"),
+            Target(module=wsctg, script='wsctg.py', dest_base="wsctg_cli"),
             ]
-        __version__ += "+wsctgv3_" + wsctgv3.__version__
-        HOMO &= wsctgv3.HOMO
+        __version__ += "+wsctgv4_" + wsctg.__version__
+        HOMO &= wsctg.HOMO
 
     if 'wslpg' in globals():
         kwargs['com_server'] += [
@@ -355,6 +360,47 @@ if 'py2exe' in sys.argv:
         __version__ += "+wslpg_" + wslpg.__version__
         HOMO &= wslpg.HOMO
     
+    if 'wsltv' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsltv, modules="wsltv"),
+            ]
+        kwargs['console'] += [
+            Target(module=wsltv, script='wsltv.py', dest_base="wsltv_cli"),
+            ]
+        data_files += [
+            ("conf", ["conf/wsltv.ini"]),
+            ("plantillas", [ 
+                ]),
+            ]
+        __version__ += "+wsltv_" + wsltv.__version__
+        HOMO &= wsltv.HOMO
+
+    if 'wslum' in globals():
+        kwargs['com_server'] += [
+            Target(module=wslum, modules="wslum"),
+            ]
+        kwargs['console'] += [
+            Target(module=wslum, script='wslum.py', dest_base="wslum_cli"),
+            ]
+        data_files += [
+            ("conf", ["conf/wslum.ini"]),
+            ]
+        __version__ += "+wslum_" + wslum.__version__
+        HOMO &= wslum.HOMO
+
+    if 'wslsp' in globals():
+        kwargs['com_server'] += [
+            Target(module=wslsp, modules="wslsp"),
+            ]
+        kwargs['console'] += [
+            Target(module=wslsp, script='wslsp.py', dest_base="wslsp_cli"),
+            ]
+        data_files += [
+            ("conf", ["conf/wslsp.ini"]),
+            ]
+        __version__ += "+wslsp_" + wslsp.__version__
+        HOMO &= wslsp.HOMO
+
     if 'wscoc' in globals():
         kwargs['com_server'] += [
             Target(module=wscoc,modules="wscoc"),
@@ -374,6 +420,16 @@ if 'py2exe' in sys.argv:
             ]
         __version__ += "+wscdc_" + wscdc.__version__
         HOMO &= wscdc.HOMO
+
+    if 'ws_sr_padron' in globals():
+        kwargs['com_server'] += [
+            Target(module=ws_sr_padron,modules="ws_sr_padron", create_exe=True, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=ws_sr_padron, script='ws_sr_padron.py', dest_base="ws_sr_padron_cli"),
+            ]
+        __version__ += "+ws_sr_padron_" + ws_sr_padron.__version__
+        HOMO &= ws_sr_padron.HOMO
 
     if 'cot' in globals():
         kwargs['com_server'] += [
@@ -417,6 +473,16 @@ if 'py2exe' in sys.argv:
             data_files.append((".", ["trazamed.tlb"]))
         __version__ += "+trazamed_"  + trazamed.__version__
         HOMO &= trazamed.HOMO
+
+    if 'trazaprodmed' in globals():
+        kwargs['com_server'] += [
+            Target(module=trazaprodmed, modules="trazaprodmed", create_exe=not trazaprodmed.TYPELIB, create_dll=not trazaprodmed.TYPELIB),
+            ]
+        kwargs['console'] += [
+            Target(module=trazaprodmed, script='trazaprodmed.py', dest_base="trazaprodmed_cli"), 
+            ]
+        __version__ += "+trazaprodmed_"  + trazaprodmed.__version__
+        HOMO &= trazaprodmed.HOMO
 
     if 'trazarenpre' in globals():
         kwargs['com_server'] += [
@@ -495,11 +561,31 @@ if 'py2exe' in sys.argv:
     ##     data_files += [("ejemplos", glob.glob("ejemplos/*"))]
 
 else:
+    import setuptools
+    kwargs = {}
     desc = ("Interfases, tools and apps for Argentina's gov't. webservices "
             "(soap, com/dll, pdf, dbf, xml, etc.)")
     kwargs['package_dir'] = {'pyafipws': '.'}
     kwargs['packages'] = ['pyafipws']
     opts = {}
+    data_files = []
+
+
+long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"  
+             "AFIP (Factura Electrónica, Granos, Aduana, etc.), "
+             "ANMAT (Trazabilidad de Medicamentos), "
+             "RENPRE (Trazabilidad de Precursores Químicos), "
+             "ARBA (Remito Electrónico)")
+
+# convert the README and format in restructured text (only when registering)
+if "sdist" in sys.argv and os.path.exists("README.md") and sys.platform == "linux2":
+    try:
+        cmd = ['pandoc', '--from=markdown', '--to=rst', 'README.md']
+        long_desc = subprocess.check_output(cmd).decode("utf8")
+        open("README.rst", "w").write(long_desc.encode("utf8"))
+    except Exception as e:
+        warnings.warn("Exception when converting the README format: %s" % e)
+
 
 
 setup(name="PyAfipWs",
@@ -508,9 +594,9 @@ setup(name="PyAfipWs",
       long_description=long_desc,
       author="Mariano Reingart",
       author_email="reingart@gmail.com",
-      url="https://code.google.com/p/pyafipws/" if 'register' in sys.argv 
+      url="https://github.com/reingart/pyafipws" if not 'py2exe' in sys.argv 
           else "http://www.sistemasagiles.com.ar",
-      license="GNU GPL v3",
+      license="GNU GPL v3+",
       options=opts,
       data_files=data_files,
             classifiers = [
