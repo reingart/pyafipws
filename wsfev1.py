@@ -29,7 +29,7 @@ import datetime
 import decimal
 import os
 import sys
-from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False                    # solo homologación
 TYPELIB = False                 # usar librería de tipos (TLB)
@@ -926,7 +926,7 @@ class WSFEv1(BaseWS):
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             )
         res = ret['FEParamGetTiposPaisesResult']
-        return [(u"%(Id)s\t%(Desc)s" % p['PaisTipo']).replace("\t", sep)
+        return [("%(Id)s\t%(Desc)s" % p['PaisTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
@@ -974,7 +974,7 @@ def main():
         wsdl = WSDL
     proxy = ""
     wrapper = "" #"pycurl"
-    cacert = "conf/afip_ca_info.crt" #geotrust.crt"
+    cacert = True #geotrust.crt"
 
     ok = wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
     
@@ -994,8 +994,8 @@ def main():
 
 
     # obteniendo el TA para pruebas
-    from wsaa import WSAA
-    ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", cacert=cacert, debug=True)
+    from .wsaa import WSAA
+    ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", debug=True)
     wsfev1.SetTicketAcceso(ta)
     wsfev1.Cuit = "20267565393"
     
@@ -1130,6 +1130,7 @@ def main():
             open("xmlrequest.xml","wb").write(wsfev1.XmlRequest)
             open("xmlresponse.xml","wb").write(wsfev1.XmlResponse)
 
+        if not "--multiple" in sys.argv:
             wsfev1.AnalizarXml("XmlResponse")
             p_assert_eq(wsfev1.ObtenerTagXml('CAE'), str(wsfev1.CAE))
             p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '2')

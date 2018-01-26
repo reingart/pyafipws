@@ -24,8 +24,8 @@ import time
 import traceback
 
 # revisar la instalación de pyafip.ws:
-import wsaa, wsbfev1
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from . import wsaa, wsbfev1
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 HOMO = False
 DEBUG = False
@@ -139,13 +139,13 @@ def autorizar(ws, entrada, salida):
                 detalle = leer(linea, DETALLE)
                 detalles.append(detalle)
             else:
-                print "Tipo de registro incorrecto:", linea[0]
+                print("Tipo de registro incorrecto:", linea[0])
 
-    if isinstance(encabezado['id'], basestring) and not encabezado['id'].strip():
+    if isinstance(encabezado['id'], str) and not encabezado['id'].strip():
         # TODO: habria que leer y/o grabar el id en el archivo
         ##id += 1 # incremento el nº de transacción 
         # Por el momento, el id se calcula con el tipo, pv y nº de comprobant
-        i = long(encabezado['cbte_nro'])
+        i = int(encabezado['cbte_nro'])
         i += (int(encabezado['cbte_nro'])*10**4 + int(encabezado['punto_vta']))*10**8
         encabezado['id'] = i
 
@@ -164,9 +164,9 @@ def autorizar(ws, entrada, salida):
         ws.AgregarItem(**detalle)
             
     if DEBUG:
-        print '\n'.join(["%s='%s'" % (k,v) for k,v in ws.factura.items()])
-        print 'id:', encabezado['id']
-    if not DEBUG or raw_input("Facturar?")=="S":
+        print('\n'.join(["%s='%s'" % (k,v) for k,v in list(ws.factura.items())]))
+        print('id:', encabezado['id'])
+    if not DEBUG or input("Facturar?")=="S":
         cae = ws.Authorize(encabezado['id'])
         dic = ws.factura
         dic.update({'id':  encabezado['id'],
@@ -180,7 +180,7 @@ def autorizar(ws, entrada, salida):
                     'err_msg': ws.ErrMsg,
                    })
         escribir_factura(dic, salida)
-        print "ID:", dic['id'], "CAE:",dic['cae'],"Obs:",dic['obs'],"Reproceso:",dic['reproceso']
+        print("ID:", dic['id'], "CAE:",dic['cae'],"Obs:",dic['obs'],"Reproceso:",dic['reproceso'])
 
 def escribir_factura(dic, archivo, agrega=False):
     dic['tipo_reg'] = 0
@@ -204,26 +204,26 @@ def depurar_xml(client):
 
 if __name__ == "__main__":
     if '/ayuda' in sys.argv:
-        print LICENCIA
-        print
-        print "Opciones: "
-        print " /ayuda: este mensaje"
-        print " /dummy: consulta estado de servidores"
-        print " /prueba: genera y autoriza una factura de prueba (no usar en producción!)"
-        print " /ult: consulta último número de comprobante"
-        print " /id: consulta último ID"
-        print " /debug: modo depuración (detalla y confirma las operaciones)"
-        print " /formato: muestra el formato de los archivos de entrada/salida"
-        print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
-        print " /xml: almacena los requerimientos y respuestas XML (depuración)"
-        print " /dbf: lee y almacena la información en tablas DBF"
-        print
-        print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
+        print(LICENCIA)
+        print()
+        print("Opciones: ")
+        print(" /ayuda: este mensaje")
+        print(" /dummy: consulta estado de servidores")
+        print(" /prueba: genera y autoriza una factura de prueba (no usar en producción!)")
+        print(" /ult: consulta último número de comprobante")
+        print(" /id: consulta último ID")
+        print(" /debug: modo depuración (detalla y confirma las operaciones)")
+        print(" /formato: muestra el formato de los archivos de entrada/salida")
+        print(" /get: recupera datos de un comprobante autorizado previamente (verificación)")
+        print(" /xml: almacena los requerimientos y respuestas XML (depuración)")
+        print(" /dbf: lee y almacena la información en tablas DBF")
+        print()
+        print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
         sys.exit(0)
 
     if '/debug'in sys.argv:
         DEBUG = True
-        print "VERSION", __version__, "HOMO", HOMO
+        print("VERSION", __version__, "HOMO", HOMO)
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
     cert = config.get('WSAA','CERT')
@@ -246,7 +246,7 @@ if __name__ == "__main__":
 
     if config.has_section('DBF'):
         conf_dbf = dict(config.items('DBF'))
-        if DEBUG: print "conf_dbf", conf_dbf
+        if DEBUG: print("conf_dbf", conf_dbf)
     else:
         conf_dbf = {}
 
@@ -254,7 +254,7 @@ if __name__ == "__main__":
         XML = True
 
     if DEBUG:
-        print "wsaa_url %s\nwsbfe_url %s" % (wsaa_url, wsbfe_url)
+        print("wsaa_url %s\nwsbfe_url %s" % (wsaa_url, wsbfe_url))
     
     try:
         ws = wsbfev1.WSBFEv1()
@@ -262,23 +262,23 @@ if __name__ == "__main__":
         ws.Cuit = cuit
          
         if '/dummy' in sys.argv:
-            print "Consultando estado de servidores..."
-            print ws.Dummy()
+            print("Consultando estado de servidores...")
+            print(ws.Dummy())
             sys.exit(0)
 
         if '/formato' in sys.argv:
-            print "Formato:"
+            print("Formato:")
             for msg, formato in [('Encabezado', ENCABEZADO), ('Detalle', DETALLE)]:
                 comienzo = 1
-                print "== %s ==" % msg
+                print("== %s ==" % msg)
                 for (clave, longitud, tipo) in formato:
-                    print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s" % (
-                        clave, comienzo, longitud, tipo)
+                    print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s" % (
+                        clave, comienzo, longitud, tipo))
                     comienzo += longitud
             sys.exit(0)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsbfe", cert, privatekey, wsaa_url)
         if not ta:
@@ -311,26 +311,26 @@ if __name__ == "__main__":
             f_entrada.close()
         
         if '/ult' in sys.argv:
-            print "Consultar ultimo numero:"
-            tipo_cbte = int(raw_input("Tipo de comprobante: "))
-            punto_vta = int(raw_input("Punto de venta: "))
+            print("Consultar ultimo numero:")
+            tipo_cbte = int(input("Tipo de comprobante: "))
+            punto_vta = int(input("Punto de venta: "))
             ult_cbte = ws.GetLastCMP(tipo_cbte, punto_vta)
-            print "Ultimo numero: ", ult_cbte
-            print "Fecha: ", ws.FechaCbte
+            print("Ultimo numero: ", ult_cbte)
+            print("Fecha: ", ws.FechaCbte)
             depurar_xml(ws.client)
             sys.exit(0)
             
         if '/id' in sys.argv:
             ult_id = ws.GetLastID()
-            print "ID: ", ult_id
+            print("ID: ", ult_id)
             depurar_xml(ws.client)
             sys.exit(0)
             
         if '/get' in sys.argv:
-            print "Recuperar comprobante:"
-            tipo_cbte = int(raw_input("Tipo de comprobante: "))
-            punto_vta = int(raw_input("Punto de venta: "))
-            cbte_nro = int(raw_input("Numero de comprobante: "))
+            print("Recuperar comprobante:")
+            tipo_cbte = int(input("Tipo de comprobante: "))
+            punto_vta = int(input("Punto de venta: "))
+            cbte_nro = int(input("Numero de comprobante: "))
             cae = ws.GetCMP(tipo_cbte, punto_vta, cbte_nro)
             cbt = { 'fecha_cbte': ws.FechaCbte, 
                     'imp_total': ws.ImpTotal or 0,
@@ -341,8 +341,8 @@ if __name__ == "__main__":
                     'fch_venc_cae': ws.Vencimiento,  
                     'err_msg': ws.ErrMsg,
                     }
-            for k,v in cbt.items():
-                print "%s = %s" % (k, v)
+            for k,v in list(cbt.items()):
+                print("%s = %s" % (k, v))
             depurar_xml(ws.client)
             sys.exit(0)
 
@@ -362,8 +362,8 @@ if __name__ == "__main__":
                 depurar_xml(ws.client)
         sys.exit(0)
     
-    except Exception, e:
-        print unicode(e).encode("ascii","ignore")
+    except Exception as e:
+        print(str(e).encode("ascii","ignore"))
         if DEBUG:
             raise
         sys.exit(5)

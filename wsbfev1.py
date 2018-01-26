@@ -24,7 +24,7 @@ import datetime
 import decimal
 import os
 import sys
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 LANZAR_EXCEPCIONES = True      # valor por defecto: True
@@ -263,8 +263,8 @@ class WSBFEv1(BaseWS):
                 umed = {'id': u.get('Umed_Id'), 'ds': u.get('Umed_Ds'), 
                         'vig_desde': u.get('Umed_vig_desde'), 
                         'vig_hasta': u.get('Umed_vig_hasta')}
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 if u is None:
                     # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
                     umed = {'id':'', 'ds':'','vig_desde':'','vig_hasta':''}
@@ -289,7 +289,7 @@ class WSBFEv1(BaseWS):
                 mon = {'id': m.get('Mon_Id'), 'ds': m.get('Mon_Ds'), 
                         'vig_desde': m.get('Mon_vig_desde'), 
                         'vig_hasta': m.get('Mon_vig_hasta')}
-            except Exception, e:
+            except Exception as e:
                 raise
                 if m is None:
                     # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
@@ -315,7 +315,7 @@ class WSBFEv1(BaseWS):
                         'vig_desde': i.get('IVA_vig_desde'), 
                         'vig_hasta': i.get('IVA_vig_hasta')}
                 ivas.append(iva)
-            except Exception, e:
+            except Exception as e:
                 pass
                 raise
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in ivas]
@@ -336,7 +336,7 @@ class WSBFEv1(BaseWS):
                         'vig_desde': d.get('Doc_vig_desde'), 
                         'vig_hasta': d.get('Doc_vig_hasta')}
                 docs.append(doc)
-            except Exception, e:
+            except Exception as e:
                 pass
                 raise
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % d for d in docs]
@@ -356,7 +356,7 @@ class WSBFEv1(BaseWS):
                         'vig_desde': t.get('Cbte_vig_desde'), 
                         'vig_hasta': t.get('Cbte_vig_hasta')}
                 tipos.append(tipo)
-            except Exception, e:
+            except Exception as e:
                 pass
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in tipos]
 
@@ -375,9 +375,9 @@ class WSBFEv1(BaseWS):
                         'vig_desde': n.get('NCM_vig_desde'), 
                         'vig_hasta': n.get('NCM_vig_hasta')}
                 ncms.append(ncm)
-            except Exception, e:
+            except Exception as e:
                 pass
-        return [u'%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in ncms]
+        return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in ncms]
 
     def GetParamZonas(self):
         "Recuperar lista de valores referenciales de Zonas"
@@ -394,7 +394,7 @@ class WSBFEv1(BaseWS):
                         'vig_desde': z.get('Zon_vig_desde'), 
                         'vig_hasta': z.get('Zon_vig_hasta')}
                 zonas.append(zona)
-            except Exception, e:
+            except Exception as e:
                 pass
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in zonas]
 
@@ -441,7 +441,7 @@ INSTALL_DIR = WSBFEv1.InstallDir = get_install_dir()
 
 
 def p_assert_eq(a,b):
-    print a, a==b and '==' or '!=', b
+    print(a, a==b and '==' or '!=', b)
 
 
 if __name__ == "__main__":
@@ -458,7 +458,7 @@ if __name__ == "__main__":
         # Setear token y sing de autorización (pasos previos)
 
         # obteniendo el TA para pruebas
-        from wsaa import WSAA
+        from .wsaa import WSAA
         ta = WSAA().Autenticar("wsbfe", "reingart.crt", "reingart.key")
         wsbfev1.SetTicketAcceso(ta)
 
@@ -474,10 +474,10 @@ if __name__ == "__main__":
     
         if '--dummy' in sys.argv:
             #wsbfev1.LanzarExcepciones = False
-            print wsbfev1.Dummy()
-            print "AppServerStatus", wsbfev1.AppServerStatus
-            print "DbServerStatus", wsbfev1.DbServerStatus
-            print "AuthServerStatus", wsbfev1.AuthServerStatus
+            print(wsbfev1.Dummy())
+            print("AppServerStatus", wsbfev1.AppServerStatus)
+            print("DbServerStatus", wsbfev1.DbServerStatus)
+            print("AuthServerStatus", wsbfev1.AuthServerStatus)
         
         if "--prueba" in sys.argv:
             try:
@@ -533,30 +533,30 @@ if __name__ == "__main__":
                 ##id = "99000000000100" # número propio de transacción
                 # obtengo el último ID y le adiciono 1 
                 # (advertencia: evitar overflow y almacenar!)
-                id = long(wsbfev1.GetLastID()) + 1
+                id = int(wsbfev1.GetLastID()) + 1
 
                 # Llamo al WebService de Autorización para obtener el CAE
                 cae = wsbfev1.Authorize(id)
 
-                print "Comprobante", tipo_cbte, wsbfev1.CbteNro
-                print "Resultado", wsbfev1.Resultado
-                print "CAE", wsbfev1.CAE
-                print "Vencimiento", wsbfev1.Vencimiento
+                print("Comprobante", tipo_cbte, wsbfev1.CbteNro)
+                print("Resultado", wsbfev1.Resultado)
+                print("CAE", wsbfev1.CAE)
+                print("Vencimiento", wsbfev1.Vencimiento)
 
                 if wsbfev1.Resultado and False:
-                    print wsbfev1.client.help("FEXGetCMP").encode("latin1")
+                    print(wsbfev1.client.help("FEXGetCMP").encode("latin1"))
                     wsbfev1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
-                    print "CAE consulta", wsbfev1.CAE, wsbfev1.CAE==cae 
-                    print "NRO consulta", wsbfev1.CbteNro, wsbfev1.CbteNro==cbte_nro 
-                    print "TOTAL consulta", wsbfev1.ImpTotal, wsbfev1.ImpTotal==imp_total
+                    print("CAE consulta", wsbfev1.CAE, wsbfev1.CAE==cae) 
+                    print("NRO consulta", wsbfev1.CbteNro, wsbfev1.CbteNro==cbte_nro) 
+                    print("TOTAL consulta", wsbfev1.ImpTotal, wsbfev1.ImpTotal==imp_total)
 
-            except Exception, e:
-                print wsbfev1.XmlRequest        
-                print wsbfev1.XmlResponse        
-                print wsbfev1.ErrCode
-                print wsbfev1.ErrMsg
-                print wsbfev1.Excepcion
-                print wsbfev1.Traceback
+            except Exception as e:
+                print(wsbfev1.XmlRequest)        
+                print(wsbfev1.XmlResponse)        
+                print(wsbfev1.ErrCode)
+                print(wsbfev1.ErrMsg)
+                print(wsbfev1.Excepcion)
+                print(wsbfev1.Traceback)
                 raise
 
         if "--get" in sys.argv:
@@ -566,12 +566,12 @@ if __name__ == "__main__":
 
             wsbfev1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
 
-            print "FechaCbte = ", wsbfev1.FechaCbte
-            print "CbteNro = ", wsbfev1.CbteNro
-            print "PuntoVenta = ", wsbfev1.PuntoVenta
-            print "ImpTotal =", wsbfev1.ImpTotal
-            print "CAE = ", wsbfev1.CAE
-            print "Vencimiento = ", wsbfev1.Vencimiento
+            print("FechaCbte = ", wsbfev1.FechaCbte)
+            print("CbteNro = ", wsbfev1.CbteNro)
+            print("PuntoVenta = ", wsbfev1.PuntoVenta)
+            print("ImpTotal =", wsbfev1.ImpTotal)
+            print("CAE = ", wsbfev1.CAE)
+            print("Vencimiento = ", wsbfev1.Vencimiento)
 
             wsbfev1.AnalizarXml("XmlResponse")
             p_assert_eq(wsbfev1.ObtenerTagXml('Cae'), str(wsbfev1.CAE))
@@ -584,27 +584,27 @@ if __name__ == "__main__":
             import codecs, locale
             sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
 
-            print "=== Tipos de Comprobante ==="
-            print u'\n'.join(wsbfev1.GetParamTipoCbte())
+            print("=== Tipos de Comprobante ===")
+            print('\n'.join(wsbfev1.GetParamTipoCbte()))
 
-            print "=== Zonas ==="
-            print u'\n'.join(wsbfev1.GetParamZonas())
+            print("=== Zonas ===")
+            print('\n'.join(wsbfev1.GetParamZonas()))
                 
-            print "=== Monedas ==="
-            print u'\n'.join(wsbfev1.GetParamMon())
+            print("=== Monedas ===")
+            print('\n'.join(wsbfev1.GetParamMon()))
 
-            print "=== Tipos de Documentos ==="
-            print u'\n'.join(wsbfev1.GetParamTipoDoc())
+            print("=== Tipos de Documentos ===")
+            print('\n'.join(wsbfev1.GetParamTipoDoc()))
 
-            print "=== Tipos de IVA ==="
-            print u'\n'.join(wsbfev1.GetParamTipoIVA())
+            print("=== Tipos de IVA ===")
+            print('\n'.join(wsbfev1.GetParamTipoIVA()))
 
-            print "=== Unidades de medida ==="
-            print u'\n'.join(wsbfev1.GetParamUMed())
+            print("=== Unidades de medida ===")
+            print('\n'.join(wsbfev1.GetParamUMed()))
 
-            print u"=== Códigos NCM ==="
-            print u'\n'.join(wsbfev1.GetParamNCM())
+            print("=== Códigos NCM ===")
+            print('\n'.join(wsbfev1.GetParamNCM()))
             
         if "--ctz" in sys.argv:
-            print wsbfev1.GetParamCtz('DOL')
+            print(wsbfev1.GetParamCtz('DOL'))
 

@@ -58,7 +58,7 @@ class PyI25:
 
         if not width:
             width = (len(codigo) * 3) * basewidth + (10 * narrow)
-            print width
+            print(width)
             #width = 380
         # crear una nueva imágen
         im = Image.new("1",(width, height))
@@ -133,7 +133,7 @@ if __name__ == '__main__':
             raise
     elif "py2exe" in sys.argv:
         from distutils.core import setup
-        from nsis import build_installer, Target
+        from .nsis import build_installer, Target
         import py2exe
         import glob
         VCREDIST = (
@@ -193,8 +193,8 @@ if __name__ == '__main__':
             archivo="prueba-cae-i25.png"
             extension = 'PNG'
         
-        print "barras", barras
-        print "archivo", archivo
+        print("barras", barras)
+        print("archivo", archivo)
         pyi25.GenerarImagen(barras, archivo, extension=extension)
 
         if not '--mostrar' in sys.argv:

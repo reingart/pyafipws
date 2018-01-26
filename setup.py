@@ -30,14 +30,14 @@ HOMO = True
 # build a one-click-installer for windows:
 if 'py2exe' in sys.argv:
     import py2exe
-    from nsis import build_installer, Target
+    from .nsis import build_installer, Target
 
     # modulos a compilar y empaquetar (comentar si no se desea incluir):
 
     #import pyafipws
     #import pyrece
-    import wsaa
-    import wsfev1, rece1, rg3685
+    from . import wsaa
+    from . import wsfev1, rece1, rg3685
     #import wsfexv1, recex1
     #import wsbfev1, receb1
     #import wsmtx, recem
@@ -75,7 +75,7 @@ if 'py2exe' in sys.argv:
             import designer     
     except ImportError:
         # el script pyfpdf/tools/designer.py no esta disponible:
-        print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
+        print("IMPORTANTE: no se incluye el diseñador de plantillas PDF")
 
     # parametros para setup:
     kwargs = {}

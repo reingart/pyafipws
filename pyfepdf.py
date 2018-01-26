@@ -21,7 +21,7 @@ DEBUG = False
 HOMO = False
 CONFIG_FILE = "rece.ini"
 
-LICENCIA = u"""
+LICENCIA = """
 pyfepdf.py: Interfaz para generar Facturas Electrónica en formato PDF
 Copyright (C) 2011-2015 Mariano Reingart reingart@gmail.com
 
@@ -33,7 +33,7 @@ e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-AYUDA=u"""
+AYUDA="""
 Opciones: 
   --ayuda: este mensaje
   --licencia: muestra la licencia del programa
@@ -55,10 +55,10 @@ import os
 import sys
 import tempfile
 import traceback
-from cStringIO import StringIO
+from io import StringIO
 from decimal import Decimal
 from fpdf import Template
-import utils
+from . import utils
 
 
 class FEPDF:
@@ -79,53 +79,53 @@ class FEPDF:
     _reg_progid_ = "PyFEPDF"
     _reg_clsid_ = "{C9B5D7BB-0388-4A5E-87D5-0B4376C7A336}"
 
-    tipos_doc = {80:'CUIT',86:'CUIL',96:'DNI',99: '', 87: u"CDI", 
-                 89: u"LE", 90: u"LC", 91: u"CI Extranjera", 
-                 92: u"en trámite", 93: u"Acta Nacimiento", 94: u"Pasaporte", 
-                 95: u"CI Bs. As. RNP",  
-                 0: u"CI Policía Federal", 1: u"CI Buenos Aires", 
-                 2: u"CI Catamarca", 3: u"CI Córdoba", 4: u"CI Corrientes", 
-                 5: u"CI Entre Ríos", 6: u"CI Jujuy", 7: u"CI Mendoza", 
-                 8: u"CI La Rioja", 9: u"CI Salta", 10: u"CI San Juan", 
-                 11: u"CI San Luis", 12: u"CI Santa Fe", 
-                 13: u"CI Santiago del Estero", 14: u"CI Tucumán", 
-                 16: u"CI Chaco", 17: u"CI Chubut", 18: u"CI Formosa", 
-                 19: u"CI Misiones", 20: u"CI Neuquén", 21: u"CI La Pampa", 
-                 22: u"CI Río Negro", 23: u"CI Santa Cruz", 
-                 24: u"CI Tierra del Fuego",
+    tipos_doc = {80:'CUIT',86:'CUIL',96:'DNI',99: '', 87: "CDI", 
+                 89: "LE", 90: "LC", 91: "CI Extranjera", 
+                 92: "en trámite", 93: "Acta Nacimiento", 94: "Pasaporte", 
+                 95: "CI Bs. As. RNP",  
+                 0: "CI Policía Federal", 1: "CI Buenos Aires", 
+                 2: "CI Catamarca", 3: "CI Córdoba", 4: "CI Corrientes", 
+                 5: "CI Entre Ríos", 6: "CI Jujuy", 7: "CI Mendoza", 
+                 8: "CI La Rioja", 9: "CI Salta", 10: "CI San Juan", 
+                 11: "CI San Luis", 12: "CI Santa Fe", 
+                 13: "CI Santiago del Estero", 14: "CI Tucumán", 
+                 16: "CI Chaco", 17: "CI Chubut", 18: "CI Formosa", 
+                 19: "CI Misiones", 20: "CI Neuquén", 21: "CI La Pampa", 
+                 22: "CI Río Negro", 23: "CI Santa Cruz", 
+                 24: "CI Tierra del Fuego",
                 }
 
-    umeds_ds = {0: '', 1: u'kg', 2: u'm', 3: u'm2', 4: u'm3', 5: u'l', 
-             6: u'1000 kWh', 7: u'u', 
-             8: u'pares', 9: u'docenas', 10: u'quilates', 11: u'millares', 
-            14: u'g', 15: u'mm', 16: u'mm3', 17: u'km', 18: u'hl', 20: u'cm', 
-            25: u'jgo. pqt. mazo naipes', 27: u'cm3', 29: u'tn', 
-            30: u'dam3', 31: u'hm3', 32: u'km3', 33: u'ug', 34: u'ng', 35: u'pg', 41: u'mg', 47: u'mm', 
-            48: u'curie', 49: u'milicurie', 50: u'microcurie', 51: u'uiacthor', 52: u'muiacthor', 
-            53: u'kg base', 54: u'gruesa', 61: u'kg bruto', 
-            62: u'uiactant', 63: u'muiactant', 64: u'uiactig', 65: u'muiactig', 66: u'kg activo', 
-            67: u'gramo activo', 68: u'gramo base', 96: u'packs', 97: u'hormas', 
-            96: u'packs', 97: u'seña/anticipo', 
-            99: u'bonificaci\xf3n', 98: u'otras unidades'}
+    umeds_ds = {0: '', 1: 'kg', 2: 'm', 3: 'm2', 4: 'm3', 5: 'l', 
+             6: '1000 kWh', 7: 'u', 
+             8: 'pares', 9: 'docenas', 10: 'quilates', 11: 'millares', 
+            14: 'g', 15: 'mm', 16: 'mm3', 17: 'km', 18: 'hl', 20: 'cm', 
+            25: 'jgo. pqt. mazo naipes', 27: 'cm3', 29: 'tn', 
+            30: 'dam3', 31: 'hm3', 32: 'km3', 33: 'ug', 34: 'ng', 35: 'pg', 41: 'mg', 47: 'mm', 
+            48: 'curie', 49: 'milicurie', 50: 'microcurie', 51: 'uiacthor', 52: 'muiacthor', 
+            53: 'kg base', 54: 'gruesa', 61: 'kg bruto', 
+            62: 'uiactant', 63: 'muiactant', 64: 'uiactig', 65: 'muiactig', 66: 'kg activo', 
+            67: 'gramo activo', 68: 'gramo base', 96: 'packs', 97: 'hormas', 
+            96: 'packs', 97: 'seña/anticipo', 
+            99: 'bonificaci\xf3n', 98: 'otras unidades'}
 
     ivas_ds = {3: 0, 4: 10.5, 5: 21, 6: 27, 8: 5, 9: 2.5}
 
-    paises = {512: u'FIJI, ISLAS', 513: u'PAPUA NUEVA GUINEA', 514: u'KIRIBATI, ISLAS', 515: u'MICRONESIA,EST.FEDER', 516: u'PALAU', 517: u'TUVALU', 518: u'SALOMON,ISLAS', 519: u'TONGA', 520: u'MARSHALL,ISLAS', 521: u'MARIANAS,ISLAS', 597: u'RESTO OCEANIA', 598: u'INDET.(OCEANIA)', 101: u'BURKINA FASO', 102: u'ARGELIA', 103: u'BOTSWANA', 104: u'BURUNDI', 105: u'CAMERUN', 107: u'REP. CENTROAFRICANA.', 108: u'CONGO', 109: u'REP.DEMOCRAT.DEL CONGO EX ZAIRE', 110: u'COSTA DE MARFIL', 111: u'CHAD', 112: u'BENIN', 113: u'EGIPTO', 115: u'GABON', 116: u'GAMBIA', 117: u'GHANA', 118: u'GUINEA', 119: u'GUINEA ECUATORIAL', 120: u'KENYA', 121: u'LESOTHO', 122: u'LIBERIA', 123: u'LIBIA', 124: u'MADAGASCAR', 125: u'MALAWI', 126: u'MALI', 127: u'MARRUECOS', 128: u'MAURICIO,ISLAS', 129: u'MAURITANIA', 130: u'NIGER', 131: u'NIGERIA', 132: u'ZIMBABWE', 133: u'RWANDA', 134: u'SENEGAL', 135: u'SIERRA LEONA', 136: u'SOMALIA', 137: u'SWAZILANDIA', 138: u'SUDAN', 139: u'TANZANIA', 140: u'TOGO', 141: u'TUNEZ', 142: u'UGANDA', 144: u'ZAMBIA', 145: u'TERRIT.VINCULADOS AL R UNIDO', 146: u'TERRIT.VINCULADOS A ESPA\xd1A', 147: u'TERRIT.VINCULADOS A FRANCIA', 149: u'ANGOLA', 150: u'CABO VERDE', 151: u'MOZAMBIQUE', 152: u'SEYCHELLES', 153: u'DJIBOUTI', 155: u'COMORAS', 156: u'GUINEA BISSAU', 157: u'STO.TOME Y PRINCIPE', 158: u'NAMIBIA', 159: u'SUDAFRICA', 160: u'ERITREA', 161: u'ETIOPIA', 197: u'RESTO (AFRICA)', 198: u'INDETERMINADO (AFRICA)', 200: u'ARGENTINA', 201: u'BARBADOS', 202: u'BOLIVIA', 203: u'BRASIL', 204: u'CANADA', 205: u'COLOMBIA', 206: u'COSTA RICA', 207: u'CUBA', 208: u'CHILE', 209: u'REP\xdaBLICA DOMINICANA', 210: u'ECUADOR', 211: u'EL SALVADOR', 212: u'ESTADOS UNIDOS', 213: u'GUATEMALA', 214: u'GUYANA', 215: u'HAITI', 216: u'HONDURAS', 217: u'JAMAICA', 218: u'MEXICO', 219: u'NICARAGUA', 220: u'PANAMA', 221: u'PARAGUAY', 222: u'PERU', 223: u'PUERTO RICO', 224: u'TRINIDAD Y TOBAGO', 225: u'URUGUAY', 226: u'VENEZUELA', 227: u'TERRIT.VINCULADO AL R.UNIDO', 228: u'TER.VINCULADOS A DINAMARCA', 229: u'TERRIT.VINCULADOS A FRANCIA AMERIC.', 230: u'TERRIT. HOLANDESES', 231: u'TER.VINCULADOS A ESTADOS UNIDOS', 232: u'SURINAME', 233: u'DOMINICA', 234: u'SANTA LUCIA', 235: u'SAN VICENTE Y LAS GRANADINAS', 236: u'BELICE', 237: u'ANTIGUA Y BARBUDA', 238: u'S.CRISTOBAL Y NEVIS', 239: u'BAHAMAS', 240: u'GRENADA', 241: u'ANTILLAS HOLANDESAS', 250: u'AAE Tierra del Fuego - ARGENTINA', 251: u'ZF La Plata - ARGENTINA', 252: u'ZF Justo Daract - ARGENTINA', 253: u'ZF R\xedo Gallegos - ARGENTINA', 254: u'Islas Malvinas - ARGENTINA', 255: u'ZF Tucum\xe1n - ARGENTINA', 256: u'ZF C\xf3rdoba - ARGENTINA', 257: u'ZF Mendoza - ARGENTINA', 258: u'ZF General Pico - ARGENTINA', 259: u'ZF Comodoro Rivadavia - ARGENTINA', 260: u'ZF Iquique', 261: u'ZF Punta Arenas', 262: u'ZF Salta - ARGENTINA', 263: u'ZF Paso de los Libres - ARGENTINA', 264: u'ZF Puerto Iguaz\xfa - ARGENTINA', 265: u'SECTOR ANTARTICO ARG.', 270: u'ZF Col\xf3n - REP\xdaBLICA DE PANAM\xc1', 271: u'ZF Winner (Sta. C. de la Sierra) - BOLIVIA', 280: u'ZF Colonia - URUGUAY', 281: u'ZF Florida - URUGUAY', 282: u'ZF Libertad - URUGUAY', 283: u'ZF Zonamerica - URUGUAY', 284: u'ZF Nueva Helvecia - URUGUAY', 285: u'ZF Nueva Palmira - URUGUAY', 286: u'ZF R\xedo Negro - URUGUAY', 287: u'ZF Rivera - URUGUAY', 288: u'ZF San Jos\xe9 - URUGUAY', 291: u'ZF Manaos - BRASIL', 295: u'MAR ARG ZONA ECO.EX', 296: u'RIOS ARG NAVEG INTER', 297: u'RESTO AMERICA', 298: u'INDETERMINADO (AMERICA)', 301: u'AFGANISTAN', 302: u'ARABIA SAUDITA', 303: u'BAHREIN', 304: u'MYANMAR (EX-BIRMANIA)', 305: u'BUTAN', 306: u'CAMBODYA (EX-KAMPUCHE)', 307: u'SRI LANKA', 308: u'COREA DEMOCRATICA', 309: u'COREA REPUBLICANA', 310: u'CHINA', 312: u'FILIPINAS', 313: u'TAIWAN', 315: u'INDIA', 316: u'INDONESIA', 317: u'IRAK', 318: u'IRAN', 319: u'ISRAEL', 320: u'JAPON', 321: u'JORDANIA', 322: u'QATAR', 323: u'KUWAIT', 324: u'LAOS', 325: u'LIBANO', 326: u'MALASIA', 327: u'MALDIVAS ISLAS', 328: u'OMAN', 329: u'MONGOLIA', 330: u'NEPAL', 331: u'EMIRATOS ARABES UNIDOS', 332: u'PAKIST\xc1N', 333: u'SINGAPUR', 334: u'SIRIA', 335: u'THAILANDIA', 337: u'VIETNAM', 341: u'HONG KONG', 344: u'MACAO', 345: u'BANGLADESH', 346: u'BRUNEI', 348: u'REPUBLICA DE YEMEN', 349: u'ARMENIA', 350: u'AZERBAIJAN', 351: u'GEORGIA', 352: u'KAZAJSTAN', 353: u'KIRGUIZISTAN', 354: u'TAYIKISTAN', 355: u'TURKMENISTAN', 356: u'UZBEKISTAN', 357: u'TERR. AU. PALESTINOS', 397: u'RESTO DE ASIA', 398: u'INDET.(ASIA)', 401: u'ALBANIA', 404: u'ANDORRA', 405: u'AUSTRIA', 406: u'BELGICA', 407: u'BULGARIA', 409: u'DINAMARCA', 410: u'ESPA\xd1A', 411: u'FINLANDIA', 412: u'FRANCIA', 413: u'GRECIA', 414: u'HUNGRIA', 415: u'IRLANDA', 416: u'ISLANDIA', 417: u'ITALIA', 418: u'LIECHTENSTEIN', 419: u'LUXEMBURGO', 420: u'MALTA', 421: u'MONACO', 422: u'NORUEGA', 423: u'PAISES BAJOS', 424: u'POLONIA', 425: u'PORTUGAL', 426: u'REINO UNIDO', 427: u'RUMANIA', 428: u'SAN MARINO', 429: u'SUECIA', 430: u'SUIZA', 431: u'VATICANO(SANTA SEDE)', 433: u'POS.BRIT.(EUROPA)', 435: u'CHIPRE', 436: u'TURQUIA', 438: u'ALEMANIA,REP.FED.', 439: u'BIELORRUSIA', 440: u'ESTONIA', 441: u'LETONIA', 442: u'LITUANIA', 443: u'MOLDAVIA', 444: u'RUSIA', 445: u'UCRANIA', 446: u'BOSNIA HERZEGOVINA', 447: u'CROACIA', 448: u'ESLOVAQUIA', 449: u'ESLOVENIA', 450: u'MACEDONIA', 451: u'REP. CHECA', 453: u'MONTENEGRO', 454: u'SERBIA', 997: u'RESTO CONTINENTE', 998: u'INDET.(CONTINENTE)', 497: u'RESTO EUROPA', 498: u'INDET.(EUROPA)', 501: u'AUSTRALIA', 503: u'NAURU', 504: u'NUEVA ZELANDIA', 505: u'VANATU', 506: u'SAMOA OCCIDENTAL', 507: u'TERRITORIO VINCULADOS A AUSTRALIA', 508: u'TERRITORIOS VINCULADOS AL R. UNIDO', 509: u'TERRITORIOS VINCULADOS A FRANCIA', 510: u'TER VINCULADOS A NUEVA. ZELANDA', 511: u'TER. VINCULADOS A ESTADOS UNIDOS'}
+    paises = {512: 'FIJI, ISLAS', 513: 'PAPUA NUEVA GUINEA', 514: 'KIRIBATI, ISLAS', 515: 'MICRONESIA,EST.FEDER', 516: 'PALAU', 517: 'TUVALU', 518: 'SALOMON,ISLAS', 519: 'TONGA', 520: 'MARSHALL,ISLAS', 521: 'MARIANAS,ISLAS', 597: 'RESTO OCEANIA', 598: 'INDET.(OCEANIA)', 101: 'BURKINA FASO', 102: 'ARGELIA', 103: 'BOTSWANA', 104: 'BURUNDI', 105: 'CAMERUN', 107: 'REP. CENTROAFRICANA.', 108: 'CONGO', 109: 'REP.DEMOCRAT.DEL CONGO EX ZAIRE', 110: 'COSTA DE MARFIL', 111: 'CHAD', 112: 'BENIN', 113: 'EGIPTO', 115: 'GABON', 116: 'GAMBIA', 117: 'GHANA', 118: 'GUINEA', 119: 'GUINEA ECUATORIAL', 120: 'KENYA', 121: 'LESOTHO', 122: 'LIBERIA', 123: 'LIBIA', 124: 'MADAGASCAR', 125: 'MALAWI', 126: 'MALI', 127: 'MARRUECOS', 128: 'MAURICIO,ISLAS', 129: 'MAURITANIA', 130: 'NIGER', 131: 'NIGERIA', 132: 'ZIMBABWE', 133: 'RWANDA', 134: 'SENEGAL', 135: 'SIERRA LEONA', 136: 'SOMALIA', 137: 'SWAZILANDIA', 138: 'SUDAN', 139: 'TANZANIA', 140: 'TOGO', 141: 'TUNEZ', 142: 'UGANDA', 144: 'ZAMBIA', 145: 'TERRIT.VINCULADOS AL R UNIDO', 146: 'TERRIT.VINCULADOS A ESPA\xd1A', 147: 'TERRIT.VINCULADOS A FRANCIA', 149: 'ANGOLA', 150: 'CABO VERDE', 151: 'MOZAMBIQUE', 152: 'SEYCHELLES', 153: 'DJIBOUTI', 155: 'COMORAS', 156: 'GUINEA BISSAU', 157: 'STO.TOME Y PRINCIPE', 158: 'NAMIBIA', 159: 'SUDAFRICA', 160: 'ERITREA', 161: 'ETIOPIA', 197: 'RESTO (AFRICA)', 198: 'INDETERMINADO (AFRICA)', 200: 'ARGENTINA', 201: 'BARBADOS', 202: 'BOLIVIA', 203: 'BRASIL', 204: 'CANADA', 205: 'COLOMBIA', 206: 'COSTA RICA', 207: 'CUBA', 208: 'CHILE', 209: 'REP\xdaBLICA DOMINICANA', 210: 'ECUADOR', 211: 'EL SALVADOR', 212: 'ESTADOS UNIDOS', 213: 'GUATEMALA', 214: 'GUYANA', 215: 'HAITI', 216: 'HONDURAS', 217: 'JAMAICA', 218: 'MEXICO', 219: 'NICARAGUA', 220: 'PANAMA', 221: 'PARAGUAY', 222: 'PERU', 223: 'PUERTO RICO', 224: 'TRINIDAD Y TOBAGO', 225: 'URUGUAY', 226: 'VENEZUELA', 227: 'TERRIT.VINCULADO AL R.UNIDO', 228: 'TER.VINCULADOS A DINAMARCA', 229: 'TERRIT.VINCULADOS A FRANCIA AMERIC.', 230: 'TERRIT. HOLANDESES', 231: 'TER.VINCULADOS A ESTADOS UNIDOS', 232: 'SURINAME', 233: 'DOMINICA', 234: 'SANTA LUCIA', 235: 'SAN VICENTE Y LAS GRANADINAS', 236: 'BELICE', 237: 'ANTIGUA Y BARBUDA', 238: 'S.CRISTOBAL Y NEVIS', 239: 'BAHAMAS', 240: 'GRENADA', 241: 'ANTILLAS HOLANDESAS', 250: 'AAE Tierra del Fuego - ARGENTINA', 251: 'ZF La Plata - ARGENTINA', 252: 'ZF Justo Daract - ARGENTINA', 253: 'ZF R\xedo Gallegos - ARGENTINA', 254: 'Islas Malvinas - ARGENTINA', 255: 'ZF Tucum\xe1n - ARGENTINA', 256: 'ZF C\xf3rdoba - ARGENTINA', 257: 'ZF Mendoza - ARGENTINA', 258: 'ZF General Pico - ARGENTINA', 259: 'ZF Comodoro Rivadavia - ARGENTINA', 260: 'ZF Iquique', 261: 'ZF Punta Arenas', 262: 'ZF Salta - ARGENTINA', 263: 'ZF Paso de los Libres - ARGENTINA', 264: 'ZF Puerto Iguaz\xfa - ARGENTINA', 265: 'SECTOR ANTARTICO ARG.', 270: 'ZF Col\xf3n - REP\xdaBLICA DE PANAM\xc1', 271: 'ZF Winner (Sta. C. de la Sierra) - BOLIVIA', 280: 'ZF Colonia - URUGUAY', 281: 'ZF Florida - URUGUAY', 282: 'ZF Libertad - URUGUAY', 283: 'ZF Zonamerica - URUGUAY', 284: 'ZF Nueva Helvecia - URUGUAY', 285: 'ZF Nueva Palmira - URUGUAY', 286: 'ZF R\xedo Negro - URUGUAY', 287: 'ZF Rivera - URUGUAY', 288: 'ZF San Jos\xe9 - URUGUAY', 291: 'ZF Manaos - BRASIL', 295: 'MAR ARG ZONA ECO.EX', 296: 'RIOS ARG NAVEG INTER', 297: 'RESTO AMERICA', 298: 'INDETERMINADO (AMERICA)', 301: 'AFGANISTAN', 302: 'ARABIA SAUDITA', 303: 'BAHREIN', 304: 'MYANMAR (EX-BIRMANIA)', 305: 'BUTAN', 306: 'CAMBODYA (EX-KAMPUCHE)', 307: 'SRI LANKA', 308: 'COREA DEMOCRATICA', 309: 'COREA REPUBLICANA', 310: 'CHINA', 312: 'FILIPINAS', 313: 'TAIWAN', 315: 'INDIA', 316: 'INDONESIA', 317: 'IRAK', 318: 'IRAN', 319: 'ISRAEL', 320: 'JAPON', 321: 'JORDANIA', 322: 'QATAR', 323: 'KUWAIT', 324: 'LAOS', 325: 'LIBANO', 326: 'MALASIA', 327: 'MALDIVAS ISLAS', 328: 'OMAN', 329: 'MONGOLIA', 330: 'NEPAL', 331: 'EMIRATOS ARABES UNIDOS', 332: 'PAKIST\xc1N', 333: 'SINGAPUR', 334: 'SIRIA', 335: 'THAILANDIA', 337: 'VIETNAM', 341: 'HONG KONG', 344: 'MACAO', 345: 'BANGLADESH', 346: 'BRUNEI', 348: 'REPUBLICA DE YEMEN', 349: 'ARMENIA', 350: 'AZERBAIJAN', 351: 'GEORGIA', 352: 'KAZAJSTAN', 353: 'KIRGUIZISTAN', 354: 'TAYIKISTAN', 355: 'TURKMENISTAN', 356: 'UZBEKISTAN', 357: 'TERR. AU. PALESTINOS', 397: 'RESTO DE ASIA', 398: 'INDET.(ASIA)', 401: 'ALBANIA', 404: 'ANDORRA', 405: 'AUSTRIA', 406: 'BELGICA', 407: 'BULGARIA', 409: 'DINAMARCA', 410: 'ESPA\xd1A', 411: 'FINLANDIA', 412: 'FRANCIA', 413: 'GRECIA', 414: 'HUNGRIA', 415: 'IRLANDA', 416: 'ISLANDIA', 417: 'ITALIA', 418: 'LIECHTENSTEIN', 419: 'LUXEMBURGO', 420: 'MALTA', 421: 'MONACO', 422: 'NORUEGA', 423: 'PAISES BAJOS', 424: 'POLONIA', 425: 'PORTUGAL', 426: 'REINO UNIDO', 427: 'RUMANIA', 428: 'SAN MARINO', 429: 'SUECIA', 430: 'SUIZA', 431: 'VATICANO(SANTA SEDE)', 433: 'POS.BRIT.(EUROPA)', 435: 'CHIPRE', 436: 'TURQUIA', 438: 'ALEMANIA,REP.FED.', 439: 'BIELORRUSIA', 440: 'ESTONIA', 441: 'LETONIA', 442: 'LITUANIA', 443: 'MOLDAVIA', 444: 'RUSIA', 445: 'UCRANIA', 446: 'BOSNIA HERZEGOVINA', 447: 'CROACIA', 448: 'ESLOVAQUIA', 449: 'ESLOVENIA', 450: 'MACEDONIA', 451: 'REP. CHECA', 453: 'MONTENEGRO', 454: 'SERBIA', 997: 'RESTO CONTINENTE', 998: 'INDET.(CONTINENTE)', 497: 'RESTO EUROPA', 498: 'INDET.(EUROPA)', 501: 'AUSTRALIA', 503: 'NAURU', 504: 'NUEVA ZELANDIA', 505: 'VANATU', 506: 'SAMOA OCCIDENTAL', 507: 'TERRITORIO VINCULADOS A AUSTRALIA', 508: 'TERRITORIOS VINCULADOS AL R. UNIDO', 509: 'TERRITORIOS VINCULADOS A FRANCIA', 510: 'TER VINCULADOS A NUEVA. ZELANDA', 511: 'TER. VINCULADOS A ESTADOS UNIDOS'}
 
-    monedas_ds = {'DOL': u'USD: Dólar', 'PES': u'ARS: Pesos', '010': u'MXN: Pesos Mejicanos', '011': u'UYU: Pesos Uruguayos', '012': u'BRL: Real', '014': u'Coronas Danesas', '015': u'Coronas Noruegas', '016': u'Coronas Suecas', '019': u'JPY: Yens', '018': u'CAD: D\xf3lar Canadiense', '033': u'CLP: Peso Chileno', '056': u'Forint (Hungr\xeda)', '031': u'BOV: Peso Boliviano', '036': u'Sucre Ecuatoriano', '051': u'D\xf3lar de Hong Kong', '034': u'Rand Sudafricano', '053': u'D\xf3lar de Jamaica', '057': u'Baht (Tailandia)', '043': u'Balboas Paname\xf1as', '042': u'Peso Dominicano', '052': u'D\xf3lar de Singapur', '032': u'Peso Colombiano', '035': u'Nuevo Sol Peruano', '061': u'Zloty Polaco', '060': u'EUR: Euro', '063': u'Lempira Hondure\xf1a', '062': u'Rupia Hind\xfa', '064': u'Yuan (Rep. Pop. China)', '009': u'Franco Suizo', '025': u'Dinar Yugoslavo', '002': u'USD: D\xf3lar Libre EEUU', '027': u'Dracma Griego', '026': u'D\xf3lar Australiano', '007': u'Florines Holandeses', '023': u'VEB: Bol\xedvar Venezolano', '047': u'Riyal Saudita', '046': u'Libra Egipcia', '045': u'Dirham Marroqu\xed', '044': u'C\xf3rdoba Nicarag\xfcense', '029': u'G\xfcaran\xed', '028': u'Flor\xedn (Antillas Holandesas)', '054': u'D\xf3lar de Taiwan', '040': u'Lei Rumano', '024': u'Corona Checa', '030': u'Shekel (Israel)', '021': u'Libra Esterlina', '055': u'Quetzal Guatemalteco', '059': u'Dinar Kuwaiti'}
+    monedas_ds = {'DOL': 'USD: Dólar', 'PES': 'ARS: Pesos', '010': 'MXN: Pesos Mejicanos', '011': 'UYU: Pesos Uruguayos', '012': 'BRL: Real', '014': 'Coronas Danesas', '015': 'Coronas Noruegas', '016': 'Coronas Suecas', '019': 'JPY: Yens', '018': 'CAD: D\xf3lar Canadiense', '033': 'CLP: Peso Chileno', '056': 'Forint (Hungr\xeda)', '031': 'BOV: Peso Boliviano', '036': 'Sucre Ecuatoriano', '051': 'D\xf3lar de Hong Kong', '034': 'Rand Sudafricano', '053': 'D\xf3lar de Jamaica', '057': 'Baht (Tailandia)', '043': 'Balboas Paname\xf1as', '042': 'Peso Dominicano', '052': 'D\xf3lar de Singapur', '032': 'Peso Colombiano', '035': 'Nuevo Sol Peruano', '061': 'Zloty Polaco', '060': 'EUR: Euro', '063': 'Lempira Hondure\xf1a', '062': 'Rupia Hind\xfa', '064': 'Yuan (Rep. Pop. China)', '009': 'Franco Suizo', '025': 'Dinar Yugoslavo', '002': 'USD: D\xf3lar Libre EEUU', '027': 'Dracma Griego', '026': 'D\xf3lar Australiano', '007': 'Florines Holandeses', '023': 'VEB: Bol\xedvar Venezolano', '047': 'Riyal Saudita', '046': 'Libra Egipcia', '045': 'Dirham Marroqu\xed', '044': 'C\xf3rdoba Nicarag\xfcense', '029': 'G\xfcaran\xed', '028': 'Flor\xedn (Antillas Holandesas)', '054': 'D\xf3lar de Taiwan', '040': 'Lei Rumano', '024': 'Corona Checa', '030': 'Shekel (Israel)', '021': 'Libra Esterlina', '055': 'Quetzal Guatemalteco', '059': 'Dinar Kuwaiti'}
 
     tributos_ds = {1: 'Impuestos nacionales', 2: 'Impuestos provinciales', 3: 'Impuestos municipales', 4: 'Impuestos Internos', 99: 'Otro'}
 
     tipos_fact = {
-        (1, 6, 11, 19, 51): u'Factura', 
-        (2, 7, 12, 20, 52): u'Nota de Débito', 
-        (3, 8, 13, 21, 53): u'Nota de Crédito',
-        (4, 9, 15, 54): u'Recibo', 
-        (10, 5): u'Nota de Venta al contado', 
-        (60, 61): u'Cuenta de Venta y Líquido producto',
-        (63, 64): u'Liquidación',
-        (91, ): u'Remito',
-        (39, 40): u'???? (R.G. N° 3419)'}
+        (1, 6, 11, 19, 51): 'Factura', 
+        (2, 7, 12, 20, 52): 'Nota de Débito', 
+        (3, 8, 13, 21, 53): 'Nota de Crédito',
+        (4, 9, 15, 54): 'Recibo', 
+        (10, 5): 'Nota de Venta al contado', 
+        (60, 61): 'Cuenta de Venta y Líquido producto',
+        (63, 64): 'Liquidación',
+        (91, ): 'Remito',
+        (39, 40): '???? (R.G. N° 3419)'}
 
     letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63): 'A',
                    (6, 7, 8, 9, 10, 40, 61, 64): 'B',
@@ -322,10 +322,10 @@ class FEPDF:
         "Formatear tipo, letra y punto de venta y número de factura"
         n = "%04d-%08d" % (int(punto_vta), int(cbte_nro))
         t, l = tipo_cbte, ''
-        for k,v in self.tipos_fact.items():
+        for k,v in list(self.tipos_fact.items()):
             if int(tipo_cbte) in k:
                 t = v
-        for k,v in self.letras_fact.items():
+        for k,v in list(self.letras_fact.items()):
             if int(int(tipo_cbte)) in k:
                 l = v
         return t, l, n
@@ -362,10 +362,10 @@ class FEPDF:
         if not os.path.exists(archivo):
             archivo = os.path.join(self.InstallDir, "plantillas", os.path.basename(archivo))
         
-        if DEBUG: print "abriendo archivo ", archivo
+        if DEBUG: print("abriendo archivo ", archivo)
 
         for lno, linea in enumerate(open(archivo.encode('latin1')).readlines()):
-            if DEBUG: print "procesando linea ", lno, linea
+            if DEBUG: print("procesando linea ", lno, linea)
             args = []
             for i,v in enumerate(linea.split(";")):
                 if not v.startswith("'"): 
@@ -389,9 +389,9 @@ class FEPDF:
                            align="L", text="", priority=0, **kwargs):
         "Agrego un campo a la plantilla"
         # convierto colores de string (en hexadecimal)
-        if isinstance(foreground, basestring): foreground = int(foreground, 16)
-        if isinstance(background, basestring): background = int(background, 16)
-        if isinstance(text, unicode): text = text.encode("latin1")
+        if isinstance(foreground, str): foreground = int(foreground, 16)
+        if isinstance(background, str): background = int(background, 16)
+        if isinstance(text, str): text = text.encode("latin1")
         field = {
                 'name': nombre, 
                 'type': tipo, 
@@ -447,9 +447,9 @@ class FEPDF:
 
         ret = False
         try:
-            if isinstance(num_copias, basestring):
+            if isinstance(num_copias, str):
                 num_copias = int(num_copias)
-            if isinstance(lineas_max, basestring):
+            if isinstance(lineas_max, str):
                 lineas_max = int(lineas_max)
 
             f = self.template
@@ -458,7 +458,7 @@ class FEPDF:
             tipo_fact, letra_fact, numero_fact = self.fmt_fact(fact['tipo_cbte'], fact['punto_vta'], fact['cbte_nro'])
             fact['_fmt_fact'] = tipo_fact, letra_fact, numero_fact
             if fact['tipo_cbte'] in (19,20,21):
-                tipo_fact_ex = tipo_fact + u" de Exportación"
+                tipo_fact_ex = tipo_fact + " de Exportación"
             else:
                 tipo_fact_ex = tipo_fact 
 
@@ -470,7 +470,7 @@ class FEPDF:
                 codigo = it['codigo']
                 umed = it['umed']
                 # si umed es 0 (desc.), no imprimir cant/importes en 0
-                if umed is not None and umed <> "":
+                if umed is not None and umed != "":
                     umed = int(umed)
                 ds = it['ds'] or ""
                 if '\x00' in ds:
@@ -479,11 +479,11 @@ class FEPDF:
                 if '<br/>' in ds:
                     # reemplazar saltos de linea:
                     ds = ds.replace('<br/>', '\n')
-                if DEBUG: print "dividiendo", ds
+                if DEBUG: print("dividiendo", ds)
                 # divido la descripción (simil célda múltiple de PDF) 
                 n_li = 0
                 for ds in f.split_multicell(ds, 'Item.Descripcion01'):
-                    if DEBUG: print "multicell", ds
+                    if DEBUG: print("multicell", ds)
                     # agrego un item por linea (sin precio ni importe):
                     li_items.append(dict(codigo=codigo, ds=ds, qty=qty, 
                                          umed=umed if not n_li else None, 
@@ -511,17 +511,17 @@ class FEPDF:
             # reemplazar saltos de linea en observaciones:
             for k in ('obs_generales', 'obs_comerciales'):
                 ds = fact.get(k, '')
-                if isinstance(ds, basestring) and '<br/>' in ds:
+                if isinstance(ds, str) and '<br/>' in ds:
                     fact[k] = ds.replace('<br/>', '\n')
 
             # divido las observaciones por linea:
-            if fact.get('obs_generales') and not f.has_key('obs') and not f.has_key('ObservacionesGenerales1'):
+            if fact.get('obs_generales') and 'obs' not in f and 'ObservacionesGenerales1' not in f:
                 obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
                 # limpiar texto (campos dbf) y reemplazar saltos de linea:
                 obs = obs.replace('\x00', '').replace('<br/>', '\n')
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-            if fact.get('obs_comerciales') and not f.has_key('obs_comerciales') and not f.has_key('ObservacionesComerciales1'):
+            if fact.get('obs_comerciales') and 'obs_comerciales' not in f and 'ObservacionesComerciales1' not in f:
                 obs="\n<U>Observaciones Comerciales:</U>\n\n" + fact['obs_comerciales']
                 # limpiar texto (campos dbf) y reemplazar saltos de linea:
                 obs = obs.replace('\x00', '').replace('<br/>', '\n')
@@ -529,25 +529,25 @@ class FEPDF:
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
 
             # agrego permisos a descripciones (si corresponde)
-            permisos =  [u'Codigo de Despacho %s - Destino de la mercadería: %s' % (
+            permisos =  ['Codigo de Despacho %s - Destino de la mercadería: %s' % (
                          p['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
                          for p in fact.get('permisos',[])]
             #import dbg; dbg.set_trace()
-            if f.has_key('permiso.id1') and f.has_key("permiso.delivery1"):
+            if 'permiso.id1' in f and "permiso.delivery1" in f:
                 for i, p in enumerate(fact.get('permisos', [])):
                     self.AgregarDato("permiso.id%d" % (i+1), p['id_permiso'])
                     pais_dst = self.paises.get(p['dst_merc'], p['dst_merc'])
                     self.AgregarDato("permiso.delivery%d" % (i+1), pais_dst)
-            elif not f.has_key('permisos') and permisos:
+            elif 'permisos' not in f and permisos:
                 obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
             permisos_ds = ', '.join(permisos)
 
             # agrego comprobantes asociados
-            cmps_asoc = [u'%s %s %s' % self.fmt_fact(c['cbte_tipo'], c['cbte_punto_vta'], c['cbte_nro']) 
+            cmps_asoc = ['%s %s %s' % self.fmt_fact(c['cbte_tipo'], c['cbte_punto_vta'], c['cbte_nro']) 
                           for c in fact.get('cbtes_asoc',[])]
-            if not f.has_key('cmps_asoc') and cmps_asoc:
+            if 'cmps_asoc' not in f and cmps_asoc:
                 obs="\n<U>Comprobantes Asociados:</U>\n\n" + '\n'.join(cmps_asoc)
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -564,23 +564,23 @@ class FEPDF:
                 hojas = 1
 
             if HOMO:
-                self.AgregarDato("homo", u"HOMOLOGACIÓN")
+                self.AgregarDato("homo", "HOMOLOGACIÓN")
 
             # mostrar las validaciones no excluyentes de AFIP (observaciones)
             
-            if fact.get('motivos_obs') and fact['motivos_obs']<>'00':
-                if not f.has_key('motivos_ds.L'):
-                    motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
+            if fact.get('motivos_obs') and fact['motivos_obs']!='00':
+                if 'motivos_ds.L' not in f:
+                    motivos_ds = "Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
                 else:
-                    motivos_ds = u"%s" % fact['motivos_obs']
+                    motivos_ds = "%s" % fact['motivos_obs']
             elif HOMO:
-                motivos_ds = u"Ejemplo Sin validez fiscal - Homologación - Testing"
+                motivos_ds = "Ejemplo Sin validez fiscal - Homologación - Testing"
             else:
                 motivos_ds = ""
 
             if letra_fact in ('A', 'M'):
-                msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
-                if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
+                msg_no_iva = "\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
+                if 'leyenda_credito_fiscal' not in f and motivos_ds:
                     motivos_ds += msg_no_iva
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
@@ -608,7 +608,7 @@ class FEPDF:
                     f.set('continua_de', s)
                     f.set('Item.Descripcion%02d' % (0), s)
 
-                    if DEBUG: print u"generando pagina %s de %s" % (hoja, hojas)
+                    if DEBUG: print("generando pagina %s de %s" % (hoja, hojas))
                     
                     # establezco datos según configuración:
                     for d in self.datos:
@@ -620,7 +620,7 @@ class FEPDF:
                         f.set(d['campo'], d['valor'])
 
                     # establezco campos según tabla encabezado:
-                    for k,v in fact.items():
+                    for k,v in list(fact.items()):
                         f.set(k,v)
 
                     f.set('Numero', numero_fact)
@@ -647,7 +647,7 @@ class FEPDF:
                     f.set('Cliente.Telefono', fact.get('telefono', fact.get('telefono_cliente')))
                     f.set('Cliente.IVA', fact.get('categoria', fact.get('id_impositivo')))
                     f.set('Cliente.CUIT', self.fmt_cuit(str(fact['nro_doc'])))
-                    f.set('Cliente.TipoDoc', u"%s:" % self.tipos_doc[int(str(fact['tipo_doc']))])
+                    f.set('Cliente.TipoDoc', "%s:" % self.tipos_doc[int(str(fact['tipo_doc']))])
                     f.set('Cliente.Observaciones', fact.get('obs_comerciales'))
                     f.set('Cliente.PaisDestino', self.paises.get(fact.get('pais_dst_cmp'), fact.get('pais_dst_cmp')) or '')
 
@@ -675,14 +675,14 @@ class FEPDF:
                                 subtotal -= Decimal("%.6f" % float(it['imp_iva']))
                         # agregar el item si encuadra en la hoja especificada:
                         if k > (hoja - 1) * (lineas_max - 1):
-                            if DEBUG: print "it", it
+                            if DEBUG: print("it", it)
                             li += 1
                             if it['qty'] is not None:
                                 f.set('Item.Cantidad%02d' % li, self.fmt_qty(it['qty']))
                             if it['codigo'] is not None:
                                 f.set('Item.Codigo%02d' % li, it['codigo'])
                             if it['umed'] is not None:
-                                if it['umed'] and f.has_key("Item.Umed_ds01"):
+                                if it['umed'] and "Item.Umed_ds01" in f:
                                     # recortar descripción:
                                     umed_ds = self.umeds_ds.get(int(it['umed']))
                                     s = f.split_multicell(umed_ds, 'Item.Umed_ds01')
@@ -786,7 +786,7 @@ class FEPDF:
                             f.set('LeyendaIVA',"")
                             
                             # limpio etiquetas y establezco subtotal de iva liq.
-                            for p in self.ivas_ds.values():
+                            for p in list(self.ivas_ds.values()):
                                 f.set('IVA%s.L' % p, "")
                             for iva in fact['ivas']:
                                 p = self.ivas_ds[int(iva['iva_id'])]
@@ -800,7 +800,7 @@ class FEPDF:
                             f.set('NETO.L',"")
                             f.set('IVA.L',"")
                             f.set('LeyendaIVA', "")
-                            for p in self.ivas_ds.values():
+                            for p in list(self.ivas_ds.values()):
                                 f.set('IVA%s.L' % p, "")
                                 f.set('NETO%s.L' % p,"")
                         f.set('Total.L', 'Total:')
@@ -813,7 +813,7 @@ class FEPDF:
                                   'NGRA.L', 'EXENTO.L', 'descuento.L', 'descuento', 'subtotal.L',
                                   'NETO.L', 'NETO', 'IVA.L', 'LeyendaIVA'):
                             f.set(k,"")
-                        for p in self.ivas_ds.values():
+                        for p in list(self.ivas_ds.values()):
                             f.set('IVA%s.L' % p, "")
                             f.set('NETO%s.L' % p,"")
                         f.set('Total.L', 'Subtotal:')
@@ -824,9 +824,9 @@ class FEPDF:
 
                     # Datos del pie de factura (obtenidos desde AFIP):
                     f.set('motivos_ds', motivos_ds)
-                    if f.has_key('motivos_ds1') and motivos_ds:
+                    if 'motivos_ds1' in f and motivos_ds:
                         if letra_fact in ('A', 'M'):
-                            if f.has_key('leyenda_credito_fiscal'):
+                            if 'leyenda_credito_fiscal' in f:
                                 f.set('leyenda_credito_fiscal', msg_no_iva)
                         for i, txt in enumerate(f.split_multicell(motivos_ds, 'motivos_ds1')):
                             f.set('motivos_ds%d' % (i+1), txt)
@@ -858,23 +858,23 @@ class FEPDF:
                         f.set('estado', "") # compatibilidad hacia atras
 
                     # colocar campos de observaciones (si no van en ds)
-                    if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
+                    if 'observacionesgenerales1' in f and 'obs_generales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
                             f.set('ObservacionesGenerales%d' % (i+1), txt)
-                    if f.has_key('observacionescomerciales1') and 'obs_comerciales' in fact:
+                    if 'observacionescomerciales1' in f and 'obs_comerciales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_comerciales'], 'ObservacionesComerciales1')):
                             f.set('ObservacionesComerciales%d' % (i+1), txt)
-                    if f.has_key('enletras1') and 'en_letras' in fact:
+                    if 'enletras1' in f and 'en_letras' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['en_letras'], 'EnLetras1')):
                             f.set('EnLetras%d' % (i+1), txt)
 
             ret = True
-        except Exception, e:
+        except Exception as e:
             # capturar la excepción manualmente, para imprimirla en el PDF:
             ex = utils.exception_info()
             if DEBUG:
-                print self.Excepcion
-                print self.Traceback
+                print(self.Excepcion)
+                print(self.Traceback)
             
             # guardar la traza de la excepción en un archivo temporal:
             fname = os.path.join(tempfile.gettempdir(), "traceback.txt")
@@ -887,11 +887,11 @@ class FEPDF:
                   size=10, rotate=0, foreground=0xF00000, priority=-1, 
                   text="Excepcion %(name)s:%(lineno)s" % ex)
             if DEBUG:
-                print "grabando...", fname, self.Excepcion, self.Traceback,ex
+                print("grabando...", fname, self.Excepcion, self.Traceback,ex)
             f = open(fname, "w")
             try:
                 f.write(str(ex))
-            except Exception, e:
+            except Exception as e:
                 f.write("imposible grabar")
             finally:
                 f.close()
@@ -945,7 +945,7 @@ if __name__ == '__main__':
         # start the server.
         win32com.server.localserver.serve([FEPDF._reg_clsid_])
     else:
-        from ConfigParser import SafeConfigParser
+        from configparser import SafeConfigParser
 
         DEBUG = '--debug' in sys.argv
         utils.safe_console()
@@ -953,7 +953,7 @@ if __name__ == '__main__':
         # leeo configuración (primer argumento o rece.ini por defecto)
         if len(sys.argv)>1 and not sys.argv[1].startswith("--"):
             CONFIG_FILE = sys.argv.pop(1)
-        if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
+        if DEBUG: print("CONFIG_FILE:", CONFIG_FILE)
         
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
@@ -961,19 +961,19 @@ if __name__ == '__main__':
         conf_pdf = dict(config.items('PDF'))
 
         if '--ayuda' in sys.argv:
-            print AYUDA
+            print(AYUDA)
             sys.exit(0)
 
         if '--licencia' in sys.argv:
-            print LICENCIA
+            print(LICENCIA)
             sys.exit(0)
             
         if '--formato' in sys.argv:
             if '--dbf' in sys.argv:
-                from formatos import formato_dbf
+                from .formatos import formato_dbf
                 formato_dbf.ayuda()
             else:
-                from formatos import formato_txt
+                from .formatos import formato_txt
                 formato_txt.ayuda()
             sys.exit(0)
 
@@ -989,23 +989,23 @@ if __name__ == '__main__':
 
         if '--cargar' in sys.argv:
             if '--dbf' in sys.argv:
-                from formatos import formato_dbf
+                from .formatos import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
-                if DEBUG: print "conf_dbf", conf_dbf
-                regs = formato_dbf.leer(conf_dbf).values()
+                if DEBUG: print("conf_dbf", conf_dbf)
+                regs = list(formato_dbf.leer(conf_dbf).values())
             elif '--json' in sys.argv:
-                from formatos import formato_json
+                from .formatos import formato_json
                 entrada = conf_fact.get("entrada", "entrada.txt")
-                if DEBUG: print "entrada", entrada
+                if DEBUG: print("entrada", entrada)
                 regs = formato_json.leer(entrada)
             else:
-                from formatos import formato_txt
+                from .formatos import formato_txt
                 entrada = conf_fact.get("entrada", "entrada.txt")
-                if DEBUG: print "entrada", entrada
+                if DEBUG: print("entrada", entrada)
                 regs = formato_txt.leer(entrada)
             if DEBUG: 
-                print regs
-                raw_input("continuar...")
+                print(regs)
+                input("continuar...")
             fepdf.factura = regs[0]
             for d in regs[0]['datos']:
                 fepdf.AgregarDato(d['campo'], d['valor'], d['pagina'])
@@ -1118,14 +1118,14 @@ if __name__ == '__main__':
             bonif = 0.00
             iva_id = 5
             importe = 133.10
-            despacho = u'Nº 123456'
+            despacho = 'Nº 123456'
             dato_a = "Dato A"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, despacho, dato_a)
             
             # descuento general (a tasa 21%):
             u_mtx = cod_mtx = codigo = None
-            ds = u"Bonificación/Descuento 10%"
+            ds = "Bonificación/Descuento 10%"
             qty = precio = bonif = None
             umed = 99
             iva_id = 5
@@ -1142,7 +1142,7 @@ if __name__ == '__main__':
             u_mtx = cod_mtx = codigo = None
             qty = precio = bonif = iva_id = imp_iva = importe = None
             umed = 0
-            ds = u"Descripción Ejemplo"
+            ds = "Descripción Ejemplo"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed, 
                     precio, bonif, iva_id, imp_iva, importe, "")
 
@@ -1157,7 +1157,7 @@ if __name__ == '__main__':
             fepdf.AgregarDato("custom-pedido", "1234")
             fepdf.AgregarDato("custom-remito", "12345")
             fepdf.AgregarDato("custom-transporte", "Camiones Ej.")
-            print "Prueba!"
+            print("Prueba!")
 
         # grabar muestra en dbf:
         if '--grabar' in sys.argv:
@@ -1166,24 +1166,24 @@ if __name__ == '__main__':
             reg['datos'] = fepdf.datos
             reg['err_code'] = 'OK'
             if '--dbf' in sys.argv:
-                from formatos import formato_dbf
+                from .formatos import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
-                if DEBUG: print "conf_dbf", conf_dbf
+                if DEBUG: print("conf_dbf", conf_dbf)
                 regs = formato_dbf.escribir([reg], conf_dbf)
             elif '--json' in sys.argv:
-                from formatos import formato_json
+                from .formatos import formato_json
                 archivo =  conf_fact.get("entrada", "entrada.txt")
-                if DEBUG: print "Escribiendo", archivo
+                if DEBUG: print("Escribiendo", archivo)
                 regs = formato_json.escribir([reg], archivo)
             else:
-                from formatos import formato_txt
+                from .formatos import formato_txt
                 archivo =  conf_fact.get("entrada", "entrada.txt")
-                if DEBUG: print "Escribiendo", archivo
+                if DEBUG: print("Escribiendo", archivo)
                 regs = formato_txt.escribir([reg], archivo)
 
 
         # datos fijos:
-        for k, v in conf_pdf.items():
+        for k, v in list(conf_pdf.items()):
             fepdf.AgregarDato(k, v)
             if k.upper() == 'CUIT':
                 fepdf.CUIT = v  # CUIT del emisor para código de barras
@@ -1215,11 +1215,11 @@ if __name__ == '__main__':
             it['numero'] = numero_fact
             it['mes'] = fact['fecha_cbte'][4:6]
             it['año'] = fact['fecha_cbte'][0:4]
-            fn = u''.join([unicode(it.get(ff,ff)) for ff in fs])
+            fn = ''.join([str(it.get(ff,ff)) for ff in fs])
             fn = fn.encode('ascii', 'replace').replace('?','_')
             salida = os.path.join(d, "%s.pdf" % fn)
         if DEBUG:
-            print "archivo generado", salida
+            print("archivo generado", salida)
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
             fepdf.MostrarPDF(archivo=salida,imprimir='--imprimir' in sys.argv)

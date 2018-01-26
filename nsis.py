@@ -230,9 +230,9 @@ class build_installer(py2exe):
                             self.windows_exe_files,
                             self.lib_files,
                             comserver_files)
-        print "*** creating the nsis script***"
+        print("*** creating the nsis script***")
         script.create()
-        print "*** compiling the nsis script***"
+        print("*** compiling the nsis script***")
         script.compile()
         # Note: By default the final setup.exe will be in an Output subdirectory.
  

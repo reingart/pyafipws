@@ -24,7 +24,7 @@ import datetime
 import decimal
 import os
 import sys
-from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 LANZAR_EXCEPCIONES = True
@@ -802,7 +802,7 @@ class WSMTXCA(BaseWS):
                         }
                     verifica(verificaciones, cbteresp, difs)
                     if difs:
-                        print "Diferencias:", difs
+                        print("Diferencias:", difs)
                         self.log("Diferencias: %s" % difs)
                 self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
                 self.CbteNro = cbteresp['numeroComprobante'] # 1L
@@ -923,7 +923,7 @@ class WSMTXCA(BaseWS):
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             CAEA=caea,
             )
-        return [" ".join([("%s=%s" % (k, v)) for k, v in p['puntoVenta'].items()])
+        return [" ".join([("%s=%s" % (k, v)) for k, v in list(p['puntoVenta'].items())])
                  for p in ret['arrayPuntosVenta']]
 
 
@@ -935,7 +935,7 @@ def main():
     DEBUG = '--debug' in sys.argv
 
     # obteniendo el TA para pruebas
-    from wsaa import WSAA
+    from .wsaa import WSAA
     ta = WSAA().Autenticar("wsmtxca", "reingart.crt", "reingart.key")
 
     wsmtxca = WSMTXCA()
@@ -950,11 +950,11 @@ def main():
     wsmtxca.Conectar(cache, wsdl, cacert="conf/afip_ca_info.crt")
     
     if "--dummy" in sys.argv:
-        print wsmtxca.client.help("dummy")
+        print(wsmtxca.client.help("dummy"))
         wsmtxca.Dummy()
-        print "AppServerStatus", wsmtxca.AppServerStatus
-        print "DbServerStatus", wsmtxca.DbServerStatus
-        print "AuthServerStatus", wsmtxca.AuthServerStatus
+        print("AppServerStatus", wsmtxca.AppServerStatus)
+        print("DbServerStatus", wsmtxca.DbServerStatus)
+        print("AuthServerStatus", wsmtxca.AuthServerStatus)
     
     if "--prueba" in sys.argv:
         ##print wsmtxca.client.help("autorizarComprobante").encode("latin1")
@@ -965,7 +965,7 @@ def main():
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
-            cbte_nro = long(cbte_nro) + 1
+            cbte_nro = int(cbte_nro) + 1
             cbt_desde = cbte_nro; cbt_hasta = cbt_desde
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
@@ -1026,29 +1026,29 @@ def main():
                 #wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, 1, umed, 
                 #                    0, 0, iva_id, 0, 0)
             
-            print wsmtxca.factura
+            print(wsmtxca.factura)
             
             if '--caea' in sys.argv:
                 wsmtxca.InformarComprobanteCAEA()
             else:
                 wsmtxca.AutorizarComprobante()
 
-            print "Resultado", wsmtxca.Resultado
-            print "CAE", wsmtxca.CAE
-            print "Vencimiento", wsmtxca.Vencimiento
-            print "Reproceso", wsmtxca.Reproceso
+            print("Resultado", wsmtxca.Resultado)
+            print("CAE", wsmtxca.CAE)
+            print("Vencimiento", wsmtxca.Vencimiento)
+            print("Reproceso", wsmtxca.Reproceso)
             
-            print wsmtxca.Excepcion
-            print wsmtxca.ErrMsg
+            print(wsmtxca.Excepcion)
+            print(wsmtxca.ErrMsg)
             
             cae = wsmtxca.CAE
             
             if cae:
                 
                 wsmtxca.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
-                print "CAE consulta", wsmtxca.CAE, wsmtxca.CAE==cae 
-                print "NRO consulta", wsmtxca.CbteNro, wsmtxca.CbteNro==cbte_nro 
-                print "TOTAL consulta", wsmtxca.ImpTotal, wsmtxca.ImpTotal==imp_total
+                print("CAE consulta", wsmtxca.CAE, wsmtxca.CAE==cae) 
+                print("NRO consulta", wsmtxca.CbteNro, wsmtxca.CbteNro==cbte_nro) 
+                print("TOTAL consulta", wsmtxca.ImpTotal, wsmtxca.ImpTotal==imp_total)
 
                 wsmtxca.AnalizarXml("XmlResponse")
                 assert wsmtxca.ObtenerTagXml('codigoAutorizacion') == str(wsmtxca.CAE)
@@ -1057,10 +1057,10 @@ def main():
 
 
         except:
-            print wsmtxca.XmlRequest        
-            print wsmtxca.XmlResponse        
-            print wsmtxca.ErrCode
-            print wsmtxca.ErrMsg
+            print(wsmtxca.XmlRequest)        
+            print(wsmtxca.XmlResponse)        
+            print(wsmtxca.ErrCode)
+            print(wsmtxca.ErrMsg)
 
     if "--ajustar" in sys.argv:
         ##print wsmtxca.client.help("autorizarComprobante").encode("latin1")
@@ -1071,7 +1071,7 @@ def main():
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
-            cbte_nro = long(cbte_nro) + 1
+            cbte_nro = int(cbte_nro) + 1
             cbt_desde = cbte_nro; cbt_hasta = cbt_desde
             imp_total = "21.00"; imp_tot_conc = "0.00"; imp_neto = None
             imp_trib = "0.00"; imp_op_ex = "0.00"; imp_subtotal = "0.00"
@@ -1108,66 +1108,66 @@ def main():
             wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                         iva_id, imp_iva, imp_subtotal)
             
-            print wsmtxca.factura
+            print(wsmtxca.factura)
             
             if not caea:
                 wsmtxca.AutorizarAjusteIVA()
             else:
                 wsmtxca.InformarAjusteIVACAEA()
 
-            print "Resultado", wsmtxca.Resultado
-            print "CAE", wsmtxca.CAE
-            print "Vencimiento", wsmtxca.Vencimiento
+            print("Resultado", wsmtxca.Resultado)
+            print("CAE", wsmtxca.CAE)
+            print("Vencimiento", wsmtxca.Vencimiento)
             
-            print wsmtxca.Excepcion
-            print wsmtxca.ErrMsg
+            print(wsmtxca.Excepcion)
+            print(wsmtxca.ErrMsg)
             
         except:
-            print wsmtxca.XmlRequest        
-            print wsmtxca.XmlResponse        
-            print wsmtxca.ErrCode
-            print wsmtxca.ErrMsg
+            print(wsmtxca.XmlRequest)        
+            print(wsmtxca.XmlResponse)        
+            print(wsmtxca.ErrCode)
+            print(wsmtxca.ErrMsg)
             raise
 
 
     if "--parametros" in sys.argv:
-        print wsmtxca.ConsultarTiposComprobante()
-        print wsmtxca.ConsultarTiposDocumento()
-        print wsmtxca.ConsultarAlicuotasIVA()
-        print wsmtxca.ConsultarCondicionesIVA()
-        print wsmtxca.ConsultarMonedas()
-        print wsmtxca.ConsultarUnidadesMedida()
-        print wsmtxca.ConsultarTiposTributo()
+        print(wsmtxca.ConsultarTiposComprobante())
+        print(wsmtxca.ConsultarTiposDocumento())
+        print(wsmtxca.ConsultarAlicuotasIVA())
+        print(wsmtxca.ConsultarCondicionesIVA())
+        print(wsmtxca.ConsultarMonedas())
+        print(wsmtxca.ConsultarUnidadesMedida())
+        print(wsmtxca.ConsultarTiposTributo())
 
     if "--cotizacion" in sys.argv:
-        print wsmtxca.ConsultarCotizacionMoneda('DOL')
+        print(wsmtxca.ConsultarCotizacionMoneda('DOL'))
         
     if "--solicitar-caea" in sys.argv:
         periodo = sys.argv[sys.argv.index("--solicitar-caea")+1]
         orden = sys.argv[sys.argv.index("--solicitar-caea")+2]
 
         if DEBUG: 
-            print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
+            print("Consultando CAEA para periodo %s orden %s" % (periodo, orden))
         
         caea = wsmtxca.ConsultarCAEA(periodo, orden)
         if not caea:
-            print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
+            print("Solicitando CAEA para periodo %s orden %s" % (periodo, orden))
             caea = wsmtxca.SolicitarCAEA(periodo, orden)
 
-        print "CAEA:", caea
+        print("CAEA:", caea)
 
         if wsmtxca.Errores:
-            print "Errores:"
+            print("Errores:")
             for error in wsmtxca.Errores:
-                print error
+                print(error)
             
         if DEBUG:
-            print "periodo:", wsmtxca.Periodo 
-            print "orden:", wsmtxca.Orden 
-            print "fch_vig_desde:", wsmtxca.FchVigDesde 
-            print "fch_vig_hasta:", wsmtxca.FchVigHasta 
-            print "fch_tope_inf:", wsmtxca.FchTopeInf 
-            print "fch_proceso:", wsmtxca.FchProceso
+            print("periodo:", wsmtxca.Periodo) 
+            print("orden:", wsmtxca.Orden) 
+            print("fch_vig_desde:", wsmtxca.FchVigDesde) 
+            print("fch_vig_hasta:", wsmtxca.FchVigHasta) 
+            print("fch_tope_inf:", wsmtxca.FchTopeInf) 
+            print("fch_proceso:", wsmtxca.FchProceso)
         
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)

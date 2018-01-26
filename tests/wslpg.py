@@ -28,7 +28,7 @@ from pyafipws.wsaa import WSAA
 from pyafipws.wslpg import WSLPG
 
 import pysimplesoap.client
-print pysimplesoap.client.__version__
+print(pysimplesoap.client.__version__)
 #assert pysimplesoap.client.__version__ >= "1.08c"
 
 
@@ -107,7 +107,7 @@ class TestIssues(unittest.TestCase):
                     )
         ok = wslpg.AutorizarLiquidacion()
         self.assertTrue(ok)
-        self.assertIsInstance(wslpg.COE, basestring)
+        self.assertIsInstance(wslpg.COE, str)
         self.assertEqual(len(wslpg.COE), len("330100013142")) 
 
     def test_liquidacion_contrato(self, nro_contrato=26):
@@ -173,7 +173,7 @@ class TestIssues(unittest.TestCase):
                 break                
                 
         self.assertTrue(ok)
-        self.assertIsInstance(wslpg.COE, basestring)
+        self.assertIsInstance(wslpg.COE, str)
         self.assertEqual(len(wslpg.COE), len("330100013142")) 
         self.assertEqual(wslpg.NroContrato, nro_contrato)
 
@@ -265,7 +265,7 @@ class TestIssues(unittest.TestCase):
         ok = wslpg.AjustarLiquidacionUnificado()
         self.assertTrue(ok)
         # verificar respuesta general:
-        self.assertIsInstance(wslpg.COE, basestring)
+        self.assertIsInstance(wslpg.COE, str)
         self.assertEqual(len(wslpg.COE), len("330100013133"))
         coe_ajustado = coe
         coe = wslpg.COE
@@ -354,7 +354,7 @@ class TestIssues(unittest.TestCase):
         self.assertTrue(ok)
         # verificar respuesta general:
         coe = wslpg.COE
-        self.assertIsInstance(wslpg.COE, basestring)
+        self.assertIsInstance(wslpg.COE, str)
         self.assertEqual(len(wslpg.COE), len("330100013133"))
         try:
             self.assertEqual(wslpg.Estado, "AC")
@@ -459,7 +459,7 @@ class TestIssues(unittest.TestCase):
                                               cuit_corredor="20267565393",
                                               cod_grano=31)
             self.assertEqual(wslpg.Errores, [])
-            self.assertIsInstance(wslpg.COE, basestring)
+            self.assertIsInstance(wslpg.COE, str)
             self.assertEqual(len(wslpg.COE), len("330100013133"))
             self.assertEqual(wslpg.Estado, "AC")
         finally:
@@ -491,7 +491,7 @@ class TestIssues(unittest.TestCase):
                            330100014061, 330100014450, 330100014454, 
                            330100014455, 330100014459, 330100014467, 
                            330100014472, 330100004664]):            
-            self.assertIsInstance(wslpg.COE, basestring) 
+            self.assertIsInstance(wslpg.COE, str) 
             self.assertEqual(wslpg.COE, str(coe))
             self.assertEqual(wslpg.Estado, "")  # por el momento no lo devuelve
             # leo el próximo numero

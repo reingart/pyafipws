@@ -64,7 +64,7 @@ class TestTZM(unittest.TestCase):
             )
         self.assertFalse(ws.Excepcion)
         self.assertTrue(ws.Resultado)
-        self.assertIsInstance(ws.CodigoTransaccion, basestring)
+        self.assertIsInstance(ws.CodigoTransaccion, str)
         self.assertEqual(len(ws.CodigoTransaccion), len("23312897")) 
 
     def test_fraccion(self):
@@ -109,7 +109,7 @@ class TestTZM(unittest.TestCase):
             id_obra_social=None, id_evento=134,
             )
         self.assertTrue(ws.Resultado)
-        self.assertIsInstance(ws.CodigoTransaccion, basestring)
+        self.assertIsInstance(ws.CodigoTransaccion, str)
         self.assertEqual(len(ws.CodigoTransaccion), len("23312897")) 
 
     def test_cancela_parcial(self):
@@ -140,7 +140,7 @@ class TestTZM(unittest.TestCase):
             for clave in '_id_transaccion', '_gtin', '_lote', '_numero_serial':
                 valor = ws.GetParametro(clave)
                 self.assertIsNot(valor, None)
-        self.assert_(q)    
+        self.assertTrue(q)    
 
     def test_consultar_alertadas(self):
         "Prueba para obtener las transacciones propias alertadas"
@@ -157,7 +157,7 @@ class TestTZM(unittest.TestCase):
             for clave in '_id_transaccion', '_gtin', '_lote', '_numero_serial':
                 valor = ws.GetParametro(clave)
                 self.assertIsNot(valor, None)
-        self.assert_(q)    
+        self.assertTrue(q)    
 
 
     def test_confirmar(self):
@@ -183,7 +183,7 @@ class TestTZM(unittest.TestCase):
             # verifico que se haya confirmado correctamente:
             self.assertTrue(ws.Resultado)
             # verifico que haya devuelto id_transac_asociada:
-            self.assertIsInstance(ws.CodigoTransaccion, basestring)
+            self.assertIsInstance(ws.CodigoTransaccion, str)
             self.assertEqual(len(ws.CodigoTransaccion), len("23312897"))
             # salgo del ciclo (solo confirmo una transacción)
             break

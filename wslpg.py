@@ -100,10 +100,10 @@ import pprint
 import warnings
 from pysimplesoap.client import SoapFault
 from fpdf import Template
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
@@ -542,22 +542,22 @@ class WSLPG(BaseWS):
             # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
             location = self.client.services['LpgService']['ports']['LpgEndPoint']['location']
             if location.startswith("http://"):
-                print "Corrigiendo WSDL ...", location,
+                print("Corrigiendo WSDL ...", location, end=' ')
                 location = location.replace("http://", "https://").replace(":80", ":443")
                 self.client.services['LpgService']['ports']['LpgEndPoint']['location'] = location
-                print location
+                print(location)
             
             try:
                 # intento abrir el diccionario persistente de localidades
-                import wslpg_datos
+                from . import wslpg_datos
                 localidades_db = os.path.join(self.cache, "localidades.dat")
                 # verificar que puede escribir en el dir, sino abrir solo lectura
                 flag = os.access(self.cache, os.W_OK) and 'c' or 'r'
                 wslpg_datos.LOCALIDADES = shelve.open(localidades_db, flag=flag)
-                if DEBUG: print "Localidades en BD:", len(wslpg_datos.LOCALIDADES)
+                if DEBUG: print("Localidades en BD:", len(wslpg_datos.LOCALIDADES))
                 self.Traceback = "Localidades en BD: %s" % len(wslpg_datos.LOCALIDADES)
-            except Exception, e:
-                print "ADVERTENCIA: No se pudo abrir la bbdd de localidades:", e
+            except Exception as e:
+                print("ADVERTENCIA: No se pudo abrir la bbdd de localidades:", e)
                 self.Excepcion = str(e)
         return ok
 
@@ -754,7 +754,7 @@ class WSLPG(BaseWS):
             peso_neto_total_certificado = None  # 0 no es válido
         # coe_certificado_deposito no es para LPG, unificar en futuras versiones
         if tipo_certificado_deposito and int(tipo_certificado_deposito) == 332:
-            if coe_certificado_deposito and long(coe_certificado_deposito):
+            if coe_certificado_deposito and int(coe_certificado_deposito):
                 nro_certificado_deposito = coe_certificado_deposito
                 coe_certificado_deposito = None
         cert = dict(
@@ -1483,7 +1483,7 @@ class WSLPG(BaseWS):
 
         # llamar al webservice:
         
-        if base['nroContrato'] is not None and long(base['nroContrato']):
+        if base['nroContrato'] is not None and int(base['nroContrato']):
             metodo = self.client.lsgAjustarXContrato
         else:
             metodo = self.client.lsgAjustarXCoe
@@ -1646,7 +1646,7 @@ class WSLPG(BaseWS):
         v = None
         if 'servicio_otros' in kwargs: 
             v = kwargs.get('servicio_otros')
-            if isinstance(v, basestring) and v and not v.isalpha():
+            if isinstance(v, str) and v and not v.isalpha():
                 v = float(v)
             if v:
                 servicios_otros = v
@@ -1679,14 +1679,14 @@ class WSLPG(BaseWS):
                 serviciosFormaDePago=servicios_forma_de_pago or None,
             )
         # si se pasan campos no documentados por AFIP, intentar enviarlo:
-        for k, kk in {
+        for k, kk in list({
             'servicios_conceptos_no_gravados': 'serviciosConceptosNoGravados', 
             'servicios_percepciones_iva': 'serviciosPercepcionesIva',
             'servicios_otras_percepciones': 'serviciosOtrasPercepciones',
-            }.items():
+            }.items()):
             v = kwargs.get(k)
             # cuidado: si AFIP retira el campo, puede fallar si se pasa en 0
-            if isinstance(v, basestring) and v and not v.isalpha():
+            if isinstance(v, str) and v and not v.isalpha():
                 v = float(v)
             if v:
                 self.certificacion['primaria'][kk] = v
@@ -2353,7 +2353,7 @@ class WSLPG(BaseWS):
             else:
                 datos_liq = self.DatosLiquidacion[0]
             self.COE = str(datos_liq['coe'])
-            self.Estado = unicode(datos_liq.get('estado', ""))
+            self.Estado = str(datos_liq.get('estado', ""))
             return self.COE
         else:
             return ""
@@ -2591,14 +2591,14 @@ class WSLPG(BaseWS):
     def BuscarLocalidades(self, cod_prov, cod_localidad=None, consultar=True):
         "Devuelve la localidad o la consulta en AFIP (uso interno)"
         # si no se especifíca cod_localidad, es util para reconstruir la cache
-        import wslpg_datos as datos
+        from . import wslpg_datos as datos
         if not str(cod_localidad) in datos.LOCALIDADES and consultar:
             d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
             try:
                 # actualizar el diccionario persistente (shelve)
                 datos.LOCALIDADES.update(d)
-            except Exception, e:
-                print "EXCEPCION CAPTURADA", e
+            except Exception as e:
+                print("EXCEPCION CAPTURADA", e)
                 # capturo errores por permisos (o por concurrencia)
                 datos.LOCALIDADES = d
         return datos.LOCALIDADES.get(str(cod_localidad), "")
@@ -2646,11 +2646,11 @@ class WSLPG(BaseWS):
         if not os.path.exists(archivo):
             archivo = os.path.join(self.InstallDir, "plantillas", os.path.basename(archivo))
 
-        if DEBUG: print "abriendo archivo ", archivo
+        if DEBUG: print("abriendo archivo ", archivo)
         # inicializo la lista de los elementos:
         self.elements = []
         for lno, linea in enumerate(open(archivo.encode('latin1')).readlines()):
-            if DEBUG: print "procesando linea ", lno, linea
+            if DEBUG: print("procesando linea ", lno, linea)
             args = []
             for i,v in enumerate(linea.split(";")):
                 if not v.startswith("'"): 
@@ -2667,7 +2667,7 @@ class WSLPG(BaseWS):
             if args[1] == 'I':
                 if not os.path.exists(args[14]):
                     args[14] = os.path.join(self.InstallDir, "plantillas", os.path.basename(args[14]))
-                if DEBUG: print "NUEVO PATH:", args[14]          
+                if DEBUG: print("NUEVO PATH:", args[14])          
 
             self.AgregarCampoPDF(*args)
 
@@ -2694,9 +2694,9 @@ class WSLPG(BaseWS):
                            align="L", text="", priority=0, **kwargs):
         "Agrego un campo a la plantilla"
         # convierto colores de string (en hexadecimal)
-        if isinstance(foreground, basestring): foreground = int(foreground, 16)
-        if isinstance(background, basestring): background = int(background, 16)
-        if isinstance(text, unicode): text = text.encode("latin1")
+        if isinstance(foreground, str): foreground = int(foreground, 16)
+        if isinstance(background, str): background = int(background, 16)
+        if isinstance(text, str): text = text.encode("latin1")
         field = {
                 'name': nombre, 
                 'type': tipo, 
@@ -2731,7 +2731,7 @@ class WSLPG(BaseWS):
         if campo == 'fondo' and valor.startswith(self.InstallDir):
             if not os.path.exists(valor):
                 valor = os.path.join(self.InstallDir, "plantillas", os.path.basename(valor))
-            if DEBUG: print "NUEVO PATH:", valor          
+            if DEBUG: print("NUEVO PATH:", valor)          
         self.datos[campo] = valor
         return True
 
@@ -2747,7 +2747,7 @@ class WSLPG(BaseWS):
                 liq.update(liq[clave])  # unificar con AnalizarAjusteCredito/Debito
 
             if HOMO:
-                self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
+                self.AgregarDatoPDF("homo", "HOMOLOGACIÓN")
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado', 
                       4: 'Cuadruplicado', 5: 'Quintuplicado'}
@@ -2799,7 +2799,7 @@ class WSLPG(BaseWS):
                 return localidad, provincia                
 
             # divido los datos adicionales (debe haber renglones 1 al 9):
-            if liq.get('datos_adicionales') and f.has_key('datos_adicionales1'):
+            if liq.get('datos_adicionales') and 'datos_adicionales1' in f:
                 d = liq.get('datos_adicionales')
                 for i, ds in enumerate(f.split_multicell(d, 'datos_adicionales1')):
                     liq['datos_adicionales%s' % (i + 1)] = ds
@@ -2817,8 +2817,8 @@ class WSLPG(BaseWS):
                     cod_tipo_ajuste = int(liq["cod_tipo_ajuste"] or '0')
                 except: 
                     cod_tipo_ajuste = None
-                f.set('tipo_ajuste', {3: u'Liquidación de Débito', 
-                                      4: u'Liquidación de Crédito',
+                f.set('tipo_ajuste', {3: 'Liquidación de Débito', 
+                                      4: 'Liquidación de Crédito',
                                       }.get(cod_tipo_ajuste, ''))
 
                 # limpio datos del corredor si no corresponden:
@@ -2827,16 +2827,16 @@ class WSLPG(BaseWS):
                         del liq['cuit_corredor']
                     
                 # establezco campos según tabla encabezado:
-                for k,v in liq.items():
+                for k,v in list(liq.items()):
                     v = formatear(k, v, fmt_encabezado)
-                    if isinstance(v, (basestring, int, long, float)):
+                    if isinstance(v, (str, int, float)):
                         f.set(k, v)
                     elif isinstance(v, decimal.Decimal):
                         f.set(k, str(v))
                     elif isinstance(v, datetime.datetime):
                         f.set(k, str(v))
 
-                import wslpg_datos as datos
+                from . import wslpg_datos as datos
                 
                 campania = int(liq.get('campania_ppal') or 0)
                 f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
@@ -2906,29 +2906,29 @@ class WSLPG(BaseWS):
                 if int(liq['cod_tipo_operacion'] or 0) == 1: 
                     f.set("comprador.L", "COMPRADOR:")
                     f.set("vendedor.L", "VENDEDOR:")
-                    f.set("formulario", u"Form. Electrónico 1116 B %s" % homo)
+                    f.set("formulario", "Form. Electrónico 1116 B %s" % homo)
                 else:
                     f.set("comprador.L", "MANDATARIO/CONSIGNATARIO:")
                     f.set("vendedor.L", "MANDANTE/COMITENTE:")
-                    f.set("formulario", u"Form. Electrónico 1116 C %s" % homo)
+                    f.set("formulario", "Form. Electrónico 1116 C %s" % homo)
                 
                 if int(liq.get("coe_ajustado") or 0) or int(liq.get("nro_contrato") or 0):
-                    f.set("formulario", u"Ajuste Unificado %s" % homo)
+                    f.set("formulario", "Ajuste Unificado %s" % homo)
 
                 certs = []
                 for cert in liq.get('certificados', []):
-                    certs.append(u"%s Nº %s" % (
+                    certs.append("%s Nº %s" % (
                         datos.TIPO_CERT_DEP[int(cert['tipo_certificado_deposito'])],
                         cert['nro_certificado_deposito']))
                 f.set("certificados_deposito", ', '.join(certs))
 
                 for i, deduccion in enumerate(liq.get('deducciones', [])):
-                    for k, v in deduccion.items():
+                    for k, v in list(deduccion.items()):
                         v = formatear(k, v, fmt_deduccion)
                         f.set("deducciones_%s_%02d" % (k, i + 1), v)
 
                 for i, retencion in enumerate(liq.get('retenciones', [])):
-                    for k, v in retencion.items():
+                    for k, v in list(retencion.items()):
                         v = formatear(k, v, fmt_retencion)
                         f.set("retenciones_%s_%02d" % (k, i + 1), v)
                     if retencion['importe_certificado_retencion']:
@@ -2941,14 +2941,14 @@ class WSLPG(BaseWS):
                             ))
 
                 # cargo campos adicionales ([PDF] en .ini y AgregarDatoPDF)
-                for k,v in self.datos.items():
+                for k,v in list(self.datos.items()):
                     f.set(k, v)
                 
                 # Ajustes:
                 
                 if clave:
-                    f.set('subtipo_ajuste', {'ajuste_debito': u'AJUSTE DÉBITO',
-                           'ajuste_credito': u'AJUSTE CRÉDITO'}[clave])
+                    f.set('subtipo_ajuste', {'ajuste_debito': 'AJUSTE DÉBITO',
+                           'ajuste_credito': 'AJUSTE CRÉDITO'}[clave])
                 
                 if int(liq.get('coe_ajustado') or 0):
                     f.set("leyenda_coe_nro", "COE Ajustado:")
@@ -2961,7 +2961,7 @@ class WSLPG(BaseWS):
                     ##f.set("coe_relacionados", TODO)
                     
             return True
-        except Exception, e:
+        except Exception as e:
             ex = utils.exception_info()
             try:
                 f.set('anulado', "%(name)s:%(lineno)s" % ex)
@@ -2970,8 +2970,8 @@ class WSLPG(BaseWS):
             self.Excepcion = ex['msg']
             self.Traceback = ex['tb']
             if DEBUG:
-                print self.Excepcion
-                print self.Traceback
+                print(self.Excepcion)
+                print(self.Traceback)
             return False
 
     def GenerarPDF(self, archivo="", dest="F"):
@@ -2979,7 +2979,7 @@ class WSLPG(BaseWS):
         try:
             self.template.render(archivo, dest=dest)
             return True
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = str(e)
             return False
 
@@ -2991,7 +2991,7 @@ class WSLPG(BaseWS):
                 operation = imprimir and "print" or ""
                 os.startfile(archivo, operation)
             return True
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = str(e)
             return False
 
@@ -3136,7 +3136,7 @@ def leer_archivo(nombre_archivo):
                 # encabezado base de las liquidaciones
                 d = leer(linea, ENCABEZADO)
                 if d['reservado1']:
-                    print "ADVERTENCIA: USAR datos adicionales (nueva posición)" 
+                    print("ADVERTENCIA: USAR datos adicionales (nueva posición)") 
                     d['datos_adicionales'] = d['reservado1'] 
                 dic.update(d)
                 # referenciar la liquidación para agregar ret. / ded.:
@@ -3144,7 +3144,7 @@ def leer_archivo(nombre_archivo):
             elif str(linea[0])=='1':
                 d = leer(linea, CERTIFICADO)
                 if d['reservado1']:
-                    print "ADVERTENCIA: USAR tipo_certificado_deposito (nueva posición)" 
+                    print("ADVERTENCIA: USAR tipo_certificado_deposito (nueva posición)") 
                     d['tipo_certificado_deposito'] = d['reservado1'] 
                 liq['certificados'].append(d)
             elif str(linea[0])=='2':
@@ -3153,7 +3153,7 @@ def leer_archivo(nombre_archivo):
                 d = leer(linea, DEDUCCION)
                 # ajustes por cambios en afip (compatibilidad hacia atras):
                 if d['reservado1']:
-                    print "ADVERTENCIA: USAR precio_pkg_diario!" 
+                    print("ADVERTENCIA: USAR precio_pkg_diario!") 
                     d['precio_pkg_diario'] = d['reservado1'] 
                 liq['deducciones'].append(d)
             elif str(linea[0])=='P':
@@ -3183,7 +3183,7 @@ def leer_archivo(nombre_archivo):
             elif str(linea[0])=='9':
                 dic['datos'].append(leer(linea, DATO))
             else:
-                print "Tipo de registro incorrecto:", linea[0]
+                print("Tipo de registro incorrecto:", linea[0])
     archivo.close()
                 
     if not 'nro_orden' in dic:
@@ -3200,11 +3200,11 @@ INSTALL_DIR = WSLPG.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato in [('Encabezado', ENCABEZADO), 
                              ('Certificado', CERTIFICADO), 
                              ('Retencion', RETENCION), 
@@ -3220,12 +3220,12 @@ if __name__ == '__main__':
                              ('Evento', EVENTO), ('Error', ERROR), 
                              ('Dato', DATO)]:
             comienzo = 1
-            print "=== %s ===" % msg
+            print("=== %s ===" % msg)
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                    clave, comienzo, longitud, tipo, dec)
+                print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    clave, comienzo, longitud, tipo, dec))
                 comienzo += longitud
         sys.exit(0)
 
@@ -3235,18 +3235,18 @@ if __name__ == '__main__':
         sys.exit(0)
 
     import csv
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
-    from wsaa import WSAA
+    from .wsaa import WSAA
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
-            print "Usando configuracion:", CONFIG_FILE
+            print("Usando configuracion:", CONFIG_FILE)
          
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
@@ -3271,7 +3271,7 @@ if __name__ == '__main__':
         
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
             
@@ -3279,13 +3279,13 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "WSAA_URL:", WSAA_URL
-            print "WSLPG_URL:", WSLPG_URL
-            print "CACERT", CACERT
-            print "WRAPPER", WRAPPER
+            print("Usando Configuración:")
+            print("WSAA_URL:", WSAA_URL)
+            print("WSLPG_URL:", WSLPG_URL)
+            print("CACERT", CACERT)
+            print("WRAPPER", WRAPPER)
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wslpg", CERT, PRIVATEKEY, wsdl=WSAA_URL, 
                                proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
@@ -3301,9 +3301,9 @@ if __name__ == '__main__':
 
         if '--dummy' in sys.argv:
             ret = wslpg.Dummy()
-            print "AppServerStatus", wslpg.AppServerStatus
-            print "DbServerStatus", wslpg.DbServerStatus
-            print "AuthServerStatus", wslpg.AuthServerStatus
+            print("AppServerStatus", wslpg.AppServerStatus)
+            print("DbServerStatus", wslpg.DbServerStatus)
+            print("AuthServerStatus", wslpg.AuthServerStatus)
             ##sys.exit(0)
 
         if '--autorizar' in sys.argv:
@@ -3444,7 +3444,7 @@ if __name__ == '__main__':
 
             # establezco los parametros (se pueden pasar directamente al metodo)
             for k, v in sorted(dic.items()):
-                if DEBUG: print "%s = %s" % (k, v)
+                if DEBUG: print("%s = %s" % (k, v))
                 wslpg.SetParametro(k, v)
                 
             # cargo la liquidación:
@@ -3470,45 +3470,45 @@ if __name__ == '__main__':
                 else:
                     wslpg.LoadTestXML("wslpg_aut_test.xml")  # cargo respuesta
 
-            print "Liquidacion: pto_emision=%s nro_orden=%s nro_act=%s tipo_op=%s" % (
+            print("Liquidacion: pto_emision=%s nro_orden=%s nro_act=%s tipo_op=%s" % (
                     wslpg.liquidacion['ptoEmision'], 
                     wslpg.liquidacion['nroOrden'], 
                     wslpg.liquidacion['nroActComprador'],
                     wslpg.liquidacion['codTipoOperacion'], 
-                    )
+                    ))
             
             if not '--dummy' in sys.argv:        
                 if '--recorrer' in sys.argv:
-                    print "Consultando actividades y operaciones habilitadas..."
+                    print("Consultando actividades y operaciones habilitadas...")
                     lista_act_op = wslpg.ConsultarTiposOperacion(sep=None)
                     # recorro las actividades habilitadas buscando la 
                     for nro_act, cod_op, det in lista_act_op:
-                        print "Probando nro_act=", nro_act, "cod_op=", cod_op, 
+                        print("Probando nro_act=", nro_act, "cod_op=", cod_op, end=' ') 
                         wslpg.liquidacion['nroActComprador'] = nro_act
                         wslpg.liquidacion['codTipoOperacion'] = cod_op
                         ret = wslpg.AutorizarLiquidacion()
                         if wslpg.COE:
-                            print
+                            print()
                             break       # si obtuve COE salgo
                         else:
-                            print wslpgPDF.Errores
+                            print(wslpgPDF.Errores)
                 else:
-                    print "Autorizando..." 
+                    print("Autorizando...") 
                     ret = wslpg.AutorizarLiquidacion()
                     
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "Errores:", wslpg.Errores
-            print "COE", wslpg.COE
-            print "COEAjustado", wslpg.COEAjustado
-            print "TotalDeduccion", wslpg.TotalDeduccion
-            print "TotalRetencion", wslpg.TotalRetencion
-            print "TotalRetencionAfip", wslpg.TotalRetencionAfip
-            print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
-            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
-            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
-            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("Errores:", wslpg.Errores)
+            print("COE", wslpg.COE)
+            print("COEAjustado", wslpg.COEAjustado)
+            print("TotalDeduccion", wslpg.TotalDeduccion)
+            print("TotalRetencion", wslpg.TotalRetencion)
+            print("TotalRetencionAfip", wslpg.TotalRetencionAfip)
+            print("TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones)
+            print("TotalNetoAPagar", wslpg.TotalNetoAPagar)
+            print("TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07)
+            print("TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion)
             if False and '--testing' in sys.argv:
                 assert wslpg.COE == "330100000357"
                 assert wslpg.COEAjustado == None
@@ -3525,7 +3525,7 @@ if __name__ == '__main__':
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
 
         if '--ajustar' in sys.argv:
-            print "Ajustando..."
+            print("Ajustando...")
             if '--prueba' in sys.argv:
                 # genero una liquidación de ejemplo:
                 dic = dict(
@@ -3696,18 +3696,18 @@ if __name__ == '__main__':
                 ret = wslpg.AjustarLiquidacionUnificado()
             
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "Errores:", wslpg.Errores
-            print "COE", wslpg.COE
-            print "Subtotal", wslpg.Subtotal
-            print "TotalIva105", wslpg.TotalIva105
-            print "TotalIva21", wslpg.TotalIva21
-            print "TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias
-            print "TotalRetencionesIVA", wslpg.TotalRetencionesIVA
-            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
-            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
-            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("Errores:", wslpg.Errores)
+            print("COE", wslpg.COE)
+            print("Subtotal", wslpg.Subtotal)
+            print("TotalIva105", wslpg.TotalIva105)
+            print("TotalIva21", wslpg.TotalIva21)
+            print("TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias)
+            print("TotalRetencionesIVA", wslpg.TotalRetencionesIVA)
+            print("TotalNetoAPagar", wslpg.TotalNetoAPagar)
+            print("TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07)
+            print("TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion)
             
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)            
@@ -3721,7 +3721,7 @@ if __name__ == '__main__':
                 pprint.pprint(dic)
         
         if '--asociar' in sys.argv:
-            print "Asociando...",
+            print("Asociando...", end=' ')
             if '--prueba' in sys.argv:
                 # genero datos de ejemplo en el archivo para consultar:
                 dic = dict(coe="330100004664", nro_contrato=26, cod_grano=31,
@@ -3731,16 +3731,16 @@ if __name__ == '__main__':
                            )
                 escribir_archivo(dic, ENTRADA)
             dic = leer_archivo(ENTRADA)
-            print ', '.join(sorted(["%s=%s" % (k, v) for k,v in dic.items() 
+            print(', '.join(sorted(["%s=%s" % (k, v) for k,v in list(dic.items()) 
                                     if k in ("nro_contrato", "coe") or 
-                                    k.startswith("cuit")]))
+                                    k.startswith("cuit")])))
             if not '--lsg' in sys.argv:
                 wslpg.AsociarLiquidacionAContrato(**dic)
             else:
                 wslpg.AsociarLiquidacionSecundariaAContrato(**dic)
-            print "Errores:", wslpg.Errores
-            print "COE", wslpg.COE
-            print "Estado", wslpg.Estado
+            print("Errores:", wslpg.Errores)
+            print("COE", wslpg.COE)
+            print("Estado", wslpg.Estado)
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
@@ -3753,20 +3753,20 @@ if __name__ == '__main__':
                 coe = 330100000357
 
             if '--lsg' in sys.argv:
-                print "Anulando COE LSG", coe
+                print("Anulando COE LSG", coe)
                 ret = wslpg.AnularLiquidacionSecundaria(coe)
             if '--cg' in sys.argv:
-                print "Anulando COE CG", coe
+                print("Anulando COE CG", coe)
                 ret = wslpg.AnularCertificacion(coe)
             else:
-                print "Anulando COE", coe
+                print("Anulando COE", coe)
                 ret = wslpg.AnularLiquidacion(coe)
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "COE", wslpg.COE
-            print "Resultado", wslpg.Resultado
-            print "Errores:", wslpg.Errores
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("COE", wslpg.COE)
+            print("Resultado", wslpg.Resultado)
+            print("Errores:", wslpg.Errores)
             sys.exit(0)
             
         if '--consultar' in sys.argv:
@@ -3784,7 +3784,7 @@ if __name__ == '__main__':
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo
                 wslpg.LoadTestXML("wslpg_cons_test.xml")     # cargo prueba
-            print "Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe)
+            print("Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe))
             if '--lsg' in sys.argv:
                 ret = wslpg.ConsultarLiquidacionSecundaria(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             elif '--cg' in sys.argv:
@@ -3793,9 +3793,9 @@ if __name__ == '__main__':
                 ret = wslpg.CancelarAnticipo(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
             else:
                 ret = wslpg.ConsultarLiquidacion(pto_emision=pto_emision, nro_orden=nro_orden, coe=coe, pdf=pdf)
-            print "COE", wslpg.COE
-            print "Estado", wslpg.Estado
-            print "Errores:", wslpg.Errores
+            print("COE", wslpg.COE)
+            print("Estado", wslpg.Estado)
+            print("Errores:", wslpg.Errores)
 
             # actualizo el archivo de salida con los datos devueltos
             escribir_archivo(wslpg.params_out, SALIDA, agrega=('--agrega' in sys.argv))
@@ -3824,12 +3824,12 @@ if __name__ == '__main__':
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo
                 wslpg.LoadTestXML("wslpg_cons_ajuste_test.xml")   # cargo prueba
-            print "Consultando: pto_emision=%s nro_orden=%s nro_contrato=%s" % (
-                    pto_emision, nro_orden, nro_contrato)
+            print("Consultando: pto_emision=%s nro_orden=%s nro_contrato=%s" % (
+                    pto_emision, nro_orden, nro_contrato))
             wslpg.ConsultarAjuste(pto_emision, nro_orden, nro_contrato, coe, pdf)
-            print "COE", wslpg.COE
-            print "Estado", wslpg.Estado
-            print "Errores:", wslpg.Errores
+            print("COE", wslpg.COE)
+            print("Estado", wslpg.Estado)
+            print("Errores:", wslpg.Errores)
             # actualizo el archivo de salida con los datos devueltos
             dic = wslpg.params_out            
             ok = wslpg.AnalizarAjusteCredito()
@@ -3841,7 +3841,7 @@ if __name__ == '__main__':
                 pprint.pprint(dic)
                 
         if '--consultar_por_contrato' in sys.argv:
-            print "Consultando liquidaciones por contrato...",
+            print("Consultando liquidaciones por contrato...", end=' ')
             if '--prueba' in sys.argv:
                 # genero datos de ejemplo en el archivo para consultar:
                 dic = dict(nro_contrato=26, cod_grano=31,
@@ -3851,15 +3851,15 @@ if __name__ == '__main__':
                            )
                 escribir_archivo(dic, ENTRADA)
             dic = leer_archivo(ENTRADA)
-            print ', '.join(sorted(["%s=%s" % (k, v) for k,v in dic.items() 
-                             if k == "nro_contrato" or k.startswith("cuit")]))
+            print(', '.join(sorted(["%s=%s" % (k, v) for k,v in list(dic.items()) 
+                             if k == "nro_contrato" or k.startswith("cuit")])))
             if not '--lsg' in sys.argv:
                 wslpg.ConsultarLiquidacionesPorContrato(**dic)
             else:
                 wslpg.ConsultarLiquidacionesSecundariasPorContrato(**dic)
-            print "Errores:", wslpg.Errores
+            print("Errores:", wslpg.Errores)
             while wslpg.COE:
-                print "COE", wslpg.COE
+                print("COE", wslpg.COE)
                 wslpg.LeerDatosLiquidacion()
                 ##print "Estado", wslpg.Estado
                 # actualizo el archivo de salida con los datos devueltos
@@ -3869,23 +3869,23 @@ if __name__ == '__main__':
         if '--ult' in sys.argv:
             try:
                 pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 pto_emision = 1
-            print "Consultando ultimo nro_orden para pto_emision=%s" % pto_emision,
+            print("Consultando ultimo nro_orden para pto_emision=%s" % pto_emision, end=' ')
             if '--lsg' in sys.argv:
-                print "LSG"
+                print("LSG")
                 ret = wslpg.ConsultarLiquidacionSecundariaUltNroOrden(pto_emision)
             elif '--cg' in sys.argv:
-                print "CG"
+                print("CG")
                 ret = wslpg.ConsultarCertificacionUltNroOrden(pto_emision)            
             else:
-                print "LPG"
+                print("LPG")
                 ret = wslpg.ConsultarUltNroOrden(pto_emision)
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "Ultimo Nro de Orden", wslpg.NroOrden
-            print "Errores:", wslpg.Errores
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Orden", wslpg.NroOrden)
+            print("Errores:", wslpg.Errores)
             sys.exit(0)
 
         if '--autorizar-lsg' in sys.argv:
@@ -3936,10 +3936,10 @@ if __name__ == '__main__':
             for fp in dic.get('factura_papel', []):
                 wslpg.AgregarFacturaPapel(**fp)
 
-            print "Liquidacion Secundaria: pto_emision=%s nro_orden=%s" % (
+            print("Liquidacion Secundaria: pto_emision=%s nro_orden=%s" % (
                     wslpg.liquidacion['ptoEmision'],
                     wslpg.liquidacion['nroOrden'],
-                    )
+                    ))
             
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
@@ -3948,24 +3948,24 @@ if __name__ == '__main__':
             wslpg.AutorizarLiquidacionSecundaria()
             
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "Errores:", wslpg.Errores
-            print "COE", wslpg.COE
-            print wslpg.GetParametro("cod_tipo_operacion")
-            print wslpg.GetParametro("fecha_liquidacion") 
-            print wslpg.GetParametro("subtotal")
-            print wslpg.GetParametro("importe_iva")
-            print wslpg.GetParametro("operacion_con_iva")
-            print wslpg.GetParametro("total_peso_neto")
-            print wslpg.GetParametro("numero_contrato")
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("Errores:", wslpg.Errores)
+            print("COE", wslpg.COE)
+            print(wslpg.GetParametro("cod_tipo_operacion"))
+            print(wslpg.GetParametro("fecha_liquidacion")) 
+            print(wslpg.GetParametro("subtotal"))
+            print(wslpg.GetParametro("importe_iva"))
+            print(wslpg.GetParametro("operacion_con_iva"))
+            print(wslpg.GetParametro("total_peso_neto"))
+            print(wslpg.GetParametro("numero_contrato"))
 
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
             
         if '--ajustar-lsg' in sys.argv:
-            print "Ajustando LSG..."
+            print("Ajustando LSG...")
             if '--prueba' in sys.argv:
                 # genero una liquidación de ejemplo:
                 dic = dict(
@@ -4049,18 +4049,18 @@ if __name__ == '__main__':
             ret = wslpg.AjustarLiquidacionSecundaria()
             
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "Errores:", wslpg.Errores
-            print "COE", wslpg.COE
-            print "Subtotal", wslpg.Subtotal
-            print "TotalIva105", wslpg.TotalIva105
-            print "TotalIva21", wslpg.TotalIva21
-            print "TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias
-            print "TotalRetencionesIVA", wslpg.TotalRetencionesIVA
-            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
-            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
-            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("Errores:", wslpg.Errores)
+            print("COE", wslpg.COE)
+            print("Subtotal", wslpg.Subtotal)
+            print("TotalIva105", wslpg.TotalIva105)
+            print("TotalIva21", wslpg.TotalIva21)
+            print("TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias)
+            print("TotalRetencionesIVA", wslpg.TotalRetencionesIVA)
+            print("TotalNetoAPagar", wslpg.TotalNetoAPagar)
+            print("TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07)
+            print("TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion)
             
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)            
@@ -4117,10 +4117,10 @@ if __name__ == '__main__':
             for ret in dic.get('retenciones', []):
                 wslpg.AgregarRetencion(**ret)
 
-            print "Liquidacion Primaria (Ant): pto_emision=%s nro_orden=%s" % (
+            print("Liquidacion Primaria (Ant): pto_emision=%s nro_orden=%s" % (
                     wslpg.liquidacion['ptoEmision'],
                     wslpg.liquidacion['nroOrden'],
-                    )
+                    ))
             
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
@@ -4129,19 +4129,19 @@ if __name__ == '__main__':
             wslpg.AutorizarAnticipo()
             
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "Errores:", wslpg.Errores
-            print "COE", wslpg.COE
-            print wslpg.GetParametro("cod_tipo_operacion")
-            print wslpg.GetParametro("fecha_liquidacion") 
-            print "TootalDeduccion", wslpg.TotalDeduccion
-            print "TotalRetencion", wslpg.TotalRetencion
-            print "TotalRetencionAfip", wslpg.TotalRetencionAfip
-            print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
-            print "TotalNetoAPagar", wslpg.TotalNetoAPagar
-            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
-            print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("Errores:", wslpg.Errores)
+            print("COE", wslpg.COE)
+            print(wslpg.GetParametro("cod_tipo_operacion"))
+            print(wslpg.GetParametro("fecha_liquidacion")) 
+            print("TootalDeduccion", wslpg.TotalDeduccion)
+            print("TotalRetencion", wslpg.TotalRetencion)
+            print("TotalRetencionAfip", wslpg.TotalRetencionAfip)
+            print("TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones)
+            print("TotalNetoAPagar", wslpg.TotalNetoAPagar)
+            print("TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07)
+            print("TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion)
 
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)
@@ -4257,11 +4257,11 @@ if __name__ == '__main__':
             if dic["tipo_certificado"] in ('E', ):
                 wslpg.AgregarCertificacionPreexistente(**dic)
             
-            print "Certificacion: pto_emision=%s nro_orden=%s tipo=%s" % (
+            print("Certificacion: pto_emision=%s nro_orden=%s tipo=%s" % (
                     wslpg.certificacion['cabecera']['ptoEmision'],
                     wslpg.certificacion['cabecera']['nroOrden'],
                     wslpg.certificacion['cabecera']['tipoCertificado'],
-                    )
+                    ))
             
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
@@ -4272,11 +4272,11 @@ if __name__ == '__main__':
             wslpg.AutorizarCertificacion()
             
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "Errores:", wslpg.Errores
-            print "COE", wslpg.COE
-            print wslpg.GetParametro("fecha_certificacion") 
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("Errores:", wslpg.Errores)
+            print("COE", wslpg.COE)
+            print(wslpg.GetParametro("fecha_certificacion")) 
 
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)
@@ -4300,14 +4300,14 @@ if __name__ == '__main__':
             except IndexError:
                 coe = dic['coe']
             
-            print "Informar Calidad: coe=%s " % (coe, )
+            print("Informar Calidad: coe=%s " % (coe, ))
             wslpg.InformarCalidadCertificacion(coe)
             
             if wslpg.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                if DEBUG: print >> sys.stderr, wslpg.Traceback
-            print "Errores:", wslpg.Errores
-            print "COE", wslpg.COE
+                print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslpg.Traceback, file=sys.stderr)
+            print("Errores:", wslpg.Errores)
+            print("COE", wslpg.COE)
             # actualizo el archivo de salida con los datos devueltos
             dic.update(wslpg.params_out)
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
@@ -4327,7 +4327,7 @@ if __name__ == '__main__':
                                   nro_planta, cod_grano, campania)
             pprint.pprint(wslpg.params_out)
             if DEBUG:
-                print "NRO CTG", wslpg.GetParametro("ctgs", 0, "nro_ctg")
+                print("NRO CTG", wslpg.GetParametro("ctgs", 0, "nro_ctg"))
 
         # consultar certificados con saldo disponible para liquidar/transferir:
         
@@ -4348,83 +4348,83 @@ if __name__ == '__main__':
                         fecha_emision_des, fecha_emision_has,
                  )
             pprint.pprint(wslpg.params_out)
-            print wslpg.ErrMsg
+            print(wslpg.ErrMsg)
             if DEBUG:
-                print "1er COE", wslpg.GetParametro("certificados", 0, "coe")
+                print("1er COE", wslpg.GetParametro("certificados", 0, "coe"))
             
         # Recuperar parámetros:
         
         if '--campanias' in sys.argv:
             ret = wslpg.ConsultarCampanias()
-            print "\n".join(ret)
+            print("\n".join(ret))
         
         if '--tipograno' in sys.argv:
             ret = wslpg.ConsultarTipoGrano()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--gradoref' in sys.argv:
             ret = wslpg.ConsultarCodigoGradoReferencia()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--gradoent' in sys.argv:
             ##wslpg.LoadTestXML("wslpg_cod.xml")     # cargo respuesta de ej
-            cod_grano = raw_input("Ingrese el código de grano: ")
+            cod_grano = input("Ingrese el código de grano: ")
             ret = wslpg.ConsultarGradoEntregadoXTipoGrano(cod_grano=cod_grano)
-            print "\n".join(ret)
+            print("\n".join(ret))
         
         if '--datos' in sys.argv:
-            print "# Grados"
-            print wslpg.ConsultarCodigoGradoReferencia(sep=None)
+            print("# Grados")
+            print(wslpg.ConsultarCodigoGradoReferencia(sep=None))
             
-            print "# Datos de grado entregado por tipo de granos:"
+            print("# Datos de grado entregado por tipo de granos:")
             for cod_grano in wslpg.ConsultarTipoGrano(sep=None):
                 grad_ent = wslpg.ConsultarGradoEntregadoXTipoGrano(cod_grano, sep=None)
-                print cod_grano, ":", grad_ent, ","
+                print(cod_grano, ":", grad_ent, ",")
 
         if '--shelve' in sys.argv:
-            print "# Construyendo BD de Localidades por Provincias"            
-            import wslpg_datos as datos
-            for cod_prov, desc_prov in wslpg.ConsultarProvincias(sep=None).items():
-                print "Actualizando Provincia", cod_prov, desc_prov
+            print("# Construyendo BD de Localidades por Provincias")            
+            from . import wslpg_datos as datos
+            for cod_prov, desc_prov in list(wslpg.ConsultarProvincias(sep=None).items()):
+                print("Actualizando Provincia", cod_prov, desc_prov)
                 d = wslpg.BuscarLocalidades(cod_prov)
 
         if '--certdeposito' in sys.argv:
             ret = wslpg.ConsultarTipoCertificadoDeposito()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--deducciones' in sys.argv:
             ret = wslpg.ConsultarTipoDeduccion()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--retenciones' in sys.argv:
             ret = wslpg.ConsultarTipoRetencion()
-            print "\n".join(ret)
+            print("\n".join(ret))
             
         if '--puertos' in sys.argv:
             ret = wslpg.ConsultarPuerto()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--actividades' in sys.argv:
             ret = wslpg.ConsultarTipoActividad()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--actividadesrep' in sys.argv:
             ret = wslpg.ConsultarTipoActividadRepresentado()
-            print "\n".join(ret)
-            print "Errores:", wslpg.Errores
+            print("\n".join(ret))
+            print("Errores:", wslpg.Errores)
             
         if '--operaciones' in sys.argv:
             ret = wslpg.ConsultarTiposOperacion()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--provincias' in sys.argv:
             ret = wslpg.ConsultarProvincias()
-            print "\n".join(ret)
+            print("\n".join(ret))
                     
         if '--localidades' in sys.argv:
-            cod_prov = raw_input("Ingrese el código de provincia:")
+            cod_prov = input("Ingrese el código de provincia:")
             ret = wslpg.ConsultarLocalidadesPorProvincia(cod_prov)
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         # Generación del PDF:
 
@@ -4464,21 +4464,21 @@ if __name__ == '__main__':
                 wslpg.CargarFormatoPDF(conf_liq.get(formato))
                 
                 # datos fijos (configuracion):
-                for k, v in conf_pdf.items():
+                for k, v in list(conf_pdf.items()):
                     wslpg.AgregarDatoPDF(k, v)
 
                 # datos adicionales (tipo de registro 9):
                 for dato in liq.get('datos', []):
                     wslpg.AgregarDatoPDF(dato['campo'], dato['valor'])
-                    if DEBUG: print "DATO", dato['campo'], dato['valor']
+                    if DEBUG: print("DATO", dato['campo'], dato['valor'])
 
                 wslpg.ProcesarPlantillaPDF(num_copias=copias,
                                         lineas_max=int(conf_liq.get("lineas_max", 24)),
                                         qty_pos=conf_liq.get("cant_pos") or 'izq',
                                         clave=clave)
                 if wslpg.Excepcion:
-                    print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
-                    if DEBUG: print >> sys.stderr, wslpg.Traceback
+                    print("EXCEPCION:", wslpg.Excepcion, file=sys.stderr)
+                    if DEBUG: print(wslpg.Traceback, file=sys.stderr)
 
                 salida = conf_liq.get("salida", "")
 
@@ -4486,10 +4486,10 @@ if __name__ == '__main__':
                 d = os.path.join(conf_liq.get('directorio', "."), 
                                  liq['fecha_liquidacion'].replace("-", "_"))
                 if not os.path.isdir(d):
-                    if DEBUG: print "Creando directorio!", d 
+                    if DEBUG: print("Creando directorio!", d) 
                     os.makedirs(d)
                 fs = conf_liq.get('archivo','pto_emision,nro_orden').split(",")
-                fn = u'_'.join([unicode(liq.get(ff,ff)) for ff in fs])
+                fn = '_'.join([str(liq.get(ff,ff)) for ff in fs])
                 fn = fn.encode('ascii', 'replace').replace('?','_')
                 salida = os.path.join(d, "%s.pdf" % fn)
                 if num_formato == len(formatos) - 1:
@@ -4497,21 +4497,21 @@ if __name__ == '__main__':
                 else:
                     dest = ""   # sino, no escribir archivo todavía
                 wslpg.GenerarPDF(archivo=salida, dest=dest)
-                print "Generando PDF", salida, dest
+                print("Generando PDF", salida, dest)
             if '--mostrar' in sys.argv:
                 wslpg.MostrarPDF(archivo=salida,
                                  imprimir='--imprimir' in sys.argv)
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print >> sys.stderr, "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"), file=sys.stderr)
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         try:
-            print >> sys.stderr, traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
+            print(traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0], file=sys.stderr)
         except:
-            print >> sys.stderr, "Excepción no disponible:", type(e)
+            print("Excepción no disponible:", type(e), file=sys.stderr)
         if DEBUG:
             raise
         sys.exit(5)

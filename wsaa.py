@@ -24,7 +24,7 @@ __version__ = "2.11c"
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
 from pysimplesoap.client import SimpleXMLElement
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
      exception_info, safe_console, date
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
@@ -74,7 +74,7 @@ def create_tra(service=SERVICE,ttl=2400):
     tra.header.add_child('generationTime',str(date('c',date('U')-ttl)))
     tra.header.add_child('expirationTime',str(date('c',date('U')+ttl)))
     tra.add_child('service',service)
-    return tra.as_xml().decode("utf8")
+    return tra.as_xml()
 
 def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
@@ -112,8 +112,7 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
-            tra = tra.encode("latin1")
-            if sys.platform == "linux":
+            if sys.platform == "linux2":
                 openssl = "openssl"
             else:
                 if sys.maxsize <= 2**32:
@@ -124,9 +123,9 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
                          "-signer", cert, "-inkey", privatekey,
                          "-outform","DER", "-nodetach"], 
                         stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
-            return b64encode(out).decode("latin1")
+            return b64encode(out)
         except Exception as e:
-            if isinstance(e, IOError) and e.errno == 2:
+            if e.errno == 2:
                 warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
             raise
 
@@ -256,13 +255,13 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
-        return sign_tra(tra,cert.encode('latin1'),privatekey.encode('latin1'),passphrase.encode("utf8"))
+        return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'),passphrase.encode("utf8"))
 
     @inicializar_y_capturar_excepciones
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
         results = self.client.loginCms(in0=str(cms))
-        ta_xml = results['loginCmsReturn']
+        ta_xml = results['loginCmsReturn'].encode("utf-8")
         self.xml = ta = SimpleXMLElement(ta_xml)
         self.Token = str(ta.credentials.token)
         self.Sign = str(ta.credentials.sign)
@@ -297,8 +296,7 @@ class WSAA(BaseWS):
                 if not os.access(filename,os.R_OK):
                     raise RuntimeError("Imposible abrir %s\n" % filename)
             # creo el nombre para el archivo del TA (según credenciales y ws) 
-            hash = service + crt + key
-            fn = "TA-%s.xml" % hashlib.md5(hash.encode("latin1")).hexdigest()
+            fn = "TA-%s.xml" % hashlib.md5(service + crt + key).hexdigest()
             if cache:
                 fn = os.path.join(cache, fn)
             else:

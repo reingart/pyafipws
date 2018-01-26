@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-from __future__ import with_statement
+
 
 """Módulo para obtener código de autorización electrónica (CAE) para 
 Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
@@ -71,10 +71,10 @@ import traceback
 import pprint
 from pysimplesoap.client import SoapFault
 from fpdf import Template
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wslum/LumService?wsdl"
@@ -153,10 +153,10 @@ class WSLUM(BaseWS):
             # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
             location = self.client.services['LumService']['ports']['LumEndPoint']['location']
             if location.startswith("http://"):
-                print "Corrigiendo WSDL ...", location,
+                print("Corrigiendo WSDL ...", location, end=' ')
                 location = location.replace("http://", "https://").replace(":80", ":443")
                 self.client.services['LumService']['ports']['LumEndPoint']['location'] = location
-                print location
+                print(location)
         return ok
 
     def __analizar_errores(self, ret):
@@ -597,7 +597,7 @@ class WSLUM(BaseWS):
                 operation = imprimir and "print" or ""
                 os.startfile(archivo, operation)
             return True
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = str(e)
             return False
 
@@ -608,19 +608,19 @@ INSTALL_DIR = WSLUM.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato in []:
             comienzo = 1
-            print "=== %s ===" % msg
+            print("=== %s ===" % msg)
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                    clave, comienzo, longitud, tipo, dec)
+                print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    clave, comienzo, longitud, tipo, dec))
                 comienzo += longitud
         sys.exit(0)
 
@@ -630,18 +630,18 @@ if __name__ == '__main__':
         sys.exit(0)
 
     import csv
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
-    from wsaa import WSAA
+    from .wsaa import WSAA
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
-            print "Usando configuracion:", CONFIG_FILE
+            print("Usando configuracion:", CONFIG_FILE)
          
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
@@ -666,7 +666,7 @@ if __name__ == '__main__':
         
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
             
@@ -674,13 +674,13 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "WSAA_URL:", WSAA_URL
-            print "WSLUM_URL:", WSLUM_URL
-            print "CACERT", CACERT
-            print "WRAPPER", WRAPPER
+            print("Usando Configuración:")
+            print("WSAA_URL:", WSAA_URL)
+            print("WSLUM_URL:", WSLUM_URL)
+            print("CACERT", CACERT)
+            print("WRAPPER", WRAPPER)
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wslum", CERT, PRIVATEKEY, wsdl=WSAA_URL, 
                                proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
@@ -696,9 +696,9 @@ if __name__ == '__main__':
 
         if '--dummy' in sys.argv:
             ret = wslum.Dummy()
-            print "AppServerStatus", wslum.AppServerStatus
-            print "DbServerStatus", wslum.DbServerStatus
-            print "AuthServerStatus", wslum.AuthServerStatus
+            print("AppServerStatus", wslum.AppServerStatus)
+            print("DbServerStatus", wslum.DbServerStatus)
+            print("AuthServerStatus", wslum.AuthServerStatus)
             ##sys.exit(0)
 
         if '--autorizar' in sys.argv:
@@ -784,32 +784,32 @@ if __name__ == '__main__':
                 with open("wslum.json", "w") as f:
                     json.dump(wslum.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
 
-            print "Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
+            print("Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
                     wslum.solicitud['liquidacion']['puntoVenta'],
                     wslum.solicitud['liquidacion']['nroComprobante'], 
                     wslum.solicitud['liquidacion']['tipoComprobante'],
-                    )
+                    ))
             
             if not '--dummy' in sys.argv:        
-                print "Autorizando..." 
+                print("Autorizando...") 
                 ret = wslum.AutorizarLiquidacion()
                     
             if wslum.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslum.Excepcion
-                if DEBUG: print >> sys.stderr, wslum.Traceback
-            print "Errores:", wslum.Errores
-            print "CAE", wslum.CAE
-            print "FechaComprobante", wslum.FechaComprobante
-            print "NroComprobante", wslum.NroComprobante
-            print "TotalNeto", wslum.TotalNeto
-            print "AlicuotaIVA", wslum.AlicuotaIVA
-            print "ImporteIVA", wslum.ImporteIVA
-            print "TotalBonificacionesCalidad", wslum.TotalBonificacionesCalidad
-            print "TotalPenalizacionesCalidad", wslum.TotalPenalizacionesCalidad
-            print "TotalBonificacionesComerciales", wslum.TotalBonificacionesComerciales
-            print "TotalDebitosComerciales", wslum.TotalDebitosComerciales
-            print "TotalOtrosImpuestos", wslum.TotalOtrosImpuestos
-            print "Total", wslum.Total
+                print("EXCEPCION:", wslum.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslum.Traceback, file=sys.stderr)
+            print("Errores:", wslum.Errores)
+            print("CAE", wslum.CAE)
+            print("FechaComprobante", wslum.FechaComprobante)
+            print("NroComprobante", wslum.NroComprobante)
+            print("TotalNeto", wslum.TotalNeto)
+            print("AlicuotaIVA", wslum.AlicuotaIVA)
+            print("ImporteIVA", wslum.ImporteIVA)
+            print("TotalBonificacionesCalidad", wslum.TotalBonificacionesCalidad)
+            print("TotalPenalizacionesCalidad", wslum.TotalPenalizacionesCalidad)
+            print("TotalBonificacionesComerciales", wslum.TotalBonificacionesComerciales)
+            print("TotalDebitosComerciales", wslum.TotalDebitosComerciales)
+            print("TotalOtrosImpuestos", wslum.TotalOtrosImpuestos)
+            print("Total", wslum.Total)
 
             pdf = wslum.GetParametro("pdf")
             if pdf:
@@ -846,11 +846,11 @@ if __name__ == '__main__':
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo prueba:
                 wslum.LoadTestXML("tests/xml/wslum_cons_test.xml")
-            print "Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte)
+            print("Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte))
             ret = wslum.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte, 
                                              cuit_comprador=cuit)
-            print "CAE", wslum.CAE
-            print "Errores:", wslum.Errores
+            print("CAE", wslum.CAE)
+            print("Errores:", wslum.Errores)
 
             if DEBUG: 
                 pprint.pprint(wslum.params_out)
@@ -868,51 +868,51 @@ if __name__ == '__main__':
             except IndexError:
                 pass
 
-            print "Consultando ultimo nro_cbte para pto_vta=%s" % pto_vta,
+            print("Consultando ultimo nro_cbte para pto_vta=%s" % pto_vta, end=' ')
             ret = wslum.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
             if wslum.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslum.Excepcion
-                if DEBUG: print >> sys.stderr, wslum.Traceback
-            print "Ultimo Nro de Comprobante", wslum.NroComprobante
-            print "Errores:", wslum.Errores
+                print("EXCEPCION:", wslum.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslum.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Comprobante", wslum.NroComprobante)
+            print("Errores:", wslum.Errores)
             sys.exit(0)
 
         # Recuperar parámetros:
         
         if '--provincias' in sys.argv:
             ret = wslum.ConsultarProvincias()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--localidades' in sys.argv:
             try:
                 cod_provincia = sys.argv[sys.argv.index("--localidades") + 1]
             except:
-                cod_provincia = raw_input("Codigo Provincia:")
+                cod_provincia = input("Codigo Provincia:")
             ret = wslum.ConsultarLocalidades(cod_provincia)
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--bonificaciones_penalizaciones' in sys.argv:
             ret = wslum.ConsultarBonificacionesPenalizaciones()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--otros_impuestos' in sys.argv:
             ret = wslum.ConsultarOtrosImpuestos()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--puntosventa' in sys.argv:
             ret = wslum.ConsultarPuntosVentas()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print >> sys.stderr, "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"), file=sys.stderr)
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         try:
-            print >> sys.stderr, traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
+            print(traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0], file=sys.stderr)
         except:
-            print >> sys.stderr, "Excepción no disponible:", type(e)
+            print("Excepción no disponible:", type(e), file=sys.stderr)
         if DEBUG:
             raise
         sys.exit(5)

@@ -102,9 +102,9 @@ f = open(sys.argv[1])
 for l in f:
     reg = l[0:2]
     if reg in registros:
-        print "Registro: ", registros[reg]
+        print("Registro: ", registros[reg])
         campos = l.strip("\r").strip("\n").split("|")
         for i, campo in enumerate(campos): 
-            print " * %s: |%s|" % (formato[reg][i], campo, )
+            print(" * %s: |%s|" % (formato[reg][i], campo, ))
     else:
-        print "registro incorrecto:", l
+        print("registro incorrecto:", l)

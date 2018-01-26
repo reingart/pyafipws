@@ -21,9 +21,9 @@ __license__ = "GPL 3.0"
 __version__ = "1.02e"
 
 import sys, os, time
-from ConfigParser import SafeConfigParser
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
+from configparser import SafeConfigParser
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
 
 
 # Constantes (si se usa el script de linea de comandos)
@@ -36,26 +36,26 @@ CONFIG_FILE = "rece.ini"
 # definición del formato del archivo de intercambio (sólo para linea de comandos):
 
 ENCABEZADO = [
-    ('tipo_reg', 1, A, u"0: encabezado"),
-    ('cbte_modo', 4, A, u"Modalidad de autorización (CAI, CAE, CAEA)"),
-    ('cuit_emisor', 11, A, u"CUIT del emisor del comprobante"),
-    ('pto_vta', 4, N, u"Punto de Venta del comprobante"),
-    ('cbte_tipo', 3, N, u"Tipo de comprobante"),
-    ('cbte_nro', 8, N, u"Número de comprobante"),
-    ('cbte_fch', 8, A, u"Fecha en formato AAAAMMDD"),
-    ('imp_total', 15, I, u"Importe total Double (13 + 2)"),
-    ('cod_autorizacion', 14, A, u"Número de CAI, CAE, CAEA"),
-    ('doc_tipo_receptor', 2, A, u"Tipo de documento del receptor"),
-    ('doc_nro_receptor', 20, A, u"N° de documento del receptor"),
+    ('tipo_reg', 1, A, "0: encabezado"),
+    ('cbte_modo', 4, A, "Modalidad de autorización (CAI, CAE, CAEA)"),
+    ('cuit_emisor', 11, A, "CUIT del emisor del comprobante"),
+    ('pto_vta', 4, N, "Punto de Venta del comprobante"),
+    ('cbte_tipo', 3, N, "Tipo de comprobante"),
+    ('cbte_nro', 8, N, "Número de comprobante"),
+    ('cbte_fch', 8, A, "Fecha en formato AAAAMMDD"),
+    ('imp_total', 15, I, "Importe total Double (13 + 2)"),
+    ('cod_autorizacion', 14, A, "Número de CAI, CAE, CAEA"),
+    ('doc_tipo_receptor', 2, A, "Tipo de documento del receptor"),
+    ('doc_nro_receptor', 20, A, "N° de documento del receptor"),
     # campos devueltos por AFIP (respuesta)
-    ('resultado', 1, A, u"Resultado (A: Aprobado, O: Observado, R: rechazado)"),
-    ('fch_proceso', 14, A, u"Fecha y hora de procesamiento"),
+    ('resultado', 1, A, "Resultado (A: Aprobado, O: Observado, R: rechazado)"),
+    ('fch_proceso', 14, A, "Fecha y hora de procesamiento"),
     ]
 
 OBSERVACION = [
-    ('tipo_reg', 1, A, u"O: observaciones devueltas por AFIP"),
-    ('code', 5, N, u"Código de Observación / Error / Evento"),
-    ('msg', 255, A, u"Mensaje"),
+    ('tipo_reg', 1, A, "O: observaciones devueltas por AFIP"),
+    ('code', 5, N, "Código de Observación / Error / Evento"),
+    ('msg', 255, A, "Mensaje"),
     ]
 
 EVENTO = ERROR = OBSERVACION        # misma estructura, cambia tipo de registro
@@ -183,7 +183,7 @@ class WSCDC(BaseWS):
                     )
         result = response['ComprobantesModalidadConsultarResult']
         self.__analizar_errores(result)
-        return [(u"\t%(Cod)s\t%(Desc)s\t" % p['FacModTipo']).replace("\t", sep)
+        return [("\t%(Cod)s\t%(Desc)s\t" % p['FacModTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
 
     @inicializar_y_capturar_excepciones
@@ -194,7 +194,7 @@ class WSCDC(BaseWS):
                     )
         result = response['ComprobantesTipoConsultarResult']
         self.__analizar_errores(result)
-        return [(u"\t%(Id)s\t%(Desc)s\t" % p['CbteTipo']).replace("\t", sep)
+        return [("\t%(Id)s\t%(Desc)s\t" % p['CbteTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
         
     @inicializar_y_capturar_excepciones
@@ -205,7 +205,7 @@ class WSCDC(BaseWS):
                     )
         result = response['DocumentosTipoConsultarResult']
         self.__analizar_errores(result)
-        return [(u"\t%(Id)s\t%(Desc)s\t" % p['DocTipo']).replace("\t", sep)
+        return [("\t%(Id)s\t%(Desc)s\t" % p['DocTipo']).replace("\t", sep)
                  for p in result['ResultGet']]
                          
     @inicializar_y_capturar_excepciones
@@ -217,7 +217,7 @@ class WSCDC(BaseWS):
         result = response['OpcionalesTipoConsultarResult']
         res = result['ResultGet'] if 'ResultGet' in result else []
         self.__analizar_errores(result)
-        return [(u"\t%(Id)s\t%(Desc)s\t" % p['OpcionalTipo']).replace("\t", sep)
+        return [("\t%(Id)s\t%(Desc)s\t" % p['OpcionalTipo']).replace("\t", sep)
                  for p in res]
 
 
@@ -260,7 +260,7 @@ def leer_archivo(nombre_archivo):
                 d = leer(linea, ENCABEZADO)
                 dic.update(d)
             else:
-                print "Tipo de registro incorrecto:", linea[0]
+                print("Tipo de registro incorrecto:", linea[0])
     archivo.close()
                 
     if not 'cod_autorizacion' in dic:
@@ -273,19 +273,19 @@ def main():
     "Funcion principal para utilizar la interfaz por linea de comando"
 
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato in [('Encabezado', ENCABEZADO),
                              ('Observacion', OBSERVACION),
                              ('Evento', EVENTO), ('Error', ERROR), 
                              ]:
             comienzo = 1
-            print "=== %s ===" % msg
-            print "|| %-20s || %8s || %9s || %-12s || %-20s ||" % (
-                "Campo", "Posición", "Longitud", "Tipo", "Descripción")
+            print("=== %s ===" % msg)
+            print("|| %-20s || %8s || %9s || %-12s || %-20s ||" % (
+                "Campo", "Posición", "Longitud", "Tipo", "Descripción"))
             for fmt in formato:
                 clave, longitud, tipo, desc = fmt
-                print "|| %-20s || %8d || %9d || %-12s || %-20s ||" % (
-                    clave, comienzo, longitud, tipo, desc.encode("latin1"))
+                print("|| %-20s || %8d || %9d || %-12s || %-20s ||" % (
+                    clave, comienzo, longitud, tipo, desc.encode("latin1")))
                 comienzo += longitud
         sys.exit(0)
     
@@ -316,13 +316,13 @@ def main():
     if "--dummy" in sys.argv:
         #print wscdc.client.help("ComprobanteDummy")
         wscdc.Dummy()
-        print "AppServerStatus", wscdc.AppServerStatus
-        print "DbServerStatus", wscdc.DbServerStatus
-        print "AuthServerStatus", wscdc.AuthServerStatus
+        print("AppServerStatus", wscdc.AppServerStatus)
+        print("DbServerStatus", wscdc.DbServerStatus)
+        print("AuthServerStatus", wscdc.AuthServerStatus)
         sys.exit(0)
 
     # Gestionar credenciales de acceso con AFIP:
-    from wsaa import WSAA
+    from .wsaa import WSAA
     wsaa = WSAA()
     ta = wsaa.Autenticar("wscdc", crt, key, url_wsaa)
     if not ta:
@@ -363,21 +363,21 @@ def main():
             # usar los datos pasados por linea de comandos:
             wscdc.ConstatarComprobante(*sys.argv[sys.argv.index("--constatar")+1:])
         
-        print "Resultado:", wscdc.Resultado
-        print "Mensaje de Error:", wscdc.ErrMsg
-        print "Observaciones:", wscdc.Obs    
+        print("Resultado:", wscdc.Resultado)
+        print("Mensaje de Error:", wscdc.ErrMsg)
+        print("Observaciones:", wscdc.Obs)    
 
     if "--params" in sys.argv:
 
-        print "=== Modalidad Comprobantes ==="
-        print u'\n'.join(wscdc.ConsultarModalidadComprobantes("||"))
-        print "=== Tipo Comprobantes ==="
-        print u'\n'.join(wscdc.ConsultarTipoComprobantes("||"))
-        print "=== Tipo Documentos ==="
-        print u'\n'.join(wscdc.ConsultarTipoDocumentos("||"))
-        print "=== Tipo Opcionales ==="
-        print u'\n'.join(wscdc.ConsultarTipoOpcionales("||"))
-        print "Mensaje de Error:", wscdc.ErrMsg
+        print("=== Modalidad Comprobantes ===")
+        print('\n'.join(wscdc.ConsultarModalidadComprobantes("||")))
+        print("=== Tipo Comprobantes ===")
+        print('\n'.join(wscdc.ConsultarTipoComprobantes("||")))
+        print("=== Tipo Documentos ===")
+        print('\n'.join(wscdc.ConsultarTipoDocumentos("||")))
+        print("=== Tipo Opcionales ===")
+        print('\n'.join(wscdc.ConsultarTipoOpcionales("||")))
+        print("Mensaje de Error:", wscdc.ErrMsg)
         
 if __name__=="__main__":
     

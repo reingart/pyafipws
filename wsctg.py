@@ -68,13 +68,13 @@ Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
-from utils import date
+from .utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 # constantes de configuración (homologación):
@@ -564,7 +564,7 @@ class WSCTG(BaseWS):
                 return ""
             self.CartaPorte = str(datos_ctg['cartaPorte'])
             self.NumeroCTG = str(datos_ctg['ctg'])
-            self.Estado = unicode(datos_ctg.get('estado', ""))
+            self.Estado = str(datos_ctg.get('estado', ""))
             self.ImprimeConstancia = str(datos_ctg.get('imprimeConstancia', ""))
             for campo in ("fechaRechazo", "fechaEmision", "fechaSolicitud",
                           "fechaConfirmacionArribo"):
@@ -624,7 +624,7 @@ class WSCTG(BaseWS):
         if datos:
             self.NumeroCTG = str(datos['ctg'])
             self.CartaPorte = str(datos['cartaPorte'])
-            self.Estado = unicode(datos['estado'])
+            self.Estado = str(datos['estado'])
             self.FechaHora = str(datos['fechaEmision'])
             self.VigenciaDesde = str(datos['fechaVigenciaDesde'])
             self.VigenciaHasta = str(datos['fechaVigenciaHasta'])
@@ -745,7 +745,7 @@ def leer_archivo(nombre_archivo):
             if str(linea[0])=='0':
                 dic.update(leer(linea, ENCABEZADO))
             else:
-                print "Tipo de registro incorrecto:", linea[0]
+                print("Tipo de registro incorrecto:", linea[0])
         items.append(dic)
     else:
         raise RuntimeError("Extension de archivo desconocida: %s" % ext)
@@ -793,19 +793,19 @@ INSTALL_DIR = WSCTG.InstallDir = WSCTGv2.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato in [('Encabezado', ENCABEZADO), ]:
             comienzo = 1
-            print "=== %s ===" % msg
+            print("=== %s ===" % msg)
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                    clave, comienzo, longitud, tipo, dec)
+                print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    clave, comienzo, longitud, tipo, dec))
                 comienzo += longitud
         sys.exit(0)
 
@@ -817,17 +817,17 @@ if __name__ == '__main__':
         sys.exit(0)
 
     import csv
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuración:", arg
+            print("Usando configuración:", arg)
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -849,7 +849,7 @@ if __name__ == '__main__':
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
 
@@ -857,12 +857,12 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "wsaa_url:", wsaa_url
-            print "wsctg_url:", wsctg_url
+            print("Usando Configuración:")
+            print("wsaa_url:", wsaa_url)
+            print("wsctg_url:", wsctg_url)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsctg", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
         if not ta:
@@ -876,46 +876,46 @@ if __name__ == '__main__':
         
         if '--dummy' in sys.argv:
             ret = wsctg.Dummy()
-            print "AppServerStatus", wsctg.AppServerStatus
-            print "DbServerStatus", wsctg.DbServerStatus
-            print "AuthServerStatus", wsctg.AuthServerStatus
+            print("AppServerStatus", wsctg.AppServerStatus)
+            print("DbServerStatus", wsctg.DbServerStatus)
+            print("AuthServerStatus", wsctg.AuthServerStatus)
             sys.exit(0)
 
         if '--anular' in sys.argv:
             i = sys.argv.index("--anular")
             ##print wsctg.client.help("anularCTG")
             if i + 2 > len(sys.argv) or sys.argv[i + 1].startswith("--"):
-                carta_porte = raw_input("Ingrese Carta de Porte: ")
-                ctg = raw_input("Ingrese CTG: ")
+                carta_porte = input("Ingrese Carta de Porte: ")
+                ctg = input("Ingrese CTG: ")
             else:
                 carta_porte = sys.argv[i + 1]
                 ctg = sys.argv[i + 2]
             ret = wsctg.AnularCTG(carta_porte, ctg)
             wsctg.SolicitarCTGDatoPendiente()
-            print "Carta Porte", wsctg.CartaPorte
-            print "Numero CTG", wsctg.NumeroCTG
-            print "Fecha y Hora", wsctg.FechaHora
-            print "Codigo Anulacion de CTG", wsctg.CodigoOperacion
-            print "Errores:", wsctg.Errores
+            print("Carta Porte", wsctg.CartaPorte)
+            print("Numero CTG", wsctg.NumeroCTG)
+            print("Fecha y Hora", wsctg.FechaHora)
+            print("Codigo Anulacion de CTG", wsctg.CodigoOperacion)
+            print("Errores:", wsctg.Errores)
             sys.exit(0)
 
         if '--rechazar' in sys.argv:
             i = sys.argv.index("--rechazar")
             ##print wsctg.client.help("rechazarCTG")
             if i + 3 > len(sys.argv) or sys.argv[i + 1].startswith("--"):
-                carta_porte = raw_input("Ingrese Carta de Porte: ")
-                ctg = raw_input("Ingrese CTG: ")
-                motivo = raw_input("Motivo: ")
+                carta_porte = input("Ingrese Carta de Porte: ")
+                ctg = input("Ingrese CTG: ")
+                motivo = input("Motivo: ")
             else:
                 carta_porte = sys.argv[i + 1]
                 ctg = sys.argv[i + 2]
                 motivo = sys.argv[i + 3]
             ret = wsctg.RechazarCTG(carta_porte, ctg, motivo)
-            print "Carta Porte", wsctg.CartaPorte
-            print "Numero CTG", wsctg.NumeroCTG
-            print "Fecha y Hora", wsctg.FechaHora
-            print "Codigo Anulacion de CTG", wsctg.CodigoOperacion
-            print "Errores:", wsctg.Errores
+            print("Carta Porte", wsctg.CartaPorte)
+            print("Numero CTG", wsctg.NumeroCTG)
+            print("Fecha y Hora", wsctg.FechaHora)
+            print("Codigo Anulacion de CTG", wsctg.CodigoOperacion)
+            print("Errores:", wsctg.Errores)
             sys.exit(0)
 
 
@@ -923,23 +923,23 @@ if __name__ == '__main__':
         
         if '--provincias' in sys.argv:
             ret = wsctg.ConsultarProvincias()
-            print "\n".join(ret)
+            print("\n".join(ret))
                     
         if '--localidades' in sys.argv:    
             ret = wsctg.ConsultarLocalidadesPorProvincia(16)
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--especies' in sys.argv:    
             ret = wsctg.ConsultarEspecies()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--cosechas' in sys.argv:    
             ret = wsctg.ConsultarCosechas()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--establecimientos' in sys.argv:    
             ret = wsctg.ConsultarEstablecimientos()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
 
         if '--prueba' in sys.argv or '--formato' in sys.argv:
@@ -964,7 +964,7 @@ if __name__ == '__main__':
             if not '--parcial' in sys.argv:
                 prueba.update(parcial)
             
-            escribir_archivo(prueba.keys(), [prueba], ENTRADA)
+            escribir_archivo(list(prueba.keys()), [prueba], ENTRADA)
             
         cols, items = leer_archivo(ENTRADA)
         ctg = None
@@ -972,18 +972,18 @@ if __name__ == '__main__':
         if '--solicitar' in sys.argv:
             wsctg.LanzarExcepciones = True
             for it in items:
-                print "solicitando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
+                print("solicitando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
                 ctg = wsctg.SolicitarCTGInicial(**it)
-                print "numero CTG: ", ctg
-                print "Observiacion: ", wsctg.Observaciones
-                print "Carta Porte", wsctg.CartaPorte
-                print "Numero CTG", wsctg.NumeroCTG
-                print "Fecha y Hora", wsctg.FechaHora
-                print "Vigencia Desde", wsctg.VigenciaDesde
-                print "Vigencia Hasta", wsctg.VigenciaHasta
-                print "Tarifa Referencia: ", wsctg.TarifaReferencia
-                print "Errores:", wsctg.Errores
-                print "Controles:", wsctg.Controles
+                print("numero CTG: ", ctg)
+                print("Observiacion: ", wsctg.Observaciones)
+                print("Carta Porte", wsctg.CartaPorte)
+                print("Numero CTG", wsctg.NumeroCTG)
+                print("Fecha y Hora", wsctg.FechaHora)
+                print("Vigencia Desde", wsctg.VigenciaDesde)
+                print("Vigencia Hasta", wsctg.VigenciaHasta)
+                print("Tarifa Referencia: ", wsctg.TarifaReferencia)
+                print("Errores:", wsctg.Errores)
+                print("Controles:", wsctg.Controles)
                 it['numero_ctg'] = wsctg.NumeroCTG
                 it['tarifa_referencia'] = wsctg.TarifaReferencia
                 it['observaciones'] = wsctg.Observaciones
@@ -996,20 +996,20 @@ if __name__ == '__main__':
         if '--parcial' in sys.argv:
             wsctg.LanzarExcepciones = True
             for it in items:
-                print "solicitando dato pendiente...", ' '.join(['%s=%s' % (k,v) for k,v in parcial.items()])
+                print("solicitando dato pendiente...", ' '.join(['%s=%s' % (k,v) for k,v in list(parcial.items())]))
                 ctg = wsctg.SolicitarCTGDatoPendiente(
                     numero_carta_de_porte=wsctg.CartaPorte,
                     **parcial)
-                print "numero CTG: ", ctg
-                print "Observiacion: ", wsctg.Observaciones
-                print "Carta Porte", wsctg.CartaPorte
-                print "Numero CTG", wsctg.NumeroCTG
-                print "Fecha y Hora", wsctg.FechaHora
-                print "Vigencia Desde", wsctg.VigenciaDesde
-                print "Vigencia Hasta", wsctg.VigenciaHasta
-                print "Tarifa Referencia: ", wsctg.TarifaReferencia
-                print "Errores:", wsctg.Errores
-                print "Controles:", wsctg.Controles
+                print("numero CTG: ", ctg)
+                print("Observiacion: ", wsctg.Observaciones)
+                print("Carta Porte", wsctg.CartaPorte)
+                print("Numero CTG", wsctg.NumeroCTG)
+                print("Fecha y Hora", wsctg.FechaHora)
+                print("Vigencia Desde", wsctg.VigenciaDesde)
+                print("Vigencia Hasta", wsctg.VigenciaHasta)
+                print("Tarifa Referencia: ", wsctg.TarifaReferencia)
+                print("Errores:", wsctg.Errores)
+                print("Controles:", wsctg.Controles)
                 it['numero_ctg'] = wsctg.NumeroCTG
                 it['tarifa_referencia'] = wsctg.TarifaReferencia
                 it['errores'] = '|'.join(wsctg.Errores)
@@ -1017,11 +1017,11 @@ if __name__ == '__main__':
 
         if '--confirmar_arribo' in sys.argv:
             for it in items:
-                print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
+                print("confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
                 transaccion = wsctg.ConfirmarArribo(**it)
-                print "transaccion: %s" % (transaccion, )
-                print "Fecha y Hora", wsctg.FechaHora
-                print "Errores:", wsctg.Errores
+                print("transaccion: %s" % (transaccion, ))
+                print("Fecha y Hora", wsctg.FechaHora)
+                print("Errores:", wsctg.Errores)
                 it['transaccion'] = transaccion
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Controles)
@@ -1030,33 +1030,33 @@ if __name__ == '__main__':
             if '--testing' in sys.argv:
                 wsctg.LoadTestXML("wsctg_confirmar_def.xml") # cargo respuesta
             for it in items:
-                print "confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
+                print("confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
                 transaccion = wsctg.ConfirmarDefinitivo(**it)
-                print "transaccion: %s" % (transaccion, )
-                print "Fecha y Hora", wsctg.FechaHora
-                print "Errores:", wsctg.Errores
+                print("transaccion: %s" % (transaccion, ))
+                print("Fecha y Hora", wsctg.FechaHora)
+                print("Errores:", wsctg.Errores)
                 it['transaccion'] = transaccion
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Errores)
                 
         if '--regresar_a_origen_rechazado' in sys.argv:
             for it in items:
-                print "regresando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
+                print("regresando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
                 transaccion = wsctg.RegresarAOrigenCTGRechazado(**it)
-                print "transaccion: %s" % (transaccion, )
-                print "Fecha y Hora", wsctg.FechaHora
-                print "Errores:", wsctg.Errores
+                print("transaccion: %s" % (transaccion, ))
+                print("Fecha y Hora", wsctg.FechaHora)
+                print("Errores:", wsctg.Errores)
                 it['transaccion'] = transaccion
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Errores)
                 
         if '--cambiar_destino_destinatario_rechazado' in sys.argv:
             for it in items:
-                print "cambiando...", ' '.join(['%s=%s' % (k,v) for k,v in it.items()])
+                print("cambiando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
                 transaccion = wsctg.CambiarDestinoDestinatarioCTGRechazado(**it)
-                print "transaccion: %s" % (transaccion, )
-                print "Fecha y Hora", wsctg.FechaHora
-                print "Errores:", wsctg.Errores
+                print("transaccion: %s" % (transaccion, ))
+                print("Fecha y Hora", wsctg.FechaHora)
+                print("Errores:", wsctg.Errores)
                 it['transaccion'] = transaccion
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Errores)
@@ -1066,30 +1066,30 @@ if __name__ == '__main__':
             if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
                 ctg = int(sys.argv[i+1])
             elif not ctg:
-                ctg = int(raw_input("Numero de CTG: ") or '0') or 73714620
+                ctg = int(input("Numero de CTG: ") or '0') or 73714620
 
             wsctg.LanzarExcepciones = True
             for i, it in enumerate(items):
-                print "consultando detalle...", ctg
+                print("consultando detalle...", ctg)
                 ok = wsctg.ConsultarDetalleCTG(ctg)
-                print "Numero CTG: ", wsctg.NumeroCTG
-                print "Tarifa Referencia: ", wsctg.TarifaReferencia
-                print "Observiacion: ", wsctg.Observaciones
-                print "Carta Porte", wsctg.CartaPorte
-                print "Numero CTG", wsctg.NumeroCTG
-                print "Fecha y Hora", wsctg.FechaHora
-                print "Vigencia Desde", wsctg.VigenciaDesde
-                print "Vigencia Hasta", wsctg.VigenciaHasta
-                print "Errores:", wsctg.Errores
-                print "Controles:", wsctg.Controles
-                print "Detalle:", wsctg.Detalle
+                print("Numero CTG: ", wsctg.NumeroCTG)
+                print("Tarifa Referencia: ", wsctg.TarifaReferencia)
+                print("Observiacion: ", wsctg.Observaciones)
+                print("Carta Porte", wsctg.CartaPorte)
+                print("Numero CTG", wsctg.NumeroCTG)
+                print("Fecha y Hora", wsctg.FechaHora)
+                print("Vigencia Desde", wsctg.VigenciaDesde)
+                print("Vigencia Hasta", wsctg.VigenciaHasta)
+                print("Errores:", wsctg.Errores)
+                print("Controles:", wsctg.Controles)
+                print("Detalle:", wsctg.Detalle)
                 it['numero_ctg'] = wsctg.NumeroCTG
                 it['observaciones'] = wsctg.Observaciones
                 it['fecha_hora'] = wsctg.FechaHora
                 it['vigencia_desde'] = wsctg.VigenciaDesde
                 it['vigencia_hasta'] = wsctg.VigenciaHasta
                 wsctg.AnalizarXml("XmlResponse")
-                for k, ki in {'ctg': 'numero_ctg', 'solicitante': '', 
+                for k, ki in list({'ctg': 'numero_ctg', 'solicitante': '', 
                           'estado': 'estado', 
                           'especie': '', ##'codigo_especie', no devuelve codigo! 
                           'cosecha': '', ##'codigo_cosecha', no devuelve codigo!
@@ -1107,9 +1107,9 @@ if __name__ == '__main__':
                           'tarifaReferencia': 'tarifa_referencia',
                           'ctcCodigo': 'ctc_codigo',
                           'turno': 'turno',
-                        }.items():
+                        }.items()):
                     v = wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
-                    print k, v
+                    print(k, v)
                     if ki.startswith("cuit") and v:
                         v = v[:11]
                     it[ki] = v
@@ -1119,42 +1119,42 @@ if __name__ == '__main__':
         if "--consultar" in sys.argv:
             wsctg.LanzarExcepciones = True
             wsctg.ConsultarCTG(fecha_emision_desde="01/04/2012")
-            print "Numero CTG - Carta de Porte - Imprime Constancia - Estado"
+            print("Numero CTG - Carta de Porte - Imprime Constancia - Estado")
             while wsctg.LeerDatosCTG():
-                print wsctg.NumeroCTG, wsctg.CartaPorte,
-                print wsctg.ImprimeConstancia, wsctg.Estado, wsctg.FechaHora
+                print(wsctg.NumeroCTG, wsctg.CartaPorte, end=' ')
+                print(wsctg.ImprimeConstancia, wsctg.Estado, wsctg.FechaHora)
 
         if "--consultar_rechazados" in sys.argv:
             wsctg.LanzarExcepciones = True
             wsctg.ConsultarCTGRechazados()
-            print "Numero CTG - Carta de Porte - Fecha - Destino/Dest./Obs."
+            print("Numero CTG - Carta de Porte - Fecha - Destino/Dest./Obs.")
             while wsctg.LeerDatosCTG():
-                print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora,
-                print wsctg.Destino, wsctg.Destinatario, wstcg.Observaciones
+                print(wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora, end=' ')
+                print(wsctg.Destino, wsctg.Destinatario, wstcg.Observaciones)
 
         if "--consultar_activos_por_patente" in sys.argv:
             i = sys.argv.index("--consultar_activos_por_patente")
             if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
                 patente = int(sys.argv[i+1])
             elif not ctg:
-                patente= raw_input("Patente: ") or 'APE652'
+                patente= input("Patente: ") or 'APE652'
             wsctg.LanzarExcepciones = True
             if '--testing' in sys.argv:
                 wsctg.LoadTestXML("wsctgv2_activos.xml")
             wsctg.ConsultarCTGActivosPorPatente(patente=patente)
-            print "Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario"
+            print("Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario")
             while wsctg.LeerDatosCTG():
-                print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.Patente,
-                print wsctg.FechaHora, wsctg.FechaVencimiento, wsctg.PesoNeto, 
-                print wsctg.UsuarioSolicitante, wsctg.UsuarioReal
+                print(wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.Patente, end=' ')
+                print(wsctg.FechaHora, wsctg.FechaVencimiento, wsctg.PesoNeto, end=' ') 
+                print(wsctg.UsuarioSolicitante, wsctg.UsuarioReal)
 
         if '--consultar_excel' in sys.argv:
-            archivo = raw_input("Archivo a generar (planilla.xls): ") or \
+            archivo = input("Archivo a generar (planilla.xls): ") or \
                         'planilla.xls'
             wsctg.LanzarExcepciones = True
             ok = wsctg.ConsultarCTGExcel(fecha_emision_desde="01/04/2012",
                                          archivo=archivo)
-            print "Errores:", wsctg.Errores
+            print("Errores:", wsctg.Errores)
 
         if '--consultar_constancia_pdf' in sys.argv:
             i = sys.argv.index("--consultar_constancia_pdf")
@@ -1162,13 +1162,13 @@ if __name__ == '__main__':
                 ctg = int(sys.argv[i+1])
                 archivo = sys.argv[i+2]
             elif not ctg:
-                ctg = int(raw_input("Numero de CTG: ") or '0') or 83139794
-                archivo = raw_input("Archivo a generar (constancia.pdf): ") or \
+                ctg = int(input("Numero de CTG: ") or '0') or 83139794
+                archivo = input("Archivo a generar (constancia.pdf): ") or \
                             'constancia.pdf'
 
             wsctg.LanzarExcepciones = True
             ok = wsctg.ConsultarConstanciaCTGPDF(ctg, archivo)
-            print "Errores:", wsctg.Errores
+            print("Errores:", wsctg.Errores)
 
         if "--pendientes" in sys.argv:
             wsctg.LanzarExcepciones = True
@@ -1176,20 +1176,20 @@ if __name__ == '__main__':
             for clave in ("arrayCTGsRechazadosAResolver", 
                           "arrayCTGsOtorgadosAResolver",
                           "arrayCTGsConfirmadosAResolver", ):
-                print clave[6:]
-                print "Numero CTG - Carta de Porte - Imprime Constancia - Estado"
+                print(clave[6:])
+                print("Numero CTG - Carta de Porte - Imprime Constancia - Estado")
                 while wsctg.LeerDatosCTG(clave):
-                    print wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora
-                    print wsctg.Destino, wsctg.Destinatario, wsctg.Observaciones
+                    print(wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora)
+                    print(wsctg.Destino, wsctg.Destinatario, wsctg.Observaciones)
             
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         ex = utils.exception_info()
-        print ex
+        print(ex)
         if DEBUG:
             raise
         sys.exit(5)

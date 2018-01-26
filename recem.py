@@ -24,9 +24,9 @@ import time
 import traceback
 
 # revisar la instalación de pyafip.ws:
-import wsmtx
-from utils import SimpleXMLElement, SoapClient, SoapFault, date
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from . import wsmtx
+from .utils import SimpleXMLElement, SoapClient, SoapFault, date
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsmtx.HOMO
@@ -122,9 +122,9 @@ if not '--pyfepdf' in sys.argv:
         ]
 
 else:
-    print "!" * 78
-    print "importando formato segun pyfepdf"
-    from formatos.formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
+    print("!" * 78)
+    print("importando formato segun pyfepdf")
+    from .formatos.formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
     TIPOS_REG = '0', '5', '4', '3', '1'
 
 
@@ -144,8 +144,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             if str(linea[0])==TIPOS_REG[0]:
                 encabezado = leer(linea, ENCABEZADO, expandir_fechas=True)
                 if 'cbte_nro' in encabezado:
-                    print "*" * 80
-                    print "cbte_nro", encabezado['cbte_nro']
+                    print("*" * 80)
+                    print("cbte_nro", encabezado['cbte_nro'])
                     encabezado['cbt_desde'] = encabezado['cbte_nro']
                     encabezado['cbt_hasta'] = encabezado['cbte_nro']
                     del encabezado['cbte_nro']
@@ -168,7 +168,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 if 'imp_subtotal' not in detalle:
                     detalle['imp_subtotal'] = detalle['importe']
             else:
-                print "Tipo de registro incorrecto:", linea[0]
+                print("Tipo de registro incorrecto:", linea[0])
        
     if informar_caea:
         if '/testing' in sys.argv:
@@ -190,8 +190,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         ws.AgregarCmpAsoc(**cbtasoc)
 
     if DEBUG:
-        print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
-    if not DEBUG or raw_input("Facturar?")=="S":
+        print('\n'.join(["%s='%s'" % (k,str(v)) for k,v in list(ws.factura.items())]))
+    if not DEBUG or input("Facturar?")=="S":
         if not informar_caea:
             cae = ws.AutorizarComprobante()
             dic = ws.factura
@@ -209,7 +209,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             'emision_tipo': ws.EmisionTipo,
             })
         escribir_factura(dic, salida)
-        print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
+        print("NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso'])
 
 def escribir_factura(dic, archivo, agrega=False):
     dic['tipo_reg'] = TIPOS_REG[0]
@@ -249,25 +249,25 @@ def depurar_xml(client):
 
 if __name__ == "__main__":
     if '/ayuda' in sys.argv:
-        print LICENCIA
-        print
-        print "Opciones: "
-        print " /ayuda: este mensaje"
-        print " /dummy: consulta estado de servidores"
-        print " /prueba: genera y autoriza una factura de prueba (no usar en producción!)"
-        print " /ult: consulta último número de comprobante"
-        print " /debug: modo depuración (detalla y confirma las operaciones)"
-        print " /formato: muestra el formato de los archivos de entrada/salida"
-        print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
-        print " /xml: almacena los requerimientos y respuestas XML (depuración)"
-        print " /dbf: lee y almacena la información en tablas DBF"
-        print
-        print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
+        print(LICENCIA)
+        print()
+        print("Opciones: ")
+        print(" /ayuda: este mensaje")
+        print(" /dummy: consulta estado de servidores")
+        print(" /prueba: genera y autoriza una factura de prueba (no usar en producción!)")
+        print(" /ult: consulta último número de comprobante")
+        print(" /debug: modo depuración (detalla y confirma las operaciones)")
+        print(" /formato: muestra el formato de los archivos de entrada/salida")
+        print(" /get: recupera datos de un comprobante autorizado previamente (verificación)")
+        print(" /xml: almacena los requerimientos y respuestas XML (depuración)")
+        print(" /dbf: lee y almacena la información en tablas DBF")
+        print()
+        print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
         sys.exit(0)
 
     if '/debug'in sys.argv:
         DEBUG = True
-        print "VERSION", __version__, "HOMO", HOMO
+        print("VERSION", __version__, "HOMO", HOMO)
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
     cert = config.get('WSAA','CERT')
@@ -300,7 +300,7 @@ if __name__ == "__main__":
 
     if config.has_section('DBF'):
         conf_dbf = dict(config.items('DBF'))
-        if DEBUG: print "conf_dbf", conf_dbf
+        if DEBUG: print("conf_dbf", conf_dbf)
     else:
         conf_dbf = {}
 
@@ -308,7 +308,7 @@ if __name__ == "__main__":
         XML = True
 
     if DEBUG:
-        print "wsaa_url %s\nwsmtxca_url %s\ncuit %s" % (wsaa_url, wsmtxca_url, cuit)
+        print("wsaa_url %s\nwsmtxca_url %s\ncuit %s" % (wsaa_url, wsmtxca_url, cuit))
     
     try:
         ws = wsmtx.WSMTXCA()
@@ -318,31 +318,31 @@ if __name__ == "__main__":
             ws.Reprocesar = wsmtxca_reprocesar
 
         if '/dummy' in sys.argv:
-            print "Consultando estado de servidores..."
+            print("Consultando estado de servidores...")
             ws.Dummy()
-            print "AppServerStatus", ws.AppServerStatus
-            print "DbServerStatus", ws.DbServerStatus
-            print "AuthServerStatus", ws.AuthServerStatus
+            print("AppServerStatus", ws.AppServerStatus)
+            print("DbServerStatus", ws.DbServerStatus)
+            print("AuthServerStatus", ws.AuthServerStatus)
             sys.exit(0)
 
         if '/formato' in sys.argv:
-            print "Formato:"
+            print("Formato:")
             for msg, formato in [('Encabezado', ENCABEZADO), ('Tributo', TRIBUTO), ('Iva', IVA), ('Comprobante Asociado', CMP_ASOC), ('Detalle', DETALLE)]:
                 comienzo = 1
-                print "== %s ==" % msg
+                print("== %s ==" % msg)
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
                     if isinstance(longitud, tuple):
                         longitud, dec = longitud
                     else:
                         dec = len(fmt)>3 and fmt[3] or 2
-                    print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                        clave, comienzo, longitud, tipo, dec)
+                    print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                        clave, comienzo, longitud, tipo, dec))
                     comienzo += longitud
             sys.exit(0)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsmtxca", cert, privatekey, wsaa_url)
         if not ta:
@@ -350,12 +350,12 @@ if __name__ == "__main__":
         ws.SetTicketAcceso(ta)
                 
         if '/puntosventa' in sys.argv:
-            print "Consultando puntos de venta CAE..."
-            print '\n'.join(ws.ConsultarPuntosVentaCAE())
-            print "Consultando puntos de venta CAEA..."
+            print("Consultando puntos de venta CAE...")
+            print('\n'.join(ws.ConsultarPuntosVentaCAE()))
+            print("Consultando puntos de venta CAEA...")
             if "--testing" in sys.argv:
                 ws.LoadTestXML("tests/wsmtx_ptosvta_caea_resp.xml")
-            print '\n'.join(ws.ConsultarPuntosVentaCAEA())
+            print('\n'.join(ws.ConsultarPuntosVentaCAEA()))
             sys.exit(0)
             
         if '/prueba' in sys.argv:
@@ -366,7 +366,7 @@ if __name__ == "__main__":
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             concepto = 3
             tipo_doc = 80; nro_doc = "30000000007"
-            cbte_nro = long(cbte_nro) + 1
+            cbte_nro = int(cbte_nro) + 1
             cbt_desde = cbte_nro; cbt_hasta = cbt_desde
             imp_total = "121.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "0.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
@@ -431,23 +431,23 @@ if __name__ == "__main__":
             f_entrada = open(entrada,"w")
                 
             if DEBUG:
-                print ws.factura
+                print(ws.factura)
 
             dic = ws.factura
             escribir_factura(dic, f_entrada, agrega=True)            
             f_entrada.close()
       
         if '/ult' in sys.argv:
-            print "Consultar ultimo numero:"
+            print("Consultar ultimo numero:")
             i = sys.argv.index("/ult")
             if i+2<len(sys.argv):
                tipo_cbte = int(sys.argv[i+1])
                punto_vta = int(sys.argv[i+2])
             else:
-               tipo_cbte = int(raw_input("Tipo de comprobante: "))
-               punto_vta = int(raw_input("Punto de venta: "))
+               tipo_cbte = int(input("Tipo de comprobante: "))
+               punto_vta = int(input("Punto de venta: "))
             ult_cbte = ws.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
-            print "Ultimo numero: ", ult_cbte
+            print("Ultimo numero: ", ult_cbte)
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
                               'punto_vta': punto_vta, 
@@ -457,25 +457,25 @@ if __name__ == "__main__":
             sys.exit(0)
 
         if '/get' in sys.argv:
-            print "Recuperar comprobante:"
+            print("Recuperar comprobante:")
             i = sys.argv.index("/get")
             if i+3<len(sys.argv):
                tipo_cbte = int(sys.argv[i+1])
                punto_vta = int(sys.argv[i+2])
                cbte_nro = int(sys.argv[i+3])
             else:
-               tipo_cbte = int(raw_input("Tipo de comprobante: "))
-               punto_vta = int(raw_input("Punto de venta: "))
-               cbte_nro = int(raw_input("Numero de comprobante: "))
+               tipo_cbte = int(input("Tipo de comprobante: "))
+               punto_vta = int(input("Punto de venta: "))
+               cbte_nro = int(input("Numero de comprobante: "))
             ws.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
 
-            print "FechaCbte = ", ws.FechaCbte
-            print "CbteNro = ", ws.CbteNro
-            print "PuntoVenta = ", ws.PuntoVenta
-            print "ImpTotal =", ws.ImpTotal
-            print "CAE = ", ws.CAE
-            print "Vencimiento = ", ws.Vencimiento
-            print "EmisionTipo = ", ws.EmisionTipo
+            print("FechaCbte = ", ws.FechaCbte)
+            print("CbteNro = ", ws.CbteNro)
+            print("PuntoVenta = ", ws.PuntoVenta)
+            print("ImpTotal =", ws.ImpTotal)
+            print("CAE = ", ws.CAE)
+            print("Vencimiento = ", ws.Vencimiento)
+            print("EmisionTipo = ", ws.EmisionTipo)
 
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
@@ -495,35 +495,35 @@ if __name__ == "__main__":
                 periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
                 orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
             else:
-                periodo = raw_input("Periodo (año-mes, ej 201108): ")
-                orden = raw_input("Orden (quincena, 1 u 2): ")
+                periodo = input("Periodo (año-mes, ej 201108): ")
+                orden = input("Orden (quincena, 1 u 2): ")
                 
             if DEBUG: 
-                print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
+                print("Solicitando CAEA para periodo %s orden %s" % (periodo, orden))
             
             caea = ws.SolicitarCAEA(periodo, orden)
-            print "CAEA:", caea
+            print("CAEA:", caea)
 
             if ws.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in ws.Errores:
-                    print error
+                    print(error)
 
             depurar_xml(ws.client)
 
             if not caea:
                 if DEBUG: 
-                    print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
+                    print("Consultando CAEA para periodo %s orden %s" % (periodo, orden))
                 caea = ws.ConsultarCAEA(periodo, orden)
-                print "CAEA:", caea
+                print("CAEA:", caea)
                 
             if DEBUG:
-                print "Periodo:", ws.Periodo 
-                print "Orden:", ws.Orden 
-                print "FchVigDesde:", ws.FchVigDesde 
-                print "FchVigHasta:", ws.FchVigHasta 
-                print "FchTopeInf:", ws.FchTopeInf 
-                print "FchProceso:", ws.FchProceso
+                print("Periodo:", ws.Periodo) 
+                print("Orden:", ws.Orden) 
+                print("FchVigDesde:", ws.FchVigDesde) 
+                print("FchVigHasta:", ws.FchVigHasta) 
+                print("FchTopeInf:", ws.FchTopeInf) 
+                print("FchProceso:", ws.FchProceso)
 
             escribir_factura({'cae': caea, 
                               'emision_tipo': "CAEA", 
@@ -532,73 +532,73 @@ if __name__ == "__main__":
             sys.exit(0)
 
         if '/consultarcaea' in sys.argv:
-            periodo = raw_input("Periodo: ")
-            orden = raw_input("Orden: ")
+            periodo = input("Periodo: ")
+            orden = input("Orden: ")
 
             if DEBUG: 
-                print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
+                print("Consultando CAEA para periodo %s orden %s" % (periodo, orden))
             
             caea = ws.ConsultarCAEA(periodo, orden)
-            print "CAEA:", caea
+            print("CAEA:", caea)
 
             if ws.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in ws.Errores:
-                    print error
+                    print(error)
                 
             if DEBUG:
-                print "Periodo:", ws.Periodo 
-                print "Orden:", ws.Orden 
-                print "FchVigDesde:", ws.FchVigDesde 
-                print "FchVigHasta:", ws.FchVigHasta 
-                print "FchTopeInf:", ws.FchTopeInf
-                print "FchProceso:", ws.FchProceso
+                print("Periodo:", ws.Periodo) 
+                print("Orden:", ws.Orden) 
+                print("FchVigDesde:", ws.FchVigDesde) 
+                print("FchVigHasta:", ws.FchVigHasta) 
+                print("FchTopeInf:", ws.FchTopeInf)
+                print("FchProceso:", ws.FchProceso)
             sys.exit(0)
 
             
         if '/informarcaeanoutilizado' in sys.argv:
-            caea = raw_input("CAEA: ")
+            caea = input("CAEA: ")
             if DEBUG: 
-                print "Informando CAEA no utilizado: %s" % (caea, )
+                print("Informando CAEA no utilizado: %s" % (caea, ))
             ok = ws.InformarCAEANoUtilizado(caea)
-            print "Resultado:", ok
+            print("Resultado:", ok)
             if ws.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in ws.Errores:
-                    print error
+                    print(error)
             sys.exit(0)
 
         if '/informarcaeanoutilizadoptovta' in sys.argv:
-            caea = raw_input("CAEA: ")
-            pto_vta = raw_input("Punto de Venta: ")
+            caea = input("CAEA: ")
+            pto_vta = input("Punto de Venta: ")
             if DEBUG: 
-                print "Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta)
+                print("Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta))
             ok = ws.InformarCAEANoUtilizadoPtoVta(caea, pto_vta)
-            print "Resultado:", ok
+            print("Resultado:", ok)
             if ws.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in ws.Errores:
-                    print error
+                    print(error)
             sys.exit(0)
 
         if '/consultarptosvtacaeanoinformados' in sys.argv:
-            caea = raw_input("CAEA: ")
+            caea = input("CAEA: ")
             if DEBUG: 
-                print "Consultando PtosVta CAEA: %s" % (caea)
+                print("Consultando PtosVta CAEA: %s" % (caea))
             ptos_vta = ws.ConsultarPtosVtaCAEANoInformados(caea)
-            print "Resultado:", '\n'.join(ptos_vta)
+            print("Resultado:", '\n'.join(ptos_vta))
             if ws.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in ws.Errores:
-                    print error
+                    print(error)
             sys.exit(0)
             
         if '/ptosventa' in sys.argv:
 
-            print "=== Puntos de Venta CAE ==="
-            print u'\n'.join(ws.ConsultarPuntosVentaCAE())
-            print "=== Puntos de Venta CAEA ==="
-            print u'\n'.join(ws.ConsultarPuntosVentaCAEA())
+            print("=== Puntos de Venta CAE ===")
+            print('\n'.join(ws.ConsultarPuntosVentaCAE()))
+            print("=== Puntos de Venta CAEA ===")
+            print('\n'.join(ws.ConsultarPuntosVentaCAEA()))
             sys.exit(0)
 
         f_entrada = f_salida = None
@@ -606,7 +606,7 @@ if __name__ == "__main__":
             f_entrada = open(entrada,"r")
             f_salida = open(salida,"w")
             try:
-                if DEBUG: print "Autorizando usando entrada:", entrada
+                if DEBUG: print("Autorizando usando entrada:", entrada)
                 autorizar(ws, f_entrada, f_salida, '/informarcaea' in sys.argv)
             except SoapFault:
                 XML = True
@@ -618,17 +618,17 @@ if __name__ == "__main__":
                 depurar_xml(ws.client)
         sys.exit(0)
     
-    except SoapFault, e:
-        print e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print(e.faultcode, e.faultstring.encode("ascii","ignore"))
         sys.exit(3)
-    except Exception, e:
-        e_str = unicode(e).encode("ascii","ignore")
+    except Exception as e:
+        e_str = str(e).encode("ascii","ignore")
         if not e_str:
             e_str = repr(e)
-        print e_str
+        print(e_str)
         escribir_factura({'err_msg': e_str,
                          }, open(salida,"w"))
-        ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+        ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
         open("traceback.txt", "wb").write('\n'.join(ex))
 
         if DEBUG:

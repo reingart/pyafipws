@@ -24,7 +24,7 @@ except ImportError:
     try:
         import simplejson as json 
     except:
-        print "para soporte de JSON debe instalar simplejson"
+        print("para soporte de JSON debe instalar simplejson")
 
         
 def leer(fn="entrada.json"):

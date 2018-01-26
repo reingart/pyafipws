@@ -32,18 +32,12 @@ from decimal import Decimal
 from urllib.parse import urlencode
 from urllib.parse import urlparse
 import unicodedata
-import mimetypes
-from email.generator import _make_boundary 
+import mimetools, mimetypes
 from html.parser import HTMLParser
 from http.cookies import SimpleCookie
 from configparser import SafeConfigParser
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-
-try:
-    import dbf
-except ImportError:
-    print("para soporte de DBF debe instalar dbf 0.88.019 o superior")
 
 try:
     import json
@@ -454,7 +448,7 @@ class WebClient:
 
     def multipart_encode(self, vars):
         "Enconde form data (vars dict)"
-        boundary = _make_boundary()
+        boundary = mimetools.choose_boundary()
         buf = StringIO()
         for key, value in list(vars.items()):
             if not isinstance(value, file):
@@ -596,7 +590,7 @@ def leer(linea, formato, expandir_fechas=False):
                                 valor = valor[1:] 
                             else:
                                 sign = +1
-                            valor = sign * float(("%%s.%%0%sd" % dec) % (long(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
+                            valor = sign * float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
                     except ValueError:
                         raise ValueError("Campo invalido: %s = '%s'" % (clave, valor))
                 else:
@@ -646,7 +640,7 @@ def escribir(dic, formato, contraer_fechas=False):
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
         except Exception as e:
-            raise ValueError("Error al escribir campo %s pos %s val '%s': %s" % (
+            warnings.warn("Error al escribir campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return linea + "\n"
 
@@ -841,7 +835,7 @@ def verifica(ver_list, res_dict, difs):
 
 
 def safe_console():
-    if False or sys.stdout.encoding is None:
+    if True or sys.stdout.encoding is None:
         class SafeWriter:
             def __init__(self, target):
                 self.target = target
@@ -859,13 +853,13 @@ def safe_console():
 
         sys.stdout = SafeWriter(sys.stdout)
         #sys.stderr = SafeWriter(sys.stderr)
-        print("Encodign in %s" % locale.getpreferredencoding())
+        print("Encodign in %s" % locale.getpreferredencoding())    
 
 
 def norm(x, encoding="latin1"):
     "Convertir acentos codificados en ISO 8859-1 u otro, a ASCII regular"
-    if not isinstance(x, basestring):
-        x = unicode(x)
+    if not isinstance(x, str):
+        x = str(x)
     elif isinstance(x, str):
         x = x.decode(encoding, 'ignore')
     return unicodedata.normalize('NFKD', x).encode('ASCII', 'ignore')

@@ -179,7 +179,7 @@ def leer_linea_txt(linea, formato):
                 valor = valor.replace("\v","\n") # reemplazo salto de linea
             dic[clave] = valor
             comienzo += longitud
-        except Exception, e:
+        except Exception as e:
             raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (
                 clave, comienzo, valor, str(e)))
     return dic
@@ -197,9 +197,9 @@ def escribir_linea_txt(dic, formato):
             if clave.capitalize() in dic:
                 clave = clave.capitalize()
             valor = dic.get(clave,"")
-            if not isinstance(valor, basestring):
+            if not isinstance(valor, str):
                 valor = str(valor)
-            if isinstance(valor, unicode):
+            if isinstance(valor, str):
                 valor = valor.encode(CHARSET, "replace")
             if valor == 'None':
                 valor = ''
@@ -207,14 +207,14 @@ def escribir_linea_txt(dic, formato):
                 valor = ("%%0%dd" % longitud) % int(valor)
             elif tipo == I and valor:
                 valor = ("%%0%d.%df" % (longitud+1, decimales) % float(valor)).replace(".", "")
-                print "valor", valor
+                print("valor", valor)
             else:
                 valor = ("%%-%ds" % longitud) % valor.replace("\n","\v") # reemplazo salto de linea
             # reemplazo saltos de linea por tabulaci{on vertical
             valor = valor.replace("\n\r", "\v").replace("\n", "\v").replace("\r", "\v")
             linea = linea[:comienzo-1] + valor + linea[comienzo-1+longitud:]
             comienzo += longitud
-        except Exception, e:
+        except Exception as e:
             raise ValueError("Error al escribir campo %s val '%s': %s" % (
                 clave, valor, str(e)))
     return linea + "\n"
@@ -227,7 +227,7 @@ def leer(fn="entrada.txt"):
         regs = []
         reg = None
         for linea in f_entrada:
-            linea = unicode(linea, CHARSET)
+            linea = str(linea, CHARSET)
             if str(linea[0])=='0':
                 encabezado = leer_linea_txt(linea, ENCABEZADO)
                 reg = encabezado
@@ -267,9 +267,9 @@ def leer(fn="entrada.txt"):
                 dato = leer_linea_txt(linea, DATO)
                 dato['id'] = encabezado['id']
                 reg['datos'].append(dato)
-                print dato
+                print(dato)
             else:
-                print "Tipo de registro incorrecto:", linea[0]
+                print("Tipo de registro incorrecto:", linea[0])
     finally:
         f_entrada.close()
 
@@ -308,7 +308,7 @@ def escribir(regs, archivo):
     
     
 def ayuda():
-    print "Formato:"
+    print("Formato:")
     tipos_registro =  [
         ('Encabezado', ENCABEZADO),
         ('Detalle Item', DETALLE),
@@ -320,15 +320,15 @@ def ayuda():
         ]
     for msg, formato in tipos_registro:
         comienzo = 1
-        print "== %s ==" % msg
+        print("== %s ==" % msg)
         for fmt in formato:
             clave, longitud, tipo = fmt[0:3]
             if isinstance(longitud, tuple):
                 longitud, decimales = longitud
             else:
                 decimales = 2
-            print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                clave, comienzo, longitud, tipo, decimales)
+            print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                clave, comienzo, longitud, tipo, decimales))
             comienzo += longitud
 
 if __name__ == "__main__":

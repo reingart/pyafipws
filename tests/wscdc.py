@@ -28,7 +28,7 @@ from pyafipws.wsaa import WSAA
 from pyafipws.wscdc import WSCDC
 
 import pysimplesoap.client
-print pysimplesoap.client.__version__
+print(pysimplesoap.client.__version__)
 #assert pysimplesoap.client.__version__ >= "1.08c"
 
 
@@ -75,7 +75,7 @@ class TestWSCDC(unittest.TestCase):
                              doc_tipo_receptor, doc_nro_receptor)
         self.assertTrue(ok)
         self.assertEqual(wscdc.Resultado, "R")  # Rechazado
-        self.assertEqual(wscdc.Obs, u"100: El N° de CAI/CAE/CAEA consultado no existe en las bases del organismo.") 
+        self.assertEqual(wscdc.Obs, "100: El N° de CAI/CAE/CAEA consultado no existe en las bases del organismo.") 
         self.assertEqual(wscdc.PuntoVenta, pto_vta)
         self.assertEqual(wscdc.CbteNro, cbte_nro)
         self.assertEqual(wscdc.ImpTotal, imp_total)
