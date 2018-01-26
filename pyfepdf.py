@@ -391,7 +391,7 @@ class FEPDF:
         # convierto colores de string (en hexadecimal)
         if isinstance(foreground, str): foreground = int(foreground, 16)
         if isinstance(background, str): background = int(background, 16)
-        if isinstance(text, str): text = text.encode("latin1")
+        ##if isinstance(text, str): text = text.encode("latin1")
         field = {
                 'name': nombre, 
                 'type': tipo, 
@@ -556,7 +556,7 @@ class FEPDF:
             # calcular cantidad de páginas:
             lineas = len(li_items)
             if lineas_max>0:
-                hojas = lineas / (lineas_max - 1)
+                hojas = lineas // (lineas_max - 1)
                 if lineas % (lineas_max - 1): hojas = hojas + 1
                 if not hojas:
                     hojas = 1
@@ -913,7 +913,7 @@ class FEPDF:
 
     @utils.inicializar_y_capturar_excepciones_simple
     def MostrarPDF(self, archivo, imprimir=False):
-        if sys.platform.startswith(("linux2", 'java')):
+        if sys.platform.startswith(("linux", 'java')):
             os.system("evince ""%s""" % archivo)
         else:
             operation = imprimir and "print" or ""
@@ -956,7 +956,7 @@ if __name__ == '__main__':
         if DEBUG: print("CONFIG_FILE:", CONFIG_FILE)
         
         config = SafeConfigParser()
-        config.read(CONFIG_FILE)
+        config.read(CONFIG_FILE, encoding="latin1")
         conf_fact = dict(config.items('FACTURA'))
         conf_pdf = dict(config.items('PDF'))
 

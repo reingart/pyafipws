@@ -32,7 +32,8 @@ from decimal import Decimal
 from urllib.parse import urlencode
 from urllib.parse import urlparse
 import unicodedata
-import mimetools, mimetypes
+import mimetypes
+from email.generator import _make_boundary
 from html.parser import HTMLParser
 from http.cookies import SimpleCookie
 from configparser import SafeConfigParser
@@ -156,7 +157,7 @@ def inicializar_y_capturar_excepciones(func):
                     retry -= 1
                     return func(self, *args, **kwargs)
                 except socket.error as e:
-                    if e[0] not in (10054, 10053):
+                    if e.errno not in (10054, 10053):
                         # solo reintentar si el error es de conexión
                         # (10054, 'Connection reset by peer')
                         # (10053, 'Software caused connection abort')
@@ -448,7 +449,7 @@ class WebClient:
 
     def multipart_encode(self, vars):
         "Enconde form data (vars dict)"
-        boundary = mimetools.choose_boundary()
+        boundary = _make_boundary()
         buf = StringIO()
         for key, value in list(vars.items()):
             if not isinstance(value, file):
@@ -835,7 +836,7 @@ def verifica(ver_list, res_dict, difs):
 
 
 def safe_console():
-    if True or sys.stdout.encoding is None:
+    if False and sys.stdout.encoding is None:
         class SafeWriter:
             def __init__(self, target):
                 self.target = target
@@ -910,7 +911,7 @@ def abrir_conf(config_file, debug=False):
     if debug: print("CONFIG_FILE:", config_file)
     
     config = SafeConfigParser()
-    config.read(config_file)
+    config.read(config_file, encoding="latin1")
 
     return config
 

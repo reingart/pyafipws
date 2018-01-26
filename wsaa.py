@@ -74,7 +74,7 @@ def create_tra(service=SERVICE,ttl=2400):
     tra.header.add_child('generationTime',str(date('c',date('U')-ttl)))
     tra.header.add_child('expirationTime',str(date('c',date('U')+ttl)))
     tra.add_child('service',service)
-    return tra.as_xml()
+    return tra.as_xml().decode("utf8")
 
 def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
@@ -112,7 +112,7 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
-            if sys.platform == "linux2":
+            if sys.platform.startswith("linux"):
                 openssl = "openssl"
             else:
                 if sys.maxsize <= 2**32:
@@ -122,9 +122,9 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
             out = Popen([openssl, "smime", "-sign", 
                          "-signer", cert, "-inkey", privatekey,
                          "-outform","DER", "-nodetach"], 
-                        stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
-            return b64encode(out)
-        except Exception as e:
+                        stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra.encode("utf8"))[0]
+            return b64encode(out).decode("utf8")
+        except OSError as e:
             if e.errno == 2:
                 warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
             raise
@@ -261,7 +261,7 @@ class WSAA(BaseWS):
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
         results = self.client.loginCms(in0=str(cms))
-        ta_xml = results['loginCmsReturn'].encode("utf-8")
+        ta_xml = results['loginCmsReturn'] #.encode("utf-8")
         self.xml = ta = SimpleXMLElement(ta_xml)
         self.Token = str(ta.credentials.token)
         self.Sign = str(ta.credentials.sign)
@@ -296,7 +296,8 @@ class WSAA(BaseWS):
                 if not os.access(filename,os.R_OK):
                     raise RuntimeError("Imposible abrir %s\n" % filename)
             # creo el nombre para el archivo del TA (según credenciales y ws) 
-            fn = "TA-%s.xml" % hashlib.md5(service + crt + key).hexdigest()
+            ta_src = (service + crt + key).encode("utf8")
+            fn = "TA-%s.xml" % hashlib.md5(ta_src).hexdigest()
             if cache:
                 fn = os.path.join(cache, fn)
             else:
