@@ -93,10 +93,10 @@ if 'py2exe' in sys.argv:
                 )]
         # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
         # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
-	    # NOTE: on windows 8.1 64 bits, this is stored in C:\Users\REINGART\AppData\\Local\Temp\gen_py\2.7
-	    from win32com.client import gencache
-	    gen_py_path = gencache.GetGeneratePath() or "C:\Python27\lib\site-packages\win32com\gen_py"
-	    data_files += [(
+        # NOTE: on windows 8.1 64 bits, this is stored in C:\Users\REINGART\AppData\\Local\Temp\gen_py\2.7
+        from win32com.client import gencache
+        gen_py_path = gencache.GetGeneratePath() or "C:\Python27\lib\site-packages\win32com\gen_py"
+        data_files += [(
                 r"win32com\gen_py", 
                 [os.path.join(gen_py_path, "__init__.py"),
                  os.path.join(gen_py_path, "dicts.dat")],
