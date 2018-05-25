@@ -15,14 +15,14 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.30a"
+__version__ = "1.31a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
 Liquidación Primaria de Granos (LpgService)
-Copyright (C) 2013-2015 Mariano Reingart reingart@gmail.com
+Copyright (C) 2013-2018 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
@@ -417,6 +417,12 @@ FACTURA_PAPEL = [                       # para lsgAjustar (WSLPGv1.15)
     ('tipo_comprobante', 3, N),
 ]
 
+FUSION = [               # para liquidacionAjustarUnificado (WSLPGv1.19)
+    ('tipo_reg', 1, A), # f: fusion
+    ('nro_ing_brutos', 15, N),
+    ('nro_actividad', 5, N),
+]
+
 EVENTO = [
     ('tipo_reg', 1, A), # E: Evento
     ('codigo', 4, A), 
@@ -447,7 +453,7 @@ class WSLPG(BaseWS):
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion', 'AgregarPercepcion',
                         'AgregarOpcional', 'AgregarCalidad',
-                        'AgregarFacturaPapel',
+                        'AgregarFacturaPapel', 'AgregarFusion',
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'ConsultarLiquidacionSecundaria',
                         'ConsultarLiquidacionSecundariaUltNroOrden',
@@ -1369,6 +1375,13 @@ class WSLPG(BaseWS):
         self.percepciones = self.ajuste['ajusteDebito']['percepciones']
         # para compatibilidad con AgregarCertificado (WSLPGv1.17)
         self.liquidacion = self.ajuste['ajusteDebito']
+        return True
+
+    def AgregarFusion(self, nro_ing_brutos, nro_actividad, **kwargs):
+        "Datos de comprador o vendedor según liquidación a ajustar (fusión.)"
+        self.ajuste['ajusteBase']['fusion'] = {'nroIngBrutos': nro_ing_brutos, 
+                                               'nroActividad': nro_actividad,
+                                              }
         return True
 
     @inicializar_y_capturar_excepciones
@@ -3013,6 +3026,7 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
                     ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
                     ('Calidad', CALIDAD, dic.get('calidad', [])),
                     ('FacturaPapel', FACTURA_PAPEL, dic.get('factura_papel', [])),
+                    ('Fusion', FUSION, dic.get('fusion', [])),
                     ('Dato', DATO, dic.get('datos', [])),
                     ('Error', ERROR, dic.get('errores', [])),
                     ]
@@ -3088,6 +3102,10 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['factura_papel']:
                 it['tipo_reg'] = 'F'
                 archivo.write(escribir(it, FACTURA_PAPEL))
+        if 'fusion' in dic:
+            for it in dic['fusion']:
+                it['tipo_reg'] = 'f'
+                archivo.write(escribir(it, FUSION))
         if 'datos' in dic:
             for it in dic['datos']:
                 it['tipo_reg'] = 9
@@ -3104,7 +3122,7 @@ def leer_archivo(nombre_archivo):
         dic = json.load(archivo)
     elif '--dbf' in sys.argv:
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
-               'percepciones': [], 'opcionales': [],
+               'percepciones': [], 'opcionales': [], 'fusion': [],
                'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], 
                'ctgs': [], 'det_muestra_analisis': [], 'calidad': [],
               }
@@ -3121,6 +3139,7 @@ def leer_archivo(nombre_archivo):
                     ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
                     ('Calidad', CALIDAD, dic.get('calidad', [])),
                     ('FacturaPapel', FACTURA_PAPEL, dic.get('factura_papel', [])),
+                    ('Fusion', FUSION, dic.get('fusion', [])),
                     ('Dato', DATO, dic['datos']),
                     ]
         leer_dbf(formatos, conf_dbf)
@@ -3129,7 +3148,7 @@ def leer_archivo(nombre_archivo):
                'percepciones': [], 'opcionales': [],
                'datos': [], 'ajuste_credito': {}, 'ajuste_debito': {}, 
                'ctgs': [], 'det_muestra_analisis': [], 'calidad': [],
-               'factura_papel': [],
+               'factura_papel': [], 'fusion': [],
                }
         for linea in archivo:
             if str(linea[0])=='0':
@@ -3180,6 +3199,8 @@ def leer_archivo(nombre_archivo):
                 dic['calidad'].append(leer(linea, CALIDAD))
             elif str(linea[0])=='F':
                 dic['factura_papel'].append(leer(linea, FACTURA_PAPEL))
+            elif str(linea[0])=='f':
+                dic['fusion'].append(leer(linea, FUSION))
             elif str(linea[0])=='9':
                 dic['datos'].append(leer(linea, DATO))
             else:
@@ -3217,6 +3238,7 @@ if __name__ == '__main__':
                              ('Det. Muestra Analisis', DET_MUESTRA_ANALISIS),
                              ('Calidad', CALIDAD),
                              ('Factura Papel', FACTURA_PAPEL),
+                             ('Fusion', FUSION),
                              ('Evento', EVENTO), ('Error', ERROR), 
                              ('Dato', DATO)]:
             comienzo = 1
@@ -3543,6 +3565,7 @@ if __name__ == '__main__':
                        fecha_cierre='2013-01-13',
                        peso_neto_total_certificado=10000,
                        )],
+                    fusion=[{'nro_ing_brutos': '20400000000', 'nro_actividad': 40}],
                     ajuste_credito=dict(
                         diferencia_peso_neto=1000, diferencia_precio_operacion=100,
                         cod_grado="G2", val_grado=1.0, factor=100,
@@ -3666,6 +3689,9 @@ if __name__ == '__main__':
             for cert in dic.get('certificados', []):
                 if cert:
                     wslpg.AgregarCertificado(**cert)
+
+            for fusion in dic.get('fusion', []):
+                wslpg.AgregarFusion(**fusion)
 
             liq = dic['ajuste_credito']
             wslpg.CrearAjusteCredito(**liq)
