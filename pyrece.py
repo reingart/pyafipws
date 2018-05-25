@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31a"
+__version__ = "1.31b"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -1005,6 +1005,10 @@ class PyRece(gui.Controller):
                     self.smtp = SMTP(conf_mail['servidor'], conf_mail.get('puerto', 25))
                     if conf_mail['usuario'] and conf_mail['clave']:
                         self.smtp.ehlo()
+                        if conf_mail.get('tls', False):
+                            self.log("Iniciando TLS...")
+                            self.smtp.starttls()
+                            self.smtp.ehlo()
                         self.smtp.login(conf_mail['usuario'], conf_mail['clave'])
                 to = [msg['To']]
                 bcc = conf_mail.get('bcc', None)
