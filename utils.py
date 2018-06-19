@@ -44,7 +44,7 @@ try:
     import json
 except ImportError:
     try:
-        import simplejson as json 
+        import simplejson as json
     except:
         print("para soporte de JSON debe instalar simplejson")
         json = None
@@ -62,7 +62,7 @@ try:
     elif release:
         needs_patch = (release in 'XP')
     else:
-        needs_patch = False 
+        needs_patch = False
     if needs_patch and not monkey_patch:
         import ssl
         def _ssl_wrap_socket(sock, key_file, cert_file,
@@ -92,8 +92,8 @@ def exception_info(current_filename=None, index=-1):
     info = sys.exc_info() #         exc_type, exc_value, exc_traceback
     # importante: no usar unpacking porque puede causar memory leak
     if not current_filename:
-        # genero un call stack para ver quien me llamó y limitar la traza: 
-        # advertencia: esto es necesario ya que en py2exe no tengo __file__ 
+        # genero un call stack para ver quien me llamó y limitar la traza:
+        # advertencia: esto es necesario ya que en py2exe no tengo __file__
         try:
             raise ZeroDivisionError
         except ZeroDivisionError:
@@ -106,7 +106,7 @@ def exception_info(current_filename=None, index=-1):
     try:
         for (filename, lineno, fn, text) in traceback.extract_tb(info[2]):
             if os.path.normpath(os.path.abspath(filename)) == current_filename:
-                ret = {'filename': filename, 'lineno': lineno, 
+                ret = {'filename': filename, 'lineno': lineno,
                        'function_name': fn, 'code': text}
     except Exception as e:
         pass
@@ -114,7 +114,7 @@ def exception_info(current_filename=None, index=-1):
     # (para evitar errores de encoding)
     try:
         ret['msg'] = traceback.format_exception_only(*info[0:2])[0]
-    except: 
+    except:
         ret['msg'] = '<no disponible>'
     # obtener el nombre de la excepcion (ej. "NameError")
     try:
@@ -220,7 +220,7 @@ class BaseWS:
         self.inicializar()
         self.Token = self.Sign = ""
         self.LanzarExcepciones = True
-    
+
     def inicializar(self):
         self.Excepcion = self.Traceback = ""
         self.XmlRequest = self.XmlResponse = ""
@@ -243,7 +243,7 @@ class BaseWS:
             if not wsdl.endswith(self.WSDL[-5:]) and wsdl.startswith("http"):
                 wsdl += self.WSDL[-5:]
             if not cache or self.HOMO:
-                # use 'cache' from installation base directory 
+                # use 'cache' from installation base directory
                 cache = os.path.join(self.InstallDir, 'cache')
             # deshabilitar verificación cert. servidor si es nulo falso vacio
             if not cacert:
@@ -254,7 +254,7 @@ class BaseWS:
             elif cacert.startswith("-----BEGIN CERTIFICATE-----"):
                 pass
             else:
-                if not os.path.exists(cacert): 
+                if not os.path.exists(cacert):
                     self.log("Buscando CACERT en conf...")
                     cacert = os.path.join(self.InstallDir, "conf", os.path.basename(cacert))
                 if cacert and not os.path.exists(cacert):
@@ -263,17 +263,17 @@ class BaseWS:
                     cacert = None   # wrong version, certificates not found...
                     raise RuntimeError("Error de configuracion CACERT ver DebugLog")
                     return False
-                    
+
             self.log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
             # analizar espacio de nombres (axis vs .net):
             ns = 'ser' if self.WSDL[-5:] == "?wsdl" else None
             self.client = SoapClient(
-                wsdl = wsdl,        
+                wsdl = wsdl,
                 cache = cache,
                 proxy = proxy_dict,
                 cacert = cacert,
                 timeout = timeout,
-                ns = ns, soap_server = soap_server, 
+                ns = ns, soap_server = soap_server,
                 trace = "--trace" in sys.argv)
             self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
             self.wsdl = wsdl    # utilizado por TrazaMed (para corregir el location)
@@ -323,7 +323,7 @@ class BaseWS:
             self.Log = None
         else:
             msg = ''
-        return msg    
+        return msg
 
     def LoadTestXML(self, xml):
         "Cargar un archivo de pruebas con la respuesta simulada (depuración)"
@@ -349,9 +349,9 @@ class BaseWS:
         "Analiza un mensaje XML (por defecto el ticket de acceso)"
         try:
             if not xml or xml=='XmlResponse':
-                xml = self.XmlResponse 
+                xml = self.XmlResponse
             elif xml=='XmlRequest':
-                xml = self.XmlRequest 
+                xml = self.XmlRequest
             self.xml = SimpleXMLElement(xml)
             return True
         except Exception as e:
@@ -419,7 +419,7 @@ class BaseWS:
 
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
-        
+
         if self.Errores:
             # extraigo el primer item
             er = self.Errores.pop(0)
@@ -475,14 +475,14 @@ class WebClient:
         "Perform a GET/POST request and return the response"
 
         location = self.location
-        # if isinstance(location, str):
-        #     location = location.encode("utf8")
+        if isinstance(location, str):
+            location = location.encode("utf8")
         # extend the base URI with additional components
         if args:
             location += "/".join(args)
         if self.method == "GET":
             location += "?%s" % urlencode(vars)
-            
+
         # prepare the request content suitable to be sent to the server:
         if self.enctype == "multipart/form-data":
             boundary, body = self.multipart_encode(vars)
@@ -492,9 +492,9 @@ class WebClient:
             content_type = self.enctype
         else:
             body = None
-            
+
         # add headers according method, cookies, etc.:
-        headers={}        
+        headers={}
         if self.method == "POST":
             headers.update({
                 'Content-type': content_type,
@@ -510,15 +510,15 @@ class WebClient:
             print("%s %s" % (self.method, location))
             print('\n'.join(["%s: %s" % (k,v) for k,v in list(headers.items())]))
             print("\n%s" % body)
-        
+
         # send the request to the server and store the result:
         response, content = self.http.request(
             location, self.method, body=body, headers=headers )
         self.response = response
         self.content = content
 
-        if self.trace: 
-            print() 
+        if self.trace:
+            print()
             print('\n'.join(["%s: %s" % (k,v) for k,v in list(response.items())]))
             print(content)
             print("="*80)
@@ -538,11 +538,11 @@ class AttrDict(dict):
 
 class HTMLFormParser(HTMLParser):
     "Convert HTML form into custom named-tuple dicts"
-    
+
     def __init__(self, *args, **kwargs):
         HTMLParser.__init__(self, *args, **kwargs)
         self.forms = {}
-        
+
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if 'name' in attrs:
@@ -567,7 +567,7 @@ def leer(linea, formato, expandir_fechas=False):
     "Analiza una linea de texto dado un formato, devuelve un diccionario"
     dic = {}
     comienzo = 1
-    for fmt in formato:    
+    for fmt in formato:
         clave, longitud, tipo = fmt[0:3]
         dec = (len(fmt)>3 and isinstance(fmt[3], int)) and fmt[3] or 2
         valor = linea[comienzo-1:comienzo-1+longitud].strip()
@@ -588,7 +588,7 @@ def leer(linea, formato, expandir_fechas=False):
                             valor = valor.strip(" ")
                             if valor[0] == "-":
                                 sign = -1
-                                valor = valor[1:] 
+                                valor = valor[1:]
                             else:
                                 sign = +1
                             valor = sign * float(("%%s.%%0%sd" % dec) % (int(valor[:-dec] or '0'), int(valor[-dec:] or '0')))
@@ -675,11 +675,11 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
             if longitud>250:
                 tipo = "M" # memo!
             elif tipo == A:
-                tipo = "C(%s)" % longitud 
+                tipo = "C(%s)" % longitud
             elif tipo == N:
                 if longitud >= 18:
                     longitud = 17
-                tipo = "N(%s,0)" % longitud 
+                tipo = "N(%s,0)" % longitud
             elif tipo == I:
                 if not dec:
                     dec = 0
@@ -688,7 +688,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                 if longitud >= 18:
                     longitud = 17
                 if longitud - 2 <= dec:
-                    longitud += longitud - dec + 1      # ajusto long. decimales 
+                    longitud += longitud - dec + 1      # ajusto long. decimales
                 tipo = "N(%s,%s)" % (longitud, dec)
             clave_dbf = dar_nombre_campo_dbf(clave, claves)
             campo = "%s %s" % (clave_dbf, tipo)
@@ -702,7 +702,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
             tabla = dbf.Table(filename)
 
         for d in l:
-            # si no es un diccionario, ignorar ya que seguramente va en otra 
+            # si no es un diccionario, ignorar ya que seguramente va en otra
             # tabla (por ej. retenciones tiene su propio formato)
             if isinstance(d, str):
                 continue
@@ -751,7 +751,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
 def leer_dbf(formatos, conf_dbf):
     import dbf
     if DEBUG: print("Leyendo DBF...")
-    
+
     for nombre, formato, ld in formatos:
         filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
         if DEBUG: print("leyendo tabla", nombre, filename)
@@ -760,7 +760,7 @@ def leer_dbf(formatos, conf_dbf):
         tabla = dbf.Table(filename)
         for reg in tabla:
             r = {}
-            d = reg.scatter_fields() 
+            d = reg.scatter_fields()
             claves = []
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
@@ -772,7 +772,7 @@ def leer_dbf(formatos, conf_dbf):
             if isinstance(ld, dict):
                 ld.update(r)
             else:
-                ld.append(r)    
+                ld.append(r)
 
 
 def dar_nombre_campo_dbf(clave, claves):
@@ -782,7 +782,7 @@ def dar_nombre_campo_dbf(clave, claves):
     # si el campo esta repetido, le agrego un número
     i = 0
     while nombre in claves:
-        i += 1    
+        i += 1
         nombre = nombre[:9] + str(i)
     return nombre.lower()
 
@@ -828,7 +828,7 @@ def verifica(ver_list, res_dict, difs):
             if float(res_dict.get(k)) != float(v):
                 difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
         elif str(res_dict.get(k)) != str(v):
-            # tipos diferentes, comparo la representación  
+            # tipos diferentes, comparo la representación
             difs.append("%s: str %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
         else:
             pass
@@ -844,7 +844,7 @@ def safe_console():
                 self.errors = 'replace'
                 self.encode_to = 'latin-1'
             def write(self, s):
-                self.target.write(self.intercept(s))        
+                self.target.write(self.intercept(s))
             def flush(self):
                 self.target.flush()
             def intercept(self, s):
@@ -854,7 +854,7 @@ def safe_console():
 
         sys.stdout = SafeWriter(sys.stdout)
         #sys.stderr = SafeWriter(sys.stderr)
-        print("Encodign in %s" % locale.getpreferredencoding())    
+        print("Encoding in %s" % locale.getpreferredencoding())
 
 
 def norm(x, encoding="latin1"):
@@ -871,7 +871,7 @@ def date(fmt=None,timestamp=None):
     if fmt=='U': # return timestamp
         t = datetime.datetime.now()
         return int(time.mktime(t.timetuple()))
-    if fmt=='c': # return isoformat 
+    if fmt=='c': # return isoformat
         d = datetime.datetime.fromtimestamp(timestamp)
         return d.isoformat()
     if fmt=='Ymd':
@@ -880,7 +880,7 @@ def date(fmt=None,timestamp=None):
 
 
 def get_install_dir():
-    if not hasattr(sys, "frozen"): 
+    if not hasattr(sys, "frozen"):
         basepath = __file__
     elif sys.frozen=='dll':
         import win32api
@@ -888,7 +888,7 @@ def get_install_dir():
     else:
         basepath = sys.executable
 
-    if hasattr(sys, "frozen"): 
+    if hasattr(sys, "frozen"):
         # we are running as py2exe-packed executable
         import pythoncom
         pythoncom.frozen = 1
@@ -896,7 +896,7 @@ def get_install_dir():
 
     return os.path.dirname(os.path.abspath(basepath))
 
-        
+
 def abrir_conf(config_file, debug=False):
     "Abrir el archivo de configuración (usar primer parámetro como ruta)"
     # en principio, usar el nombre de archivo predeterminado
@@ -909,7 +909,7 @@ def abrir_conf(config_file, debug=False):
         warnings.warn("Archivo de configuracion %s invalido" % config_file)
 
     if debug: print("CONFIG_FILE:", config_file)
-    
+
     config = SafeConfigParser()
     config.read(config_file, encoding="latin1")
 
