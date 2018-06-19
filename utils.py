@@ -475,8 +475,8 @@ class WebClient:
         "Perform a GET/POST request and return the response"
 
         location = self.location
-        if isinstance(location, str):
-            location = location.encode("utf8")
+        # if isinstance(location, str):
+        #     location = location.encode("utf8")
         # extend the base URI with additional components
         if args:
             location += "/".join(args)
