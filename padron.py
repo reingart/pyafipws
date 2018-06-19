@@ -414,7 +414,7 @@ class PadronAFIP():
         if not self.client:
             self.Conectar()
         self.response = self.client("parametros", "v1", tipo_recurso)
-        result = json.loads(self.response)
+        result = json.loads(self.response.decode('utf8'))
         ret = {}
         if result['success']:
             data = result['data']
