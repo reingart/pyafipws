@@ -81,7 +81,7 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
 
     if BIO:
         # Firmar el texto (tra) usando m2crypto (openssl bindings para python)
-        buf = BIO.MemoryBuffer(tra)             # Crear un buffer desde el texto
+        buf = BIO.MemoryBuffer(tra.encode('utf8'))             # Crear un buffer desde el texto
         #Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
         s = SMIME.SMIME()                       # Instanciar un SMIME
         # soporte de contraseña de encriptación (clave privada, opcional)
@@ -95,8 +95,8 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
             else:
                 raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
         # crear buffers en memoria de la clave privada y certificado:
-        key_bio = BIO.MemoryBuffer(privatekey)
-        crt_bio = BIO.MemoryBuffer(cert)
+        key_bio = BIO.MemoryBuffer(privatekey.encode('utf8'))
+        crt_bio = BIO.MemoryBuffer(cert.encode('utf8'))
         s.load_key_bio(key_bio, crt_bio, callback)  # (desde buffer)
         p7 = s.sign(buf,0)                      # Firmar el buffer
         out = BIO.MemoryBuffer()                # Crear un buffer para la salida
@@ -104,7 +104,7 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
         #Rand.save_file('randpool.dat')         # Guardar el estado del PRNG's
 
         # extraer el cuerpo del mensaje (parte firmada)
-        msg = email.message_from_string(out.read())
+        msg = email.message_from_string(out.read().decode('utf8'))
         for part in msg.walk():
             filename = part.get_filename()
             if filename == "smime.p7m":                 # es la parte firmada?
@@ -183,12 +183,14 @@ class WSAA(BaseWS):
         "Carga un certificado digital y extrae los campos más importantes"
         from M2Crypto import BIO, EVP, RSA, X509
         if binary:
-            bio = BIO.MemoryBuffer(cert)
+            bio = BIO.MemoryBuffer(cert.encode('utf8'))
             x509 = X511.load_cert_bio(bio, X509.FORMAT_DER)
         else:
             if not crt.startswith("-----BEGIN CERTIFICATE-----"):
-                crt = open(crt).read().encode('utf-8')
-            bio = BIO.MemoryBuffer(crt)
+                crt = open(crt).read()
+                if isinstance(crt, str):
+                    crt = crt.encode('utf-8')
+            bio = BIO.MemoryBuffer(crt.encode('utf8'))
             x509 = X509.load_cert_bio(bio, X509.FORMAT_PEM)
         if x509:
             self.Identidad = x509.get_subject().as_text()
@@ -255,7 +257,7 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
-        return sign_tra(tra.encode('utf8'),cert.encode('utf8'),privatekey.encode('utf8'),passphrase.encode("utf8"))
+        return sign_tra(tra,cert,privatekey,passphrase)
 
     @inicializar_y_capturar_excepciones
     def LoginCMS(self, cms):
@@ -435,7 +437,7 @@ if __name__=="__main__":
         url = len(argv)>5 and argv[5] or WSAAURL
         wrapper = len(argv)>6 and argv[6] or None
         cacert = len(argv)>7 and argv[7] or CACERT
-        DEBUG = "--debug" in args
+        DEBUG = "--debug" in args or DEBUG
 
         print("Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl), file=sys.stderr)
 
