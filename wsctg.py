@@ -17,7 +17,7 @@ del web service WSCTG versión 4.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.14a"
+__version__ = "1.14b"
 
 LICENCIA = """
 wsctg.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -891,7 +891,6 @@ if __name__ == '__main__':
                 carta_porte = sys.argv[i + 1]
                 ctg = sys.argv[i + 2]
             ret = wsctg.AnularCTG(carta_porte, ctg)
-            wsctg.SolicitarCTGDatoPendiente()
             print "Carta Porte", wsctg.CartaPorte
             print "Numero CTG", wsctg.NumeroCTG
             print "Fecha y Hora", wsctg.FechaHora
