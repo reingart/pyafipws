@@ -17,7 +17,7 @@ del web service WSCTG versión 4.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.14b"
+__version__ = "1.14c"
 
 LICENCIA = """
 wsctg.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -274,12 +274,16 @@ class WSCTG(BaseWS):
         **kwargs):
         "Solicitar CTG Desde el Inicio"
         # ajusto parámetros según validaciones de AFIP:
-        if cuit_canjeador and int(cuit_canjeador) == 0:
+        if not cuit_canjeador or int(cuit_canjeador) == 0:
             cuit_canjeador = None         # nulo
+        if not cuit_corredor or int(cuit_corredor) == 0:
+            cuit_corredor = None         # nulo
         if not remitente_comercial_como_canjeador:
             remitente_comercial_como_canjeador = None
         if not remitente_comercial_como_productor:
             remitente_comercial_como_productor = None
+        if turno == '':
+            turno  = None                # nulo
 
         ret = self.client.solicitarCTGInicial(request=dict(
                         auth={
@@ -1134,7 +1138,7 @@ if __name__ == '__main__':
         if "--consultar_activos_por_patente" in sys.argv:
             i = sys.argv.index("--consultar_activos_por_patente")
             if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
-                patente = int(sys.argv[i+1])
+                patente = sys.argv[i+1]
             elif not ctg:
                 patente= raw_input("Patente: ") or 'APE652'
             wsctg.LanzarExcepciones = True
