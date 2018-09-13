@@ -32,7 +32,7 @@ from ConfigParser import SafeConfigParser
 from padron import TIPO_CLAVE, PROVINCIAS
 
 
-HOMO = True
+HOMO = False
 LANZAR_EXCEPCIONES = True
 WSDL = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA4?wsdl"
 CONFIG_FILE = "rece.ini"
