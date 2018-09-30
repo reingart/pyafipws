@@ -144,6 +144,93 @@ class WSRemCarne(BaseWS):
             self.Evento = "%(codigo)s: %(descripcion)s" % evt
 
     @inicializar_y_capturar_excepciones
+    def CrearRemito(self, tipo_comprobante, punto_emision, categoria_emisor, cuit_titular_mercaderia, cod_dom_origen,
+                    tipo_receptor, caracter_receptor=None, cuit_receptor=None, cuit_depositario=None,
+                    cod_dom_destino=None, cod_rem_redestinar=None, cod_remito=None, estado=None,
+                    **kwargs):
+        "Inicializa internamente los datos de un remito para autorizar"
+        self.remito = {'tipoComprobante': tipo_comprobante, 'puntoEmision': punto_emision, 'categoriaEmisor': categoria_emisor,
+                       'cuitTitularMercaderia': cuit_titular_mercaderia, 'cuitDepositario': cuit_depositario,
+                       'tipoReceptor': tipo_receptor, 'caracterReceptor': caracter_receptor, 'cuitReceptor': cuit_receptor,
+                       'codDomOrigen': cod_dom_origen, 'codDomDestino': cod_dom_destino,
+                       'estado': estado, 'codRemito': cod_remito,
+                       'codRemRedestinar': cod_rem_redestinar,
+                       'arrayMercaderia': [], 'arrayContingencias': [],
+                      }
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarViaje(self, cuit_transportista=None, cuit_conductor=None, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
+        "Agrega la información referente al viaje del remito electrónico cárnico"
+        self.remito['viaje'] = {'cuitTransportista': cuit_transportista, 
+                                'cuitConductor': cuit_conductor,
+                                'fechaInicioViaje': fecha_inicio_viaje ,
+                                'distanciaKm': distancia_km,
+                                'vehiculo': {}
+                               }
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarVehiculo(self, dominio_vehiculo=None, dominio_acoplado=None, **kwargs):
+        "Agrega la información referente al vehiculo usado en el viaje del remito electrónico cárnico"
+        self.remito['viaje']['vehiculo'] = {'dominioVehiculo': dominio_vehiculo, 'dominioAcoplado': dominio_acoplado}
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarMercaderia(self, orden=None, cod_tipo_prod=None, kilos=None, unidades=None, tropa=None, **kwargs):
+        "Agrega la información referente a la mercadería del remito electrónico cárnico"
+        mercaderia = dict(orden=orden, tropa=tropa, codTipoProd=cod_tipo_prod, kilos=kilos, unidades=unidades)
+        self.remito['arrayMercaderia'].append(dict(mercaderia=mercaderia))
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarDatosAutorizacion(self, nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None, **kwargs):
+        "Agrega la información referente a los datos de autorización del remito electrónico cárnico"
+        self.remito['datosAutorizacion'] = dict(nroRemito=nro_remito, codAutorizacion=cod_autorizacion,
+                                                fechaEmision=fecha_emision, fechaVencimiento=fecha_vencimiento,
+                                               )
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarContingencias(self, tipo=None, observacion=None, **kwargs):
+        "Agrega la información referente a los opcionales de la liq. seq."
+        contingencia = dict(tipoContingencia=tipo, observacion=observacion)
+        self.remito['arrayContingencias'].append(dict(contingencia=contingencia))
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def GenerarRemito(self, id_cliente, archivo="qr.png"):
+        "Informar los datos necesarios para la generación de un remito nuevo"
+        if not self.remito['arrayContingencias']:
+            del self.remito['arrayContingencias']
+        response = self.client.generarRemito(
+                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+                                idCliente=id_cliente, remito=self.remito) 
+        ret = response.get("generarRemitoReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.CodRemito = ret.get("codRemito")
+            self.TipoComprobante = ret.get("tipoComprobante")
+            self.PuntoEmision = ret.get("puntoEmision")
+            datos_aut = ret.get('datosAutorizacion')
+            if datos_aut:
+                self.NroRemito = datos_aut.get('nroRemito')
+                self.CodAutorizacion = datos_aut.get('codAutorizacion')
+                self.FechaEmision = datos_aut.get('fechaEmision')
+                self.FechaVencimiento = datos_aut.get('fechaVencimiento')
+            self.Estado = ret.get('estado')
+            self.Resultado = ret.get('resultado')
+            self.QR = ret.get('qr') or ""
+            if archivo:
+                qr = base64.b64decode(self.QR)
+                f = open(archivo, "wb")
+                f.write(qr)
+                f.close()
+        return bool(self.CodRemito)
+
+    @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         results = self.client.dummy()['response']
@@ -329,6 +416,56 @@ if __name__ == '__main__':
             print "DbServerStatus", wsremcarne.DbServerStatus
             print "AuthServerStatus", wsremcarne.AuthServerStatus
             sys.exit(0)
+
+        if '--prueba' in sys.argv:
+            rec = dict(tipo_comprobante=995, punto_emision=1, categoria_emisor=1,
+                          cuit_titular_mercaderia='20222222223', cod_dom_origen=1,
+                          tipo_receptor='EM',  # 'EM': DEPOSITO EMISOR, 'MI': MERCADO INTERNO, 'RP': REPARTO
+                          caracter_receptor=1, id_cliente=int(time.time()),
+                          cuit_receptor='20111111112', cuit_depositario=None,
+                          cod_dom_destino=1, cod_rem_redestinar=None, cod_remito=None, estado=None)
+            rec['viaje'] = dict(cuit_transportista='20333333334', cuit_conductor='20333333334',
+                                   fecha_inicio_viaje='2018-10-01', distancia_km=999)
+            rec['viaje']['vehiculo'] = dict(dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000')
+            rec['mercaderias'] = [dict(orden=1, tropa=1, cod_tipo_prod='2.13', kilos=10, unidades=1)]
+            rec['datos_autorizacion'] = None # dict(nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
+            rec['contingencias'] = [dict(tipo=1, observacion="anulacion")]
+
+        if '--generar':
+            wsremcarne.CrearRemito(**rec)
+            wsremcarne.AgregarViaje(**rec['viaje'])
+            wsremcarne.AgregarVehiculo(**rec['viaje']['vehiculo'])
+            for mercaderia in rec['mercaderias']:
+                wsremcarne.AgregarMercaderia(**mercaderia)
+            datos_aut = rec['datos_autorizacion']
+            if datos_aut:
+                wsremcarne.AgregarDatosAutorizacion(**datos_aut)
+            for contingencia in rec['contingencias']:
+                wsremcarne.AgregarContingencias(**contingencia)
+
+            if '--testing' in sys.argv:
+                wsremcarne.LoadTestXML("tests/xml/wsremcarne_generar_response_ok_beta.xml")  # cargo respuesta
+
+            ok = wsremcarne.GenerarRemito(id_cliente=rec['id_cliente'])
+            print "Resultado: ", wsremcarne.Resultado
+            print "Cod Remito: ", wsremcarne.CodRemito
+            if wsremcarne.CodAutorizacion:
+                print "Numero Remito: ", wsremcarne.NumeroRemito
+                print "Cod Autorizacion: ", wsremcarne.CodAutorizacion
+                print "Fecha Emision", wsremcarne.FechaEmision
+                print "Fecha Vencimiento", wsremcarne.FechaVencimiento
+            print "Observaciones: ", wsremcarne.Observaciones
+            print "Errores:", wsremcarne.Errores
+            print "Errores Formato:", wsremcarne.ErroresFormato
+            print "Evento:", wsremcarne.Evento
+            rec['cod_remito'] = wsremcarne.CodRemito
+            rec['resultado'] = wsremcarne.Resultado
+            rec['observaciones'] = wsremcarne.Observaciones
+            rec['fecha_emision'] = wsremcarne.FechaEmision
+            rec['fecha_vencimiento'] = wsremcarne.FechaVencimiento
+            rec['errores'] = wsremcarne.Errores
+            rec['errores_formato'] = wsremcarne.ErroresFormato
+            rec['evento'] = wsremcarne.Evento
 
         # Recuperar parámetros:
 
