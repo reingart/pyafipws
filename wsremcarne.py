@@ -98,7 +98,7 @@ class WSRemCarne(BaseWS):
                       'Token', 'Sign', 'Cuit', 'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
                       'CodRemito', 'TipoComprobante', 'PuntoEmision'
                       'NroRemito', 'CodAutorizacion', 'FechaVencimiento', 'FechaEmision', 'Estado', 'Resultado', 'QR',
-                      'ErrCode', 'ErrMsg', 'Errores', 'ErroresFormato', 'Observaciones', 'Evento',
+                      'ErrCode', 'ErrMsg', 'Errores', 'ErroresFormato', 'Observaciones', 'Obs', 'Evento', 'Eventos',
                      ]
     _reg_progid_ = "WSRemCarne"
     _reg_clsid_ = "{71DB0CB9-2ED7-4226-A1E6-C3FA7FB18F41}"
@@ -120,25 +120,28 @@ class WSRemCarne(BaseWS):
         self.Estado = self.Resultado = self.QR = None
         self.Errores = []
         self.Observaciones = []
-        self.Evento = ""
+        self.Eventos = []
+        self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        self.Errores = ["%(codigo)s: %(descripcion)s" % err for err in ret.get('arrayErrores', [])]
-        self.ErroresFormato = ["%(codigo)s: %(descripcion)s" % err for err in ret.get('arrayErroresFormato', [])]
-        errores = ret.get('arrayErrores', []) + ret.get('arrayErroresFormato', [])
+        self.Errores = [err['codigoDescripcion'] for err in ret.get('arrayErrores', [])]
+        self.ErroresFormato = [err['codigoDescripcionString'] for err in ret.get('arrayErroresFormato', [])]
+        errores = self.Errores + self.ErroresFormato
         self.ErrCode = ' '.join(["%(codigo)s" % err for err in errores])
-        self.ErrMsg = '\n'.join(self.Errores + self.ErroresFormato)
+        self.ErrMsg = '\n'.join(["%(codigo)s: %(descripcion)s" % err for err in errores])
 
     def __analizar_observaciones(self, ret):
         "Comprueba y extrae observaciones si existen en la respuesta XML"
-        self.Observaciones = ["%(codigo)s: %(descripcion)s" % obs for obs in ret.get('arrayObservaciones', [])]
+        self.Observaciones = [obs["codigoDescripcion"] for obs in ret.get('arrayObservaciones', [])]
+        self.Obs = '\n'.join(["%(codigo)s: %(descripcion)s" % obs for obs in self.Observaciones])
 
     def __analizar_evento(self, ret):
         "Comprueba y extrae el wvento informativo si existen en la respuesta XML"
-        evt = ret.get('Evento')
+        evt = ret.get('evento')
         if evt:
-            self.Evento = "%(codigo)s: %(descripcion)s"
+            self.Eventos = [evt]
+            self.Evento = "%(codigo)s: %(descripcion)s" % evt
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
