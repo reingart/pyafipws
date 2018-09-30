@@ -430,6 +430,12 @@ if __name__ == '__main__':
             rec['mercaderias'] = [dict(orden=1, tropa=1, cod_tipo_prod='2.13', kilos=10, unidades=1)]
             rec['datos_autorizacion'] = None # dict(nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
             rec['contingencias'] = [dict(tipo=1, observacion="anulacion")]
+            with open(ENTRADA, "w") as archivo:
+                json.dump(rec, archivo, sort_keys=True, indent=4)
+
+        if '--cargar' in sys.argv:
+            with open(ENTRADA, "r") as archivo:
+                rec = json.load(archivo)
 
         if '--generar':
             wsremcarne.CrearRemito(**rec)
@@ -466,6 +472,10 @@ if __name__ == '__main__':
             rec['errores'] = wsremcarne.Errores
             rec['errores_formato'] = wsremcarne.ErroresFormato
             rec['evento'] = wsremcarne.Evento
+
+        if '--grabar' in sys.argv:
+            with open(SALIDA, "w") as archivo:
+                json.dump(rec, archivo, sort_keys=True, indent=4)
 
         # Recuperar parámetros:
 
