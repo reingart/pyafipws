@@ -52,8 +52,8 @@ try:
     import httplib2
     # corregir temas de negociacion de SSL en algunas versiones de ubuntu:
     import platform
-    dist, ver, nick = platform.linux_distribution() if sys.version > (2, 6) else ("", "", "")
-    release, ver, csd, ptype = platform.win32_ver() if sys.version > (2, 6) else ("", "", "", "")
+    dist, ver, nick = platform.linux_distribution() if sys.version_info > (2, 6) else ("", "", "")
+    release, ver, csd, ptype = platform.win32_ver() if sys.version_info > (2, 6) else ("", "", "", "")
     from pysimplesoap.client import SoapClient
     monkey_patch = httplib2._ssl_wrap_socket.__module__ != "httplib2"
     if dist:
