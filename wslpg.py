@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31a"
+__version__ = "1.31b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -113,6 +113,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
+TIMEOUT = 30
 HOMO = False
 
 # definición del formato del archivo de intercambio:
@@ -3291,6 +3292,9 @@ if __name__ == '__main__':
         CACERT = config.has_option('WSAA', 'CACERT') and config.get('WSAA', 'CACERT') or None
         WRAPPER = config.has_option('WSAA', 'WRAPPER') and config.get('WSAA', 'WRAPPER') or None
         
+        if config.has_option('WSLPG', 'TIMEOUT'):
+            TIMEOUT = int(config.get('WSLPG', 'TIMEOUT'))
+
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
             if DEBUG: print "conf_dbf", conf_dbf
@@ -3306,6 +3310,7 @@ if __name__ == '__main__':
             print "WSLPG_URL:", WSLPG_URL
             print "CACERT", CACERT
             print "WRAPPER", WRAPPER
+            print "timeout:", TIMEOUT
         # obteniendo el TA
         from wsaa import WSAA
         wsaa = WSAA()
@@ -3317,7 +3322,7 @@ if __name__ == '__main__':
         # cliente soap del web service
         wslpg = WSLPG()
         wslpg.LanzarExcepciones = True
-        wslpg.Conectar(url=WSLPG_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
+        wslpg.Conectar(url=WSLPG_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT, timeout=TIMEOUT)
         wslpg.SetTicketAcceso(ta)
         wslpg.Cuit = CUIT
 
