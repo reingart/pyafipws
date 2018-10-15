@@ -215,7 +215,7 @@ class WSRemCarne(BaseWS):
             self.AnalizarRemito(ret, archivo)
         return bool(self.CodRemito)
 
-    def AnalizarRemito(self, ret, archivo):
+    def AnalizarRemito(self, ret, archivo=None):
         "Extrae el resultado del remito, si existen en la respuesta XML"
         if ret:
             self.CodRemito = ret.get("codRemito")
@@ -264,6 +264,20 @@ class WSRemCarne(BaseWS):
             self.__analizar_observaciones(ret)
             self.__analizar_evento(ret)
             self.AnalizarRemito(ret, archivo)
+        return bool(self.CodRemito)
+
+    @inicializar_y_capturar_excepciones
+    def AnularRemito(self):
+        "Anular un remito generado que aún no haya sido emitido"
+        response = self.client.anularRemito(
+                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+                                codRemito=self.remito['codRemito'])
+        ret = response.get("anularRemitoReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.AnalizarRemito(ret)
         return bool(self.CodRemito)
 
     @inicializar_y_capturar_excepciones
@@ -496,6 +510,9 @@ if __name__ == '__main__':
 
         if '--autorizar' in sys.argv:
             ok = wsremcarne.AutorizarRemito()
+
+        if '--anular' in sys.argv:
+            ok = wsremcarne.AnularRemito()
 
         if ok is not None:
             print "Resultado: ", wsremcarne.Resultado
