@@ -252,6 +252,21 @@ class WSRemCarne(BaseWS):
         return bool(self.CodRemito)
 
     @inicializar_y_capturar_excepciones
+    def AutorizarRemito(self, archivo="qr.png"):
+        "Autorizar o denegar un remito (cuando corresponde autorizacion) por parte del titular/depositario"
+        response = self.client.autorizarRemito(
+                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+                                codRemito=self.remito['codRemito'],
+                                estado=self.remito['estado'])
+        ret = response.get("autorizarRemitoReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.AnalizarRemito(ret, archivo)
+        return bool(self.CodRemito)
+
+    @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         results = self.client.dummy()['response']
@@ -444,7 +459,9 @@ if __name__ == '__main__':
                           tipo_receptor='EM',  # 'EM': DEPOSITO EMISOR, 'MI': MERCADO INTERNO, 'RP': REPARTO
                           caracter_receptor=1, id_cliente=int(time.time()),
                           cuit_receptor='20111111112', cuit_depositario=None,
-                          cod_dom_destino=1, cod_rem_redestinar=None, cod_remito=None, estado=None)
+                          cod_dom_destino=1, cod_rem_redestinar=None,
+                          cod_remito=70, estado='A'  # 'A': Autorizar, 'D': Denegar
+                        )
             rec['viaje'] = dict(cuit_transportista='20333333334', cuit_conductor='20333333334',
                                    fecha_inicio_viaje='2018-10-01', distancia_km=999)
             rec['viaje']['vehiculo'] = dict(dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000')
@@ -477,6 +494,8 @@ if __name__ == '__main__':
         if '--emitir' in sys.argv:
             ok = wsremcarne.EmitirRemito()
 
+        if '--autorizar' in sys.argv:
+            ok = wsremcarne.AutorizarRemito()
 
         if ok is not None:
             print "Resultado: ", wsremcarne.Resultado
