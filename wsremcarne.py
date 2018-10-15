@@ -17,7 +17,7 @@ del web service WSRemCarne versión 1.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.00a"
+__version__ = "1.00b"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v1.0
@@ -78,7 +78,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsremcarne.ini"
-HOMO = False
+HOMO = True
 ENCABEZADO = []
 
 
@@ -119,6 +119,7 @@ class WSRemCarne(BaseWS):
         self.NroRemito = self.CodAutorizacion = self.FechaVencimiento = self.FechaEmision = None
         self.Estado = self.Resultado = self.QR = None
         self.Errores = []
+        self.ErroresFormato = []
         self.Observaciones = []
         self.Eventos = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
@@ -211,6 +212,12 @@ class WSRemCarne(BaseWS):
             self.__analizar_errores(ret)
             self.__analizar_observaciones(ret)
             self.__analizar_evento(ret)
+            self.AnalizarRemito(ret, archivo)
+        return bool(self.CodRemito)
+
+    def AnalizarRemito(self, ret, archivo):
+        "Extrae el resultado del remito, si existen en la respuesta XML"
+        if ret:
             self.CodRemito = ret.get("codRemito")
             self.TipoComprobante = ret.get("tipoComprobante")
             self.PuntoEmision = ret.get("puntoEmision")
@@ -228,6 +235,20 @@ class WSRemCarne(BaseWS):
                 f = open(archivo, "wb")
                 f.write(qr)
                 f.close()
+
+    @inicializar_y_capturar_excepciones
+    def EmitirRemito(self, archivo="qr.png"):
+        "Emitir Remitos que se encuentren en estado Pendiente de Emitir."
+        response = self.client.emitirRemito(
+                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+                                codRemito=self.remito['codRemito'],
+                                viaje=self.remito['viaje'])
+        ret = response.get("emitirRemitoReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.AnalizarRemito(ret, archivo)
         return bool(self.CodRemito)
 
     @inicializar_y_capturar_excepciones
@@ -436,8 +457,6 @@ if __name__ == '__main__':
         if '--cargar' in sys.argv:
             with open(ENTRADA, "r") as archivo:
                 rec = json.load(archivo)
-
-        if '--generar':
             wsremcarne.CrearRemito(**rec)
             wsremcarne.AgregarViaje(**rec['viaje'])
             wsremcarne.AgregarVehiculo(**rec['viaje']['vehiculo'])
@@ -449,17 +468,25 @@ if __name__ == '__main__':
             for contingencia in rec['contingencias']:
                 wsremcarne.AgregarContingencias(**contingencia)
 
+        if '--generar' in sys.argv:
             if '--testing' in sys.argv:
                 wsremcarne.LoadTestXML("tests/xml/wsremcarne_generar_response_ok_beta.xml")  # cargo respuesta
 
             ok = wsremcarne.GenerarRemito(id_cliente=rec['id_cliente'])
+
+        if '--emitir' in sys.argv:
+            ok = wsremcarne.EmitirRemito()
+
+
+        if ok is not None:
             print "Resultado: ", wsremcarne.Resultado
             print "Cod Remito: ", wsremcarne.CodRemito
             if wsremcarne.CodAutorizacion:
-                print "Numero Remito: ", wsremcarne.NumeroRemito
+                print "Numero Remito: ", wsremcarne.NroRemito
                 print "Cod Autorizacion: ", wsremcarne.CodAutorizacion
                 print "Fecha Emision", wsremcarne.FechaEmision
                 print "Fecha Vencimiento", wsremcarne.FechaVencimiento
+            print "Estado: ", wsremcarne.Estado
             print "Observaciones: ", wsremcarne.Observaciones
             print "Errores:", wsremcarne.Errores
             print "Errores Formato:", wsremcarne.ErroresFormato
