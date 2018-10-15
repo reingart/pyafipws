@@ -48,6 +48,7 @@ Opciones:
   --anular: anula un remito
   --autorizar: autoriza un remito
 
+  --ult: consulta ultimo nro remito emitido
   --consultar: consulta un remito generado
 
   --tipos_comprobante: tabla de parametros para tipo de comprobante
@@ -281,6 +282,22 @@ class WSRemCarne(BaseWS):
         return bool(self.CodRemito)
 
     @inicializar_y_capturar_excepciones
+    def ConsultarUltimoRemitoEmitido(self, tipo_comprobante=995, punto_emision=1):
+        "Obtener el último número de remito que se emitió por tipo de comprobante y punto de emisión"
+        response = self.client.consultarUltimoRemitoEmitido(
+                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+                                tipoComprobante=tipo_comprobante,
+                                puntoEmision=punto_emision)
+        ret = response.get("consultarUltimoRemitoReturn", {})
+        id_cliente = ret.get("idCliente", 0)
+        rec = ret.get("remito", {})
+        self.__analizar_errores(ret)
+        self.__analizar_observaciones(ret)
+        self.__analizar_evento(ret)
+        self.AnalizarRemito(rec)
+        return id_cliente
+
+    @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         results = self.client.dummy()['response']
@@ -466,6 +483,24 @@ if __name__ == '__main__':
             print "DbServerStatus", wsremcarne.DbServerStatus
             print "AuthServerStatus", wsremcarne.AuthServerStatus
             sys.exit(0)
+
+        if '--ult' in sys.argv:
+            try:
+                pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
+            except IndexError, ValueError:
+                pto_emision = 1
+            try:
+                tipo_cbte = int(sys.argv[sys.argv.index("--ult") + 1])
+            except IndexError, ValueError:
+                tipo_comprobante = 995
+            rec = {}
+            print "Consultando ultimo remito pto_emision=%s tipo_comprobante=%s" % (pto_emision, tipo_comprobante)
+            ok = wsremcarne.ConsultarUltimoRemitoEmitido(tipo_comprobante, pto_emision)
+            if wsremcarne.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wsremcarne.Excepcion
+                if DEBUG: print >> sys.stderr, wsremcarne.Traceback
+            print "Ultimo Nro de Remito", wsremcarne.NroRemito
+            print "Errores:", wsremcarne.Errores
 
         if '--prueba' in sys.argv:
             rec = dict(tipo_comprobante=995, punto_emision=1, categoria_emisor=1,
