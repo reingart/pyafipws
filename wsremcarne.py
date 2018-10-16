@@ -97,7 +97,7 @@ class WSRemCarne(BaseWS):
                         ]
     _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
                       'Token', 'Sign', 'Cuit', 'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
-                      'CodRemito', 'TipoComprobante', 'PuntoEmision'
+                      'CodRemito', 'TipoComprobante', 'PuntoEmision',
                       'NroRemito', 'CodAutorizacion', 'FechaVencimiento', 'FechaEmision', 'Estado', 'Resultado', 'QR',
                       'ErrCode', 'ErrMsg', 'Errores', 'ErroresFormato', 'Observaciones', 'Obs', 'Evento', 'Eventos',
                      ]
@@ -497,7 +497,8 @@ if __name__ == '__main__':
         wsremcarne.Conectar(wsdl=wsremcarne_url)
         wsremcarne.SetTicketAcceso(ta)
         wsremcarne.Cuit = CUIT
-        
+        ok = None
+
         if '--dummy' in sys.argv:
             ret = wsremcarne.Dummy()
             print "AppServerStatus", wsremcarne.AppServerStatus
