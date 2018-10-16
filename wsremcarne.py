@@ -298,6 +298,27 @@ class WSRemCarne(BaseWS):
         return id_cliente
 
     @inicializar_y_capturar_excepciones
+    def ConsultarRemito(self, cod_remito=None, id_cliente=None,
+                        tipo_comprobante=None, punto_emision=None, nro_comprobante=None):
+        "Obtener los datos de un remito generado"
+        print(self.client.help("consultarRemito"))
+        response = self.client.consultarRemito(
+                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+                                codRemito=cod_remito,
+                                idCliente=id_cliente,
+                                tipoComprobante=tipo_comprobante,
+                                puntoEmision=punto_emision,
+                                nroComprobante=nro_comprobante)
+        ret = response.get("consultarRemitoReturn", {})
+        id_cliente = ret.get("idCliente", 0)
+        self.remito = rec = ret.get("remito", {})
+        self.__analizar_errores(ret)
+        self.__analizar_observaciones(ret)
+        self.__analizar_evento(ret)
+        self.AnalizarRemito(rec)
+        return id_cliente
+
+    @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         results = self.client.dummy()['response']
@@ -501,6 +522,23 @@ if __name__ == '__main__':
                 if DEBUG: print >> sys.stderr, wsremcarne.Traceback
             print "Ultimo Nro de Remito", wsremcarne.NroRemito
             print "Errores:", wsremcarne.Errores
+
+        if '--consultar' in sys.argv:
+            try:
+                cod_remito = sys.argv[sys.argv.index("--consultar") + 1]
+            except IndexError, ValueError:
+                cod_remito = None
+            rec = {}
+            print "Consultando remito cod_remito=%s" % (cod_remito, )
+            ok = wsremcarne.ConsultarRemito(cod_remito)
+            if wsremcarne.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wsremcarne.Excepcion
+                if DEBUG: print >> sys.stderr, wsremcarne.Traceback
+            print "Ultimo Nro de Remito", wsremcarne.NroRemito
+            print "Errores:", wsremcarne.Errores
+            if DEBUG:
+                import pprint
+                pprint.pprint(wsremcarne.remito)
 
         if '--prueba' in sys.argv:
             rec = dict(tipo_comprobante=995, punto_emision=1, categoria_emisor=1,
