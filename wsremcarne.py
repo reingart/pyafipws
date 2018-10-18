@@ -388,7 +388,7 @@ class WSRemCarne(BaseWS):
                                 )['consultarTiposEstadoReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayTiposEstado', [])
-        lista = [it['codigoDescripcion'] for it in array]
+        lista = [it['codigoDescripcionString'] for it in array]
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
     @inicializar_y_capturar_excepciones
@@ -633,7 +633,7 @@ if __name__ == '__main__':
             print "\n".join(ret)
 
         if '--tipos_estados' in sys.argv:
-            ret = wsremcarne.ConsultarTiposEstados()
+            ret = wsremcarne.ConsultarTiposEstado()
             print "\n".join(ret)
 
         if '--grupos_carne' in sys.argv:
