@@ -37,7 +37,7 @@ if 'py2exe' in sys.argv:
     #import pyafipws
     #import pyrece
     import wsaa
-    import wsfev1, rece1, rg3685
+    #import wsfev1, rece1, rg3685
     #import wsfexv1, recex1
     #import wsbfev1, receb1
     #import wsmtx, recem
@@ -51,6 +51,7 @@ if 'py2exe' in sys.argv:
     #import wsltv
     #import wslum
     #import wslsp
+    import wsremcarne
     #import wscoc
     #import wscdc
     #import cot
@@ -219,9 +220,9 @@ if 'py2exe' in sys.argv:
         HOMO &= wsaa.HOMO
 
     if 'wsfev1' in globals():
-        kwargs['com_server'] += [
-            Target(module=wsfev1, modules="wsfev1", create_exe=not wsfev1.TYPELIB, create_dll=not wsfev1.TYPELIB)
-            ]
+        #kwargs['com_server'] += [
+        #    Target(module=wsfev1, modules="wsfev1", create_exe=not wsfev1.TYPELIB, create_dll=not wsfev1.TYPELIB)
+        #    ]
         kwargs['console'] += [
             Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
             Target(module=rece1, script='rece1.py'), 
@@ -400,6 +401,19 @@ if 'py2exe' in sys.argv:
             ]
         __version__ += "+wslsp_" + wslsp.__version__
         HOMO &= wslsp.HOMO
+
+    if 'wsremcarne' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsremcarne, modules="wsremcarne"),
+            ]
+        kwargs['console'] += [
+            Target(module=wsremcarne, script='wsremcarne.py', dest_base="wsremcarne_cli"),
+            ]
+        data_files += [
+            ("conf", ["conf/wsremcarne.ini"]),
+            ]
+        __version__ += "+wsremcarne_" + wsremcarne.__version__
+        HOMO &= wsremcarne.HOMO
 
     if 'wscoc' in globals():
         kwargs['com_server'] += [

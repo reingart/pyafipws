@@ -246,7 +246,7 @@ if __name__=="__main__":
                 print "Usando URL:", URL
                 break
 
-    iibb.Conectar(URL, trace='--trace' in sys.argv, cacert=None, testing=test_response)
+    iibb.Conectar(URL, trace='--trace' in sys.argv, cacert=CACERT, testing=test_response)
     iibb.ConsultarContribuyentes(fecha_desde, fecha_hasta, cuit_contribuyente)
 
     if iibb.Excepcion:

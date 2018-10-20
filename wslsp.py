@@ -748,7 +748,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarRazas(self, sep="||"):
-        "Retorna listado de razas -vacunas- (código, descripción)"
+        "Retorna listado de razas -vacunas y porcinos- (código, descripción)"
         ret = self.client.consultarRazas(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
