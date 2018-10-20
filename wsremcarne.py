@@ -17,7 +17,7 @@ del web service WSRemCarne versión 1.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.00b"
+__version__ = "1.00c"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v1.0
@@ -41,8 +41,8 @@ Opciones:
   --debug: modo depuración (detalla y confirma las operaciones)
   --prueba: genera y autoriza una rec de prueba (no usar en producción!)
   --xml: almacena los requerimientos y respuestas XML (depuración)
-
   --dummy: consulta estado de servidores
+
   --generar: generar un remito
   --emitir: emite un remito
   --anular: anula un remito
@@ -321,7 +321,7 @@ class WSRemCarne(BaseWS):
     @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
-        results = self.client.dummy()['response']
+        results = self.client.dummy()['dummyReturn']
         self.AppServerStatus = str(results['appserver'])
         self.DbServerStatus = str(results['dbserver'])
         self.AuthServerStatus = str(results['authserver'])
