@@ -17,7 +17,7 @@ del web service WSRemCarne versión 1.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.00c"
+__version__ = "1.00d"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v1.0
@@ -58,6 +58,7 @@ Opciones:
   --tipos_estados: estados posibles en los que puede estar un remito cárnico
   --grupos_carne' grupos de los distintos tipos de cortes de carne
   --tipos_carne': tipos de corte de carne
+  --codigos_domicilio: codigos de depositos habilitados para el cuit
 
 Ver wsremcarne.ini para parámetros de configuración (URL, certificados, etc.)"
 """
@@ -418,6 +419,21 @@ class WSRemCarne(BaseWS):
         lista = [it['codigoDescripcionString'] for it in array]
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarCodigosDomicilio(self, cuit_titular=1, sep="||"):
+        "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
+        ret = self.client.consultarCodigosDomicilio(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit, },
+                            cuitTitularDomicilio=cuit_titular,
+                            )['consultarCodigosDomicilioReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayDomicilios', [])
+        lista = [it['codigoDescripcion'] for it in array]
+        return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
+
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
@@ -644,6 +660,14 @@ if __name__ == '__main__':
             for grupo_carne in wsremcarne.ConsultarGruposCarne(sep=None):
                 ret = wsremcarne.ConsultarTiposCarne(grupo_carne['codigo'])
                 print "\n".join(ret)
+
+        if '--codigos_domicilio' in sys.argv:
+            cuit = raw_input("Cuit Titular Domicilio: ")
+            ret = wsremcarne.ConsultarCodigosDomicilio(cuit)
+            print "\n".join(ret)
+
+        if wsremcarne.Errores or wsremcarne.ErroresFormato:
+            print "Errores:", wsremcarne.Errores, wsremcarne.ErroresFormato
 
         print "hecho."
         
