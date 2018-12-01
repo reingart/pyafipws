@@ -159,7 +159,7 @@ class WSRemCarne(BaseWS):
                        'codDomOrigen': cod_dom_origen, 'codDomDestino': cod_dom_destino,
                        'estado': estado, 'codRemito': cod_remito,
                        'codRemRedestinar': cod_rem_redestinar,
-                       'arrayMercaderia': [], 'arrayContingencias': [],
+                       'arrayMercaderias': [], 'arrayContingencias': [],
                       }
         return True
 
@@ -181,10 +181,10 @@ class WSRemCarne(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarMercaderia(self, orden=None, cod_tipo_prod=None, kilos=None, unidades=None, tropa=None, **kwargs):
+    def AgregarMercaderia(self, orden=None, cod_tipo_prod=None, cantidad=None, unidades=None, tropa=None, **kwargs):
         "Agrega la información referente a la mercadería del remito electrónico cárnico"
-        mercaderia = dict(orden=orden, tropa=tropa, codTipoProd=cod_tipo_prod, kilos=kilos, unidades=unidades)
-        self.remito['arrayMercaderia'].append(dict(mercaderia=mercaderia))
+        mercaderia = dict(orden=orden, tropa=tropa, codTipoProd=cod_tipo_prod, cantidad=cantidad, unidadMedida=unidades)
+        self.remito['arrayMercaderias'].append(dict(mercaderia=mercaderia))
         return True
 
     @inicializar_y_capturar_excepciones
@@ -572,7 +572,7 @@ if __name__ == '__main__':
             rec['viaje'] = dict(cuit_transportista='20333333334', cuit_conductor='20333333334',
                                    fecha_inicio_viaje='2018-10-01', distancia_km=999)
             rec['viaje']['vehiculo'] = dict(dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000')
-            rec['mercaderias'] = [dict(orden=1, tropa=1, cod_tipo_prod='2.13', kilos=10, unidades=1)]
+            rec['mercaderias'] = [dict(orden=1, tropa=1, cod_tipo_prod='2.13', cantidad=10, unidades=1)]
             rec['datos_autorizacion'] = None # dict(nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
             rec['contingencias'] = [dict(tipo=1, observacion="anulacion")]
             with open(ENTRADA, "w") as archivo:
