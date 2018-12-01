@@ -149,13 +149,13 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def CrearRemito(self, tipo_comprobante, punto_emision, categoria_emisor, cuit_titular_mercaderia, cod_dom_origen,
-                    tipo_receptor, caracter_receptor=None, cuit_receptor=None, cuit_depositario=None,
+                    tipo_receptor, categoria_receptor=None, cuit_receptor=None, cuit_depositario=None,
                     cod_dom_destino=None, cod_rem_redestinar=None, cod_remito=None, estado=None,
                     **kwargs):
         "Inicializa internamente los datos de un remito para autorizar"
         self.remito = {'tipoComprobante': tipo_comprobante, 'puntoEmision': punto_emision, 'categoriaEmisor': categoria_emisor,
                        'cuitTitularMercaderia': cuit_titular_mercaderia, 'cuitDepositario': cuit_depositario,
-                       'tipoReceptor': tipo_receptor, 'caracterReceptor': caracter_receptor, 'cuitReceptor': cuit_receptor,
+                       'tipoReceptor': tipo_receptor, 'categoriaReceptor': categoria_receptor, 'cuitReceptor': cuit_receptor,
                        'codDomOrigen': cod_dom_origen, 'codDomDestino': cod_dom_destino,
                        'estado': estado, 'codRemito': cod_remito,
                        'codRemRedestinado': cod_rem_redestinar,
@@ -562,7 +562,7 @@ if __name__ == '__main__':
             rec = dict(tipo_comprobante=995, punto_emision=1, categoria_emisor=1,
                           cuit_titular_mercaderia='20222222223', cod_dom_origen=1,
                           tipo_receptor='EM',  # 'EM': DEPOSITO EMISOR, 'MI': MERCADO INTERNO, 'RP': REPARTO
-                          caracter_receptor=1, id_req=int(time.time()),
+                          categoria_receptor=1, id_req=int(time.time()),
                           cuit_receptor='20111111112', cuit_depositario=None,
                           cod_dom_destino=1, cod_rem_redestinar=None,
                           cod_remito=30,
