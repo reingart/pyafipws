@@ -203,13 +203,13 @@ class WSRemCarne(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def GenerarRemito(self, id_cliente, archivo="qr.png"):
+    def GenerarRemito(self, id_req, archivo="qr.png"):
         "Informar los datos necesarios para la generación de un remito nuevo"
         if not self.remito['arrayContingencias']:
             del self.remito['arrayContingencias']
         response = self.client.generarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                idCliente=id_cliente, remito=self.remito) 
+                                idReq=id_req, remito=self.remito) 
         ret = response.get("generarRemitoReturn")
         if ret:
             self.__analizar_errores(ret)
@@ -291,34 +291,34 @@ class WSRemCarne(BaseWS):
                                 tipoComprobante=tipo_comprobante,
                                 puntoEmision=punto_emision)
         ret = response.get("consultarUltimoRemitoReturn", {})
-        id_cliente = ret.get("idCliente", 0)
+        id_req = ret.get("idReq", 0)
         rec = ret.get("remito", {})
         self.__analizar_errores(ret)
         self.__analizar_observaciones(ret)
         self.__analizar_evento(ret)
         self.AnalizarRemito(rec)
-        return id_cliente
+        return id_req
 
     @inicializar_y_capturar_excepciones
-    def ConsultarRemito(self, cod_remito=None, id_cliente=None,
+    def ConsultarRemito(self, cod_remito=None, id_req=None,
                         tipo_comprobante=None, punto_emision=None, nro_comprobante=None):
         "Obtener los datos de un remito generado"
         print(self.client.help("consultarRemito"))
         response = self.client.consultarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=cod_remito,
-                                idCliente=id_cliente,
+                                idReq=id_req,
                                 tipoComprobante=tipo_comprobante,
                                 puntoEmision=punto_emision,
                                 nroComprobante=nro_comprobante)
         ret = response.get("consultarRemitoReturn", {})
-        id_cliente = ret.get("idCliente", 0)
+        id_req = ret.get("idReq", 0)
         self.remito = rec = ret.get("remito", {})
         self.__analizar_errores(ret)
         self.__analizar_observaciones(ret)
         self.__analizar_evento(ret)
         self.AnalizarRemito(rec)
-        return id_cliente
+        return id_req
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
@@ -562,7 +562,7 @@ if __name__ == '__main__':
             rec = dict(tipo_comprobante=995, punto_emision=1, categoria_emisor=1,
                           cuit_titular_mercaderia='20222222223', cod_dom_origen=1,
                           tipo_receptor='EM',  # 'EM': DEPOSITO EMISOR, 'MI': MERCADO INTERNO, 'RP': REPARTO
-                          caracter_receptor=1, id_cliente=int(time.time()),
+                          caracter_receptor=1, id_req=int(time.time()),
                           cuit_receptor='20111111112', cuit_depositario=None,
                           cod_dom_destino=1, cod_rem_redestinar=None,
                           cod_remito=30,
@@ -596,7 +596,7 @@ if __name__ == '__main__':
             if '--testing' in sys.argv:
                 wsremcarne.LoadTestXML("tests/xml/wsremcarne_generar_response_ok_beta.xml")  # cargo respuesta
 
-            ok = wsremcarne.GenerarRemito(id_cliente=rec['id_cliente'])
+            ok = wsremcarne.GenerarRemito(id_req=rec['id_req'])
 
         if '--emitir' in sys.argv:
             ok = wsremcarne.EmitirRemito()
