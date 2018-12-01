@@ -158,7 +158,7 @@ class WSRemCarne(BaseWS):
                        'tipoReceptor': tipo_receptor, 'caracterReceptor': caracter_receptor, 'cuitReceptor': cuit_receptor,
                        'codDomOrigen': cod_dom_origen, 'codDomDestino': cod_dom_destino,
                        'estado': estado, 'codRemito': cod_remito,
-                       'codRemRedestinar': cod_rem_redestinar,
+                       'codRemRedestinado': cod_rem_redestinar,
                        'arrayMercaderias': [], 'arrayContingencias': [],
                       }
         return True
