@@ -17,7 +17,7 @@ del web service WSRemCarne versión 1.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.00e"
+__version__ = "1.01a"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v1.0
@@ -73,9 +73,10 @@ import utils
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
-# constantes de configuración (homologación):
+# constantes de configuración (producción/homologación):
 
-WSDL = "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"
+WSDL = ["https://serviciosjava.afip.gob.ar/wsremcarne/RemCarneService?wsdl",
+        "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"]
 
 DEBUG = False
 XML = False
@@ -107,7 +108,7 @@ class WSRemCarne(BaseWS):
 
     # Variables globales para BaseWS:
     HOMO = HOMO
-    WSDL = WSDL
+    WSDL = WSDL[HOMO]
     LanzarExcepciones = False
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
@@ -485,7 +486,7 @@ if __name__ == '__main__':
         if config.has_option('WSRemCarne','URL') and not HOMO:
             wsremcarne_url = config.get('WSRemCarne','URL')
         else:
-            wsremcarne_url = WSDL
+            wsremcarne_url = WSDL[HOMO]
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
