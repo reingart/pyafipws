@@ -190,7 +190,7 @@ class WSRemCarne(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarDatosAutorizacion(self, nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None, **kwargs):
         "Agrega la información referente a los datos de autorización del remito electrónico cárnico"
-        self.remito['datosAutorizacion'] = dict(nroRemito=nro_remito, codAutorizacion=cod_autorizacion,
+        self.remito['datosEmision'] = dict(nroRemito=nro_remito, codAutorizacion=cod_autorizacion,
                                                 fechaEmision=fecha_emision, fechaVencimiento=fecha_vencimiento,
                                                )
         return True
