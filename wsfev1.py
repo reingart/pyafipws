@@ -17,13 +17,14 @@ RG 3067/2011 (RS - Monotributo), RG 3571/2013 (Responsables inscriptos IVA),
 RG 3668/2014 (Factura A IVA F.8001), RG 3749/2015 (R.I. y exentos)
 RG 4004-E Alquiler de inmuebles con destino casa habitación).  
 RG 4109-E Venta de bienes muebles registrables.
+RG 4291/2018 Régimen especial de emisión y almacenamiento electrónico
 Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.20a"
+__version__ = "1.21a"
 
 import datetime
 import decimal
@@ -48,7 +49,7 @@ class WSFEv1(BaseWS):
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
                         'CAEASinMovimientoInformar',
-                        'CAESolicitarX', 
+                        'CAESolicitarX', 'CompTotXRequest',
                         'IniciarFacturasX', 'AgregarFacturaX', 'LeerFacturaX',
                         'ParamGetTiposCbte',
                         'ParamGetTiposConcepto',

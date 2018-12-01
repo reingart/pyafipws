@@ -13,9 +13,9 @@
 "Módulo para generar PDF de facturas electrónicas"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08c"
+__version__ = "1.09a"
 
 DEBUG = False
 HOMO = False
@@ -837,7 +837,7 @@ class FEPDF:
                     f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
                     if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
                         cuit = ''.join([x for x in str(self.CUIT) if x.isdigit()])
-                        barras = ''.join([cuit, "%02d" % int(fact['tipo_cbte']), "%04d" % int(fact['punto_vta']), 
+                        barras = ''.join([cuit, "%03d" % int(fact['tipo_cbte']), "%05d" % int(fact['punto_vta']), 
                             str(fact['cae']), fact['fecha_vto']])
                         barras = barras + self.digito_verificador_modulo10(barras)
                     else:
