@@ -148,7 +148,7 @@ class WSRemCarne(BaseWS):
             self.Evento = "%(codigo)s: %(descripcion)s" % evt
 
     @inicializar_y_capturar_excepciones
-    def CrearRemito(self, tipo_comprobante, punto_emision, categoria_emisor, cuit_titular_mercaderia, cod_dom_origen,
+    def CrearRemito(self, tipo_comprobante, punto_emision, tipo_movimiento, categoria_emisor, cuit_titular_mercaderia, cod_dom_origen,
                     tipo_receptor, categoria_receptor=None, cuit_receptor=None, cuit_depositario=None,
                     cod_dom_destino=None, cod_rem_redestinar=None, cod_remito=None, estado=None,
                     **kwargs):
@@ -156,7 +156,7 @@ class WSRemCarne(BaseWS):
         self.remito = {'tipoComprobante': tipo_comprobante, 'puntoEmision': punto_emision, 'categoriaEmisor': categoria_emisor,
                        'cuitTitularMercaderia': cuit_titular_mercaderia, 'cuitDepositario': cuit_depositario,
                        'tipoReceptor': tipo_receptor, 'categoriaReceptor': categoria_receptor, 'cuitReceptor': cuit_receptor,
-                       'codDomOrigen': cod_dom_origen, 'codDomDestino': cod_dom_destino,
+                       'codDomOrigen': cod_dom_origen, 'codDomDestino': cod_dom_destino, 'tipoMovimiento': tipo_movimiento, 
                        'estado': estado, 'codRemito': cod_remito,
                        'codRemRedestinado': cod_rem_redestinar,
                        'arrayMercaderias': [], 'arrayContingencias': [],
@@ -560,6 +560,7 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv:
             rec = dict(tipo_comprobante=995, punto_emision=1, categoria_emisor=1,
+                          tipo_movimiento='ENV',  # ENV: Envio Normal, PLA: Retiro en planta, REP: Reparto, RED: Redestino
                           cuit_titular_mercaderia='20222222223', cod_dom_origen=1,
                           tipo_receptor='EM',  # 'EM': DEPOSITO EMISOR, 'MI': MERCADO INTERNO, 'RP': REPARTO
                           categoria_receptor=1, id_req=int(time.time()),
