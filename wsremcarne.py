@@ -17,7 +17,7 @@ del web service WSRemCarne versión 1.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.00d"
+__version__ = "1.00e"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v1.0
@@ -244,7 +244,7 @@ class WSRemCarne(BaseWS):
         response = self.client.emitirRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=self.remito['codRemito'],
-                                viaje=self.remito['viaje'])
+                                viaje=self.remito.get('viaje'))
         ret = response.get("emitirRemitoReturn")
         if ret:
             self.__analizar_errores(ret)
@@ -564,8 +564,10 @@ if __name__ == '__main__':
                           caracter_receptor=1, id_cliente=int(time.time()),
                           cuit_receptor='20111111112', cuit_depositario=None,
                           cod_dom_destino=1, cod_rem_redestinar=None,
-                          cod_remito=70, estado='A'  # 'A': Autorizar, 'D': Denegar
+                          cod_remito=30,
                         )
+            if "--autorizar" in sys.argv:
+                rec["estado"] = 'A'  # 'A': Autorizar, 'D': Denegar
             rec['viaje'] = dict(cuit_transportista='20333333334', cuit_conductor='20333333334',
                                    fecha_inicio_viaje='2018-10-01', distancia_km=999)
             rec['viaje']['vehiculo'] = dict(dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000')
