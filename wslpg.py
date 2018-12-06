@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31b"
+__version__ = "1.32a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -158,7 +158,7 @@ ENCABEZADO = [
     ('total_retencion_afip', 17, I, 2), # 17.2
     ('total_otras_retenciones', 17, I, 2), # 17.2
     ('total_neto_a_pagar', 17, I, 2), # 17.2
-    ('total_iva_rg_2300_07', 17, I, 2), # 17.2
+    ('total_iva_rg_4310_18', 17, I, 2), # 17.2 WSLPGv1.20
     ('total_pago_segun_condicion', 17, I, 2), # 17.2
     
     ('fecha_liquidacion', 10, A), 
@@ -289,7 +289,7 @@ AJUSTE = [
     ('total_retencion_afip', 17, I, 2), # 17.2
     ('total_otras_retenciones', 17, I, 2), # 17.2
     ('total_neto_a_pagar', 17, I, 2), # 17.2
-    ('total_iva_rg_2300_07', 17, I, 2), # 17.2
+    ('total_iva_rg_4310_18', 17, I, 2), # 17.2
     ('total_pago_segun_condicion', 17, I, 2), # 17.2
     ('iva_calculado_iva_0', 15, I, 2), # 15.2
     ('iva_calculado_iva_105', 15, I, 2), # 15.2
@@ -508,7 +508,7 @@ class WSLPG(BaseWS):
         'COE', 'COEAjustado', 'Estado', 'Resultado', 'NroOrden',
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip',
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
-        'TotalIvaRg2300_07', 'Subtotal', 'TotalIva105', 'TotalIva21',
+        'TotalIvaRg4310_18', 'Subtotal', 'TotalIva105', 'TotalIva21',
         'TotalRetencionesGanancias', 'TotalRetencionesIVA', 'NroContrato',
         'FechaCertificacion', 
         ]
@@ -532,7 +532,7 @@ class WSLPG(BaseWS):
         self.TotalRetencionAfip = ""
         self.TotalOtrasRetenciones = ""
         self.TotalNetoAPagar = ""
-        self.TotalIvaRg2300_07 = ""
+        self.TotalIvaRg4310_18 = ""
         self.TotalPagoSegunCondicion = ""
         self.Subtotal = self.TotalIva105 = self.TotalIva21 = ""
         self.TotalRetencionesGanancias = self.TotalRetencionesIVA = ""
@@ -1106,7 +1106,7 @@ class WSLPG(BaseWS):
             self.TotalRetencionAfip = aut.get('totalRetencionAfip')
             self.TotalOtrasRetenciones = aut.get('totalOtrasRetenciones')
             self.TotalNetoAPagar = aut.get('totalNetoAPagar')
-            self.TotalIvaRg2300_07 = aut.get('totalIvaRg2300_07')
+            self.TotalIvaRg4310_18 = aut.get('totalIvaRg4310_18')
             self.TotalPagoSegunCondicion = aut.get('totalPagoSegunCondicion')
             self.COE = str(aut.get('coe', ''))
             self.COEAjustado = aut.get('coeAjustado')
@@ -1122,7 +1122,7 @@ class WSLPG(BaseWS):
             self.params_out['total_retencion_afip'] = self.TotalRetencionAfip
             self.params_out['total_otras_retenciones'] = self.TotalOtrasRetenciones
             self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
-            self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
+            self.params_out['total_iva_rg_4310_18'] = self.TotalIvaRg4310_18
             self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
 
             # datos adicionales:
@@ -1547,7 +1547,7 @@ class WSLPG(BaseWS):
             self.TotalRetencionesIVA = totunif.get('retencionesIVA')
             self.TotalOtrasRetenciones = totunif.get('importeOtrasRetenciones')
             self.TotalNetoAPagar = totunif.get('importeNeto')
-            self.TotalIvaRg2300_07 = totunif.get('ivaRG2300_2007')
+            self.TotalIvaRg4310_18 = totunif.get('ivaRG4310_18')
             self.TotalPagoSegunCondicion = totunif.get('pagoSCondicion')
             
             # actualizo parámetros de salida:
@@ -1572,7 +1572,7 @@ class WSLPG(BaseWS):
                 self.params_out['total_retenciones_iva'] = self.TotalRetencionesIVA
                 self.params_out['total_otras_retenciones'] = self.TotalOtrasRetenciones
                 self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
-                self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
+                self.params_out['total_iva_rg_4310_18'] = self.TotalIvaRg4310_18
                 self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
             
                 # almaceno los datos de ajustes crédito y débito para usarlos luego
@@ -3534,7 +3534,7 @@ if __name__ == '__main__':
             print "TotalRetencionAfip", wslpg.TotalRetencionAfip
             print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
             print "TotalNetoAPagar", wslpg.TotalNetoAPagar
-            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalIvaRg4310_18", wslpg.TotalIvaRg4310_18
             print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
             if False and '--testing' in sys.argv:
                 assert wslpg.COE == "330100000357"
@@ -3737,7 +3737,7 @@ if __name__ == '__main__':
             print "TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias
             print "TotalRetencionesIVA", wslpg.TotalRetencionesIVA
             print "TotalNetoAPagar", wslpg.TotalNetoAPagar
-            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalIvaRg4310_18", wslpg.TotalIvaRg4310_18
             print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
             
             # actualizo el archivo de salida con los datos devueltos
@@ -4090,7 +4090,7 @@ if __name__ == '__main__':
             print "TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias
             print "TotalRetencionesIVA", wslpg.TotalRetencionesIVA
             print "TotalNetoAPagar", wslpg.TotalNetoAPagar
-            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalIvaRg4310_18", wslpg.TotalIvaRg4310_18
             print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
             
             # actualizo el archivo de salida con los datos devueltos
@@ -4171,7 +4171,7 @@ if __name__ == '__main__':
             print "TotalRetencionAfip", wslpg.TotalRetencionAfip
             print "TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones
             print "TotalNetoAPagar", wslpg.TotalNetoAPagar
-            print "TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07
+            print "TotalIvaRg4310_18", wslpg.TotalIvaRg4310_18
             print "TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion
 
             # actualizo el archivo de salida con los datos devueltos
