@@ -602,7 +602,10 @@ def leer(linea, formato, expandir_fechas=False):
                     valor = None
             else:
                 valor = valor.decode("ascii","ignore")
-            dic[clave] = valor
+            if not valor and clave in dic and len(linea) <= comienzo:
+                pass    # ignorar - compatibilidad hacia atrás (cambios tamaño)
+            else:
+                dic[clave] = valor
             comienzo += longitud
         except Exception, e:
             raise ValueError("Error al leer campo %s pos %s val '%s': %s" % (

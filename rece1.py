@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.37a"
+__version__ = "1.37b"
 
 import datetime
 import os
@@ -78,6 +78,7 @@ ENCABEZADO = [
     ('emision_tipo', 4, A),
     ('fecha_serv_desde', 8, A), # opcional solo conceptos 2 y 3
     ('fecha_serv_hasta', 8, A), # opcional solo conceptos 2 y 3
+    ('tipo_cbte', 3, N), ('punto_vta', 5, N),
     ]
                    
 #DETALLE = [
