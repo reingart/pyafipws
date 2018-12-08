@@ -16,6 +16,7 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 
+from io import IOBase
 import datetime
 import functools
 import inspect
@@ -434,11 +435,15 @@ class WebClient:
     def __init__(self, location, enctype="multipart/form-data", trace=False,
                        cacert=None, timeout=30):
         kwargs = {}
-        if httplib2.__version__ >= '0.3.0':
-                kwargs['timeout'] = timeout
-        if httplib2.__version__ >= '0.7.0':
-                kwargs['disable_ssl_certificate_validation'] = cacert is None
-                kwargs['ca_certs'] = cacert
+        # TODO we whould fix this if, actually we are using httplb 0.12.0
+        # but 0.12.0 >= >= '0.7.0' return "False"
+        # if httplib2.__version__ >= '0.3.0':
+        #         kwargs['timeout'] = timeout
+        # if httplib2.__version__ >= '0.7.0':
+        #         kwargs['disable_ssl_certificate_validation'] = cacert is None
+        #         kwargs['ca_certs'] = cacert
+        kwargs['disable_ssl_certificate_validation'] = cacert is None
+        kwargs['ca_certs'] = cacert
         self.http = httplib2.Http(**kwargs)
         self.trace = trace
         self.location = location
@@ -452,7 +457,7 @@ class WebClient:
         boundary = _make_boundary()
         buf = StringIO()
         for key, value in list(vars.items()):
-            if not isinstance(value, file):
+            if not isinstance(value, IOBase):
                 buf.write('--%s\r\n' % boundary)
                 buf.write('Content-Disposition: form-data; name="%s"' % key)
                 buf.write('\r\n\r\n' + value + '\r\n')
