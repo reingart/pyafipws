@@ -36,6 +36,7 @@ except ImportError:
     # utilizar alternativa (ejecutar proceso por separado) 
     from subprocess import Popen, PIPE
     from base64 import b64encode
+    from tempfile import NamedTemporaryFile
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"  # El WSDL correspondiente al WSAA 
@@ -74,7 +75,7 @@ def create_tra(service=SERVICE,ttl=2400):
     tra.header.add_child('generationTime',str(date('c',date('U')-ttl)))
     tra.header.add_child('expirationTime',str(date('c',date('U')+ttl)))
     tra.add_child('service',service)
-    return tra.as_xml().decode("utf8")
+    return tra.as_xml()
 
 def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
@@ -119,10 +120,18 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
                     openssl = r"c:\OpenSSL-Win32\bin\openssl.exe"
                 else:
                     openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
+            cert_f = NamedTemporaryFile()
+            cert_f.write(cert)
+            cert_f.seek(0)
+            key_f = NamedTemporaryFile()
+            key_f.write(privatekey)
+            key_f.seek(0)
             out = Popen([openssl, "smime", "-sign", 
-                         "-signer", cert, "-inkey", privatekey,
+                         "-signer", cert_f.name, "-inkey", key_f.name,
                          "-outform","DER", "-nodetach"], 
-                        stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra.encode("utf8"))[0]
+                        stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
+            cert_f.close()
+            key_f.close()
             return b64encode(out).decode("utf8")
         except OSError as e:
             if e.errno == 2:
@@ -255,7 +264,7 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
-        return sign_tra(str(tra),cert.encode('latin1'),privatekey.encode('latin1'),passphrase.encode("utf8"))
+        return sign_tra(tra,cert.encode('utf-8'),privatekey.encode('utf-8'),passphrase.encode("utf8"))
 
     @inicializar_y_capturar_excepciones
     def LoginCMS(self, cms):
