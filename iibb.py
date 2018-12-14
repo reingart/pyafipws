@@ -117,7 +117,7 @@ class IIBB:
             if 'tipoError' in self.xml:
                 self.TipoError = str(self.xml.tipoError)
                 self.CodigoError = str(self.xml.codigoError)
-                self.MensajeError = str(self.xml.mensajeError).decode('latin1').encode("ascii", "replace")
+                self.MensajeError = str(self.xml.mensajeError)
             if 'numeroComprobante' in self.xml:
                 self.NumeroComprobante = str(self.xml.numeroComprobante)
                 self.CantidadContribuyentes = int(self.xml.cantidadContribuyentes)

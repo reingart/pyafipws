@@ -13,7 +13,7 @@
 # Based on MultipartPostHandler.py (C) 02/2006 Will Holcomb <wholcomb@gmail.com>
 # Ejemplos iniciales gracias a "Matias Gieco matigro@gmail.com"
 
-"Módulo para obtener remito electrónico automático (COT)"
+"Mï¿½dulo para obtener remito electrï¿½nico automï¿½tico (COT)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
@@ -26,10 +26,10 @@ from pysimplesoap.simplexml import SimpleXMLElement
 from .utils import WebClient
 
 HOMO = False
-CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producción)
+CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producciï¿½n)
 
 ##URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
-# Nuevo servidor para el "Remito Electrónico Automático"
+# Nuevo servidor para el "Remito Electrï¿½nico Automï¿½tico"
 URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # testing
 #URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # prod.
 
@@ -49,7 +49,7 @@ class COT:
     _reg_progid_ = "COT"
     _reg_clsid_ = "{7518B2CF-23E9-4821-BC55-D15966E15620}"
 
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologaciï¿½n' or '')
     
     def __init__(self):
         self.Usuario = self.Password = None
@@ -93,7 +93,7 @@ class COT:
             if 'tipoError' in self.xml:
                 self.TipoError = str(self.xml.tipoError)
                 self.CodigoError = str(self.xml.codigoError)
-                self.MensajeError = str(self.xml.mensajeError).decode('latin1').encode("ascii", "replace")
+                self.MensajeError = str(self.xml.mensajeError)
             if 'cuitEmpresa' in self.xml:
                 self.CuitEmpresa = str(self.xml.cuitEmpresa)
                 self.NumeroComprobante = str(self.xml.numeroComprobante)
@@ -110,7 +110,7 @@ class COT:
                             for error in remito.errores.error:
                                 d['Errores'].append((
                                     str(error.codigo), 
-                                    str(error.descripcion).decode('latin1').encode("ascii", "replace")))
+                                    str(error.descripcion)))
                         self.remitos.append(d)
                     # establecer valores del primer remito (sin eliminarlo)
                     self.LeerValidacionRemito(pop=False)
@@ -125,7 +125,7 @@ class COT:
                 return False
 
     def LeerValidacionRemito(self, pop=True):
-        "Leeo el próximo remito"
+        "Leeo el prï¿½ximo remito"
         # por compatibilidad hacia atras, la primera vez no remueve de la lista
         # (llamado de PresentarRemito con pop=False)
         if self.remitos:
@@ -172,7 +172,7 @@ class COT:
         try:
             if self.xml:
                 xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
+                # por cada tag, lo busco segun su nombre o posiciï¿½n
                 for tag in tags:
                     xml = xml(tag) # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
@@ -181,7 +181,7 @@ class COT:
             self.Excepcion = "%s" % (e)
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciï¿½n (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
 elif sys.frozen=='dll':
