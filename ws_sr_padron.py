@@ -18,7 +18,7 @@ Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03d"
+__version__ = "1.03e"
 
 import csv
 import datetime
@@ -316,6 +316,7 @@ def main():
                 try:
                     ok = padron.Consultar(cuit)
                 except SoapFault as e:
+                    ok = None
                     if e.faultstring != "No existe persona con ese Id":
                         raise
                 print 'ok' if ok else "error", padron.Excepcion
