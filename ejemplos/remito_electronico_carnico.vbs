@@ -67,6 +67,7 @@ End If
 nro_remito = nro_remito + 1
 
 ' Establezco los valores del remito a autorizar:
+tipo_movimiento = "ENV"  ' ENV: Envio Normal, PLA: Retiro en planta, REP: Reparto, RED: Redestino
 categoria_emisor = 1
 cuit_titular_mercaderia = "20222222223"
 cod_dom_origen = 1
@@ -79,7 +80,7 @@ cod_rem_redestinar = Null
 cod_remito = Null
 estado = Null
 
-ok = WSRemCarne.CrearRemito(tipo_comprobante, punto_emision, categoria_emisor, _
+ok = WSRemCarne.CrearRemito(tipo_comprobante, punto_emision, tipo_movimiento, categoria_emisor, _
                             cuit_titular_mercaderia, cod_dom_origen, tipo_receptor, _
                             caracter_receptor, cuit_receptor, cuit_depositario, _
                             cod_dom_destino, cod_rem_redestinar, cod_remito, estado)
@@ -100,9 +101,9 @@ ok = WSRemCarne.AgregarVehiculo(dominio_vehiculo, dominio_acoplado)
 orden = 1
 tropa = 1
 cod_tipo_prod = "2.13"  ' http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCarnico#Tiposdecarne
-kilos = 10
+cantidad = 10
 unidades=1
-ok = WSRemCarne.AgregarMercaderia(orden, cod_tipo_prod, kilos, unidades, tropa)
+ok = WSRemCarne.AgregarMercaderia(orden, cod_tipo_prod, cantidad, unidades, tropa)
 
 ' WSRemCarne.AgregarContingencias(tipo=1, observacion="anulacion")
 
