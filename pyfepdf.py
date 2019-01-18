@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09a"
+__version__ = "1.09b"
 
 DEBUG = False
 HOMO = False
@@ -320,7 +320,7 @@ class FEPDF:
 
     def fmt_fact(self, tipo_cbte, punto_vta, cbte_nro):
         "Formatear tipo, letra y punto de venta y número de factura"
-        n = "%04d-%08d" % (int(punto_vta), int(cbte_nro))
+        n = "%05d-%08d" % (int(punto_vta), int(cbte_nro))
         t, l = tipo_cbte, ''
         for k,v in self.tipos_fact.items():
             if int(tipo_cbte) in k:
