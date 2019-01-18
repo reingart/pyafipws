@@ -53,7 +53,7 @@ SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL
 # Verificación del web server remoto, necesario para verificar canal seguro
 CACERT = "conf/afip_ca_info.crt" # WSAA CA Cert (Autoridades de Confiaza)
 
-HOMO = True
+HOMO = False
 TYPELIB = False
 DEFAULT_TTL = 60*60*5       # five hours
 DEBUG = False
