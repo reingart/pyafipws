@@ -10,7 +10,7 @@
 *--  http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 *--  http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs
  
-ON ERROR DO errhand1;
+&& ON ERROR DO errhand1;
 
 CLEAR
 
@@ -18,9 +18,11 @@ CLEAR
 WSAA = CREATEOBJECT("WSAA") 
 
 *-- solicito ticket de acceso
-DO Autenticar
+ta = Autenticar()
 
-ON ERROR DO errhand2;
+ON ERROR
+
+&& ON ERROR DO errhand2;
 
 *-- Crear el objeto WSRemCarne (Web Service de Factura Electrónica version 1) AFIP
 
@@ -29,30 +31,31 @@ WSRemCarne = CreateObject("WSRemCarne")
 
 *--  Establecer parametros de uso:
 WSRemCarne.Cuit = "20267565393"
-WSRemCarne.Token = WSAA.Token
-WSRemCarne.Sign = WSAA.Sign
+WSRemCarne.SetTicketAcceso(ta)
 
 *--  Conectar al websrvice
-wsdl = ""
+wsdl = "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"
 ok = WSRemCarne.Conectar("", wsdl)
 
 *-- Consultar último comprobante autorizado en AFIP (ejemplo, no es obligatorio)
 tipo_comprobante = 995
 punto_emision = 1
-ok = WSRemCarne.ConsultarUltimoRemitoEmitido(tipo_comprobante, punto_emision)
 
-If ok Then
-    ult = WSRemCarne.NroRemito
+If .F. Then
+
+	ok = WSRemCarne.ConsultarUltimoRemitoEmitido(tipo_comprobante, punto_emision)
+
+	If ok Then
+	    ult = WSRemCarne.NroRemito
+	Else
+	    ? WSRemCarne.Traceback, "Traceback"
+	    ? WSRemCarne.Traceback, "XmlResponse"
+	    ? WSRemCarne.Traceback, "XmlRequest"
+	    ult = 0
+	EndIf
+	? "Ultimo comprobante: ", ult
 Else
-    ? WSRemCarne.Traceback, "Traceback"
-    ? WSRemCarne.Traceback, "XmlResponse"
-    ? WSRemCarne.Traceback, "XmlRequest"
-    ult = 0
-EndIf
-? "Ultimo comprobante: ", ult
-? WSRemCarne.ErrMsg, "ErrMsg:"
-If WSRemCarne.Excepcion <> "" Then
-    ? WSRemCarne.Excepcion, "Excepcion:"
+	ult = ""
 EndIf
 
 *-- Calculo el próximo número de comprobante:
@@ -60,10 +63,11 @@ If ult = "" Then
     nro_remito = 0               && no hay comprobantes emitidos
 Else
     nro_remito = INT(ult)        && convertir a entero largo
-End If
+EndIf
 nro_remito = nro_remito + 1
 
 *-- Establezco los valores del remito a autorizar:
+tipo_movimiento = "ENV" && ENV: Envio Normal, PLA: Retiro en planta, REP: Reparto, RED: Redestino
 categoria_emisor = 1
 cuit_titular_mercaderia = "20222222223"
 cod_dom_origen = 1
@@ -76,7 +80,7 @@ cod_rem_redestinar = Null
 cod_remito = Null
 estado = Null
 
-ok = WSRemCarne.CrearRemito(tipo_comprobante, punto_emision, categoria_emisor, ;
+ok = WSRemCarne.CrearRemito(tipo_comprobante, punto_emision, tipo_movimiento, categoria_emisor, ;
                             cuit_titular_mercaderia, cod_dom_origen, tipo_receptor, ;
                             caracter_receptor, cuit_receptor, cuit_depositario, ;
                             cod_dom_destino, cod_rem_redestinar, cod_remito, estado)
@@ -97,20 +101,18 @@ ok = WSRemCarne.AgregarVehiculo(dominio_vehiculo, dominio_acoplado)
 orden = 1
 tropa = 1
 cod_tipo_prod = "2.13"  && http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCarnico#Tiposdecarne
-kilos = 10
+cantidad = 10
 unidades=1
-ok = WSRemCarne.AgregarMercaderia(orden, cod_tipo_prod, kilos, unidades, tropa)
+ok = WSRemCarne.AgregarMercaderia(orden, cod_tipo_prod, cantidad, unidades, tropa)
 
 *-- WSRemCarne.AgregarContingencias(tipo=1, observacion="anulacion")
 
 *-- Armo un ID único (usar clave primaria de tabla de remito o similar!)
-fecha = {01/01/2018 12:00am}  	&& Año Nuevo
-hoy = DATETIME()
-dif = VAL(fecha - hoy)           && usar cantidad de segundos (diferencia)
-id_cliente = STR(dif, 24)		    	&& convertir a string sin exp.
+id_cliente = 1
 
 *-- Solicito CodRemito:
 archivo = "qr.png"
+WSRemCarne.LanzarExcepciones = .F.
 ok = WSRemCarne.GenerarRemito(id_cliente, archivo)
 
 If not ok Then 
@@ -132,41 +134,73 @@ EndIf
 ? "Errores:", WSRemCarne.ErrMsg
 ? "Evento:", WSRemCarne.Evento
 
-MESSAGEBOX("Resultado:" + WSRemCarne.Resultado + " CodRemito: " + WSRemCarne.CodRemito + " Observaciones: " + WSFE.Obs + " Errores: " + WSFE.ErrMsg, 0)
+&& MESSAGEBOX("Resultado:" + WSRemCarne.Resultado, 0, "WsRemCarne")
 
 
 *-- Procedimiento para autenticar y reutilizar el ticket de acceso
 PROCEDURE Autenticar 
+	ON ERROR DO errhand1
+
+   
+	*-- Crear objeto interface Web Service Autenticacion y Autorizacion
+	WSAA = CREATEOBJECT("WSAA") 
+	
+	*-- ubicación del ticket de acceso (puede guardarse también en memoria)
+	*-- (en el mismo directorio que el programa -predeterminado-)
+	ruta_prg = SYS(16,1) 
+    inicio = AT(":", ruta_prg)- 1
+    longitud = RAT("\", ruta_prg) - (inicio)
+    ruta = (SUBSTR(ruta_prg, inicio, longitud)) + "\"
+	archivo = ruta + 'TA.xml'
+	? "ruta archivo", archivo
+
+	f = FOPEN(archivo)  
+	IF f = -1 THEN
+		ta = ""		&& no existe el TA previo
+	ELSE
+		ta = FREAD(f, 65535)
+		? "TA leido:", ta
+		=FCLOSE(f)
+	ENDIF
+	ok = WSAA.AnalizarXml(ta)
 	expiracion = WSAA.ObtenerTagXml("expirationTime")
 	? "Fecha Expiracion ticket: ", expiracion
 	IF ISNULL(expiracion) THEN
-	    solicitar = .T.         		&& solicitud inicial
+	    solicitar = .T.         					&& solicitud inicial
 	ELSE
-		solicitar = WSAA.Expirado()		&& chequear solicitud previa
+		solicitar = WSAA.Expirado(expiracion)		&& chequear solicitud previa
 	ENDIF
+	
 	IF solicitar THEn
 		*-- Generar un Ticket de Requerimiento de Acceso (TRA)
 		tra = WSAA.CreateTRA("wsremcarne")
-
 		*-- uso la ruta a la carpeta de instalaciòn con los certificados de prueba
 		ruta = WSAA.InstallDir + "\"
-		? "ruta",ruta
+		? "ruta", ruta
 
 		*-- Generar el mensaje firmado (CMS) 
 		cms = WSAA.SignTRA(tra, ruta + "reingart.crt", ruta + "reingart.key") && Cert. Demo
-		*-- cms = WSAA.SignTRA(tra, ruta + "homo.crt", ruta + "homo.key") 
-
-		*-- Produccion usar: ta = WSAA.CallWSAA(cms, "https://wsaa.afip.gov.ar/ws/services/LoginCms") && ProducciÃ³n
-		ok = WSAA.Conectar("", "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") && Homologación
+		
+		*-- Produccion usar: ta = WSAA.Conectar("", "https://wsaa.afip.gov.ar/ws/services/LoginCms") && ProducciÃ³n
+		
+		ok = WSAA.Conectar("", "https://wsaahomo.afip.gov.ar/ws/services/LoginCms") && HomologaciÃ³n
 
 		*-- Llamar al web service para autenticar
 		ta = WSAA.LoginCMS(cms)
+		
+		*-- Grabo el ticket de acceso para poder reutilizarlo
+		*-- (revisar temas de seguridad y permisos)
+		f = FCREATE(archivo)  
+		w = FWRITE(f, ta)
+		=FCLOSE(f)
+
 	ELSE
 		? "no expirado!", "Reutilizando!"
 	ENDIF
-	? WSAA.ObtenerTagXml("destination")
+	
+	*-- devuelvo el ticket de acceso
+	RETURN ta
 ENDPROC
-
 *-- Depuración (grabar a un archivo los datos de prueba)
 * gnErrFile = FCREATE('c:\error.txt')  
 * =FWRITE(gnErrFile, WSFE.Token + CHR(13))
