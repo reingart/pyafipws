@@ -15,14 +15,14 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.30a"
+__version__ = "1.32a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
 Liquidación Primaria de Granos (LpgService)
-Copyright (C) 2013-2015 Mariano Reingart reingart@gmail.com
+Copyright (C) 2013-2018 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
@@ -113,6 +113,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslpg/LpgService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wslpg.ini"
+TIMEOUT = 30
 HOMO = False
 
 # definición del formato del archivo de intercambio:
@@ -157,7 +158,7 @@ ENCABEZADO = [
     ('total_retencion_afip', 17, I, 2), # 17.2
     ('total_otras_retenciones', 17, I, 2), # 17.2
     ('total_neto_a_pagar', 17, I, 2), # 17.2
-    ('total_iva_rg_2300_07', 17, I, 2), # 17.2
+    ('total_iva_rg_4310_18', 17, I, 2), # 17.2 WSLPGv1.20
     ('total_pago_segun_condicion', 17, I, 2), # 17.2
     
     ('fecha_liquidacion', 10, A), 
@@ -288,7 +289,7 @@ AJUSTE = [
     ('total_retencion_afip', 17, I, 2), # 17.2
     ('total_otras_retenciones', 17, I, 2), # 17.2
     ('total_neto_a_pagar', 17, I, 2), # 17.2
-    ('total_iva_rg_2300_07', 17, I, 2), # 17.2
+    ('total_iva_rg_4310_18', 17, I, 2), # 17.2
     ('total_pago_segun_condicion', 17, I, 2), # 17.2
     ('iva_calculado_iva_0', 15, I, 2), # 15.2
     ('iva_calculado_iva_105', 15, I, 2), # 15.2
@@ -417,6 +418,12 @@ FACTURA_PAPEL = [                       # para lsgAjustar (WSLPGv1.15)
     ('tipo_comprobante', 3, N),
 ]
 
+FUSION = [               # para liquidacionAjustarUnificado (WSLPGv1.19)
+    ('tipo_reg', 1, A), # f: fusion
+    ('nro_ing_brutos', 15, N),
+    ('nro_actividad', 5, N),
+]
+
 EVENTO = [
     ('tipo_reg', 1, A), # E: Evento
     ('codigo', 4, A), 
@@ -447,7 +454,7 @@ class WSLPG(BaseWS):
                         'AgregarCertificado', 'AgregarRetencion', 
                         'AgregarDeduccion', 'AgregarPercepcion',
                         'AgregarOpcional', 'AgregarCalidad',
-                        'AgregarFacturaPapel',
+                        'AgregarFacturaPapel', 'AgregarFusion',
                         'ConsultarLiquidacion', 'ConsultarUltNroOrden',
                         'ConsultarLiquidacionSecundaria',
                         'ConsultarLiquidacionSecundariaUltNroOrden',
@@ -501,7 +508,7 @@ class WSLPG(BaseWS):
         'COE', 'COEAjustado', 'Estado', 'Resultado', 'NroOrden',
         'TotalDeduccion', 'TotalRetencion', 'TotalRetencionAfip',
         'TotalOtrasRetenciones', 'TotalNetoAPagar', 'TotalPagoSegunCondicion',
-        'TotalIvaRg2300_07', 'Subtotal', 'TotalIva105', 'TotalIva21',
+        'TotalIvaRg4310_18', 'Subtotal', 'TotalIva105', 'TotalIva21',
         'TotalRetencionesGanancias', 'TotalRetencionesIVA', 'NroContrato',
         'FechaCertificacion', 
         ]
@@ -525,7 +532,7 @@ class WSLPG(BaseWS):
         self.TotalRetencionAfip = ""
         self.TotalOtrasRetenciones = ""
         self.TotalNetoAPagar = ""
-        self.TotalIvaRg2300_07 = ""
+        self.TotalIvaRg4310_18 = ""
         self.TotalPagoSegunCondicion = ""
         self.Subtotal = self.TotalIva105 = self.TotalIva21 = ""
         self.TotalRetencionesGanancias = self.TotalRetencionesIVA = ""
@@ -1099,7 +1106,7 @@ class WSLPG(BaseWS):
             self.TotalRetencionAfip = aut.get('totalRetencionAfip')
             self.TotalOtrasRetenciones = aut.get('totalOtrasRetenciones')
             self.TotalNetoAPagar = aut.get('totalNetoAPagar')
-            self.TotalIvaRg2300_07 = aut.get('totalIvaRg2300_07')
+            self.TotalIvaRg4310_18 = aut.get('totalIvaRg4310_18')
             self.TotalPagoSegunCondicion = aut.get('totalPagoSegunCondicion')
             self.COE = str(aut.get('coe', ''))
             self.COEAjustado = aut.get('coeAjustado')
@@ -1115,7 +1122,7 @@ class WSLPG(BaseWS):
             self.params_out['total_retencion_afip'] = self.TotalRetencionAfip
             self.params_out['total_otras_retenciones'] = self.TotalOtrasRetenciones
             self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
-            self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
+            self.params_out['total_iva_rg_4310_18'] = self.TotalIvaRg4310_18
             self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
 
             # datos adicionales:
@@ -1371,6 +1378,13 @@ class WSLPG(BaseWS):
         self.liquidacion = self.ajuste['ajusteDebito']
         return True
 
+    def AgregarFusion(self, nro_ing_brutos, nro_actividad, **kwargs):
+        "Datos de comprador o vendedor según liquidación a ajustar (fusión.)"
+        self.ajuste['ajusteBase']['fusion'] = {'nroIngBrutos': nro_ing_brutos, 
+                                               'nroActividad': nro_actividad,
+                                              }
+        return True
+
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacionUnificado(self):
         "Ajustar Liquidación Primaria de Granos"
@@ -1533,7 +1547,7 @@ class WSLPG(BaseWS):
             self.TotalRetencionesIVA = totunif.get('retencionesIVA')
             self.TotalOtrasRetenciones = totunif.get('importeOtrasRetenciones')
             self.TotalNetoAPagar = totunif.get('importeNeto')
-            self.TotalIvaRg2300_07 = totunif.get('ivaRG2300_2007')
+            self.TotalIvaRg4310_18 = totunif.get('ivaRG4310_18')
             self.TotalPagoSegunCondicion = totunif.get('pagoSCondicion')
             
             # actualizo parámetros de salida:
@@ -1558,7 +1572,7 @@ class WSLPG(BaseWS):
                 self.params_out['total_retenciones_iva'] = self.TotalRetencionesIVA
                 self.params_out['total_otras_retenciones'] = self.TotalOtrasRetenciones
                 self.params_out['total_neto_a_pagar'] = self.TotalNetoAPagar
-                self.params_out['total_iva_rg_2300_07'] = self.TotalIvaRg2300_07
+                self.params_out['total_iva_rg_4310_18'] = self.TotalIvaRg4310_18
                 self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
             
                 # almaceno los datos de ajustes crédito y débito para usarlos luego
@@ -3013,6 +3027,7 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
                     ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
                     ('Calidad', CALIDAD, dic.get('calidad', [])),
                     ('FacturaPapel', FACTURA_PAPEL, dic.get('factura_papel', [])),
+                    ('Fusion', FUSION, dic.get('fusion', [])),
                     ('Dato', DATO, dic.get('datos', [])),
                     ('Error', ERROR, dic.get('errores', [])),
                     ]
@@ -3088,6 +3103,10 @@ def escribir_archivo(dic, nombre_archivo, agrega=True):
             for it in dic['factura_papel']:
                 it['tipo_reg'] = 'F'
                 archivo.write(escribir(it, FACTURA_PAPEL))
+        if 'fusion' in dic:
+            for it in dic['fusion']:
+                it['tipo_reg'] = 'f'
+                archivo.write(escribir(it, FUSION))
         if 'datos' in dic:
             for it in dic['datos']:
                 it['tipo_reg'] = 9
@@ -3104,7 +3123,7 @@ def leer_archivo(nombre_archivo):
         dic = json.load(archivo)
     elif '--dbf' in sys.argv:
         dic = {'retenciones': [], 'deducciones': [], 'certificados': [], 
-               'percepciones': [], 'opcionales': [],
+               'percepciones': [], 'opcionales': [], 'fusion': [],
                'datos': [], 'ajuste_credito': [], 'ajuste_debito': [], 
                'ctgs': [], 'det_muestra_analisis': [], 'calidad': [],
               }
@@ -3121,6 +3140,7 @@ def leer_archivo(nombre_archivo):
                     ('DetMuestraAnalisis', DET_MUESTRA_ANALISIS, dic.get('det_muestra_analisis', [])),
                     ('Calidad', CALIDAD, dic.get('calidad', [])),
                     ('FacturaPapel', FACTURA_PAPEL, dic.get('factura_papel', [])),
+                    ('Fusion', FUSION, dic.get('fusion', [])),
                     ('Dato', DATO, dic['datos']),
                     ]
         leer_dbf(formatos, conf_dbf)
@@ -3129,7 +3149,7 @@ def leer_archivo(nombre_archivo):
                'percepciones': [], 'opcionales': [],
                'datos': [], 'ajuste_credito': {}, 'ajuste_debito': {}, 
                'ctgs': [], 'det_muestra_analisis': [], 'calidad': [],
-               'factura_papel': [],
+               'factura_papel': [], 'fusion': [],
                }
         for linea in archivo:
             if str(linea[0])=='0':
@@ -3180,6 +3200,8 @@ def leer_archivo(nombre_archivo):
                 dic['calidad'].append(leer(linea, CALIDAD))
             elif str(linea[0])=='F':
                 dic['factura_papel'].append(leer(linea, FACTURA_PAPEL))
+            elif str(linea[0])=='f':
+                dic['fusion'].append(leer(linea, FUSION))
             elif str(linea[0])=='9':
                 dic['datos'].append(leer(linea, DATO))
             else:
@@ -3217,6 +3239,7 @@ if __name__ == '__main__':
                              ('Det. Muestra Analisis', DET_MUESTRA_ANALISIS),
                              ('Calidad', CALIDAD),
                              ('Factura Papel', FACTURA_PAPEL),
+                             ('Fusion', FUSION),
                              ('Evento', EVENTO), ('Error', ERROR), 
                              ('Dato', DATO)]:
             comienzo = 1
@@ -3269,6 +3292,9 @@ if __name__ == '__main__':
         CACERT = config.has_option('WSAA', 'CACERT') and config.get('WSAA', 'CACERT') or None
         WRAPPER = config.has_option('WSAA', 'WRAPPER') and config.get('WSAA', 'WRAPPER') or None
         
+        if config.has_option('WSLPG', 'TIMEOUT'):
+            TIMEOUT = int(config.get('WSLPG', 'TIMEOUT'))
+
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
             if DEBUG: print("conf_dbf", conf_dbf)
@@ -3284,6 +3310,7 @@ if __name__ == '__main__':
             print("WSLPG_URL:", WSLPG_URL)
             print("CACERT", CACERT)
             print("WRAPPER", WRAPPER)
+            print("timeout:", TIMEOUT)
         # obteniendo el TA
         from .wsaa import WSAA
         wsaa = WSAA()
@@ -3295,7 +3322,7 @@ if __name__ == '__main__':
         # cliente soap del web service
         wslpg = WSLPG()
         wslpg.LanzarExcepciones = True
-        wslpg.Conectar(url=WSLPG_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
+        wslpg.Conectar(url=WSLPG_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT, timeout=TIMEOUT)
         wslpg.SetTicketAcceso(ta)
         wslpg.Cuit = CUIT
 
@@ -3507,7 +3534,7 @@ if __name__ == '__main__':
             print("TotalRetencionAfip", wslpg.TotalRetencionAfip)
             print("TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones)
             print("TotalNetoAPagar", wslpg.TotalNetoAPagar)
-            print("TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07)
+            print("TotalIvaRg4310_18", wslpg.TotalIvaRg4310_18)
             print("TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion)
             if False and '--testing' in sys.argv:
                 assert wslpg.COE == "330100000357"
@@ -3543,6 +3570,7 @@ if __name__ == '__main__':
                        fecha_cierre='2013-01-13',
                        peso_neto_total_certificado=10000,
                        )],
+                    fusion=[{'nro_ing_brutos': '20400000000', 'nro_actividad': 40}],
                     ajuste_credito=dict(
                         diferencia_peso_neto=1000, diferencia_precio_operacion=100,
                         cod_grado="G2", val_grado=1.0, factor=100,
@@ -3667,6 +3695,9 @@ if __name__ == '__main__':
                 if cert:
                     wslpg.AgregarCertificado(**cert)
 
+            for fusion in dic.get('fusion', []):
+                wslpg.AgregarFusion(**fusion)
+
             liq = dic['ajuste_credito']
             wslpg.CrearAjusteCredito(**liq)
             for ded in liq.get('deducciones', []):
@@ -3706,7 +3737,7 @@ if __name__ == '__main__':
             print("TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias)
             print("TotalRetencionesIVA", wslpg.TotalRetencionesIVA)
             print("TotalNetoAPagar", wslpg.TotalNetoAPagar)
-            print("TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07)
+            print("TotalIvaRg4310_18", wslpg.TotalIvaRg4310_18)
             print("TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion)
             
             # actualizo el archivo de salida con los datos devueltos
@@ -4059,7 +4090,7 @@ if __name__ == '__main__':
             print("TotalRetencionesGanancias", wslpg.TotalRetencionesGanancias)
             print("TotalRetencionesIVA", wslpg.TotalRetencionesIVA)
             print("TotalNetoAPagar", wslpg.TotalNetoAPagar)
-            print("TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07)
+            print("TotalIvaRg4310_18", wslpg.TotalIvaRg4310_18)
             print("TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion)
             
             # actualizo el archivo de salida con los datos devueltos
@@ -4140,7 +4171,7 @@ if __name__ == '__main__':
             print("TotalRetencionAfip", wslpg.TotalRetencionAfip)
             print("TotalOtrasRetenciones", wslpg.TotalOtrasRetenciones)
             print("TotalNetoAPagar", wslpg.TotalNetoAPagar)
-            print("TotalIvaRg2300_07", wslpg.TotalIvaRg2300_07)
+            print("TotalIvaRg4310_18", wslpg.TotalIvaRg4310_18)
             print("TotalPagoSegunCondicion", wslpg.TotalPagoSegunCondicion)
 
             # actualizo el archivo de salida con los datos devueltos

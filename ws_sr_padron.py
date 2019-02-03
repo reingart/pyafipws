@@ -18,7 +18,7 @@ Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03c"
+__version__ = "1.03e"
 
 import csv
 import datetime
@@ -27,12 +27,12 @@ import json
 import os
 import sys
 
-from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm, SoapFault
 from configparser import SafeConfigParser
 from .padron import TIPO_CLAVE, PROVINCIAS
 
 
-HOMO = True
+HOMO = False
 LANZAR_EXCEPCIONES = True
 WSDL = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA4?wsdl"
 CONFIG_FILE = "rece.ini"
@@ -313,7 +313,12 @@ def main():
             cuit = (fila[0] if fila else "").replace("-", "")
             if cuit.isdigit():
                 print("Consultando AFIP online...", cuit, end=' ')
-                ok = padron.Consultar(cuit)
+                try:
+                    ok = padron.Consultar(cuit)
+                except SoapFault as e:
+                    ok = None
+                    if e.faultstring != "No existe persona con ese Id":
+                        raise
                 print('ok' if ok else "error", padron.Excepcion)
                 # domicilio posiblemente esté en Latin1, normalizar
                 csv_writer.writerow([norm(getattr(padron, campo, ""))

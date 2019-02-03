@@ -13,9 +13,9 @@
 "Módulo para generar PDF de facturas electrónicas"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08c"
+__version__ = "1.09b"
 
 DEBUG = False
 HOMO = False
@@ -320,7 +320,7 @@ class FEPDF:
 
     def fmt_fact(self, tipo_cbte, punto_vta, cbte_nro):
         "Formatear tipo, letra y punto de venta y número de factura"
-        n = "%04d-%08d" % (int(punto_vta), int(cbte_nro))
+        n = "%05d-%08d" % (int(punto_vta), int(cbte_nro))
         t, l = tipo_cbte, ''
         for k,v in list(self.tipos_fact.items()):
             if int(tipo_cbte) in k:
@@ -837,7 +837,7 @@ class FEPDF:
                     f.set('CAE.Vencimiento', self.fmt_date(fact['fecha_vto']))
                     if fact['cae']!="NULL" and str(fact['cae']).isdigit() and str(fact['fecha_vto']).isdigit() and self.CUIT:
                         cuit = ''.join([x for x in str(self.CUIT) if x.isdigit()])
-                        barras = ''.join([cuit, "%02d" % int(fact['tipo_cbte']), "%04d" % int(fact['punto_vta']), 
+                        barras = ''.join([cuit, "%03d" % int(fact['tipo_cbte']), "%05d" % int(fact['punto_vta']), 
                             str(fact['cae']), fact['fecha_vto']])
                         barras = barras + self.digito_verificador_modulo10(barras)
                     else:
@@ -995,12 +995,18 @@ if __name__ == '__main__':
                 regs = list(formato_dbf.leer(conf_dbf).values())
             elif '--json' in sys.argv:
                 from .formatos import formato_json
-                entrada = conf_fact.get("entrada", "entrada.txt")
+                if '--entrada' in sys.argv:
+                    entrada = sys.argv[sys.argv.index("--entrada")+1]
+                else:
+                    entrada = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print("entrada", entrada)
                 regs = formato_json.leer(entrada)
             else:
                 from .formatos import formato_txt
-                entrada = conf_fact.get("entrada", "entrada.txt")
+                if '--entrada' in sys.argv:
+                    entrada = sys.argv[sys.argv.index("--entrada")+1]
+                else:
+                    entrada = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG: print("entrada", entrada)
                 regs = formato_txt.leer(entrada)
             if DEBUG: 

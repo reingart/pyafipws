@@ -70,39 +70,6 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "%(copyright)s"
 ;VIAddVersionKey /LANG=${LANG_ENGLISH} "InternalName" "FileSetup.exe"
 
 Section %(name)s
-    ; uninstall old version
-
-    ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "UninstallString"
-    StrCmp $R0 "" notistalled
-    ExecWait '$R0 /S _?=$INSTDIR' 
-
-    ; clean up executable files
-    Delete $INSTDIR\*.pyc
-    Delete $INSTDIR\*.pyd
-    Delete $INSTDIR\*.pyo
-    Delete $INSTDIR\*.dll
-    Delete $INSTDIR\*.exe
-    
-    ; clean up subdirectories
-    FindFirst $0 $1 $INSTDIR\*
-    cleanup_loop:
-        StrCmp $1 "" cleanup_done
-        StrCmp $1 "." cleanup_next
-        StrCmp $1 ".." cleanup_next
-        StrCmp $1 "conf" cleanup_next
-        StrCmp $1 "datos" cleanup_next
-        StrCmp $1 "plantillas" cleanup_next
-        IfFileExists $INSTDIR\$1\*.* 0 +2
-            RMDir /r $INSTDIR\$1
-    cleanup_next:
-        FindNext $0 $1
-        Goto cleanup_loop
-    cleanup_done:
-    FindClose $0
-    
-
-notistalled:
-
     SectionIn RO
     SetOutPath $INSTDIR
     File /r dist\*.*
@@ -308,8 +275,14 @@ class Target():
         self.__dict__.update(kw)
         # for the version info resources (Properties -- Version)
         # convertir 1.21a en 1.21.1
-        self.version = module.__version__[:-1]+"."+str(ord(module.__version__[-1])-96)
+        try:
+            self.version = module.__version__[:-1]+"."+str(ord(module.__version__[-1])-96)
+        except AttributeError:
+            self.version = "0.0.1"
         self.description = module.__doc__
         self.company_name = "Sistemas Agiles"
-        self.copyright = module.__copyright__
+        try:
+            self.copyright = module.__copyright__
+        except AttributeError:
+            self.copyright = ""
         self.name = "Interfaz PyAfipWs - %s" % os.path.basename(module.__file__).replace(".pyc", ".py")

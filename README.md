@@ -19,7 +19,7 @@ General Information:
  * Public Forum: http://groups.google.com/group/pyafipws (community support, no-charge "gratis" access)
 
 More information at [Python Argentina Magazine article](http://revista.python.org.ar/2/en/html/pyafip.html) (English) 
-and [JAIIO 2012 paper](http://www.41jaiio.org.ar/sites/default/files/15_JSL_2012.pdf) (Spanish)
+and [JAIIO 2012 paper](http://41jaiio.sadio.org.ar/sites/default/files/15_JSL_2012.pdf) (Spanish)
 
 Project Structure:
 ------------------

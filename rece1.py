@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.37a"
+__version__ = "1.37b"
 
 import datetime
 import os
@@ -78,6 +78,7 @@ ENCABEZADO = [
     ('emision_tipo', 4, A),
     ('fecha_serv_desde', 8, A), # opcional solo conceptos 2 y 3
     ('fecha_serv_hasta', 8, A), # opcional solo conceptos 2 y 3
+    ('tipo_cbte', 3, N), ('punto_vta', 5, N),
     ]
                    
 #DETALLE = [
@@ -326,13 +327,14 @@ def escribir_facturas(encabezados, archivo, agrega=False):
 
 
 def depurar_xml(client, ruta="."):
-    fecha = time.strftime("%Y%m%d%H%M%S")
-    f=open(os.path.join(ruta, "request-%s.xml" % fecha),"w")
-    f.write(client.xml_request)
-    f.close()
-    f=open(os.path.join(ruta, "response-%s.xml" % fecha),"w")
-    f.write(client.xml_response)
-    f.close()
+    if XML:
+        fecha = time.strftime("%Y%m%d%H%M%S")
+        f=open(os.path.join(ruta, "request-%s.xml" % fecha),"w")
+        f.write(client.xml_request)
+        f.close()
+        f=open(os.path.join(ruta, "response-%s.xml" % fecha),"w")
+        f.write(client.xml_response)
+        f.close()
 
 if __name__ == "__main__":
     if '/ayuda' in sys.argv:
@@ -364,8 +366,11 @@ if __name__ == "__main__":
         entrada = sys.argv[sys.argv.index("/entrada")+1]
     else:
         entrada = config.get('WSFEv1','ENTRADA')
-    salida = config.get('WSFEv1','SALIDA')
-    
+    if '/salida' in sys.argv:
+        salida = sys.argv[sys.argv.index("/salida")+1]
+    else:
+        salida = config.get('WSFEv1','SALIDA')
+
     if config.has_option('WSAA','URL') and not HOMO:
         wsaa_url = config.get('WSAA','URL')
     else:

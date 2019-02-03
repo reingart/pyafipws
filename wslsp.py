@@ -19,7 +19,7 @@ Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.07a"
 
 LICENCIA = """
 wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -627,7 +627,7 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        array = ret.get('operacion', [])
+        array = ret.get('operacion', []) + ret.get('operacionPorcina', []) 
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
         else:
@@ -643,7 +643,7 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        array = ret.get('tributo', [])
+        array = ret.get('tributo', []) + ret.get('tributoPorcino', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
         else:
@@ -707,7 +707,7 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        array = ret.get('caracter', [])
+        array = ret.get('caracter', []) + ret.get('caracterPorcino', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
         else:
@@ -723,7 +723,7 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        array = ret.get('categoria', [])
+        array = ret.get('categoria', []) + ret.get('categoriaPorcina', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
         else:
@@ -748,14 +748,14 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarRazas(self, sep="||"):
-        "Retorna listado de razas -vacunas- (código, descripción)"
+        "Retorna listado de razas -vacunas y porcinos- (código, descripción)"
         ret = self.client.consultarRazas(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        array = ret.get('raza', [])
+        array = ret.get('raza', []) + ret.get('razaPorcina', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
         else:
@@ -771,7 +771,7 @@ class WSLSP(BaseWS):
                             'cuit': self.Cuit, },
                             )['respuesta']
         self.__analizar_errores(ret)
-        array = ret.get('corte', [])
+        array = ret.get('corte', []) + ret.get('cortePorcino', [])
         if sep is None:
             return dict([(it['codigo'], it['descripcion']) for it in array])
         else:

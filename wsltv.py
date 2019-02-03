@@ -19,7 +19,7 @@ Liquidación de Tabaco Verde del web service WSLTV de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.06d"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -87,6 +87,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsltv.ini"
+TIMEOUT = 30
 HOMO = False
 
 
@@ -144,6 +145,7 @@ class WSLTV(BaseWS):
         self.TotalTributos = ""
         self.Subtotal = self.Total = ""
         self.datos = {}
+        self.reintentos = 0
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=30):
@@ -746,6 +748,9 @@ if __name__ == '__main__':
         CACERT = config.has_option('WSAA', 'CACERT') and config.get('WSAA', 'CACERT') or None
         WRAPPER = config.has_option('WSAA', 'WRAPPER') and config.get('WSAA', 'WRAPPER') or None
         
+        if config.has_option('WSLTV', 'TIMEOUT'):
+            TIMEOUT = int(config.get('WSLTV', 'TIMEOUT'))
+        
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
             if DEBUG: print("conf_dbf", conf_dbf)
@@ -761,6 +766,7 @@ if __name__ == '__main__':
             print("WSLTV_URL:", WSLTV_URL)
             print("CACERT", CACERT)
             print("WRAPPER", WRAPPER)
+            print("timeout:", TIMEOUT)
         # obteniendo el TA
         from .wsaa import WSAA
         wsaa = WSAA()
@@ -772,7 +778,7 @@ if __name__ == '__main__':
         # cliente soap del web service
         wsltv = WSLTV()
         wsltv.LanzarExcepciones = True
-        wsltv.Conectar(url=WSLTV_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
+        wsltv.Conectar(url=WSLTV_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT, timeout=TIMEOUT)
         wsltv.SetTicketAcceso(ta)
         wsltv.Cuit = CUIT
 

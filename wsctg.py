@@ -17,7 +17,7 @@ del web service WSCTG versión 4.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.14a"
+__version__ = "1.14e"
 
 LICENCIA = """
 wsctg.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -132,7 +132,7 @@ ENCABEZADO = [
 
     # nuevos campos agregados WSCTGv4:
     ('ctc_codigo', 2, A),
-    ('turno', 20, A),
+    ('turno', 50, A),
     
     ]        
 
@@ -240,7 +240,7 @@ class WSCTG(BaseWS):
         self.__analizar_errores(response)
         if datos:
             self.CartaPorte = str(datos['cartaPorte'])
-            self.NumeroCTG = str(datos['CTG'])
+            self.NumeroCTG = str(datos['ctg'])
             self.FechaHora = str(datos['fechaHora'])
             self.CodigoOperacion = str(datos['codigoOperacion'])
 
@@ -274,12 +274,16 @@ class WSCTG(BaseWS):
         **kwargs):
         "Solicitar CTG Desde el Inicio"
         # ajusto parámetros según validaciones de AFIP:
-        if cuit_canjeador and int(cuit_canjeador) == 0:
+        if not cuit_canjeador or int(cuit_canjeador) == 0:
             cuit_canjeador = None         # nulo
+        if not cuit_corredor or int(cuit_corredor) == 0:
+            cuit_corredor = None         # nulo
         if not remitente_comercial_como_canjeador:
             remitente_comercial_como_canjeador = None
         if not remitente_comercial_como_productor:
             remitente_comercial_como_productor = None
+        if turno == '':
+            turno  = None                # nulo
 
         ret = self.client.solicitarCTGInicial(request=dict(
                         auth={
@@ -891,7 +895,6 @@ if __name__ == '__main__':
                 carta_porte = sys.argv[i + 1]
                 ctg = sys.argv[i + 2]
             ret = wsctg.AnularCTG(carta_porte, ctg)
-            wsctg.SolicitarCTGDatoPendiente()
             print("Carta Porte", wsctg.CartaPorte)
             print("Numero CTG", wsctg.NumeroCTG)
             print("Fecha y Hora", wsctg.FechaHora)
@@ -1135,7 +1138,7 @@ if __name__ == '__main__':
         if "--consultar_activos_por_patente" in sys.argv:
             i = sys.argv.index("--consultar_activos_por_patente")
             if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
-                patente = int(sys.argv[i+1])
+                patente = sys.argv[i+1]
             elif not ctg:
                 patente= input("Patente: ") or 'APE652'
             wsctg.LanzarExcepciones = True
