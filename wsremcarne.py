@@ -81,7 +81,7 @@ WSDL = ["https://serviciosjava.afip.gob.ar/wsremcarne/RemCarneService?wsdl",
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsremcarne.ini"
-HOMO = True
+HOMO = False
 ENCABEZADO = []
 
 

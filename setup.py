@@ -51,7 +51,7 @@ if 'py2exe' in sys.argv:
     #import wsltv
     #import wslum
     #import wslsp
-    import wsremcarne
+    #import wsremcarne
     #import wscoc
     #import wscdc
     #import cot
