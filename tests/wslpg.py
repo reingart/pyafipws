@@ -10,6 +10,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+import pysimplesoap.client
+from pyafipws.wslpg import WSLPG
+from pyafipws.wsaa import WSAA
+from pyafipws import utils
 "Pruebas Liquidación Primaria Electrónica de Granos web service WSLPG (AFIP)"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -23,11 +27,7 @@ from decimal import Decimal
 
 sys.path.append("/home/reingart")        # TODO: proper packaging
 
-from pyafipws import utils
-from pyafipws.wsaa import WSAA
-from pyafipws.wslpg import WSLPG
 
-import pysimplesoap.client
 print(pysimplesoap.client.__version__)
 #assert pysimplesoap.client.__version__ >= "1.08c"
 
@@ -46,8 +46,9 @@ cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
 wsaa.Conectar()
 wsaa.LoginCMS(cms)
 
+
 class TestIssues(unittest.TestCase):
-    
+
     def setUp(self):
         sys.argv.append("--trace")                  # TODO: use logging
         self.wslpg = wslpg = WSLPG()
@@ -55,8 +56,8 @@ class TestIssues(unittest.TestCase):
         wslpg.Conectar(url=WSDL, cacert=None, cache=CACHE)
         wslpg.Cuit = CUIT
         wslpg.Token = wsaa.Token
-        wslpg.Sign = wsaa.Sign                    
-                    
+        wslpg.Sign = wsaa.Sign
+
     def test_liquidacion(self):
         "Prueba de autorización (obtener COE) liquidación electrónica de granos"
         wslpg = self.wslpg
@@ -64,51 +65,51 @@ class TestIssues(unittest.TestCase):
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
         self.assertTrue(ok)
         ok = wslpg.CrearLiquidacion(
-                pto_emision=pto_emision,
-                nro_orden=wslpg.NroOrden + 1, 
-                cuit_comprador=wslpg.Cuit,
-                nro_act_comprador=29, nro_ing_bruto_comprador=wslpg.Cuit,
-                cod_tipo_operacion=1,
-                es_liquidacion_propia='N', es_canje='N',
-                cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
-                cod_grano=31, 
-                cuit_vendedor=23000000019, nro_ing_bruto_vendedor=23000000019,
-                actua_corredor="N", liquida_corredor="N", 
-                cuit_corredor=0,
-                comision_corredor=0, nro_ing_bruto_corredor=0,
-                fecha_precio_operacion="2013-02-07",
-                precio_ref_tn=2000,
-                cod_grado_ref="G1",
-                cod_grado_ent="FG",
-                factor_ent=98, val_grado_ent=1.02,
-                precio_flete_tn=10,
-                cont_proteico=20,
-                alic_iva_operacion=10.5,
-                campania_ppal=1213,
-                cod_localidad_procedencia=5544,
-                cod_prov_procedencia=12,
-                datos_adicionales="DATOS ADICIONALES",
-                peso_neto_sin_certificado=10000,
-                cod_prov_procedencia_sin_certificado=1,
-                cod_localidad_procedencia_sin_certificado=15124,
-                )        
+            pto_emision=pto_emision,
+            nro_orden=wslpg.NroOrden + 1,
+            cuit_comprador=wslpg.Cuit,
+            nro_act_comprador=29, nro_ing_bruto_comprador=wslpg.Cuit,
+            cod_tipo_operacion=1,
+            es_liquidacion_propia='N', es_canje='N',
+            cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
+            cod_grano=31,
+            cuit_vendedor=23000000019, nro_ing_bruto_vendedor=23000000019,
+            actua_corredor="N", liquida_corredor="N",
+            cuit_corredor=0,
+            comision_corredor=0, nro_ing_bruto_corredor=0,
+            fecha_precio_operacion="2013-02-07",
+            precio_ref_tn=2000,
+            cod_grado_ref="G1",
+            cod_grado_ent="FG",
+            factor_ent=98, val_grado_ent=1.02,
+            precio_flete_tn=10,
+            cont_proteico=20,
+            alic_iva_operacion=10.5,
+            campania_ppal=1213,
+            cod_localidad_procedencia=5544,
+            cod_prov_procedencia=12,
+            datos_adicionales="DATOS ADICIONALES",
+            peso_neto_sin_certificado=10000,
+            cod_prov_procedencia_sin_certificado=1,
+            cod_localidad_procedencia_sin_certificado=15124,
+        )
 
         wslpg.AgregarRetencion(
-                        codigo_concepto="RI",
-                        detalle_aclaratorio="DETALLE DE IVA",
-                        base_calculo=1000,
-                        alicuota=10.5,
-                    )
-        wslpg.AgregarRetencion(                        
-                        codigo_concepto="RG",
-                        detalle_aclaratorio="DETALLE DE GANANCIAS",
-                        base_calculo=100,
-                        alicuota=15,
-                    )
+            codigo_concepto="RI",
+            detalle_aclaratorio="DETALLE DE IVA",
+            base_calculo=1000,
+            alicuota=10.5,
+        )
+        wslpg.AgregarRetencion(
+            codigo_concepto="RG",
+            detalle_aclaratorio="DETALLE DE GANANCIAS",
+            base_calculo=100,
+            alicuota=15,
+        )
         ok = wslpg.AutorizarLiquidacion()
         self.assertTrue(ok)
         self.assertIsInstance(wslpg.COE, str)
-        self.assertEqual(len(wslpg.COE), len("330100013142")) 
+        self.assertEqual(len(wslpg.COE), len("330100013142"))
 
     def test_liquidacion_contrato(self, nro_contrato=26):
         "Prueba de obtener COE variante con contrato / corredor (WSLPGv1.4)"
@@ -117,25 +118,25 @@ class TestIssues(unittest.TestCase):
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
         self.assertTrue(ok)
         nro_orden = wslpg.NroOrden + 1
-        
+
         # probar todas las actividades en caso de que devuelva error AFIP:
         #     1106: La actividad seleccionada no corresponde al comprador
-        actividades = (40, 41, 29, 33, 31, 30, 35, 44, 47, 46, 48, 49, 51, 50, 
-                       45, 59, 57, 52, 34, 28, 36, 55, 39, 37)        
-        
+        actividades = (40, 41, 29, 33, 31, 30, 35, 44, 47, 46, 48, 49, 51, 50,
+                       45, 59, 57, 52, 34, 28, 36, 55, 39, 37)
+
         for actid in actividades:
             ok = wslpg.CrearLiquidacion(
                 pto_emision=pto_emision,
-                nro_orden=nro_orden, 
+                nro_orden=nro_orden,
                 nro_contrato=nro_contrato,
                 cuit_comprador=20400000000,
                 nro_act_comprador=actid, nro_ing_bruto_comprador=20400000000,
                 cod_tipo_operacion=1,
                 es_liquidacion_propia='N', es_canje='N',
                 cod_puerto=14, des_puerto_localidad="DETALLE PUERTO",
-                cod_grano=31, 
+                cod_grano=31,
                 cuit_vendedor=23000000019, nro_ing_bruto_vendedor=23000000019,
-                actua_corredor="S", liquida_corredor="S", 
+                actua_corredor="S", liquida_corredor="S",
                 cuit_corredor=20267565393,
                 comision_corredor=1, nro_ing_bruto_corredor=20267565393,
                 fecha_precio_operacion="2013-02-07",
@@ -153,28 +154,28 @@ class TestIssues(unittest.TestCase):
                 peso_neto_sin_certificado=10000,
                 cod_prov_procedencia_sin_certificado=1,
                 cod_localidad_procedencia_sin_certificado=15124,
-                )        
+            )
 
             wslpg.AgregarRetencion(
-                        codigo_concepto="RI",
-                        detalle_aclaratorio="DETALLE DE IVA",
-                        base_calculo=1000,
-                        alicuota=10.5,
-                    )
-            wslpg.AgregarRetencion(                        
-                        codigo_concepto="RG",
-                        detalle_aclaratorio="DETALLE DE GANANCIAS",
-                        base_calculo=100,
-                        alicuota=15,
-                    )
+                codigo_concepto="RI",
+                detalle_aclaratorio="DETALLE DE IVA",
+                base_calculo=1000,
+                alicuota=10.5,
+            )
+            wslpg.AgregarRetencion(
+                codigo_concepto="RG",
+                detalle_aclaratorio="DETALLE DE GANANCIAS",
+                base_calculo=100,
+                alicuota=15,
+            )
             ok = wslpg.AutorizarLiquidacion()
             if wslpg.COE:
-                #print "Actividad OK", actid
-                break                
-                
+                # print "Actividad OK", actid
+                break
+
         self.assertTrue(ok)
         self.assertIsInstance(wslpg.COE, str)
-        self.assertEqual(len(wslpg.COE), len("330100013142")) 
+        self.assertEqual(len(wslpg.COE), len("330100013142"))
         self.assertEqual(wslpg.NroContrato, nro_contrato)
 
     def test_anular(self, coe=None):
@@ -199,33 +200,33 @@ class TestIssues(unittest.TestCase):
         self.assertTrue(ok)
         nro_orden = wslpg.NroOrden + 1
         # creo el ajuste base y agrego los datos de certificado:
-        wslpg.CrearAjusteBase(pto_emision=pto_emision, 
-                              nro_orden=nro_orden, 
+        wslpg.CrearAjusteBase(pto_emision=pto_emision,
+                              nro_orden=nro_orden,
                               coe_ajustado=coe,
                               cod_provincia=1,
                               cod_localidad=5,
                               )
         wslpg.AgregarCertificado(tipo_certificado_deposito=5,
-                       nro_certificado_deposito=555501200729,
-                       peso_neto=10000,
-                       cod_localidad_procedencia=3,
-                       cod_prov_procedencia=1,
-                       campania=1213,
-                       fecha_cierre='2013-01-13',
-                       peso_neto_total_certificado=10000)
+                                 nro_certificado_deposito=555501200729,
+                                 peso_neto=10000,
+                                 cod_localidad_procedencia=3,
+                                 cod_prov_procedencia=1,
+                                 campania=1213,
+                                 fecha_cierre='2013-01-13',
+                                 peso_neto_total_certificado=10000)
         # creo el ajuste de crédito (ver documentación AFIP)
         wslpg.CrearAjusteCredito(
-                diferencia_peso_neto=1000, diferencia_precio_operacion=100,
-                cod_grado="G2", val_grado=1.0, factor=100,
-                diferencia_precio_flete_tn=10,
-                datos_adicionales='AJUSTE CRED UNIF',
-                concepto_importe_iva_0='Alicuota Cero',
-                importe_ajustar_Iva_0=900,
-                concepto_importe_iva_105='Alicuota Diez',
-                importe_ajustar_Iva_105=800,
-                concepto_importe_iva_21='Alicuota Veintiuno',
-                importe_ajustar_Iva_21=700,
-            )
+            diferencia_peso_neto=1000, diferencia_precio_operacion=100,
+            cod_grado="G2", val_grado=1.0, factor=100,
+            diferencia_precio_flete_tn=10,
+            datos_adicionales='AJUSTE CRED UNIF',
+            concepto_importe_iva_0='Alicuota Cero',
+            importe_ajustar_Iva_0=900,
+            concepto_importe_iva_105='Alicuota Diez',
+            importe_ajustar_Iva_105=800,
+            concepto_importe_iva_21='Alicuota Veintiuno',
+            importe_ajustar_Iva_21=700,
+        )
         wslpg.AgregarDeduccion(codigo_concepto="AL",
                                detalle_aclaratorio="Deduc Alm",
                                dias_almacenaje="1",
@@ -239,17 +240,17 @@ class TestIssues(unittest.TestCase):
                                alicuota=10.5, )
         # creo el ajuste de débito (ver documentación AFIP)
         wslpg.CrearAjusteDebito(
-                diferencia_peso_neto=500, diferencia_precio_operacion=100,
-                cod_grado="G2", val_grado=1.0, factor=100,
-                diferencia_precio_flete_tn=0.01,
-                datos_adicionales='AJUSTE DEB UNIF',
-                concepto_importe_iva_0='Alic 0',
-                importe_ajustar_Iva_0=250,
-                concepto_importe_iva_105='Alic 10.5',
-                importe_ajustar_Iva_105=200,
-                concepto_importe_iva_21='Alicuota 21',
-                importe_ajustar_Iva_21=50,
-            )
+            diferencia_peso_neto=500, diferencia_precio_operacion=100,
+            cod_grado="G2", val_grado=1.0, factor=100,
+            diferencia_precio_flete_tn=0.01,
+            datos_adicionales='AJUSTE DEB UNIF',
+            concepto_importe_iva_0='Alic 0',
+            importe_ajustar_Iva_0=250,
+            concepto_importe_iva_105='Alic 10.5',
+            importe_ajustar_Iva_105=200,
+            concepto_importe_iva_21='Alicuota 21',
+            importe_ajustar_Iva_21=50,
+        )
         wslpg.AgregarDeduccion(codigo_concepto="AL",
                                detalle_aclaratorio="Deduc Alm",
                                dias_almacenaje="1",
@@ -299,17 +300,17 @@ class TestIssues(unittest.TestCase):
             self.assertEqual(wslpg.GetParametro("importe_iva"), "215.55")
             self.assertEqual(wslpg.GetParametro("operacion_con_iva"), "2268.45")
             self.assertEqual(wslpg.GetParametro("retenciones", 0, "importe_retencion"), "10.50")
-            
+
         finally:
             # anulo el ajuste para evitar subsiguiente validación AFIP:
             if coe:
                 self.test_anular(coe)
             if coe_ajustado:
                 self.test_anular(coe_ajustado)   # anulo también la liq. orig.
-        
+
     def test_ajuste_contrato(self, nro_contrato=27):
         "Prueba de ajuste por contrato de una liquidación de granos (WSLPGv1.4)"
-        wslpg = self.wslpg        
+        wslpg = self.wslpg
         # solicito una liquidación para tener el COE autorizado a ajustar:
         self.test_liquidacion_contrato(nro_contrato)
         coe_ajustado = wslpg.COE
@@ -318,10 +319,10 @@ class TestIssues(unittest.TestCase):
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
         self.assertTrue(ok)
         nro_orden = wslpg.NroOrden + 1
-        wslpg.CrearAjusteBase(pto_emision=55, nro_orden=nro_orden, 
+        wslpg.CrearAjusteBase(pto_emision=55, nro_orden=nro_orden,
                               nro_contrato=nro_contrato,
                               coe_ajustado=coe_ajustado,
-                              nro_act_comprador=40, 
+                              nro_act_comprador=40,
                               cod_grano=31,
                               cuit_vendedor=23000000019,
                               cuit_comprador=20400000000,
@@ -336,13 +337,13 @@ class TestIssues(unittest.TestCase):
                               cod_localidad=5,
                               )
         wslpg.CrearAjusteCredito(
-                concepto_importe_iva_0='Ajuste IVA al 0%',
-                importe_ajustar_Iva_0=100,
-            )
+            concepto_importe_iva_0='Ajuste IVA al 0%',
+            importe_ajustar_Iva_0=100,
+        )
         wslpg.CrearAjusteDebito(
-                concepto_importe_iva_105='Ajuste IVA al 10.5%',
-                importe_ajustar_Iva_105=100,
-            )
+            concepto_importe_iva_105='Ajuste IVA al 10.5%',
+            importe_ajustar_Iva_105=100,
+        )
         wslpg.AgregarDeduccion(codigo_concepto="OD",
                                detalle_aclaratorio="Otras Deduc",
                                dias_almacenaje="1",
@@ -366,7 +367,7 @@ class TestIssues(unittest.TestCase):
             self.assertEqual(wslpg.TotalNetoAPagar, Decimal("-110.50"))
             self.assertEqual(wslpg.TotalIvaRg2300_07, Decimal("0"))
             self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("-110.50"))
-            ##self.assertEqual(wslpg.NroContrato, nro_contrato)  # no devuelto AFIP
+            # self.assertEqual(wslpg.NroContrato, nro_contrato)  # no devuelto AFIP
             # verificar campos globales no documentados (directamente desde el XML):
             wslpg.AnalizarXml()
             v = wslpg.ObtenerTagXml("totalesUnificados", "subTotalDebCred")
@@ -395,7 +396,7 @@ class TestIssues(unittest.TestCase):
             self.assertEqual(float(wslpg.GetParametro("operacion_con_iva")), 0.00)
             self.assertEqual(float(wslpg.GetParametro("deducciones", 0, "importe_iva")), 10.50)
             self.assertEqual(float(wslpg.GetParametro("deducciones", 0, "importe_deduccion")), 110.50)
-        
+
         finally:
             # anulo el ajuste para evitar subsiguiente validación AFIP:
             # 2105: No puede relacionar la liquidacion con el contrato, porque el contrato tiene un Ajuste realizado.
@@ -406,7 +407,7 @@ class TestIssues(unittest.TestCase):
                 self.test_anular(coe)
             if coe_ajustado:
                 self.test_anular(coe_ajustado)   # anulo también el COE ajustado
-                    
+
     def atest_ajuste_papel(self):
         # deshabilitado ya que el método esta "en estudio" por parte de AFIP
         wslpg = self.wslpg
@@ -424,27 +425,27 @@ class TestIssues(unittest.TestCase):
                               cod_provincia=1,
                               cod_localidad=5)
         wslpg.AgregarCertificado(tipo_certificado_deposito=5,
-                       nro_certificado_deposito=555501200802,
-                       peso_neto=10000,
-                       cod_localidad_procedencia=5,
-                       cod_prov_procedencia=1,
-                       campania=1213,
-                       fecha_cierre='2013-07-12')
+                                 nro_certificado_deposito=555501200802,
+                                 peso_neto=10000,
+                                 cod_localidad_procedencia=5,
+                                 cod_prov_procedencia=1,
+                                 campania=1213,
+                                 fecha_cierre='2013-07-12')
         wslpg.CrearAjusteCredito(
-                concepto_importe_iva_21='IVA al 21%',
-                importe_ajustar_Iva_21=1500,
-            )
+            concepto_importe_iva_21='IVA al 21%',
+            importe_ajustar_Iva_21=1500,
+        )
         wslpg.AgregarRetencion(codigo_concepto="RI",
                                detalle_aclaratorio="Ret IVA",
                                base_calculo=1500,
                                alicuota=8, )
         wslpg.CrearAjusteDebito(
-                concepto_importe_iva_105='IVA al 0%',
-                importe_ajustar_Iva_105=100,
-            )
+            concepto_importe_iva_105='IVA al 0%',
+            importe_ajustar_Iva_105=100,
+        )
 
         ret = wslpg.AjustarLiquidacionUnificadoPapel()
-        
+
     def test_asociaciar_coe_contrato(self, nro_contrato=27):
         wslpg = self.wslpg
         # solicito una liquidación para tener el COE autorizado a asociar:
@@ -453,8 +454,8 @@ class TestIssues(unittest.TestCase):
         try:
             # Asocio la liquidación con el contrato:
             wslpg.AsociarLiquidacionAContrato(coe=coe,
-                                              nro_contrato=nro_contrato, 
-                                              cuit_comprador="20400000000", 
+                                              nro_contrato=nro_contrato,
+                                              cuit_comprador="20400000000",
                                               cuit_vendedor="23000000019",
                                               cuit_corredor="20267565393",
                                               cod_grano=31)
@@ -468,7 +469,7 @@ class TestIssues(unittest.TestCase):
             # 2112: La liquidacion ya esta relacionada al contrato.
             try:
                 self.test_anular(coe)
-            except: 
+            except BaseException:
                 # ignorar error de AFIP (aparentemente problema interno):
                 self.assertEqual(wslpg.Errores[0], "2100: El contrato ingresado no se encuentra registrado.")
                 pass
@@ -477,21 +478,21 @@ class TestIssues(unittest.TestCase):
         wslpg = self.wslpg
         # obtener las liquidaciones relacionadas al contrato:
         wslpg.ConsultarLiquidacionesPorContrato(
-                                          nro_contrato=nro_contrato, 
-                                          cuit_comprador="20400000000", 
-                                          cuit_vendedor="23000000019",
-                                          cuit_corredor="20267565393",
-                                          cod_grano=31,
-                                          )
+            nro_contrato=nro_contrato,
+            cuit_comprador="20400000000",
+            cuit_vendedor="23000000019",
+            cuit_corredor="20267565393",
+            cod_grano=31,
+        )
         self.assertEqual(wslpg.Errores, [])
         # verifico COEs previamente relacionados al contrato:
-        for coe in sorted([330100014020, 330100014022, 330100014023, 
-                           330100014025, 330100014028, 330100014029, 
-                           330100014040, 330100014043, 330100014057, 
-                           330100014061, 330100014450, 330100014454, 
-                           330100014455, 330100014459, 330100014467, 
-                           330100014472, 330100004664]):            
-            self.assertIsInstance(wslpg.COE, str) 
+        for coe in sorted([330100014020, 330100014022, 330100014023,
+                           330100014025, 330100014028, 330100014029,
+                           330100014040, 330100014043, 330100014057,
+                           330100014061, 330100014450, 330100014454,
+                           330100014455, 330100014459, 330100014467,
+                           330100014472, 330100004664]):
+            self.assertIsInstance(wslpg.COE, str)
             self.assertEqual(wslpg.COE, str(coe))
             self.assertEqual(wslpg.Estado, "")  # por el momento no lo devuelve
             # leo el próximo numero
@@ -508,7 +509,7 @@ class TestIssues(unittest.TestCase):
         self.assertTrue(ok)
         # verificar respuesta general:
         self.assertEqual(wslpg.COE, "330100014501")
-        self.assertEqual(wslpg.Estado, "AN") # anulado!
+        self.assertEqual(wslpg.Estado, "AN")  # anulado!
         self.assertEqual(wslpg.Subtotal, Decimal("-734.10"))
         self.assertEqual(wslpg.TotalIva105, Decimal("-77.61"))
         self.assertEqual(wslpg.TotalIva21, Decimal("0"))
@@ -536,9 +537,8 @@ class TestIssues(unittest.TestCase):
         self.assertEqual(wslpg.TotalPagoSegunCondicion, Decimal("2047.38"))
         self.assertEqual(float(wslpg.GetParametro("importe_iva")), 215.55)
         self.assertEqual(float(wslpg.GetParametro("operacion_con_iva")), 2268.45)
-        self.assertEqual(float(wslpg.GetParametro("retenciones", 0, "importe_retencion")), 10.50)            
-        
-        
+        self.assertEqual(float(wslpg.GetParametro("retenciones", 0, "importe_retencion")), 10.50)
+
+
 if __name__ == '__main__':
     unittest.main()
-

@@ -10,6 +10,15 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+import base64
+import time
+import sys
+import os
+from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from . import utils
+from pysimplesoap.client import SoapFault
+import traceback
+from .utils import date
 """Módulo para obtener Remito Electronico Carnico:
 del web service WSRemCarne versión 1.0 de AFIP (RG4256/18 y RG4303/18)
 """
@@ -34,8 +43,8 @@ e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-AYUDA="""
-Opciones: 
+AYUDA = """
+Opciones:
   --ayuda: este mensaje
 
   --debug: modo depuración (detalla y confirma las operaciones)
@@ -63,14 +72,8 @@ Opciones:
 Ver wsremcarne.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, time, base64
-from .utils import date
-import traceback
-from pysimplesoap.client import SoapFault
-from . import utils
 
 # importo funciones compartidas:
-from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 # constantes de configuración (producción/homologación):
@@ -89,7 +92,7 @@ class WSRemCarne(BaseWS):
     "Interfaz para el WebService de Remito Electronico Carnico (Version 3)"
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'GenerarRemito', 'EmitirRemito', 'AutorizarRemito', 'AnularRemito', 'ConsultarRemito',
-                        'InformarContingencia', 'ModificarViaje', 'RegistrarRecepcion',  'ConsultarUltimoRemitoEmitido',
+                        'InformarContingencia', 'ModificarViaje', 'RegistrarRecepcion', 'ConsultarUltimoRemitoEmitido',
                         'CrearRemito', 'AgregarViaje', 'AgregarVehiculo', 'AgregarMercaderia',
                         'AgregarDatosAutorizacion', 'AgregarContingencia',
                         'ConsultarTiposCarne', 'ConsultarTiposCategoriaEmisor', 'ConsultarTiposCategoriaReceptor',
@@ -102,7 +105,7 @@ class WSRemCarne(BaseWS):
                       'CodRemito', 'TipoComprobante', 'PuntoEmision',
                       'NroRemito', 'CodAutorizacion', 'FechaVencimiento', 'FechaEmision', 'Estado', 'Resultado', 'QR',
                       'ErrCode', 'ErrMsg', 'Errores', 'ErroresFormato', 'Observaciones', 'Obs', 'Evento', 'Eventos',
-                     ]
+                      ]
     _reg_progid_ = "WSRemCarne"
     _reg_clsid_ = "{71DB0CB9-2ED7-4226-A1E6-C3FA7FB18F41}"
 
@@ -156,22 +159,22 @@ class WSRemCarne(BaseWS):
         self.remito = {'tipoComprobante': tipo_comprobante, 'puntoEmision': punto_emision, 'categoriaEmisor': categoria_emisor,
                        'cuitTitularMercaderia': cuit_titular_mercaderia, 'cuitDepositario': cuit_depositario,
                        'tipoReceptor': tipo_receptor, 'categoriaReceptor': categoria_receptor, 'cuitReceptor': cuit_receptor,
-                       'codDomOrigen': cod_dom_origen, 'codDomDestino': cod_dom_destino, 'tipoMovimiento': tipo_movimiento, 
+                       'codDomOrigen': cod_dom_origen, 'codDomDestino': cod_dom_destino, 'tipoMovimiento': tipo_movimiento,
                        'estado': estado, 'codRemito': cod_remito,
                        'codRemRedestinado': cod_rem_redestinar,
                        'arrayMercaderias': [], 'arrayContingencias': [],
-                      }
+                       }
         return True
 
     @inicializar_y_capturar_excepciones
     def AgregarViaje(self, cuit_transportista=None, cuit_conductor=None, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
         "Agrega la información referente al viaje del remito electrónico cárnico"
-        self.remito['viaje'] = {'cuitTransportista': cuit_transportista, 
+        self.remito['viaje'] = {'cuitTransportista': cuit_transportista,
                                 'cuitConductor': cuit_conductor,
-                                'fechaInicioViaje': fecha_inicio_viaje ,
+                                'fechaInicioViaje': fecha_inicio_viaje,
                                 'distanciaKm': distancia_km,
                                 'vehiculo': {}
-                               }
+                                }
         return True
 
     @inicializar_y_capturar_excepciones
@@ -191,8 +194,8 @@ class WSRemCarne(BaseWS):
     def AgregarDatosAutorizacion(self, nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None, **kwargs):
         "Agrega la información referente a los datos de autorización del remito electrónico cárnico"
         self.remito['datosEmision'] = dict(nroRemito=nro_remito, codAutorizacion=cod_autorizacion,
-                                                fechaEmision=fecha_emision, fechaVencimiento=fecha_vencimiento,
-                                               )
+                                           fechaEmision=fecha_emision, fechaVencimiento=fecha_vencimiento,
+                                           )
         return True
 
     @inicializar_y_capturar_excepciones
@@ -208,8 +211,8 @@ class WSRemCarne(BaseWS):
         if not self.remito['arrayContingencias']:
             del self.remito['arrayContingencias']
         response = self.client.generarRemito(
-                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                idReq=id_req, remito=self.remito) 
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            idReq=id_req, remito=self.remito)
         ret = response.get("generarRemitoReturn")
         if ret:
             self.__analizar_errores(ret)
@@ -243,9 +246,9 @@ class WSRemCarne(BaseWS):
     def EmitirRemito(self, archivo="qr.png"):
         "Emitir Remitos que se encuentren en estado Pendiente de Emitir."
         response = self.client.emitirRemito(
-                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                codRemito=self.remito['codRemito'],
-                                viaje=self.remito.get('viaje'))
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            codRemito=self.remito['codRemito'],
+            viaje=self.remito.get('viaje'))
         ret = response.get("emitirRemitoReturn")
         if ret:
             self.__analizar_errores(ret)
@@ -258,9 +261,9 @@ class WSRemCarne(BaseWS):
     def AutorizarRemito(self, archivo="qr.png"):
         "Autorizar o denegar un remito (cuando corresponde autorizacion) por parte del titular/depositario"
         response = self.client.autorizarRemito(
-                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                codRemito=self.remito['codRemito'],
-                                estado=self.remito['estado'])
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            codRemito=self.remito['codRemito'],
+            estado=self.remito['estado'])
         ret = response.get("autorizarRemitoReturn")
         if ret:
             self.__analizar_errores(ret)
@@ -273,8 +276,8 @@ class WSRemCarne(BaseWS):
     def AnularRemito(self):
         "Anular un remito generado que aún no haya sido emitido"
         response = self.client.anularRemito(
-                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                codRemito=self.remito['codRemito'])
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            codRemito=self.remito['codRemito'])
         ret = response.get("anularRemitoReturn")
         if ret:
             self.__analizar_errores(ret)
@@ -287,9 +290,9 @@ class WSRemCarne(BaseWS):
     def ConsultarUltimoRemitoEmitido(self, tipo_comprobante=995, punto_emision=1):
         "Obtener el último número de remito que se emitió por tipo de comprobante y punto de emisión"
         response = self.client.consultarUltimoRemitoEmitido(
-                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                tipoComprobante=tipo_comprobante,
-                                puntoEmision=punto_emision)
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            tipoComprobante=tipo_comprobante,
+            puntoEmision=punto_emision)
         ret = response.get("consultarUltimoRemitoReturn", {})
         id_req = ret.get("idReq", 0)
         rec = ret.get("remito", {})
@@ -305,12 +308,12 @@ class WSRemCarne(BaseWS):
         "Obtener los datos de un remito generado"
         print((self.client.help("consultarRemito")))
         response = self.client.consultarRemito(
-                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                codRemito=cod_remito,
-                                idReq=id_req,
-                                tipoComprobante=tipo_comprobante,
-                                puntoEmision=punto_emision,
-                                nroComprobante=nro_comprobante)
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            codRemito=cod_remito,
+            idReq=id_req,
+            tipoComprobante=tipo_comprobante,
+            puntoEmision=punto_emision,
+            nroComprobante=nro_comprobante)
         ret = response.get("consultarRemitoReturn", {})
         id_req = ret.get("idReq", 0)
         self.remito = rec = ret.get("remito", {})
@@ -332,10 +335,10 @@ class WSRemCarne(BaseWS):
     def ConsultarTiposComprobante(self, sep="||"):
         "Obtener el código y descripción para tipo de comprobante"
         ret = self.client.consultarTiposComprobante(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                                )['consultarTiposComprobanteReturn']
+            authRequest={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentada': self.Cuit, },
+        )['consultarTiposComprobanteReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayTiposComprobante', [])
         lista = [it['codigoDescripcion'] for it in array]
@@ -345,10 +348,10 @@ class WSRemCarne(BaseWS):
     def ConsultarTiposContingencia(self, sep="||"):
         "Obtener el código y descripción para cada tipo de contingencia que puede reportar"
         ret = self.client.consultarTiposContingencia(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                                )['consultarTiposContingenciaReturn']
+            authRequest={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentada': self.Cuit, },
+        )['consultarTiposContingenciaReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayTiposContingencia', [])
         lista = [it['codigoDescripcion'] for it in array]
@@ -358,10 +361,10 @@ class WSRemCarne(BaseWS):
     def ConsultarTiposCategoriaEmisor(self, sep="||"):
         "Obtener el código y descripción para tipos de categorías de emisor"
         ret = self.client.consultarTiposCategoriaEmisor(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                                )['consultarCategoriasEmisorReturn']
+            authRequest={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentada': self.Cuit, },
+        )['consultarCategoriasEmisorReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayCategoriasEmisor', [])
         lista = [it['codigoDescripcionString'] for it in array]
@@ -371,10 +374,10 @@ class WSRemCarne(BaseWS):
     def ConsultarTiposCategoriaReceptor(self, sep="||"):
         "Obtener el código y descripción para cada tipos de categorías de receptor"
         ret = self.client.consultarTiposCategoriaReceptor(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                                )['consultarCategoriasReceptorReturn']
+            authRequest={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentada': self.Cuit, },
+        )['consultarCategoriasReceptorReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayCategoriasReceptor', [])
         lista = [it['codigoDescripcionString'] for it in array]
@@ -384,10 +387,10 @@ class WSRemCarne(BaseWS):
     def ConsultarTiposEstado(self, sep="||"):
         "Obtener el código y descripción para cada estado posibles en los que puede estar un remito cárnico"
         ret = self.client.consultarTiposEstado(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                                )['consultarTiposEstadoReturn']
+            authRequest={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentada': self.Cuit, },
+        )['consultarTiposEstadoReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayTiposEstado', [])
         lista = [it['codigoDescripcionString'] for it in array]
@@ -397,10 +400,10 @@ class WSRemCarne(BaseWS):
     def ConsultarGruposCarne(self, sep="||"):
         "Obtener el código y descripción para los grupos de los distintos tipos de cortes de carne"
         ret = self.client.consultarGruposCarne(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                                )['consultarGruposCarneReturn']
+            authRequest={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentada': self.Cuit, },
+        )['consultarGruposCarneReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayGruposCarne', [])
         lista = [it['codigoDescripcionString'] for it in array]
@@ -410,11 +413,11 @@ class WSRemCarne(BaseWS):
     def ConsultarTiposCarne(self, cod_grupo_carne=1, sep="||"):
         "Obtener el código y descripción para tipos de corte de carne"
         ret = self.client.consultarTiposCarne(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                            codGrupoCarne=cod_grupo_carne,
-                            )['consultarTiposCarneReturn']
+            authRequest={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentada': self.Cuit, },
+            codGrupoCarne=cod_grupo_carne,
+        )['consultarTiposCarneReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayTiposCarne', [])
         lista = [it['codigoDescripcionString'] for it in array]
@@ -424,22 +427,21 @@ class WSRemCarne(BaseWS):
     def ConsultarCodigosDomicilio(self, cuit_titular=1, sep="||"):
         "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
         ret = self.client.consultarCodigosDomicilio(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                            cuitTitularDomicilio=cuit_titular,
-                            )['consultarCodigosDomicilioReturn']
+            authRequest={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentada': self.Cuit, },
+            cuitTitularDomicilio=cuit_titular,
+        )['consultarCodigosDomicilioReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayDomicilios', [])
         lista = [it['codigoDescripcion'] for it in array]
         return [("%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
 
-
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
+if not hasattr(sys, "frozen"):
     basepath = __file__
-elif sys.frozen=='dll':
+elif sys.frozen == 'dll':
     import win32api
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
@@ -461,7 +463,7 @@ if __name__ == '__main__':
     from configparser import SafeConfigParser
 
     try:
-    
+
         if "--version" in sys.argv:
             print("Versión: ", __version__)
 
@@ -473,24 +475,25 @@ if __name__ == '__main__':
 
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
-        CERT = config.get('WSAA','CERT')
-        PRIVATEKEY = config.get('WSAA','PRIVATEKEY')
-        CUIT = config.get('WSRemCarne','CUIT')
-        ENTRADA = config.get('WSRemCarne','ENTRADA')
-        SALIDA = config.get('WSRemCarne','SALIDA')
-        
-        if config.has_option('WSAA','URL') and not HOMO:
-            wsaa_url = config.get('WSAA','URL')
+        CERT = config.get('WSAA', 'CERT')
+        PRIVATEKEY = config.get('WSAA', 'PRIVATEKEY')
+        CUIT = config.get('WSRemCarne', 'CUIT')
+        ENTRADA = config.get('WSRemCarne', 'ENTRADA')
+        SALIDA = config.get('WSRemCarne', 'SALIDA')
+
+        if config.has_option('WSAA', 'URL') and not HOMO:
+            wsaa_url = config.get('WSAA', 'URL')
         else:
             wsaa_url = None
-        if config.has_option('WSRemCarne','URL') and not HOMO:
-            wsremcarne_url = config.get('WSRemCarne','URL')
+        if config.has_option('WSRemCarne', 'URL') and not HOMO:
+            wsremcarne_url = config.get('WSRemCarne', 'URL')
         else:
             wsremcarne_url = WSDL[HOMO]
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print("conf_dbf", conf_dbf)
+            if DEBUG:
+                print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
 
@@ -537,7 +540,8 @@ if __name__ == '__main__':
             ok = wsremcarne.ConsultarUltimoRemitoEmitido(tipo_comprobante, pto_emision)
             if wsremcarne.Excepcion:
                 print("EXCEPCION:", wsremcarne.Excepcion, file=sys.stderr)
-                if DEBUG: print(wsremcarne.Traceback, file=sys.stderr)
+                if DEBUG:
+                    print(wsremcarne.Traceback, file=sys.stderr)
             print("Ultimo Nro de Remito", wsremcarne.NroRemito)
             print("Errores:", wsremcarne.Errores)
 
@@ -551,7 +555,8 @@ if __name__ == '__main__':
             ok = wsremcarne.ConsultarRemito(cod_remito)
             if wsremcarne.Excepcion:
                 print("EXCEPCION:", wsremcarne.Excepcion, file=sys.stderr)
-                if DEBUG: print(wsremcarne.Traceback, file=sys.stderr)
+                if DEBUG:
+                    print(wsremcarne.Traceback, file=sys.stderr)
             print("Ultimo Nro de Remito", wsremcarne.NroRemito)
             print("Errores:", wsremcarne.Errores)
             if DEBUG:
@@ -560,21 +565,21 @@ if __name__ == '__main__':
 
         if '--prueba' in sys.argv:
             rec = dict(tipo_comprobante=995, punto_emision=1, categoria_emisor=1,
-                          tipo_movimiento='ENV',  # ENV: Envio Normal, PLA: Retiro en planta, REP: Reparto, RED: Redestino
-                          cuit_titular_mercaderia='20222222223', cod_dom_origen=1,
-                          tipo_receptor='EM',  # 'EM': DEPOSITO EMISOR, 'MI': MERCADO INTERNO, 'RP': REPARTO
-                          categoria_receptor=1, id_req=int(time.time()),
-                          cuit_receptor='20111111112', cuit_depositario=None,
-                          cod_dom_destino=1, cod_rem_redestinar=None,
-                          cod_remito=30,
-                        )
+                       tipo_movimiento='ENV',  # ENV: Envio Normal, PLA: Retiro en planta, REP: Reparto, RED: Redestino
+                       cuit_titular_mercaderia='20222222223', cod_dom_origen=1,
+                       tipo_receptor='EM',  # 'EM': DEPOSITO EMISOR, 'MI': MERCADO INTERNO, 'RP': REPARTO
+                       categoria_receptor=1, id_req=int(time.time()),
+                       cuit_receptor='20111111112', cuit_depositario=None,
+                       cod_dom_destino=1, cod_rem_redestinar=None,
+                       cod_remito=30,
+                       )
             if "--autorizar" in sys.argv:
                 rec["estado"] = 'A'  # 'A': Autorizar, 'D': Denegar
             rec['viaje'] = dict(cuit_transportista='20333333334', cuit_conductor='20333333334',
-                                   fecha_inicio_viaje='2018-10-01', distancia_km=999)
+                                fecha_inicio_viaje='2018-10-01', distancia_km=999)
             rec['viaje']['vehiculo'] = dict(dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000')
             rec['mercaderias'] = [dict(orden=1, tropa=1, cod_tipo_prod='2.13', cantidad=10, unidades=1)]
-            rec['datos_autorizacion'] = None # dict(nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
+            rec['datos_autorizacion'] = None  # dict(nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
             rec['contingencias'] = [dict(tipo=1, observacion="anulacion")]
             with open(ENTRADA, "w") as archivo:
                 json.dump(rec, archivo, sort_keys=True, indent=4)
@@ -674,9 +679,9 @@ if __name__ == '__main__':
             print("Errores:", wsremcarne.Errores, wsremcarne.ErroresFormato)
 
         print("hecho.")
-        
+
     except SoapFault as e:
-        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii", "ignore"))
         sys.exit(3)
     except Exception as e:
         ex = utils.exception_info()

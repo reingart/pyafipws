@@ -10,6 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+from .formato_txt import A, N, I, ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
 "Módulo para manejo de Facturas Electrónicas en tablas DBF (dBase, FoxPro, Clipper et.al.)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
@@ -23,9 +24,9 @@ CODEPAGE = 'cp437'
 
 try:
     import dbf
-except:
+except BaseException:
     dbf = None
-    
+
 CHARSET = 'latin1'
 CODEPAGE = 'cp437'
 DEBUG = True
@@ -37,7 +38,6 @@ if dbf and hasattr(dbf, "encoding"):
 
 # definición del formato del archivo de intercambio:
 
-from .formato_txt import A, N, I, ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
 
 # agrego identificadores unicos para relacionarlos con el encabezado
 DETALLE = [('id', 15, N)] + DETALLE
@@ -57,17 +57,17 @@ def definir_campos(formato):
             longitud, decimales = longitud
         else:
             decimales = 2
-        if longitud>250:
+        if longitud > 250:
             tipo = "M"                  # memo!
         elif tipo == A:
             tipo = "C(%s)" % longitud   # character
         elif tipo == N:
-            tipo = "N(%s,0)" % longitud # numeric
+            tipo = "N(%s,0)" % longitud  # numeric
         elif tipo == I:
-            tipo = "N(%s,%s)" % (longitud, decimales) # "currency"
+            tipo = "N(%s,%s)" % (longitud, decimales)  # "currency"
         else:
             raise RuntimeError("Tipo desconocido: %s %s %s %s" % (tipo, clave, longitud, decimales))
-        nombre =dar_nombre_campo(clave)
+        nombre = dar_nombre_campo(clave)
         campo = "%s %s" % (nombre, tipo)
         campos.append(campo)
         claves.append(nombre)
@@ -79,26 +79,28 @@ CLAVES_ESPECIALES = {
     'Dato_adicional2': "datoadic02",
     'Dato_adicional3': "datoadic03",
     'Dato_adicional4': "datoadic04",
-    }
+}
 
 
 def dar_nombre_campo(clave):
     "Reducir nombre de campo a 10 caracteres, sin espacios ni _, sin repetir"
     nombre = CLAVES_ESPECIALES.get(clave)
     if not nombre:
-        nombre = clave.replace("_","")[:10]
+        nombre = clave.replace("_", "")[:10]
     return nombre.lower()
 
 
 def leer(archivos=None, carpeta=None):
     "Leer las tablas dbf y devolver una lista de diccionarios con las facturas"
-    if DEBUG: print("Leyendo DBF...")
-    if archivos is None: archivos = {}
+    if DEBUG:
+        print("Leyendo DBF...")
+    if archivos is None:
+        archivos = {}
     regs = {}
-    formatos = [('Encabezado', ENCABEZADO, None), 
+    formatos = [('Encabezado', ENCABEZADO, None),
                 ('Detalle', DETALLE, 'detalles'),
-                ('Iva', IVA, 'ivas'), 
-                ('Tributo', TRIBUTO, 'tributos'), 
+                ('Iva', IVA, 'ivas'),
+                ('Tributo', TRIBUTO, 'tributos'),
                 ('Permiso', PERMISO, 'permisos'),
                 ('Comprobante Asociado', CMP_ASOC, 'cbtes_asoc'),
                 ('Dato', DATO, 'datos'),
@@ -110,18 +112,19 @@ def leer(archivos=None, carpeta=None):
         # construir ruta absoluta si se especifica carpeta
         if carpeta is not None:
             filename = os.path.join(carpeta, filename)
-        if DEBUG: print("leyendo tabla", nombre, filename)
+        if DEBUG:
+            print("leyendo tabla", nombre, filename)
         tabla = dbf.Table(filename, codepage=CODEPAGE)
         for reg in tabla:
             r = {}
-            d = reg.scatter_fields() 
+            d = reg.scatter_fields()
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 nombre = dar_nombre_campo(clave)
                 v = d.get(nombre)
                 r[clave] = v
-            # agrego 
-            if formato==ENCABEZADO:
+            # agrego
+            if formato == ENCABEZADO:
                 r.update({
                     'detalles': [],
                     'ivas': [],
@@ -129,27 +132,29 @@ def leer(archivos=None, carpeta=None):
                     'permisos': [],
                     'cbtes_asoc': [],
                     'datos': [],
-                    })
+                })
                 regs[r['id']] = r
             else:
-                regs[r['id']][subclave].append(r) 
-                
+                regs[r['id']][subclave].append(r)
+
     return regs
 
 
 def escribir(regs, archivos=None, carpeta=None):
     "Grabar en talbas dbf la lista de diccionarios con la factura"
-    if DEBUG: print("Creando DBF...")
-    if not archivos: filenames = {}
-    
+    if DEBUG:
+        print("Creando DBF...")
+    if not archivos:
+        filenames = {}
+
     for reg in regs:
-        formatos = [('Encabezado', ENCABEZADO, [reg]), 
-                    ('Detalle', DETALLE, reg.get('detalles', [])), 
-                    ('Iva', IVA, reg.get('ivas', [])), 
+        formatos = [('Encabezado', ENCABEZADO, [reg]),
+                    ('Detalle', DETALLE, reg.get('detalles', [])),
+                    ('Iva', IVA, reg.get('ivas', [])),
                     ('Tributo', TRIBUTO, reg.get('tributos', [])),
-                    ('Permiso', PERMISO, reg.get('permisos', [])), 
+                    ('Permiso', PERMISO, reg.get('permisos', [])),
                     ('Comprobante Asociado', CMP_ASOC, reg.get('cbtes_asoc', [])),
-                    ('Dato', DATO, reg.get('datos', [])), 
+                    ('Dato', DATO, reg.get('datos', [])),
                     ]
         for nombre, formato, l in formatos:
             claves, campos = definir_campos(formato)
@@ -157,21 +162,23 @@ def escribir(regs, archivos=None, carpeta=None):
             # construir ruta absoluta si se especifica carpeta
             if carpeta is not None:
                 filename = os.path.join(carpeta, filename)
-            if DEBUG: print("leyendo tabla", nombre, filename)
+            if DEBUG:
+                print("leyendo tabla", nombre, filename)
             tabla = dbf.Table(filename, campos)
 
             for d in l:
                 r = {}
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
-                    if clave=='id':
+                    if clave == 'id':
                         v = reg['id']
                     else:
                         v = d.get(clave, None)
-                    if DEBUG: print(clave,v, tipo)
+                    if DEBUG:
+                        print(clave, v, tipo)
                     if v is None and tipo == A:
                         v = ''
-                    if (v is None or v=='') and tipo in (I, N):
+                    if (v is None or v == '') and tipo in (I, N):
                         v = 0
                     if tipo == A:
                         if isinstance(v, str):
@@ -188,17 +195,17 @@ def escribir(regs, archivos=None, carpeta=None):
 def ayuda():
     "Imprimir ayuda con las tablas DBF y definición de campos"
     print("=== Formato DBF: ===")
-    tipos_registro =  [
+    tipos_registro = [
         ('Encabezado', ENCABEZADO),
         ('Detalle Item', DETALLE),
-        ('Iva', IVA), 
-        ('Tributo', TRIBUTO), 
+        ('Iva', IVA),
+        ('Tributo', TRIBUTO),
         ('Comprobante Asociado', CMP_ASOC),
         ('Permisos', PERMISO),
         ('Datos', DATO),
-        ]
+    ]
     for msg, formato in tipos_registro:
-        filename =  "%s.dbf" % msg.lower()[:8]
+        filename = "%s.dbf" % msg.lower()[:8]
         print("==== %s (%s) ====" % (msg, filename))
         claves, campos = definir_campos(formato)
         for campo in campos:

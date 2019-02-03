@@ -24,7 +24,8 @@ import traceback
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
-import sys, os
+import sys
+import os
 import smtplib
 from configparser import SafeConfigParser
 
@@ -35,18 +36,17 @@ DEBUG = False
 class PyEmail:
     "Interfaz para enviar correos de Factura Electrónica"
     _public_methods_ = ['Conectar', 'Crear', 'Enviar',
-                        'AgregarDestinatario', 'Adjuntar', 
+                        'AgregarDestinatario', 'Adjuntar',
                         'AgregarCC', 'AgregarBCC',
                         ]
     _public_attrs_ = [
-                    'Motivo', 'Remitente', 'Destinatarios', 'ResponderA',
-                    'MensajeHTML', 'MensajeTexto',
-                    'Version', 'Excepcion', 'Traceback',
-                    ]
-        
+        'Motivo', 'Remitente', 'Destinatarios', 'ResponderA',
+        'MensajeHTML', 'MensajeTexto',
+        'Version', 'Excepcion', 'Traceback',
+    ]
+
     _reg_progid_ = "PyEmail"
     _reg_clsid_ = "{2BEF3037-BF38-41AA-84A3-6F109D543FC9}"
-
 
     def __init__(self):
         self.Version = __version__
@@ -82,9 +82,9 @@ class PyEmail:
                 self.smtp.login(usuario, clave)
             return True
         except Exception as e:
-            ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+            ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
             self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
+            self.Excepcion = traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0]
             return False
 
     def Crear(self, remitente="", motivo=""):
@@ -99,7 +99,7 @@ class PyEmail:
         "Agrega una dirección de correo de destino"
         self.Destinatarios.append(destinatario)
         return True
-        
+
     def AgregarCC(self, destinatario):
         "Agrega una dirección de correo de destino (copia carbónica)"
         self.CC.append(destinatario)
@@ -114,13 +114,13 @@ class PyEmail:
         "Agrega un archivo para ser enviado como adjunto"
         self.adjuntos.append(archivo)
         return True
-        
+
     def Enviar(self, remitente="", motivo="", destinatario="", mensaje="", archivo=None):
         "Generar un correo multiparte y enviarlo"
         try:
-            to = ([destinatario] if destinatario 
+            to = ([destinatario] if destinatario
                   else self.Destinatarios)
-            
+
             msg = MIMEMultipart('related')
             msg['Subject'] = motivo or self.Motivo
             msg['From'] = remitente or self.Remitente
@@ -133,14 +133,14 @@ class PyEmail:
                 to += self.BCC
 
             msg.preamble = 'Mensaje de multiples partes.\n'
-            
+
             if mensaje:
                 text = mensaje
                 html = None
             else:
                 text = self.MensajeTexto
                 html = self.MensajeHTML
-            
+
             if html:
                 alt = MIMEMultipart('alternative')
                 msg.attach(alt)
@@ -151,24 +151,24 @@ class PyEmail:
             else:
                 part = MIMEText(text)
                 msg.attach(part)
-            
+
             if archivo:
                 self.adjuntos.append(archivo)
 
             for archivo in self.adjuntos:
-                part = MIMEApplication(open(archivo,"rb").read())
-                part.add_header('Content-Disposition', 'attachment', 
-                                    filename=os.path.basename(archivo))
+                part = MIMEApplication(open(archivo, "rb").read())
+                part.add_header('Content-Disposition', 'attachment',
+                                filename=os.path.basename(archivo))
                 msg.attach(part)
 
-            #print "Enviando email: %s a %s" % (msg['Subject'], msg['To'])
+            # print "Enviando email: %s a %s" % (msg['Subject'], msg['To'])
             self.smtp.sendmail(msg['From'], to, msg.as_string())
 
             return True
         except Exception as e:
-            ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+            ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
             self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
+            self.Excepcion = traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0]
             return False
 
     def Salir(self):
@@ -177,12 +177,12 @@ class PyEmail:
             self.smtp.quit()
             return True
         except Exception as e:
-            ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+            ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
             self.Traceback = ''.join(ex)
-            self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
+            self.Excepcion = traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0]
             return False
 
-            
+
 if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -192,7 +192,7 @@ if __name__ == '__main__':
         from distutils.core import setup
         from .nsis import build_installer, Target
         import py2exe
-        setup( 
+        setup(
             name="PyEmail",
             version=__version__,
             description="Interfaz PyAfipWs Email %s",
@@ -201,22 +201,22 @@ if __name__ == '__main__':
             author_email="reingart@gmail.com",
             url="http://www.sistemasagiles.com.ar",
             license="GNU GPL v3",
-            com_server = ['pyemail'],
+            com_server=['pyemail'],
             console=[],
-            options={ 
+            options={
                 'py2exe': {
-                'includes': ['email.generator', 'email.iterators', 'email.message', 'email.utils'],
-                'optimize': 2,
-                'excludes': ["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui","distutils.core","py2exe","nsis"],
-                #'skip_archive': True,
-            }},
-            data_files = [(".", ["licencia.txt"]),],
-            cmdclass = {"py2exe": build_installer}
+                    'includes': ['email.generator', 'email.iterators', 'email.message', 'email.utils'],
+                    'optimize': 2,
+                    'excludes': ["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui", "distutils.core", "py2exe", "nsis"],
+                    # 'skip_archive': True,
+                }},
+            data_files=[(".", ["licencia.txt"]), ],
+            cmdclass={"py2exe": build_installer}
         )
     elif "/Automate" in sys.argv:
         # MS seems to like /automate to run the class factories.
         import win32com.server.localserver
-        #win32com.server.localserver.main()
+        # win32com.server.localserver.main()
         # start the server.
         win32com.server.localserver.serve([PyEmail._reg_clsid_])
     elif "/prueba" in sys.argv:
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         ok = pyemail.Enviar(usuario, "prueba", usuario, "prueba!", None)
         print("mail enviado?", ok, pyemail.Excepcion)
         ok = pyemail.Salir()
-    else:        
+    else:
         config = SafeConfigParser()
         config.read("rece.ini")
 
@@ -239,27 +239,27 @@ if __name__ == '__main__':
             print("VERSION", __version__)
             sys.argv.remove("/debug")
 
-        if len(sys.argv)<3:
+        if len(sys.argv) < 3:
             print("Parámetros: motivo destinatario [mensaje] [archivo]")
             sys.exit(1)
 
         conf_mail = dict(config.items('MAIL'))
         motivo = sys.argv[1]
         destinatario = sys.argv[2]
-        mensaje = len(sys.argv)>3 and sys.argv[3] or conf_mail['cuerpo']
-        archivo = len(sys.argv)>4 and sys.argv[4] or None
-        
+        mensaje = len(sys.argv) > 3 and sys.argv[3] or conf_mail['cuerpo']
+        archivo = len(sys.argv) > 4 and sys.argv[4] or None
+
         print("Motivo: ", motivo)
         print("Destinatario: ", destinatario)
         print("Mensaje: ", mensaje)
         print("Archivo: ", archivo)
-        
+
         pyemail = PyEmail()
-        ok = pyemail.Conectar(conf_mail['servidor'], 
+        ok = pyemail.Conectar(conf_mail['servidor'],
                               conf_mail['usuario'], conf_mail['clave'],
                               conf_mail.get('puerto', 25))
         if ok:
-            pyemail.Enviar(conf_mail['remitente'], 
+            pyemail.Enviar(conf_mail['remitente'],
                            motivo, destinatario, mensaje, archivo)
         else:
             print(pyemail.Traceback)

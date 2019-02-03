@@ -20,7 +20,9 @@ __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
 __version__ = "1.02h"
 
-import os, sys, traceback
+import os
+import sys
+import traceback
 from pysimplesoap.simplexml import SimpleXMLElement
 
 from .utils import WebClient
@@ -31,26 +33,26 @@ CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producción)
 ##URL = "https://cot.ec.gba.gob.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"
 # Nuevo servidor para el "Remito Electrónico Automático"
 URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # testing
-#URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # prod.
+# URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # prod.
 
 
 class COT:
     "Interfaz para el servicio de Remito Electronico ARBA"
-    _public_methods_ = ['Conectar', 'PresentarRemito', 'LeerErrorValidacion', 
+    _public_methods_ = ['Conectar', 'PresentarRemito', 'LeerErrorValidacion',
                         'LeerValidacionRemito',
                         'AnalizarXml', 'ObtenerTagXml']
-    _public_attrs_ = ['Usuario', 'Password', 'XmlResponse', 
-        'Version', 'Excepcion', 'Traceback', 'InstallDir',
-        'CuitEmpresa', 'NumeroComprobante', 'CodigoIntegridad', 'NombreArchivo',
-        'TipoError', 'CodigoError', 'MensajeError',
-        'NumeroUnico', 'Procesado',
-        ]
-        
+    _public_attrs_ = ['Usuario', 'Password', 'XmlResponse',
+                      'Version', 'Excepcion', 'Traceback', 'InstallDir',
+                      'CuitEmpresa', 'NumeroComprobante', 'CodigoIntegridad', 'NombreArchivo',
+                      'TipoError', 'CodigoError', 'MensajeError',
+                      'NumeroUnico', 'Procesado',
+                      ]
+
     _reg_progid_ = "COT"
     _reg_clsid_ = "{7518B2CF-23E9-4821-BC55-D15966E15620}"
 
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
-    
+
     def __init__(self):
         self.Usuario = self.Password = None
         self.TipoError = self.CodigoError = self.MensajeError = ""
@@ -67,7 +69,7 @@ class COT:
         self.Excepcion = self.Traceback = ""
         self.TipoError = self.CodigoError = self.MensajeError = ""
         self.CuitEmpresa = self.NumeroComprobante = ""
-        self.NombreArchivo = self.CodigoIntegridad  = ""
+        self.NombreArchivo = self.CodigoIntegridad = ""
         self.NumeroUnico = self.Procesado = ""
 
     def Conectar(self, url=None, proxy="", wrapper=None, cacert=None, trace=False):
@@ -82,14 +84,14 @@ class COT:
                 self.Excepcion = "Archivo no encontrado: %s" % filename
                 return False
 
-            archivo = open(filename,"rb")
+            archivo = open(filename, "rb")
             if not testing:
-                response = self.client(user=self.Usuario, password=self.Password, 
-                                   file=archivo)
+                response = self.client(user=self.Usuario, password=self.Password,
+                                       file=archivo)
             else:
                 response = open(testing).read()
             self.XmlResponse = response
-            self.xml = SimpleXMLElement(response)  
+            self.xml = SimpleXMLElement(response)
             if 'tipoError' in self.xml:
                 self.TipoError = str(self.xml.tipoError)
                 self.CodigoError = str(self.xml.codigoError)
@@ -98,31 +100,31 @@ class COT:
                 self.CuitEmpresa = str(self.xml.cuitEmpresa)
                 self.NumeroComprobante = str(self.xml.numeroComprobante)
                 self.NombreArchivo = str(self.xml.nombreArchivo)
-                self.CodigoIntegridad  = str(self.xml.codigoIntegridad)
+                self.CodigoIntegridad = str(self.xml.codigoIntegridad)
                 if 'validacionesRemitos' in self.xml:
                     for remito in self.xml.validacionesRemitos.remito:
                         d = {
                             'NumeroUnico': str(remito.numeroUnico),
                             'Procesado': str(remito.procesado),
                             'Errores': [],
-                            }
+                        }
                         if 'errores' in remito:
                             for error in remito.errores.error:
                                 d['Errores'].append((
-                                    str(error.codigo), 
+                                    str(error.codigo),
                                     str(error.descripcion).decode('latin1').encode("ascii", "replace")))
                         self.remitos.append(d)
                     # establecer valores del primer remito (sin eliminarlo)
                     self.LeerValidacionRemito(pop=False)
-            return True      
+            return True
         except Exception as e:
-                ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
-                self.Traceback = ''.join(ex)
-                try:
-                    self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
-                except:
-                    self.Excepcion = "<no disponible>"
-                return False
+            ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+            self.Traceback = ''.join(ex)
+            try:
+                self.Excepcion = traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0]
+            except BaseException:
+                self.Excepcion = "<no disponible>"
+            return False
 
     def LeerValidacionRemito(self, pop=True):
         "Leeo el próximo remito"
@@ -159,7 +161,7 @@ class COT:
         "Analiza un mensaje XML (por defecto la respuesta)"
         try:
             if not xml:
-                xml = self.XmlResponse 
+                xml = self.XmlResponse
             self.xml = SimpleXMLElement(xml)
             return True
         except Exception as e:
@@ -174,7 +176,7 @@ class COT:
                 xml = self.xml
                 # por cada tag, lo busco segun su nombre o posición
                 for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
+                    xml = xml(tag)  # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
                 return str(xml)
         except Exception as e:
@@ -182,9 +184,9 @@ class COT:
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
+if not hasattr(sys, "frozen"):
     basepath = __file__
-elif sys.frozen=='dll':
+elif sys.frozen == 'dll':
     import win32api
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
@@ -192,16 +194,16 @@ else:
 INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(COT)
         sys.exit(0)
-    elif len(sys.argv)<4:
+    elif len(sys.argv) < 4:
         print("Se debe especificar el nombre de archivo, usuario y clave como argumentos!")
         sys.exit(1)
-        
+
     cot = COT()
     filename = sys.argv[1]      # TB_20111111112_000000_20080124_000001.txt
     cot.Usuario = sys.argv[2]   # 20267565393
@@ -217,7 +219,7 @@ if __name__=="__main__":
     if not HOMO:
         for i, arg in enumerate(sys.argv):
             if arg.startswith("--prod"):
-                URL = URL.replace("http://cot.test.arba.gov.ar", 
+                URL = URL.replace("http://cot.test.arba.gov.ar",
                                   "https://cot.arba.gov.ar")
                 print("Usando URL:", URL)
                 break
@@ -225,10 +227,10 @@ if __name__=="__main__":
                 URL = arg
                 print("Usando URL:", URL)
                 break
-        
+
     cot.Conectar(URL, trace='--trace' in sys.argv, cacert=CACERT)
     cot.PresentarRemito(filename, testing=test_response)
-    
+
     if cot.Excepcion:
         print("Excepcion:", cot.Excepcion)
         print("Traceback:", cot.Traceback)
@@ -240,7 +242,7 @@ if __name__=="__main__":
     print("Codigo Integridad:", cot.CodigoIntegridad)
 
     print("Error General:", cot.TipoError, "|", cot.CodigoError, "|", cot.MensajeError)
-    
+
     # recorro los remitos devueltos e imprimo sus datos por cada uno:
     while cot.LeerValidacionRemito():
         print("Numero Unico:", cot.NumeroUnico)
