@@ -220,9 +220,9 @@ if 'py2exe' in sys.argv:
         HOMO &= wsaa.HOMO
 
     if 'wsfev1' in globals():
-        #kwargs['com_server'] += [
-        #    Target(module=wsfev1, modules="wsfev1", create_exe=not wsfev1.TYPELIB, create_dll=not wsfev1.TYPELIB)
-        #    ]
+        kwargs['com_server'] += [
+            Target(module=wsfev1, modules="wsfev1", create_exe=not wsfev1.TYPELIB, create_dll=not wsfev1.TYPELIB)
+            ]
         kwargs['console'] += [
             Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"),
             Target(module=rece1, script='rece1.py'),
