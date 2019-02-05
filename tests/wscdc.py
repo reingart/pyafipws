@@ -10,6 +10,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+import pysimplesoap.client
+from pyafipws.wscdc import WSCDC
+from pyafipws.wsaa import WSAA
+from pyafipws import utils
 "Pruebas para el servicio web Constatación de Comprobantes de AFIP"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -23,11 +27,7 @@ from decimal import Decimal
 
 sys.path.append("/home/reingart")        # TODO: proper packaging
 
-from pyafipws import utils
-from pyafipws.wsaa import WSAA
-from pyafipws.wscdc import WSCDC
 
-import pysimplesoap.client
 print(pysimplesoap.client.__version__)
 #assert pysimplesoap.client.__version__ >= "1.08c"
 
@@ -46,8 +46,9 @@ cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
 wsaa.Conectar()
 wsaa.LoginCMS(cms)
 
+
 class TestWSCDC(unittest.TestCase):
-    
+
     def setUp(self):
         sys.argv.append("--trace")                  # TODO: use logging
         self.wscdc = wslpg = WSCDC()
@@ -55,8 +56,8 @@ class TestWSCDC(unittest.TestCase):
         wslpg.Conectar(wsdl=WSDL, cacert=None, cache=CACHE)
         wslpg.Cuit = CUIT
         wslpg.Token = wsaa.Token
-        wslpg.Sign = wsaa.Sign                    
-                    
+        wslpg.Sign = wsaa.Sign
+
     def test_constatacion_no(self):
         "Prueba de Constatación de Comprobantes (facturas electrónicas)"
         wscdc = self.wscdc
@@ -67,22 +68,21 @@ class TestWSCDC(unittest.TestCase):
         cbte_nro = 109
         cbte_fch = "20131227"
         imp_total = "121.0"
-        cod_autorizacion = "63523178385550" 
-        doc_tipo_receptor = 80 
+        cod_autorizacion = "63523178385550"
+        doc_tipo_receptor = 80
         doc_nro_receptor = "30628789661"
-        ok = wscdc.ConstatarComprobante(cbte_modo, cuit_emisor, pto_vta, cbte_tipo, 
-                             cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
-                             doc_tipo_receptor, doc_nro_receptor)
+        ok = wscdc.ConstatarComprobante(cbte_modo, cuit_emisor, pto_vta, cbte_tipo,
+                                        cbte_nro, cbte_fch, imp_total, cod_autorizacion,
+                                        doc_tipo_receptor, doc_nro_receptor)
         self.assertTrue(ok)
         self.assertEqual(wscdc.Resultado, "R")  # Rechazado
-        self.assertEqual(wscdc.Obs, "100: El N° de CAI/CAE/CAEA consultado no existe en las bases del organismo.") 
+        self.assertEqual(wscdc.Obs, "100: El N° de CAI/CAE/CAEA consultado no existe en las bases del organismo.")
         self.assertEqual(wscdc.PuntoVenta, pto_vta)
         self.assertEqual(wscdc.CbteNro, cbte_nro)
         self.assertEqual(wscdc.ImpTotal, imp_total)
         self.assertEqual(wscdc.CAE, cod_autorizacion)
         self.assertEqual(wscdc.EmisionTipo, "CAE")
 
-        
+
 if __name__ == '__main__':
     unittest.main()
-

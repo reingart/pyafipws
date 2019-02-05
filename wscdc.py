@@ -20,14 +20,16 @@ __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.02e"
 
-import sys, os, time
+import sys
+import os
+import time
 from configparser import SafeConfigParser
 from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
 
 
 # Constantes (si se usa el script de linea de comandos)
-WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL" 
+WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL"
 HOMO = False
 CONFIG_FILE = "rece.ini"
 
@@ -50,13 +52,13 @@ ENCABEZADO = [
     # campos devueltos por AFIP (respuesta)
     ('resultado', 1, A, "Resultado (A: Aprobado, O: Observado, R: rechazado)"),
     ('fch_proceso', 14, A, "Fecha y hora de procesamiento"),
-    ]
+]
 
 OBSERVACION = [
     ('tipo_reg', 1, A, "O: observaciones devueltas por AFIP"),
     ('code', 5, N, "Código de Observación / Error / Evento"),
     ('msg', 255, A, "Mensaje"),
-    ]
+]
 
 EVENTO = ERROR = OBSERVACION        # misma estructura, cambia tipo de registro
 
@@ -68,19 +70,19 @@ class WSCDC(BaseWS):
                         'ConstatarComprobante', 'Dummy',
                         'ConsultarModalidadComprobantes',
                         'ConsultarTipoComprobantes',
-                        'ConsultarTipoDocumentos', 'ConsultarTipoOpcionales',  
+                        'ConsultarTipoDocumentos', 'ConsultarTipoOpcionales',
                         'SetParametros', 'SetParametro', 'GetParametro',
                         ]
-    _public_attrs_ = ['Token', 'Sign', 'Cuit', 'ExpirationTime', 'Version', 
+    _public_attrs_ = ['Token', 'Sign', 'Cuit', 'ExpirationTime', 'Version',
                       'XmlRequest', 'XmlResponse', 'Observaciones', 'Errores',
                       'InstallDir', 'Traceback', 'Excepcion', 'ErrMsg', 'Obs',
                       'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
                       'Resultado', 'FchProceso', 'Observaciones', 'Obs',
-                      'FechaCbte', 'CbteNro', 'PuntoVenta', 'ImpTotal', 
+                      'FechaCbte', 'CbteNro', 'PuntoVenta', 'ImpTotal',
                       'EmisionTipo', 'CAE', 'CAEA', 'CAI',
                       'DocTipo', 'DocNro',
                       'SoapFault', 'LanzarExcepciones',
-                    ]
+                      ]
     _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "WSCDC"
     _reg_clsid_ = "{D1B97BDD-A78C-4D51-8999-1D9A5034EC10}"
@@ -93,7 +95,7 @@ class WSCDC(BaseWS):
     def inicializar(self):
         BaseWS.inicializar(self)
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.Resultado = self.EmisionTipo = "" 
+        self.Resultado = self.EmisionTipo = ""
         self.CAI = self.CAE = self.CAEA = self.Vencimiento = ''
         self.CbteNro = self.PuntoVenta = self.ImpTotal = None
 
@@ -105,12 +107,12 @@ class WSCDC(BaseWS):
                 self.Errores.append("%s: %s" % (
                     error['Err']['Code'],
                     error['Err']['Msg'],
-                    ))
+                ))
             self.errores = [
                 {'code': err['Err']['Code'],
                  'msg': err['Err']['Msg'].replace("\n", "")
-                                .replace("\r", "")} 
-                             for err in errores]
+                 .replace("\r", "")}
+                for err in errores]
             self.ErrCode = ' '.join([str(error['Err']['Code']) for error in errores])
             self.ErrMsg = '\n'.join(self.Errores)
 
@@ -125,26 +127,26 @@ class WSCDC(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConstatarComprobante(self, cbte_modo, cuit_emisor, pto_vta, cbte_tipo, 
-                             cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
+    def ConstatarComprobante(self, cbte_modo, cuit_emisor, pto_vta, cbte_tipo,
+                             cbte_nro, cbte_fch, imp_total, cod_autorizacion,
                              doc_tipo_receptor=None, doc_nro_receptor=None,
                              **kwargs):
         "Método de Constatación de Comprobantes"
         response = self.client.ComprobanteConstatar(
-                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
-                    CmpReq={
-                        'CbteModo': cbte_modo,
-                        'CuitEmisor': cuit_emisor,
-                        'PtoVta': pto_vta,
-                        'CbteTipo': cbte_tipo,
-                        'CbteNro': cbte_nro,
-                        'CbteFch': cbte_fch,
-                        'ImpTotal': imp_total,
-                        'CodAutorizacion': cod_autorizacion,
-                        'DocTipoReceptor': doc_tipo_receptor,
-                        'DocNroReceptor': doc_nro_receptor,
-                        }
-                    )
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            CmpReq={
+                'CbteModo': cbte_modo,
+                'CuitEmisor': cuit_emisor,
+                'PtoVta': pto_vta,
+                'CbteTipo': cbte_tipo,
+                'CbteNro': cbte_nro,
+                'CbteFch': cbte_fch,
+                'ImpTotal': imp_total,
+                'CodAutorizacion': cod_autorizacion,
+                'DocTipoReceptor': doc_tipo_receptor,
+                'DocNroReceptor': doc_nro_receptor,
+            }
+        )
         result = response['ComprobanteConstatarResult']
         self.__analizar_errores(result)
         if 'CmpResp' in result:
@@ -157,16 +159,16 @@ class WSCDC(BaseWS):
                 self.observaciones.append({
                     'code': obs['Obs']['Code'],
                     'msg': obs['Obs']['Msg'].replace("\n", "")
-                                                    .replace("\r", "")})
+                    .replace("\r", "")})
             self.Obs = '\n'.join(self.Observaciones)
-            self.FechaCbte = resp.get('CbteFch', "") #.strftime("%Y/%m/%d")
-            self.CbteNro = resp.get('CbteNro', 0) # 1L
-            self.PuntoVenta = resp.get('PtoVta', 0) # 4000
+            self.FechaCbte = resp.get('CbteFch', "")  # .strftime("%Y/%m/%d")
+            self.CbteNro = resp.get('CbteNro', 0)  # 1L
+            self.PuntoVenta = resp.get('PtoVta', 0)  # 4000
             self.ImpTotal = str(resp['ImpTotal'])
             self.EmisionTipo = resp['CbteModo']
             self.DocTipo = resp.get('DocTipoReceptor', '')
             self.DocNro = resp.get('DocNroReceptor', '')
-            cod_aut = str(resp.get('CodAutorizacion', "")) # 60423794871430L
+            cod_aut = str(resp.get('CodAutorizacion', ""))  # 60423794871430L
             if self.EmisionTipo == 'CAE':
                 self.CAE = cod_aut
             elif self.EmisionTipo == 'CAEA':
@@ -174,51 +176,51 @@ class WSCDC(BaseWS):
             elif self.EmisionTipo == 'CAI':
                 self.CAI = cod_aut
         return True
-        
+
     @inicializar_y_capturar_excepciones
     def ConsultarModalidadComprobantes(self, sep="|"):
         "Recuperador de modalidades de autorización de comprobantes"
         response = self.client.ComprobantesModalidadConsultar(
-                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
-                    )
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+        )
         result = response['ComprobantesModalidadConsultarResult']
         self.__analizar_errores(result)
         return [("\t%(Cod)s\t%(Desc)s\t" % p['FacModTipo']).replace("\t", sep)
-                 for p in result['ResultGet']]
+                for p in result['ResultGet']]
 
     @inicializar_y_capturar_excepciones
     def ConsultarTipoComprobantes(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de comprobante"
         response = self.client.ComprobantesTipoConsultar(
-                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
-                    )
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+        )
         result = response['ComprobantesTipoConsultarResult']
         self.__analizar_errores(result)
         return [("\t%(Id)s\t%(Desc)s\t" % p['CbteTipo']).replace("\t", sep)
-                 for p in result['ResultGet']]
-        
+                for p in result['ResultGet']]
+
     @inicializar_y_capturar_excepciones
     def ConsultarTipoDocumentos(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de Documentos"
         response = self.client.DocumentosTipoConsultar(
-                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
-                    )
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+        )
         result = response['DocumentosTipoConsultarResult']
         self.__analizar_errores(result)
         return [("\t%(Id)s\t%(Desc)s\t" % p['DocTipo']).replace("\t", sep)
-                 for p in result['ResultGet']]
-                         
+                for p in result['ResultGet']]
+
     @inicializar_y_capturar_excepciones
     def ConsultarTipoOpcionales(self, sep="|"):
         "Recuperador de valores referenciales de códigos de Tipos de datos Opcionales"
         response = self.client.OpcionalesTipoConsultar(
-                    Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
-                    )
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+        )
         result = response['OpcionalesTipoConsultarResult']
         res = result['ResultGet'] if 'ResultGet' in result else []
         self.__analizar_errores(result)
         return [("\t%(Id)s\t%(Desc)s\t" % p['OpcionalTipo']).replace("\t", sep)
-                 for p in res]
+                for p in res]
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -227,7 +229,7 @@ INSTALL_DIR = WSCDC.InstallDir = get_install_dir()
 
 def escribir_archivo(dic, nombre_archivo, agrega=True):
     archivo = open(nombre_archivo, agrega and "a" or "w")
-    formatos = [('Encabezado', ENCABEZADO, [dic], 0), 
+    formatos = [('Encabezado', ENCABEZADO, [dic], 0),
                 ('Observacion', OBSERVACION, dic.get('observaciones', []), 'O'),
                 ('Eventos', ERROR, dic.get('eventos', []), 'V'),
                 ('Error', ERROR, dic.get('errores', []), 'E'),
@@ -250,19 +252,19 @@ def leer_archivo(nombre_archivo):
         dic = json.load(archivo)
     elif '--dbf' in sys.argv:
         dic = {}
-        formatos = [('Encabezado', ENCABEZADO, dic), 
+        formatos = [('Encabezado', ENCABEZADO, dic),
                     ]
         leer_dbf(formatos, conf_dbf)
     else:
         dic = {}
         for linea in archivo:
-            if str(linea[0])=='0':
+            if str(linea[0]) == '0':
                 d = leer(linea, ENCABEZADO)
                 dic.update(d)
             else:
                 print("Tipo de registro incorrecto:", linea[0])
     archivo.close()
-                
+
     if not 'cod_autorizacion' in dic:
         raise RuntimeError("Archivo de entrada invalido, revise campos y lineas en blanco")
 
@@ -276,7 +278,7 @@ def main():
         print("Formato:")
         for msg, formato in [('Encabezado', ENCABEZADO),
                              ('Observacion', OBSERVACION),
-                             ('Evento', EVENTO), ('Error', ERROR), 
+                             ('Evento', EVENTO), ('Error', ERROR),
                              ]:
             comienzo = 1
             print("=== %s ===" % msg)
@@ -288,22 +290,22 @@ def main():
                     clave, comienzo, longitud, tipo, desc.encode("latin1")))
                 comienzo += longitud
         sys.exit(0)
-    
+
     # leer configuracion
     global CONFIG_FILE
-    if len(sys.argv)>1 and sys.argv[1][0] not in "-/":
+    if len(sys.argv) > 1 and sys.argv[1][0] not in "-/":
         CONFIG_FILE = sys.argv.pop(1)
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
     crt = config.get('WSAA', 'CERT')
     key = config.get('WSAA', 'PRIVATEKEY')
     cuit = config.get('WSCDC', 'CUIT')
-    url_wsaa = config.get('WSAA', 'URL') if config.has_option('WSAA','URL') else ""
-    url_wscdc = config.get('WSCDC', 'URL') if config.has_option('WSCDC','URL') else ""
-    
+    url_wsaa = config.get('WSAA', 'URL') if config.has_option('WSAA', 'URL') else ""
+    url_wscdc = config.get('WSCDC', 'URL') if config.has_option('WSCDC', 'URL') else ""
+
     # leo configuración de archivos de intercambio
-    ENTRADA = config.get('WSCDC','ENTRADA')
-    SALIDA = config.get('WSCDC','SALIDA')
+    ENTRADA = config.get('WSCDC', 'ENTRADA')
+    SALIDA = config.get('WSCDC', 'SALIDA')
     if config.has_section('DBF'):
         conf_dbf = dict(config.items('DBF'))
     else:
@@ -312,9 +314,9 @@ def main():
     # instanciar la interfaz con el webservice
     wscdc = WSCDC()
     ok = wscdc.Conectar("", url_wscdc)
-    
+
     if "--dummy" in sys.argv:
-        #print wscdc.client.help("ComprobanteDummy")
+        # print wscdc.client.help("ComprobanteDummy")
         wscdc.Dummy()
         print("AppServerStatus", wscdc.AppServerStatus)
         print("DbServerStatus", wscdc.DbServerStatus)
@@ -337,14 +339,14 @@ def main():
                     cbte_modo="CAE",
                     cuit_emisor="20267565393",
                     pto_vta=3,
-                    cbte_tipo=6, 
+                    cbte_tipo=6,
                     cbte_nro=1,
                     cbte_fch="20131231",
                     imp_total="1.21",
                     cod_autorizacion="63533727749637",
-                    doc_tipo_receptor=99 ,
+                    doc_tipo_receptor=99,
                     doc_nro_receptor=0,
-                    )
+                )
                 # escribir archivo de intercambio con datos de prueba:
                 escribir_archivo(dic, ENTRADA)
             else:
@@ -361,11 +363,11 @@ def main():
             escribir_archivo(dic, SALIDA)
         else:
             # usar los datos pasados por linea de comandos:
-            wscdc.ConstatarComprobante(*sys.argv[sys.argv.index("--constatar")+1:])
-        
+            wscdc.ConstatarComprobante(*sys.argv[sys.argv.index("--constatar") + 1:])
+
         print("Resultado:", wscdc.Resultado)
         print("Mensaje de Error:", wscdc.ErrMsg)
-        print("Observaciones:", wscdc.Obs)    
+        print("Observaciones:", wscdc.Obs)
 
     if "--params" in sys.argv:
 
@@ -378,9 +380,10 @@ def main():
         print("=== Tipo Opcionales ===")
         print('\n'.join(wscdc.ConsultarTipoOpcionales("||")))
         print("Mensaje de Error:", wscdc.ErrMsg)
-        
-if __name__=="__main__":
-    
+
+
+if __name__ == "__main__":
+
     if '--register' in sys.argv or '--unregister' in sys.argv:
         import pythoncom
         import win32com.server.register
@@ -388,9 +391,8 @@ if __name__=="__main__":
     elif "/Automate" in sys.argv:
         # MS seems to like /automate to run the class factories.
         import win32com.server.localserver
-        #win32com.server.localserver.main()
+        # win32com.server.localserver.main()
         # start the server.
         win32com.server.localserver.serve([WSCDC._reg_clsid_])
     else:
         main()
-

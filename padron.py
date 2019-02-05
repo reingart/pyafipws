@@ -27,14 +27,16 @@ import os
 import shelve
 import socket
 import sqlite3
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
 import zipfile
 from email.utils import formatdate
 import sys
 import warnings
 from .utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
-                  inicializar_y_capturar_excepciones_simple, WebClient, norm, \
-                  exception_info
+    inicializar_y_capturar_excepciones_simple, WebClient, norm, \
+    exception_info
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
@@ -51,16 +53,16 @@ FORMATO = [
     ("tipo_doc", 2, N, "80: CUIT, 96: DNI, etc."),
     ("cat_iva", 2, N, "1: RI, 4: EX, 5: CF, 6: MT, etc"),
     ("email", 250, A, ""),
-    ]
+]
 
 # Mapeos constantes:
 
 PROVINCIAS = {0: 'CIUDAD AUTONOMA BUENOS AIRES', 1: 'BUENOS AIRES',
-    2: 'CATAMARCA', 3: 'CORDOBA', 4: 'CORRIENTES', 5: 'ENTRE RIOS', 6: 'JUJUY',
-    7: 'MENDOZA', 8: 'LA RIOJA', 9: 'SALTA', 10: 'SAN JUAN', 11: 'SAN LUIS',
-    12: 'SANTA FE', 13: 'SANTIAGO DEL ESTERO', 14: 'TUCUMAN', 16: 'CHACO',
-    17: 'CHUBUT', 18: 'FORMOSA', 19: 'MISIONES', 20: 'NEUQUEN', 21: 'LA PAMPA',
-    22: 'RIO NEGRO', 23: 'SANTA CRUZ', 24: 'TIERRA DEL FUEGO'}
+              2: 'CATAMARCA', 3: 'CORDOBA', 4: 'CORRIENTES', 5: 'ENTRE RIOS', 6: 'JUJUY',
+              7: 'MENDOZA', 8: 'LA RIOJA', 9: 'SALTA', 10: 'SAN JUAN', 11: 'SAN LUIS',
+              12: 'SANTA FE', 13: 'SANTIAGO DEL ESTERO', 14: 'TUCUMAN', 16: 'CHACO',
+              17: 'CHUBUT', 18: 'FORMOSA', 19: 'MISIONES', 20: 'NEUQUEN', 21: 'LA PAMPA',
+              22: 'RIO NEGRO', 23: 'SANTA CRUZ', 24: 'TIERRA DEL FUEGO'}
 
 TIPO_CLAVE = {'CUIT': 80, 'CUIL': 86, 'CDI': 86, 'DNI': 96, 'Otro': 99}
 
@@ -86,7 +88,7 @@ class PadronAFIP():
                       'tipo_persona', 'estado', 'impuestos', 'actividades',
                       'direccion', 'localidad', 'provincia', 'cod_postal',
                       'data', 'response',
-                     ]
+                      ]
     _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "PadronAFIP"
     _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
@@ -157,10 +159,10 @@ class PadronAFIP():
         p0 = None
         while True:
             p = int(size / lenght * 100)
-            if p0 is None or p>p0:
+            if p0 is None or p > p0:
                 print("Leyendo ... %0d %%" % p)
                 p0 = p
-            data = web.read(1024*100)
+            data = web.read(1024 * 100)
             size = size + len(data)
             if not data:
                 print("Descarga Terminada!")
@@ -203,29 +205,30 @@ class PadronAFIP():
             db = db = sqlite3.connect(self.db_path)
             c = db.cursor()
             c.execute("CREATE TABLE padron ("
-                        "nro_doc INTEGER, "
-                        "denominacion VARCHAR(30), "
-                        "imp_ganancias VARCHAR(2), "
-                        "imp_iva VARCHAR(2), "
-                        "monotributo VARCHAR(1), "
-                        "integrante_soc VARCHAR(1), "
-                        "empleador VARCHAR(1), "
-                        "actividad_monotributo VARCHAR(2), "
-                        "tipo_doc INTEGER, "
-                        "cat_iva INTEGER DEFAULT NULL, "
-                        "email VARCHAR(250), "
-                        "PRIMARY KEY (tipo_doc, nro_doc)"
+                      "nro_doc INTEGER, "
+                      "denominacion VARCHAR(30), "
+                      "imp_ganancias VARCHAR(2), "
+                      "imp_iva VARCHAR(2), "
+                      "monotributo VARCHAR(1), "
+                      "integrante_soc VARCHAR(1), "
+                      "empleador VARCHAR(1), "
+                      "actividad_monotributo VARCHAR(2), "
+                      "tipo_doc INTEGER, "
+                      "cat_iva INTEGER DEFAULT NULL, "
+                      "email VARCHAR(250), "
+                      "PRIMARY KEY (tipo_doc, nro_doc)"
                       ");")
             c.execute("CREATE TABLE domicilio ("
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        "tipo_doc INTEGER, "
-                        "nro_doc INTEGER, "
-                        "direccion TEXT, "
-                        "FOREIGN KEY (tipo_doc, nro_doc) REFERENCES padron "
+                      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                      "tipo_doc INTEGER, "
+                      "nro_doc INTEGER, "
+                      "direccion TEXT, "
+                      "FOREIGN KEY (tipo_doc, nro_doc) REFERENCES padron "
                       ");")
             # importar los datos a la base sqlite
             for i, l in enumerate(f):
-                if i % 10000 == 0: print(i)
+                if i % 10000 == 0:
+                    print(i)
                 l = l.strip("\x00")
                 r = leer(l, FORMATO)
                 params = [r[k] for k in keys]
@@ -286,16 +289,26 @@ class PadronAFIP():
         return len(filas)
 
     @inicializar_y_capturar_excepciones_simple
-    def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion, email):
+    def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion,
+                email, imp_ganancias='NI', imp_iva='NI', monotributo='NI',
+                integrante_soc='N', empleador='N'):
         "Agregar o actualizar los datos del cliente"
         if self.Buscar(nro_doc, tipo_doc):
-            sql = ("UPDATE padron SET denominacion=?, cat_iva=?, email=? "
-                    "WHERE tipo_doc=? AND nro_doc=?")
-            params = [denominacion, cat_iva, email, tipo_doc, nro_doc]
+            sql = ("UPDATE padron SET denominacion=?, cat_iva=?, email=?, "
+                   "imp_ganancias=?, imp_iva=?, monotributo=?, "
+                   "integrante_soc=?, empleador=? "
+                   "WHERE tipo_doc=? AND nro_doc=?")
+            params = [denominacion, cat_iva, email, imp_ganancias,
+                      imp_iva, monotributo, integrante_soc, empleador,
+                      tipo_doc, nro_doc]
         else:
             sql = ("INSERT INTO padron (tipo_doc, nro_doc, denominacion, "
-                    "cat_iva, email) VALUES (?, ?, ?, ?, ?)")
-            params = [tipo_doc, nro_doc, denominacion, cat_iva, email]
+                   "cat_iva, email, imp_ganancias, imp_iva, monotributo, "
+                   "integrante_soc, empleador) "
+                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+            params = [tipo_doc, nro_doc, denominacion, cat_iva, email,
+                      imp_ganancias, imp_iva, monotributo,
+                      integrante_soc, empleador]
         self.cursor.execute(sql, params)
         # agregar el domicilio solo si no existe:
         if direccion:
@@ -304,7 +317,7 @@ class PadronAFIP():
                                 [direccion, tipo_doc, nro_doc])
             if self.cursor.rowcount < 0:
                 sql = ("INSERT INTO domicilio (nro_doc, tipo_doc, direccion)"
-                        "VALUES (?, ?, ?)")
+                       "VALUES (?, ?, ?)")
                 self.cursor.execute(sql, [nro_doc, tipo_doc, direccion])
         self.db.commit()
         return True
@@ -327,7 +340,7 @@ class PadronAFIP():
                 self.Traceback = ex.get("tb", "")
                 try:
                     self.Excepcion = norm(ex.get("msg", "").replace("\n", ""))
-                except:
+                except BaseException:
                     self.Excepcion = "<no disponible>"
                 if DEBUG:
                     warnings.warn("Error %s [%d]" % (self.Excepcion, n))
@@ -357,8 +370,8 @@ class PadronAFIP():
                 self.cod_postal = ""
             # retrocompatibilidad:
             self.domicilios = ["%s - %s (%s) - %s" % (
-                                    self.direccion, self.localidad,
-                                    self.cod_postal, self.provincia,) ]
+                self.direccion, self.localidad,
+                self.cod_postal, self.provincia,)]
             # analizo impuestos:
             self.impuestos = data.get("impuestos", [])
             self.actividades = data.get("actividades", [])
@@ -372,7 +385,7 @@ class PadronAFIP():
                 self.imp_iva = "S" if 30 in self.impuestos else "N"
             mt = data.get("categoriasMonotributo", {})
             self.monotributo = "S" if mt else "N"
-            self.actividad_monotributo = "" # TODO: mt[0].get("idCategoria")
+            self.actividad_monotributo = ""  # TODO: mt[0].get("idCategoria")
             self.integrante_soc = ""
             self.empleador = "S" if 301 in self.impuestos else "N"
             self.cat_iva = ""
@@ -381,7 +394,6 @@ class PadronAFIP():
             error = result['error']
             self.Excepcion = error['mensaje']
         return True
-
 
     @inicializar_y_capturar_excepciones_simple
     def DescargarConstancia(self, nro_doc, filename="constancia.pdf"):
@@ -433,7 +445,6 @@ class PadronAFIP():
             return ret
 
 
-
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
@@ -454,10 +465,12 @@ if __name__ == "__main__":
         if "--procesar" in sys.argv:
             padron.Procesar(borrar='--borrar' in sys.argv)
         if "--parametros" in sys.argv:
-            import codecs, locale, traceback
+            import codecs
+            import locale
+            import traceback
             if sys.stdout.encoding is None:
-                sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
-                sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
+                sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout, "replace")
+                sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr, "replace")
             print("=== Impuestos ===")
             print('\n'.join(padron.ObtenerTablaParametros("impuestos")))
             print("=== Conceptos ===")
@@ -505,9 +518,9 @@ if __name__ == "__main__":
                 t0 = time.time()
                 ok = padron.Consultar(cuit)
                 t1 = time.time()
-                print(("%2.4f" % (t1-t0)))
+                print(("%2.4f" % (t1 - t0)))
         else:
-            cuit = len(sys.argv)>1 and sys.argv[1] or "20267565393"
+            cuit = len(sys.argv) > 1 and sys.argv[1] or "20267565393"
             # consultar un cuit:
             if '--online' in sys.argv:
                 padron.Conectar(trace="--trace" in sys.argv)
@@ -534,7 +547,7 @@ if __name__ == "__main__":
                 print('ok' if ok else "error", padron.Excepcion)
                 if '--mostrar' in sys.argv:
                     padron.MostrarPDF(archivo=filename,
-                                     imprimir='--imprimir' in sys.argv)
+                                      imprimir='--imprimir' in sys.argv)
             else:
                 ok = padron.Buscar(cuit)
                 if ok:
@@ -554,5 +567,4 @@ if __name__ == "__main__":
                     print(padron.Traceback)
         t1 = time.time()
         if '--trace' in sys.argv:
-            print("tiempo", t1 -t0)
-
+            print("tiempo", t1 - t0)

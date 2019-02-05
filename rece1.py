@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.37a"
+__version__ = "1.37b"
 
 import datetime
 import os
@@ -51,36 +51,37 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 # definición del formato del archivo de intercambio:
 
 ENCABEZADO = [
-    ('tipo_reg', 1, N), # 0: encabezado
+    ('tipo_reg', 1, N),  # 0: encabezado
     ('fecha_cbte', 8, A),
     ('tipo_cbte', 2, N), ('punto_vta', 4, N),
-    ('cbt_desde', 8, N), 
-    ('cbt_hasta', 8, N), 
-    ('concepto', 1, N), # 1:bienes, 2:servicios,... 
-    ('tipo_doc', 2, N), # 80
-    ('nro_doc', 11, N), # 50000000016    
-    ('imp_total', 15, I, 2), 
-    ('no_usar', 15, I, 2), 
-    ('imp_tot_conc', 15, I, 2), 
-    ('imp_neto', 15, I, 2), 
-    ('imp_iva', 15, I, 2), 
-    ('imp_trib', 15, I, 2), 
-    ('imp_op_ex', 15, I, 2), 
+    ('cbt_desde', 8, N),
+    ('cbt_hasta', 8, N),
+    ('concepto', 1, N),  # 1:bienes, 2:servicios,...
+    ('tipo_doc', 2, N),  # 80
+    ('nro_doc', 11, N),  # 50000000016
+    ('imp_total', 15, I, 2),
+    ('no_usar', 15, I, 2),
+    ('imp_tot_conc', 15, I, 2),
+    ('imp_neto', 15, I, 2),
+    ('imp_iva', 15, I, 2),
+    ('imp_trib', 15, I, 2),
+    ('imp_op_ex', 15, I, 2),
     ('moneda_id', 3, A),
-    ('moneda_ctz', 10, I, 6), #10,6
+    ('moneda_ctz', 10, I, 6),  # 10,6
     ('fecha_venc_pago', 8, A),   # opcional solo conceptos 2 y 3
     ('cae', 14, A), ('fch_venc_cae', 8, A),
-    ('resultado', 1, A), 
+    ('resultado', 1, A),
     ('motivos_obs', 1000, A),
     ('err_code', 6, A),
     ('err_msg', 1000, A),
     ('reproceso', 1, A),
     ('emision_tipo', 4, A),
-    ('fecha_serv_desde', 8, A), # opcional solo conceptos 2 y 3
-    ('fecha_serv_hasta', 8, A), # opcional solo conceptos 2 y 3
-    ]
-                   
-#DETALLE = [
+    ('fecha_serv_desde', 8, A),  # opcional solo conceptos 2 y 3
+    ('fecha_serv_hasta', 8, A),  # opcional solo conceptos 2 y 3
+    ('tipo_cbte', 3, N), ('punto_vta', 5, N),
+]
+
+# DETALLE = [
 #    ('tipo_reg', 1, N), # 1: detalle item
 #    ('codigo', 30, A),
 #    ('qty', 12, I),
@@ -91,50 +92,50 @@ ENCABEZADO = [
 #    ]
 
 TRIBUTO = [
-    ('tipo_reg', 1, N), # 1: tributo
+    ('tipo_reg', 1, N),  # 1: tributo
     ('tributo_id', 16, N),
     ('desc', 100, A),
-    ('base_imp', 15, I, 2), 
-    ('alic', 15, I, 2), 
-    ('importe', 15, I, 2), 
-    ]
+    ('base_imp', 15, I, 2),
+    ('alic', 15, I, 2),
+    ('importe', 15, I, 2),
+]
 
 IVA = [
-    ('tipo_reg', 1, N), # 2: alicuota de IVA
+    ('tipo_reg', 1, N),  # 2: alicuota de IVA
     ('iva_id', 16, N),
-    ('base_imp', 15, I, 2), 
-    ('importe', 15, I, 2), 
-    ]
+    ('base_imp', 15, I, 2),
+    ('importe', 15, I, 2),
+]
 
 CMP_ASOC = [
-    ('tipo_reg', 1, N), # 3: comprobante asociado
+    ('tipo_reg', 1, N),  # 3: comprobante asociado
     ('tipo', 3, N), ('pto_vta', 4, N),
-    ('nro', 8, N), 
-    ]
+    ('nro', 8, N),
+]
 
 OPCIONAL = [
-    ('tipo_reg', 1, N), # 6: datos opcionales
+    ('tipo_reg', 1, N),  # 6: datos opcionales
     ('opcional_id', 4, A),
-    ('valor', 250, A), 
-    ]
+    ('valor', 250, A),
+]
 
 COMPRADOR = [
-    ('tipo_reg', 1, N), # 7: compradores
+    ('tipo_reg', 1, N),  # 7: compradores
     ('doc_tipo', 3, N),
     ('doc_nro', 80, N),
     ('porcentaje', 6, I, 2),
-    ]
+]
 
 # Constantes (tablas de parámetros):
 
 TIPO_CBTE = {1: "FAC A", 2: "N/D A", 3: "N/C A", 6: "FAC B", 7: "N/D B",
-             8: "N/C B", 4: "REC A", 5: "NV A", 9: "REC B",             
+             8: "N/C B", 4: "REC A", 5: "NV A", 9: "REC B",
              10: "NV B", 11: "FAC C", 12: "N/D C", 13: "N/C C", 15: "REC C",
              49: "BIENES USADOS",
-             60: "LIQ PROD A", 61: "LIQ PROD B", 63: "LIQ A", 64: "LIQ B", 
-            }
+             60: "LIQ PROD A", 61: "LIQ PROD B", 63: "LIQ A", 64: "LIQ B",
+             }
 
-TIPO_DOC = {80: 'CUIT', 86: 'CUIL', 96: 'DNI', 99: '', 87: "CDI"} 
+TIPO_DOC = {80: 'CUIT', 86: 'CUIL', 96: 'DNI', 99: '', 87: "CDI"}
 
 
 def autorizar(ws, entrada, salida, informar_caea=False):
@@ -146,17 +147,18 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         encabezados = []
         opcionales = []
         compradores = []
-        if DEBUG: print("Leyendo DBF...")
+        if DEBUG:
+            print("Leyendo DBF...")
 
-        formatos = [('Encabezado', ENCABEZADO, encabezados), 
-                    ('Tributo', TRIBUTO, tributos), 
-                    ('Iva', IVA, ivas), 
+        formatos = [('Encabezado', ENCABEZADO, encabezados),
+                    ('Tributo', TRIBUTO, tributos),
+                    ('Iva', IVA, ivas),
                     ('Comprobante Asociado', CMP_ASOC, cbtasocs),
                     ('Datos Opcionales', OPCIONAL, opcionales),
                     ('Compradores', COMPRADOR, compradores),
                     ]
         dic = leer_dbf(formatos, conf_dbf)
-        
+
         # rearmar estructura asociando id (comparando, si se útiliza)
         for encabezado in encabezados:
             for tributo in tributos:
@@ -185,23 +187,24 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     else:
         # la estructura está implícita en el órden de los registros (líneas)
         for linea in entrada:
-            if str(linea[0])=='0':
+            if str(linea[0]) == '0':
                 encabezado = leer(linea, ENCABEZADO)
                 encabezados.append(encabezado)
-                if DEBUG: print(len(encabezados), "Leida factura %(cbt_desde)s" % encabezado) 
-            elif str(linea[0])=='1':
+                if DEBUG:
+                    print(len(encabezados), "Leida factura %(cbt_desde)s" % encabezado)
+            elif str(linea[0]) == '1':
                 tributo = leer(linea, TRIBUTO)
                 encabezado.setdefault("tributos", []).append(tributo)
-            elif str(linea[0])=='2':
+            elif str(linea[0]) == '2':
                 iva = leer(linea, IVA)
                 encabezado.setdefault("ivas", []).append(iva)
-            elif str(linea[0])=='3':
+            elif str(linea[0]) == '3':
                 cbtasoc = leer(linea, CMP_ASOC)
                 encabezado.setdefault("cbtasocs", []).append(cbtasoc)
-            elif str(linea[0])=='6':
+            elif str(linea[0]) == '6':
                 opcional = leer(linea, OPCIONAL)
                 encabezado.setdefault("opcionales", []).append(opcional)
-            elif str(linea[0])=='7':
+            elif str(linea[0]) == '7':
                 comprador = leer(linea, COMPRADOR)
                 encabezado.setdefault("compradores", []).append(comprador)
             else:
@@ -213,7 +216,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     # ajusto datos para pruebas en depuración (nro de cbte. / fecha)
     if '--testing' in sys.argv and DEBUG:
         encabezado['punto_vta'] = 9998
-        cbte_nro = int(ws.CompUltimoAutorizado(encabezado['tipo_cbte'], 
+        cbte_nro = int(ws.CompUltimoAutorizado(encabezado['tipo_cbte'],
                                                encabezado['punto_vta'])) + 1
         encabezado['cbt_desde'] = cbte_nro
         encabezado['cbt_hasta'] = cbte_nro
@@ -246,8 +249,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             ws.AgregarComprador(**comprador)
 
         if DEBUG:
-            print('\n'.join(["%s='%s'" % (k,str(v)) for k,v in list(ws.factura.items())]))
-        if not DEBUG or input("Facturar (S/n)?")=="S":
+            print('\n'.join(["%s='%s'" % (k, str(v)) for k, v in list(ws.factura.items())]))
+        if not DEBUG or input("Facturar (S/n)?") == "S":
             if not informar_caea:
                 cae = ws.CAESolicitar()
                 dic = ws.factura
@@ -255,11 +258,11 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 cae = ws.CAEARegInformativo()
                 dic = ws.factura
             print("Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f" % (
-                TIPO_CBTE.get(dic['tipo_cbte'], dic['tipo_cbte']), 
-                dic['punto_vta'], dic['cbt_desde'], dic['cbt_hasta'], 
-                TIPO_DOC.get(dic['tipo_doc'], dic['tipo_doc']), dic['nro_doc'], 
-                float(dic['imp_total']), 
-                float(dic['imp_iva'] if dic['imp_iva'] is not None else 'NaN'))) 
+                TIPO_CBTE.get(dic['tipo_cbte'], dic['tipo_cbte']),
+                dic['punto_vta'], dic['cbt_desde'], dic['cbt_hasta'],
+                TIPO_DOC.get(dic['tipo_doc'], dic['tipo_doc']), dic['nro_doc'],
+                float(dic['imp_total']),
+                float(dic['imp_iva'] if dic['imp_iva'] is not None else 'NaN')))
             dic.update(encabezado)         # preservar la estructura leida
             dic.update({
                 'cae': cae and str(cae) or '',
@@ -270,11 +273,12 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 'err_msg': ws.ErrMsg,
                 'reproceso': ws.Reproceso,
                 'emision_tipo': ws.EmisionTipo,
-                })
+            })
             dicts.append(dic)
-            print("NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso'])
+            print("NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo, dic['cae'], "Obs:", dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso'])
     if dicts:
         escribir_facturas(dicts, salida)
+
 
 def escribir_facturas(encabezados, archivo, agrega=False):
     if '/json' in sys.argv:
@@ -315,9 +319,9 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                     archivo.write(escribir(it, COMPRADOR))
 
     if '/dbf' in sys.argv:
-        formatos = [('Encabezado', ENCABEZADO, encabezados), 
-                    ('Tributo', TRIBUTO, dic.get('tributos', [])), 
-                    ('Iva', IVA, dic.get('iva', [])), 
+        formatos = [('Encabezado', ENCABEZADO, encabezados),
+                    ('Tributo', TRIBUTO, dic.get('tributos', [])),
+                    ('Iva', IVA, dic.get('iva', [])),
                     ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])),
                     ('Datos Opcionales', OPCIONAL, dic.get("opcionales", [])),
                     ('Compradores', COMPRADOR, dic.get("compradores", [])),
@@ -326,13 +330,15 @@ def escribir_facturas(encabezados, archivo, agrega=False):
 
 
 def depurar_xml(client, ruta="."):
-    fecha = time.strftime("%Y%m%d%H%M%S")
-    f=open(os.path.join(ruta, "request-%s.xml" % fecha),"w")
-    f.write(client.xml_request)
-    f.close()
-    f=open(os.path.join(ruta, "response-%s.xml" % fecha),"w")
-    f.write(client.xml_response)
-    f.close()
+    if XML:
+        fecha = time.strftime("%Y%m%d%H%M%S")
+        f = open(os.path.join(ruta, "request-%s.xml" % fecha), "w")
+        f.write(client.xml_request)
+        f.close()
+        f = open(os.path.join(ruta, "response-%s.xml" % fecha), "w")
+        f.write(client.xml_response)
+        f.close()
+
 
 if __name__ == "__main__":
     if '/ayuda' in sys.argv:
@@ -357,26 +363,29 @@ if __name__ == "__main__":
         print("VERSION", __version__, "HOMO", HOMO)
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
-    cert = config.get('WSAA','CERT')
-    privatekey = config.get('WSAA','PRIVATEKEY')
-    cuit = config.get('WSFEv1','CUIT')
+    cert = config.get('WSAA', 'CERT')
+    privatekey = config.get('WSAA', 'PRIVATEKEY')
+    cuit = config.get('WSFEv1', 'CUIT')
     if '/entrada' in sys.argv:
-        entrada = sys.argv[sys.argv.index("/entrada")+1]
+        entrada = sys.argv[sys.argv.index("/entrada") + 1]
     else:
-        entrada = config.get('WSFEv1','ENTRADA')
-    salida = config.get('WSFEv1','SALIDA')
-    
-    if config.has_option('WSAA','URL') and not HOMO:
-        wsaa_url = config.get('WSAA','URL')
+        entrada = config.get('WSFEv1', 'ENTRADA')
+    if '/salida' in sys.argv:
+        salida = sys.argv[sys.argv.index("/salida") + 1]
+    else:
+        salida = config.get('WSFEv1', 'SALIDA')
+
+    if config.has_option('WSAA', 'URL') and not HOMO:
+        wsaa_url = config.get('WSAA', 'URL')
     else:
         wsaa_url = None
-    if config.has_option('WSFEv1','URL') and not HOMO:
-        wsfev1_url = config.get('WSFEv1','URL')
+    if config.has_option('WSFEv1', 'URL') and not HOMO:
+        wsfev1_url = config.get('WSFEv1', 'URL')
     else:
         wsfev1_url = None
 
-    if config.has_option('WSFEv1','REPROCESAR'):
-        wsfev1_reprocesar = config.get('WSFEv1','REPROCESAR') == 'S'
+    if config.has_option('WSFEv1', 'REPROCESAR'):
+        wsfev1_reprocesar = config.get('WSFEv1', 'REPROCESAR') == 'S'
     else:
         wsfev1_reprocesar = None
 
@@ -387,12 +396,13 @@ if __name__ == "__main__":
 
     if config.has_section('DBF'):
         conf_dbf = dict(config.items('DBF'))
-        if DEBUG: print("conf_dbf", conf_dbf)
+        if DEBUG:
+            print("conf_dbf", conf_dbf)
     else:
         conf_dbf = {}
 
     if config.has_section('PROXY') and not HOMO:
-        proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))
+        proxy_dict = dict(("proxy_%s" % k, v) for k, v in config.items('PROXY'))
         proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
     else:
         proxy_dict = {}
@@ -409,12 +419,13 @@ if __name__ == "__main__":
 
     if DEBUG:
         print("wsaa_url %s\nwsfev1_url %s\ncuit %s" % (wsaa_url, wsfev1_url, cuit))
-        if proxy_dict: print("proxy_dict=",proxy_dict)
+        if proxy_dict:
+            print("proxy_dict=", proxy_dict)
         print("timeout:", TIMEOUT)
 
     if '/x' in sys.argv:
         escribir_facturas([{'err_msg': "Prueba",
-                     }], open("x.txt","w"))
+                            }], open("x.txt", "w"))
 
     try:
         ws = wsfev1.WSFEv1()
@@ -434,24 +445,24 @@ if __name__ == "__main__":
 
         if '/formato' in sys.argv:
             print("Formato:")
-            for msg, formato in [('Encabezado', ENCABEZADO), 
-                                 ('Tributo', TRIBUTO), ('Iva', IVA), 
+            for msg, formato in [('Encabezado', ENCABEZADO),
+                                 ('Tributo', TRIBUTO), ('Iva', IVA),
                                  ('Comprobante Asociado', CMP_ASOC),
                                  ('Opcionales', OPCIONAL),
                                  ('Compradores', COMPRADOR),
-                                ]:
+                                 ]:
                 if not '/dbf' in sys.argv:
                     comienzo = 1
                     print("== %s ==" % msg)
                     for fmt in formato:
                         clave, longitud, tipo = fmt[0:3]
-                        dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                        dec = len(fmt) > 3 and fmt[3] or (tipo == 'I' and '2' or '')
                         print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                             clave, comienzo, longitud, tipo, dec))
                         comienzo += longitud
                 else:
                     from .formatos.formato_dbf import definir_campos
-                    filename =  "%s.dbf" % msg.lower()[:8]
+                    filename = "%s.dbf" % msg.lower()[:8]
                     print("==== %s (%s) ====" % (msg, filename))
                     claves, campos = definir_campos(formato)
                     for campo in campos:
@@ -465,40 +476,50 @@ if __name__ == "__main__":
         if not ta:
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
         ws.SetTicketAcceso(ta)
-                    
+
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             tipo_cbte = 1
             punto_vta = 4002
             cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
-            if not cbte_nro: cbte_nro=0
-            cbte_nro=int(cbte_nro)
+            if not cbte_nro:
+                cbte_nro = 0
+            cbte_nro = int(cbte_nro)
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 1
-            tipo_doc = 80; nro_doc = "30500010912"
-            cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
-            imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
-            imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
-            fecha_cbte = fecha; fecha_venc_pago = None # fecha
+            tipo_doc = 80
+            nro_doc = "30500010912"
+            cbt_desde = cbte_nro + 1
+            cbt_hasta = cbte_nro + 1
+            imp_total = "122.00"
+            imp_tot_conc = "0.00"
+            imp_neto = "100.00"
+            imp_iva = "21.00"
+            imp_trib = "1.00"
+            imp_op_ex = "0.00"
+            fecha_cbte = fecha
+            fecha_venc_pago = None  # fecha
             # Fechas del período del servicio facturado (solo si concepto = 1?)
-            fecha_serv_desde = ""; fecha_serv_hasta = ""
-            moneda_id = 'PES'; moneda_ctz = '1.000'
+            fecha_serv_desde = ""
+            fecha_serv_hasta = ""
+            moneda_id = 'PES'
+            moneda_ctz = '1.000'
 
             ws.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-                imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
-                fecha_serv_desde, fecha_serv_hasta, #--
-                moneda_id, moneda_ctz)
-            
+                            cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
+                            imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago,
+                            fecha_serv_desde, fecha_serv_hasta,  # --
+                            moneda_id, moneda_ctz)
+
             if tipo_cbte not in (1, 2, 6, 7):
                 tipo = 1
                 pto_vta = 2
                 nro = 1234
                 ws.AgregarCmpAsoc(tipo, pto_vta, nro)
-            
+
             if '--proyectos' in sys.argv:
                 ws.AgregarOpcional(2, "1234")  # identificador del proyecto
-            
+
             # datos opcionales para RG 3668 Impuesto al Valor Agregado - Art.12:
             if '--rg3668' in sys.argv:
                 ws.AgregarOpcional(5, "02")             # IVA Excepciones
@@ -524,52 +545,52 @@ if __name__ == "__main__":
             importe = 1
             ws.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
-            iva_id = 5 # 21%
+            iva_id = 5  # 21%
             base_imp = 100
             importe = 21
-            ws.AgregarIva(iva_id, base_imp, importe) 
-                        
-            f_entrada = open(entrada,"w")
-                
+            ws.AgregarIva(iva_id, base_imp, importe)
+
+            f_entrada = open(entrada, "w")
+
             if DEBUG:
                 print(ws.factura)
 
             dic = ws.factura
             escribir_facturas([dic], f_entrada, agrega=True)
             f_entrada.close()
-      
+
         if '/ult' in sys.argv:
             print("Consultar ultimo numero:")
             i = sys.argv.index("/ult")
-            if i+2<len(sys.argv):
-               tipo_cbte = int(sys.argv[i+1])
-               punto_vta = int(sys.argv[i+2])
+            if i + 2 < len(sys.argv):
+                tipo_cbte = int(sys.argv[i + 1])
+                punto_vta = int(sys.argv[i + 2])
             else:
-               tipo_cbte = int(input("Tipo de comprobante: "))
-               punto_vta = int(input("Punto de venta: "))
+                tipo_cbte = int(input("Tipo de comprobante: "))
+                punto_vta = int(input("Punto de venta: "))
             ult_cbte = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             print("Ultimo numero: ", ult_cbte)
             print(ws.ErrMsg)
             depurar_xml(ws.client, RUTA_XML)
-            escribir_facturas([{'tipo_cbte': tipo_cbte, 
-                              'punto_vta': punto_vta, 
-                              'cbt_desde': ult_cbte, 
-                              'fecha_cbte': ws.FechaCbte, 
-                              'err_msg': ws.ErrMsg,
-                              }], open(salida,"w"))
+            escribir_facturas([{'tipo_cbte': tipo_cbte,
+                                'punto_vta': punto_vta,
+                                'cbt_desde': ult_cbte,
+                                'fecha_cbte': ws.FechaCbte,
+                                'err_msg': ws.ErrMsg,
+                                }], open(salida, "w"))
             sys.exit(0)
 
         if '/get' in sys.argv:
             print("Recuperar comprobante:")
             i = sys.argv.index("/get")
-            if i+3<len(sys.argv):
-               tipo_cbte = int(sys.argv[i+1])
-               punto_vta = int(sys.argv[i+2])
-               cbte_nro = int(sys.argv[i+3])
+            if i + 3 < len(sys.argv):
+                tipo_cbte = int(sys.argv[i + 1])
+                punto_vta = int(sys.argv[i + 2])
+                cbte_nro = int(sys.argv[i + 3])
             else:
-               tipo_cbte = int(input("Tipo de comprobante: "))
-               punto_vta = int(input("Punto de venta: "))
-               cbte_nro = int(input("Numero de comprobante: "))
+                tipo_cbte = int(input("Tipo de comprobante: "))
+                punto_vta = int(input("Punto de venta: "))
+                cbte_nro = int(input("Numero de comprobante: "))
             ws.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
 
             ws.AnalizarXml("XmlResponse")
@@ -582,47 +603,47 @@ if __name__ == "__main__":
             print("CAE = ", ws.CAE)
             print("Vencimiento = ", ws.Vencimiento)
             print("EmisionTipo = ", ws.EmisionTipo)
-            print(ws.ErrMsg) 
+            print(ws.ErrMsg)
 
             depurar_xml(ws.client, RUTA_XML)
             # grabar todos los datos devueltos por AFIP:
             factura = ws.factura.copy()
             # actulizar los campos básicos:
-            factura.update({'tipo_cbte': tipo_cbte, 
-                              'punto_vta': ws.PuntoVenta, 
-                              'cbt_desde': ws.CbtDesde, 
-                              'cbt_hasta': ws.CbtHasta, 
-                              'fecha_cbte': ws.FechaCbte, 
-                              'tipo_doc': ws.ObtenerCampoFactura('tipo_doc'),
-                              'nro_doc': ws.ObtenerCampoFactura('nro_doc'),
-                              'imp_total': ws.ImpTotal, 
-                              'imp_neto': ws.ImpNeto,
-                              'imp_iva': ws.ImpOpEx,
-                              'imp_trib': ws.ImpTrib,
-                              'imp_op_ex': ws.ImpTrib,
-                              'cae': str(ws.CAE), 
-                              'fch_venc_cae': ws.Vencimiento,  
-                              'emision_tipo': ws.EmisionTipo, 
-                              'resultado': ws.Resultado,
-                              'err_msg': ws.ErrMsg,
-                              'motivos_obs': ws.Obs,
+            factura.update({'tipo_cbte': tipo_cbte,
+                            'punto_vta': ws.PuntoVenta,
+                            'cbt_desde': ws.CbtDesde,
+                            'cbt_hasta': ws.CbtHasta,
+                            'fecha_cbte': ws.FechaCbte,
+                            'tipo_doc': ws.ObtenerCampoFactura('tipo_doc'),
+                            'nro_doc': ws.ObtenerCampoFactura('nro_doc'),
+                            'imp_total': ws.ImpTotal,
+                            'imp_neto': ws.ImpNeto,
+                            'imp_iva': ws.ImpOpEx,
+                            'imp_trib': ws.ImpTrib,
+                            'imp_op_ex': ws.ImpTrib,
+                            'cae': str(ws.CAE),
+                            'fch_venc_cae': ws.Vencimiento,
+                            'emision_tipo': ws.EmisionTipo,
+                            'resultado': ws.Resultado,
+                            'err_msg': ws.ErrMsg,
+                            'motivos_obs': ws.Obs,
                             })
-            escribir_facturas([factura], open(salida,"w"))
+            escribir_facturas([factura], open(salida, "w"))
 
             sys.exit(0)
 
         if '/solicitarcaea' in sys.argv:
             i = sys.argv.index("/solicitarcaea")
-            if i+2<len(sys.argv):
-                periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
-                orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
+            if i + 2 < len(sys.argv):
+                periodo = sys.argv[sys.argv.index("/solicitarcaea") + 1]
+                orden = sys.argv[sys.argv.index("/solicitarcaea") + 2]
             else:
                 periodo = input("Periodo: ")
                 orden = input("Orden: ")
-                
-            if DEBUG: 
+
+            if DEBUG:
                 print("Solicitando CAEA para periodo %s orden %s" % (periodo, orden))
-            
+
             caea = ws.CAEASolicitar(periodo, orden)
             print("CAEA:", caea)
 
@@ -634,37 +655,37 @@ if __name__ == "__main__":
             depurar_xml(ws.client, RUTA_XML)
 
             if not caea:
-                if DEBUG: 
+                if DEBUG:
                     print("Consultando CAEA para periodo %s orden %s" % (periodo, orden))
                 caea = ws.CAEAConsultar(periodo, orden)
                 print("CAEA:", caea)
-                
+
             if DEBUG:
-                print("Periodo:", ws.Periodo) 
-                print("Orden:", ws.Orden) 
-                print("FchVigDesde:", ws.FchVigDesde) 
-                print("FchVigHasta:", ws.FchVigHasta) 
-                print("FchTopeInf:", ws.FchTopeInf) 
+                print("Periodo:", ws.Periodo)
+                print("Orden:", ws.Orden)
+                print("FchVigDesde:", ws.FchVigDesde)
+                print("FchVigHasta:", ws.FchVigHasta)
+                print("FchTopeInf:", ws.FchTopeInf)
                 print("FchProceso:", ws.FchProceso)
 
-            escribir_facturas([{'cae': str(caea), 
-                              'emision_tipo': "CAEA", 
-                             }], open(salida,"w"))
-                              
+            escribir_facturas([{'cae': str(caea),
+                                'emision_tipo': "CAEA",
+                                }], open(salida, "w"))
+
             sys.exit(0)
 
         if '/consultarcaea' in sys.argv:
             i = sys.argv.index("/consultarcaea")
-            if i+2<len(sys.argv):
-                periodo = sys.argv[sys.argv.index("/consultarcaea")+1]
-                orden = sys.argv[sys.argv.index("/consultarcaea")+2]
+            if i + 2 < len(sys.argv):
+                periodo = sys.argv[sys.argv.index("/consultarcaea") + 1]
+                orden = sys.argv[sys.argv.index("/consultarcaea") + 2]
             else:
                 periodo = input("Periodo: ")
                 orden = input("Orden: ")
 
-            if DEBUG: 
+            if DEBUG:
                 print("Consultando CAEA para periodo %s orden %s" % (periodo, orden))
-            
+
             caea = ws.CAEAConsultar(periodo, orden)
             print("CAEA:", caea)
 
@@ -672,12 +693,12 @@ if __name__ == "__main__":
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-                
+
             if DEBUG:
-                print("Periodo:", ws.Periodo) 
-                print("Orden:", ws.Orden) 
-                print("FchVigDesde:", ws.FchVigDesde) 
-                print("FchVigHasta:", ws.FchVigHasta) 
+                print("Periodo:", ws.Periodo)
+                print("Orden:", ws.Orden)
+                print("FchVigDesde:", ws.FchVigDesde)
+                print("FchVigHasta:", ws.FchVigHasta)
                 print("FchTopeInf:", ws.FchTopeInf)
                 print("FchProceso:", ws.FchProceso)
             sys.exit(0)
@@ -689,18 +710,18 @@ if __name__ == "__main__":
             sys.exit(0)
 
         if '/informarcaeanoutilizadoptovta' in sys.argv:
-            i = sys.argv.index('/informarcaeanoutilizadoptovta') 
-            if i+2 < len(sys.argv):
-                caea = sys.argv[i+1]
-                pto_vta = sys.argv[i+2]
+            i = sys.argv.index('/informarcaeanoutilizadoptovta')
+            if i + 2 < len(sys.argv):
+                caea = sys.argv[i + 1]
+                pto_vta = sys.argv[i + 2]
             else:
                 caea = input("CAEA: ")
                 pto_vta = input("Punto de Venta: ")
-            if DEBUG: 
+            if DEBUG:
                 print("Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta))
             ok = ws.CAEASinMovimientoInformar(pto_vta, caea)
             print("Resultado:", ok)
-            print("FchProceso:", ws.FchProceso)            
+            print("FchProceso:", ws.FchProceso)
             if ws.Errores:
                 print("Errores:")
                 for error in ws.Errores:
@@ -710,32 +731,35 @@ if __name__ == "__main__":
         ws.LanzarExcepciones = False
         f_entrada = f_salida = None
         try:
-            f_entrada = open(entrada,"r")
-            f_salida = open(salida,"w")
+            f_entrada = open(entrada, "r")
+            f_salida = open(salida, "w")
             try:
-                if DEBUG: print("Autorizando usando entrada:", entrada)
+                if DEBUG:
+                    print("Autorizando usando entrada:", entrada)
                 autorizar(ws, f_entrada, f_salida, '/informarcaea' in sys.argv)
             except SoapFault:
                 XML = True
                 raise
         finally:
-            if f_entrada is not None: f_entrada.close()
-            if f_salida is not None: f_salida.close()
+            if f_entrada is not None:
+                f_entrada.close()
+            if f_salida is not None:
+                f_salida.close()
             if XML:
                 depurar_xml(ws.client, RUTA_XML)
         sys.exit(0)
-    
+
     except SoapFault as e:
-        print("SoapFault:", e.faultcode, e.faultstring.encode("ascii","ignore"))
+        print("SoapFault:", e.faultcode, e.faultstring.encode("ascii", "ignore"))
         sys.exit(3)
     except Exception as e:
-        e_str = str(e).encode("ascii","ignore")
+        e_str = str(e).encode("ascii", "ignore")
         if not e_str:
             e_str = repr(e)
         print("Excepcion:", e_str)
         escribir_facturas([{'err_msg': e_str,
-                         }], open(salida,"w"))
-        ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+                            }], open(salida, "w"))
+        ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
         open("traceback.txt", "wb").write('\n'.join(ex))
 
         if DEBUG:

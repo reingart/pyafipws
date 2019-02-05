@@ -5,7 +5,7 @@ Attribute VB_Name = "Module1"
 ' 2010-2014 (C) Mariano Reingart <reingart@gmail.com>
 
 Sub Main()
-    Dim WSAA As Object, WSCTGv2 As Object
+    Dim WSAA As Object, WSCTG As Object
     On Error GoTo ManejoError
     ttl = 2400 ' tiempo de vida en segundos
     cache = "" ' Directorio para archivos temporales (dejar en blanco para usar predeterminado)
@@ -23,32 +23,24 @@ Sub Main()
     
     wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl" ' homologación
     ok = WSAA.Conectar(cache, wsdl, proxy)
-    ta = WSAA.LoginCMS(cms) 'obtener ticket de acceso
-    
+    '' ta = WSAA.LoginCMS(cms) 'obtener ticket de acceso
+    ta = ""
     Debug.Print ta
     Debug.Print "Token:", WSAA.Token
     Debug.Print "Sign:", WSAA.Sign
     
     ' Crear objeto interface Web Service de CTG
-    Set WSCTGv2 = CreateObject("WSCTGv2")
+    Set WSCTG = CreateObject("WSCTG")
     ' Setear tocken y sing de autorización (pasos previos)
-    WSCTGv2.Token = WSAA.Token
-    WSCTGv2.Sign = WSAA.Sign
+    WSCTG.Token = WSAA.Token
+    WSCTG.Sign = WSAA.Sign
     
     ' CUIT (debe estar registrado en la AFIP)
-    WSCTGv2.CUIT = "20267565393"
+    WSCTG.CUIT = "20267565393"
     
     ' Conectar al Servicio Web
-    ok = WSCTGv2.Conectar("", "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v2.0?wsdl") ' homologación
-    
-    ' Verifico que la versión esté actualizada (nuevos métodos)
-    Debug.Print WSCTGv2.version >= "1.12a"
-    
-    ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
-    WSCTGv2.Dummy
-    Debug.Print "appserver status", WSCTGv2.AppServerStatus
-    Debug.Print "dbserver status", WSCTGv2.DbServerStatus
-    Debug.Print "authserver status", WSCTGv2.AuthServerStatus
+    ok = WSCTG.Conectar("", "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v4.0?wsdl") ' homologación
+    ' produccion: https://serviciosjava.afip.gov.ar/wsctg/services/CTGService_v4.0?wsdl"
     
     ' Establezco los criterios de búsqueda para ConsultarCTG:
     
@@ -61,42 +53,42 @@ Sub Main()
     fecha_emision_hasta = "31-03-2013"
     
     ' llamo al webservice con los parámetros de busqueda:
-    ok = WSCTGv2.ConsultarCTG(numero_carta_de_porte, numero_ctg, _
+    ok = WSCTG.ConsultarCTG(numero_carta_de_porte, numero_ctg, _
                      patente, cuit_solicitante, cuit_destino, _
                      fecha_emision_desde, fecha_emision_hasta)
             
-    Debug.Print WSCTGv2.XmlResponse
-    Debug.Print WSCTGv2.Excepcion
-    Debug.Print WSCTGv2.Traceback
+    Debug.Print WSCTG.XmlResponse
+    Debug.Print WSCTG.Excepcion
+    Debug.Print WSCTG.Traceback
 
     Debug.Assert False
     
     ' si hay datos, recorro los resultados de la consulta:
     Do While ok
-        Debug.Print WSCTGv2.CartaPorte
-        Debug.Print WSCTGv2.NumeroCTG
-        Debug.Print WSCTGv2.Estado
-        Debug.Print WSCTGv2.ImprimeConstancia
-        Debug.Print WSCTGv2.FechaHora
-        numero_ctg = WSCTGv2.NumeroCTG
+        Debug.Print WSCTG.CartaPorte
+        Debug.Print WSCTG.NumeroCTG
+        Debug.Print WSCTG.Estado
+        Debug.Print WSCTG.ImprimeConstancia
+        Debug.Print WSCTG.FechaHora
+        numero_ctg = WSCTG.NumeroCTG
         ' leo el proximo, si devuelve vacio no hay más datos
-        ok = WSCTGv2.LeerDatosCTG() <> ""
+        ok = WSCTG.LeerDatosCTG() <> ""
     Loop
     
     Debug.Assert False
 
     ' consulto una CTG
     numero_ctg = 65013454
-    Call WSCTGv2.ConsultarDetalleCTG(numero_ctg)
-    Debug.Print WSCTGv2.XmlResponse
-    Debug.Print WSCTGv2.Excepcion
-    Debug.Print WSCTGv2.Traceback
+    Call WSCTG.ConsultarDetalleCTG(numero_ctg)
+    Debug.Print WSCTG.XmlResponse
+    Debug.Print WSCTG.Excepcion
+    Debug.Print WSCTG.Traceback
 
-    If IsNumeric(WSCTGv2.TarifaReferencia) Then
-        tarifa_ref = WSCTGv2.TarifaReferencia
-        numero_ctg = WSCTGv2.NumeroCTG
-        Debug.Print WSCTGv2.TarifaReferencia
-        Debug.Print WSCTGv2.Detalle             ' nuevo campo WSCTGv2
+    If IsNumeric(WSCTG.TarifaReferencia) Then
+        tarifa_ref = WSCTG.TarifaReferencia
+        numero_ctg = WSCTG.NumeroCTG
+        Debug.Print WSCTG.TarifaReferencia
+        Debug.Print WSCTG.Detalle             ' nuevo campo WSCTG
     End If
     
     
@@ -113,44 +105,44 @@ Sub Main()
     cant_horas = 1
     patente_vehiculo = "AAA000"
     cuit_transportista = "20076641707"
-    km_a_recorrer = 1234                        ' cambio de nombre WSCTGv2
-    remitente_comercial_como_canjeador = "N"    ' nuevo campo WSCTGv2
+    km_a_recorrer = 1234                        ' cambio de nombre WSCTG
+    remitente_comercial_como_canjeador = "N"    ' nuevo campo WSCTG
        
     ' llamo al webservice para solicitar el ctg inicial:
-    ok = WSCTGv2.SolicitarCTGInicial(numero_carta_de_porte, codigo_especie, _
+    ok = WSCTG.SolicitarCTGInicial(numero_carta_de_porte, codigo_especie, _
             cuit_remitente_comercial, cuit_destino, cuit_destinatario, codigo_localidad_origen, _
             codigo_localidad_destino, codigo_cosecha, peso_neto_carga, cant_horas, _
             patente_vehiculo, cuit_transportista, km_a_recorrer, _
             remitente_comercial_como_canjeador)
             
-    Debug.Print WSCTGv2.XmlResponse
-    Debug.Print WSCTGv2.Observaciones
-    Debug.Print WSCTGv2.ErrMsg
+    Debug.Print WSCTG.XmlResponse
+    Debug.Print WSCTG.Observaciones
+    Debug.Print WSCTG.ErrMsg
             
     If ok Then
         ' recorro los errores devueltos por AFIP (si hubo)
         Dim ControlErrores As Variant
-        For Each ControlErrores In WSCTGv2.Controles
+        For Each ControlErrores In WSCTG.Controles
             Debug.Print ControlErrores
         Next
         
-        numero_ctg = WSCTGv2.NumeroCTG
+        numero_ctg = WSCTG.NumeroCTG
         ' llamo al webservice para consultar la ctg recien creada
         ' para que devuelva entre otros datos la tarifa de referencia otorgada por afip
-        Call WSCTGv2.ConsultarDetalleCTG(numero_ctg)
-        If IsNumeric(WSCTGv2.TarifaReferencia) Then
-            tarifa_ref = WSCTGv2.TarifaReferencia
-            numero_ctg = WSCTGv2.NumeroCTG
-            Debug.Print WSCTGv2.TarifaReferencia
+        Call WSCTG.ConsultarDetalleCTG(numero_ctg)
+        If IsNumeric(WSCTG.TarifaReferencia) Then
+            tarifa_ref = WSCTG.TarifaReferencia
+            numero_ctg = WSCTG.NumeroCTG
+            Debug.Print WSCTG.TarifaReferencia
         End If
     Else
         ' muestro los errores
         Dim MensajeError As Variant
-        For Each MensajeError In WSCTGv2.Errores
-            MsgBox MensajeError, vbCritical, "WSCTGv2: Errores"
+        For Each MensajeError In WSCTG.Errores
+            MsgBox MensajeError, vbCritical, "WSCTG: Errores"
         Next
-        For Each MensajeError In WSCTGv2.Controles
-            MsgBox MensajeError, vbCritical, "WSCTGv2: Controles"
+        For Each MensajeError In WSCTG.Controles
+            MsgBox MensajeError, vbCritical, "WSCTG: Controles"
         Next
     End If
        
@@ -164,14 +156,14 @@ Sub Main()
     cuit_destino = Null
     fecha_emision_desde = "01-01-2013"
     fecha_emision_hasta = Null
-    ok = WSCTGv2.ConsultarCTGExcel(numero_carta_de_porte, numero_ctg, patente, cuit_solicitante, cuit_destino, fecha_emision_desde, fecha_emision_hasta, archivo)
-    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    ok = WSCTG.ConsultarCTGExcel(numero_carta_de_porte, numero_ctg, patente, cuit_solicitante, cuit_destino, fecha_emision_desde, fecha_emision_hasta, archivo)
+    Debug.Print "Errores:", WSCTG.ErrMsg
     
     ' Obtengo la constacia CTG -debe estar confirmada- (documento PDF AFIP)
     ctg = 83139794
     archivo = App.Path & "\constancia.pdf"
-    ok = WSCTGv2.ConsultarConstanciaCTGPDF(ctg, archivo)
-    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    ok = WSCTG.ConsultarConstanciaCTGPDF(ctg, archivo)
+    Debug.Print "Errores:", WSCTG.ErrMsg
         
         
     ' Ejemplo de Confirmación (usar el método que corresponda en cada caso):
@@ -181,73 +173,73 @@ Sub Main()
     peso_neto_carga = 1000
     patente_vehiculo = "APE652"
     cuit_transportista = "20333333334"
-    consumo_propio = "S"                ' nuevo campo WSCTGv2
+    consumo_propio = "S"                ' nuevo campo WSCTG
     codigo_cosecha = "1314"
     peso_neto_carga = "1000"
     
-    transaccion = WSCTGv2.ConfirmarArribo(numero_carta_de_porte, numero_ctg, _
+    transaccion = WSCTG.ConfirmarArribo(numero_carta_de_porte, numero_ctg, _
                         cuit_transportista, peso_neto_carga, _
                         consumo_propio, establecimiento)
     Debug.Print "Transaccion:", transaccion
-    Debug.Print "Fecha y Hora", WSCTGv2.FechaHora
-    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    Debug.Print "Fecha y Hora", WSCTG.FechaHora
+    Debug.Print "Errores:", WSCTG.ErrMsg
     
-    transaccion = WSCTGv2.ConfirmarDefinitivo(numero_carta_de_porte, numero_ctg, _
+    transaccion = WSCTG.ConfirmarDefinitivo(numero_carta_de_porte, numero_ctg, _
             establecimiento, codigo_cosecha, peso_neto_carga)
     Debug.Print "Transaccion:", transaccion
-    Debug.Print "Fecha y Hora", WSCTGv2.FechaHora
-    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    Debug.Print "Fecha y Hora", WSCTG.FechaHora
+    Debug.Print "Errores:", WSCTG.ErrMsg
 
 
-    ' Consulta de CTG a Resolver (nuevo método WSCTGv2)
-    ok = WSCTGv2.CTGsPendientesResolucion()
+    ' Consulta de CTG a Resolver (nuevo método WSCTG)
+    ok = WSCTG.CTGsPendientesResolucion()
     For Each clave In Array("arrayCTGsRechazadosAResolver", _
                   "arrayCTGsOtorgadosAResolver", _
                   "arrayCTGsConfirmadosAResolver"):
         Debug.Print clave
         Debug.Print "Numero CTG - Carta de Porte - Imprime Constancia - Estado"
         ' recorro cada uno para esta clave, devuelve el número de ctg o string vacio
-        Do While WSCTGv2.LeerDatosCTG(clave) <> "":
-            Debug.Print WSCTGv2.NumeroCTG, WSCTGv2.CartaPorte, WSCTGv2.FechaHora
-            Debug.Print WSCTGv2.Destino, WSCTGv2.Destinatario, WSCTGv2.Observaciones
+        Do While WSCTG.LeerDatosCTG(clave) <> "":
+            Debug.Print WSCTG.NumeroCTG, WSCTG.CartaPorte, WSCTG.FechaHora
+            Debug.Print WSCTG.Destino, WSCTG.Destinatario, WSCTG.Observaciones
         Loop
     Next
 
-    ' Consulta de CTG a Rechazados (nuevo método WSCTGv2)
-    ok = WSCTGv2.ConsultarCTGRechazados()
-    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    ' Consulta de CTG a Rechazados (nuevo método WSCTG)
+    ok = WSCTG.ConsultarCTGRechazados()
+    Debug.Print "Errores:", WSCTG.ErrMsg
     Debug.Print "Numero CTG - Carta de Porte - Fecha - Destino/Dest./Obs."
     ' recorro cada uno para esta clave, devuelve el número de ctg o string vacio
-    Do While WSCTGv2.LeerDatosCTG() <> "":
-        Debug.Print WSCTGv2.NumeroCTG, WSCTGv2.CartaPorte, WSCTGv2.FechaHora,
-        Debug.Print WSCTGv2.Destino, WSCTGv2.Destinatario, WSCTGv2.Observaciones
+    Do While WSCTG.LeerDatosCTG() <> "":
+        Debug.Print WSCTG.NumeroCTG, WSCTG.CartaPorte, WSCTG.FechaHora,
+        Debug.Print WSCTG.Destino, WSCTG.Destinatario, WSCTG.Observaciones
     Loop
     
-    ' Al consultar los CTGs rechazados se puede tomar la acción "Regresar a Origen" (nuevo método WSCTGv2)
-    ok = WSCTGv2.RegresarAOrigenCTGRechazado(numero_carta_de_porte, numero_ctg, km_a_recorrer)
+    ' Al consultar los CTGs rechazados se puede tomar la acción "Regresar a Origen" (nuevo método WSCTG)
+    ok = WSCTG.RegresarAOrigenCTGRechazado(numero_carta_de_porte, numero_ctg, km_a_recorrer)
     Debug.Print "Transaccion:", transaccion
-    Debug.Print "Fecha y Hora", WSCTGv2.FechaHora
-    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    Debug.Print "Fecha y Hora", WSCTG.FechaHora
+    Debug.Print "Errores:", WSCTG.ErrMsg
     
-    ' Al consultar los CTGs rechazados se puede tomar la acción "Cambio de Destino y Destinatario para CTG rechazado" (nuevo método WSCTGv2)
+    ' Al consultar los CTGs rechazados se puede tomar la acción "Cambio de Destino y Destinatario para CTG rechazado" (nuevo método WSCTG)
     cuit_destino = "20111111112"
-    ok = WSCTGv2.CambiarDestinoDestinatarioCTGRechazado(numero_carta_de_porte, _
+    ok = WSCTG.CambiarDestinoDestinatarioCTGRechazado(numero_carta_de_porte, _
                             numero_ctg, codigo_localidad_destino, _
                             cuit_destino, cuit_destinatario, _
                             km_a_recorrer)
     Debug.Print "Transaccion:", transaccion
-    Debug.Print "Fecha y Hora", WSCTGv2.FechaHora
-    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    Debug.Print "Fecha y Hora", WSCTG.FechaHora
+    Debug.Print "Errores:", WSCTG.ErrMsg
     
-    ' Consulta de CTG a Activos por patente (nuevo método WSCTGv2)
+    ' Consulta de CTG a Activos por patente (nuevo método WSCTG)
     patente = "APE652"
-    ok = WSCTGv2.ConsultarCTGActivosPorPatente(patente)
-    Debug.Print "Errores:", WSCTGv2.ErrMsg
+    ok = WSCTG.ConsultarCTGActivosPorPatente(patente)
+    Debug.Print "Errores:", WSCTG.ErrMsg
     Debug.Print "Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario"
-    Do While WSCTGv2.LeerDatosCTG() <> "":
-        Debug.Print WSCTGv2.NumeroCTG, WSCTGv2.CartaPorte, WSCTGv2.patente,
-        Debug.Print WSCTGv2.FechaHora, WSCTGv2.FechaVencimiento, WSCTGv2.PesoNeto,
-        Debug.Print WSCTGv2.UsuarioSolicitante, WSCTGv2.UsuarioReal
+    Do While WSCTG.LeerDatosCTG() <> "":
+        Debug.Print WSCTG.NumeroCTG, WSCTG.CartaPorte, WSCTG.patente,
+        Debug.Print WSCTG.FechaHora, WSCTG.FechaVencimiento, WSCTG.PesoNeto,
+        Debug.Print WSCTG.UsuarioSolicitante, WSCTG.UsuarioReal
     Loop
     
     
@@ -265,7 +257,7 @@ ManejoError:
         Case vbCancel
             Debug.Print Err.Description
     End Select
-    Debug.Print WSCTGv2.XmlRequest
+    Debug.Print WSCTG.XmlRequest
     Debug.Assert False
 
 End Sub

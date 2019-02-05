@@ -11,15 +11,25 @@
 # for more details.
 
 
-
-"""Módulo para obtener código de autorización electrónica (CAE) para 
+import shelve
+import sys
+import datetime
+import decimal
+import os
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from . import utils
+from fpdf import Template
+from pysimplesoap.client import SoapFault
+import pprint
+import traceback
+"""Módulo para obtener código de autorización electrónica (CAE) para
 Liquidación de Tabaco Verde del web service WSLTV de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.06d"
 
 LICENCIA = """
 wsltv.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
@@ -35,8 +45,8 @@ e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-AYUDA="""
-Opciones: 
+AYUDA = """
+Opciones:
   --ayuda: este mensaje
 
   --debug: modo depuración (detalla y confirma las operaciones)
@@ -46,12 +56,12 @@ Opciones:
   --dbf: utilizar tablas DBF (xBase) para los archivos de intercambio
   --json: utilizar formato json para el archivo de intercambio
   --dummy: consulta estado de servidores
-  
+
   --autorizar: Autorizar Liquidación de Tabaco Verde (generarLiquidacion)
   --ajustar: Ajustar (ajustarLiquidacion/generarAjusteFisico)
-  --ult: Consulta el último número de orden registrado en AFIP 
+  --ult: Consulta el último número de orden registrado en AFIP
          (consultarUltimoComprobanteXPuntoVenta)
-  --consultar: Consulta una liquidación registrada en AFIP 
+  --consultar: Consulta una liquidación registrada en AFIP
          (consultarLiquidacionXNroComprobante / consultarLiquidacionXCAE)
 
   --pdf: descarga la liquidación en formato PDF
@@ -69,16 +79,8 @@ Opciones:
 Ver wsltv.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, shelve
-import decimal, datetime
-import traceback
-import pprint
-from pysimplesoap.client import SoapFault
-from fpdf import Template
-from . import utils
 
 # importo funciones compartidas:
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
@@ -87,15 +89,16 @@ WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsltv.ini"
+TIMEOUT = 30
 HOMO = False
 
 
 class WSLTV(BaseWS):
-    "Interfaz para el WebService de Liquidación de Tabaco Verde"    
+    "Interfaz para el WebService de Liquidación de Tabaco Verde"
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
-                        'AutorizarLiquidacion', 
+                        'AutorizarLiquidacion',
                         'CrearLiquidacion',
-                        'AgregarCondicionVenta', 'AgregarReceptor', 
+                        'AgregarCondicionVenta', 'AgregarReceptor',
                         'AgregarRomaneo', 'AgregarFardo', 'AgregarPrecioClase',
                         'AgregarRetencion', 'AgregarTributo',
                         'AgregarFlete', 'AgregarBonificacion',
@@ -107,21 +110,21 @@ class WSLTV(BaseWS):
                         'ConsultarTributos',
                         'ConsultarRetencionesTabacaleras',
                         'ConsultarDepositosAcopio',
-                        'ConsultarPuntosVentas', 
+                        'ConsultarPuntosVentas',
                         'ConsultarProvincias',
                         'ConsultarCondicionesVenta',
                         'MostrarPDF',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
-                        'SetParametros', 'SetParametro', 'GetParametro', 
+                        'SetParametros', 'SetParametro', 'GetParametro',
                         ]
-    _public_attrs_ = ['Token', 'Sign', 'Cuit', 
-        'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
-        'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
-        'CAE', 'NroComprobante', 'FechaLiquidacion',
-        'ImporteNeto', 'TotalRetenciones', 'TotalTributos', 'Total',
-        'AlicuotaIVA', 'ImporteIVA', 'Subtotal',
-        ]
+    _public_attrs_ = ['Token', 'Sign', 'Cuit',
+                      'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
+                      'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
+                      'XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'InstallDir',
+                      'CAE', 'NroComprobante', 'FechaLiquidacion',
+                      'ImporteNeto', 'TotalRetenciones', 'TotalTributos', 'Total',
+                      'AlicuotaIVA', 'ImporteIVA', 'Subtotal',
+                      ]
     _reg_progid_ = "WSLTV"
     _reg_clsid_ = "{C6EEAE8A-7560-4538-B29C-76434A8C2DC3}"
 
@@ -144,20 +147,21 @@ class WSLTV(BaseWS):
         self.TotalTributos = ""
         self.Subtotal = self.Total = ""
         self.datos = {}
+        self.reintentos = 0
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=30):
         "Establecer la conexión a los servidores de la AFIP"
         # llamo al constructor heredado:
         ok = BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
-        if ok:        
+        if ok:
             # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
             location = self.client.services['LtvService']['ports']['LtvEndPoint']['location']
             if location.startswith("http://"):
                 print("Corrigiendo WSDL ...", location, end=' ')
                 location = location.replace("http://", "https://").replace(":80", ":443")
                 self.client.services['LtvService']['ports']['LtvEndPoint']['location'] = location
-                print(location)            
+                print(location)
         return ok
 
     def __analizar_errores(self, ret):
@@ -171,8 +175,8 @@ class WSLTV(BaseWS):
             self.errores = [
                 {'codigo': err['error'][0]['codigo'],
                  'descripcion': err['error'][0]['descripcion'].replace("\n", "")
-                                .replace("\r", "")} 
-                             for err in errores]
+                 .replace("\r", "")}
+                for err in errores]
             self.ErrCode = ' '.join(self.Errores)
             self.ErrMsg = '\n'.join(self.Errores)
 
@@ -186,28 +190,28 @@ class WSLTV(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def CrearLiquidacion(self, tipo_cbte, pto_vta, nro_cbte, fecha, 
-            cod_deposito_acopio, tipo_compra,
-            variedad_tabaco, cod_provincia_origen_tabaco,
-            puerta=None, nro_tarjeta=None, horas=None, control=None,
-            nro_interno=None, iibb_emisor=None, fecha_inicio_actividad=None,
-            **kwargs):
+    def CrearLiquidacion(self, tipo_cbte, pto_vta, nro_cbte, fecha,
+                         cod_deposito_acopio, tipo_compra,
+                         variedad_tabaco, cod_provincia_origen_tabaco,
+                         puerta=None, nro_tarjeta=None, horas=None, control=None,
+                         nro_interno=None, iibb_emisor=None, fecha_inicio_actividad=None,
+                         **kwargs):
         "Inicializa internamente los datos de una liquidación para autorizar"
         # creo el diccionario con los campos generales de la liquidación:
-        liq = dict(tipoComprobante=tipo_cbte, 
-                   nroComprobante=nro_cbte, 
-                   puntoVenta=pto_vta, 
-                   iibbEmisor=iibb_emisor, 
-                   codDepositoAcopio=cod_deposito_acopio, 
-                   fechaLiquidacion=fecha, 
+        liq = dict(tipoComprobante=tipo_cbte,
+                   nroComprobante=nro_cbte,
+                   puntoVenta=pto_vta,
+                   iibbEmisor=iibb_emisor,
+                   codDepositoAcopio=cod_deposito_acopio,
+                   fechaLiquidacion=fecha,
                    tipoCompra=tipo_compra,
-                   condicionVenta=[], 
-                   variedadTabaco=variedad_tabaco, 
-                   codProvinciaOrigenTabaco=cod_provincia_origen_tabaco, 
-                   puerta=puerta, 
-                   nroTarjeta=nro_tarjeta, 
-                   horas=horas, 
-                   control=control, 
+                   condicionVenta=[],
+                   variedadTabaco=variedad_tabaco,
+                   codProvinciaOrigenTabaco=cod_provincia_origen_tabaco,
+                   puerta=puerta,
+                   nroTarjeta=nro_tarjeta,
+                   horas=horas,
+                   control=control,
                    nroInterno=nro_interno,
                    fechaInicioActividad=fecha_inicio_actividad,
                    )
@@ -217,7 +221,7 @@ class WSLTV(BaseWS):
                               precioClase=[],
                               retencion=[],
                               tributo=[],
-                             )
+                              )
         return True
 
     @inicializar_y_capturar_excepciones
@@ -285,7 +289,6 @@ class WSLTV(BaseWS):
         self.solicitud['bonificacion'] = bonif
         return True
 
-
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
         "Autorizar Liquidación Electrónica de Tabaco Verde"
@@ -295,11 +298,11 @@ class WSLTV(BaseWS):
                 del self.solicitud[campo]
         # llamo al webservice:
         ret = self.client.generarLiquidacion(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        solicitud=self.solicitud,
-                        )
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+            solicitud=self.solicitud,
+        )
         # analizo la respusta
         ret = ret['respuesta']
         self.__analizar_errores(ret)
@@ -307,7 +310,6 @@ class WSLTV(BaseWS):
         liq = liqs[0] if liqs else None
         self.AnalizarLiquidacion(liq)
         return True
-
 
     def AnalizarLiquidacion(self, liq):
         "Método interno para analizar la respuesta de AFIP"
@@ -342,7 +344,7 @@ class WSLTV(BaseWS):
                     situacion_iva=liq['emisor']['situacionIVA'],
                     domicilio=liq['emisor']['domicilio'],
                     fecha_inicio_actividad=liq['emisor']['fechaInicioActividad'],
-                    ),
+                ),
                 receptor=dict(
                     cuit=liq['receptor']['cuit'],
                     razon_social=liq['receptor']['razonSocial'],
@@ -351,7 +353,7 @@ class WSLTV(BaseWS):
                     situacion_iva=liq['receptor']['situacionIVA'],
                     domicilio=liq['receptor']['domicilio'],
                     iibb=liq['receptor'].get('iibb'),
-                    ),
+                ),
                 control=liq['datosOperacion'].get('control'),
                 nro_interno=liq['datosOperacion'].get('nroInterno'),
                 condicion_venta=liq['datosOperacion'].get('condicionVenta'),
@@ -372,10 +374,10 @@ class WSLTV(BaseWS):
                 total_tributos=liq['totalesOperacion']['totalTributos'],
                 total=liq['totalesOperacion']['total'],
                 retenciones=[],
-                tributos=[],               
+                tributos=[],
                 cae_ajustado=liq.get("caeAjustado"),
                 pdf=liq.get('pdf'),
-                )
+            )
             for romaneo in liq['detalleOperacion'].get('romaneo', []):
                 self.params_out['romaneos'].append(dict(
                     fecha_romaneo=romaneo['fechaRomaneo'],
@@ -386,42 +388,42 @@ class WSLTV(BaseWS):
                         importe=det['importe'],
                         peso_fardos_kg=det['pesoFardosKg'],
                         precio_x_kg_fardo=det['precioXKgFardo'],
-                        ) for det in romaneo['detalleClase']],
-                    ))
+                    ) for det in romaneo['detalleClase']],
+                ))
             for ret in liq.get('retencion', []):
                 self.params_out['retenciones'].append(dict(
                     retencion_codigo=ret['codigo'],
                     retencion_importe=ret['importe'],
-                    ))
-            for trib in liq.get('tributo',[]):
+                ))
+            for trib in liq.get('tributo', []):
                 self.params_out['tributos'].append(dict(
                     tributo_descripcion=trib.get('descripcion', ""),
                     tributo_base_imponible=trib['baseImponible'],
                     tributo_alicuota=trib['alicuota'],
                     tributo_codigo=trib['codigo'],
                     tributo_importe=trib['importe'],
-                    ))
+                ))
             if DEBUG:
                 import pprint
                 pprint.pprint(self.params_out)
         self.params_out['errores'] = self.errores
 
     @inicializar_y_capturar_excepciones
-    def CrearAjuste(self, tipo_cbte, pto_vta, nro_cbte, fecha, 
-            cod_deposito_acopio=None, tipo_ajuste=None, cuit_receptor=None, 
-            iibb_emisor=None, iibb_receptor=None, fecha_inicio_actividad=None,
-            **kwargs):
+    def CrearAjuste(self, tipo_cbte, pto_vta, nro_cbte, fecha,
+                    cod_deposito_acopio=None, tipo_ajuste=None, cuit_receptor=None,
+                    iibb_emisor=None, iibb_receptor=None, fecha_inicio_actividad=None,
+                    **kwargs):
         "Inicializa internamente los datos de una liquidación para ajustar"
         # codDepositoAcopio, tipoAjuste, cuitReceptor obligatorio ajustar liq.
         # WSLTVv1.3 fechaLiquidacion/fechaInicioActividad para ajuste físico
         # creo el diccionario con los campos generales de la liquidación:
-        liq = dict(tipoComprobante=tipo_cbte, 
-                   nroComprobante=nro_cbte, 
-                   puntoVenta=pto_vta, 
-                   fechaAjusteLiquidacion=fecha, 
+        liq = dict(tipoComprobante=tipo_cbte,
+                   nroComprobante=nro_cbte,
+                   puntoVenta=pto_vta,
+                   fechaAjusteLiquidacion=fecha,
                    fechaLiquidacion=fecha,
                    fechaInicioActividad=fecha_inicio_actividad,
-                   codDepositoAcopio=cod_deposito_acopio, 
+                   codDepositoAcopio=cod_deposito_acopio,
                    tipoAjuste=tipo_ajuste,
                    cuitReceptor=cuit_receptor,
                    iibbReceptor=iibb_receptor,
@@ -432,7 +434,7 @@ class WSLTV(BaseWS):
                               precioClase=[],
                               retencion=[],
                               tributo=[],
-                             )
+                              )
         return True
 
     @inicializar_y_capturar_excepciones
@@ -445,19 +447,19 @@ class WSLTV(BaseWS):
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacion(self):
         "Ajustar Liquidación de Tabaco Verde"
-        
+
         # renombrar la clave principal de la estructura
         if 'liquidacion' in self.solicitud:
             liq = self.solicitud.pop('liquidacion')
             self.solicitud["liquidacionAjuste"] = liq
-        
+
         # llamar al webservice:
         ret = self.client.ajustarLiquidacion(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        solicitud=self.solicitud,
-                        )
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+            solicitud=self.solicitud,
+        )
         # analizo la respusta
         ret = ret['respuesta']
         self.__analizar_errores(ret)
@@ -469,19 +471,19 @@ class WSLTV(BaseWS):
     @inicializar_y_capturar_excepciones
     def GenerarAjusteFisico(self):
         "Generar Ajuste Físico de Liquidación de Tabaco Verde (WSLTVv1.3)"
-        
+
         # renombrar la clave principal de la estructura
         if 'liquidacion' in self.solicitud:
             liq = self.solicitud.pop('liquidacion')
             self.solicitud = liq
-        
+
         # llamar al webservice:
         ret = self.client.generarAjusteFisico(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        solicitud=self.solicitud,
-                        )
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+            solicitud=self.solicitud,
+        )
         # analizar el resultado:
         ret = ret['respuesta']
         self.__analizar_errores(ret)
@@ -490,33 +492,32 @@ class WSLTV(BaseWS):
         self.AnalizarLiquidacion(liq)
         return True
 
-
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, tipo_cbte=None, pto_vta=None, nro_cbte=None,
-                                   cae=None, pdf="liq.pdf"):
+                             cae=None, pdf="liq.pdf"):
         "Consulta una liquidación por No de Comprobante o CAE"
         if cae:
             ret = self.client.consultarLiquidacionXCAE(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        solicitud={
-                            'cae': cae,
-                            'pdf': pdf and True or False,
-                            },
-                        )
+                auth={
+                    'token': self.Token, 'sign': self.Sign,
+                    'cuit': self.Cuit, },
+                solicitud={
+                    'cae': cae,
+                    'pdf': pdf and True or False,
+                },
+            )
         else:
             ret = self.client.consultarLiquidacionXNroComprobante(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                        solicitud={
-                            'puntoVenta': pto_vta,
-                            'nroComprobante': nro_cbte,
-                            'tipoComprobante': tipo_cbte,
-                            'pdf': pdf and True or False,
-                            },
-                        )
+                auth={
+                    'token': self.Token, 'sign': self.Sign,
+                    'cuit': self.Cuit, },
+                solicitud={
+                    'puntoVenta': pto_vta,
+                    'nroComprobante': nro_cbte,
+                    'tipoComprobante': tipo_cbte,
+                    'pdf': pdf and True or False,
+                },
+            )
         ret = ret['respuesta']
         self.__analizar_errores(ret)
         if 'liquidacion' in ret:
@@ -532,26 +533,25 @@ class WSLTV(BaseWS):
     def ConsultarUltimoComprobante(self, tipo_cbte=151, pto_vta=1):
         "Consulta el último No de Comprobante registrado"
         ret = self.client.consultarUltimoComprobanteXPuntoVenta(
-                    auth={
-                        'token': self.Token, 'sign': self.Sign,
-                        'cuit': self.Cuit, },
-                    solicitud={
-                        'puntoVenta': pto_vta,
-                        'tipoComprobante': tipo_cbte},
-                    )
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+            solicitud={
+                'puntoVenta': pto_vta,
+                'tipoComprobante': tipo_cbte},
+        )
         ret = ret['respuesta']
         self.__analizar_errores(ret)
         self.NroComprobante = ret['nroComprobante']
         return True
 
-
     def ConsultarProvincias(self, sep="||"):
         "Consulta las provincias habilitadas"
         ret = self.client.consultarProvincias(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                            )['respuesta']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+        )['respuesta']
         self.__analizar_errores(ret)
         array = ret.get('provincia', [])
         if sep is None:
@@ -563,10 +563,10 @@ class WSLTV(BaseWS):
     def ConsultarCondicionesVenta(self, sep="||"):
         "Retorna un listado de códigos y descripciones de las condiciones de ventas"
         ret = self.client.consultarCondicionesVenta(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                            )['respuesta']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+        )['respuesta']
         self.__analizar_errores(ret)
         array = ret.get('condicionVenta', [])
         if sep is None:
@@ -578,10 +578,10 @@ class WSLTV(BaseWS):
     def ConsultarTributos(self, sep="||"):
         "Retorna un listado de tributos con código, descripción y signo."
         ret = self.client.consultarTributos(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                            )['respuesta']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+        )['respuesta']
         self.__analizar_errores(ret)
         array = ret.get('tributo', [])
         if sep is None:
@@ -595,10 +595,10 @@ class WSLTV(BaseWS):
         #  El listado es una estructura anidada (varias clases por variedad)
         #import dbg; dbg.set_trace()
         ret = self.client.consultarVariedadesClasesTabaco(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                            )['respuesta']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+        )['respuesta']
         self.__analizar_errores(ret)
         self.XmlResponse = self.client.xml_response
         array = ret.get('variedad', [])
@@ -606,8 +606,8 @@ class WSLTV(BaseWS):
             # sin separador, devuelve un diccionario con clave cod_variadedad
             # y valor: {"descripcion": ds_variedad, "clases": lista_clases}
             # siendo lista_clases = [{'codigo': ..., 'descripcion': ...}]
-            return dict([(it['codigo'], {'descripcion': it['descripcion'], 
-                                         'clases': it['clase']}) 
+            return dict([(it['codigo'], {'descripcion': it['descripcion'],
+                                         'clases': it['clase']})
                          for it in array])
         else:
             # con separador, devuelve una lista de strings:
@@ -616,20 +616,20 @@ class WSLTV(BaseWS):
             for it in array:
                 for clase in it['clase']:
                     ret.append(
-                        ("%s %%s %s %%s %s %%s %s %%s %s" % 
+                        ("%s %%s %s %%s %s %%s %s %%s %s" %
                             (sep, sep, sep, sep, sep)) %
-                        (it['codigo'], it['descripcion'], 
-                         clase['descripcion'], clase['codigo']) 
-                        )
+                        (it['codigo'], it['descripcion'],
+                         clase['descripcion'], clase['codigo'])
+                    )
             return ret
 
     def ConsultarRetencionesTabacaleras(self, sep="||"):
         "Retorna un listado de retenciones tabacaleras con código y descripción"
         ret = self.client.consultarRetencionesTabacaleras(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                            )['respuesta']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+        )['respuesta']
         self.__analizar_errores(ret)
         array = ret.get('retencion', [])
         if sep is None:
@@ -641,26 +641,26 @@ class WSLTV(BaseWS):
     def ConsultarDepositosAcopio(self, sep="||"):
         "Retorna los depósitos de acopio pertenencientes al contribuyente"
         ret = self.client.consultarDepositosAcopio(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                            )['respuesta']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+        )['respuesta']
         self.__analizar_errores(ret)
         array = ret.get('acopio', [])
         if sep is None:
             return array
         else:
             return [("%s %%s %s %%s %s %%s %s %%s %s" % (sep, sep, sep, sep, sep)) %
-                    (it['codigo'], it['direccion'], it['localidad'], it['codigoPostal']) 
+                    (it['codigo'], it['direccion'], it['localidad'], it['codigoPostal'])
                     for it in array]
 
     def ConsultarPuntosVentas(self, sep="||"):
         "Retorna los puntos de ventas autorizados para la utilizacion de WS"
         ret = self.client.consultarPuntosVentas(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuit': self.Cuit, },
-                            )['respuesta']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuit': self.Cuit, },
+        )['respuesta']
         self.__analizar_errores(ret)
         array = ret.get('puntoVenta', [])
         if sep is None:
@@ -669,10 +669,9 @@ class WSLTV(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
-
     def MostrarPDF(self, archivo, imprimir=False):
         try:
-            if sys.platform=="linux2":
+            if sys.platform == "linux2":
                 os.system("evince ""%s""" % archivo)
             else:
                 operation = imprimir and "print" or ""
@@ -699,7 +698,7 @@ if __name__ == '__main__':
             print("=== %s ===" % msg)
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
-                dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                dec = len(fmt) > 3 and fmt[3] or (tipo == 'I' and '2' or '')
                 print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                     clave, comienzo, longitud, tipo, dec))
                 comienzo += longitud
@@ -716,42 +715,46 @@ if __name__ == '__main__':
     from .wsaa import WSAA
 
     try:
-    
+
         if "--version" in sys.argv:
             print("Versión: ", __version__)
 
-        if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
+        if len(sys.argv) > 1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
             print("Usando configuracion:", CONFIG_FILE)
-         
+
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
-        CERT = config.get('WSAA','CERT')
-        PRIVATEKEY = config.get('WSAA','PRIVATEKEY')
-        CUIT = config.get('WSLTV','CUIT')
-        ENTRADA = config.get('WSLTV','ENTRADA')
-        SALIDA = config.get('WSLTV','SALIDA')
+        CERT = config.get('WSAA', 'CERT')
+        PRIVATEKEY = config.get('WSAA', 'PRIVATEKEY')
+        CUIT = config.get('WSLTV', 'CUIT')
+        ENTRADA = config.get('WSLTV', 'ENTRADA')
+        SALIDA = config.get('WSLTV', 'SALIDA')
         PDF = config.has_option('WSLTV', 'PDF') and config.get('WSLTV', 'PDF') or "liq.pdf"
-        
-        if config.has_option('WSAA','URL') and not HOMO:
-            WSAA_URL = config.get('WSAA','URL')
+
+        if config.has_option('WSAA', 'URL') and not HOMO:
+            WSAA_URL = config.get('WSAA', 'URL')
         else:
-            WSAA_URL = None #wsaa.WSAAURL
-        if config.has_option('WSLTV','URL') and not HOMO:
-            WSLTV_URL = config.get('WSLTV','URL')
+            WSAA_URL = None  # wsaa.WSAAURL
+        if config.has_option('WSLTV', 'URL') and not HOMO:
+            WSLTV_URL = config.get('WSLTV', 'URL')
         else:
             WSLTV_URL = WSDL
 
         PROXY = config.has_option('WSAA', 'PROXY') and config.get('WSAA', 'PROXY') or None
         CACERT = config.has_option('WSAA', 'CACERT') and config.get('WSAA', 'CACERT') or None
         WRAPPER = config.has_option('WSAA', 'WRAPPER') and config.get('WSAA', 'WRAPPER') or None
-        
+
+        if config.has_option('WSLTV', 'TIMEOUT'):
+            TIMEOUT = int(config.get('WSLTV', 'TIMEOUT'))
+
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print("conf_dbf", conf_dbf)
+            if DEBUG:
+                print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
-            
+
         DEBUG = '--debug' in sys.argv
         XML = '--xml' in sys.argv
 
@@ -761,18 +764,19 @@ if __name__ == '__main__':
             print("WSLTV_URL:", WSLTV_URL)
             print("CACERT", CACERT)
             print("WRAPPER", WRAPPER)
+            print("timeout:", TIMEOUT)
         # obteniendo el TA
         from .wsaa import WSAA
         wsaa = WSAA()
-        ta = wsaa.Autenticar("wsltv", CERT, PRIVATEKEY, wsdl=WSAA_URL, 
-                               proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
+        ta = wsaa.Autenticar("wsltv", CERT, PRIVATEKEY, wsdl=WSAA_URL,
+                             proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
         if not ta:
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
 
         # cliente soap del web service
         wsltv = WSLTV()
         wsltv.LanzarExcepciones = True
-        wsltv.Conectar(url=WSLTV_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
+        wsltv.Conectar(url=WSLTV_URL, proxy=PROXY, wrapper=WRAPPER, cacert=CACERT, timeout=TIMEOUT)
         wsltv.SetTicketAcceso(ta)
         wsltv.Cuit = CUIT
 
@@ -781,7 +785,7 @@ if __name__ == '__main__':
             print("AppServerStatus", wsltv.AppServerStatus)
             print("DbServerStatus", wsltv.DbServerStatus)
             print("AuthServerStatus", wsltv.AuthServerStatus)
-            ##sys.exit(0)
+            # sys.exit(0)
 
         if '--json' in sys.argv and os.path.exists("wsltv.json"):
             # cargar un archivo de texto:
@@ -791,12 +795,12 @@ if __name__ == '__main__':
         if '--autorizar' in sys.argv:
 
             if '--prueba' in sys.argv:
-        
+
                 # genero una liquidación de ejemplo:
 
                 tipo_cbte = 150
                 pto_vta = 6
-                
+
                 if not '--prueba' in sys.argv:
                     # consulto el último número de orden emitido:
                     ok = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
@@ -804,7 +808,7 @@ if __name__ == '__main__':
                         nro_cbte = wsltv.NroComprobante + 1
                 else:
                     nro_cbte = 1
-                    
+
                 # datos de la cabecera:
                 fecha = '2016-04-18'
                 cod_deposito_acopio = 1000
@@ -817,24 +821,24 @@ if __name__ == '__main__':
                 control = "FFAA"
                 nro_interno = "77888"
                 fecha_inicio_actividad = "2016-04-01"
-                
+
                 # cargo la liquidación:
-                wsltv.CrearLiquidacion(tipo_cbte, pto_vta, nro_cbte, fecha, 
-                    cod_deposito_acopio, tipo_compra,
-                    variedad_tabaco, cod_provincia_origen_tabaco,
-                    puerta, nro_tarjeta, horas, control,
-                    nro_interno, iibb_emisor=None, 
-                    fecha_inicio_actividad=fecha_inicio_actividad)
-                
-                wsltv.AgregarCondicionVenta(codigo=99, descripcion="otra")            
+                wsltv.CrearLiquidacion(tipo_cbte, pto_vta, nro_cbte, fecha,
+                                       cod_deposito_acopio, tipo_compra,
+                                       variedad_tabaco, cod_provincia_origen_tabaco,
+                                       puerta, nro_tarjeta, horas, control,
+                                       nro_interno, iibb_emisor=None,
+                                       fecha_inicio_actividad=fecha_inicio_actividad)
+
+                wsltv.AgregarCondicionVenta(codigo=99, descripcion="otra")
 
                 # datos del receptor:
                 cuit = 20111111112
                 iibb = 123456
-                nro_socio = 11223   
+                nro_socio = 11223
                 nro_fet = 22
                 wsltv.AgregarReceptor(cuit, iibb, nro_socio, nro_fet)
-                
+
                 # datos romaneo:
                 nro_romaneo = 321
                 fecha_romaneo = "2015-12-10"
@@ -842,9 +846,9 @@ if __name__ == '__main__':
                 # fardo:
                 cod_trazabilidad = 356
                 clase_tabaco = 4
-                peso= 900
+                peso = 900
                 wsltv.AgregarFardo(cod_trazabilidad, clase_tabaco, peso)
-                
+
                 # precio clase:
                 precio = 190
                 wsltv.AgregarPrecioClase(clase_tabaco, precio)
@@ -871,26 +875,27 @@ if __name__ == '__main__':
                 # bonificacion:
                 porcentaje = 10.0
                 importe = 100.00
-                wsltv.AgregarBonificacion(porcentaje, importe)                
-            
+                wsltv.AgregarBonificacion(porcentaje, importe)
+
             if '--testing' in sys.argv:
-                # mensaje de prueba (no realiza llamada remota), 
+                # mensaje de prueba (no realiza llamada remota),
                 # usar solo si no está operativo, cargo respuesta:
                 wsltv.LoadTestXML("tests/xml/wsltv_aut_test_pdf.xml")
 
             print("Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
-                    wsltv.solicitud['liquidacion']['puntoVenta'],
-                    wsltv.solicitud['liquidacion']['nroComprobante'], 
-                    wsltv.solicitud['liquidacion']['tipoComprobante'],
-                    ))
-            
-            if not '--dummy' in sys.argv:        
-                print("Autorizando...") 
+                wsltv.solicitud['liquidacion']['puntoVenta'],
+                wsltv.solicitud['liquidacion']['nroComprobante'],
+                wsltv.solicitud['liquidacion']['tipoComprobante'],
+            ))
+
+            if not '--dummy' in sys.argv:
+                print("Autorizando...")
                 ret = wsltv.AutorizarLiquidacion()
-                    
+
             if wsltv.Excepcion:
                 print("EXCEPCION:", wsltv.Excepcion, file=sys.stderr)
-                if DEBUG: print(wsltv.Traceback, file=sys.stderr)
+                if DEBUG:
+                    print(wsltv.Traceback, file=sys.stderr)
             print("Errores:", wsltv.Errores)
             print("CAE", wsltv.CAE)
             print("FechaLiquidacion", wsltv.FechaLiquidacion)
@@ -925,7 +930,7 @@ if __name__ == '__main__':
                 assert wsltv.GetParametro("romaneos", 0, "nro_romaneo") == "321"
                 assert wsltv.GetParametro("romaneos", 0, "fecha_romaneo") == "2015-12-10"
 
-            if DEBUG: 
+            if DEBUG:
                 pprint.pprint(wsltv.params_out)
 
         if '--generar-ajuste-fisico' in sys.argv:
@@ -933,10 +938,10 @@ if __name__ == '__main__':
                 # ejemplo documentación AFIP:
                 if '--testing' in sys.argv:
                     wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test_pdf.xml")
-                wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2, nro_cbte=1, 
-                                  fecha='2016-09-09', 
+                wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2, nro_cbte=1,
+                                  fecha='2016-09-09',
                                   fecha_inicio_actividad="1900-01-01",
-                                 )
+                                  )
                 wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=3697, nro_cbte=2)
             wsltv.GenerarAjusteFisico()
             print("CAE Ajustado:", wsltv.GetParametro("cae_ajustado"))
@@ -948,13 +953,13 @@ if __name__ == '__main__':
                 # ejemplo documentación AFIP:
                 if '--testing' in sys.argv:
                     wsltv.LoadTestXML("tests/xml/wsltv_ajuste_test.xml")
-                wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2958, nro_cbte=13, 
-                                  fecha='2015-12-31', 
+                wsltv.CrearAjuste(tipo_cbte=151, pto_vta=2958, nro_cbte=13,
+                                  fecha='2015-12-31',
                                   cod_deposito_acopio=201, tipo_ajuste="C",
-                                  cuit_receptor=222222222, 
+                                  cuit_receptor=222222222,
                                   iibb_receptor=2,
                                   fecha_inicio_actividad="2010-01-01"
-                                 )
+                                  )
                 wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=4521, nro_cbte=12345678)
                 wsltv.AgregarPrecioClase(clase_tabaco=111, precio=25, total_kilos=41, total_fardos=1)
                 wsltv.AgregarRetencion(cod_retencion=11, descripcion=None, importe=20)
@@ -975,7 +980,7 @@ if __name__ == '__main__':
             except IndexError:
                 pass
             if '--testing' in sys.argv:
-                # mensaje de prueba (no realiza llamada remota), 
+                # mensaje de prueba (no realiza llamada remota),
                 # usar solo si no está operativo, cargo prueba:
                 wsltv.LoadTestXML("tests/xml/wsltv_cons_test.xml")
             print("Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte))
@@ -983,7 +988,7 @@ if __name__ == '__main__':
             print("CAE", wsltv.CAE)
             print("Errores:", wsltv.Errores)
 
-            if DEBUG: 
+            if DEBUG:
                 pprint.pprint(wsltv.params_out)
 
             if '--mostrar' in sys.argv and pdf:
@@ -1008,13 +1013,14 @@ if __name__ == '__main__':
             ret = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
             if wsltv.Excepcion:
                 print("EXCEPCION:", wsltv.Excepcion, file=sys.stderr)
-                if DEBUG: print(wsltv.Traceback, file=sys.stderr)
+                if DEBUG:
+                    print(wsltv.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wsltv.NroComprobante)
             print("Errores:", wsltv.Errores)
             sys.exit(0)
 
         # Recuperar parámetros:
-        
+
         if '--provincias' in sys.argv:
             ret = wsltv.ConsultarProvincias()
             print("\n".join(ret))
@@ -1044,14 +1050,14 @@ if __name__ == '__main__':
             print("\n".join(ret))
 
         print("hecho.")
-        
+
     except SoapFault as e:
-        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"), file=sys.stderr)
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii", "ignore"), file=sys.stderr)
         sys.exit(3)
     except Exception as e:
         try:
             print(traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0], file=sys.stderr)
-        except:
+        except BaseException:
             print("Excepción no disponible:", type(e), file=sys.stderr)
         if DEBUG:
             raise
@@ -1060,5 +1066,3 @@ if __name__ == '__main__':
         if XML:
             open("wsltv_request.xml", "w").write(wsltv.client.xml_request)
             open("wsltv_response.xml", "w").write(wsltv.client.xml_response)
-
-

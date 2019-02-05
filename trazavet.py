@@ -25,18 +25,19 @@ __version__ = "1.11d"
 import os
 import socket
 import sys
-import datetime, time
+import datetime
+import time
 import traceback
 import pysimplesoap.client
 from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
-                                set_http_wrapper
+    set_http_wrapper
 from pysimplesoap.simplexml import SimpleXMLElement
 from io import StringIO
 
 # importo funciones compartidas:
 from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, \
-                  dar_nombre_campo_dbf, get_install_dir, BaseWS, \
-                  inicializar_y_capturar_excepciones
+    dar_nombre_campo_dbf, get_install_dir, BaseWS, \
+    inicializar_y_capturar_excepciones
 
 HOMO = True
 TYPELIB = False
@@ -60,7 +61,7 @@ TRANSACCION_DTO = [
     ('n_cae', 15, A),
     ('id_motivo_destruccion', 5, A),
     ('n_manifiesto', 15, N),
-    ('en_transporte', 1, A), # boolean
+    ('en_transporte', 1, A),  # boolean
     ('n_remito', 15, A),
     ('motivo_devolucion', 100, A),
     ('observaciones', 1000, A),
@@ -119,28 +120,28 @@ TRANSACCIONES = [
 ERRORES = [
     ('_c_error', 4, A),                 # código
     ('_d_error', 250, A),               # descripción
-    ]
+]
 
 
 class TrazaVet(BaseWS):
     "Interfaz para el WebService de Trazabilidad de Veterinarios SENASA"
-    
+
     _public_methods_ = ['SaveTransaccion', 'SendCancelaTransac',
                         'SendConfirmaTransacc', 'SendAlertaTransacc',
                         'GetTransacciones',
                         'Conectar', 'LeerError', 'LeerTransaccion',
-                        'SetUsername', 
+                        'SetUsername',
                         'SetParametro', 'GetParametro',
                         'GetCodigoTransaccion', 'GetResultado', 'LoadTestXML']
-                        
+
     _public_attrs_ = [
-        'Username', 'Password', 
+        'Username', 'Password',
         'CodigoTransaccion', 'Errores', 'Resultado',
-        'XmlRequest', 'XmlResponse', 
-        'Version', 'InstallDir', 
+        'XmlRequest', 'XmlResponse',
+        'Version', 'InstallDir',
         'Traceback', 'Excepcion',
         'CantPaginas', 'HayError', 'TransaccionSenasa',
-        ]
+    ]
 
     _reg_progid_ = "TrazaVet"
     _reg_clsid_ = "{2E28D79D-23B0-4C1E-85B9-64BDC41B8FCF}"
@@ -148,7 +149,7 @@ class TrazaVet(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s %s" % (__version__, HOMO and 'Homologación' or '', 
+    Version = "%s %s %s" % (__version__, HOMO and 'Homologación' or '',
                             pysimplesoap.client.__version__)
 
     def __init__(self, reintentos=1):
@@ -173,8 +174,8 @@ class TrazaVet(BaseWS):
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
         # Conecto usando el método estandard:
-        ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
-                              soap_server="jetty")
+        ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout,
+                             soap_server="jetty")
         if ok:
             # si el archivo es local, asumo que ya esta corregido:
             if not self.wsdl.startswith("file"):
@@ -182,61 +183,61 @@ class TrazaVet(BaseWS):
                 location = self.wsdl[:-5]
                 ws = self.client.services['IWebServiceSenasa']
                 ws['ports']['IWebServiceSenasaPort']['location'] = location
-            
+
             # Establecer credenciales de seguridad:
             self.client['wsse:Security'] = {
                 'wsse:UsernameToken': {
                     'wsse:Username': self.Username,
                     'wsse:Password': self.Password,
-                    }
                 }
+            }
         return ok
-        
+
     @inicializar_y_capturar_excepciones
-    def SaveTransaccion(self, usuario, password, 
-                        gln_origen=None, gln_destino=None, 
-                        f_operacion=None, f_elaboracion=None, f_vto=None, 
-                        id_evento=None, cod_producto=None, n_cantidad=None, 
-                        n_serie=None, n_lote=None, n_cai=None, n_cae=None, 
-                        id_motivo_destruccion=None, n_manifiesto=None, 
-                        en_transporte=None, n_remito=None, 
-                        motivo_devolucion=None, observaciones=None, 
-                        n_vale_compra=None, apellidoNombres=None, 
-                        direccion=None, numero=None, localidad=None, 
+    def SaveTransaccion(self, usuario, password,
+                        gln_origen=None, gln_destino=None,
+                        f_operacion=None, f_elaboracion=None, f_vto=None,
+                        id_evento=None, cod_producto=None, n_cantidad=None,
+                        n_serie=None, n_lote=None, n_cai=None, n_cae=None,
+                        id_motivo_destruccion=None, n_manifiesto=None,
+                        en_transporte=None, n_remito=None,
+                        motivo_devolucion=None, observaciones=None,
+                        n_vale_compra=None, apellidoNombres=None,
+                        direccion=None, numero=None, localidad=None,
                         provincia=None, n_postal=None, cuit=None
-                         ):
+                        ):
         "Realiza el registro de una transacción de productos fitosanitarios. "
         # creo los parámetros para esta llamada
-        params = {  'gln_origen': gln_origen,
-                    'gln_destino': gln_destino,
-                    'f_operacion': f_operacion,
-                    'f_elaboracion': f_elaboracion,
-                    'f_vto': f_vto,
-                    'id_evento': id_evento,
-                    'cod_producto': cod_producto,
-                    'n_cantidad': n_cantidad,
-                    'n_serie': n_serie,
-                    'n_lote': n_lote,
-                    'n_cai': n_cai or None,
-                    'n_cae': n_cae or None,
-                    'id_motivo_destruccion': id_motivo_destruccion or None,
-                    'n_manifiesto': n_manifiesto or None,
-                    'en_transporte': en_transporte or None,
-                    'n_remito': n_remito or None,
-                    'motivo_devolucion': motivo_devolucion or None,
-                    'observaciones': observaciones or None,
-                    'n_vale_compra': n_vale_compra or None,
-                    'apellidoNombres': apellidoNombres or None,
-                    'direccion': direccion or None,
-                    'numero': numero or None,
-                    'localidad': localidad or None,
-                    'provincia': provincia or None,
-                    'n_postal': n_postal or None,
-                    'cuit': cuit or None,
-                    }
+        params = {'gln_origen': gln_origen,
+                  'gln_destino': gln_destino,
+                  'f_operacion': f_operacion,
+                  'f_elaboracion': f_elaboracion,
+                  'f_vto': f_vto,
+                  'id_evento': id_evento,
+                  'cod_producto': cod_producto,
+                  'n_cantidad': n_cantidad,
+                  'n_serie': n_serie,
+                  'n_lote': n_lote,
+                  'n_cai': n_cai or None,
+                  'n_cae': n_cae or None,
+                  'id_motivo_destruccion': id_motivo_destruccion or None,
+                  'n_manifiesto': n_manifiesto or None,
+                  'en_transporte': en_transporte or None,
+                  'n_remito': n_remito or None,
+                  'motivo_devolucion': motivo_devolucion or None,
+                  'observaciones': observaciones or None,
+                  'n_vale_compra': n_vale_compra or None,
+                  'apellidoNombres': apellidoNombres or None,
+                  'direccion': direccion or None,
+                  'numero': numero or None,
+                  'localidad': localidad or None,
+                  'provincia': provincia or None,
+                  'n_postal': n_postal or None,
+                  'cuit': cuit or None,
+                  }
         res = self.client.saveTransacciones(
             arg0=params,
-            arg1=usuario, 
+            arg1=usuario,
             arg2=password,
         )
         ret = res['return']
@@ -248,8 +249,8 @@ class TrazaVet(BaseWS):
     def SendCancelaTransac(self, usuario, password, codigo_transaccion):
         " Realiza la cancelación de una transacción"
         res = self.client.sendCancelaTransac(
-            arg0=codigo_transaccion, 
-            arg1=usuario, 
+            arg0=codigo_transaccion,
+            arg1=usuario,
             arg2=password,
         )
         ret = res['return']
@@ -261,11 +262,11 @@ class TrazaVet(BaseWS):
     def SendConfirmaTransacc(self, usuario, password, p_ids_transac, f_operacion, n_cantidad=None):
         "Confirma la recepción de un medicamento"
         res = self.client.sendConfirmaTransacc(
-            arg0=usuario, 
+            arg0=usuario,
             arg1=password,
             arg2={'p_ids_transac': p_ids_transac, 'f_operacion': f_operacion,
                   'n_cantidad': n_cantidad,
-                 }, 
+                  },
         )
         ret = res['return']
         self.CodigoTransaccion = ret.get('codigoTransaccion')
@@ -276,9 +277,9 @@ class TrazaVet(BaseWS):
     def SendAlertaTransacc(self, usuario, password, p_ids_transac_ws):
         "Alerta un medicamento, acción contraria a “confirmar la transacción”."
         res = self.client.sendAlertaTransacc(
-            arg0=usuario, 
+            arg0=usuario,
             arg1=password,
-            arg2=p_ids_transac_ws, 
+            arg2=p_ids_transac_ws,
         )
         ret = res['return']
         self.CodigoTransaccion = ret.get('id_transac_asociada')
@@ -286,14 +287,14 @@ class TrazaVet(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def GetTransacciones(self, usuario, password, 
-                id_transaccion=None, id_evento=None, gln_origen=None,
-                fecha_desde_t=None, fecha_hasta_t=None, 
-                fecha_desde_v=None, fecha_hasta_v=None, 
-                gln_informador=None, id_tipo_transaccion=None,
-                gtin_elemento=None, n_lote=None, n_serie=None,
-                n_remito_factura=None,
-                ):
+    def GetTransacciones(self, usuario, password,
+                         id_transaccion=None, id_evento=None, gln_origen=None,
+                         fecha_desde_t=None, fecha_hasta_t=None,
+                         fecha_desde_v=None, fecha_hasta_v=None,
+                         gln_informador=None, id_tipo_transaccion=None,
+                         gtin_elemento=None, n_lote=None, n_serie=None,
+                         n_remito_factura=None,
+                         ):
         "Trae un listado de las transacciones que no están confirmadas"
 
         # preparo los parametros de entrada opcionales:
@@ -304,30 +305,30 @@ class TrazaVet(BaseWS):
             kwargs['arg3'] = id_evento
         if gln_origen is not None:
             kwargs['arg4'] = gln_origen
-        if fecha_desde_t is not None: 
+        if fecha_desde_t is not None:
             kwargs['arg5'] = fecha_desde_t
-        if fecha_hasta_t is not None: 
+        if fecha_hasta_t is not None:
             kwargs['arg6'] = fecha_hasta_t
-        if fecha_desde_v is not None: 
+        if fecha_desde_v is not None:
             kwargs['arg7'] = fecha_desde_v
-        if fecha_hasta_v is not None: 
+        if fecha_hasta_v is not None:
             kwargs['arg8'] = fecha_hasta_v
-        if gln_informador is not None: 
+        if gln_informador is not None:
             kwargs['arg9'] = gln_informador
-        if id_tipo_transaccion is not None: 
+        if id_tipo_transaccion is not None:
             kwargs['arg10'] = id_tipo_transaccion
-        if gtin_elemento is not None: 
+        if gtin_elemento is not None:
             kwargs['arg11'] = gtin_elemento
-        if n_lote is not None: 
+        if n_lote is not None:
             kwargs['arg12'] = n_lote
-        if n_serie is not None: 
+        if n_serie is not None:
             kwargs['arg13'] = n_serie
-        if n_remito_factura is not None: 
+        if n_remito_factura is not None:
             kwargs['arg14'] = n_remito_factura
 
         # llamo al webservice
         res = self.client.getTransacciones(
-            arg0=usuario, 
+            arg0=usuario,
             arg1=password,
             **kwargs
         )
@@ -339,10 +340,10 @@ class TrazaVet(BaseWS):
             self.TransaccionSenasa = [it for it in ret.get('list', [])]
         return True
 
-    def  LeerTransaccion(self):
+    def LeerTransaccion(self):
         "Recorro TransaccionSenasa devuelto por GetTransacciones"
-         # usar GetParametro para consultar el valor retornado por el webservice
-        
+        # usar GetParametro para consultar el valor retornado por el webservice
+
         if self.TransaccionSenasa:
             # extraigo el primer item
             self.params_out = self.TransaccionSenasa.pop(0)
@@ -354,7 +355,7 @@ class TrazaVet(BaseWS):
 
     def LeerError(self):
         "Recorro los errores devueltos y devuelvo el primero si existe"
-        
+
         if self.Errores:
             # extraigo el primer item
             er = self.Errores.pop(0)
@@ -363,34 +364,36 @@ class TrazaVet(BaseWS):
             return ""
 
     def SetUsername(self, username):
-        "Establezco el nombre de usuario"        
+        "Establezco el nombre de usuario"
         self.Username = username
 
     def SetPassword(self, password):
-        "Establezco la contraseña"        
+        "Establezco la contraseña"
         self.Password = password
 
     def GetCodigoTransaccion(self):
-        "Devuelvo el código de transacción"        
+        "Devuelvo el código de transacción"
         return self.CodigoTransaccion
 
     def GetResultado(self):
-        "Devuelvo el resultado"        
+        "Devuelvo el resultado"
         return self.Resultado
 
 
 def main():
     "Función principal de pruebas (obtener CAE)"
-    import os, time, sys
+    import os
+    import time
+    import sys
     global WSDL, LOCATION
 
     DEBUG = '--debug' in sys.argv
 
     ws = TrazaVet()
-    
+
     ws.Username = 'testwservice'
     ws.Password = 'testwservicepsw'
-    
+
     if '--prod' in sys.argv and not HOMO:
         WSDL = "https://servicios.pami.org.ar/trazavet.WebService?wsdl"
         print("Usando WSDL:", WSDL)
@@ -407,17 +410,17 @@ def main():
     transaccion_dto = []
     transacciones = []
     errores = []
-    formatos = [('TransaccionDTO', TRANSACCION_DTO, transaccion_dto), 
+    formatos = [('TransaccionDTO', TRANSACCION_DTO, transaccion_dto),
                 ('Transacciones', TRANSACCIONES, transacciones),
                 ('Errores', ERRORES, errores),
-               ]
+                ]
 
     if '--formato' in sys.argv:
         print("Formato:")
         for msg, formato, lista in formatos:
             comienzo = 1
             print("=== %s ===" % msg)
-            print("|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (  
+            print("|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (
                 "Nombre", "Tipo", "Long.", "Pos(txt)", "Campo(dbf)"))
             claves = []
             for fmt in formato:
@@ -428,10 +431,10 @@ def main():
                     clave, tipo, longitud, comienzo, clave_dbf))
                 comienzo += longitud
         sys.exit(0)
-        
+
     if '--cargar' in sys.argv:
         if '--dbf' in sys.argv:
-            leer_dbf(formatos[:1], {})        
+            leer_dbf(formatos[:1], {})
         elif '--json' in sys.argv:
             for formato in formatos[:1]:
                 archivo = open(formato[0].lower() + ".json", "r")
@@ -445,26 +448,26 @@ def main():
                     d = leer(linea, formato[1])
                     formato[2].append(d)
                 archivo.close()
-        
+
     ws.Conectar("", WSDL, proxy)
-    
+
     if ws.Excepcion:
         print(ws.Excepcion)
         print(ws.Traceback)
         sys.exit(-1)
-    
+
     # Datos de pruebas:
-    
+
     if '--test' in sys.argv:
         transaccion_dto.append(dict(
-            gln_origen="9876543210982", gln_destino="3692581473693", 
+            gln_origen="9876543210982", gln_destino="3692581473693",
             f_operacion=datetime.datetime.now().strftime("%d/%m/%Y"),
             f_elaboracion=datetime.datetime.now().strftime("%d/%m/%Y"),
-            f_vto=(datetime.datetime.now()+datetime.timedelta(30)).strftime("%d/%m/%Y"),
+            f_vto=(datetime.datetime.now() + datetime.timedelta(30)).strftime("%d/%m/%Y"),
             id_evento=11,
             cod_producto="88900000000001",
             n_cantidad=1,
-            n_serie=int(time.time()*10), 
+            n_serie=int(time.time() * 10),
             n_lote=datetime.datetime.now().strftime("%Y"),
             n_cai="123456789012345",
             n_cae="",
@@ -476,7 +479,7 @@ def main():
             observaciones="prueba",
             n_vale_compra="",
             apellidoNombres="Juan Peres",
-            direccion="Saraza", numero="1234", 
+            direccion="Saraza", numero="1234",
             localidad="Hurlingham", provincia="Buenos Aires",
             n_postal="1688",
             cuit="20267565393",
@@ -484,26 +487,26 @@ def main():
         ))
 
     # Opciones principales:
-    
+
     if '--confirma' in sys.argv:
         if '--loadxml' in sys.argv:
             ws.LoadTestXML("trazamed_confirma.xml")  # cargo respuesta
             ok = ws.SendConfirmaTransacc(usuario="pruebasws", password="pruebasws",
-                                   p_ids_transac="1", f_operacion="31-12-2013")
+                                         p_ids_transac="1", f_operacion="31-12-2013")
             if not ok:
                 raise RuntimeError(ws.Excepcion)
-        ws.SendConfirmaTransacc(*sys.argv[sys.argv.index("--confirma")+1:])
+        ws.SendConfirmaTransacc(*sys.argv[sys.argv.index("--confirma") + 1:])
     elif '--alerta' in sys.argv:
-        ws.SendAlertaTransacc(*sys.argv[sys.argv.index("--alerta")+1:])
+        ws.SendAlertaTransacc(*sys.argv[sys.argv.index("--alerta") + 1:])
     elif '--cancela' in sys.argv:
-        ws.SendCancelaTransac(*sys.argv[sys.argv.index("--cancela")+1:])
+        ws.SendCancelaTransac(*sys.argv[sys.argv.index("--cancela") + 1:])
     elif '--consulta' in sys.argv:
         ws.GetTransacciones(
-                            *sys.argv[sys.argv.index("--consulta")+1:]
-                            )
+            *sys.argv[sys.argv.index("--consulta") + 1:]
+        )
         print("CantPaginas", ws.CantPaginas)
         print("HayError", ws.HayError)
-        #print "TransaccionSenasa", ws.TransaccionSenasa
+        # print "TransaccionSenasa", ws.TransaccionSenasa
         # parametros comunes de salida (columnas de la tabla):
         claves = [k for k, v, l in TRANSACCIONES]
         # extiendo la lista de resultado para el archivo de intercambio:
@@ -511,21 +514,21 @@ def main():
         # encabezado de la tabla:
         print("||", "||".join(["%s" % clave for clave in claves]), "||")
         # recorro los datos devueltos (TransaccionSenasa):
-        while ws.LeerTransaccion():     
+        while ws.LeerTransaccion():
             for clave in claves:
                 print("||", ws.GetParametro(clave), end=' ')         # imprimo cada fila
             print("||")
     else:
         argv = [argv for argv in sys.argv if not argv.startswith("--")]
         if not transaccion_dto:
-            if len(argv)>10:
+            if len(argv) > 10:
                 ws.SaveTransaccion(*argv[1:])
             else:
                 print("ERROR: no se indicaron todos los parámetros requeridos")
         elif transaccion_dto:
             try:
                 usuario, password = argv[-2:]
-            except:
+            except BaseException:
                 print("ADVERTENCIA: no se indico parámetros usuario y passoword")
                 usuario, password = "senasaws", "Clave2013"
             for i, dto in enumerate(transaccion_dto):
@@ -538,23 +541,23 @@ def main():
                     ws.Resultado,
                     ws.CodigoTransaccion,
                     '|'.join(ws.Errores or []),
-                    ))
+                ))
         else:
             print("ERROR: no se especificaron productos a informar")
-            
+
     if not transaccion_dto:
         print("|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
-                ws.Resultado,
-                ws.CodigoTransaccion,
-                '|'.join(ws.Errores or []),
-                ))
+            ws.Resultado,
+            ws.CodigoTransaccion,
+            '|'.join(ws.Errores or []),
+        ))
 
     if ws.Excepcion:
         print(ws.Traceback)
 
     if '--grabar' in sys.argv:
         if '--dbf' in sys.argv:
-            guardar_dbf(formatos, True, {})        
+            guardar_dbf(formatos, True, {})
         elif '--json' in sys.argv:
             for formato in formatos:
                 archivo = open(formato[0].lower() + ".json", "w")
@@ -576,9 +579,10 @@ if __name__ == '__main__':
 
     # ajusto el encoding por defecto (si se redirije la salida)
     if not hasattr(sys.stdout, "encoding") or sys.stdout.encoding is None:
-        import codecs, locale
-        sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout,"replace");
-        sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr,"replace");
+        import codecs
+        import locale
+        sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout, "replace")
+        sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr, "replace")
 
     if '--register' in sys.argv or '--unregister' in sys.argv:
         import pythoncom
@@ -587,7 +591,7 @@ if __name__ == '__main__':
     elif "/Automate" in sys.argv:
         # MS seems to like /automate to run the class factories.
         import win32com.server.localserver
-        #win32com.server.localserver.main()
+        # win32com.server.localserver.main()
         # start the server.
         win32com.server.localserver.serve([TrazaVet._reg_clsid_])
     else:
