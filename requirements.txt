@@ -1,4 +1,4 @@
-httplib2>=0.7
+httplib2>=0.12.0
 pysimplesoap==1.08.14
 m2crypto>=0.18
 fpdf>=1.7.2
