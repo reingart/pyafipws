@@ -16,6 +16,7 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 
+from io import IOBase
 import datetime
 import functools
 import inspect
@@ -457,7 +458,7 @@ class WebClient:
         boundary = _make_boundary()
         buf = StringIO()
         for key, value in list(vars.items()):
-            if not isinstance(value, file):
+            if not isinstance(value, IOBase):
                 buf.write('--%s\r\n' % boundary)
                 buf.write('Content-Disposition: form-data; name="%s"' % key)
                 buf.write('\r\n\r\n' + value + '\r\n')
@@ -480,8 +481,8 @@ class WebClient:
         "Perform a GET/POST request and return the response"
 
         location = self.location
-        if isinstance(location, str):
-            location = location.encode("utf8")
+        # if isinstance(location, str):
+        #     location = location.encode("utf8")
         # extend the base URI with additional components
         if args:
             location += "/".join(args)

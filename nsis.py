@@ -228,9 +228,9 @@ class NSISScript:
         self.comserver_files_dll = [self.chop(p) for p in comserver_files if p.lower().endswith(".dll")]
         self.comserver_files_tlb = []
         if not self.comserver_files_exe and self.windows_exe_files:
-            for file in self.windows_exe_files:
-                if file in ("wsaa.exe", "wsfev1.exe"):
-                    self.comserver_files_tlb.append(file)
+            for win_file in self.windows_exe_files:
+                if win_file in ("wsaa.exe", "wsfev1.exe"):
+                    self.comserver_files_tlb.append(win_file)
 
     def chop(self, pathname):
         global install_vcredist
@@ -243,7 +243,7 @@ class NSISScript:
 
     def create(self, pathname="base.nsi"):
         self.pathname = pathname
-        ofi = self.file = open(pathname, "w")
+        ofi = open(pathname, "w")
         ver = self.version
         if "-" in ver:
             ver = ver[:ver.index("-")]

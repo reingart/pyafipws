@@ -1,5 +1,5 @@
-httplib2>=0.7
-pysimplesoap==1.08.14
+httplib2>=0.12.0
+git+https://github.com/pysimplesoap/pysimplesoap.git@stable_py3k#pysimplesoap
 m2crypto>=0.18
 fpdf>=1.7.2
 dbf>=0.88.019
