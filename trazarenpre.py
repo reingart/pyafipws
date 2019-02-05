@@ -10,9 +10,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"MÛdulo para Trazabilidad de Precursores QuÌmicos RENPRE ResoluciÛn 900/12"
+"M√≥dulo para Trazabilidad de Precursores Qu√≠micos RENPRE Resoluci√≥n 900/12"
 
-# InformaciÛn adicional y documentaciÛn:
+# Informaci√≥n adicional y documentaci√≥n:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadPrecursoresQuimicos
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -62,7 +62,7 @@ class TrazaRenpre(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s %s" % (__version__, HOMO and 'HomologaciÛn' or '',
+    Version = "%s %s %s" % (__version__, HOMO and 'Homologaci√≥n' or '',
                             pysimplesoap.client.__version__)
 
     def __init__(self, reintentos=1):
@@ -80,13 +80,13 @@ class TrazaRenpre(BaseWS):
         self.Resultado = ret.get('resultado')
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
-        # Conecto usando el mÈtodo estandard:
+        # Conecto usando el m√©todo estandard:
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout,
                              soap_server="jetty")
         if ok:
             # si el archivo es local, asumo que ya esta corregido:
             if not self.wsdl.startswith("file"):
-                # corrijo ubicaciÛn del servidor (localhost:9050 en el WSDL)
+                # corrijo ubicaci√≥n del servidor (localhost:9050 en el WSDL)
                 location = self.wsdl[:-5]
                 if 'IWebServiceSDRNService' in self.client.services:
                     ws = self.client.services['IWebServiceSDRNService']
@@ -120,7 +120,7 @@ class TrazaRenpre(BaseWS):
                           operacion_excento_djai=None, control_duplicidad=None,
                           ):
         "Permite informe por parte de un agente de una o varias transacciones"
-        # creo los par·metros para esta llamada
+        # creo los par√°metros para esta llamada
         params = {'gln_origen': gln_origen, 'gln_destino': gln_destino,
                   'f_operacion': f_operacion, 'id_evento': id_evento,
                   'cod_producto': cod_producto, 'n_cantidad': n_cantidad,
@@ -143,7 +143,7 @@ class TrazaRenpre(BaseWS):
                   'operacion_excento_djai': operacion_excento_djai,
                   'control_duplicidad': control_duplicidad,
                   }
-        # actualizo con par·metros generales:
+        # actualizo con par√°metros generales:
         params.update(self.params_in)
         res = self.client.saveTransacciones(
             arg0=params,
@@ -157,7 +157,7 @@ class TrazaRenpre(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendCancelacTransacc(self, usuario, password, codigo_transaccion):
-        " Realiza la cancelaciÛn de una transacciÛn"
+        " Realiza la cancelaci√≥n de una transacci√≥n"
         res = self.client.sendCancelaTransac(
             arg0=codigo_transaccion,
             arg1=usuario,
@@ -173,7 +173,7 @@ class TrazaRenpre(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendConfirmaTransacc(self, usuario, password, p_ids_transac, f_operacion):
-        "Confirma la recepciÛn de un medicamento"
+        "Confirma la recepci√≥n de un medicamento"
         res = self.client.sendConfirmaTransacc(
             arg0=usuario,
             arg1=password,
@@ -186,7 +186,7 @@ class TrazaRenpre(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendAlertaTransacc(self, usuario, password, p_ids_transac_ws):
-        "Alerta un medicamento, acciÛn contraria a ìconfirmar la transacciÛnî."
+        "Alerta un medicamento, acci√≥n contraria a ‚Äúconfirmar la transacci√≥n‚Äù."
         res = self.client.sendAlertaTransacc(
             arg0=usuario,
             arg1=password,
@@ -208,7 +208,7 @@ class TrazaRenpre(BaseWS):
                            id_tipo=None,
                            id_estado=None, nro_pag=1, cant_reg=100,
                            ):
-        "Obtiene los movimientos realizados y permite filtros de b˙squeda"
+        "Obtiene los movimientos realizados y permite filtros de b√∫squeda"
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
@@ -262,11 +262,11 @@ class TrazaRenpre(BaseWS):
         self.Username = username
 
     def SetPassword(self, password):
-        "Establezco la contraseÒa"
+        "Establezco la contrase√±a"
         self.Password = password
 
     def GetCodigoTransaccion(self):
-        "Devuelvo el cÛdigo de transacciÛn"
+        "Devuelvo el c√≥digo de transacci√≥n"
         return self.CodigoTransaccion
 
     def GetResultado(self):
@@ -275,7 +275,7 @@ class TrazaRenpre(BaseWS):
 
 
 def main():
-    "FunciÛn principal de pruebas (transaccionar!)"
+    "Funci√≥n principal de pruebas (transaccionar!)"
     import os
     import time
     import sys
@@ -310,7 +310,7 @@ def main():
             gln_destino=8888888888888,
             f_operacion="20/05/2014",
             id_evento=44,
-            cod_producto=88800000000035,  # acido sulf˙rico
+            cod_producto=88800000000035,  # acido sulf√∫rico
             n_cantidad=1,
             n_documento_operacion=1,
             # m_entrega_parcial="",
@@ -339,7 +339,7 @@ def main():
         print(ws.Traceback)
 
 
-# busco el directorio de instalaciÛn (global para que no cambie si usan otra dll)
+# busco el directorio de instalaci√≥n (global para que no cambie si usan otra dll)
 INSTALL_DIR = TrazaRenpre.InstallDir = get_install_dir()
 
 
