@@ -91,7 +91,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
 
     if BIO:
         # Firmar el texto (tra) usando m2crypto (openssl bindings para python)
-        buf = BIO.MemoryBuffer(tra.encode('utf8'))             # Crear un buffer desde el texto
+        buf = BIO.MemoryBuffer(tra)             # Crear un buffer desde el texto
         #Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
         s = SMIME.SMIME()                       # Instanciar un SMIME
         # soporte de contraseña de encriptación (clave privada, opcional)
@@ -130,15 +130,16 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
                 else:
                     openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
             cert_f = NamedTemporaryFile()
-            cert_f.write(cert)
+            cert_f.write(cert.encode('utf-8'))
             cert_f.seek(0)
             key_f = NamedTemporaryFile()
-            key_f.write(privatekey)
+            key_f.write(privatekey.encode('utf-8'))
             key_f.seek(0)
-            out = Popen([openssl, "smime", "-sign", 
-                         "-signer", cert_f.name, "-inkey", key_f.name,
-                         "-outform","DER", "-nodetach"], 
-                        stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra.encode("utf8"))[0]
+            out = Popen([openssl, "smime", "-sign",
+                    "-signer", cert_f.name, "-inkey", key_f.name,
+                    "-outform","DER", "-nodetach"],
+                stdin=PIPE, stdout=PIPE,
+                stderr=PIPE).communicate(tra)[0]
             cert_f.close()
             key_f.close()
             return b64encode(out).decode("utf8")
