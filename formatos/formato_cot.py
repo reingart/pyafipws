@@ -27,15 +27,15 @@ registros = {
     '02': 'REMITO',
     '03': 'PRODUCTOS',
     '04': 'FOOTER',
-    }
+}
 
 formato = {
     '01': [
-        'TIPO_REGISTRO', 
+        'TIPO_REGISTRO',
         'CUIT_EMPRESA'
-        ],
+    ],
     '02': [
-        'TIPO_REGISTRO', 
+        'TIPO_REGISTRO',
         'FECHA_EMISION',
         'CODIGO_UNICO',
         'FECHA_SALIDA_TRANSPORTE',
@@ -79,7 +79,7 @@ formato = {
         'PATENTE_ACOPLADO',
         'PRODUCTO_NO_TERM_DEV',
         'IMPORTE',
-        ],
+    ],
     '03': [
         'TIPO_REGISTRO',
         'CODIGO_UNICO_PRODUCTO',
@@ -89,12 +89,12 @@ formato = {
         'PROPIO_DESCRIPCION_PRODUCTO',
         'PROPIO_DESCRIPCION_UNIDAD_MEDIDA',
         'CANTIDAD_AJUSTADA',
-        ],
+    ],
     '04': [
         'TIPO_REGISTRO',
         'CANTIDAD_TOTAL_REMITOS',
-        ]
-    }
+    ]
+}
 
 
 f = open(sys.argv[1])
@@ -104,7 +104,7 @@ for l in f:
     if reg in registros:
         print("Registro: ", registros[reg])
         campos = l.strip("\r").strip("\n").split("|")
-        for i, campo in enumerate(campos): 
+        for i, campo in enumerate(campos):
             print(" * %s: |%s|" % (formato[reg][i], campo, ))
     else:
         print("registro incorrecto:", l)

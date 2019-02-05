@@ -22,11 +22,11 @@ try:
     import json
 except ImportError:
     try:
-        import simplejson as json 
-    except:
+        import simplejson as json
+    except BaseException:
         print("para soporte de JSON debe instalar simplejson")
 
-        
+
 def leer(fn="entrada.json"):
     "Analiza un archivo JSON y devuelve un diccionario (confia en que el json este ok)"
     items = []
@@ -34,12 +34,10 @@ def leer(fn="entrada.json"):
     regs = json.load(jsonfile)
     return regs
 
-    
+
 def escribir(filas, fn="salida.json"):
     "Dado una lista de comprobantes (diccionarios), escribe JSON"
     import codecs
     jsonfile = codecs.open(fn, "w")
     json.dump(filas, jsonfile, sort_keys=True, indent=4, encoding="utf-8",)
     jsonfile.close()
-
-    

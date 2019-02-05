@@ -17,7 +17,11 @@ __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
 __version__ = "1.01b"
 
-import md5, os, sys, tempfile, traceback
+import md5
+import os
+import sys
+import tempfile
+import traceback
 from pysimplesoap.simplexml import SimpleXMLElement
 
 from .utils import WebClient
@@ -26,7 +30,7 @@ HOMO = False
 CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producción)
 
 URL = "https://dfe.test.arba.gov.ar/DomicilioElectronico/SeguridadCliente/dfeServicioConsulta.do"  # testing
-##URL = "https://dfe.arba.gov.ar/DomicilioElectronico/SeguridadCliente/dfeServicioConsulta.do"  # produccion
+# URL = "https://dfe.arba.gov.ar/DomicilioElectronico/SeguridadCliente/dfeServicioConsulta.do"  # produccion
 
 
 XML_ENTRADA_BASE = """<?xml version = "1.0" encoding = "ISO-8859-1"?>
@@ -46,12 +50,12 @@ class IIBB:
                         'LeerContribuyente', 'LeerErrorValidacion',
                         'AnalizarXml', 'ObtenerTagXml']
     _public_attrs_ = ['Usuario', 'Password', 'XmlResponse',
-        'Version', 'Excepcion', 'Traceback', 'InstallDir',
-        'NumeroComprobante', 'CantidadContribuyentes', 'CodigoHash',
-        'CuitContribuyente', 'AlicuotaPercepcion', 'AlicuotaRetencion',
-        'GrupoPercepcion', 'GrupoRetencion',
-        'TipoError', 'CodigoError', 'MensajeError',
-        ]
+                      'Version', 'Excepcion', 'Traceback', 'InstallDir',
+                      'NumeroComprobante', 'CantidadContribuyentes', 'CodigoHash',
+                      'CuitContribuyente', 'AlicuotaPercepcion', 'AlicuotaRetencion',
+                      'GrupoPercepcion', 'GrupoRetencion',
+                      'TipoError', 'CodigoError', 'MensajeError',
+                      ]
 
     _reg_progid_ = "IIBB"
     _reg_clsid_ = "{2C7E29D2-0C99-49D8-B04B-A16B807BB123}"
@@ -108,7 +112,7 @@ class IIBB:
 
             if not self.testing:
                 response = self.client(user=self.Usuario, password=self.Password,
-                                   file=archivo)
+                                       file=archivo)
             else:
                 response = open(self.testing).read()
             self.XmlResponse = response
@@ -129,19 +133,19 @@ class IIBB:
                             'GrupoPercepcion': str(contrib.grupoPercepcion),
                             'GrupoRetencion': str(contrib.grupoRetencion),
                             'Errores': [],
-                            }
+                        }
                         self.contribuyentes.append(c)
                     # establecer valores del primer contrib (sin eliminarlo)
                     self.LeerContribuyente(pop=False)
             return True
         except Exception as e:
-                ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
-                self.Traceback = ''.join(ex)
-                try:
-                    self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
-                except:
-                    self.Excepcion = "<no disponible>"
-                return False
+            ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+            self.Traceback = ''.join(ex)
+            try:
+                self.Excepcion = traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0]
+            except BaseException:
+                self.Excepcion = "<no disponible>"
+            return False
 
     def LeerContribuyente(self, pop=True):
         "Leeo el próximo contribuyente"
@@ -193,7 +197,7 @@ class IIBB:
                 xml = self.xml
                 # por cada tag, lo busco segun su nombre o posición
                 for tag in tags:
-                    xml = xml(tag) # atajo a getitem y getattr
+                    xml = xml(tag)  # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
                 return str(xml)
         except Exception as e:
@@ -203,7 +207,7 @@ class IIBB:
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"):
     basepath = __file__
-elif sys.frozen=='dll':
+elif sys.frozen == 'dll':
     import win32api
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
@@ -211,13 +215,13 @@ else:
 INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(IIBB)
         sys.exit(0)
-    elif len(sys.argv)<6:
+    elif len(sys.argv) < 6:
         print("Se debe especificar usuario, clave, fecha desde/hasta y cuit como argumentos!")
         sys.exit(1)
 
@@ -246,7 +250,7 @@ if __name__=="__main__":
                 print("Usando URL:", URL)
                 break
 
-    iibb.Conectar(URL, trace='--trace' in sys.argv, cacert=None, testing=test_response)
+    iibb.Conectar(URL, trace='--trace' in sys.argv, cacert=CACERT, testing=test_response)
     iibb.ConsultarContribuyentes(fecha_desde, fecha_hasta, cuit_contribuyente)
 
     if iibb.Excepcion:

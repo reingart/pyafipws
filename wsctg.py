@@ -10,6 +10,15 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+import base64
+import time
+import sys
+import os
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from . import utils
+from pysimplesoap.client import SoapFault
+import traceback
+from .utils import date
 """Módulo para obtener Código de Trazabilidad de Granos
 del web service WSCTG versión 4.0 de AFIP (RG3593/14)
 """
@@ -17,7 +26,7 @@ del web service WSCTG versión 4.0 de AFIP (RG3593/14)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2014 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.14a"
+__version__ = "1.14e"
 
 LICENCIA = """
 wsctg.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
@@ -32,8 +41,8 @@ e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-AYUDA="""
-Opciones: 
+AYUDA = """
+Opciones:
   --ayuda: este mensaje
 
   --debug: modo depuración (detalla y confirma las operaciones)
@@ -57,8 +66,8 @@ Opciones:
   --consultar_constancia_pdf: descarga el documento PDF de una CTG
   --pendientes: consulta CTGs otorgados, rechazados, confirmados a resolver
   --consultar_rechazados: obtener CTGs rechazados para darles un nuevo curso
-  --consultar_activos_por_patente: consulta de CTGs activos por patente 
-  
+  --consultar_activos_por_patente: consulta de CTGs activos por patente
+
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
   --especies: obtiene el listado de especies
@@ -67,14 +76,8 @@ Opciones:
 Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, time, base64
-from .utils import date
-import traceback
-from pysimplesoap.client import SoapFault
-from . import utils
 
 # importo funciones compartidas:
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 # constantes de configuración (homologación):
@@ -90,85 +93,84 @@ HOMO = False
 
 ENCABEZADO = [
     # datos enviados
-    ('tipo_reg', 1, A), # 0: encabezado
+    ('tipo_reg', 1, A),  # 0: encabezado
     ('numero_carta_de_porte', 13, N),
     ('codigo_especie', 5, N),
-    ('cuit_canjeador', 11, N), 
-    ('cuit_destino', 11, N), 
-    ('cuit_destinatario', 11, N), 
-    ('codigo_localidad_origen', 6, N), 
-    ('codigo_localidad_destino', 6, N), 
-    ('codigo_cosecha', 4, N), 
-    ('peso_neto_carga', 5, N), 
-    ('cant_horas', 2, N), 
-    ('reservado1', 6, A), 
-    ('cuit_transportista', 11, N), 
+    ('cuit_canjeador', 11, N),
+    ('cuit_destino', 11, N),
+    ('cuit_destinatario', 11, N),
+    ('codigo_localidad_origen', 6, N),
+    ('codigo_localidad_destino', 6, N),
+    ('codigo_cosecha', 4, N),
+    ('peso_neto_carga', 5, N),
+    ('cant_horas', 2, N),
+    ('reservado1', 6, A),
+    ('cuit_transportista', 11, N),
     ('km_a_recorrer', 4, N),                          # km_recorridos (en consulta WSCTGv2)
     ('establecimiento', 6, N),                        # confirmar arribo
     ('remitente_comercial_como_canjeador', 1, A),     # S/N solicitar CTG inicial (WSCTGv2)
     ('consumo_propio', 1, A),                         # S/N confirmar arribo (WSCTGv2)
 
     # datos devueltos
-    ('numero_ctg', 8, N), 
-    ('fecha_hora', 19, A), 
-    ('vigencia_desde', 10, A), 
-    ('vigencia_hasta', 10, A), 
-    ('transaccion', 12, N), 
+    ('numero_ctg', 8, N),
+    ('fecha_hora', 19, A),
+    ('vigencia_desde', 10, A),
+    ('vigencia_hasta', 10, A),
+    ('transaccion', 12, N),
     ('tarifa_referencia', 6, I, 2),           # consultar detalle
-    ('estado', 20, A), 
-    ('imprime_constancia', 5, A), 
-    ('observaciones', 200, A), 
+    ('estado', 20, A),
+    ('imprime_constancia', 5, A),
+    ('observaciones', 200, A),
     ('errores', 1000, A),
     ('controles', 1000, A),
     ('detalle', 1000, A),                     # consultar detalle (WSCTGv2)
-    
+
     # nuevos campos agregados:
-    ('cuit_chofer', 11, N), 
-    
+    ('cuit_chofer', 11, N),
+
     # nuevos campos agregados WSCTGv3:
     ('cuit_corredor', 12, N),
     ('remitente_comercial_como_productor', 1, A),
-    ('patente_vehiculo', 10, A), 
+    ('patente_vehiculo', 10, A),
 
     # nuevos campos agregados WSCTGv4:
     ('ctc_codigo', 2, A),
-    ('turno', 20, A),
-    
-    ]        
+    ('turno', 50, A),
 
+]
 
 
 class WSCTG(BaseWS):
-    "Interfaz para el WebService de Código de Trazabilidad de Granos (Version 3)"    
+    "Interfaz para el WebService de Código de Trazabilidad de Granos (Version 3)"
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
                         'AnularCTG', 'RechazarCTG', 'CTGsPendientesResolucion',
                         'ConsultarCTG', 'LeerDatosCTG', 'ConsultarDetalleCTG',
                         'ConsultarCTGExcel', 'ConsultarConstanciaCTGPDF',
-                        'ConsultarCTGRechazados', 
+                        'ConsultarCTGRechazados',
                         'RegresarAOrigenCTGRechazado',
                         'CambiarDestinoDestinatarioCTGRechazado',
                         'ConsultarCTGActivosPorPatente',
-                        'ConsultarProvincias', 
-                        'ConsultarLocalidadesPorProvincia', 
+                        'ConsultarProvincias',
+                        'ConsultarLocalidadesPorProvincia',
                         'ConsultarEstablecimientos',
                         'ConsultarCosechas',
                         'ConsultarEspecies',
                         'SetParametros', 'SetParametro', 'GetParametro',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
-    _public_attrs_ = ['Token', 'Sign', 'Cuit', 
-        'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
-        'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
-        'XmlRequest', 'XmlResponse', 'Version', 'Traceback',
-        'NumeroCTG', 'CartaPorte', 'FechaHora', 'CodigoOperacion', 
-        'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosCTG',
-        'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
-        'TarifaReferencia', 'Destino', 'Destinatario', 'Detalle',
-        'Patente', 'PesoNeto', 'FechaVencimiento',
-        'UsuarioSolicitante', 'UsuarioReal', 'CtcCodigo', 'Turno',
-        ]
+    _public_attrs_ = ['Token', 'Sign', 'Cuit',
+                      'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
+                      'Excepcion', 'ErrCode', 'ErrMsg', 'LanzarExcepciones', 'Errores',
+                      'XmlRequest', 'XmlResponse', 'Version', 'Traceback',
+                      'NumeroCTG', 'CartaPorte', 'FechaHora', 'CodigoOperacion',
+                      'CodigoTransaccion', 'Observaciones', 'Controles', 'DatosCTG',
+                      'VigenciaHasta', 'VigenciaDesde', 'Estado', 'ImprimeConstancia',
+                      'TarifaReferencia', 'Destino', 'Destinatario', 'Detalle',
+                      'Patente', 'PesoNeto', 'FechaVencimiento',
+                      'UsuarioSolicitante', 'UsuarioReal', 'CtcCodigo', 'Turno',
+                      ]
     _reg_progid_ = "WSCTG"
     _reg_clsid_ = "{4383E947-57C4-47C5-8419-85221580CB48}"
 
@@ -181,7 +183,7 @@ class WSCTG(BaseWS):
     def Conectar(self, *args, **kwargs):
         ret = BaseWS.Conectar(self, *args, **kwargs)
         # corregir descripción de servicio WSDL publicado por AFIP
-        # kmARecorrer -> kmRecorridos (ConsultarDetalleCTG) 
+        # kmARecorrer -> kmRecorridos (ConsultarDetalleCTG)
         port = self.client.services['CTGService_v4.0']['ports']['CTGServiceHttpSoap20Endpoint']
         msg = port['operations']['consultarDetalleCTG']['output']['consultarDetalleCTGResponse']
         msg['response']['consultarDetalleCTGDatos']['kmRecorridos'] = int
@@ -202,7 +204,6 @@ class WSCTG(BaseWS):
         self.UsuarioSolicitante = self.UsuarioReal = ''
         self.CtcCodigo = self.Turno = ""
 
-
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
         if 'arrayErrores' in ret:
@@ -215,8 +216,8 @@ class WSCTG(BaseWS):
         "Comprueba y extrae controles si existen en la respuesta XML"
         if 'arrayControles' in ret:
             controles = ret['arrayControles']
-            self.Controles = ["%(tipo)s: %(descripcion)s" % ctl['control'] 
-                                for ctl in controles]
+            self.Controles = ["%(tipo)s: %(descripcion)s" % ctl['control']
+                              for ctl in controles]
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
@@ -230,17 +231,17 @@ class WSCTG(BaseWS):
     def AnularCTG(self, carta_porte, ctg):
         "Anular el CTG si se creó el mismo por error"
         response = self.client.anularCTG(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosAnularCTG={
-                            'cartaPorte': carta_porte,
-                            'ctg': ctg, }))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            datosAnularCTG={
+                'cartaPorte': carta_porte,
+                'ctg': ctg, }))['response']
         datos = response.get('datosResponse')
         self.__analizar_errores(response)
         if datos:
             self.CartaPorte = str(datos['cartaPorte'])
-            self.NumeroCTG = str(datos['CTG'])
+            self.NumeroCTG = str(datos['ctg'])
             self.FechaHora = str(datos['fechaHora'])
             self.CodigoOperacion = str(datos['codigoOperacion'])
 
@@ -248,13 +249,13 @@ class WSCTG(BaseWS):
     def RechazarCTG(self, carta_porte, ctg, motivo):
         "El Destino puede rechazar el CTG a través de la siguiente operatoria"
         response = self.client.rechazarCTG(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosRechazarCTG={
-                            'cartaPorte': carta_porte,
-                            'ctg': ctg, 'motivoRechazo': motivo,
-                            }))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            datosRechazarCTG={
+                'cartaPorte': carta_porte,
+                'ctg': ctg, 'motivoRechazo': motivo,
+            }))['response']
         datos = response.get('datosResponse')
         self.__analizar_errores(response)
         if datos:
@@ -265,45 +266,49 @@ class WSCTG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SolicitarCTGInicial(self, numero_carta_de_porte, codigo_especie,
-        cuit_canjeador, cuit_destino, cuit_destinatario, codigo_localidad_origen,
-        codigo_localidad_destino, codigo_cosecha, peso_neto_carga, 
-        cant_horas=None, patente_vehiculo=None, cuit_transportista=None, 
-        km_a_recorrer=None, remitente_comercial_como_canjeador=None, 
-        cuit_corredor=None, remitente_comercial_como_productor=None, 
-        turno=None,
-        **kwargs):
+                            cuit_canjeador, cuit_destino, cuit_destinatario, codigo_localidad_origen,
+                            codigo_localidad_destino, codigo_cosecha, peso_neto_carga,
+                            cant_horas=None, patente_vehiculo=None, cuit_transportista=None,
+                            km_a_recorrer=None, remitente_comercial_como_canjeador=None,
+                            cuit_corredor=None, remitente_comercial_como_productor=None,
+                            turno=None,
+                            **kwargs):
         "Solicitar CTG Desde el Inicio"
         # ajusto parámetros según validaciones de AFIP:
-        if cuit_canjeador and int(cuit_canjeador) == 0:
+        if not cuit_canjeador or int(cuit_canjeador) == 0:
             cuit_canjeador = None         # nulo
+        if not cuit_corredor or int(cuit_corredor) == 0:
+            cuit_corredor = None         # nulo
         if not remitente_comercial_como_canjeador:
             remitente_comercial_como_canjeador = None
         if not remitente_comercial_como_productor:
             remitente_comercial_como_productor = None
+        if turno == '':
+            turno = None                # nulo
 
         ret = self.client.solicitarCTGInicial(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                         datosSolicitarCTGInicial=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            codigoEspecie=codigo_especie,
-                            cuitCanjeador=cuit_canjeador or None, 
-                            remitenteComercialComoCanjeador=remitente_comercial_como_canjeador,
-                            cuitDestino=cuit_destino, 
-                            cuitDestinatario=cuit_destinatario, 
-                            codigoLocalidadOrigen=codigo_localidad_origen,
-                            codigoLocalidadDestino=codigo_localidad_destino, 
-                            codigoCosecha=codigo_cosecha, 
-                            pesoNeto=peso_neto_carga, 
-                            cuitTransportista=cuit_transportista,
-                            cantHoras=cant_horas,
-                            patente=patente_vehiculo, 
-                            kmARecorrer=km_a_recorrer,
-                            cuitCorredor=cuit_corredor,
-                            remitenteComercialcomoProductor=remitente_comercial_como_productor,
-                            turno=turno,
-                            )))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            datosSolicitarCTGInicial=dict(
+                cartaPorte=numero_carta_de_porte,
+                codigoEspecie=codigo_especie,
+                cuitCanjeador=cuit_canjeador or None,
+                remitenteComercialComoCanjeador=remitente_comercial_como_canjeador,
+                cuitDestino=cuit_destino,
+                cuitDestinatario=cuit_destinatario,
+                codigoLocalidadOrigen=codigo_localidad_origen,
+                codigoLocalidadDestino=codigo_localidad_destino,
+                codigoCosecha=codigo_cosecha,
+                pesoNeto=peso_neto_carga,
+                cuitTransportista=cuit_transportista,
+                cantHoras=cant_horas,
+                patente=patente_vehiculo,
+                kmARecorrer=km_a_recorrer,
+                cuitCorredor=cuit_corredor,
+                remitenteComercialcomoProductor=remitente_comercial_como_productor,
+                turno=turno,
+            )))['response']
         self.__analizar_errores(ret)
         self.Observaciones = ret['observacion']
         datos = ret.get('datosSolicitarCTGResponse')
@@ -318,23 +323,23 @@ class WSCTG(BaseWS):
                 self.TarifaReferencia = str(datos_ctg.get('tarifaReferencia'))
             self.__analizar_controles(datos)
         return self.NumeroCTG or 0
-    
+
     @inicializar_y_capturar_excepciones
-    def SolicitarCTGDatoPendiente(self, numero_carta_de_porte, cant_horas, 
-        patente_vehiculo, cuit_transportista, patente=None, turno=None):
+    def SolicitarCTGDatoPendiente(self, numero_carta_de_porte, cant_horas,
+                                  patente_vehiculo, cuit_transportista, patente=None, turno=None):
         "Solicitud que permite completar los datos faltantes de un Pre-CTG "
         "generado anteriormente a través de la operación solicitarCTGInicial"
         ret = self.client.solicitarCTGDatoPendiente(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosSolicitarCTGDatoPendiente=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            cuitTransportista=cuit_transportista,
-                            cantHoras=cant_horas,
-                            patente=patente,
-                            turno=turno,
-                            )))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            datosSolicitarCTGDatoPendiente=dict(
+                cartaPorte=numero_carta_de_porte,
+                cuitTransportista=cuit_transportista,
+                cantHoras=cant_horas,
+                patente=patente,
+                turno=turno,
+            )))['response']
         self.__analizar_errores(ret)
         self.Observaciones = ret['observacion']
         datos = ret.get('datosSolicitarCTGResponse')
@@ -349,26 +354,26 @@ class WSCTG(BaseWS):
                 self.TarifaReferencia = str(datos_ctg.get('tarifaReferencia'))
             self.__analizar_controles(datos)
         return self.NumeroCTG
-        
+
     @inicializar_y_capturar_excepciones
-    def ConfirmarArribo(self, numero_carta_de_porte, numero_ctg, 
-                        cuit_transportista, peso_neto_carga, 
+    def ConfirmarArribo(self, numero_carta_de_porte, numero_ctg,
+                        cuit_transportista, peso_neto_carga,
                         consumo_propio, establecimiento=None, cuit_chofer=None,
                         **kwargs):
         "Confirma arribo CTG"
         ret = self.client.confirmarArribo(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosConfirmarArribo=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            ctg=numero_ctg,
-                            cuitTransportista=cuit_transportista,
-                            cuitChofer=cuit_chofer,
-                            cantKilosCartaPorte=peso_neto_carga,
-                            consumoPropio=consumo_propio,
-                            establecimiento=establecimiento,
-                            )))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            datosConfirmarArribo=dict(
+                cartaPorte=numero_carta_de_porte,
+                ctg=numero_ctg,
+                cuitTransportista=cuit_transportista,
+                cuitChofer=cuit_chofer,
+                cantKilosCartaPorte=peso_neto_carga,
+                consumoPropio=consumo_propio,
+                establecimiento=establecimiento,
+            )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
         if datos:
@@ -380,21 +385,21 @@ class WSCTG(BaseWS):
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_ctg, 
-                            establecimiento=None, codigo_cosecha=None, peso_neto_carga=None, 
+    def ConfirmarDefinitivo(self, numero_carta_de_porte, numero_ctg,
+                            establecimiento=None, codigo_cosecha=None, peso_neto_carga=None,
                             **kwargs):
         "Confirma arribo definitivo CTG"
         ret = self.client.confirmarDefinitivo(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosConfirmarDefinitivo=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            ctg=numero_ctg,
-                            establecimiento=establecimiento,
-                            codigoCosecha=codigo_cosecha,
-                            pesoNeto=peso_neto_carga,
-                            )))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            datosConfirmarDefinitivo=dict(
+                cartaPorte=numero_carta_de_porte,
+                ctg=numero_ctg,
+                establecimiento=establecimiento,
+                codigoCosecha=codigo_cosecha,
+                pesoNeto=peso_neto_carga,
+            )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
         if datos:
@@ -406,18 +411,18 @@ class WSCTG(BaseWS):
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def RegresarAOrigenCTGRechazado(self, numero_carta_de_porte, numero_ctg, 
-                            km_a_recorrer=None, 
-                            **kwargs):
+    def RegresarAOrigenCTGRechazado(self, numero_carta_de_porte, numero_ctg,
+                                    km_a_recorrer=None,
+                                    **kwargs):
         "Al consultar los CTGs rechazados se puede Regresar a Origen"
         ret = self.client.regresarAOrigenCTGRechazado(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosRegresarAOrigenCTGRechazado=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            ctg=numero_ctg, kmARecorrer=km_a_recorrer,
-                            )))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            datosRegresarAOrigenCTGRechazado=dict(
+                cartaPorte=numero_carta_de_porte,
+                ctg=numero_ctg, kmARecorrer=km_a_recorrer,
+            )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
         if datos:
@@ -429,25 +434,25 @@ class WSCTG(BaseWS):
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def CambiarDestinoDestinatarioCTGRechazado(self, numero_carta_de_porte, 
-                            numero_ctg, codigo_localidad_destino=None,
-                            cuit_destino=None, cuit_destinatario=None,
-                            km_a_recorrer=None, turno=None,
-                            **kwargs):
+    def CambiarDestinoDestinatarioCTGRechazado(self, numero_carta_de_porte,
+                                               numero_ctg, codigo_localidad_destino=None,
+                                               cuit_destino=None, cuit_destinatario=None,
+                                               km_a_recorrer=None, turno=None,
+                                               **kwargs):
         "Tomar acción de Cambio de Destino y Destinatario para CTG rechazado"
         ret = self.client.cambiarDestinoDestinatarioCTGRechazado(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        datosCambiarDestinoDestinatarioCTGRechazado=dict(
-                            cartaPorte=numero_carta_de_porte,
-                            ctg=numero_ctg, 
-                            codigoLocalidadDestino=codigo_localidad_destino,
-                            cuitDestino=cuit_destino, 
-                            cuitDestinatario=cuit_destinatario,
-                            kmARecorrer=km_a_recorrer,
-                            turno=turno,
-                            )))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            datosCambiarDestinoDestinatarioCTGRechazado=dict(
+                cartaPorte=numero_carta_de_porte,
+                ctg=numero_ctg,
+                codigoLocalidadDestino=codigo_localidad_destino,
+                cuitDestino=cuit_destino,
+                cuitDestinatario=cuit_destinatario,
+                kmARecorrer=km_a_recorrer,
+                turno=turno,
+            )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('datosResponse')
         if datos:
@@ -459,23 +464,23 @@ class WSCTG(BaseWS):
         return self.CodigoTransaccion
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCTG(self, numero_carta_de_porte=None, numero_ctg=None, 
+    def ConsultarCTG(self, numero_carta_de_porte=None, numero_ctg=None,
                      patente=None, cuit_solicitante=None, cuit_destino=None,
                      fecha_emision_desde=None, fecha_emision_hasta=None):
         "Operación que realiza consulta de CTGs según el criterio ingresado."
         ret = self.client.consultarCTG(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        consultarCTGDatos=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            ctg=numero_ctg,
-                            patente=patente,
-                            cuitSolicitante=cuit_solicitante,
-                            cuitDestino=cuit_destino,
-                            fechaEmisionDesde=fecha_emision_desde,
-                            fechaEmisionHasta=fecha_emision_hasta,
-                            )))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            consultarCTGDatos=dict(
+                cartaPorte=numero_carta_de_porte,
+                ctg=numero_ctg,
+                patente=patente,
+                cuitSolicitante=cuit_solicitante,
+                cuitDestino=cuit_destino,
+                fechaEmisionDesde=fecha_emision_desde,
+                fechaEmisionHasta=fecha_emision_hasta,
+            )))['response']
         self.__analizar_errores(ret)
         datos = ret.get('arrayDatosConsultarCTG')
         if datos:
@@ -490,10 +495,10 @@ class WSCTG(BaseWS):
     def ConsultarCTGRechazados(self):
         "Consulta de CTGs Otorgados, CTGs Rechazados y CTGs Confirmados"
         ret = self.client.consultarCTGRechazados(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                            ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+        ))['response']
         self.__analizar_errores(ret)
         datos = ret.get('arrayConsultarCTGRechazados')
         if datos:
@@ -508,11 +513,11 @@ class WSCTG(BaseWS):
     def ConsultarCTGActivosPorPatente(self, patente="ZZZ999"):
         "Consulta de CTGs activos por patente"
         ret = self.client.consultarCTGActivosPorPatente(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        patente=patente,
-                            ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            patente=patente,
+        ))['response']
         self.__analizar_errores(ret)
         datos = ret.get('arrayConsultarCTGActivosPorPatenteResponse')
         if datos:
@@ -527,10 +532,10 @@ class WSCTG(BaseWS):
     def CTGsPendientesResolucion(self):
         "Consulta de CTGs Otorgados, CTGs Rechazados y CTGs Confirmados"
         ret = self.client.CTGsPendientesResolucion(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                            ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+        ))['response']
         self.__analizar_errores(ret)
         if ret:
             self.DatosCTG = ret
@@ -541,7 +546,7 @@ class WSCTG(BaseWS):
 
     def LeerDatosCTG(self, clave='', pop=True):
         "Recorro los datos devueltos y devuelvo el primero si existe"
-                
+
         if clave and self.DatosCTG:
             # obtengo la lista por estado pendiente de resolución ("array")
             datos = self.DatosCTG[clave]
@@ -554,8 +559,8 @@ class WSCTG(BaseWS):
                 datos = datos.pop(0)
             else:
                 datos = datos[0]
-            for det in ('datosConsultarCTG', 'detalleConsultaCTGRechazado', 
-                          'detalleConsultaCTGActivo'):
+            for det in ('datosConsultarCTG', 'detalleConsultaCTGRechazado',
+                        'detalleConsultaCTGActivo'):
                 if det in datos:
                     datos_ctg = datos[det]
                     break
@@ -585,40 +590,40 @@ class WSCTG(BaseWS):
             return ""
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCTGExcel(self, numero_carta_de_porte=None, numero_ctg=None, 
-                     patente=None, cuit_solicitante=None, cuit_destino=None,
-                     fecha_emision_desde=None, fecha_emision_hasta=None,
-                     archivo="planilla.xls"):
+    def ConsultarCTGExcel(self, numero_carta_de_porte=None, numero_ctg=None,
+                          patente=None, cuit_solicitante=None, cuit_destino=None,
+                          fecha_emision_desde=None, fecha_emision_hasta=None,
+                          archivo="planilla.xls"):
         "Operación que realiza consulta de CTGs, graba una planilla xls"
         ret = self.client.consultarCTGExcel(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        consultarCTGDatos=dict(
-                            cartaPorte=numero_carta_de_porte, 
-                            ctg=numero_ctg,
-                            patente=patente,
-                            cuitSolicitante=cuit_solicitante,
-                            cuitDestino=cuit_destino,
-                            fechaEmisionDesde=fecha_emision_desde,
-                            fechaEmisionHasta=fecha_emision_hasta,
-                            )))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            consultarCTGDatos=dict(
+                cartaPorte=numero_carta_de_porte,
+                ctg=numero_ctg,
+                patente=patente,
+                cuitSolicitante=cuit_solicitante,
+                cuitDestino=cuit_destino,
+                fechaEmisionDesde=fecha_emision_desde,
+                fechaEmisionHasta=fecha_emision_hasta,
+            )))['response']
         self.__analizar_errores(ret)
         datos = base64.b64decode(ret.get('archivo') or "")
         f = open(archivo, "wb")
         f.write(datos)
         f.close()
         return True
-        
+
     @inicializar_y_capturar_excepciones
     def ConsultarDetalleCTG(self, numero_ctg=None):
         "Operación mostrar este detalle de la  solicitud de CTG seleccionada."
         ret = self.client.consultarDetalleCTG(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        ctg=numero_ctg, 
-                        ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            ctg=numero_ctg,
+        ))['response']
         self.__analizar_errores(ret)
         datos = ret.get('consultarDetalleCTGDatos')
         if datos:
@@ -633,15 +638,15 @@ class WSCTG(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConsultarConstanciaCTGPDF(self, numero_ctg=None, 
-                                        archivo="constancia.pdf"):
+    def ConsultarConstanciaCTGPDF(self, numero_ctg=None,
+                                  archivo="constancia.pdf"):
         "Operación Consultar Constancia de CTG en PDF"
         ret = self.client.consultarConstanciaCTGPDF(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        ctg=numero_ctg, 
-                        ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            ctg=numero_ctg,
+        ))['response']
         self.__analizar_errores(ret)
         datos = base64.b64decode(ret.get('archivo', ""))
         f = open(archivo, "wb")
@@ -652,72 +657,72 @@ class WSCTG(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
         ret = self.client.consultarProvincias(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                            ))['consultarProvinciasResponse']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+        ))['consultarProvinciasResponse']
         self.__analizar_errores(ret)
         array = ret.get('arrayProvincias', [])
         return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
-                    (it['provincia']['codigo'], 
-                     it['provincia']['descripcion']) 
-               for it in array]
+                (it['provincia']['codigo'],
+                 it['provincia']['descripcion'])
+                for it in array]
 
     @inicializar_y_capturar_excepciones
     def ConsultarLocalidadesPorProvincia(self, codigo_provincia, sep="||"):
         ret = self.client.consultarLocalidadesPorProvincia(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        codigoProvincia=codigo_provincia,
-                        ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+            codigoProvincia=codigo_provincia,
+        ))['response']
         self.__analizar_errores(ret)
         array = ret.get('arrayLocalidades', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
-                    (it['localidad']['codigo'], 
-                     it['localidad']['descripcion']) 
-               for it in array]
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                (it['localidad']['codigo'],
+                 it['localidad']['descripcion'])
+                for it in array]
 
     @inicializar_y_capturar_excepciones
     def ConsultarEstablecimientos(self, sep="||"):
         ret = self.client.consultarEstablecimientos(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                        ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+        ))['response']
         self.__analizar_errores(ret)
         array = ret.get('arrayEstablecimientos', [])
-        return [("%s" % 
-                    (it['establecimiento'],)) 
-               for it in array]
+        return [("%s" %
+                 (it['establecimiento'],))
+                for it in array]
 
     @inicializar_y_capturar_excepciones
     def ConsultarEspecies(self, sep="||"):
         ret = self.client.consultarEspecies(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                            ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+        ))['response']
         self.__analizar_errores(ret)
         array = ret.get('arrayEspecies', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
-                    (it['especie']['codigo'], 
-                     it['especie']['descripcion']) 
-               for it in array]
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                (it['especie']['codigo'],
+                 it['especie']['descripcion'])
+                for it in array]
 
     @inicializar_y_capturar_excepciones
     def ConsultarCosechas(self, sep="||"):
         ret = self.client.consultarCosechas(request=dict(
-                        auth={
-                            'token': self.Token, 'sign': self.Sign,
-                            'cuitRepresentado': self.Cuit, },
-                            ))['response']
+            auth={
+                'token': self.Token, 'sign': self.Sign,
+                'cuitRepresentado': self.Cuit, },
+        ))['response']
         self.__analizar_errores(ret)
         array = ret.get('arrayCosechas', [])
-        return [("%s %%s %s %%s %s" % (sep, sep, sep)) % 
-                    (it['cosecha']['codigo'], 
-                     it['cosecha']['descripcion']) 
-               for it in array]
+        return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                (it['cosecha']['codigo'],
+                 it['cosecha']['descripcion'])
+                for it in array]
 
 
 def leer_archivo(nombre_archivo):
@@ -730,7 +735,7 @@ def leer_archivo(nombre_archivo):
             items.append(row)
         cols = [str(it).strip() for it in items[0]]
         # armar diccionario por cada linea
-        items = [dict([(cols[i],str(v).strip()) for i,v in enumerate(item)]) for item in items[1:]]
+        items = [dict([(cols[i], str(v).strip()) for i, v in enumerate(item)]) for item in items[1:]]
         return cols, items
     elif ext == '.json':
         items = json.load(archivo)
@@ -742,7 +747,7 @@ def leer_archivo(nombre_archivo):
     elif ext == '.txt':
         dic = {}
         for linea in archivo:
-            if str(linea[0])=='0':
+            if str(linea[0]) == '0':
                 dic.update(leer(linea, ENCABEZADO))
             else:
                 print("Tipo de registro incorrecto:", linea[0])
@@ -781,9 +786,9 @@ class WSCTGv2(BaseWS):
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
-if not hasattr(sys, "frozen"): 
+if not hasattr(sys, "frozen"):
     basepath = __file__
-elif sys.frozen=='dll':
+elif sys.frozen == 'dll':
     import win32api
     basepath = win32api.GetModuleFileName(sys.frozendllhandle)
 else:
@@ -803,7 +808,7 @@ if __name__ == '__main__':
             print("=== %s ===" % msg)
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
-                dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+                dec = len(fmt) > 3 and fmt[3] or (tipo == 'I' and '2' or '')
                 print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                     clave, comienzo, longitud, tipo, dec))
                 comienzo += longitud
@@ -820,7 +825,7 @@ if __name__ == '__main__':
     from configparser import SafeConfigParser
 
     try:
-    
+
         if "--version" in sys.argv:
             print("Versión: ", __version__)
 
@@ -832,24 +837,25 @@ if __name__ == '__main__':
 
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
-        CERT = config.get('WSAA','CERT')
-        PRIVATEKEY = config.get('WSAA','PRIVATEKEY')
-        CUIT = config.get('WSCTG','CUIT')
-        ENTRADA = config.get('WSCTG','ENTRADA')
-        SALIDA = config.get('WSCTG','SALIDA')
-        
-        if config.has_option('WSAA','URL') and not HOMO:
-            wsaa_url = config.get('WSAA','URL')
+        CERT = config.get('WSAA', 'CERT')
+        PRIVATEKEY = config.get('WSAA', 'PRIVATEKEY')
+        CUIT = config.get('WSCTG', 'CUIT')
+        ENTRADA = config.get('WSCTG', 'ENTRADA')
+        SALIDA = config.get('WSCTG', 'SALIDA')
+
+        if config.has_option('WSAA', 'URL') and not HOMO:
+            wsaa_url = config.get('WSAA', 'URL')
         else:
             wsaa_url = None
-        if config.has_option('WSCTG','URL') and not HOMO:
-            wsctg_url = config.get('WSCTG','URL')
+        if config.has_option('WSCTG', 'URL') and not HOMO:
+            wsctg_url = config.get('WSCTG', 'URL')
         else:
             wsctg_url = WSDL
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print("conf_dbf", conf_dbf)
+            if DEBUG:
+                print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
 
@@ -873,7 +879,7 @@ if __name__ == '__main__':
         wsctg.Conectar(wsdl=wsctg_url)
         wsctg.SetTicketAcceso(ta)
         wsctg.Cuit = CUIT
-        
+
         if '--dummy' in sys.argv:
             ret = wsctg.Dummy()
             print("AppServerStatus", wsctg.AppServerStatus)
@@ -883,7 +889,7 @@ if __name__ == '__main__':
 
         if '--anular' in sys.argv:
             i = sys.argv.index("--anular")
-            ##print wsctg.client.help("anularCTG")
+            # print wsctg.client.help("anularCTG")
             if i + 2 > len(sys.argv) or sys.argv[i + 1].startswith("--"):
                 carta_porte = input("Ingrese Carta de Porte: ")
                 ctg = input("Ingrese CTG: ")
@@ -891,7 +897,6 @@ if __name__ == '__main__':
                 carta_porte = sys.argv[i + 1]
                 ctg = sys.argv[i + 2]
             ret = wsctg.AnularCTG(carta_porte, ctg)
-            wsctg.SolicitarCTGDatoPendiente()
             print("Carta Porte", wsctg.CartaPorte)
             print("Numero CTG", wsctg.NumeroCTG)
             print("Fecha y Hora", wsctg.FechaHora)
@@ -901,7 +906,7 @@ if __name__ == '__main__':
 
         if '--rechazar' in sys.argv:
             i = sys.argv.index("--rechazar")
-            ##print wsctg.client.help("rechazarCTG")
+            # print wsctg.client.help("rechazarCTG")
             if i + 3 > len(sys.argv) or sys.argv[i + 1].startswith("--"):
                 carta_porte = input("Ingrese Carta de Porte: ")
                 ctg = input("Ingrese CTG: ")
@@ -918,61 +923,59 @@ if __name__ == '__main__':
             print("Errores:", wsctg.Errores)
             sys.exit(0)
 
-
         # Recuperar parámetros:
-        
+
         if '--provincias' in sys.argv:
             ret = wsctg.ConsultarProvincias()
             print("\n".join(ret))
-                    
-        if '--localidades' in sys.argv:    
+
+        if '--localidades' in sys.argv:
             ret = wsctg.ConsultarLocalidadesPorProvincia(16)
             print("\n".join(ret))
 
-        if '--especies' in sys.argv:    
+        if '--especies' in sys.argv:
             ret = wsctg.ConsultarEspecies()
             print("\n".join(ret))
 
-        if '--cosechas' in sys.argv:    
+        if '--cosechas' in sys.argv:
             ret = wsctg.ConsultarCosechas()
             print("\n".join(ret))
 
-        if '--establecimientos' in sys.argv:    
+        if '--establecimientos' in sys.argv:
             ret = wsctg.ConsultarEstablecimientos()
             print("\n".join(ret))
 
-
         if '--prueba' in sys.argv or '--formato' in sys.argv:
             prueba = dict(numero_carta_de_porte=512345679, codigo_especie=23,
-                cuit_canjeador=0, #30660685908, 
-                cuit_destino=20111111112, cuit_destinatario=20222222223, 
-                codigo_localidad_origen=3058, codigo_localidad_destino=3059, 
-                codigo_cosecha='1314', peso_neto_carga=1000, 
-                km_a_recorrer=1234,
-                observaciones='', establecimiento=1,
-            )
-            if [argv for argv in sys.argv if argv.startswith(("--confirmar", 
-                    "--regresar", '--cambiar'))]:
+                          cuit_canjeador=0,  # 30660685908,
+                          cuit_destino=20111111112, cuit_destinatario=20222222223,
+                          codigo_localidad_origen=3058, codigo_localidad_destino=3059,
+                          codigo_cosecha='1314', peso_neto_carga=1000,
+                          km_a_recorrer=1234,
+                          observaciones='', establecimiento=1,
+                          )
+            if [argv for argv in sys.argv if argv.startswith(("--confirmar",
+                                                              "--regresar", '--cambiar'))]:
                 prueba.update(dict(
-                    numero_ctg="49241727", transaccion='10000001681', 
+                    numero_ctg="49241727", transaccion='10000001681',
                     consumo_propio='S',
-                    ))
+                ))
             parcial = dict(
-                    cant_horas=1, 
-                    patente_vehiculo='APE652', cuit_transportista=20333333334,
-                    )
+                cant_horas=1,
+                patente_vehiculo='APE652', cuit_transportista=20333333334,
+            )
             if not '--parcial' in sys.argv:
                 prueba.update(parcial)
-            
+
             escribir_archivo(list(prueba.keys()), [prueba], ENTRADA)
-            
+
         cols, items = leer_archivo(ENTRADA)
         ctg = None
 
         if '--solicitar' in sys.argv:
             wsctg.LanzarExcepciones = True
             for it in items:
-                print("solicitando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
+                print("solicitando...", ' '.join(['%s=%s' % (k, v) for k, v in list(it.items())]))
                 ctg = wsctg.SolicitarCTGInicial(**it)
                 print("numero CTG: ", ctg)
                 print("Observiacion: ", wsctg.Observaciones)
@@ -996,7 +999,7 @@ if __name__ == '__main__':
         if '--parcial' in sys.argv:
             wsctg.LanzarExcepciones = True
             for it in items:
-                print("solicitando dato pendiente...", ' '.join(['%s=%s' % (k,v) for k,v in list(parcial.items())]))
+                print("solicitando dato pendiente...", ' '.join(['%s=%s' % (k, v) for k, v in list(parcial.items())]))
                 ctg = wsctg.SolicitarCTGDatoPendiente(
                     numero_carta_de_porte=wsctg.CartaPorte,
                     **parcial)
@@ -1017,7 +1020,7 @@ if __name__ == '__main__':
 
         if '--confirmar_arribo' in sys.argv:
             for it in items:
-                print("confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
+                print("confirmando...", ' '.join(['%s=%s' % (k, v) for k, v in list(it.items())]))
                 transaccion = wsctg.ConfirmarArribo(**it)
                 print("transaccion: %s" % (transaccion, ))
                 print("Fecha y Hora", wsctg.FechaHora)
@@ -1025,12 +1028,12 @@ if __name__ == '__main__':
                 it['transaccion'] = transaccion
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Controles)
-                
+
         if '--confirmar_definitivo' in sys.argv:
             if '--testing' in sys.argv:
-                wsctg.LoadTestXML("wsctg_confirmar_def.xml") # cargo respuesta
+                wsctg.LoadTestXML("wsctg_confirmar_def.xml")  # cargo respuesta
             for it in items:
-                print("confirmando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
+                print("confirmando...", ' '.join(['%s=%s' % (k, v) for k, v in list(it.items())]))
                 transaccion = wsctg.ConfirmarDefinitivo(**it)
                 print("transaccion: %s" % (transaccion, ))
                 print("Fecha y Hora", wsctg.FechaHora)
@@ -1038,10 +1041,10 @@ if __name__ == '__main__':
                 it['transaccion'] = transaccion
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Errores)
-                
+
         if '--regresar_a_origen_rechazado' in sys.argv:
             for it in items:
-                print("regresando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
+                print("regresando...", ' '.join(['%s=%s' % (k, v) for k, v in list(it.items())]))
                 transaccion = wsctg.RegresarAOrigenCTGRechazado(**it)
                 print("transaccion: %s" % (transaccion, ))
                 print("Fecha y Hora", wsctg.FechaHora)
@@ -1049,10 +1052,10 @@ if __name__ == '__main__':
                 it['transaccion'] = transaccion
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Errores)
-                
+
         if '--cambiar_destino_destinatario_rechazado' in sys.argv:
             for it in items:
-                print("cambiando...", ' '.join(['%s=%s' % (k,v) for k,v in list(it.items())]))
+                print("cambiando...", ' '.join(['%s=%s' % (k, v) for k, v in list(it.items())]))
                 transaccion = wsctg.CambiarDestinoDestinatarioCTGRechazado(**it)
                 print("transaccion: %s" % (transaccion, ))
                 print("Fecha y Hora", wsctg.FechaHora)
@@ -1060,11 +1063,11 @@ if __name__ == '__main__':
                 it['transaccion'] = transaccion
                 it['errores'] = '|'.join(wsctg.Errores)
                 it['controles'] = '|'.join(wsctg.Errores)
-                
+
         if '--consultar_detalle' in sys.argv:
             i = sys.argv.index("--consultar_detalle")
-            if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
-                ctg = int(sys.argv[i+1])
+            if len(sys.argv) > i + 1 and not sys.argv[i + 1].startswith("--"):
+                ctg = int(sys.argv[i + 1])
             elif not ctg:
                 ctg = int(input("Numero de CTG: ") or '0') or 73714620
 
@@ -1089,33 +1092,33 @@ if __name__ == '__main__':
                 it['vigencia_desde'] = wsctg.VigenciaDesde
                 it['vigencia_hasta'] = wsctg.VigenciaHasta
                 wsctg.AnalizarXml("XmlResponse")
-                for k, ki in list({'ctg': 'numero_ctg', 'solicitante': '', 
-                          'estado': 'estado', 
-                          'especie': '', ##'codigo_especie', no devuelve codigo! 
-                          'cosecha': '', ##'codigo_cosecha', no devuelve codigo!
-                          'cuitCanjeador': 'cuit_canjeador', 
-                          'cuitDestino': 'cuit_destino', 
-                          'cuitDestinatario': 'cuit_destinatario', 
-                          'cuitTransportista': 'cuit_transportista', 
-                          'establecimiento': 'establecimiento', 
-                          'localidadOrigen': 'localidad_origen', 
-                          'localidadDestino': 'localidad_destino',
-                          'cantidadHoras': 'cantidad_horas', 
-                          'patenteVehiculo': 'patente_vehiculo', 
-                          'pesoNetoCarga': 'peso_neto_carga',
-                          'kmRecorridos': 'km_recorridos', 
-                          'tarifaReferencia': 'tarifa_referencia',
-                          'ctcCodigo': 'ctc_codigo',
-                          'turno': 'turno',
-                        }.items()):
+                for k, ki in list({'ctg': 'numero_ctg', 'solicitante': '',
+                                   'estado': 'estado',
+                                   'especie': '',  # 'codigo_especie', no devuelve codigo!
+                                   'cosecha': '',  # 'codigo_cosecha', no devuelve codigo!
+                                   'cuitCanjeador': 'cuit_canjeador',
+                                   'cuitDestino': 'cuit_destino',
+                                   'cuitDestinatario': 'cuit_destinatario',
+                                   'cuitTransportista': 'cuit_transportista',
+                                   'establecimiento': 'establecimiento',
+                                   'localidadOrigen': 'localidad_origen',
+                                   'localidadDestino': 'localidad_destino',
+                                   'cantidadHoras': 'cantidad_horas',
+                                   'patenteVehiculo': 'patente_vehiculo',
+                                   'pesoNetoCarga': 'peso_neto_carga',
+                                   'kmRecorridos': 'km_recorridos',
+                                   'tarifaReferencia': 'tarifa_referencia',
+                                   'ctcCodigo': 'ctc_codigo',
+                                   'turno': 'turno',
+                                   }.items()):
                     v = wsctg.ObtenerTagXml('consultarDetalleCTGDatos', k)
                     print(k, v)
                     if ki.startswith("cuit") and v:
                         v = v[:11]
                     it[ki] = v
-    
+
         escribir_archivo(cols, items, SALIDA)
-        
+
         if "--consultar" in sys.argv:
             wsctg.LanzarExcepciones = True
             wsctg.ConsultarCTG(fecha_emision_desde="01/04/2012")
@@ -1134,10 +1137,10 @@ if __name__ == '__main__':
 
         if "--consultar_activos_por_patente" in sys.argv:
             i = sys.argv.index("--consultar_activos_por_patente")
-            if len(sys.argv) > i + 1 and not sys.argv[i+1].startswith("--"):
-                patente = int(sys.argv[i+1])
+            if len(sys.argv) > i + 1 and not sys.argv[i + 1].startswith("--"):
+                patente = sys.argv[i + 1]
             elif not ctg:
-                patente= input("Patente: ") or 'APE652'
+                patente = input("Patente: ") or 'APE652'
             wsctg.LanzarExcepciones = True
             if '--testing' in sys.argv:
                 wsctg.LoadTestXML("wsctgv2_activos.xml")
@@ -1145,12 +1148,12 @@ if __name__ == '__main__':
             print("Numero CTG - Carta de Porte - Fecha - Peso Neto - Usuario")
             while wsctg.LeerDatosCTG():
                 print(wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.Patente, end=' ')
-                print(wsctg.FechaHora, wsctg.FechaVencimiento, wsctg.PesoNeto, end=' ') 
+                print(wsctg.FechaHora, wsctg.FechaVencimiento, wsctg.PesoNeto, end=' ')
                 print(wsctg.UsuarioSolicitante, wsctg.UsuarioReal)
 
         if '--consultar_excel' in sys.argv:
             archivo = input("Archivo a generar (planilla.xls): ") or \
-                        'planilla.xls'
+                'planilla.xls'
             wsctg.LanzarExcepciones = True
             ok = wsctg.ConsultarCTGExcel(fecha_emision_desde="01/04/2012",
                                          archivo=archivo)
@@ -1158,13 +1161,13 @@ if __name__ == '__main__':
 
         if '--consultar_constancia_pdf' in sys.argv:
             i = sys.argv.index("--consultar_constancia_pdf")
-            if len(sys.argv) > i + 2 and not sys.argv[i+1].startswith("--"):
-                ctg = int(sys.argv[i+1])
-                archivo = sys.argv[i+2]
+            if len(sys.argv) > i + 2 and not sys.argv[i + 1].startswith("--"):
+                ctg = int(sys.argv[i + 1])
+                archivo = sys.argv[i + 2]
             elif not ctg:
                 ctg = int(input("Numero de CTG: ") or '0') or 83139794
                 archivo = input("Archivo a generar (constancia.pdf): ") or \
-                            'constancia.pdf'
+                    'constancia.pdf'
 
             wsctg.LanzarExcepciones = True
             ok = wsctg.ConsultarConstanciaCTGPDF(ctg, archivo)
@@ -1173,7 +1176,7 @@ if __name__ == '__main__':
         if "--pendientes" in sys.argv:
             wsctg.LanzarExcepciones = True
             wsctg.CTGsPendientesResolucion()
-            for clave in ("arrayCTGsRechazadosAResolver", 
+            for clave in ("arrayCTGsRechazadosAResolver",
                           "arrayCTGsOtorgadosAResolver",
                           "arrayCTGsConfirmadosAResolver", ):
                 print(clave[6:])
@@ -1181,11 +1184,11 @@ if __name__ == '__main__':
                 while wsctg.LeerDatosCTG(clave):
                     print(wsctg.NumeroCTG, wsctg.CartaPorte, wsctg.FechaHora)
                     print(wsctg.Destino, wsctg.Destinatario, wsctg.Observaciones)
-            
+
         print("hecho.")
-        
+
     except SoapFault as e:
-        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii", "ignore"))
         sys.exit(3)
     except Exception as e:
         ex = utils.exception_info()

@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31a"
+__version__ = "1.31b"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -41,8 +41,8 @@ from .formatos import formato_xml, formato_csv, formato_dbf, formato_txt, format
 
 try:
     from numeros import conv_text
-except:
-    conv_text = lambda num: str(num)
+except BaseException:
+    def conv_text(num): return str(num)
 
 
 HOMO = False
@@ -64,19 +64,19 @@ INSTRUCTIVO = """
 Forma de uso:
 
  * Examinar: para buscar el archivo a procesar (opcional)
- * Cargar: para leer los datos del archivo de facturas a procesar 
+ * Cargar: para leer los datos del archivo de facturas a procesar
  * Autenticar: para iniciar la sesión en los servidores de AFIP (obligatorio antes de autorizar)
  * Marcar Todo: para seleccionar todas las facturas
  * Autorizar: para autorizar las facturas seleccionadas, completando el CAE y demás datos
  * Autorizar Lote: para autorizar en un solo lote las facturas seleccionadas
- * Grabar: para almacenar los datos procesados en el archivo de facturas 
+ * Grabar: para almacenar los datos procesados en el archivo de facturas
  * Previsualizar: para ver por pantalla la factura seleccionadas
  * Enviar: para envia por correo electrónico las facturas seleccionadas
 
 Para solicitar soporte comercial, escriba a pyrece@sistemasagiles.com.ar
 """
 
-    
+
 class PyRece(gui.Controller):
 
     def on_load(self, event):
@@ -88,35 +88,35 @@ class PyRece(gui.Controller):
         self.webservice = None
         if entrada and os.path.exists(entrada):
             self.cargar()
-        
+
         self.components.cboWebservice.value = DEFAULT_WEBSERVICE
         self.on_cboWebservice_click(event)
-        
+
         self.tipos = {
-            1:"Factura A",
-            2:"Notas de Débito A",
-            3:"Notas de Crédito A",
-            4:"Recibos A",
-            5:"Notas de Venta al contado A",
-            6:"Facturas B",
-            7:"Notas de Débito B",
-            8:"Notas de Crédito B",
-            9:"Recibos B",
-            10:"Notas de Venta al contado B",
-            19:"Facturas de Exportación",
-            20:"Nota de Débito por Operaciones con el Exterior",
-            21:"Nota de Crédito por Operaciones con el Exterior",
-            39:"Otros comprobantes A que cumplan con la R.G. N° 3419",
-            40:"Otros comprobantes B que cumplan con la R.G. N° 3419",
-            60:"Cuenta de Venta y Líquido producto A",
-            61:"Cuenta de Venta y Líquido producto B",
-            63:"Liquidación A",
-            64:"Liquidación B",
-            11:"Factura C",
-            12:"Nota de Débito C",
-            13:"Nota de Crédito C",
-            15:"Recibo C",
-            }
+            1: "Factura A",
+            2: "Notas de Débito A",
+            3: "Notas de Crédito A",
+            4: "Recibos A",
+            5: "Notas de Venta al contado A",
+            6: "Facturas B",
+            7: "Notas de Débito B",
+            8: "Notas de Crédito B",
+            9: "Recibos B",
+            10: "Notas de Venta al contado B",
+            19: "Facturas de Exportación",
+            20: "Nota de Débito por Operaciones con el Exterior",
+            21: "Nota de Crédito por Operaciones con el Exterior",
+            39: "Otros comprobantes A que cumplan con la R.G. N° 3419",
+            40: "Otros comprobantes B que cumplan con la R.G. N° 3419",
+            60: "Cuenta de Venta y Líquido producto A",
+            61: "Cuenta de Venta y Líquido producto B",
+            63: "Liquidación A",
+            64: "Liquidación B",
+            11: "Factura C",
+            12: "Nota de Débito C",
+            13: "Nota de Crédito C",
+            15: "Recibo C",
+        }
 
         self.component.bgcolor = "light gray"
         # deshabilito ordenar
@@ -129,7 +129,8 @@ class PyRece(gui.Controller):
         lv.clear_all()
         # insert new columns
         for col in cols:
-            ch = gui.ListColumn(lv, name=col, text=col.replace("_"," ").title(), align="left")
+            ch = gui.ListColumn(lv, name=col, text=col.replace("_", " ").title(), align="left")
+
     def get_cols(self):
         return self.__cols
     cols = property(get_cols, set_cols)
@@ -137,17 +138,19 @@ class PyRece(gui.Controller):
     def set_items(self, items):
         cols = self.cols
         self.__items = items
+
         def convert_str(value):
             if value is None:
                 return ''
             elif isinstance(value, str):
-                return str(value,'latin1')
+                return str(value, 'latin1')
             elif isinstance(value, str):
                 return value
             else:
                 return str(value)
         self.components.lvwListado.items = [[convert_str(item[col]) for col in cols] for item in items]
         wx.SafeYield()
+
     def get_items(self):
         return self.__items
     items = property(get_items, set_items)
@@ -163,19 +166,20 @@ class PyRece(gui.Controller):
     def set_paths(self, paths):
         self.__paths = paths
         self.components.txtArchivo.value = ', '.join([fn for fn in paths])
+
     def get_paths(self):
         return self.__paths
     paths = property(get_paths, set_paths)
-        
+
     def log(self, msg):
         if not isinstance(msg, str):
-            msg = str(msg, "latin1","ignore")
+            msg = str(msg, "latin1", "ignore")
         print("LOG", msg)
         self.components.txtEstado.value = msg + "\n" + self.components.txtEstado.value
         wx.SafeYield()
         f = None
         try:
-            f = open("pyrece.log","a")
+            f = open("pyrece.log", "a")
             f.write("%s: " % (datetime.now(), ))
             f.write(msg.encode("ascii", "ignore"))
             f.write("\n\r")
@@ -184,15 +188,15 @@ class PyRece(gui.Controller):
         finally:
             if f:
                 f.close()
-                
+
     def progreso(self, value):
         if self.items:
-            per = (value+1)/float(len(self.items))*100
+            per = (value + 1) / float(len(self.items)) * 100
             self.components.pbProgreso.value = per
             wx.SafeYield()
 
     def error(self, code, text):
-        ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
+        ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
         self.log(''.join(ex))
         gui.alert(text, 'Error %s' % code)
 
@@ -210,7 +214,7 @@ class PyRece(gui.Controller):
             it.selected = True
 
     def on_menu_consultas_dummy_click(self, event):
-        ##self.verifica_ws()
+        # self.verifica_ws()
         try:
             if self.webservice in ("wsfev1", "wsfexv1"):
                 self.ws.Dummy()
@@ -222,63 +226,63 @@ class PyRece(gui.Controller):
                 location = ""
             gui.alert(msg, location)
         except Exception as e:
-            self.error('Excepción',str(str(e),"latin1","ignore"))
+            self.error('Excepción', str(str(e), "latin1", "ignore"))
 
     def on_menu_consultas_lastCBTE_click(self, event):
-        ##self.verifica_ws()
-        options = [v for k,v in sorted([(k,v) for k,v in list(self.tipos.items())])]
+        # self.verifica_ws()
+        options = [v for k, v in sorted([(k, v) for k, v in list(self.tipos.items())])]
         result = gui.single_choice(options, "Tipo de comprobante",
-                                   "Consulta Último Nro. Comprobante", 
-                )
+                                   "Consulta Último Nro. Comprobante",
+                                   )
         if not result:
             return
-        tipocbte = [k for k,v in list(self.tipos.items()) if v==result][0]
+        tipocbte = [k for k, v in list(self.tipos.items()) if v == result][0]
         result = gui.prompt("Punto de venta",
-            "Consulta Último Nro. Comprobante", '2')
+                            "Consulta Último Nro. Comprobante", '2')
         if not result:
             return
         ptovta = result
 
         try:
-            if  self.webservice=="wsfev1":
-                ultcmp = "%s (wsfev1)" % self.ws.CompUltimoAutorizado(tipocbte, ptovta) 
-            elif  self.webservice=="wsfexv1":
-                ultcmp = "%s (wsfexv1)" % self.ws.GetLastCMP(tipocbte, ptovta) 
-            
-            gui.alert("Último comprobante: %s\n" 
-                "Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, self.tipos[tipocbte], 
-                    tipocbte, ptovta), 'Consulta Último Nro. Comprobante')
+            if self.webservice == "wsfev1":
+                ultcmp = "%s (wsfev1)" % self.ws.CompUltimoAutorizado(tipocbte, ptovta)
+            elif self.webservice == "wsfexv1":
+                ultcmp = "%s (wsfexv1)" % self.ws.GetLastCMP(tipocbte, ptovta)
+
+            gui.alert("Último comprobante: %s\n"
+                      "Tipo: %s (%s)\nPunto de Venta: %s" % (ultcmp, self.tipos[tipocbte],
+                                                             tipocbte, ptovta), 'Consulta Último Nro. Comprobante')
         except SoapFault as e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
-            self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
+            self.error(e.faultcode, e.faultstring.encode("ascii", "ignore"))
         except Exception as e:
-            self.error('Excepción',str(str(e),"latin1","ignore"))
+            self.error('Excepción', str(str(e), "latin1", "ignore"))
 
     def on_menu_consultas_getCAE_click(self, event):
         self.verifica_ws()
-        options = [v for k,v in sorted([(k,v) for k,v in list(self.tipos.items())])]
+        options = [v for k, v in sorted([(k, v) for k, v in list(self.tipos.items())])]
         result = gui.single_choice(options, "Tipo de comprobante",
-            "Consulta Comprobante", 
-                )
+                                   "Consulta Comprobante",
+                                   )
         if not result:
             return
-        tipocbte = [k for k,v in list(self.tipos.items()) if v==result][0]
+        tipocbte = [k for k, v in list(self.tipos.items()) if v == result][0]
         result = gui.prompt("Punto de venta",
-            "Consulta Comprobante", '2')
+                            "Consulta Comprobante", '2')
         if not result:
             return
         ptovta = result
         result = gui.prompt("Nº de comprobante",
-            "Consulta Comprobante", '2')
+                            "Consulta Comprobante", '2')
         if not result:
             return
         nrocbte = result
 
         try:
-            if self.webservice=="wsfe":
+            if self.webservice == "wsfe":
                 cae = 'no soportado'
-            elif  self.webservice=="wsfev1":
+            elif self.webservice == "wsfev1":
                 cae = "%s (wsfev1)" % self.ws.CompConsultar(tipocbte, ptovta, nrocbte)
                 self.log('CAE: %s' % self.ws.CAE)
                 self.log('FechaCbte: %s' % self.ws.FechaCbte)
@@ -288,44 +292,42 @@ class PyRece(gui.Controller):
                 self.log('ImpNeto: %s' % self.ws.ImpNeto)
                 self.log('ImptoLiq: %s' % self.ws.ImptoLiq)
                 self.log('EmisionTipo: %s' % self.ws.EmisionTipo)
-            elif  self.webservice=="wsfexv1":
+            elif self.webservice == "wsfexv1":
                 cae = "%s (wsfexv1)" % self.ws.GetCMP(tipocbte, ptovta, nrocbte)
                 self.log('CAE: %s' % self.ws.CAE)
                 self.log('FechaCbte: %s' % self.ws.FechaCbte)
                 self.log('PuntoVenta: %s' % self.ws.PuntoVenta)
                 self.log('CbteNro: %s' % self.ws.CbteNro)
                 self.log('ImpTotal: %s' % self.ws.ImpTotal)
-                    
-            gui.alert("CAE: %s\n" 
-                "Tipo: %s (%s)\nPunto de Venta: %s\nNumero: %s\nFecha: %s" % (
-                    cae, self.tipos[tipocbte],
-                    tipocbte, ptovta, nrocbte, self.ws.FechaCbte), 
-                    'Consulta Comprobante')
+
+            gui.alert("CAE: %s\n"
+                      "Tipo: %s (%s)\nPunto de Venta: %s\nNumero: %s\nFecha: %s" % (
+                          cae, self.tipos[tipocbte],
+                          tipocbte, ptovta, nrocbte, self.ws.FechaCbte),
+                      'Consulta Comprobante')
 
         except SoapFault as e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
-            self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
+            self.error(e.faultcode, e.faultstring.encode("ascii", "ignore"))
         except Exception as e:
-            self.error('Excepción',str(str(e),"latin1","ignore"))
-
+            self.error('Excepción', str(str(e), "latin1", "ignore"))
 
     def on_menu_consultas_lastID_click(self, event):
-        ##self.verifica_ws()
+        # self.verifica_ws()
         try:
-            if self.webservice=="wsfexv1":
+            if self.webservice == "wsfexv1":
                 ultnro = self.ws.GetLastID()
-            else: 
+            else:
                 ultnro = None
-            gui.alert("Último ID (máximo): %s" % (ultnro), 
-                'Consulta Último ID')
+            gui.alert("Último ID (máximo): %s" % (ultnro),
+                      'Consulta Último ID')
         except SoapFault as e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
-            self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
+            self.error(e.faultcode, e.faultstring.encode("ascii", "ignore"))
         except Exception as e:
-            self.error('Excepción',str(e))
-
+            self.error('Excepción', str(e))
 
     def on_menu_ayuda_acercade_click(self, event):
         text = ACERCA_DE
@@ -345,21 +347,21 @@ class PyRece(gui.Controller):
         self.component.size = (592, 517)
 
     def on_menu_ayuda_estado_click(self, event):
-        if self.component.size[1]<517:
+        if self.component.size[1] < 517:
             self.component.size = (592, 517)
         else:
             self.component.size = (592, 265)
-    
+
     def on_menu_ayuda_configuracion_click(self, event):
         self.components.txtEstado.value = open(CONFIG_FILE).read()
         self.component.size = (592, 517)
-        
+
     def on_cboWebservice_click(self, event):
         self.webservice = self.components.cboWebservice.value
         self.ws = None
         self.token = None
         self.sign = None
-        
+
         if self.webservice == "wsfev1":
             self.ws = wsfev1.WSFEv1()
         elif self.webservice == "wsfexv1":
@@ -371,12 +373,12 @@ class PyRece(gui.Controller):
                 service = "wsfe"
             elif self.webservice in ('wsfev1', ):
                 self.log("Conectando WSFEv1... " + wsfev1_url)
-                self.ws.Conectar("",wsfev1_url, proxy_dict, timeout=60, cacert=CACERT, wrapper=WRAPPER)
+                self.ws.Conectar("", wsfev1_url, proxy_dict, timeout=60, cacert=CACERT, wrapper=WRAPPER)
                 self.ws.Cuit = cuit
                 service = "wsfe"
             elif self.webservice in ('wsfex', 'wsfexv1'):
                 self.log("Conectando WSFEXv1... " + wsfexv1_url)
-                self.ws.Conectar("",wsfexv1_url, proxy_dict, cacert=CACERT, wrapper=WRAPPER)
+                self.ws.Conectar("", wsfexv1_url, proxy_dict, cacert=CACERT, wrapper=WRAPPER)
                 self.ws.Cuit = cuit
                 service = "wsfex"
             else:
@@ -386,8 +388,8 @@ class PyRece(gui.Controller):
             self.log("Creando TRA %s ..." % service)
             ws = wsaa.WSAA()
             tra = ws.CreateTRA(service)
-            self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
-            cms = ws.SignTRA(str(tra),str(cert),str(privatekey))
+            self.log("Frimando TRA (CMS) con %s %s..." % (str(cert), str(privatekey)))
+            cms = ws.SignTRA(str(tra), str(cert), str(privatekey))
             self.log("Llamando a WSAA... " + wsaa_url)
             ws.Conectar("", wsdl=wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
             self.log("Proxy: %s" % proxy_dict)
@@ -411,19 +413,19 @@ class PyRece(gui.Controller):
             else:
                 gui.alert('Respuesta: %s' % ws.XmlResponse, 'No se pudo autenticar: %s' % ws.Excepcion)
         except SoapFault as e:
-            self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
+            self.error(e.faultcode, e.faultstring.encode("ascii", "ignore"))
         except Exception as e:
-            self.error('Excepción',str(e))
-    
+            self.error('Excepción', str(e))
+
     def examinar(self):
         filename = entrada
-        wildcard = ["Planillas Excel (*.xlsx)|*.xlsx", 
-                    "Archivos CSV (*.csv)|*.csv", 
-                    "Archivos XML (*.xml)|*.xml", 
-                    "Archivos TXT (*.txt)|*.txt", 
+        wildcard = ["Planillas Excel (*.xlsx)|*.xlsx",
+                    "Archivos CSV (*.csv)|*.csv",
+                    "Archivos XML (*.xml)|*.xml",
+                    "Archivos TXT (*.txt)|*.txt",
                     "Archivos DBF (*.dbf)|*.dbf",
                     "Archivos JSON (*.json)|*.json",
-                   ]
+                    ]
         if entrada.endswith("xml"):
             wildcard.sort(reverse=True)
 
@@ -438,7 +440,7 @@ class PyRece(gui.Controller):
 
     def on_menu_archivo_cargar_click(self, event):
         self.cargar()
-        
+
     def cargar(self):
         try:
             items = []
@@ -464,36 +466,36 @@ class PyRece(gui.Controller):
                 gui.alert('El archivo no tiene datos válidos', 'Advertencia')
             # extraer los nombres de columnas (ignorar vacios de XLSX)
             cols = items and [str(it).strip() for it in items[0] if it] or []
-            if DEBUG: print("Cols",cols)
+            if DEBUG:
+                print("Cols", cols)
             # armar diccionario por cada linea
-            items = [dict([(col,item[i]) for i, col in enumerate(cols)]) 
-                                for item in items[1:]]
+            items = [dict([(col, item[i]) for i, col in enumerate(cols)])
+                     for item in items[1:]]
             self.cols = cols
             self.items = items
         except Exception as e:
-                self.error('Excepción',str(e))
-                ##raise
+            self.error('Excepción', str(e))
+            # raise
 
     def on_menu_archivo_guardar_click(self, event):
-            filename = entrada
-            wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml", 
-                        "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
-                        "Archivos JSON (*.json)|*.json",
-                        "Planillas Excel (*.xlsx)|*.xlsx",
-                        ]
-            if entrada.endswith("xml"):
-                wildcard.sort(reverse=True)
-            if self.paths:
-                path = self.paths[0]
-            else:
-                path = salida
-            result = gui.save_file(title='Guardar', filename=path, 
-                wildcard='|'.join(wildcard))
-            if not result:
-                return
-            fn = result[0]
-            self.grabar(fn)
-            
+        filename = entrada
+        wildcard = ["Archivos CSV (*.csv)|*.csv", "Archivos XML (*.xml)|*.xml",
+                    "Archivos TXT (*.txt)|*.txt", "Archivos DBF (*.dbf)|*.dbf",
+                    "Archivos JSON (*.json)|*.json",
+                    "Planillas Excel (*.xlsx)|*.xlsx",
+                    ]
+        if entrada.endswith("xml"):
+            wildcard.sort(reverse=True)
+        if self.paths:
+            path = self.paths[0]
+        else:
+            path = salida
+        result = gui.save_file(title='Guardar', filename=path,
+                               wildcard='|'.join(wildcard))
+        if not result:
+            return
+        fn = result[0]
+        self.grabar(fn)
 
     def grabar(self, fn=None):
         try:
@@ -520,7 +522,7 @@ class PyRece(gui.Controller):
                     self.error('Formato de archivo desconocido', str(fn))
             gui.alert('Se guardó con éxito el archivo:\n%s' % (str(fn),), 'Guardar')
         except Exception as e:
-            self.error('Excepción',str(e))
+            self.error('Excepción', str(e))
 
     def on_btnAutorizar_click(self, event):
         self.verifica_ws()
@@ -533,25 +535,25 @@ class PyRece(gui.Controller):
             for i, item in self.get_selected_items():
                 kargs = item.copy()
                 selected.append(item)
-                kargs['cbt_desde'] = kargs['cbt_hasta'] = kargs ['cbt_numero']
+                kargs['cbt_desde'] = kargs['cbt_hasta'] = kargs['cbt_numero']
                 for key in kargs:
                     if isinstance(kargs[key], str):
-                        kargs[key] = kargs[key].replace(",",".")
+                        kargs[key] = kargs[key].replace(",", ".")
                 if self.webservice == 'wsfev1':
                     encabezado = {}
                     for k in ('concepto', 'tipo_doc', 'nro_doc', 'tipo_cbte', 'punto_vta',
                               'cbt_desde', 'cbt_hasta', 'imp_total', 'imp_tot_conc', 'imp_neto',
-                              'imp_iva', 'imp_trib', 'imp_op_ex', 'fecha_cbte', 
+                              'imp_iva', 'imp_trib', 'imp_op_ex', 'fecha_cbte',
                               'moneda_id', 'moneda_ctz'):
                         encabezado[k] = kargs[k]
-                            
+
                     for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta'):
                         if k in kargs:
                             encabezado[k] = kargs.get(k)
-                    
+
                     self.ws.CrearFactura(**encabezado)
-                    
-                    for l in range(1,1000):
+
+                    for l in range(1, 1000):
                         k = 'tributo_%%s_%s' % l
                         if (k % 'id') in kargs:
                             id = kargs[k % 'id']
@@ -564,7 +566,7 @@ class PyRece(gui.Controller):
                         else:
                             break
 
-                    for l in range(1,1000):
+                    for l in range(1, 1000):
                         k = 'iva_%%s_%s' % l
                         if (k % 'id') in kargs:
                             id = kargs[k % 'id']
@@ -574,8 +576,8 @@ class PyRece(gui.Controller):
                                 self.ws.AgregarIva(id, base_imp, importe)
                         else:
                             break
-                        
-                    for l in range(1,1000):
+
+                    for l in range(1, 1000):
                         k = 'cbte_asoc_%%s_%s' % l
                         if (k % 'tipo') in kargs:
                             tipo = kargs[k % 'tipo']
@@ -586,7 +588,7 @@ class PyRece(gui.Controller):
                         else:
                             break
 
-                    for l in range(1,1000):
+                    for l in range(1, 1000):
                         k = 'opcional_%%s_%s' % l
                         if (k % 'id') in kargs:
                             op_id = kargs[k % 'id']
@@ -595,9 +597,9 @@ class PyRece(gui.Controller):
                                 self.ws.AgregarOpcional(op_id, valor)
                         else:
                             break
-                
+
                     if DEBUG:
-                        self.log('\n'.join(["%s='%s'" % (k,v) for k,v in list(self.ws.factura.items())]))
+                        self.log('\n'.join(["%s='%s'" % (k, v) for k, v in list(self.ws.factura.items())]))
 
                     cae = self.ws.CAESolicitar()
                     kargs.update({
@@ -608,27 +610,27 @@ class PyRece(gui.Controller):
                         'reproceso': self.ws.Reproceso,
                         'err_code': self.ws.ErrCode.encode("latin1"),
                         'err_msg': self.ws.ErrMsg.encode("latin1"),
-                        })
+                    })
                     if self.ws.ErrMsg:
                         gui.alert(self.ws.ErrMsg, "Error AFIP")
-                    if self.ws.Obs and self.ws.Obs!='00':
+                    if self.ws.Obs and self.ws.Obs != '00':
                         gui.alert(self.ws.Obs, "Observación AFIP")
 
                 elif self.webservice == 'wsfexv1':
-                    kargs['cbte_nro'] = kargs ['cbt_numero']
+                    kargs['cbte_nro'] = kargs['cbt_numero']
                     kargs['permiso_existente'] = kargs['permiso_existente'] or ""
                     encabezado = {}
                     for k in ('tipo_cbte', 'punto_vta', 'cbte_nro', 'fecha_cbte',
                               'imp_total', 'tipo_expo', 'permiso_existente', 'pais_dst_cmp',
                               'nombre_cliente', 'cuit_pais_cliente', 'domicilio_cliente',
                               'id_impositivo', 'moneda_id', 'moneda_ctz',
-                              'obs_comerciales', 'obs_generales', 'forma_pago', 'incoterms', 
+                              'obs_comerciales', 'obs_generales', 'forma_pago', 'incoterms',
                               'idioma_cbte', 'incoterms_ds'):
                         encabezado[k] = kargs.get(k)
-                    
+
                     self.ws.CrearFactura(**encabezado)
-                    
-                    for l in range(1,1000):
+
+                    for l in range(1, 1000):
                         k = 'codigo%s' % l
                         if k in kargs:
                             codigo = kargs['codigo%s' % l]
@@ -641,8 +643,8 @@ class PyRece(gui.Controller):
                             self.ws.AgregarItem(codigo, ds, qty, umed, precio, importe, bonif)
                         else:
                             break
-                        
-                    for l in range(1,1000):
+
+                    for l in range(1, 1000):
                         k = 'cbte_asoc_%%s_%s' % l
                         if (k % 'tipo') in kargs:
                             tipo = kargs[k % 'tipo']
@@ -652,9 +654,9 @@ class PyRece(gui.Controller):
                                 self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
                         else:
                             break
-                
+
                     if DEBUG:
-                        self.log('\n'.join(["%s='%s'" % (k,v) for k,v in list(self.ws.factura.items())]))
+                        self.log('\n'.join(["%s='%s'" % (k, v) for k, v in list(self.ws.factura.items())]))
 
                     cae = self.ws.Authorize(kargs['id'])
                     kargs.update({
@@ -665,38 +667,38 @@ class PyRece(gui.Controller):
                         'reproceso': self.ws.Reproceso,
                         'err_code': self.ws.ErrCode.encode("latin1"),
                         'err_msg': self.ws.ErrMsg.encode("latin1"),
-                        })
+                    })
                     if self.ws.ErrMsg:
                         gui.alert(self.ws.ErrMsg, "Error AFIP")
-                    if self.ws.Obs and self.ws.Obs!='00':
+                    if self.ws.Obs and self.ws.Obs != '00':
                         gui.alert(self.ws.Obs, "Observación AFIP")
-                        
+
                 # actualizo la factura
                 for k in ('cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
                     if kargs.get(k):
                         item[k] = kargs[k] if kargs[k] is not None else ""
                 self.items[i] = item
-                self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
+                self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'], kargs['reproceso']))
                 procesadas += 1
                 if kargs['resultado'] == "R":
                     rechazadas += 1
                 elif kargs['resultado'] == "A":
                     ok += 1
                 self.progreso(i)
-            self.items = self.items 
+            self.items = self.items
             self.set_selected_items(selected)
             self.progreso(len(self.items) - 1)
             gui.alert('Proceso finalizado, procesadas %d\n\n'
-                    'Aceptadas: %d\n'
-                    'Rechazadas: %d' % (procesadas, ok, rechazadas), 
-                    'Autorización')
+                      'Aceptadas: %d\n'
+                      'Rechazadas: %d' % (procesadas, ok, rechazadas),
+                      'Autorización')
             self.grabar()
         except SoapFault as e:
-            self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
+            self.error(e.faultcode, e.faultstring.encode("ascii", "ignore"))
         except KeyError as e:
-            self.error("Error",'Campo obligatorio no encontrado: %s' % e)
+            self.error("Error", 'Campo obligatorio no encontrado: %s' % e)
         except Exception as e:
-            self.error('Excepción',str(e))
+            self.error('Excepción', str(e))
         finally:
             if DEBUG:
                 if self.webservice == 'wsfev1' and DEBUG:
@@ -705,7 +707,8 @@ class PyRece(gui.Controller):
 
     def on_btnAutorizarLote_click(self, event):
         self.verifica_ws()
-        if not self.items: return
+        if not self.items:
+            return
         try:
             #getcontext().prec = 2
             ok = 0
@@ -731,17 +734,17 @@ class PyRece(gui.Controller):
                 'imp_total': Decimal(0),
                 'imp_tot_conc': Decimal(0),
                 'imp_neto': Decimal(0),
-                'imp_iva':Decimal(0),
+                'imp_iva': Decimal(0),
                 'imp_op_ex': Decimal(0),
                 'imp_trib': Decimal(0),
             }
-            for l in range(1,5):
+            for l in range(1, 5):
                 k = 'iva_%%s_%s' % l
                 datos[k % 'id'] = None
                 importes[k % 'base_imp'] = Decimal(0)
                 importes[k % 'importe'] = Decimal(0)
 
-            for l in range(1,10):
+            for l in range(1, 10):
                 k = 'tributo_%%s_%s' % l
                 datos[k % 'id'] = None
                 datos[k % 'desc'] = None
@@ -761,10 +764,10 @@ class PyRece(gui.Controller):
                         elif datos[key] != item[key]:
                             raise RuntimeError("%s tiene valores distintos en el lote!" % key)
                     if key in importes and item[key]:
-                        importes[key] = importes[key] + Decimal("%.2f" % float(str(item[key].replace(",","."))))
-                
+                        importes[key] = importes[key] + Decimal("%.2f" % float(str(item[key].replace(",", "."))))
+
             kargs = {'cbt_desde': cbt_desde, 'cbt_hasta': cbt_hasta}
-            kargs.update({'tipo_doc': 99, 'nro_doc':  '0'})
+            kargs.update({'tipo_doc': 99, 'nro_doc': '0'})
             kargs.update(datos)
             kargs.update(importes)
             if kargs['fecha_serv_desde'] and kargs['fecha_serv_hasta']:
@@ -773,43 +776,43 @@ class PyRece(gui.Controller):
             else:
                 kargs['presta_serv'] = 0
                 kargs['concepto'] = 1
-                del kargs['fecha_serv_desde'] 
+                del kargs['fecha_serv_desde']
                 del kargs['fecha_serv_hasta']
-            
+
             for key, val in list(importes.items()):
                 importes[key] = val.quantize(Decimal('.01'), rounding=ROUND_DOWN)
-                
+
             if 'id' not in kargs or kargs['id'] == "":
                 id = int(kargs['cbt_desde'])
-                id += (int(kargs['tipo_cbte'])*10**4 + int(kargs['punto_vta']))*10**8
+                id += (int(kargs['tipo_cbte']) * 10**4 + int(kargs['punto_vta'])) * 10**8
                 kargs['id'] = id
-            
+
             if DEBUG:
-                self.log('\n'.join(["%s='%s'" % (k,v) for k,v in list(kargs.items())]))
+                self.log('\n'.join(["%s='%s'" % (k, v) for k, v in list(kargs.items())]))
             if '--test' in sys.argv:
                 kargs['cbt_desde'] = 777
                 kargs['fecha_cbte'] = '20110802'
                 kargs['fecha_venc_pago'] = '20110831'
 
             if gui.confirm("Confirma Lote:\n"
-                "Tipo: %(tipo_cbte)s Desde: %(cbt_desde)s Hasta %(cbt_hasta)s\n"
-                "Neto: %(imp_neto)s IVA: %(imp_iva)s Trib.: %(imp_trib)s Total: %(imp_total)s" 
-                % kargs, "Autorizar lote:"):
+                           "Tipo: %(tipo_cbte)s Desde: %(cbt_desde)s Hasta %(cbt_hasta)s\n"
+                           "Neto: %(imp_neto)s IVA: %(imp_iva)s Trib.: %(imp_trib)s Total: %(imp_total)s"
+                           % kargs, "Autorizar lote:"):
 
                 if self.webservice == 'wsfev1':
                     encabezado = {}
                     for k in ('concepto', 'tipo_doc', 'nro_doc', 'tipo_cbte', 'punto_vta',
                               'cbt_desde', 'cbt_hasta', 'imp_total', 'imp_tot_conc', 'imp_neto',
-                              'imp_iva', 'imp_trib', 'imp_op_ex', 'fecha_cbte', 
+                              'imp_iva', 'imp_trib', 'imp_op_ex', 'fecha_cbte',
                               'moneda_id', 'moneda_ctz'):
                         encabezado[k] = kargs[k]
-                            
+
                     for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta'):
                         if k in kargs:
                             encabezado[k] = kargs.get(k)
-                    
+
                     self.ws.CrearFactura(**encabezado)
-                    for l in range(1,1000):
+                    for l in range(1, 1000):
                         k = 'iva_%%s_%s' % l
                         if (k % 'id') in kargs:
                             id = kargs[k % 'id']
@@ -820,7 +823,7 @@ class PyRece(gui.Controller):
                         else:
                             break
 
-                    for l in range(1,1000):
+                    for l in range(1, 1000):
                         k = 'tributo_%%s_%s' % l
                         if (k % 'id') in kargs:
                             id = kargs[k % 'id']
@@ -834,7 +837,7 @@ class PyRece(gui.Controller):
                             break
 
                     if DEBUG:
-                        self.log('\n'.join(["%s='%s'" % (k,v) for k,v in list(self.ws.factura.items())]))
+                        self.log('\n'.join(["%s='%s'" % (k, v) for k, v in list(self.ws.factura.items())]))
 
                     cae = self.ws.CAESolicitar()
                     kargs.update({
@@ -845,40 +848,40 @@ class PyRece(gui.Controller):
                         'reproceso': self.ws.Reproceso,
                         'err_code': self.ws.ErrCode.encode("latin1"),
                         'err_msg': self.ws.ErrMsg.encode("latin1"),
-                        })
+                    })
                     if self.ws.ErrMsg:
                         gui.alert(self.ws.ErrMsg, "Error AFIP")
-                    if self.ws.Obs and self.ws.Obs!='00':
+                    if self.ws.Obs and self.ws.Obs != '00':
                         gui.alert(self.ws.Obs, "Observación AFIP")
-            
+
                 for i, item in self.get_selected_items():
                     for key in ('id', 'cae', 'fecha_vto', 'resultado', 'motivo', 'reproceso', 'err_code', 'err_msg'):
                         item[key] = kargs[key] if kargs[key] is not None else ""
                         self.items[i] = item
-                    
-                self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'],kargs['reproceso']))
+
+                self.log("ID: %s CAE: %s Motivo: %s Reproceso: %s" % (kargs['id'], kargs['cae'], kargs['motivo'], kargs['reproceso']))
                 if kargs['resultado'] == "R":
                     rechazadas += 1
                 elif kargs['resultado'] == "A":
                     ok += 1
 
-                self.items = self.items # refrescar, ver de corregir
+                self.items = self.items  # refrescar, ver de corregir
                 self.progreso(len(self.items))
                 gui.alert('Proceso finalizado OK!\n\nAceptadas: %d\nRechazadas: %d' % (ok, rechazadas), 'Autorización')
                 self.grabar()
         except SoapFault as e:
             self.log(self.client.xml_request)
             self.log(self.client.xml_response)
-            self.error(e.faultcode, e.faultstring.encode("ascii","ignore"))
+            self.error(e.faultcode, e.faultstring.encode("ascii", "ignore"))
         except Exception as e:
-            self.error('Excepción',str(e))
+            self.error('Excepción', str(e))
 
     def on_btnPrevisualizar_click(self, event):
         try:
             j = 0
             for i, item in self.get_selected_items():
                 j += 1
-                archivo = self.generar_factura(item,  mostrar=(j==1))
+                archivo = self.generar_factura(item, mostrar=(j == 1))
         except Exception as e:
             print(e)
             self.error('Excepción', str(str(e), 'latin1', 'ignore'))
@@ -891,7 +894,7 @@ class PyRece(gui.Controller):
                 if not item['cae'] in ("", "NULL"):
                     archivo = self.generar_factura(item)
                     if item.get('email'):
-                        self.enviar_mail(item,archivo)
+                        self.enviar_mail(item, archivo)
                         ok += 1
                     else:
                         no += 1
@@ -903,10 +906,10 @@ class PyRece(gui.Controller):
             self.progreso(len(self.items))
             gui.alert('Proceso finalizado OK!\n\nEnviados: %d\nNo enviados: %d' % (ok, no), 'Envio de Email')
         except Exception as e:
-            self.error('Excepción',str(e))
-            
+            self.error('Excepción', str(e))
+
     def generar_factura(self, fila, mostrar=False):
-        
+
         fepdf = FEPDF()
         fact = formato_csv.desaplanar([self.cols] + [[item[k] for k in self.cols] for item in [fila]])[0]
         fact['cbte_nro'] = fact['cbt_numero']
@@ -917,9 +920,9 @@ class PyRece(gui.Controller):
             # por compatiblidad, completo campos anteriores
             if d['campo'] not in fact and d['valor']:
                 fact[d['campo']] = d['valor']
-                
+
         fepdf.factura = fact
-        
+
         # convertir importe total en texto (palabras):
         moneda_ds = {"PES": "PESOS", "DOL": "DOLAR EEUU"}.get(fact.get("moneda_id", ""), "")
         fact["en_letras"] = "SON " + moneda_ds + " " + conv_text(float(fact["imp_total"]))
@@ -930,21 +933,21 @@ class PyRece(gui.Controller):
         # establezco formatos (cantidad de decimales) según configuración:
         fepdf.FmtCantidad = conf_fact.get("fmt_cantidad", "0.2")
         fepdf.FmtPrecio = conf_fact.get("fmt_precio", "0.2")
-        
+
         # datos fijos:
         fepdf.CUIT = cuit  # CUIT del emisor para código de barras
         for k, v in list(conf_pdf.items()):
             fepdf.AgregarDato(k, v)
 
-        fepdf.CrearPlantilla(papel=conf_fact.get("papel", "legal"), 
+        fepdf.CrearPlantilla(papel=conf_fact.get("papel", "legal"),
                              orientacion=conf_fact.get("orientacion", "portrait"))
         fepdf.ProcesarPlantilla(num_copias=int(conf_fact.get("copias", 1)),
                                 lineas_max=int(conf_fact.get("lineas_max", 24)),
                                 qty_pos=conf_fact.get("cant_pos") or 'izq')
-        
+
         salida = conf_fact.get("salida", "")
         fact = fepdf.factura
-        
+
         if salida:
             pass
         elif 'pdf' in fact and fact['pdf']:
@@ -952,12 +955,12 @@ class PyRece(gui.Controller):
         else:
             # genero el nombre de archivo según datos de factura
             d = conf_fact.get('directorio', ".")
-            clave_subdir = conf_fact.get('subdirectorio','fecha_cbte')
+            clave_subdir = conf_fact.get('subdirectorio', 'fecha_cbte')
             if clave_subdir:
                 d = os.path.join(d, item[clave_subdir])
             if not os.path.isdir(d):
                 os.mkdir(d)
-            fs = conf_fact.get('archivo','numero').split(",")
+            fs = conf_fact.get('archivo', 'numero').split(",")
             it = item.copy()
             tipo_fact, letra_fact, numero_fact = fact['_fmt_fact']
             it['tipo'] = tipo_fact.replace(" ", "_")
@@ -966,20 +969,20 @@ class PyRece(gui.Controller):
             it['mes'] = item['fecha_cbte'][4:6]
             it['año'] = item['fecha_cbte'][0:4]
             # remover acentos, ñ del nombre de archivo (vía unicode):
-            fn = ''.join([str(it.get(ff,ff)) for ff in fs])
-            fn = unicodedata.normalize('NFKD', fn).encode('ASCII', 'ignore') 
+            fn = ''.join([str(it.get(ff, ff)) for ff in fs])
+            fn = unicodedata.normalize('NFKD', fn).encode('ASCII', 'ignore')
             salida = os.path.join(d, "%s.pdf" % fn)
         fepdf.GenerarPDF(archivo=salida)
         if mostrar:
-            fepdf.MostrarPDF(archivo=salida,imprimir='--imprimir' in sys.argv)
+            fepdf.MostrarPDF(archivo=salida, imprimir='--imprimir' in sys.argv)
 
         return salida
-        
+
     def enviar_mail(self, item, archivo):
         archivo = self.generar_factura(item)
         if item['email']:
             msg = MIMEMultipart()
-            msg['Subject'] = conf_mail['motivo'].replace("NUMERO",str(item['cbt_numero']))
+            msg['Subject'] = conf_mail['motivo'].replace("NUMERO", str(item['cbt_numero']))
             msg['From'] = conf_mail['remitente']
             msg['Reply-to'] = msg['From']
             msg['To'] = item['email']
@@ -995,7 +998,7 @@ class PyRece(gui.Controller):
                 # We reference the image in the IMG SRC attribute by the ID we give it below
                 html = MIMEText(conf_mail['html'], 'html')
                 alt.attach(html)
-            part = MIMEApplication(open(archivo,"rb").read())
+            part = MIMEApplication(open(archivo, "rb").read())
             part.add_header('Content-Disposition', 'attachment', filename=os.path.basename(archivo))
             msg.attach(part)
 
@@ -1005,6 +1008,10 @@ class PyRece(gui.Controller):
                     self.smtp = SMTP(conf_mail['servidor'], conf_mail.get('puerto', 25))
                     if conf_mail['usuario'] and conf_mail['clave']:
                         self.smtp.ehlo()
+                        if conf_mail.get('tls', False):
+                            self.log("Iniciando TLS...")
+                            self.smtp.starttls()
+                            self.smtp.ehlo()
                         self.smtp.login(conf_mail['usuario'], conf_mail['clave'])
                 to = [msg['To']]
                 bcc = conf_mail.get('bcc', None)
@@ -1012,42 +1019,42 @@ class PyRece(gui.Controller):
                     to.append(bcc)
                 self.smtp.sendmail(msg['From'], to, msg.as_string())
             except Exception as e:
-                self.error('Excepción',str(e))
-            
-        
+                self.error('Excepción', str(e))
+
+
 if __name__ == '__main__':
 
-    if len(sys.argv)>1 and not sys.argv[1].startswith("-"):
+    if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
         CONFIG_FILE = sys.argv[1]
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
     if not len(config.sections()):
         if os.path.exists(CONFIG_FILE):
-            gui.alert("Error al cargar archivo de configuración: %s" % 
-                        CONFIG_FILE, "PyRece: Imposible Continuar")
+            gui.alert("Error al cargar archivo de configuración: %s" %
+                      CONFIG_FILE, "PyRece: Imposible Continuar")
         else:
-            gui.alert("No se encuentra archivo de configuración: %s" % 
-                        CONFIG_FILE, "PyRece: Imposible Continuar")
+            gui.alert("No se encuentra archivo de configuración: %s" %
+                      CONFIG_FILE, "PyRece: Imposible Continuar")
         sys.exit(1)
-    cert = config.get('WSAA','CERT')
-    privatekey = config.get('WSAA','PRIVATEKEY')
-    cuit = config.get('WSFEv1','CUIT')
-    if config.has_option('WSFEv1','ENTRADA'):
-        entrada = config.get('WSFEv1','ENTRADA')
+    cert = config.get('WSAA', 'CERT')
+    privatekey = config.get('WSAA', 'PRIVATEKEY')
+    cuit = config.get('WSFEv1', 'CUIT')
+    if config.has_option('WSFEv1', 'ENTRADA'):
+        entrada = config.get('WSFEv1', 'ENTRADA')
     else:
         entrada = ""
     if not os.path.exists(entrada):
         entrada = "facturas.csv"
-    if config.has_option('WSFEv1','SALIDA'):
-        salida = config.get('WSFEv1','SALIDA')
+    if config.has_option('WSFEv1', 'SALIDA'):
+        salida = config.get('WSFEv1', 'SALIDA')
     else:
         salida = "resultado.csv"
-    
+
     if config.has_section('FACTURA'):
         conf_fact = dict(config.items('FACTURA'))
     else:
         conf_fact = {}
-    
+
     conf_pdf = dict(config.items('PDF'))
     conf_mail = dict(config.items('MAIL'))
 
@@ -1056,19 +1063,18 @@ if __name__ == '__main__':
     else:
         conf_dbf = {}
 
-      
-    if config.has_option('WSAA','URL') and not HOMO:
-        wsaa_url = config.get('WSAA','URL')
+    if config.has_option('WSAA', 'URL') and not HOMO:
+        wsaa_url = config.get('WSAA', 'URL')
     else:
         wsaa_url = wsaa.WSAAURL
 
-    if config.has_option('WSFEv1','URL') and not HOMO:
-        wsfev1_url = config.get('WSFEv1','URL')
+    if config.has_option('WSFEv1', 'URL') and not HOMO:
+        wsfev1_url = config.get('WSFEv1', 'URL')
     else:
         wsfev1_url = wsfev1.WSDL
 
-    if config.has_option('WSFEXv1','URL') and not HOMO:
-        wsfexv1_url = config.get('WSFEXv1','URL')
+    if config.has_option('WSFEXv1', 'URL') and not HOMO:
+        wsfexv1_url = config.get('WSFEXv1', 'URL')
     else:
         wsfexv1_url = wsfexv1.WSDL
 
@@ -1077,13 +1083,13 @@ if __name__ == '__main__':
 
     DEFAULT_WEBSERVICE = "wsfev1"
     if config.has_section('PYRECE'):
-        DEFAULT_WEBSERVICE = config.get('PYRECE','WEBSERVICE')
+        DEFAULT_WEBSERVICE = config.get('PYRECE', 'WEBSERVICE')
 
     if config.has_section('PROXY'):
-        proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))
+        proxy_dict = dict(("proxy_%s" % k, v) for k, v in config.items('PROXY'))
         proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
     else:
         proxy_dict = {}
-       
+
     c = PyRece()
     gui.main_loop()

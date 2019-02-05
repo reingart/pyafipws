@@ -27,16 +27,16 @@ NULL = None
 
 def esquema_sql(tipos_registro, conf={}):
     from .formato_txt import A, N, I
-    
+
     for tabla, formato in tipos_registro:
         sql = []
         sql.append("CREATE TABLE %s (" % tabla)
-        if tabla!='encabezado':
+        if tabla != 'encabezado':
             # agrego id como fk
             id = [('id', 15, N)]
         else:
             id = []
-        for (clave, longitud, tipo) in id+formato:
+        for (clave, longitud, tipo) in id + formato:
             clave_orig = clave
             if conf:
                 if tabla == 'encabezado':
@@ -55,16 +55,17 @@ def esquema_sql(tipos_registro, conf={}):
                 longitud, decimales = longitud
             else:
                 decimales = 2
-            sql.append ("    %s %s %s%s%s" % (
-                clave, 
-                {N: 'INTEGER', I: 'NUMERIC', A: 'VARCHAR'}[tipo], 
+            sql.append("    %s %s %s%s%s" % (
+                clave,
+                {N: 'INTEGER', I: 'NUMERIC', A: 'VARCHAR'}[tipo],
                 {I: "(%s, %s)" % (longitud, decimales), A: '(%s)' % longitud, N: ''}[tipo],
-                clave == 'id' and (tabla=='encabezado' and " PRIMARY KEY" or " FOREING KEY encabezado") or "",
-                formato[-1][0]!=clave_orig and "," or ""))
+                clave == 'id' and (tabla == 'encabezado' and " PRIMARY KEY" or " FOREING KEY encabezado") or "",
+                formato[-1][0] != clave_orig and "," or ""))
         sql.append(")")
         sql.append(";")
-        if DEBUG: print('\n'.join(sql))
-        yield '\n'.join(sql)    
+        if DEBUG:
+            print('\n'.join(sql))
+        yield '\n'.join(sql)
 
 
 def configurar(schema):
@@ -78,8 +79,9 @@ def configurar(schema):
             campos_rev[tabla] = dict([(v, k) for k, v in list(campos[tabla].items())])
     return tablas, campos, campos_rev
 
+
 def ejecutar(cur, sql, params=None):
-    ##print sql, params
+    # print sql, params
     if params is None:
         return cur.execute(sql)
     else:
@@ -90,7 +92,8 @@ def max_id(db, schema={}):
     cur = db.cursor()
     tablas, campos, campos_rev = configurar(schema)
     query = ("SELECT MAX(%%(id)s) FROM %(encabezado)s" % tablas) % campos["encabezado"]
-    if DEBUG: print("ejecutando",query)
+    if DEBUG:
+        print("ejecutando", query)
     ret = None
     try:
         ejecutar(cur, query)
@@ -98,22 +101,24 @@ def max_id(db, schema={}):
             ret = row[0]
         if not ret:
             ret = 0
-        ##print "MAX_ID = ", ret
+        # print "MAX_ID = ", ret
         return ret
     finally:
         cur.close()
+
 
 def redondear(formato, clave, valor):
     from .formato_txt import A, N, I
     # corregir redondeo (aparentemente sqlite no guarda correctamente los decimal)
     import decimal
     try:
-        long = [fmt[1] for fmt in formato if fmt[0]==clave]
-        tipo = [fmt[2] for fmt in formato if fmt[0]==clave]
+        long = [fmt[1] for fmt in formato if fmt[0] == clave]
+        tipo = [fmt[2] for fmt in formato if fmt[0] == clave]
         if not tipo:
             return valor
         tipo = tipo[0]
-        if DEBUG: print("tipo", tipo, clave, valor, int)
+        if DEBUG:
+            print("tipo", tipo, clave, valor, int)
         if valor is None:
             return None
         if valor == "":
@@ -125,9 +130,9 @@ def redondear(formato, clave, valor):
         if isinstance(valor, (int, float)):
             valor = str(valor)
         if isinstance(valor, str):
-            valor = Decimal(valor) 
+            valor = Decimal(valor)
         if int and isinstance(int[0], (tuple, list)):
-            decimales = Decimal('1')  / Decimal(10**(int[0][1]))
+            decimales = Decimal('1') / Decimal(10**(int[0][1]))
         else:
             decimales = Decimal('.01')
         valor1 = valor.quantize(decimales, rounding=decimal.ROUND_DOWN)
@@ -147,44 +152,50 @@ def escribir(facts, db, schema={}, commit=True):
             if not 'id' in dic:
                 dic['id'] = max_id(db, schema={}) + 1
             query = "INSERT INTO %(encabezado)s (%%s) VALUES (%%s)" % tablas
-            fields = ','.join([campos["encabezado"].get(k, k) for k,t,n in ENCABEZADO if k in dic])
-            values = ','.join(['?' for k,t,n in ENCABEZADO if k in dic])
-            if DEBUG: print("Ejecutando2: %s %s" % (query % (fields, values), [dic[k] for k,t,n in ENCABEZADO if k in dic]))
-            ejecutar(cur, query % (fields, values), [dic[k] for k,t,n in ENCABEZADO if k in dic])
+            fields = ','.join([campos["encabezado"].get(k, k) for k, t, n in ENCABEZADO if k in dic])
+            values = ','.join(['?' for k, t, n in ENCABEZADO if k in dic])
+            if DEBUG:
+                print("Ejecutando2: %s %s" % (query % (fields, values), [dic[k] for k, t, n in ENCABEZADO if k in dic]))
+            ejecutar(cur, query % (fields, values), [dic[k] for k, t, n in ENCABEZADO if k in dic])
             query = ("INSERT INTO %(detalle)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["detalle"]
             for item in dic['detalles']:
-                fields = ','.join([campos["detalle"].get(k, k) for k,t,n in DETALLE if k in item])
-                values = ','.join(['?' for k,t,n in DETALLE if k in item])
-                if DEBUG: print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in DETALLE if k in item]))
-                ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in DETALLE if k in item])
-            if 'cbtes_asoc' in dic and tablas["cmp_asoc"]: 
+                fields = ','.join([campos["detalle"].get(k, k) for k, t, n in DETALLE if k in item])
+                values = ','.join(['?' for k, t, n in DETALLE if k in item])
+                if DEBUG:
+                    print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k, t, n in DETALLE if k in item]))
+                ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k, t, n in DETALLE if k in item])
+            if 'cbtes_asoc' in dic and tablas["cmp_asoc"]:
                 query = ("INSERT INTO %(cmp_asoc)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["cmp_asoc"]
                 for item in dic['cbtes_asoc']:
-                    fields = ','.join([campos["cmp_asoc"].get(k, k) for k,t,n in CMP_ASOC if k in item])
-                    values = ','.join(['?' for k,t,n in CMP_ASOC if k in item])
-                    if DEBUG: print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in CMP_ASOC if k in item]))
-                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in CMP_ASOC if k in item])
-            if 'permisos' in dic: 
+                    fields = ','.join([campos["cmp_asoc"].get(k, k) for k, t, n in CMP_ASOC if k in item])
+                    values = ','.join(['?' for k, t, n in CMP_ASOC if k in item])
+                    if DEBUG:
+                        print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k, t, n in CMP_ASOC if k in item]))
+                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k, t, n in CMP_ASOC if k in item])
+            if 'permisos' in dic:
                 query = ("INSERT INTO %(permiso)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["permiso"]
                 for item in dic['permisos']:
-                    fields = ','.join([campos["permiso"].get(k, k) for k,t,n in PERMISO if k in item])
-                    values = ','.join(['?' for k,t,n in PERMISO if k in item])
-                    if DEBUG: print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in PERMISO if k in item]))
-                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in PERMISO if k in item])
-            if 'tributos' in dic: 
+                    fields = ','.join([campos["permiso"].get(k, k) for k, t, n in PERMISO if k in item])
+                    values = ','.join(['?' for k, t, n in PERMISO if k in item])
+                    if DEBUG:
+                        print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k, t, n in PERMISO if k in item]))
+                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k, t, n in PERMISO if k in item])
+            if 'tributos' in dic:
                 query = ("INSERT INTO %(tributo)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["tributo"]
                 for item in dic['tributos']:
-                    fields = ','.join([campos["tributo"].get(k, k) for k,t,n in TRIBUTO if k in item])
-                    values = ','.join(['?' for k,t,n in TRIBUTO if k in item])
-                    if DEBUG: print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in TRIBUTO if k in item]))
-                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in TRIBUTO if k in item])
-            if 'ivas' in dic: 
+                    fields = ','.join([campos["tributo"].get(k, k) for k, t, n in TRIBUTO if k in item])
+                    values = ','.join(['?' for k, t, n in TRIBUTO if k in item])
+                    if DEBUG:
+                        print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k, t, n in TRIBUTO if k in item]))
+                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k, t, n in TRIBUTO if k in item])
+            if 'ivas' in dic:
                 query = ("INSERT INTO %(iva)s (%%(id)s, %%%%s) VALUES (?, %%%%s)" % tablas) % campos["iva"]
                 for item in dic['ivas']:
-                    fields = ','.join([campos["iva"].get(k, k) for k,t,n in IVA if k in item])
-                    values = ','.join(['?' for k,t,n in IVA if k in item])
-                    if DEBUG: print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k,t,n in IVA if k in item]))
-                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k,t,n in IVA if k in item])
+                    fields = ','.join([campos["iva"].get(k, k) for k, t, n in IVA if k in item])
+                    values = ','.join(['?' for k, t, n in IVA if k in item])
+                    if DEBUG:
+                        print("Ejecutando: %s %s" % (query % (fields, values), [dic['id']] + [item[k] for k, t, n in IVA if k in item]))
+                    ejecutar(cur, query % (fields, values), [dic['id']] + [item[k] for k, t, n in IVA if k in item])
         if commit:
             db.commit()
     finally:
@@ -196,24 +207,26 @@ def modificar(fact, db, schema={}, webservice="wsfev1", ids=None, conf_db={}):
     update = ['cae', 'fecha_vto', 'resultado', 'reproceso', 'motivo_obs', 'err_code', 'err_msg', 'cbte_nro']
     tablas, campos, campos_rev = configurar(schema)
     cur = db.cursor()
-    if fact['cae']=='NULL' or fact['cae']=='' or fact['cae']==None:
+    if fact['cae'] == 'NULL' or fact['cae'] == '' or fact['cae'] is None:
         fact['cae'] = CAE_NULL
         fact['fecha_vto'] = FECHA_VTO_NULL
-    if 'null' in conf_db and fact['resultado']==None or fact['resultado']=='':
+    if 'null' in conf_db and fact['resultado'] is None or fact['resultado'] == '':
         fact['resultado'] = RESULTADO_NULL
     for k in ['reproceso', 'motivo_obs', 'err_code', 'err_msg']:
-        if 'null' in conf_db and k in fact and fact[k]==None or fact[k]=='':
-            if DEBUG: print(k, "NULL")
+        if 'null' in conf_db and k in fact and fact[k] is None or fact[k] == '':
+            if DEBUG:
+                print(k, "NULL")
             fact[k] = NULL
     try:
         query = ("UPDATE %(encabezado)s SET %%%%s WHERE %%(id)s=?" % tablas) % campos["encabezado"]
-        fields = [campos["encabezado"].get(k, k) for k,t,n in ENCABEZADO if k in update and k in fact]
-        values = [fact[k] for k,t,n in ENCABEZADO if k in update and k in fact]
+        fields = [campos["encabezado"].get(k, k) for k, t, n in ENCABEZADO if k in update and k in fact]
+        values = [fact[k] for k, t, n in ENCABEZADO if k in update and k in fact]
         query = query % ','.join(["%s=?" % f for f in fields])
-        if DEBUG: print(query, values+[fact['id']])
-        ejecutar(cur, query, values+[fact['id']] )
+        if DEBUG:
+            print(query, values + [fact['id']])
+        ejecutar(cur, query, values + [fact['id']])
         db.commit()
-    except:
+    except BaseException:
         raise
     finally:
         pass
@@ -230,7 +243,8 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
         ids = [webservice]
     else:
         query = ("SELECT * FROM %(encabezado)s WHERE " % tablas) + " OR ".join(["%(id)s=?" % campos["encabezado"] for id in ids])
-    if DEBUG: print("ejecutando",query, ids)
+    if DEBUG:
+        print("ejecutando", query, ids)
     try:
         ejecutar(cur, query, ids)
         rows = cur.fetchall()
@@ -240,22 +254,23 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
             encabezado = {}
             for i, k in enumerate(description):
                 val = row[i]
-                if isinstance(val,str):
+                if isinstance(val, str):
                     val = val.decode(CHARSET)
-                if isinstance(val,str):
+                if isinstance(val, str):
                     val = val.strip()
                 key = campos_rev["encabezado"].get(k[0], k[0].lower())
-                val = redondear(ENCABEZADO, key, val)                
+                val = redondear(ENCABEZADO, key, val)
                 encabezado[key] = val
-            ##print encabezado
+            # print encabezado
             detalles = []
-            if DEBUG: print(("SELECT * FROM %(detalle)s WHERE %%(id)s = ?" % tablas) % campos["detalle"], [encabezado['id']])
-            ejecutar(cur, ("SELECT * FROM %(detalle)s WHERE %%(id)s = ?" % tablas) % campos["detalle"], [encabezado['id']]) 
+            if DEBUG:
+                print(("SELECT * FROM %(detalle)s WHERE %%(id)s = ?" % tablas) % campos["detalle"], [encabezado['id']])
+            ejecutar(cur, ("SELECT * FROM %(detalle)s WHERE %%(id)s = ?" % tablas) % campos["detalle"], [encabezado['id']])
             for it in cur.fetchall():
                 detalle = {}
                 for i, k in enumerate(cur.description):
                     val = it[i]
-                    if isinstance(val,str):
+                    if isinstance(val, str):
                         val = val.decode(CHARSET)
                     key = campos_rev["detalle"].get(k[0], k[0].lower())
                     val = redondear(DETALLE, key, val)
@@ -264,8 +279,9 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
             encabezado['detalles'] = detalles
 
             cmps_asoc = []
-            if DEBUG: print(("SELECT * FROM %(cmp_asoc)s WHERE %%(id)s = ?" % tablas) % campos["cmp_asoc"], [encabezado['id']])
-            ejecutar(cur, ("SELECT * FROM %(cmp_asoc)s WHERE %%(id)s = ?" % tablas) % campos["cmp_asoc"], [encabezado['id']]) 
+            if DEBUG:
+                print(("SELECT * FROM %(cmp_asoc)s WHERE %%(id)s = ?" % tablas) % campos["cmp_asoc"], [encabezado['id']])
+            ejecutar(cur, ("SELECT * FROM %(cmp_asoc)s WHERE %%(id)s = ?" % tablas) % campos["cmp_asoc"], [encabezado['id']])
             for it in cur.fetchall():
                 cmp_asoc = {}
                 for i, k in enumerate(cur.description):
@@ -277,8 +293,9 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
                 encabezado['cbtes_asoc'] = cmps_asoc
 
             permisos = []
-            if DEBUG: print(("SELECT * FROM %(permiso)s WHERE %%(id)s = ?" % tablas) % campos["permiso"], [encabezado['id']])
-            ejecutar(cur, ("SELECT * FROM %(permiso)s WHERE %%(id)s = ?" % tablas) % campos["permiso"], [encabezado['id']]) 
+            if DEBUG:
+                print(("SELECT * FROM %(permiso)s WHERE %%(id)s = ?" % tablas) % campos["permiso"], [encabezado['id']])
+            ejecutar(cur, ("SELECT * FROM %(permiso)s WHERE %%(id)s = ?" % tablas) % campos["permiso"], [encabezado['id']])
             for it in cur.fetchall():
                 permiso = {}
                 for i, k in enumerate(cur.description):
@@ -290,8 +307,9 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
                 encabezado['permisos'] = permisos
 
             ivas = []
-            if DEBUG: print(("SELECT * FROM %(iva)s WHERE %%(id)s = ?" % tablas) % campos["iva"], [encabezado['id']])
-            ejecutar(cur, ("SELECT * FROM %(iva)s WHERE %%(id)s = ?" % tablas) % campos["iva"], [encabezado['id']]) 
+            if DEBUG:
+                print(("SELECT * FROM %(iva)s WHERE %%(id)s = ?" % tablas) % campos["iva"], [encabezado['id']])
+            ejecutar(cur, ("SELECT * FROM %(iva)s WHERE %%(id)s = ?" % tablas) % campos["iva"], [encabezado['id']])
             for it in cur.fetchall():
                 iva = {}
                 for i, k in enumerate(cur.description):
@@ -304,8 +322,9 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
                 encabezado['ivas'] = ivas
 
             tributos = []
-            if DEBUG: print(("SELECT * FROM %(tributo)s WHERE %%(id)s = ?" % tablas) % campos["tributo"], [encabezado['id']])
-            ejecutar(cur, ("SELECT * FROM %(tributo)s WHERE %%(id)s = ?" % tablas) % campos["tributo"], [encabezado['id']]) 
+            if DEBUG:
+                print(("SELECT * FROM %(tributo)s WHERE %%(id)s = ?" % tablas) % campos["tributo"], [encabezado['id']])
+            ejecutar(cur, ("SELECT * FROM %(tributo)s WHERE %%(id)s = ?" % tablas) % campos["tributo"], [encabezado['id']])
             for it in cur.fetchall():
                 tributo = {}
                 for i, k in enumerate(cur.description):
@@ -316,7 +335,7 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
                 tributos.append(tributo)
             if tributos:
                 encabezado['tributos'] = tributos
-            
+
             yield encabezado
         db.commit()
     finally:
@@ -326,15 +345,15 @@ def leer(db, schema={}, webservice="wsfev1", ids=None, **kwargs):
 def ayuda():
     print("-- Formato:")
     from .formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, DATO, PERMISO
-    tipos_registro =  [
+    tipos_registro = [
         ('encabezado', ENCABEZADO),
         ('detalle', DETALLE),
-        ('tributo', TRIBUTO), 
-        ('iva', IVA), 
+        ('tributo', TRIBUTO),
+        ('iva', IVA),
         ('cmp_asoc', CMP_ASOC),
         ('permiso', PERMISO),
         ('dato', DATO),
-        ]
+    ]
     print("-- Esquema:")
     for sql in esquema_sql(tipos_registro):
         print(sql)

@@ -18,7 +18,7 @@ Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03c"
+__version__ = "1.03e"
 
 import csv
 import datetime
@@ -27,7 +27,7 @@ import json
 import os
 import sys
 
-from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm, SoapFault
 from configparser import SafeConfigParser
 from .padron import TIPO_CLAVE, PROVINCIAS
 
@@ -45,17 +45,17 @@ class WSSrPadronA4(BaseWS):
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
                         'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit',
-        'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
-        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 
-        'LanzarExcepciones', 'Excepcion', 'Traceback',
-        'Persona', 'data',
-        'denominacion', 'imp_ganancias', 'imp_iva',
-        'monotributo', 'integrante_soc', 'empleador',
-        'actividad_monotributo', 'cat_iva', 'domicilios',
-        'tipo_doc', 'nro_doc',
-        'tipo_persona', 'estado', 'impuestos', 'actividades',
-        'direccion', 'localidad', 'provincia', 'cod_postal',
-        ]
+                      'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
+                      'XmlRequest', 'XmlResponse', 'Version', 'InstallDir',
+                      'LanzarExcepciones', 'Excepcion', 'Traceback',
+                      'Persona', 'data',
+                      'denominacion', 'imp_ganancias', 'imp_iva',
+                      'monotributo', 'integrante_soc', 'empleador',
+                      'actividad_monotributo', 'cat_iva', 'domicilios',
+                      'tipo_doc', 'nro_doc',
+                      'tipo_persona', 'estado', 'impuestos', 'actividades',
+                      'direccion', 'localidad', 'provincia', 'cod_postal',
+                      ]
 
     _reg_progid_ = "WSSrPadronA4"
     _reg_clsid_ = "{C2270008-4324-46F6-A2D3-60836EE63BD7}"
@@ -72,7 +72,7 @@ class WSSrPadronA4(BaseWS):
         BaseWS.inicializar(self)
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
         self.Persona = ''
-        self.Reproceso = '' # no implementado
+        self.Reproceso = ''  # no implementado
         self.cuit = self.dni = 0
         self.tipo_persona = ""                      # FISICA o JURIDICA
         self.tipo_doc = self.nro_doc = 0
@@ -105,7 +105,7 @@ class WSSrPadronA4(BaseWS):
             token=self.Token,
             cuitRepresentada=self.Cuit,
             idPersona=id_persona,
-            )
+        )
         ret = res.get('personaReturn', {})
         # obtengo el resultado de AFIP (dict):
         data = ret.get('persona', None)
@@ -123,7 +123,7 @@ class WSSrPadronA4(BaseWS):
         self.estado = data.get("estadoClave")
         if not "razonSocial" in data:
             self.denominacion = ", ".join([data.get("apellido", ""),
-                                          data.get("nombre", "")])
+                                           data.get("nombre", "")])
         else:
             self.denominacion = data.get("razonSocial", "")
         # analizo el domicilio, dando prioridad al FISCAL, luego LEGAL/REAL
@@ -141,8 +141,8 @@ class WSSrPadronA4(BaseWS):
         # retrocompatibilidad:
         self.domicilios = domicilios
         self.domicilio = "%s - %s (%s) - %s" % (
-                            self.direccion, self.localidad, 
-                            self.cod_postal, self.provincia,)
+            self.direccion, self.localidad,
+            self.cod_postal, self.provincia,)
         # analizo impuestos:
         self.impuestos = [imp["idImpuesto"] for imp in data.get("impuesto", [])
                           if imp['estado'] == 'ACTIVO']
@@ -196,7 +196,7 @@ class WSSrPadronA5(WSSrPadronA4):
             token=self.Token,
             cuitRepresentada=self.Cuit,
             idPersona=id_persona,
-            )
+        )
         ret = res.get('personaReturn', {})
         # obtengo el resultado de AFIP (dict):
         data = ret.get('datosGenerales', {})
@@ -218,7 +218,7 @@ class WSSrPadronA5(WSSrPadronA4):
         self.estado = data.get("estadoClave")
         if not "razonSocial" in data:
             self.denominacion = ", ".join([data.get("apellido", ""),
-                                          data.get("nombre", "")])
+                                           data.get("nombre", "")])
         else:
             self.denominacion = data.get("razonSocial", "")
         # analizo el domicilio, dando prioridad al FISCAL, luego LEGAL/REAL
@@ -234,8 +234,8 @@ class WSSrPadronA5(WSSrPadronA4):
         # retrocompatibilidad:
         self.domicilios = [domicilio]
         self.domicilio = "%s - %s (%s) - %s" % (
-                            self.direccion, self.localidad, 
-                            self.cod_postal, self.provincia,)
+            self.direccion, self.localidad,
+            self.cod_postal, self.provincia,)
         # extraer datos impositivos (inscripción / opción) para unificarlos:
         data_mt = ret.get("datosMonotributo", {})
         data_rg = ret.get("datosRegimenGeneral", {})
@@ -251,7 +251,8 @@ class WSSrPadronA5(WSSrPadronA4):
 
 def main():
     "Función principal de pruebas (obtener CAE)"
-    import os, time
+    import os
+    import time
     global CONFIG_FILE
 
     DEBUG = '--debug' in sys.argv
@@ -274,9 +275,9 @@ def main():
         crt, key = "reingart.crt", "reingart.key"
         cuit = "20267565393"
     url_wsaa = url_ws = None
-    if config.has_option('WSAA','URL'):
+    if config.has_option('WSAA', 'URL'):
         url_wsaa = config.get('WSAA', 'URL')
-    if config.has_option(SECTION,'URL') and not HOMO:
+    if config.has_option(SECTION, 'URL') and not HOMO:
         url_ws = config.get(SECTION, 'URL')
 
     # obteniendo el TA para pruebas
@@ -297,23 +298,28 @@ def main():
         print("AuthServerStatus", wssrpadron4.AuthServerStatus)
 
     if '--csv' in sys.argv:
-        csv_reader = csv.reader(open("entrada.csv", "rU"), 
+        csv_reader = csv.reader(open("entrada.csv", "rU"),
                                 dialect='excel', delimiter=",")
-        csv_writer = csv.writer(open("salida.csv", "w"), 
+        csv_writer = csv.writer(open("salida.csv", "w"),
                                 dialect='excel', delimiter=",")
         encabezado = next(csv_reader)
         columnas = ["cuit", "denominacion", "estado", "direccion",
                     "localidad", "provincia", "cod_postal",
-                    "impuestos", "actividades", "imp_iva", 
-                    "monotributo", "actividad_monotributo", 
+                    "impuestos", "actividades", "imp_iva",
+                    "monotributo", "actividad_monotributo",
                     "empleador", "imp_ganancias", "integrante_soc"]
         csv_writer.writerow(columnas)
-        
+
         for fila in csv_reader:
             cuit = (fila[0] if fila else "").replace("-", "")
             if cuit.isdigit():
                 print("Consultando AFIP online...", cuit, end=' ')
-                ok = padron.Consultar(cuit)
+                try:
+                    ok = padron.Consultar(cuit)
+                except SoapFault as e:
+                    ok = None
+                    if e.faultstring != "No existe persona con ese Id":
+                        raise
                 print('ok' if ok else "error", padron.Excepcion)
                 # domicilio posiblemente esté en Latin1, normalizar
                 csv_writer.writerow([norm(getattr(padron, campo, ""))
@@ -325,7 +331,7 @@ def main():
         if "--prueba" in sys.argv:
             id_persona = "20000000516"
         else:
-            id_persona = len(sys.argv)>1 and sys.argv[1] or "20267565393"
+            id_persona = len(sys.argv) > 1 and sys.argv[1] or "20267565393"
 
         if "--testing" in sys.argv:
             padron.LoadTestXML("tests/xml/%s_resp.xml" % service)
@@ -354,7 +360,7 @@ def main():
             print("Excepcion:", padron.Excepcion)
             # ver padron.errores para el detalle
 
-    except:
+    except BaseException:
         raise
         print(padron.XmlRequest)
         print(padron.XmlResponse)
@@ -372,4 +378,3 @@ if __name__ == '__main__':
         win32com.server.register.UseCommandLine(WSSrPadronA5)
     else:
         main()
-

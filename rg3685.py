@@ -17,7 +17,7 @@ __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.01a"
 
-import sys 
+import sys
 from .utils import leer, escribir, C, N, A, I, B, get_install_dir
 
 
@@ -46,7 +46,7 @@ REGINFO_CV_VENTAS_CBTE = [
     ('codigo_operacion', 1, C),
     ('imp_trib', 15, I),
     ('fecha_venc_pago', 8, A),
-    ]
+]
 
 # Diseño de registro de Importación de Alícuotas de comprobantes de Ventas
 
@@ -57,7 +57,7 @@ REGINFO_CV_VENTAS_CBTE_ALICUOTA = [
     ('base_imp', 15, I),
     ('iva_id', 4, N),
     ('importe', 15, I),
-    ]
+]
 
 
 if __name__ == "__main__":
@@ -65,14 +65,14 @@ if __name__ == "__main__":
     print("Usando formato registro RG3685 (regimen informativo compras/ventas)")
 
     if '--caea' in sys.argv:
-        caea = sys.argv[sys.argv.index("--caea")+1]
+        caea = sys.argv[sys.argv.index("--caea") + 1]
         print("Usando CAEA:", caea)
     else:
         caea = ""
-    
+
     if '--serv' in sys.argv:
-        fecha_serv_desde = sys.argv[sys.argv.index("--serv")+1]
-        fecha_serv_hasta = sys.argv[sys.argv.index("--serv")+2]
+        fecha_serv_desde = sys.argv[sys.argv.index("--serv") + 1]
+        fecha_serv_hasta = sys.argv[sys.argv.index("--serv") + 2]
         concepto = 2
     else:
         concepto = 1
@@ -100,9 +100,8 @@ if __name__ == "__main__":
         reg.setdefault("iva", []).append(iva)
 
     from . import rece1
-    facts = sorted(list(ops.values()), 
-                key=lambda f: (f["tipo_cbte"], f["punto_vta"], f["cbt_desde"]))
+    facts = sorted(list(ops.values()),
+                   key=lambda f: (f["tipo_cbte"], f["punto_vta"], f["cbt_desde"]))
     rece1.escribir_facturas(facts, open("entrada.txt", "w"))
-    
-    print("Hecho.")
 
+    print("Hecho.")

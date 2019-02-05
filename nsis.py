@@ -70,39 +70,6 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "%(copyright)s"
 ;VIAddVersionKey /LANG=${LANG_ENGLISH} "InternalName" "FileSetup.exe"
 
 Section %(name)s
-    ; uninstall old version
-
-    ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%(reg_key)s" "UninstallString"
-    StrCmp $R0 "" notistalled
-    ExecWait '$R0 /S _?=$INSTDIR' 
-
-    ; clean up executable files
-    Delete $INSTDIR\*.pyc
-    Delete $INSTDIR\*.pyd
-    Delete $INSTDIR\*.pyo
-    Delete $INSTDIR\*.dll
-    Delete $INSTDIR\*.exe
-    
-    ; clean up subdirectories
-    FindFirst $0 $1 $INSTDIR\*
-    cleanup_loop:
-        StrCmp $1 "" cleanup_done
-        StrCmp $1 "." cleanup_next
-        StrCmp $1 ".." cleanup_next
-        StrCmp $1 "conf" cleanup_next
-        StrCmp $1 "datos" cleanup_next
-        StrCmp $1 "plantillas" cleanup_next
-        IfFileExists $INSTDIR\$1\*.* 0 +2
-            RMDir /r $INSTDIR\$1
-    cleanup_next:
-        FindNext $0 $1
-        Goto cleanup_loop
-    cleanup_done:
-    FindClose $0
-    
-
-notistalled:
-
     SectionIn RO
     SetOutPath $INSTDIR
     File /r dist\*.*
@@ -134,7 +101,7 @@ notistalled:
     IfFileExists $INSTDIR\\factura.exe 0 +3
         CreateDirectory "$SMPROGRAMS\%(name)s"
         CreateShortCut "$SMPROGRAMS\%(name)s\PyFactura.lnk" "$INSTDIR\factura.exe" "" "$INSTDIR\factura.exe" 0
-  
+
 SectionEnd
 
 Section "Uninstall"
@@ -170,44 +137,45 @@ Function .onInit
     Pop $LANGUAGE
     StrCmp $LANGUAGE "cancel" 0 +2
         Abort
-        
+
 nolangdialog:
-        
+
 FunctionEnd
 
 """
 
 register_com_server_dll = """\
-    RegDLL "$INSTDIR\%s"
+    RegDLL r"$INSTDIR\%s"
 """
 register_com_server_exe = """\
-    ExecWait '%s /register' 
+    ExecWait '%s /register'
 """
 register_com_server_tlb = """\
-    ExecWait '%s --register' 
+    ExecWait '%s --register'
 """
 unregister_com_server_dll = """\
-    UnRegDLL "$INSTDIR\%s"
+    UnRegDLL r"$INSTDIR\%s"
 """
 unregister_com_server_exe = """\
-    ExecWait '%s /unregister' 
+    ExecWait '%s /unregister'
 """
 unregister_com_server_tlb = """\
-    ExecWait '%s --unregister' 
+    ExecWait '%s --unregister'
 """
 
 install_vcredist = r"""
     ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{FF66E9F6-83E7-3A3E-AF14-8DE9A809A6A4}" "DisplayName"
     StrCmp $0 "Microsoft Visual C++ 2008 Redistributable - x86 9.0.21022"  vcredist_ok vcredist_install
- 
+
     vcredist_install:
-    File "vcredist_x86.exe" 	
+    File "vcredist_x86.exe"
     DetailPrint "Installing Microsoft Visual C++ 2008 Redistributable"
     ExecWait '"$INSTDIR\vcredist_x86.exe" /q' $0
     Delete $INSTDIR\vcredist_x86.exe
     vcredist_ok:
-    
+
 """
+
 
 class build_installer(py2exe):
     # This class first builds the exe file(s), then creates a Windows installer.
@@ -235,16 +203,16 @@ class build_installer(py2exe):
         print("*** compiling the nsis script***")
         script.compile()
         # Note: By default the final setup.exe will be in an Output subdirectory.
- 
+
 
 class NSISScript:
     def __init__(self,
                  metadata,
                  lib_dir,
                  dist_dir,
-                 windows_exe_files = [],
-                 lib_files = [],
-                 comserver_files = []):
+                 windows_exe_files=[],
+                 lib_files=[],
+                 comserver_files=[]):
         self.lib_dir = lib_dir
         self.dist_dir = dist_dir
         if not self.dist_dir[-1] in "\\/":
@@ -261,26 +229,26 @@ class NSISScript:
         self.comserver_files_tlb = []
         if not self.comserver_files_exe and self.windows_exe_files:
             for file in self.windows_exe_files:
-                if file in ("wsaa.exe", "wsfev1.exe"): 
+                if file in ("wsaa.exe", "wsfev1.exe"):
                     self.comserver_files_tlb.append(file)
 
     def chop(self, pathname):
         global install_vcredist
-        #print pathname, self.dist_dir
+        # print pathname, self.dist_dir
         #assert pathname.startswith(self.dist_dir)
         if 'Microsoft.VC90.CRT.manifest' in pathname:
             # clean redistributable instructions (DLL files already included)
             install_vcredist = ""
         return pathname[len(self.dist_dir):]
-    
+
     def create(self, pathname="base.nsi"):
         self.pathname = pathname
         ofi = self.file = open(pathname, "w")
         ver = self.version
         if "-" in ver:
-            ver = ver[:ver.index("-")]  
+            ver = ver[:ver.index("-")]
         rev = self.version.endswith("-full") and ".1" or ".0"
-        ver= [c in '0123456789.' and c or ".%s" % (ord(c)-96) for c in ver]+[rev]
+        ver = [c in '0123456789.' and c or ".%s" % (ord(c) - 96) for c in ver] + [rev]
         ofi.write(nsi_base_script % {
             'name': self.name,
             'description': "%s version %s" % (self.description, self.version),
@@ -289,7 +257,7 @@ class NSISScript:
             'copyright': self.copyright,
             'install_dir': self.name,
             'reg_key': self.name,
-            'out_file': "%s-%s.exe" % (self.name, self.version if len(self.version)<128 else (self.version[:14] + self.version[-5:])),
+            'out_file': "%s-%s.exe" % (self.name, self.version if len(self.version) < 128 else (self.version[:14] + self.version[-5:])),
             'install_vcredist': install_vcredist if sys.version_info > (2, 7) else "",
             'register_com_servers_tlb': ''.join([register_com_server_tlb % comserver for comserver in self.comserver_files_tlb]),
             'register_com_servers_exe': ''.join([register_com_server_exe % comserver for comserver in self.comserver_files_exe]),
@@ -301,15 +269,21 @@ class NSISScript:
 
     def compile(self, pathname="base.nsi"):
         os.startfile(pathname, 'compile')
-        
-        
+
+
 class Target():
     def __init__(self, module, **kw):
         self.__dict__.update(kw)
         # for the version info resources (Properties -- Version)
         # convertir 1.21a en 1.21.1
-        self.version = module.__version__[:-1]+"."+str(ord(module.__version__[-1])-96)
+        try:
+            self.version = module.__version__[:-1] + "." + str(ord(module.__version__[-1]) - 96)
+        except AttributeError:
+            self.version = "0.0.1"
         self.description = module.__doc__
         self.company_name = "Sistemas Agiles"
-        self.copyright = module.__copyright__
+        try:
+            self.copyright = module.__copyright__
+        except AttributeError:
+            self.copyright = ""
         self.name = "Interfaz PyAfipWs - %s" % os.path.basename(module.__file__).replace(".pyc", ".py")
