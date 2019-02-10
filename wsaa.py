@@ -129,19 +129,35 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
                     openssl = r"c:\OpenSSL-Win32\bin\openssl.exe"
                 else:
                     openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
-            cert_f = NamedTemporaryFile()
-            cert_f.write(cert.encode('utf-8'))
-            cert_f.seek(0)
-            key_f = NamedTemporaryFile()
-            key_f.write(privatekey.encode('utf-8'))
-            key_f.seek(0)
-            out = Popen([openssl, "smime", "-sign",
-                    "-signer", cert_f.name, "-inkey", key_f.name,
-                    "-outform","DER", "-nodetach"],
-                stdin=PIPE, stdout=PIPE,
-                stderr=PIPE).communicate(tra)[0]
-            cert_f.close()
-            key_f.close()
+            # NOTE: workaround if certificate is not already stored in a file
+            # SECURITY WARNING: the private key will be exposed a bit in /tmp
+            #                   (in theory only for the current user)
+            if cert.startswith("-----BEGIN CERTIFICATE-----"):
+                cert_f = NamedTemporaryFile()
+                cert_f.write(cert.encode('utf-8'))
+                cert_f.flush()
+                cert = cert_f.name
+            else:
+                cert_f = None
+            if privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
+                key_f = NamedTemporaryFile()
+                key_f.write(privatekey.encode('utf-8'))
+                key_f.flush()
+                privatekey = key_f.name
+            else:
+                key_f = None
+            try:
+                out = Popen([openssl, "smime", "-sign",
+                        "-signer", cert, "-inkey", privatekey,
+                        "-outform","DER", "-nodetach"],
+                    stdin=PIPE, stdout=PIPE,
+                    stderr=PIPE).communicate(tra)[0]
+            finally:
+                # close temp files to delete them (just in case):
+                if cert_f:
+                    cert_f.close()
+                if key_f:
+                    key_f.close()
             return b64encode(out).decode("utf8")
         except OSError as e:
             if e.errno == 2:
