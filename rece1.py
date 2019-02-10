@@ -760,7 +760,7 @@ if __name__ == "__main__":
         escribir_facturas([{'err_msg': e_str,
                             }], open(salida, "w"))
         ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
-        open("traceback.txt", "wb").write('\n'.join(ex))
+        open("traceback.txt", "w").write('\n'.join(ex))
 
         if DEBUG:
             raise
