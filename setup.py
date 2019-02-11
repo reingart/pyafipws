@@ -579,9 +579,10 @@ else:
     desc = ("Interfases, tools and apps for Argentina's gov't. webservices "
             "(soap, com/dll, pdf, dbf, xml, etc.)")
     kwargs['package_dir'] = {'pyafipws': '.'}
-    kwargs['packages'] = ['pyafipws']
+    kwargs['packages'] = ['pyafipws', ]
     opts = {}
-    data_files = []
+    data_files = [("pyafipws/plantillas", glob.glob("plantillas/*"))]
+    data_files += [("conf", glob.glob("conf/*"))]
 
 
 long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"
@@ -612,16 +613,17 @@ setup(name="PyAfipWs",
       options=opts,
       data_files=data_files,
       classifiers=[
+          "Development Status :: 4 - Beta",
           "Development Status :: 5 - Production/Stable",
           "Intended Audience :: Developers",
           "Intended Audience :: End Users/Desktop",
           "Intended Audience :: Financial and Insurance Industry",
           "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
           "Programming Language :: Python",
-          "Programming Language :: Python :: 2.5",
-          "Programming Language :: Python :: 2.6",
-          "Programming Language :: Python :: 2.7",
-          #"Programming Language :: Python :: 3.2",
+          "Programming Language :: Python :: 3.4",
+          "Programming Language :: Python :: 3.5",
+          "Programming Language :: Python :: 3.6",
+          "Programming Language :: Python :: 3.7",
           "Operating System :: OS Independent",
           "Operating System :: Microsoft :: Windows",
           "Natural Language :: Spanish",
