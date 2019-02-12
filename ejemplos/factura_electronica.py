@@ -25,15 +25,16 @@ import time
 import sys
 from decimal import Decimal
 import datetime
+import warnings
 
 
+# Opciones de configuración (testing/homologación, cambiar para producción):
 URL_WSAA = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
 URL_WSFEv1 = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 CUIT = 20267565393
 CERT = "../reingart.crt"
 PRIVATEKEY = "../reingart.key"
 CACHE = "../cache"
-
 CONF_PDF = dict(
     LOGO="../plantillas/logo.png",
     EMPRESA="Empresa de Prueba",
@@ -43,11 +44,13 @@ CONF_PDF = dict(
     IIBB="exento",
     IVA="IVA Responsable Inscripto",
     INICIO="Inicio de Actividad: 01/04/2006",
-    BORRADOR="HOMOLOGACION",
     )
 
 
-def main():
+def facturar(registros):
+    """Rutina para emitir facturas electrónicas en PDF c/CAE AFIP Argentina"""
+
+    # inicialización AFIP:
     wsaa = WSAA()
     wsfev1 = WSFEv1()
     # obtener ticket de acceso (token y sign):
@@ -57,16 +60,43 @@ def main():
     wsfev1.SetTicketAcceso(ta)
     wsfev1.Conectar(CACHE, URL_WSFEv1)
 
-    # TODO: leer comprobantes de planilla CSV
-    for registros in [1]:
-        cbte = Comprobante(tipo_cbte=6, punto_vta=4000, tipo_doc=99, nro_doc=0,
-                           nombre_cliente="Juan Perez",
-                           domicilio_cliente="Balcarce 50",
-                        )
-        cbte.agregar_item(ds="Cuota Social", qty=1, precio=100, tasa_iva=21.)
+    # inicialización PDF
+    fepdf = FEPDF()
+    fepdf.CargarFormato("factura.csv")
+    fepdf.FmtCantidad = "0.2"
+    fepdf.FmtPrecio = "0.2"
+    fepdf.CUIT = CUIT
+    for k, v in CONF_PDF.items():
+        fepdf.AgregarDato(k, v)
+
+    if "homo" in URL_WSAA:
+        fepdf.AgregarCampo("DEMO", 'T', 120, 260, 0, 0, text="DEMOSTRACION",
+                          size=70, rotate=45, foreground=0x808080, priority=-1)
+        fepdf.AgregarDato("motivos_obs", "Ejemplo Sin validez fiscal")
+
+    # recorrer los registros a facturar, solicitar CAE y generar el PDF:
+    for reg in registros:
+        hoy = datetime.date.today().strftime("%Y%m%d")
+        cbte = Comprobante(tipo_cbte=6, punto_vta=4000, fecha_cbte=hoy,
+                           cbte_nro=reg.get("nro"),
+                           tipo_doc=96, nro_doc=reg["dni"],
+                           nombre_cliente=reg["nombre"],        # "Juan Perez"
+                           domicilio_cliente=reg["domicilio"],  # "Balcarce 50"
+                           fecha_serv_desde=reg.get("periodo_desde"),
+                           fecha_serv_hasta=reg.get("periodo_hasta"),
+                           fecha_venc_pago=reg.get("venc_pago", hoy),
+                          )
+        cbte.agregar_item(ds=reg["descripcion"],
+                          qty=reg.get("cantidad", 1),
+                          precio=reg.get("precio", 0),
+                          tasa_iva=reg.get("tasa_iva", 21.),
+                         )
         ok = cbte.autorizar(wsfev1)
-        print("Factura autorizada", cbte.encabezado["cbte_nro"], cbte.encabezado["cae"])
-        ok = cbte.generar_pdf()
+        nro = cbte.encabezado["cbte_nro"]
+        print("Factura autorizada", nro, cbte.encabezado["cae"])
+        if "homo" in URL_WSFEv1:
+            cbte.encabezado["motivos_obs"] = "Ejemplo Sin validez fiscal"
+        ok = cbte.generar_pdf(fepdf, "/tmp/factura_{}.pdf".format(nro))
         print("PDF generado", ok)
 
 
@@ -75,17 +105,14 @@ class Comprobante:
     def __init__(self, **kwargs):
         self.encabezado = dict(
                 tipo_doc=99, nro_doc=0,
-                tipo_cbte=6, cbte_nro=None, punto_vta=4000,
-                fecha_cbte=datetime.date.today().strftime("%Y%m%d"),
+                tipo_cbte=6, cbte_nro=None, punto_vta=4000, fecha_cbte=None,
                 imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
                 imp_trib=0.00, imp_op_ex=0.00, imp_iva=0.00,
                 moneda_id='PES', moneda_ctz=1.000,
                 obs="Observaciones Comerciales, libre",
-                concepto=3,
-                fecha_serv_desde="20190101", fecha_serv_hasta="20190131",
-                fecha_venc_pago="20190228",
-                nombre_cliente='',
-                domicilio_cliente='',
+                concepto=1, fecha_serv_desde=None, fecha_serv_hasta=None,
+                fecha_venc_pago=None,
+                nombre_cliente='', domicilio_cliente='',
                 localidad='', provincia='',
                 pais_dst_cmp=200, id_impositivo='Consumidor Final',
                 forma_pago = '30 dias',
@@ -94,12 +121,15 @@ class Comprobante:
                 motivo_obs="", cae="", resultado='', fch_venc_cae=""
                 )
         self.encabezado.update(kwargs)
+        if self.encabezado['fecha_serv_desde'] or self.encabezado["fecha_serv_hasta"]:
+            self.encabezado["concepto"] = 3          # servicios
         self.cmp_asocs = []
         self.items = []
         self.ivas = {}
 
     def agregar_item(self, ds="Descripcion del producto P0001",
                      qty=1, precio=0, tasa_iva=21., umed=7, codigo="P0001"):
+        """Agregar producto / servicio facturado (calculando IVA)"""
         # detalle de artículos:
         item = dict(
             u_mtx=123456, cod_mtx=1234567890123, codigo=codigo, ds=ds,
@@ -145,7 +175,7 @@ class Comprobante:
 
         # datos generales del comprobante:
         if not self.encabezado["cbte_nro"]:
-            # si no me especifícan nro de comprobante, busco el próximo
+            # si no se especifíca nro de comprobante, autonumerar:
             ult = wsfev1.CompUltimoAutorizado(self.encabezado["tipo_cbte"], self.encabezado["punto_vta"])
             self.encabezado["cbte_nro"] = int(ult) + 1
 
@@ -164,6 +194,12 @@ class Comprobante:
         # llamo al websevice para obtener el CAE:
         wsfev1.CAESolicitar()
 
+        if wsfev1.ErrMsg:
+            raise RuntimeError(wsfev1.ErrMsg)
+
+        for obs in wsfev1.Observaciones:
+            warnings.warn(obs)
+
         assert wsfev1.Resultado == "A"    # Aprobado!
         assert wsfev1.CAE
         assert wsfev1.Vencimiento
@@ -174,13 +210,7 @@ class Comprobante:
         return True
 
 
-    def generar_pdf(self):
-
-        # setup PDF
-        fepdf = FEPDF()
-        fepdf.CargarFormato("factura.csv")
-        fepdf.FmtCantidad = "0.2"
-        fepdf.FmtPrecio = "0.2"
+    def generar_pdf(self, fepdf, salida="/tmp/factura.pdf"):
 
         fepdf.CrearFactura(**self.encabezado)
 
@@ -203,18 +233,21 @@ class Comprobante:
         for iva in self.ivas.values():
             fepdf.AgregarIva(**iva)
 
+        # armar el PDF:
         fepdf.CrearPlantilla(papel="A4", orientacion="portrait")
-        for k, v in CONF_PDF.items():
-            fepdf.AgregarDato(k, v)
-        fepdf.CUIT = CUIT
-
-        ##import dbg; dbg.set_trace()
         fepdf.ProcesarPlantilla(num_copias=1, lineas_max=24, qty_pos='izq')
-
-        salida = "/tmp/factura.pdf"
         fepdf.GenerarPDF(archivo=salida)
         return salida
 
 
 if __name__ == '__main__':
-    main()
+    # TODO: leer comprobantes de planilla CSV
+    # Ejemplo para facturación masiva por programa:
+    # IMPORTANTE: es recomendable indicar el nro de factura (y guardarlo antes)
+    # para evitar generar varias facturas distintas para el mismo registro, y
+    # poder recuperarlas (reproceso automático) si hay falla de comunicación
+    regs = [{"dni": i, "nombre": "Juan Perez", "domicilio": "Balcarce 50",
+             "descripcion": "Cuota Social Enero", "precio": 300.00,
+             "periodo_desde": "20190101", "periodo_hasta": "20190131",
+            } for i in range(1, 10)]
+    facturar(regs)
