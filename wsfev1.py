@@ -11,7 +11,7 @@
 # for more details.
 
 """Módulo para obtener CAE/CAEA, código de autorización electrónico webservice 
-WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.12)
+WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.13)
 Según RG 2485/08, RG 2757/2010, RG 2904/2010 y RG2926/10 (CAE anticipado), 
 RG 3067/2011 (RS - Monotributo), RG 3571/2013 (Responsables inscriptos IVA), 
 RG 3668/2014 (Factura A IVA F.8001), RG 3749/2015 (R.I. y exentos)
@@ -43,7 +43,7 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 
 
 class WSFEv1(BaseWS):
-    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.12"
+    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.13"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
                         'AgregarComprador',
@@ -1112,7 +1112,7 @@ def main():
                 wsfev1.AgregarComprador(80, "30999032083", 0.01)
 
             # datos de Factura de Crédito Electrónica MiPyMEs (FCE):
-            if '--fce' in sys.argv: # 0110001900000000000000
+            if '--fce' in sys.argv:
                 wsfev1.AgregarOpcional(2101, "2850590940090418135201")  # CBU
                 wsfev1.AgregarOpcional(2102, "pyafipws")               # alias
                 if tipo_cbte in (203, 208, 213):
