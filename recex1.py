@@ -462,6 +462,17 @@ if __name__ == "__main__":
             print ws.ErrMsg
             sys.exit(0)
 
+        if '/monctz' in sys.argv:
+            i = sys.argv.index("/monctz")
+            if i+1<len(sys.argv):
+               fecha = sys.argv[i+1]
+            else:
+               fecha = raw_input("Fecha (AAAAMMDD): ") or None
+            ctz = ws.GetParamMonConCotizacion(fecha)
+            print "\n".join(ctz)
+            print ws.ErrMsg
+            sys.exit(0)
+
         f_entrada = f_salida = None
         try:
             f_entrada = open(entrada,"r")
