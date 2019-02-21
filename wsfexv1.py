@@ -19,7 +19,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08f"
+__version__ = "1.09a"
 
 import datetime
 import decimal
@@ -39,6 +39,7 @@ class WSFEXv1(BaseWS):
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT', 'GetParamIdiomas',
                         'GetParamIncoterms', 'GetParamDstCUIT',
+                        'GetParamMonConCotizacion',
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
@@ -503,6 +504,36 @@ class WSFEXv1(BaseWS):
         return ctz
     
     @inicializar_y_capturar_excepciones
+    def GetParamMonConCotizacion(self, fecha=None, sep="|"):
+        "Recupera el listado de monedas que tengan cotizacion de ADUANA"
+        if not fecha:
+            fecha = datetime.date.today().strftime("%Y%m%d")
+
+        ret = self.client.FEXGetPARAM_MON_CON_COTIZACION(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            Fecha_CTZ=fecha)
+        result = ret['FEXGetPARAM_MON_CON_COTIZACIONResult']
+        self.__analizar_errores(result)
+     
+        mons = [] # monedas
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_Mon_CON_Cotizacion']
+            try:
+                mon = {'id': u.get('Mon_Id'), 'ctz': u.get('Mon_ctz'), 
+                       'fecha': u.get('Fecha_ctz')}
+            except Exception, e:
+                print e
+                if u is None:
+                    # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
+                    mon = {'id':'', 'ctz':'','fecha':''}
+            mons.append(mon)
+        if sep:
+            return [("\t%(id)s\t%(ctz)s\t%(fecha)s\t"
+                      % it).replace("\t", sep) for it in mons]
+        else:
+            return mons
+
+    @inicializar_y_capturar_excepciones
     def GetParamPtosVenta(self, sep="|"):
         "Recupera el listado de los puntos de venta para exportacion y estado"
         ret = self.client.FEXGetPARAM_PtoVenta(
@@ -757,6 +788,9 @@ if __name__ == "__main__":
             
         if "--ctz" in sys.argv:
             print wsfexv1.GetParamCtz('DOL')
+            
+        if "--monctz" in sys.argv:
+            print wsfexv1.GetParamMonConCotizacion()
             
         if "--ptosventa" in sys.argv:
             print wsfexv1.GetParamPtosVenta()
