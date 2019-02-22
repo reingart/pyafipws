@@ -211,6 +211,10 @@ def escribir_factura(dic, archivo, agrega=False):
         for it in dic['permisos']:
             it['tipo_reg'] = TIPOS_REG[2]
             archivo.write(escribir(it, PERMISO))
+    if 'cbtes_asoc' in dic:    
+        for it in dic['cbtes_asoc']:
+            it['tipo_reg'] = TIPOS_REG[3]
+            archivo.write(escribir(it, CMP_ASOC))
 
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, [dic]), ('Permisos', PERMISO, dic.get('permisos', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])), ('Detalles', DETALLE, dic.get('detalles', []))]
@@ -339,7 +343,7 @@ if __name__ == "__main__":
             # generar el archivo de prueba para la próxima factura
             f_entrada = open(entrada,"w")
 
-            tipo_cbte = 19 # FC Expo (ver tabla de parámetros)
+            tipo_cbte = 21 # FC Expo (ver tabla de parámetros)
             punto_vta = 7
             # Obtengo el último número de comprobante y le agrego 1
             cbte_nro = int(ws.GetLastCMP(tipo_cbte, punto_vta)) + 1
