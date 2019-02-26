@@ -225,7 +225,7 @@ class WSRemCarne(BaseWS):
             self.CodRemito = ret.get("codRemito")
             self.TipoComprobante = ret.get("tipoComprobante")
             self.PuntoEmision = ret.get("puntoEmision")
-            datos_aut = ret.get('datosAutorizacion')
+            datos_aut = ret.get('datosEmision')
             if datos_aut:
                 self.NroRemito = datos_aut.get('nroRemito')
                 self.CodAutorizacion = datos_aut.get('codAutorizacion')
