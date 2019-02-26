@@ -17,7 +17,7 @@ del web service WSRemCarne versión 3.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v3.0
@@ -235,9 +235,8 @@ class WSRemCarne(BaseWS):
             self.Resultado = ret.get('resultado')
             self.QR = ret.get('qr') or ""
             if archivo:
-                qr = base64.b64decode(self.QR)
                 f = open(archivo, "wb")
-                f.write(qr)
+                f.write(self.QR)
                 f.close()
 
     @inicializar_y_capturar_excepciones
@@ -596,9 +595,9 @@ if __name__ == '__main__':
 
         if '--generar' in sys.argv:
             if '--testing' in sys.argv:
-                wsremcarne.LoadTestXML("tests/xml/wsremcarne_generar_response_ok_beta.xml")  # cargo respuesta
+                wsremcarne.LoadTestXML("tests/xml/wsremcarne.xml")  # cargo respuesta
 
-            ok = wsremcarne.GenerarRemito(id_req=rec['id_req'])
+            ok = wsremcarne.GenerarRemito(id_req=rec['id_req'], archivo="qr.jpg")
 
         if '--emitir' in sys.argv:
             ok = wsremcarne.EmitirRemito()
