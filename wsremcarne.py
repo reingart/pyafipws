@@ -70,7 +70,7 @@ from pysimplesoap.client import SoapFault
 import utils
 
 # importo funciones compartidas:
-from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 
 
 # constantes de configuración (producción/homologación):
@@ -632,7 +632,7 @@ if __name__ == '__main__':
 
         if '--grabar' in sys.argv:
             with open(SALIDA, "w") as archivo:
-                json.dump(rec, archivo, sort_keys=True, indent=4)
+                json.dump(rec, archivo, sort_keys=True, indent=4, default=json_serializer)
 
         # Recuperar parámetros:
 
