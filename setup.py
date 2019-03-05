@@ -114,7 +114,7 @@ if 'py2exe' in sys.argv:
             "C:\python25\MSVCR71.dll",
             "C:\python25\lib\site-packages\wx-2.8-msw-unicode\wx\gdiplus.dll",
             ])
-	
+
     # includes for py2exe
     includes=['email.generator', 'email.iterators', 'email.message', 'email.utils',  'email.mime.text', 'email.mime.application', 'email.mime.multipart']
     if 'pyi25' in globals() or 'pyfepdf' in globals():
