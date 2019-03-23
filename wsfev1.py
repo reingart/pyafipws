@@ -24,7 +24,7 @@ M�s info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23a"
+__version__ = "1.22b"
 
 import datetime
 import decimal
@@ -460,7 +460,9 @@ class WSFEv1(BaseWS):
                             'tipo': cbte_asoc['CbteAsoc']['Tipo'],
                             'pto_vta': cbte_asoc['CbteAsoc']['PtoVta'],
                             'nro': cbte_asoc['CbteAsoc']['Nro'],
-                            'cuit': cbte_asoc['CbteAsoc'].get('Cuit')}
+                            'cuit': cbte_asoc['CbteAsoc'].get('Cuit'),
+                            'fecha': cbte_asoc['CbteAsoc'].get('CbteFch'),
+                            }
                         for cbte_asoc in resultget.get('CbtesAsoc', [])],
                     'tributos': [
                         {
@@ -581,6 +583,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'],
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
+                            'CbteFch': cbte_asoc.get('fecha'),
                         }}
                         for cbte_asoc in f['cbtes_asoc']] or None,
                     'Tributos': [
@@ -772,6 +775,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'],
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
+                            'CbteFch': cbte_asoc.get('fecha'),
                         }}
                         for cbte_asoc in f['cbtes_asoc']]
                     if f['cbtes_asoc'] else None,
@@ -1012,9 +1016,17 @@ def main():
     wsfev1.Cuit = "20267565393"
 
     if "--prueba" in sys.argv:
-        print(wsfev1.client.help("FECAESolicitar").encode("latin1"))
+        print wsfev1.client.help("FECAESolicitar").encode("latin1")
 
-        tipo_cbte = 6 if '--usados' not in sys.argv else 49
+        if '--usados' in sys.argv:
+            tipo_cbte = 49
+            concepto = 1
+        elif '--fce' in sys.argv:
+            tipo_cbte = 203
+            concepto = 1
+        else:
+            tipo_cbte = 3
+            concepto = 3 if ('--rg4109' not in sys.argv) else 1
         punto_vta = 4001
         cbte_nro = int(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
