@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09b"
+__version__ = "1.09c"
 
 DEBUG = False
 HOMO = False
@@ -120,6 +120,9 @@ class FEPDF:
         (1, 6, 11, 19, 51): u'Factura', 
         (2, 7, 12, 20, 52): u'Nota de Débito', 
         (3, 8, 13, 21, 53): u'Nota de Crédito',
+        (201, 206, 211): u'Factura de Crédito MiPyMEs', 
+        (202, 207, 212): u'Nota de Débito MiPyMEs', 
+        (203, 208, 213): u'Nota de Crédito MiPyMEs',
         (4, 9, 15, 54): u'Recibo', 
         (10, 5): u'Nota de Venta al contado', 
         (60, 61): u'Cuenta de Venta y Líquido producto',
@@ -127,9 +130,9 @@ class FEPDF:
         (91, ): u'Remito',
         (39, 40): u'???? (R.G. N° 3419)'}
 
-    letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63): 'A',
-                   (6, 7, 8, 9, 10, 40, 61, 64): 'B',
-                   (11, 12, 13, 15): 'C',
+    letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63, 201, 202, 203): 'A',
+                   (6, 7, 8, 9, 10, 40, 61, 64, 206, 207, 208): 'B',
+                   (11, 12, 13, 15, 211, 212, 213): 'C',
                    (51, 52, 53, 54): 'M',
                    (19, 20, 21): 'E',
                    (91, ): 'R',
@@ -1022,7 +1025,7 @@ if __name__ == '__main__':
             HOMO = True
             
             # datos generales del encabezado:
-            tipo_cbte = 19 if '--expo' in sys.argv else 1
+            tipo_cbte = 19 if '--expo' in sys.argv else 201
             punto_vta = 4000
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
