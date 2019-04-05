@@ -38,7 +38,6 @@ from Cookie import SimpleCookie
 from ConfigParser import SafeConfigParser
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-from pkg_resources import parse_version
 
 try:
     import json
@@ -434,11 +433,9 @@ class WebClient:
     def __init__(self, location, enctype="multipart/form-data", trace=False,
                        cacert=None, timeout=30):
         kwargs = {}
-        if parse_version(httplib2.__version__) >= parse_version('0.3.0'):
-                kwargs['timeout'] = timeout
-        if parse_version(httplib2.__version__) >= parse_version('0.7.0'):
-                kwargs['disable_ssl_certificate_validation'] = cacert is None
-                kwargs['ca_certs'] = cacert
+        kwargs['timeout'] = timeout
+        kwargs['disable_ssl_certificate_validation'] = cacert is None
+        kwargs['ca_certs'] = cacert
         self.http = httplib2.Http(**kwargs)
         self.trace = trace
         self.location = location
