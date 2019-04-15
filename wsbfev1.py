@@ -34,7 +34,7 @@ WSDL="https://wswhomo.afip.gov.ar/wsbfev1/service.asmx?WSDL"
 class WSBFEv1(BaseWS):
     "Interfaz para el WebService de Bono Fiscal Electrónico V1 (FE Bs. Capital)"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'AgregarCmpAsoc',
-                        'Authorize', 'GetCMP',
+                        'Authorize', 'GetCMP', 'AgregarOpcional',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamUMed', 
                         'GetParamTipoIVA', 'GetParamNCM', 'GetParamZonas',
                         'GetParamTipoDoc',
@@ -106,6 +106,7 @@ class WSBFEv1(BaseWS):
                 'imp_iibb': imp_iibb, 'imp_internos': imp_internos, 
                 'imp_moneda_id': imp_moneda_id, 'imp_moneda_ctz': imp_moneda_ctz,
                 'cbtes_asoc': [],
+                'opcionales': [],
                 'iva': [],
                 'detalles': [],
             }
@@ -136,6 +137,12 @@ class WSBFEv1(BaseWS):
         if fecha is not None:
             cmp_asoc['fecha'] = fecha
         self.factura['cbtes_asoc'].append(cmp_asoc)
+        return True
+
+    def AgregarOpcional(self, opcional_id=0, valor="", **kwarg):
+        "Agrego un dato opcional a una factura (interna)"
+        op = { 'opcional_id': opcional_id, 'valor': valor }
+        self.factura['opcionales'].append(op)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -182,6 +189,11 @@ class WSBFEv1(BaseWS):
                         'Fecha_cbte': cbte_asoc.get('fecha'),
                     }}
                     for cbte_asoc in f['cbtes_asoc']] or None,
+                'Opcionales': [
+                        {'Opcional': {
+                            'Id': opcional['opcional_id'],
+                            'Valor': opcional['valor'],
+                            }} for opcional in f['opcionales']] or None,
             })
 
         result = ret['BFEAuthorizeResult']
@@ -560,6 +572,13 @@ if __name__ == "__main__":
                     # obligatorio en Factura de Crédito Electrónica MiPyMEs (FCE):
                     fecha_cbte = fecha if tipo_cbte in (203, 208, 213) else None
                     wsbfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha_cbte)
+
+                # datos de Factura de Crédito Electrónica MiPyMEs (FCE):
+                if '--fce' in sys.argv:
+                    wsbfev1.AgregarOpcional(2101, "2850590940090418135201")  # CBU
+                    wsbfev1.AgregarOpcional(2102, "pyafipws")               # alias
+                    if tipo_cbte in (203, 208, 213):
+                        wsbfev1.AgregarOpcional(22, "S")  # Anulación
 
                 ##id = "99000000000100" # número propio de transacción
                 # obtengo el último ID y le adiciono 1 
