@@ -18,7 +18,7 @@ a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013-2016 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.06g"
+__version__ = "1.07a"
 
 import datetime
 import decimal
@@ -33,7 +33,8 @@ WSDL="https://wswhomo.afip.gov.ar/wsbfev1/service.asmx?WSDL"
 
 class WSBFEv1(BaseWS):
     "Interfaz para el WebService de Bono Fiscal Electrónico V1 (FE Bs. Capital)"
-    _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
+    _public_methods_ = ['CrearFactura', 'AgregarItem', 'AgregarCmpAsoc',
+                        'Authorize', 'GetCMP',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamUMed', 
                         'GetParamTipoIVA', 'GetParamNCM', 'GetParamZonas',
                         'GetParamTipoDoc',
@@ -127,6 +128,16 @@ class WSBFEv1(BaseWS):
                 })
         return True
         
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, fecha=None, **kwarg):
+        "Agrego un comprobante asociado a una factura (interna)"
+        cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
+        if cuit is not None:
+            cmp_asoc['cuit'] = cuit
+        if fecha is not None:
+            cmp_asoc['fecha'] = fecha
+        self.factura['cbtes_asoc'].append(cmp_asoc)
+        return True
+
     @inicializar_y_capturar_excepciones
     def Authorize(self, id):
         "Autoriza la factura cargada en memoria"
@@ -161,7 +172,16 @@ class WSBFEv1(BaseWS):
                         'Imp_bonif': d['bonif'],
                         'Imp_total': d['imp_total'],
                         'Iva_id': d['iva_id'],
-                     }} for d in f['detalles']],                    
+                     }} for d in f['detalles']],
+                'CbtesAsoc': f['cbtes_asoc'] and [
+                    {'CbteAsoc': {
+                        'Tipo_cbte': cbte_asoc['tipo'],
+                        'Punto_vta': cbte_asoc['pto_vta'], 
+                        'Cbte_nro': cbte_asoc['nro'],
+                        'Cuit': cbte_asoc.get('cuit'),
+                        'Fecha_cbte': cbte_asoc.get('fecha'),
+                    }}
+                    for cbte_asoc in f['cbtes_asoc']] or None,
             })
 
         result = ret['BFEAuthorizeResult']
@@ -530,6 +550,17 @@ if __name__ == "__main__":
                 imp_total = "229.90"
                 ok = wsbfev1.AgregarItem(ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total)
                     
+
+                # comprobantes asociados (notas de crédito / débito)
+                if True:
+                    tipo = 91
+                    pto_vta = 4001
+                    nro = 1
+                    cuit = "20267565393"
+                    # obligatorio en Factura de Crédito Electrónica MiPyMEs (FCE):
+                    fecha_cbte = fecha if tipo_cbte in (203, 208, 213) else None
+                    wsbfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha_cbte)
+
                 ##id = "99000000000100" # número propio de transacción
                 # obtengo el último ID y le adiciono 1 
                 # (advertencia: evitar overflow y almacenar!)
