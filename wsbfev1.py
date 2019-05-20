@@ -92,7 +92,7 @@ class WSBFEv1(BaseWS):
             imp_total=0.0, imp_neto=0.0, impto_liq=0.0,
             imp_tot_conc=0.0, impto_liq_rni=0.00, imp_op_ex=0.00,
             imp_perc=0.00, imp_iibb=0.00, imp_perc_mun=0.00, imp_internos=0.00,
-            imp_moneda_id=0, imp_moneda_ctz=1.0, **kwargs):
+            imp_moneda_id=0, imp_moneda_ctz=1.0, fecha_venc_pago=None, **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura para bonos fiscales electrónicos
 
@@ -105,6 +105,7 @@ class WSBFEv1(BaseWS):
                 'imp_perc': imp_perc, 'imp_perc_mun': imp_perc_mun, 
                 'imp_iibb': imp_iibb, 'imp_internos': imp_internos, 
                 'imp_moneda_id': imp_moneda_id, 'imp_moneda_ctz': imp_moneda_ctz,
+                'fecha_venc_pago': fecha_venc_pago,
                 'cbtes_asoc': [],
                 'opcionales': [],
                 'iva': [],
@@ -168,6 +169,7 @@ class WSBFEv1(BaseWS):
                 'Imp_perc': f['imp_perc'], 'Imp_perc_mun': f['imp_perc_mun'],                
                 'Imp_iibb': f['imp_iibb'],
                 'Imp_internos': f['imp_internos'],
+                'Fecha_vto_pago': f['fecha_venc_pago'],
                 'Items': [
                     {'Item': {
                         'Pro_codigo_ncm': d['ncm'],
@@ -514,7 +516,7 @@ if __name__ == "__main__":
         if "--prueba" in sys.argv:
             try:
                 # Establezco los valores de la factura a autorizar:
-                tipo_cbte = '--nc' in sys.argv and 3 or 1 # FC/NC Expo (ver tabla de parámetros)
+                tipo_cbte = '--nc' in sys.argv and 3 or 201 # FC/NC Expo (ver tabla de parámetros)
                 punto_vta = 5
                 tipo_doc = 80 
                 nro_doc = 23111111113
@@ -529,6 +531,7 @@ if __name__ == "__main__":
                 impto_liq_rni = imp_tot_conc = imp_op_ex = "0.00"
                 imp_perc = imp_iibb = imp_perc_mun = imp_internos = "0.00"
                 imp_total = "471.90"
+                fecha_venc_pago = fecha_cbte if "--fce" in sys.argv else None
                 
                 # Creo una factura (internamente, no se llama al WebService):
                 ok = wsbfev1.CrearFactura(tipo_doc, nro_doc,
@@ -536,7 +539,7 @@ if __name__ == "__main__":
                     imp_total, imp_neto, impto_liq,
                     imp_tot_conc, impto_liq_rni, imp_op_ex,
                     imp_perc, imp_iibb, imp_perc_mun, imp_internos,
-                    imp_moneda_id, imp_moneda_ctz)
+                    imp_moneda_id, imp_moneda_ctz, fecha_venc_pago)
                 
                 # Agrego un item:
                 ncm = '7308.10.00'
@@ -570,7 +573,7 @@ if __name__ == "__main__":
                     nro = 1
                     cuit = "20267565393"
                     # obligatorio en Factura de Crédito Electrónica MiPyMEs (FCE):
-                    fecha_cbte = fecha if tipo_cbte in (203, 208, 213) else None
+                    fecha_cbte = fecha_cbte if "--fce" in sys.argv else None
                     wsbfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha_cbte)
 
                 # datos de Factura de Crédito Electrónica MiPyMEs (FCE):
