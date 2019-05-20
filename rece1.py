@@ -273,6 +273,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 'motivos_obs': ws.Obs,
                 'err_code': str(ws.ErrCode),
                 'err_msg': ws.ErrMsg,
+                'cbt_desde': ws.CbtDesde,
+                'cbt_hasta': ws.CbtHasta,
+                'fecha_cbte': ws.FechaCbte,
                 'reproceso': ws.Reproceso,
                 'emision_tipo': ws.EmisionTipo,
             })
