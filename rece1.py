@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.37b"
+__version__ = "1.37c"
 
 import datetime
 import os
@@ -111,6 +111,7 @@ CMP_ASOC = [
     ('tipo_reg', 1, N), # 3: comprobante asociado
     ('tipo', 3, N), ('pto_vta', 4, N),
     ('nro', 8, N), 
+    ('fecha', 8, N),
     ]
 
 OPCIONAL = [
@@ -212,7 +213,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         raise RuntimeError("No se pudieron leer los registros de la entrada")
 
     # ajusto datos para pruebas en depuración (nro de cbte. / fecha)
-    if '--testing' in sys.argv and DEBUG:
+    if '--testing' in sys.argv:
         encabezado['punto_vta'] = 9998
         cbte_nro = int(ws.CompUltimoAutorizado(encabezado['tipo_cbte'], 
                                                encabezado['punto_vta'])) + 1
@@ -269,6 +270,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 'motivos_obs': ws.Obs,
                 'err_code': str(ws.ErrCode),
                 'err_msg': ws.ErrMsg,
+                'cbt_desde': ws.CbtDesde,
+                'cbt_hasta': ws.CbtHasta,
+                'fecha_cbte': ws.FechaCbte,
                 'reproceso': ws.Reproceso,
                 'emision_tipo': ws.EmisionTipo,
                 })
