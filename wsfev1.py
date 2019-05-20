@@ -394,7 +394,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'], 
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
-                            'CbteFch': cbte_asoc.get('fecha'),
+                            'CbteFch': cbte_asoc.get('fecha') or None,
                         }}
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
