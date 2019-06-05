@@ -45,7 +45,7 @@ class COT:
                       'Version', 'Excepcion', 'Traceback', 'InstallDir',
                       'CuitEmpresa', 'NumeroComprobante', 'CodigoIntegridad', 'NombreArchivo',
                       'TipoError', 'CodigoError', 'MensajeError',
-                      'NumeroUnico', 'Procesado',
+                      'NumeroUnico', 'Procesado', 'COT',
                       ]
 
     _reg_progid_ = "COT"
@@ -68,7 +68,7 @@ class COT:
         self.XmlResponse = ""
         self.Excepcion = self.Traceback = ""
         self.TipoError = self.CodigoError = self.MensajeError = ""
-        self.CuitEmpresa = self.NumeroComprobante = ""
+        self.CuitEmpresa = self.NumeroComprobante = self.COT = ""
         self.NombreArchivo = self.CodigoIntegridad = ""
         self.NumeroUnico = self.Procesado = ""
 
@@ -84,10 +84,10 @@ class COT:
                 self.Excepcion = "Archivo no encontrado: %s" % filename
                 return False
 
-            archivo = open(filename, "rb")
+            archivo = open(filename, "r")
             if not testing:
-                response = self.client(user=self.Usuario, password=self.Password,
-                                       file=archivo)
+                response = self.client(
+                    user=self.Usuario, password=self.Password, file=archivo)
             else:
                 response = open(testing).read()
             self.XmlResponse = response
@@ -99,6 +99,8 @@ class COT:
             if 'cuitEmpresa' in self.xml:
                 self.CuitEmpresa = str(self.xml.cuitEmpresa)
                 self.NumeroComprobante = str(self.xml.numeroComprobante)
+                if 'cot' in self.xml:
+                    self.COT = str(self.xml.cot)
                 self.NombreArchivo = str(self.xml.nombreArchivo)
                 self.CodigoIntegridad = str(self.xml.codigoIntegridad)
                 if 'validacionesRemitos' in self.xml:
@@ -111,7 +113,7 @@ class COT:
                         if 'errores' in remito:
                             for error in remito.errores.error:
                                 d['Errores'].append((
-                                    str(error.codigo), 
+                                    str(error.codigo),
                                     str(error.descripcion)))
                         self.remitos.append(d)
                     # establecer valores del primer remito (sin eliminarlo)
@@ -238,6 +240,7 @@ if __name__ == "__main__":
     # datos generales:
     print("CUIT Empresa:", cot.CuitEmpresa)
     print("Numero Comprobante:", cot.NumeroComprobante)
+    print("COT:", cot.COT)
     print("Nombre Archivo:", cot.NombreArchivo)
     print("Codigo Integridad:", cot.CodigoIntegridad)
 
