@@ -50,7 +50,7 @@ class WSFEXv1(BaseWS):
                       'Resultado', 'Obs', 'Reproceso',
                       'CAE', 'Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg', 'FchVencCAE',
                       'Excepcion', 'LanzarExcepciones', 'Traceback', "InstallDir",
-                      'PuntoVenta', 'CbteNro', 'FechaCbte', 'ImpTotal']
+                      'PuntoVenta', 'CbteNro', 'FechaCbte', 'ImpTotal', 'FchCotiz']
 
     _reg_progid_ = "WSFEXv1"
     _reg_clsid_ = "{8106F039-D132-4F87-8AFE-ADE47B5503D4}"
@@ -69,6 +69,7 @@ class WSFEXv1(BaseWS):
         self.CbteNro = self.FechaCbte = self.PuntoVenta = self.ImpTotal = None
         self.InstallDir = INSTALL_DIR
         self.FchVencCAE = ""              # retrocompatibilidad
+        self.FchCotiz = None
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -496,6 +497,7 @@ class WSFEXv1(BaseWS):
         res = ret['FEXGetPARAM_CtzResult'].get('FEXResultGet')
         if res:
             ctz = str(res.get('Mon_ctz', ""))
+            self.FchCotiz = res.get("Mon_fecha")
         else:
             ctz = ''
         return ctz

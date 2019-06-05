@@ -73,7 +73,7 @@ class WSFEv1(BaseWS):
                       'Reprocesar', 'Reproceso', 'EmisionTipo', 'CAEA',
                       'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte',
                       'ImpTotal', 'ImpNeto', 'ImptoLiq',
-                      'ImpIVA', 'ImpOpEx', 'ImpTrib', ]
+                      'ImpIVA', 'ImpOpEx', 'ImpTrib', 'FchCotiz',]
 
     _reg_progid_ = "WSFEv1"
     _reg_clsid_ = "{CA0E604D-E3D7-493A-8880-F6CDD604185E}"
@@ -102,6 +102,7 @@ class WSFEv1(BaseWS):
         self.ImpTotal = self.ImpIVA = self.ImpOpEx = self.ImpNeto = self.ImptoLiq = self.ImpTrib = None
         self.EmisionTipo = self.Periodo = self.Orden = ""
         self.FechaCbte = self.FchVigDesde = self.FchVigHasta = self.FchTopeInf = self.FchProceso = ""
+        self.FchCotiz = None
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -939,6 +940,7 @@ class WSFEv1(BaseWS):
         )
         self.__analizar_errores(ret)
         res = ret['FEParamGetCotizacionResult']['ResultGet']
+        self.FchCotiz = res.get("FchCotiz")
         return str(res.get('MonCotiz', ""))
 
     @inicializar_y_capturar_excepciones
