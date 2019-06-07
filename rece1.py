@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.37c"
+__version__ = "1.37d"
 
 import datetime
 import os
@@ -112,6 +112,7 @@ CMP_ASOC = [
     ('tipo', 3, N), ('pto_vta', 4, N),
     ('nro', 8, N), 
     ('fecha', 8, N),
+    ('cuit', 11, N),
     ]
 
 OPCIONAL = [
@@ -477,7 +478,7 @@ if __name__ == "__main__":
                     
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
-            tipo_cbte = 1
+            tipo_cbte = 3
             punto_vta = 4002
             cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             if not cbte_nro: cbte_nro=0
@@ -503,7 +504,9 @@ if __name__ == "__main__":
                 tipo = 1
                 pto_vta = 2
                 nro = 1234
-                ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                fecha = "20190601"
+                cuit = "20267565393"
+                ws.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha)
             
             if '--proyectos' in sys.argv:
                 ws.AgregarOpcional(2, "1234")  # identificador del proyecto
