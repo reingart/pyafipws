@@ -25,7 +25,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22b"
+__version__ = "1.23a"
 
 import datetime
 import decimal
@@ -134,7 +134,7 @@ class WSFEv1(BaseWS):
             cbt_desde=0, cbt_hasta=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago=None, 
             fecha_serv_desde=None, fecha_serv_hasta=None, #--
-            moneda_id="PES", moneda_ctz="1.0000", caea=None, **kwargs
+            moneda_id="PES", moneda_ctz="1.0000", caea=None, fecha_hs_gen=None, **kwargs
             ):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
@@ -147,7 +147,7 @@ class WSFEv1(BaseWS):
                 'fecha_cbte': fecha_cbte,
                 'fecha_venc_pago': fecha_venc_pago,
                 'moneda_id': moneda_id, 'moneda_ctz': moneda_ctz,
-                'concepto': concepto,
+                'concepto': concepto, 'fecha_hs_gen': fecha_hs_gen,
                 'cbtes_asoc': [],
                 'tributos': [],
                 'iva': [],
@@ -162,7 +162,7 @@ class WSFEv1(BaseWS):
         return True
 
     def EstablecerCampoFactura(self, campo, valor):
-        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae'):
+        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae', 'fecha_hs_gen'):
             self.factura[campo] = valor
             return True
         else:
@@ -790,6 +790,7 @@ class WSFEv1(BaseWS):
                         for iva in f['iva']]
                         if f['iva'] else None,
                     'CAEA': f['caea'],
+                    'CbteFchHsGen': f.get('fecha_hs_gen'),
                     }
                 }]
             })
@@ -1052,6 +1053,7 @@ def main():
                 orden = 1 if datetime.datetime.today().day < 15 else 2
                 caea = wsfev1.CAEAConsultar(periodo, orden)
                 wsfev1.EstablecerCampoFactura("caea", caea)
+                wsfev1.EstablecerCampoFactura("fecha_hs_gen", "yyyymmddhhmiss")
 
             # comprobantes asociados (notas de crédito / débito)
             if tipo_cbte in (2, 3, 7, 8, 12, 13, 203, 208, 213):
