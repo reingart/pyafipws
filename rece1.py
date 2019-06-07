@@ -10,12 +10,12 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo de Intefase para archivos de texto (mercado interno versión 1)"
+"Mï¿½dulo de Intefase para archivos de texto (mercado interno versiï¿½n 1)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.37b"
+__version__ = "1.37d"
 
 import datetime
 import os
@@ -24,7 +24,7 @@ import time
 import traceback
 import warnings
 
-# revisar la instalación de pyafip.ws:
+# revisar la instalaciï¿½n de pyafip.ws:
 from . import wsfev1
 from .utils import SimpleXMLElement, SoapClient, SoapFault, date
 from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
@@ -37,18 +37,18 @@ TIMEOUT = 30
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
-rece1.py: Interfaz de texto para generar Facturas Electrónica Mercado Interno V1
+rece1.py: Interfaz de texto para generar Facturas Electrï¿½nica Mercado Interno V1
 Copyright (C) 2010 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para información adicional sobre garantía, soporte técnico comercial
-e incorporación/distribución en programas propietarios ver PyAfipWs:
+Para informaciï¿½n adicional sobre garantï¿½a, soporte tï¿½cnico comercial
+e incorporaciï¿½n/distribuciï¿½n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-# definición del formato del archivo de intercambio:
+# definiciï¿½n del formato del archivo de intercambio:
 
 ENCABEZADO = [
     ('tipo_reg', 1, N),  # 0: encabezado
@@ -111,6 +111,8 @@ CMP_ASOC = [
     ('tipo_reg', 1, N),  # 3: comprobante asociado
     ('tipo', 3, N), ('pto_vta', 4, N),
     ('nro', 8, N),
+    ('fecha', 8, N),
+    ('cuit', 11, N),
 ]
 
 OPCIONAL = [
@@ -126,7 +128,7 @@ COMPRADOR = [
     ('porcentaje', 6, I, 2),
 ]
 
-# Constantes (tablas de parámetros):
+# Constantes (tablas de parï¿½metros):
 
 TIPO_CBTE = {1: "FAC A", 2: "N/D A", 3: "N/C A", 6: "FAC B", 7: "N/D B",
              8: "N/C B", 4: "REC A", 5: "NV A", 9: "REC B",
@@ -159,7 +161,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ]
         dic = leer_dbf(formatos, conf_dbf)
 
-        # rearmar estructura asociando id (comparando, si se útiliza)
+        # rearmar estructura asociando id (comparando, si se ï¿½tiliza)
         for encabezado in encabezados:
             for tributo in tributos:
                 if tributo.get("id") == encabezado.get("id"):
@@ -177,15 +179,15 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 if comprador.get("id") == encabezado.get("id"):
                     encabezado.setdefault("compradores", []).append(comprador)
             if encabezado.get("id") is None and len(encabezados) > 1:
-                # compatibilidad hacia atrás, descartar si hay más de 1 factura
-                warnings.warn("Para múltiples registros debe usar campo id!")
+                # compatibilidad hacia atrï¿½s, descartar si hay mï¿½s de 1 factura
+                warnings.warn("Para mï¿½ltiples registros debe usar campo id!")
                 break
     elif '/json' in sys.argv:
         # ya viene estructurado
         import json
         encabezados = json.load(entrada)
     else:
-        # la estructura está implícita en el órden de los registros (líneas)
+        # la estructura estï¿½ implï¿½cita en el ï¿½rden de los registros (lï¿½neas)
         for linea in entrada:
             if str(linea[0]) == '0':
                 encabezado = leer(linea, ENCABEZADO)
@@ -213,7 +215,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     if not encabezados:
         raise RuntimeError("No se pudieron leer los registros de la entrada")
 
-    # ajusto datos para pruebas en depuración (nro de cbte. / fecha)
+    # ajusto datos para pruebas en depuraciï¿½n (nro de cbte. / fecha)
     if '--testing' in sys.argv and DEBUG:
         encabezado['punto_vta'] = 9998
         cbte_nro = int(ws.CompUltimoAutorizado(encabezado['tipo_cbte'],
@@ -222,7 +224,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         encabezado['cbt_hasta'] = cbte_nro
         encabezado['fecha_cbte'] = datetime.datetime.now().strftime("%Y%m%d")
 
-    # recorrer los registros para obtener CAE (dicts tendrá los procesados)
+    # recorrer los registros para obtener CAE (dicts tendrï¿½ los procesados)
     dicts = []
     for encabezado in encabezados:
         if informar_caea:
@@ -347,15 +349,15 @@ if __name__ == "__main__":
         print("Opciones: ")
         print(" /ayuda: este mensaje")
         print(" /dummy: consulta estado de servidores")
-        print(" /prueba: genera y autoriza una factura de prueba (no usar en producción!)")
-        print(" /ult: consulta último número de comprobante")
-        print(" /debug: modo depuración (detalla y confirma las operaciones)")
+        print(" /prueba: genera y autoriza una factura de prueba (no usar en producciï¿½n!)")
+        print(" /ult: consulta ï¿½ltimo nï¿½mero de comprobante")
+        print(" /debug: modo depuraciï¿½n (detalla y confirma las operaciones)")
         print(" /formato: muestra el formato de los archivos de entrada/salida")
-        print(" /get: recupera datos de un comprobante autorizado previamente (verificación)")
-        print(" /xml: almacena los requerimientos y respuestas XML (depuración)")
-        print(" /dbf: lee y almacena la información en tablas DBF")
+        print(" /get: recupera datos de un comprobante autorizado previamente (verificaciï¿½n)")
+        print(" /xml: almacena los requerimientos y respuestas XML (depuraciï¿½n)")
+        print(" /dbf: lee y almacena la informaciï¿½n en tablas DBF")
         print()
-        print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
+        print("Ver rece.ini para parï¿½metros de configuraciï¿½n (URL, certificados, etc.)")
         sys.exit(0)
 
     if '/debug'in sys.argv:
@@ -457,7 +459,7 @@ if __name__ == "__main__":
                     for fmt in formato:
                         clave, longitud, tipo = fmt[0:3]
                         dec = len(fmt) > 3 and fmt[3] or (tipo == 'I' and '2' or '')
-                        print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                        print(" * Campo: %-20s Posiciï¿½n: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                             clave, comienzo, longitud, tipo, dec))
                         comienzo += longitud
                 else:
@@ -478,8 +480,8 @@ if __name__ == "__main__":
         ws.SetTicketAcceso(ta)
 
         if '/prueba' in sys.argv:
-            # generar el archivo de prueba para la próxima factura
-            tipo_cbte = 1
+            # generar el archivo de prueba para la prï¿½xima factura
+            tipo_cbte = 3
             punto_vta = 4002
             cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             if not cbte_nro:
@@ -499,7 +501,7 @@ if __name__ == "__main__":
             imp_op_ex = "0.00"
             fecha_cbte = fecha
             fecha_venc_pago = None  # fecha
-            # Fechas del período del servicio facturado (solo si concepto = 1?)
+            # Fechas del perï¿½odo del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = ""
             fecha_serv_hasta = ""
             moneda_id = 'PES'
@@ -515,7 +517,9 @@ if __name__ == "__main__":
                 tipo = 1
                 pto_vta = 2
                 nro = 1234
-                ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                fecha = "20190601"
+                cuit = "20267565393"
+                ws.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha)
 
             if '--proyectos' in sys.argv:
                 ws.AgregarOpcional(2, "1234")  # identificador del proyecto
@@ -525,13 +529,13 @@ if __name__ == "__main__":
                 ws.AgregarOpcional(5, "02")             # IVA Excepciones
                 ws.AgregarOpcional(61, "80")            # Firmante Doc Tipo
                 ws.AgregarOpcional(62, "20267565393")   # Firmante Doc Nro
-                ws.AgregarOpcional(7, "01")             # Carácter del Firmante
+                ws.AgregarOpcional(7, "01")             # Carï¿½cter del Firmante
 
-            # RG 3.368 Establecimientos de educación pública de gestión privada
+            # RG 3.368 Establecimientos de educaciï¿½n pï¿½blica de gestiï¿½n privada
             if '--rg3749' in sys.argv:
                 ws.AgregarOpcional(10, "1")             # Actividad Comprendida
                 ws.AgregarOpcional(1011, "80")            # Tipo de Documento
-                ws.AgregarOpcional(1012, "20267565393")   # Número de Documento
+                ws.AgregarOpcional(1012, "20267565393")   # Nï¿½mero de Documento
 
             # datos de compradores RG 4109-E bienes muebles registrables (%)
             if '--rg4109' in sys.argv:
@@ -608,7 +612,7 @@ if __name__ == "__main__":
             depurar_xml(ws.client, RUTA_XML)
             # grabar todos los datos devueltos por AFIP:
             factura = ws.factura.copy()
-            # actulizar los campos básicos:
+            # actulizar los campos bï¿½sicos:
             factura.update({'tipo_cbte': tipo_cbte,
                             'punto_vta': ws.PuntoVenta,
                             'cbt_desde': ws.CbtDesde,
