@@ -251,9 +251,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': f['cbtes_asoc'] and [
@@ -574,9 +571,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': [
@@ -766,9 +760,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': [
@@ -1045,7 +1036,7 @@ def main():
         if '--fce' in sys.argv:
             # obligatorio en Factura de Crédito Electrónica MiPyMEs (FCE):
             fecha_venc_pago = fecha
-            print(fecha_venc_pago)
+
         moneda_id = 'PES'
         moneda_ctz = '1.000'
 
@@ -1136,7 +1127,6 @@ def main():
             if "--multiple" in sys.argv:
                 wsfev1.AgregarFacturaX()
 
-        # import time
         t0 = time.time()
         if '--caea' not in sys.argv:
             if "--multiple" not in sys.argv:
