@@ -13,7 +13,7 @@
 "Módulo de Intefase para archivos de texto (exportación version 1)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011 Mariano Reingart"
+__copyright__ = "Copyright (C) 2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.27e"
 
@@ -23,10 +23,10 @@ import sys
 import time
 import traceback
 
-# revisar la instalación de pyafip.ws:
+# revisar la instalación de pyafipws:
 from . import wsfexv1
-from .utils import SimpleXMLElement, SoapClient, SoapFault, date
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from utils import SimpleXMLElement, SoapClient, SoapFault, date
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfexv1.HOMO
@@ -462,6 +462,17 @@ if __name__ == "__main__":
                 moneda_id = input("Id de moneda (DOL): ") or 'DOL'
             ctz = ws.GetParamCtz(moneda_id)
             print("Cotizacion: ", ctz)
+            print(ws.ErrMsg)
+            sys.exit(0)
+
+        if '/monctz' in sys.argv:
+            i = sys.argv.index("/monctz")
+            if i+1<len(sys.argv):
+               fecha = sys.argv[i+1]
+            else:
+               fecha = input("Fecha (AAAAMMDD): ") or None
+            ctz = ws.GetParamMonConCotizacion(fecha)
+            print("\n".join(ctz))
             print(ws.ErrMsg)
             sys.exit(0)
 
