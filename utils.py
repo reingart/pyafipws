@@ -13,34 +13,39 @@
 "Módulo con funciones auxiliares para el manejo de errores y temas comunes"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2013 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
-from io import IOBase
 import datetime
 import functools
+import httplib2
 import inspect
 import locale
-import socket
-import sys
+import mimetypes
 import os
+import socket
 import stat
+import sys
 import time
 import traceback
-import warnings
-from io import StringIO
-from decimal import Decimal
-from urllib.parse import urlencode
-from urllib.parse import urlparse
 import unicodedata
-import mimetypes
+import warnings
+
+from configparser import SafeConfigParser
+from decimal import Decimal
 from email.generator import _make_boundary
 from html.parser import HTMLParser
 from http.cookies import SimpleCookie
-from configparser import SafeConfigParser
+from io import IOBase
+from io import StringIO
+from pysimplesoap.client import SimpleXMLElement
+from pysimplesoap.client import SoapClient
+from pysimplesoap.client import SoapFault
+from pysimplesoap.client import parse_proxy
+from pysimplesoap.client import set_http_wrapper
+from urllib.parse import urlencode
+from urllib.parse import urlparse
 
-from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
-from pkg_resources import parse_version
 
 try:
     import json
@@ -51,10 +56,8 @@ except ImportError:
         print("para soporte de JSON debe instalar simplejson")
         json = None
 
-import httplib2
 
 DEBUG = False
-
 
 # Funciones para manejo de errores:
 
@@ -410,11 +413,9 @@ class WebClient:
     def __init__(self, location, enctype="multipart/form-data", trace=False,
                  cacert=None, timeout=30):
         kwargs = {}
-        if parse_version(httplib2.__version__) >= parse_version('0.3.0'):
-            kwargs['timeout'] = timeout
-        if parse_version(httplib2.__version__) >= parse_version('0.7.0'):
-            kwargs['disable_ssl_certificate_validation'] = cacert is None
-            kwargs['ca_certs'] = cacert
+        kwargs['timeout'] = timeout
+        kwargs['disable_ssl_certificate_validation'] = cacert is None
+        kwargs['ca_certs'] = cacert
         self.http = httplib2.Http(**kwargs)
         self.trace = trace
         self.location = location
@@ -754,7 +755,6 @@ def leer_dbf(formatos, conf_dbf):
             claves = []
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
-                #import pdb; pdb.set_trace()
                 clave_dbf = dar_nombre_campo_dbf(clave, claves)
                 claves.append(clave_dbf)
                 v = d.get(clave_dbf)
@@ -787,7 +787,7 @@ def verifica(ver_list, res_dict, difs):
             res_dict[k] = float(res_dict[k])
         if isinstance(v, list):
             # verifico que ambas listas tengan la misma cantidad de elementos:
-            if v and not k in res_dict and v:
+            if v and k not in res_dict and v:
                 difs.append("falta tag %s: %s %s" % (k, repr(v), repr(res_dict.get(k))))
             elif len(res_dict.get(k, [])) != len(v or []):
                 difs.append("tag %s len !=: %s %s" % (k, repr(v), repr(res_dict.get(k))))
@@ -846,7 +846,6 @@ def safe_console():
                 return s.encode(self.encoding, self.errors)
 
         sys.stdout = SafeWriter(sys.stdout)
-        #sys.stderr = SafeWriter(sys.stderr)
         print("Encodign in %s" % locale.getpreferredencoding())
 
 
