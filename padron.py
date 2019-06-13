@@ -31,12 +31,14 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import zipfile
-from email.utils import formatdate
 import sys
 import warnings
-from utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
-    inicializar_y_capturar_excepciones_simple, WebClient, norm, \
-    exception_info
+
+from email.utils import formatdate
+from .utils import (leer, escribir, N, A, I, get_install_dir, safe_console,
+                    inicializar_y_capturar_excepciones_simple, WebClient, norm,
+                    exception_info,
+                   )
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817

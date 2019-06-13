@@ -31,7 +31,7 @@ import datetime
 import decimal
 import os
 import sys
-from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False                    # solo homologación
 TYPELIB = False                 # usar librería de tipos (TLB)
@@ -768,7 +768,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'],
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
-                            'CbteFch': cbtes_asoc.get('fecha'),
+                            'CbteFch': cbte_asoc.get('fecha'),
                         }}
                         for cbte_asoc in f['cbtes_asoc']]
                     if f['cbtes_asoc'] else None,
@@ -996,7 +996,7 @@ def main():
         sys.exit(0)
 
     # obteniendo el TA para pruebas
-    from wsaa import WSAA
+    from .wsaa import WSAA
     ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", debug=True)
     wsfev1.SetTicketAcceso(ta)
     wsfev1.Cuit = "20267565393"

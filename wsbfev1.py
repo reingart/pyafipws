@@ -24,7 +24,7 @@ import datetime
 import decimal
 import os
 import sys
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 LANZAR_EXCEPCIONES = True      # valor por defecto: True
@@ -489,7 +489,7 @@ if __name__ == "__main__":
         # Setear token y sing de autorización (pasos previos)
 
         # obteniendo el TA para pruebas
-        from wsaa import WSAA
+        from .wsaa import WSAA
         ta = WSAA().Autenticar("wsbfe", "reingart.crt", "reingart.key")
         wsbfev1.SetTicketAcceso(ta)
 
@@ -632,7 +632,9 @@ if __name__ == "__main__":
         if "--params" in sys.argv:
             import codecs
             import locale
-            sys.stdout = codecs.getwriter('latin1')(sys.stdout)
+            if sys.stdout.encoding is None:
+                sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout, "replace")
+                sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr, "replace")
 
             print("=== Tipos de Comprobante ===")
             print('\n'.join(wsbfev1.GetParamTipoCbte()))

@@ -17,15 +17,15 @@ http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08f"
+__version__ = "1.09a"
 
 import datetime
 import decimal
 import os
 import sys
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 WSDL = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
@@ -604,7 +604,7 @@ if __name__ == "__main__":
         # Setear token y sign de autorización (pasos previos)
 
         # obteniendo el TA para pruebas
-        from wsaa import WSAA
+        from .wsaa import WSAA
         ta = WSAA().Autenticar("wsfex", "reingart.crt", "reingart.key")
         wsfexv1.SetTicketAcceso(ta)
 
@@ -748,8 +748,7 @@ if __name__ == "__main__":
                 sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr, "replace")
 
             print("\n=== Cotizacion ===")
-            print('\n'.join(wsfexv1.GetParamMonConCotizacion(sep='|')))           
-
+            print('\n'.join(wsfexv1.GetParamMonConCotizacion()))
 
             print("\n=== Incoterms ===")
             print('\n'.join(wsfexv1.GetParamIncoterms(sep='||')))
@@ -763,7 +762,7 @@ if __name__ == "__main__":
             print("=== Tipos Expo ===")
             print('\n'.join(wsfexv1.GetParamTipoExpo(sep='||')))
 
-            print ("=== Monedas ===")
+            print("=== Monedas ===")
             print('\n'.join(wsfexv1.GetParamMon(sep='||')))
 
             print("=== Unidades de medida ===")

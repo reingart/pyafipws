@@ -14,8 +14,8 @@ import base64
 import time
 import sys
 import os
-from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
-import utils
+from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
+from . import utils
 from pysimplesoap.client import SoapFault
 import traceback
 
@@ -505,7 +505,7 @@ if __name__ == '__main__':
             print("wsremcarne_url:", wsremcarne_url)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsremcarne", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
         if not ta:
