@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,20 +8,18 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-from pyafipws.wsaa import WSAA
-from pyafipws.wsfexv1 import WSFEXv1
-
-
-__author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
-__license__ = "GPL 3.0"
+"""Test para WSFEXv1 de AFIP(Factura Electrónica Exportación Versión 1)"""
 
 import unittest
 import sys
 import datetime
 
+from pyafipws.wsaa import WSAA
+from pyafipws.wsfexv1 import WSFEXv1
 
-sys.path.append("/home/reingart")
+__author__ = "Mariano Reingart <reingart@gmail.com>"
+__copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
+__license__ = "GPL 3.0"
 
 WSDL = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 CUIT = 20267565393
@@ -39,8 +35,6 @@ CACHE = "/pyafipws/cache"
 # suprimir la advertencia como se discute en
 # https://github.com/kennethreitz/requests/issues/1882
 
-# Setear token y sign de autorización (pasos previos)
-
 # obteniendo el TA para pruebas
 
 ta = WSAA().Autenticar("wsfex", "reingart.crt", "reingart.key")
@@ -48,12 +42,11 @@ print(ta)
 
 
 class TestFEX(unittest.TestCase):
-    """Test para WSFEXv1 de AFIP(Factura Electrónica Exportación Versión 1)"""
 
     def setUp(self):
         sys.argv.append('--trace')
         self.wsfexv1 = wsfexv1 = WSFEXv1()
-        wsfexv1.Cuit = CUIT
+        wsfexv1.Cuit = 20267565393
         wsfexv1.SetTicketAcceso(ta)
         wsfexv1.Conectar(CACHE, WSDL)
         print(';)')
@@ -90,8 +83,7 @@ class TestFEX(unittest.TestCase):
         id_impositivo = "PJ54482221-l"
         # para reales, "DOL" o "PES" (ver tabla de parámetros)
         moneda_id = "DOL"
-        # wsfexv1.GetParamCtz('DOL') <- no funciona
-        moneda_ctz = "8.00"
+        moneda_ctz = "39.00"
         obs_comerciales = "Observaciones comerciales"
         obs = "Sin observaciones"
         forma_pago = "30 dias"
@@ -107,7 +99,6 @@ class TestFEX(unittest.TestCase):
                              id_impositivo, moneda_id, moneda_ctz,
                              obs_comerciales, obs, forma_pago, incoterms,
                              idioma_cbte, incoterms_ds)
-
         self.assertTrue(fact)
 
     def test_agregar_item(self):
@@ -128,7 +119,7 @@ class TestFEX(unittest.TestCase):
     def test_agregar_permiso(self):
         """Test agregar permiso."""
         wsfexv1 = self.wsfexv1
-        self.test_crear_factura()
+        self.test_agregar_item()
         idz = "99999AAXX999999A"
         dst = 203  # país destino de la mercaderia
         permiso = wsfexv1.AgregarPermiso(idz, dst)
@@ -149,13 +140,10 @@ class TestFEX(unittest.TestCase):
     def test_autorizar(self):
         """Test Autorizar Comprobante."""
         wsfexv1 = self.wsfexv1
-        self.test_crear_factura()
-        self.test_agregar_item()
+        # contiene las partes necesarias para autorizar
         self.test_agregar_permiso()
-        # self.test_agregar_cbte_asoc
 
         idx = int(wsfexv1.GetLastID()) + 1
-
         # Llamo al WebService de Autorización para obtener el CAE
         wsfexv1.Authorize(idx)
 
@@ -166,12 +154,11 @@ class TestFEX(unittest.TestCase):
                          datetime.datetime.now().strftime("%d/%m/%Y"))
 
     def test_consulta(self):
-        """Test para obtener los datos de un comprobante autorizado"""
+        """Test para obtener los datos de un comprobante autorizado."""
         wsfexv1 = self.wsfexv1
         # obtengo el ultimo comprobante:
         tipo_cbte = 19
         punto_vta = 7
-
         cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
         wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
 
@@ -191,14 +178,14 @@ class TestFEX(unittest.TestCase):
         tipo_cbte = 19
         punto_vta = 7
         cbte_ejemp = '123'
-
         cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
-        self.assertEqual(len(cbte_nro), len(cbte_ejemp))
+        self.assertEqual(len(str(cbte_nro)), len(cbte_ejemp))
 
     def test_recuperar_numero_transaccion(self):
-        """Test ultimo Id"""
+        """Test ultimo Id."""
         wsfexv1 = self.wsfexv1
-        idy = wsfexv1.Id
+        self.test_consulta()
+        idy = wsfexv1.Id  # agrego en GetCMP Id
         idx = wsfexv1.GetLastID()
         self.assertEqual(idy, idx)
 
@@ -216,7 +203,7 @@ class TestFEX(unittest.TestCase):
         self.assertIsNotNone(wsfexv1.GetParamIncoterms())
         self.assertIsNotNone(wsfexv1.GetParamMonConCotizacion())
         self.assertIsNotNone(wsfexv1.GetParamPtosVenta())
-        self.assertEqual(wsfexv1.GetParamCtz('DOL'), str)
+        self.assertIsInstance(wsfexv1.GetParamCtz('DOL'), str)
 
 
 if __name__ == '__main__':
