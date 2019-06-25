@@ -11,7 +11,7 @@
 # for more details.
 
 """Módulo para obtener CAE/CAEA, código de autorización electrónico webservice
-WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.12)
+WSFEv1 de AFIP (Factura Electrónica Nacional - Proyecto Version 1 - 2.13)
 Según RG 2485/08, RG 2757/2010, RG 2904/2010 y RG2926/10 (CAE anticipado),
 RG 3067/2011 (RS - Monotributo), RG 3571/2013 (Responsables inscriptos IVA),
 RG 3668/2014 (Factura A IVA F.8001), RG 3749/2015 (R.I. y exentos)
@@ -25,7 +25,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.22a"
+__version__ = "1.22b"
 
 import datetime
 import decimal
@@ -43,7 +43,7 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 
 
 class WSFEv1(BaseWS):
-    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.12"
+    "Interfaz para el WebService de Factura Electrónica Version 1 - 2.13"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar',
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
                         'AgregarComprador',
@@ -251,9 +251,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': f['cbtes_asoc'] and [
@@ -400,6 +397,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'],
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
+                            'CbteFch': cbte_asoc.get('fecha') or None,
                         }}
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
@@ -461,7 +459,9 @@ class WSFEv1(BaseWS):
                             'tipo': cbte_asoc['CbteAsoc']['Tipo'],
                             'pto_vta': cbte_asoc['CbteAsoc']['PtoVta'],
                             'nro': cbte_asoc['CbteAsoc']['Nro'],
-                            'cuit': cbte_asoc['CbteAsoc'].get('Cuit')}
+                            'cuit': cbte_asoc['CbteAsoc'].get('Cuit'),
+                            'fecha': cbte_asoc['CbteAsoc'].get('CbteFch'),
+                        }
                         for cbte_asoc in resultget.get('CbtesAsoc', [])],
                     'tributos': [
                         {
@@ -571,9 +571,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': [
@@ -582,6 +579,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'],
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
+                            'CbteFch': cbte_asoc.get('fecha'),
                         }}
                         for cbte_asoc in f['cbtes_asoc']] or None,
                     'Tributos': [
@@ -762,9 +760,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': [
@@ -773,6 +768,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'],
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
+                            'CbteFch': cbte_asoc.get('fecha'),
                         }}
                         for cbte_asoc in f['cbtes_asoc']]
                     if f['cbtes_asoc'] else None,
@@ -1006,16 +1002,16 @@ def main():
     wsfev1.Cuit = "20267565393"
 
     if "--prueba" in sys.argv:
-        print(wsfev1.client.help("FECAESolicitar").encode("latin1"))
+        print(wsfev1.client.help("FECAESolicitar").encode('latin1'))
 
         if '--usados' in sys.argv:
             tipo_cbte = 49
             concepto = 1
         elif '--fce' in sys.argv:
-            tipo_cbte = 201
+            tipo_cbte = 203
             concepto = 1
         else:
-            tipo_cbte = 6
+            tipo_cbte = 3
             concepto = 3 if ('--rg4109' not in sys.argv) else 1
         punto_vta = 4001
         cbte_nro = int(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
@@ -1120,7 +1116,7 @@ def main():
                 wsfev1.AgregarComprador(80, "30999032083", 0.01)
 
             # datos de Factura de Crédito Electrónica MiPyMEs (FCE):
-            if '--fce' in sys.argv: # 0110001900000000000000
+            if '--fce' in sys.argv:
                 wsfev1.AgregarOpcional(2101, "2850590940090418135201")  # CBU
                 wsfev1.AgregarOpcional(2102, "pyafipws")               # alias
                 if tipo_cbte in (203, 208, 213):
@@ -1130,7 +1126,6 @@ def main():
             if "--multiple" in sys.argv:
                 wsfev1.AgregarFacturaX()
 
-        # import time
         t0 = time.time()
         if '--caea' not in sys.argv:
             if "--multiple" not in sys.argv:
@@ -1164,7 +1159,7 @@ def main():
         if "--multiple" not in sys.argv:
             wsfev1.AnalizarXml("XmlResponse")
             p_assert_eq(wsfev1.ObtenerTagXml('CAE'), str(wsfev1.CAE))
-            p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '2')
+            p_assert_eq(wsfev1.ObtenerTagXml('Concepto'), '3')
             p_assert_eq(wsfev1.ObtenerTagXml('Obs', 0, 'Code'), "10017")
             print(wsfev1.ObtenerTagXml('Obs', 0, 'Msg'))
 
@@ -1228,8 +1223,7 @@ def main():
             sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout, "replace")
             sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr, "replace")
 
-        print('\n'.join(wsfev1.ParamGetTiposDoc()))
-        print("=== Tipos de Comprobante ===")
+        print("\n=== Tipos de Comprobante ===")
         print('\n'.join(wsfev1.ParamGetTiposCbte()))
         print("=== Tipos de Concepto ===")
         print('\n'.join(wsfev1.ParamGetTiposConcepto()))
