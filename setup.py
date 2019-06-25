@@ -8,14 +8,16 @@
 "Creador de instalador para PyAfipWs"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2008-2016 Mariano Reingart"
+__copyright__ = "Copyright (C) 2008-2019 Mariano Reingart"
 
-from distutils.core import setup
+
 import glob
 import os
 import subprocess
-import warnings
 import sys
+import warnings
+
+from setuptools import setup
 
 try:
     rev = subprocess.check_output(['hg', 'tip', '--template', '{rev}'],
@@ -89,8 +91,8 @@ if 'py2exe' in sys.argv:
         # add "Microsoft Visual C++ 2008 Redistributable Package (x86)"
         if os.path.exists(r"c:\Program Files\Mercurial"):
             data_files += [(
-                ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll')
-                + glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
+                ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll') +
+                glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
             )]
         # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
         # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
@@ -105,8 +107,8 @@ if 'py2exe' in sys.argv:
 
         sys.path.insert(0, r"C:\Python27\Lib\site-packages\pythonwin")
         WX_DLL = (
-            ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*')
-            + glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest'),
+            ".", glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\mfc*.*') +
+            glob.glob(r'C:\Python27\Lib\site-packages\pythonwin\Microsoft.VC90.MFC.manifest'),
         )
     else:
         WX_DLL = (".", [
@@ -600,6 +602,17 @@ if "sdist" in sys.argv and os.path.exists("README.md") and sys.platform == "linu
     except Exception as e:
         warnings.warn("Exception when converting the README format: %s" % e)
 
+# dependencias
+
+requires_path = 'requirements.txt'
+requires = []
+
+if os.path.isfile(requires_path):
+    with open(requires_path) as f:
+        requires = f.read().splitlines()
+
+dependency_links = ['https://github.com/pysimplesoap/pysimplesoap/tarball/stable_py3k#egg=pysimplesoap', ]
+
 
 setup(name="PyAfipWs",
       version=__version__,
@@ -607,7 +620,7 @@ setup(name="PyAfipWs",
       long_description=long_desc,
       author="Mariano Reingart",
       author_email="reingart@gmail.com",
-      url="https://github.com/reingart/pyafipws" if not 'py2exe' in sys.argv
+      url="https://github.com/reingart/pyafipws" if 'py2exe' not in sys.argv
           else "http://www.sistemasagiles.com.ar",
       license="GNU GPL v3+",
       options=opts,
@@ -632,5 +645,8 @@ setup(name="PyAfipWs",
           "Topic :: Software Development :: Object Brokering",
       ],
       keywords="webservice electronic invoice pdf traceability",
-      **kwargs
+      **kwargs,
+      install_requires=requires,
+      dependency_links=dependency_links,
+      zip_safe=False,
       )
