@@ -13,7 +13,7 @@
 "Módulo de Intefase para archivos de texto (exportación version 1)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.27e"
 
@@ -23,7 +23,7 @@ import sys
 import time
 import traceback
 
-# revisar la instalación de pyafip.ws:
+# revisar la instalación de pyafipws:
 from . import wsfexv1
 from .utils import SimpleXMLElement, SoapClient, SoapFault, date
 from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
@@ -212,6 +212,10 @@ def escribir_factura(dic, archivo, agrega=False):
         for it in dic['permisos']:
             it['tipo_reg'] = TIPOS_REG[2]
             archivo.write(escribir(it, PERMISO))
+    if 'cbtes_asoc' in dic:
+        for it in dic['cbtes_asoc']:
+            it['tipo_reg'] = TIPOS_REG[3]
+            archivo.write(escribir(it, CMP_ASOC))
 
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, [dic]), ('Permisos', PERMISO, dic.get('permisos', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])), ('Detalles', DETALLE, dic.get('detalles', []))]
@@ -342,7 +346,7 @@ if __name__ == "__main__":
             # generar el archivo de prueba para la próxima factura
             f_entrada = open(entrada, "w")
 
-            tipo_cbte = 19  # FC Expo (ver tabla de parámetros)
+            tipo_cbte = 21  # FC Expo (ver tabla de parámetros)
             punto_vta = 7
             # Obtengo el último número de comprobante y le agrego 1
             cbte_nro = int(ws.GetLastCMP(tipo_cbte, punto_vta)) + 1
@@ -462,6 +466,17 @@ if __name__ == "__main__":
                 moneda_id = input("Id de moneda (DOL): ") or 'DOL'
             ctz = ws.GetParamCtz(moneda_id)
             print("Cotizacion: ", ctz)
+            print(ws.ErrMsg)
+            sys.exit(0)
+
+        if '/monctz' in sys.argv:
+            i = sys.argv.index("/monctz")
+            if i + 1 < len(sys.argv):
+                fecha = sys.argv[i + 1]
+            else:
+                fecha = input("Fecha (AAAAMMDD): ") or None
+            ctz = ws.GetParamMonConCotizacion(fecha)
+            print("\n".join(ctz))
             print(ws.ErrMsg)
             sys.exit(0)
 
