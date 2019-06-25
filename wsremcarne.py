@@ -14,25 +14,25 @@ import base64
 import time
 import sys
 import os
-from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 from . import utils
 from pysimplesoap.client import SoapFault
 import traceback
-from .utils import date
+
 """Módulo para obtener Remito Electronico Carnico:
-del web service WSRemCarne versión 1.0 de AFIP (RG4256/18 y RG4303/18)
+del web service WSRemCarne versión 3.0 de AFIP (RG4256/18 y RG4303/18)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2018 Mariano Reingart"
+__copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v1.0
 Remito de Carnes y subproductos derivados de la faena de bovinos y porcinos
 Resolución General 4256/18 y Resolución General 4303/18.
-Copyright (C) 2018 Mariano Reingart reingart@gmail.com
+Copyright (C) 2018-2019 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCarnico
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
@@ -184,9 +184,10 @@ class WSRemCarne(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarMercaderia(self, orden=None, cod_tipo_prod=None, cantidad=None, unidades=None, tropa=None, **kwargs):
+    def AgregarMercaderia(self, orden=None, cod_tipo_prod=None, kilos=None, unidades=None, tropa=None, kilos_rec=None, unidades_rec=None, **kwargs):
         "Agrega la información referente a la mercadería del remito electrónico cárnico"
-        mercaderia = dict(orden=orden, tropa=tropa, codTipoProd=cod_tipo_prod, cantidad=cantidad, unidadMedida=unidades)
+        mercaderia = dict(orden=orden, tropa=tropa, codTipoProd=cod_tipo_prod, kilos=kilos, unidades=unidades,
+                          kilosRec=kilos_rec, unidadesRec=unidades_rec)
         self.remito['arrayMercaderias'].append(dict(mercaderia=mercaderia))
         return True
 
@@ -227,7 +228,7 @@ class WSRemCarne(BaseWS):
             self.CodRemito = ret.get("codRemito")
             self.TipoComprobante = ret.get("tipoComprobante")
             self.PuntoEmision = ret.get("puntoEmision")
-            datos_aut = ret.get('datosAutorizacion')
+            datos_aut = ret.get('datosEmision')
             if datos_aut:
                 self.NroRemito = datos_aut.get('nroRemito')
                 self.CodAutorizacion = datos_aut.get('codAutorizacion')
@@ -237,10 +238,8 @@ class WSRemCarne(BaseWS):
             self.Resultado = ret.get('resultado')
             self.QR = ret.get('qr') or ""
             if archivo:
-                qr = base64.b64decode(self.QR)
-                f = open(archivo, "wb")
-                f.write(qr)
-                f.close()
+                with open(archivo, "wb") as f:
+                    f.write(self.QR)
 
     @inicializar_y_capturar_excepciones
     def EmitirRemito(self, archivo="qr.png"):
@@ -460,7 +459,7 @@ if __name__ == '__main__':
         win32com.server.register.UseCommandLine(WSRemCarne)
         sys.exit(0)
 
-    from configparser import SafeConfigParser
+    from configparser import ConfigParser
 
     try:
 
@@ -473,7 +472,7 @@ if __name__ == '__main__':
             print("Usando configuración:", arg)
             CONFIG_FILE = arg
 
-        config = SafeConfigParser()
+        config = ConfigParser()
         config.read(CONFIG_FILE)
         CERT = config.get('WSAA', 'CERT')
         PRIVATEKEY = config.get('WSAA', 'PRIVATEKEY')
@@ -578,7 +577,7 @@ if __name__ == '__main__':
             rec['viaje'] = dict(cuit_transportista='20333333334', cuit_conductor='20333333334',
                                 fecha_inicio_viaje='2018-10-01', distancia_km=999)
             rec['viaje']['vehiculo'] = dict(dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000')
-            rec['mercaderias'] = [dict(orden=1, tropa=1, cod_tipo_prod='2.13', cantidad=10, unidades=1)]
+            rec['mercaderias'] = [dict(orden=1, tropa=1, cod_tipo_prod='2.13', kilos=10, unidades=1)]
             rec['datos_autorizacion'] = None  # dict(nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
             rec['contingencias'] = [dict(tipo=1, observacion="anulacion")]
             with open(ENTRADA, "w") as archivo:
@@ -600,9 +599,9 @@ if __name__ == '__main__':
 
         if '--generar' in sys.argv:
             if '--testing' in sys.argv:
-                wsremcarne.LoadTestXML("tests/xml/wsremcarne_generar_response_ok_beta.xml")  # cargo respuesta
+                wsremcarne.LoadTestXML("tests/xml/wsremcarne.xml")  # cargo respuesta
 
-            ok = wsremcarne.GenerarRemito(id_req=rec['id_req'])
+            ok = wsremcarne.GenerarRemito(id_req=rec['id_req'], archivo="qr.jpg")
 
         if '--emitir' in sys.argv:
             ok = wsremcarne.EmitirRemito()
@@ -637,7 +636,7 @@ if __name__ == '__main__':
 
         if '--grabar' in sys.argv:
             with open(SALIDA, "w") as archivo:
-                json.dump(rec, archivo, sort_keys=True, indent=4)
+                json.dump(rec, archivo, sort_keys=True, indent=4, default=json_serializer)
 
         # Recuperar parámetros:
 
