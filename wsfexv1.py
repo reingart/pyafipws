@@ -17,9 +17,9 @@ http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.08f"
+__version__ = "1.09a"
 
 import datetime
 import decimal
@@ -39,6 +39,7 @@ class WSFEXv1(BaseWS):
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms',
                         'GetParamDstPais', 'GetParamDstCUIT', 'GetParamIdiomas',
                         'GetParamIncoterms', 'GetParamDstCUIT',
+                        'GetParamMonConCotizacion',
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
@@ -250,6 +251,7 @@ class WSFEXv1(BaseWS):
             self.Resultado = resultget.get('Resultado', '')
             self.CbteNro = resultget['Cbte_nro']
             self.ImpTotal = str(resultget['Imp_total'])
+            self.Id = resultget['Id']
             return self.CAE
         else:
             return 0
@@ -461,6 +463,7 @@ class WSFEXv1(BaseWS):
         else:
             return ret
 
+    @inicializar_y_capturar_excepciones
     def GetParamIncoterms(self, sep="|"):
         "Recuperar lista de valores referenciales de Incoterms"
         ret = self.client.FEXGetPARAM_Incoterms(
@@ -499,6 +502,37 @@ class WSFEXv1(BaseWS):
         else:
             ctz = ''
         return ctz
+
+    @inicializar_y_capturar_excepciones
+    def GetParamMonConCotizacion(self, fecha=None, sep='|'):
+        "Recupera el listado de monedas que tengan cotizacion de ADUANA"
+        if not fecha:
+            fecha = datetime.date.today().strftime('%Y%m%d')
+
+        ret = self.client.FEXGetPARAM_MON_CON_COTIZACION(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            Fecha_CTZ=fecha,
+        )
+        result = ret['FEXGetPARAM_MON_CON_COTIZACIONResult']
+        self.__analizar_errores(result)
+
+        mons = []  # Monedas
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_Mon_CON_Cotizacion']
+            try:
+                mon = {'id': u.get('Mon_Id'), 'ctz': u.get('Mon_ctz'),
+                       'fecha': u.get('Fecha_ctz')}
+            except Exception as e:
+                print(e)
+                if u is None:
+                    mon = {'id': '', 'ctz': '', 'fecha': ''}
+            mons.append(mon)
+
+        if sep:
+            return [("\t%(id)s\t%(ctz)s\t%(fecha)s\t" % it).replace('\t', sep)
+                    for it in mons]
+        else:
+            return mons
 
     @inicializar_y_capturar_excepciones
     def GetParamPtosVenta(self, sep="|"):
@@ -567,7 +601,7 @@ if __name__ == "__main__":
 
         # Crear objeto interface Web Service de Factura Electrónica de Exportación
         wsfexv1 = WSFEXv1()
-        # Setear token y sing de autorización (pasos previos)
+        # Setear token y sign de autorización (pasos previos)
 
         # obteniendo el TA para pruebas
         from .wsaa import WSAA
@@ -709,50 +743,37 @@ if __name__ == "__main__":
         if "--params" in sys.argv:
             import codecs
             import locale
-            sys.stdout = codecs.getwriter('latin1')(sys.stdout)
+            if sys.stdout.encoding is None:
+                sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout, "replace")
+                sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr, "replace")
 
-            print("=== Incoterms ===")
-            idiomas = wsfexv1.GetParamIncoterms(sep="||")
-            for idioma in idiomas:
-                print(idioma)
+            print("\n=== Cotizacion ===")
+            print('\n'.join(wsfexv1.GetParamMonConCotizacion()))
+
+            print("\n=== Incoterms ===")
+            print('\n'.join(wsfexv1.GetParamIncoterms(sep='||')))
 
             print("=== Idiomas ===")
-            idiomas = wsfexv1.GetParamIdiomas(sep="||")
-            for idioma in idiomas:
-                print(idioma)
+            print('\n'.join(wsfexv1.GetParamIdiomas(sep='||')))
 
             print("=== Tipos Comprobantes ===")
-            tipos = wsfexv1.GetParamTipoCbte(sep=False)
-            for t in tipos:
-                print("||%(codigo)s||%(ds)s||" % t)
+            print('\n'.join(wsfexv1.GetParamTipoCbte(sep='||')))
 
             print("=== Tipos Expo ===")
-            tipos = wsfexv1.GetParamTipoExpo(sep=False)
-            for t in tipos:
-                print("||%(codigo)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % t)
-            #umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
+            print('\n'.join(wsfexv1.GetParamTipoExpo(sep='||')))
 
             print("=== Monedas ===")
-            mons = wsfexv1.GetParamMon(sep=False)
-            for m in mons:
-                print("||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % m)
-            #umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
+            print('\n'.join(wsfexv1.GetParamMon(sep='||')))
 
             print("=== Unidades de medida ===")
-            umedidas = wsfexv1.GetParamUMed(sep=False)
-            for u in umedidas:
-                print("||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u)
-            umeds = dict([(u.get('id', ""), u.get('ds', "")) for u in umedidas])
+            print('\n'.join(wsfexv1.GetParamUMed(sep='||')))
+            #umeds = dict([(u.get('id', ""), u.get('ds', "")) for u in umedidas])
 
             print("=== Código Pais Destino ===")
-            ret = wsfexv1.GetParamDstPais(sep=False)
-            for r in ret:
-                print("||%(codigo)s||%(ds)s||" % r)
+            print('\n'.join(wsfexv1.GetParamDstPais(sep='||')))
 
             print("=== CUIT Pais Destino ===")
-            ret = wsfexv1.GetParamDstCUIT(sep=False)
-            for r in ret:
-                print("||%(codigo)s||%(ds)s||" % r)
+            print('\n'.join(wsfexv1.GetParamDstCUIT(sep='||')))
 
         if "--ctz" in sys.argv:
             print(wsfexv1.GetParamCtz('DOL'))
