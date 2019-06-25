@@ -16,9 +16,9 @@
 #    http://www.sistemasagiles.com.ar/trac/wiki/PadronContribuyentesAFIP
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2014-2016 Mariano Reingart"
+__copyright__ = "Copyright (C) 2014-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07e"
+__version__ = "1.08a"
 
 
 import csv
@@ -31,12 +31,14 @@ import urllib.request
 import urllib.error
 import urllib.parse
 import zipfile
-from email.utils import formatdate
 import sys
 import warnings
-from .utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
-    inicializar_y_capturar_excepciones_simple, WebClient, norm, \
-    exception_info
+
+from email.utils import formatdate
+from utils import (leer, escribir, N, A, I, get_install_dir, safe_console,
+                    inicializar_y_capturar_excepciones_simple, WebClient, norm,
+                    exception_info,
+                   )
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
@@ -77,7 +79,7 @@ class PadronAFIP():
 
     _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
                         'ConsultarDomicilios', 'Consultar', 'Conectar',
-                        'DescargarConstancia', 'MostrarPDF',
+                        'DescargarConstancia', 'MostrarPDF', 'BuscarCUIT',
                         "ObtenerTablaParametros",
                         ]
     _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
@@ -287,6 +289,17 @@ class PadronAFIP():
         filas = self.cursor.fetchall()
         self.domicilios = [fila['direccion'] for fila in filas]
         return len(filas)
+
+    @inicializar_y_capturar_excepciones_simple
+    def BuscarCUIT(self, denominacion, limite=10):
+        "Busca por nombre, devuelve una lista con tipo y nro de documento"
+        sql = ("SELECT tipo_doc, nro_doc, denominacion "
+                            "FROM padron_fts WHERE denominacion MATCH ? "
+                            "LIMIT ?")
+        denominacion = denominacion.replace(" ", "*")
+        self.cursor.execute(sql, ["*{}*".format(denominacion), limite])
+        filas = self.cursor.fetchall()
+        return [dict(fila) for fila in filas]
 
     @inicializar_y_capturar_excepciones_simple
     def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion,
