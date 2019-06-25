@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,10 +8,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-from pyafipws.wsaa import WSAA
-from pyafipws.wsbfev1 import WSBFEv1
-
-
+"""Test para WSBFEv1"""
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
@@ -21,7 +16,10 @@ __license__ = "GPL 3.0"
 
 import unittest
 import sys
-import datetime
+from datetime import datetime, timedelta
+
+from pyafipws.wsaa import WSAA
+from pyafipws.wsbfev1 import WSBFEv1
 
 
 WSDL = "https://wswhomo.afip.gov.ar/wsbfev1/service.asmx?WSDL"
@@ -31,14 +29,12 @@ PRIVATEKEY = "/pyafipws/reingart.key"
 CACERT = "/pyafipws/afip_root_desa_ca.crt"
 CACHE = "/pyafipws/cache"
 
-
 # Debido a que Python solicita una opción de diseño, hay una advertencia
 # sobre una conexión no cerrada al ejecutar las pruebas.
 # https://github.com/kennethreitz/requests/issues/3912
 # Esto puede ser molesto al ejecutar las pruebas, por lo tanto,
 # suprimir la advertencia como se discute en
 # https://github.com/kennethreitz/requests/issues/1882
-
 
 # obteniendo el TA para pruebas
 
@@ -71,9 +67,7 @@ class TestBFE(unittest.TestCase):
 
     def test_crear_factura(self):
         """Test de creación de una factura (Interna)."""
-
         wsbfev1 = self.wsbfev1
-
         tipo_cbte = 1  # factura "A"
         punto_vta = 5
         tipo_doc = 80
@@ -81,7 +75,7 @@ class TestBFE(unittest.TestCase):
         zona = 1
         # Obtengo el último número de comprobante y le agrego 1
         cbte_nro = int(wsbfev1.GetLastCMP(tipo_cbte, punto_vta)) + 1
-        fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
+        fecha_cbte = datetime.now().strftime("%Y%m%d")
         imp_moneda_id = "PES"  # (ver tabla de parámetros)
         imp_moneda_ctz = 1
         imp_neto = "1450.00"
@@ -107,7 +101,7 @@ class TestBFE(unittest.TestCase):
         # Agrego un item:
         ncm = '2101.11.10'
         sec = ''
-        umed = 12  # unidades
+        umed = 5  # unidades
         ds = 'Cafe'
         qty = "10.00"
         precio = "150.00"
@@ -134,7 +128,7 @@ class TestBFE(unittest.TestCase):
     def test_agregar_opcional(self):
         """Test agregar opcional."""
         wsbfev1 = self.wsbfev1
-        self.test_crear_factura()
+        self.test_agregar_item()
         idz = "1010"
         ds = 'pyafipws'
         opcional = wsbfev1.AgregarOpcional(idz, ds)
@@ -143,21 +137,19 @@ class TestBFE(unittest.TestCase):
     def test_autorizar(self):
         """Test Autorizar Comprobante."""
         wsbfev1 = self.wsbfev1
-        self.test_crear_factura()
         self.test_agregar_item()
-        self.test_agregar_opcional()
         # self.test_agregar_cbte_asoc
 
         idx = int(wsbfev1.GetLastID()) + 1
-
         # Llamo al WebService de Autorización para obtener el CAE
         wsbfev1.Authorize(idx)
 
         self.assertEqual(wsbfev1.Resultado, "A")
         self.assertIsInstance(wsbfev1.CAE, str)
         self.assertIsNotNone(wsbfev1.CAE)
+        ten = datetime.now() + timedelta(days=10)
         self.assertEqual(wsbfev1.Vencimiento,
-                         datetime.datetime.now().strftime("%d/%m/%Y"))
+                         ten.strftime("%d/%m/%Y"))
 
     def test_consulta(self):
         """Test para obtener los datos de un comprobante autorizado."""
@@ -184,16 +176,18 @@ class TestBFE(unittest.TestCase):
         wsbfev1 = self.wsbfev1
         tipo_cbte = 1
         punto_vta = 5
-        cbte_ejemp = '123'
+        cbte_ejemp = '1234'
 
         cbte_nro = wsbfev1.GetLastCMP(tipo_cbte, punto_vta)
-        self.assertEqual(len(cbte_nro), len(cbte_ejemp))
+        self.assertEqual(len(str(cbte_nro)), len(cbte_ejemp))
 
     def test_recuperar_ultima_id(self):
         """Test ultimo Id."""
+        self.test_consulta()
         wsbfev1 = self.wsbfev1
         idy = wsbfev1.Id
         idx = wsbfev1.GetLastID()
+        print(idy)
         self.assertEqual(idy, idx)
 
     def test_parametros(self):
