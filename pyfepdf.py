@@ -23,9 +23,9 @@ import datetime
 "Módulo para generar PDF de facturas electrónicas"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09b"
+__version__ = "1.09c"
 
 DEBUG = False
 HOMO = False
@@ -120,6 +120,9 @@ class FEPDF:
         (1, 6, 11, 19, 51): 'Factura',
         (2, 7, 12, 20, 52): 'Nota de Débito',
         (3, 8, 13, 21, 53): 'Nota de Crédito',
+        (201, 206, 211): 'Factura de Crédito MiPyMEs',
+        (202, 207, 212): 'Nota de Débito MiPyMEs',
+        (203, 208, 213): 'Nota de Crédito MiPyMEs',
         (4, 9, 15, 54): 'Recibo',
         (10, 5): 'Nota de Venta al contado',
         (60, 61): 'Cuenta de Venta y Líquido producto',
@@ -127,9 +130,9 @@ class FEPDF:
         (91, ): 'Remito',
         (39, 40): '???? (R.G. N° 3419)'}
 
-    letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63): 'A',
-                   (6, 7, 8, 9, 10, 40, 61, 64): 'B',
-                   (11, 12, 13, 15): 'C',
+    letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63, 201, 202, 203): 'A',
+                   (6, 7, 8, 9, 10, 40, 61, 64, 206, 207, 208): 'B',
+                   (11, 12, 13, 15, 211, 212, 213): 'C',
                    (51, 52, 53, 54): 'M',
                    (19, 20, 21): 'E',
                    (91, ): 'R',
@@ -299,9 +302,14 @@ class FEPDF:
         else:
             return ''
 
-    def fmt_imp(self, i): return self.fmt_num(i, "%0.2f")
-    def fmt_qty(self, i): return self.fmt_num(i, "%" + self.FmtCantidad + "f", False)
-    def fmt_pre(self, i): return self.fmt_num(i, "%" + self.FmtPrecio + "f")
+    def fmt_imp(self, i):
+        return self.fmt_num(i, "%0.2f")
+
+    def fmt_qty(self, i):
+        return self.fmt_num(i, "%" + self.FmtCantidad + "f", False)
+
+    def fmt_pre(self, i):
+        return self.fmt_num(i, "%" + self.FmtPrecio + "f")
 
     def fmt_iva(self, i):
         if int(i) in self.ivas_ds:
@@ -1028,7 +1036,7 @@ if __name__ == '__main__':
             HOMO = True
 
             # datos generales del encabezado:
-            tipo_cbte = 19 if '--expo' in sys.argv else 1
+            tipo_cbte = 19 if '--expo' in sys.argv else 201
             punto_vta = 4000
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
