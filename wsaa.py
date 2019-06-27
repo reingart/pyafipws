@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -17,7 +15,7 @@
 # Devuelve TA.xml (ticket de autorización de WSAA)
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
+__copyright__ = "Copyright (C) 2008-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "2.11c"
 
@@ -31,8 +29,9 @@ import traceback
 import warnings
 import unicodedata
 from pysimplesoap.client import SimpleXMLElement
-from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
-    exception_info, safe_console, date
+from .utils import (inicializar_y_capturar_excepciones, BaseWS, get_install_dir,
+                    exception_info, safe_console, date)
+
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
 except ImportError:
@@ -78,7 +77,7 @@ def create_tra(service=SERVICE, ttl=2400):
     tra.add_child('header')
     # El source es opcional. Si falta, toma la firma (recomendado).
     # tra.header.addChild('source','subject=...')
-    #tra.header.addChild('destination','cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239')
+    # tra.header.addChild('destination','cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239')
     tra.header.add_child('uniqueId', str(date('U')))
     tra.header.add_child('generationTime', str(date('c', date('U') - ttl)))
     tra.header.add_child('expirationTime', str(date('c', date('U') + ttl)))
@@ -92,7 +91,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
     if BIO:
         # Firmar el texto (tra) usando m2crypto (openssl bindings para python)
         buf = BIO.MemoryBuffer(tra)             # Crear un buffer desde el texto
-        #Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
+        # Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
         s = SMIME.SMIME()                       # Instanciar un SMIME
         # soporte de contraseña de encriptación (clave privada, opcional)
         callback = lambda *args, **kwarg: passphrase
@@ -148,10 +147,10 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
                 key_f = None
             try:
                 out = Popen([openssl, "smime", "-sign",
-                        "-signer", cert, "-inkey", privatekey,
-                        "-outform","DER", "-nodetach"],
-                    stdin=PIPE, stdout=PIPE,
-                    stderr=PIPE).communicate(tra)[0]
+                             "-signer", cert, "-inkey", privatekey,
+                             "-outform", "DER", "-nodetach"],
+                            stdin=PIPE, stdout=PIPE,
+                            stderr=PIPE).communicate(tra)[0]
             finally:
                 # close temp files to delete them (just in case):
                 if cert_f:
@@ -216,22 +215,22 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def AnalizarCertificado(self, crt, binary=False):
         "Carga un certificado digital y extrae los campos más importantes"
-        from M2Crypto import BIO, EVP, RSA, X509
+        from cryptography import x509
+        from cryptography.hazmat.backends import default_backend
+
         if binary:
-            bio = BIO.MemoryBuffer(cert.encode('utf8'))
-            x509 = X511.load_cert_bio(bio, X509.FORMAT_DER)
+            cert = x509.load_pem_x509_certificate(crt, default_backend())
         else:
             if not crt.startswith("-----BEGIN CERTIFICATE-----"):
                 crt = open(crt).read()
                 if isinstance(crt, str):
                     crt = crt.encode('utf-8')
-            bio = BIO.MemoryBuffer(crt.encode('utf8'))
-            x509 = X509.load_cert_bio(bio, X509.FORMAT_PEM)
-        if x509:
-            self.Identidad = x509.get_subject().as_text()
-            self.Caducidad = x509.get_not_after().get_datetime()
-            self.Emisor = x509.get_issuer().as_text()
-            self.CertX509 = x509.as_text()
+            cert = x509.load_pem_x509_certificate(crt, default_backend())
+        if cert:
+            self.Identidad = cert.subject
+            self.Caducidad = cert.not_valid_after
+            self.Emisor = cert.issuer
+            self.CertX509 = cert
         return True
 
     @inicializar_y_capturar_excepciones
@@ -348,7 +347,7 @@ class WSAA(BaseWS):
                 tra = self.CreateTRA(service=service, ttl=DEFAULT_TTL)
                 # firmarlo criptográficamente
                 if DEBUG:
-                    print("Frimando TRA...")
+                    print("Firmando TRA...")
                 cms = self.SignTRA(tra, crt, key)
                 # concectar con el servicio web:
                 if DEBUG:
@@ -518,5 +517,3 @@ if __name__ == "__main__":
             print("Generation Time:", wsaa.ObtenerTagXml('generationTime'))
             print("Expiration Time:", wsaa.ObtenerTagXml('expirationTime'))
             print("Expiro?", wsaa.Expirado())
-            ##import time; time.sleep(10)
-            # print "Expiro?", wsaa.Expirado()
