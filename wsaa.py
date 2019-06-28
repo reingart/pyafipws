@@ -32,6 +32,12 @@ from pysimplesoap.client import SimpleXMLElement
 from .utils import (inicializar_y_capturar_excepciones, BaseWS, get_install_dir,
                     exception_info, safe_console, date)
 
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asimetric import rsa
+
+
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
 except ImportError:
@@ -215,8 +221,6 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def AnalizarCertificado(self, crt, binary=False):
         "Carga un certificado digital y extrae los campos más importantes"
-        from cryptography import x509
-        from cryptography.hazmat.backends import default_backend
 
         if binary:
             cert = x509.load_pem_x509_certificate(crt, default_backend())
@@ -237,21 +241,24 @@ class WSAA(BaseWS):
     def CrearClavePrivada(self, filename="privada.key", key_length=4096,
                           pub_exponent=0x10001, passphrase=""):
         "Crea una clave privada (private key)"
-        from M2Crypto import RSA, EVP
-
-        # only protect if passphrase was given (it will fail otherwise)
-        callback = lambda *args, **kwarg: passphrase
-        chiper = None if not passphrase else "aes_128_cbc"
         # create the RSA key pair (and save the result to a file):
-        rsa_key_pair = RSA.gen_key(key_length, pub_exponent, callback)
-        bio = BIO.MemoryBuffer()
-        rsa_key_pair.save_key_bio(bio, chiper, callback)
-        f = open(filename, "w")
-        f.write(bio.read())
-        f.close()
-        # create a public key to sign the certificate request:
-        self.pkey = EVP.PKey(md='sha256')
-        self.pkey.assign_rsa(rsa_key_pair)
+        rsa_key = rsa.generate_private_key(pub_exponent, key_length, backend=default_backend())
+
+        if passphrase:
+            passp = passphrase.encode('utf-8')
+            # encryption AES-256-CBC
+            cypher = serialization.BestAvailableEncryption(passp)
+        else:
+            cypher = serialization.NoEncryption()
+
+        with open(filename, "wb") as f:
+            f.write(rsa_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=cypher,
+            ))
+        # create public_key
+        self.pkey = rsa_key.public_key()
         return True
 
     @inicializar_y_capturar_excepciones
