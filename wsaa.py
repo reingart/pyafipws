@@ -33,9 +33,11 @@ from .utils import (inicializar_y_capturar_excepciones, BaseWS, get_install_dir,
                     exception_info, safe_console, date)
 
 from cryptography import x509
+from cryptography.x509.oid import NameOID
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asimetric import rsa
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 
 try:
@@ -257,18 +259,16 @@ class WSAA(BaseWS):
                 format=serialization.PrivateFormat.TraditionalOpenSSL,
                 encryption_algorithm=cypher,
             ))
-        # create public_key
-        self.pkey = rsa_key.public_key()
+
+        self.rsa_key = rsa_key
         return True
 
     @inicializar_y_capturar_excepciones
     def CrearPedidoCertificado(self, cuit="", empresa="", nombre="pyafipws",
                                filename="empresa.csr"):
         "Crear un certificate signing request (X509 CSR)"
-        from M2Crypto import RSA, EVP, X509
-
         # create the certificate signing request (CSR):
-        self.x509_req = X509.Request()
+        self.x509_req = x509.CertificateSigningRequestBuilder()
 
         # normalizar encoding (reemplazar acentos, eñe, etc.)
         if isinstance(empresa, str):
@@ -277,22 +277,18 @@ class WSAA(BaseWS):
             nombre = unicodedata.normalize('NFKD', nombre).encode('ASCII', 'ignore')
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
-        x509name = X509.X509_Name()
-        # default OpenSSL parameters:
-        kwargs = {"type": 0x1000 | 1, "len": -1, "loc": -1, "set": 0}
-        x509name.add_entry_by_txt(field='C', entry='AR', **kwargs)
-        x509name.add_entry_by_txt(field='O', entry=empresa, **kwargs)
-        x509name.add_entry_by_txt(field='CN', entry=nombre, **kwargs)
-        x509name.add_entry_by_txt(field='serialNumber', entry="CUIT %s" % str(cuit), **kwargs)
-        self.x509_req.set_subject_name(x509name)
-
         # sign the request with the previously created key (CrearClavePrivada)
-        self.x509_req.set_pubkey(pkey=self.pkey)
-        self.x509_req.sign(pkey=self.pkey, md='sha256')
+        csrs = self.x509_req.subject_name(x509.Name([
+                x509.NameAttribute(NameOID.COUNTRY_NAME, 'AR'),
+                x509.NameAttribute(NameOID.ORGANIZATION_NAME, '{}'.format(empresa)),
+                x509.NameAttribute(NameOID.COMMON_NAME, '{}'.format(nombre)),
+                x509.NameAttribute(NameOID.SERIAL_NUMBER, 'CUIT {}'.format(cuit)),
+                ])).sign(self.rsa_key, hashes.SHA256(), default_backend())
+
         # save the CSR result to a file:
-        f = open(filename, "w")
-        f.write(self.x509_req.as_pem())
-        f.close()
+        with open(filename, "wb") as f:
+            f.write(csrs.public_bytes(serialization.Encoding.PEM))
+
         return True
 
     @inicializar_y_capturar_excepciones
@@ -466,9 +462,9 @@ if __name__ == "__main__":
         print(pedido_cert)
         # convertir a terminación de linea windows y abrir con bloc de notas
         if sys.platform == "win32":
-            txt = open(pedido_cert + ".txt", "wb")
+            txt = open(pedido_cert + ".txt", "w")
             for linea in open(pedido_cert, "r"):
-                txt.write("%s\r\n" % linea)
+                txt.write("{}".format(linea))
             txt.close()
             os.startfile(pedido_cert + ".txt")
     else:
