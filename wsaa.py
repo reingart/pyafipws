@@ -32,21 +32,19 @@ from pysimplesoap.client import SimpleXMLElement
 from .utils import (inicializar_y_capturar_excepciones, BaseWS, get_install_dir,
                     exception_info, safe_console, date)
 
-from cryptography import x509
-from cryptography.x509.oid import NameOID
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa
-
-
 try:
-    from M2Crypto import BIO, Rand, SMIME, SSL
+    from cryptography import x509
+    from cryptography.x509.oid import NameOID
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.hazmat.bindings.openssl.binding import Binding
+
 except ImportError:
     ex = exception_info()
-    warnings.warn("No es posible importar M2Crypto (OpenSSL)")
+    warnings.warn("No es posible importar cryptography (OpenSSL)")
     warnings.warn(ex['msg'])            # revisar instalación y DLLs de OpenSSL
-    BIO = Rand = SMIME = SSL = None
     # utilizar alternativa (ejecutar proceso por separado)
     from subprocess import Popen, PIPE
     from base64 import b64encode
@@ -96,36 +94,53 @@ def create_tra(service=SERVICE, ttl=2400):
 def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
 
-    if BIO:
-        # Firmar el texto (tra) usando m2crypto (openssl bindings para python)
-        buf = BIO.MemoryBuffer(tra)             # Crear un buffer desde el texto
-        # Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
-        s = SMIME.SMIME()                       # Instanciar un SMIME
-        # soporte de contraseña de encriptación (clave privada, opcional)
-        callback = lambda *args, **kwarg: passphrase
-        # Cargar clave privada y certificado
-        if not privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
-            # leer contenido desde archivo (evitar problemas Applink / MSVCRT)
-            if os.path.exists(privatekey) and os.path.exists(cert):
-                privatekey = open(privatekey).read()
-                cert = open(cert).read()
-            else:
-                raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
-        # crear buffers en memoria de la clave privada y certificado:
-        key_bio = BIO.MemoryBuffer(privatekey.encode('utf8'))
-        crt_bio = BIO.MemoryBuffer(cert.encode('utf8'))
-        s.load_key_bio(key_bio, crt_bio, callback)  # (desde buffer)
-        p7 = s.sign(buf, 0)                      # Firmar el buffer
-        out = BIO.MemoryBuffer()                # Crear un buffer para la salida
-        s.write(out, p7)                        # Generar p7 en formato mail
-        # Rand.save_file('randpool.dat')         # Guardar el estado del PRNG's
+    if Binding:
+        _lib = Binding.lib
+        _ffi = Binding.ffi
+        # Crear un buffer desde el texto
+        bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
 
-        # extraer el cuerpo del mensaje (parte firmada)
-        msg = email.message_from_string(out.read().decode('utf8'))
+        # Leer privatekey y cert
+        with open(privatekey, 'rb') as key_file:
+            private_key = serialization.load_pem_private_key(
+                key_file.read(), None, default_backend())
+
+        with open(cert, 'rb') as cert_file:
+            cert = x509.load_pem_x509_certificate(
+                cert_file.read(), default_backend())
+
+        try:
+            # Firmar el texto (tra) usando cryptography (openssl bindings para python)
+            p7 = _lib.PKCS7_sign(cert._x509, private_key._evp_pkey, _ffi.NULL, bio_in, 0)
+        finally:
+            # Liberar memoria asignada
+            _lib.BIO_free(bio_in)
+        # Se crea un buffer nuevo porque la firma lo consume
+        bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
+        try:
+            # Crear buffer de salida
+            bio_out = _lib.BIO_new(_lib.BIO_s_mem())
+            try:
+                # Instanciar un SMIME
+                _lib.SMIME_write_PKCS7(bio_out, p7, bio_in, 0)
+
+                # Tomar datos para la salida
+                result_buffer = _ffi.new('char**')
+                buffer_length = _lib.BIO_get_mem_data(bio_out, result_buffer)
+                output = _ffi.buffer(result_buffer[0], buffer_length)[:]
+            finally:
+                _lib.BIO_free(bio_out)
+        finally:
+            _lib.BIO_free(bio_in)
+
+        # Generar p7 en formato mail y recortar headers
+        msg = email.message_from_string(output.decode('utf8'))
         for part in msg.walk():
             filename = part.get_filename()
-            if filename == "smime.p7m":                 # es la parte firmada?
-                return part.get_payload(decode=False)   # devolver CMS
+            if filename == "smime.p7m":
+                # Es la parte firmada?
+                # Devolver CMS
+                return part.get_payload(decode=False)
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
