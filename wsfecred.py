@@ -42,6 +42,8 @@ Opciones:
   --xml: almacena los requerimientos y respuestas XML (depuración)
   --dummy: consulta estado de servidores
 
+  --obligado: consultar monto obligado a recepcion (según CUIT)
+
   --tipos_ajuste: tabla de parametros para tipo de ajuste
   --tipos_cancelacion: tabla de parametros para formas cancelacion
   --tipos_retencion: tabla de parametros para tipo de retenciones
@@ -50,6 +52,7 @@ Opciones:
 Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
+import datetime
 import os, sys, time, base64
 from utils import date
 import traceback
@@ -77,6 +80,7 @@ class WSFECred(BaseWS):
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'ConsultarTiposAjustesOperacion', 'ConsultarTiposFormasCancelacion',
                         'ConsultarTiposMotivosRechazo', 'ConsultarTiposRetenciones',
+                        'ConsultarMontoObligadoRecepcion',
                         'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
     _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
@@ -194,6 +198,25 @@ class WSFECred(BaseWS):
         return [(u"%s {codigoJurisdiccion} %s {descripcionJurisdiccion} %s {porcentajeRetencion} %s" % 
                 (sep, sep, sep, sep)).format(**it) if sep else it for it in lista]
 
+    def ConsultarMontoObligadoRecepcion(self, cuit_consultada, fecha_emision=None):
+        "Conocer la obligación respecto a la emisión o recepción de Facturas de Créditos"
+        if not fecha_emision:
+            fecha_emision = datetime.datetime.today().strftime("%Y-%m-%d")
+        response = self.client.consultarMontoObligadoRecepcion(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit,
+                            },
+                            cuitConsultada=cuit_consultada,
+                            fechaEmision=fecha_emision,
+                        )
+        ret = response.get('consultarMontoObligadoRecepcionReturn')
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.Resultado = ret['obligado']
+            return ret['montoDesde']
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
@@ -281,6 +304,15 @@ if __name__ == '__main__':
             print "DbServerStatus", wsfecred.DbServerStatus
             print "AuthServerStatus", wsfecred.AuthServerStatus
             sys.exit(0)
+
+        if '--obligado' in sys.argv:
+            try:
+                cuit_consultar = int(sys.argv[sys.argv.index("--obligado") + 1])
+            except IndexError, ValueError:
+                cuit_consultar = raw_input("Cuit a Consultar: ")
+            ret = wsfecred.ConsultarMontoObligadoRecepcion(cuit_consultar)
+            print "Obligado:", wsfecred.Resultado
+            print "Monto Desde:", ret
 
         # Recuperar parámetros:
 
