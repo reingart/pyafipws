@@ -43,6 +43,7 @@ Opciones:
   --dummy: consulta estado de servidores
 
   --obligado: consultar monto obligado a recepcion (según CUIT)
+  --ctasctes: consultar cuentas corrientes generadas a partir de facturación
 
   --tipos_ajuste: tabla de parametros para tipo de ajuste
   --tipos_cancelacion: tabla de parametros para formas cancelacion
@@ -198,6 +199,7 @@ class WSFECred(BaseWS):
         return [(u"%s {codigoJurisdiccion} %s {descripcionJurisdiccion} %s {porcentajeRetencion} %s" % 
                 (sep, sep, sep, sep)).format(**it) if sep else it for it in lista]
 
+    @inicializar_y_capturar_excepciones
     def ConsultarMontoObligadoRecepcion(self, cuit_consultada, fecha_emision=None):
         "Conocer la obligación respecto a la emisión o recepción de Facturas de Créditos"
         if not fecha_emision:
@@ -217,6 +219,81 @@ class WSFECred(BaseWS):
             self.__analizar_evento(ret)
             self.Resultado = ret['obligado']
             return ret['montoDesde']
+
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarCtasCtes(self, cuit_contraparte=None, rol="Receptor",
+                          fecha_desde=None, fecha_hasta=None, fecha_tipo="Emision"):
+        """Obtener las cuentas corrientes que fueron generadas a partir de la facturación
+
+        Args:
+            cuit_contraparte (str): Cuit de la contraparte, que ocupa el rol opuesto (CUITContraparte)
+            rol (str): Identificar la CUIT Representada que origina la cuenta corriente (rolCUITRepresentada)
+                "Emisor" o "Receptor"
+            fecha_desde (str): Fecha Desde, si no se indica se usa "2019-01-01"
+            fecha_hasta (str): Fecha Hasta, si no se indica se usa la fecha de hoy
+            fecha_tipo (str): permite determinar sobre qué fecha vamos a hacer el filtro (TipoFechaSimpleType)
+                "Emision": Fecha de Emisión
+                "PuestaDispo": Fecha puesta a Disposición
+                "VenPago": Fecha vencimiento de pago
+                "VenAcep": Fecha vencimiento aceptación
+                "Acep": Fecha aceptación
+                "InfoAgDptoCltv": Fecha informada a Agente de Deposito
+        
+        Returns:
+            list: a dict para cada elemento de la cuenta corriente: {
+                    'cod_cta_cte': 2561,
+                    'estado_cta_cte': 'Modificable',
+                    'fecha_hora_estado': datetime.datetime(2019, 5, 13, 9, 25, 32),
+                    'cuit_emisor': 20267565393,
+                    'tipo_cbte': 201,
+                    'nro_cbte': 22,
+                    'punto_vta': 999
+                    'cod_moneda': 'PES',
+                    'importe_total_fc': Decimal('12850000'),
+                    'saldo': Decimal('12850000'),
+                    'saldo_aceptado': Decimal('0')
+                    }
+        """
+        if not fecha_desde:
+            fecha_desde = datetime.datetime.today().strftime("2019-01-01")
+        if not fecha_hasta:
+            fecha_hasta = datetime.datetime.today().strftime("%Y-%m-%d")
+        response = self.client.consultarCtasCtes(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit,
+                            },
+                            CUITContraparte=cuit_contraparte,
+                            rolCUITRepresentada=rol,
+                            fecha={
+                                'desde': fecha_desde, 
+                               'hasta': fecha_hasta, 
+                               'tipo': fecha_tipo
+                            },
+                        )
+        ret = response.get('consultarCtasCtesReturn')
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            array = ret.get('arrayInfosCtaCte', [])
+            for cc in [it['infoCtaCte'] for it in array]:
+                cc = {
+                    'cod_cta_cte': cc['codCtaCte'],
+                    'estado_cta_cte': cc['estadoCtaCte']['estado'],
+                    'fecha_hora_estado': cc['estadoCtaCte']['fechaHoraEstado'],
+                    'cuit_emisor': cc['idFacturaCredito']['CUITEmisor'],
+                    'tipo_cbte': cc['idFacturaCredito']['codTipoCmp'],
+                    'nro_cbte': cc['idFacturaCredito']['nroCmp'],
+                    'punto_vta': cc['idFacturaCredito']['ptoVta'],
+                    'cod_moneda': cc['codMoneda'],
+                    'importe_total_fc': cc['importeTotalFC'],
+                    'saldo': cc['saldo'],
+                    'saldo_aceptado': cc['saldoAceptado'],
+                    }
+                yield cc
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
@@ -313,6 +390,18 @@ if __name__ == '__main__':
             ret = wsfecred.ConsultarMontoObligadoRecepcion(cuit_consultar)
             print "Obligado:", wsfecred.Resultado
             print "Monto Desde:", ret
+
+        if '--ctasctes' in sys.argv:
+            try:
+                cuit_contraparte = int(sys.argv[sys.argv.index("--ctasctes") + 1])
+            except IndexError, ValueError:
+                cuit_contraparte = None
+            ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol="Emisor")
+            print "Observaciones:", wsfecred.Obs
+            import pprint
+            for cc in ret:
+                pprint.pprint(cc)
+
 
         # Recuperar parámetros:
 
