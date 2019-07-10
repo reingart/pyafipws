@@ -94,7 +94,7 @@ class WSFECred(BaseWS):
                       'ErrCode', 'ErrMsg', 'Errores', 'ErroresFormato', 'Observaciones', 'Obs', 'Evento', 'Eventos',
                      ]
     _reg_progid_ = "WSFECred"
-    _reg_clsid_ = "{71DB0CB9-2ED7-4226-A1E6-C3FA7FB18F41}"
+    _reg_clsid_ = "{F4B2B652-C992-4E46-9134-121F62011C46}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
