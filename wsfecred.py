@@ -53,6 +53,7 @@ Opciones:
 Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
+from collections import OrderedDict
 import datetime
 import os, sys, time, base64
 from utils import date
@@ -79,6 +80,8 @@ ENCABEZADO = []
 class WSFECred(BaseWS):
     "Interfaz para el WebService de Factura de Crédito Electronica"
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
+                        'CrearFECred',  'AgregarFormasCancelacion', 'AgregarAjustesOperacion', 'AgregarRetenciones',
+                        'AgregarConfirmarNotasDC',
                         'ConsultarTiposAjustesOperacion', 'ConsultarTiposFormasCancelacion',
                         'ConsultarTiposMotivosRechazo', 'ConsultarTiposRetenciones',
                         'ConsultarMontoObligadoRecepcion',
@@ -86,7 +89,7 @@ class WSFECred(BaseWS):
                         ]
     _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
                       'Token', 'Sign', 'Cuit', 'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
-                      'IdCtaCte', 'TipoComprobante', 'PuntoVenta',
+                      'CodCtaCte', 'TipoComprobante', 'PuntoVenta',
                       'NroComprobante', 'CodAutorizacion', 'FechaVencimiento', 'FechaEmision', 'Estado', 'Resultado', 'QR',
                       'ErrCode', 'ErrMsg', 'Errores', 'ErroresFormato', 'Observaciones', 'Obs', 'Evento', 'Eventos',
                      ]
@@ -105,7 +108,7 @@ class WSFECred(BaseWS):
 
     def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.IdCtaCte = self.TipoComprobante = self.PuntoVenta = None
+        self.CodCtaCte = self.TipoComprobante = self.PuntoVenta = None
         self.NroComprobante = self.CUITEmisor = None
         self.Resultado = None
         self.Errores = []
@@ -141,6 +144,120 @@ class WSFECred(BaseWS):
         self.AppServerStatus = str(results['appserver'])
         self.DbServerStatus = str(results['dbserver'])
         self.AuthServerStatus = str(results['authserver'])
+
+    @inicializar_y_capturar_excepciones
+    def CrearFECred(self, cuit_emisor, tipo_cbte, punto_vta, nro_cbte, cod_moneda="PES", ctz_moneda_ult=1,
+                    importe_cancelado=0.00, importe_embargo_pesos=0.00, importe_total_ret_pesos=0.00,
+                    saldo_aceptado=0.00, tipo_cancelacion="TOT",
+                    **kwargs):
+        "Inicializa internamente los datos de una Factura de Crédito Electrónica para aceptacion/rechazo"
+        self.factura = {
+            'idCtaCte': {
+                ## "codCtaCte": 2561,
+                "idFactura": {
+                    'CUITEmisor': cuit_emisor,
+                    'codTipoCmp': tipo_cbte,
+                    'ptoVta': punto_vta,
+                    'nroCmp': nro_cbte,
+                    }
+                },
+            'codMoneda': cod_moneda,
+            'cotizacionMonedaUlt': ctz_moneda_ult,
+            'importeCancelado': importe_cancelado,
+            'importeEmbargoPesos': importe_embargo_pesos,
+            'importeTotalRetPesos': importe_total_ret_pesos,
+            'saldoAceptado': saldo_aceptado,
+            'tipoCancelacion': tipo_cancelacion,
+            'arrayAjustesOperacion': [],
+            'arrayFormasCancelacion': [],
+            'arrayRetenciones': [],
+            'arrayConfirmarNotasDC': [],
+            }
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarAjustesOperacion(self, codigo=None, importe=0.00, **kwargs):
+        "Agrega la información de los ajustes a la Factura de Crédito Electrónica"
+        self.factura['arrayAjustesOperacion'].append({
+            'ajuste': {
+                'codigo': codigo,
+                'importe': importe,
+                }
+            })
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarFormasCancelacion(self, codigo=None, descripcion=None, **kwargs):
+        "Agrega la información de las formas de cancelación a la Factura de Crédito Electrónica"
+        self.factura['arrayFormasCancelacion'].append({
+            'codigoDescripcion': {
+                'codigo': codigo,
+                'descripcion': descripcion,
+                }
+            })
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarRetenciones(self, cod_tipo=None, desc_motivo=None, importe=None, porcentaje=None, **kwargs):
+        "Agrega la información de las retenciones a la Factura de Crédito Electrónica"
+        self.factura['arrayRetenciones'].append({
+            'retencion': {
+                'codTipo': cod_tipo,
+                'descMotivo': desc_motivo,
+                'importe': importe,
+                'porcentaje': porcentaje,
+                }
+            })
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarConfirmarNotasDC(self, cuit_emisor, tipo_cbte, punto_vta, nro_cbte, **kwargs):
+        "Agrega la información referente al viaje del remito electrónico cárnico"
+        self.factura['arrayConfirmarNotasDC'].append({
+            'confirmarNota': {
+                'acepta': 'acepta',
+                'idNota': {
+                    'CUITEmisor': cuit_emisor,
+                    'codTipoCmp': tipo_cbte,
+                    'ptoVta': punto_vta,
+                    'nroCmp': nro_cbte,
+                    }
+                }
+            })
+        return True
+
+    def AceptarFECred(self):
+        "Aceptar el saldo actual de la Cta. Cte. de una Factura de Crédito"
+        # pudiendo indicar: pagos parciales, retenciones y/o embargos
+        params = {
+            'authRequest': {
+                'cuitRepresentada': self.Cuit,
+                'sign': self.Sign,
+                'token': self.Token
+                },
+            }
+        params.update(self.factura)
+        response = self.client.aceptarFECred(**params)
+        ret = response.get("operacionFECredReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.AnalizarFECred(ret)
+        return True
+
+    def AnalizarFECred(self, ret, archivo=None):
+        "Extrae el resultado de la Factura de Crédito Electrónica, si existen en la respuesta XML"
+        if ret:
+            id_cta_cte = ret.get("idCtaCte", {})
+            self.CodCtaCte = id_cta_cte.get("codCtaCte")
+            id_factura = id_cta_cte.get("idFactura")
+            if id_factura:
+                self.CUITEmisor = ret.get("cuitEmisor")
+                self.TipoComprobante = ret.get("tipoComprobante")
+                self.PuntoVenta = ret.get("ptoVta")
+                self.NroComprobante = ret.get('NroComprobante')
+            self.Resultado = ret.get('resultado')
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposAjustesOperacion(self, sep="||"):
@@ -401,6 +518,22 @@ if __name__ == '__main__':
             import pprint
             for cc in ret:
                 pprint.pprint(cc)
+
+        if '--prueba' in sys.argv:
+            fec = dict(
+                cuit_emisor=30999999999,
+                tipo_cbte=201, punto_vta=99, nro_cbte=22,
+                cod_moneda="PES", ctz_moneda_ult=1,
+                importe_cancelado=1000.00, importe_embargo_pesos=0.00, importe_total_ret_pesos=0.00,
+                saldo_aceptado=1000.00, tipo_cancelacion="TOT",
+                )
+
+            wsfecred.CrearFECred(**fec)
+            wsfecred.AgregarFormasCancelacion(codigo=2, descripcion="Transferencia Bancaria")
+            wsfecred.AceptarFECred()
+
+            print "Resultado", wsfecred.Resultado
+            print "CodCtaCte", wsfecred.CodCtaCte
 
 
         # Recuperar parámetros:
