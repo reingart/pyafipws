@@ -45,6 +45,7 @@ except ImportError:
     ex = exception_info()
     warnings.warn("No es posible importar cryptography (OpenSSL)")
     warnings.warn(ex['msg'])            # revisar instalación y DLLs de OpenSSL
+    Binding = None
     # utilizar alternativa (ejecutar proceso por separado)
     from subprocess import Popen, PIPE
     from base64 import b64encode
