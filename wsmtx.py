@@ -18,7 +18,7 @@ productos) seg�n RG2904 (opci�n A con detalle) y RG2926/10 (CAE anticipado).
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.13a"
+__version__ = "1.14a"
 
 import datetime
 import decimal
@@ -152,7 +152,7 @@ class WSMTXCA(BaseWS):
         else:
             return False
 
-    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, **kwargs):
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, fecha=None, **kwargs):
         "Agrego un comprobante asociado a una factura (interna)"
         cmp_asoc = {
             'tipo': tipo,
@@ -160,6 +160,8 @@ class WSMTXCA(BaseWS):
             'nro': nro}
         if cuit is not None:
             cmp_asoc['cuit'] = cuit
+        if fecha is not None:
+            cmp_asoc['fecha'] = fecha
         self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
@@ -250,8 +252,9 @@ class WSMTXCA(BaseWS):
                 'numeroPuntoVenta': cbte_asoc['pto_vta'],
                 'numeroComprobante': cbte_asoc['nro'],
                 'cuit': cbte_asoc.get('cuit'),
-            }} for cbte_asoc in f['cbtes_asoc']] or None,
-            'arrayOtrosTributos': f['tributos'] and [{'otroTributo': {
+                'fechaEmision': cbte_asoc.get('fecha'),
+                }} for cbte_asoc in f['cbtes_asoc']] or None,
+            'arrayOtrosTributos': f['tributos'] and [ {'otroTributo': {
                 'codigo': tributo['tributo_id'],
                 'descripcion': tributo['desc'],
                 'baseImponible': tributo['base_imp'],
