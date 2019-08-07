@@ -48,7 +48,7 @@ class WSMTXCA(BaseWS):
                         'ConsultarCondicionesIVA',
                         'ConsultarMonedas',
                         'ConsultarUnidadesMedida',
-                        'ConsultarTiposTributo',
+                        'ConsultarTiposTributo', 'ConsultarTiposDatosAdicionales',
                         'ConsultarCotizacionMoneda',
                         'ConsultarPuntosVentaCAE',
                         'ConsultarPuntosVentaCAEA',
@@ -905,6 +905,15 @@ class WSMTXCA(BaseWS):
                 for p in ret['arrayTiposTributo']]
 
     @inicializar_y_capturar_excepciones
+    def ConsultarTiposDatosAdicionales(self):
+        "Este m�todo permite consultar los tipos de datos adicionales."
+        ret = self.client.consultarTiposDatosAdicionales(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
+                 for p in ret['arrayTiposDatosAdicionales']]
+
+    @inicializar_y_capturar_excepciones
     def ConsultarCotizacionMoneda(self, moneda_id):
         "Este m�todo permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarCotizacionMoneda(
@@ -1178,13 +1187,14 @@ def main():
             raise
 
     if "--parametros" in sys.argv:
-        print(wsmtxca.ConsultarTiposComprobante())
-        print(wsmtxca.ConsultarTiposDocumento())
-        print(wsmtxca.ConsultarAlicuotasIVA())
-        print(wsmtxca.ConsultarCondicionesIVA())
-        print(wsmtxca.ConsultarMonedas())
-        print(wsmtxca.ConsultarUnidadesMedida())
-        print(wsmtxca.ConsultarTiposTributo())
+        print wsmtxca.ConsultarTiposComprobante()
+        print wsmtxca.ConsultarTiposDocumento()
+        print wsmtxca.ConsultarAlicuotasIVA()
+        print wsmtxca.ConsultarCondicionesIVA()
+        print wsmtxca.ConsultarMonedas()
+        print wsmtxca.ConsultarUnidadesMedida()
+        print wsmtxca.ConsultarTiposTributo()
+        print wsmtxca.ConsultarTiposDatosAdicionales()
 
     if "--cotizacion" in sys.argv:
         print(wsmtxca.ConsultarCotizacionMoneda('DOL'))
