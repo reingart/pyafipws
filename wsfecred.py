@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.02a"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -67,13 +67,13 @@ from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_
 
 # constantes de configuración (producción/homologación):
 
-WSDL = ["https://serviciosjava.afip.gob.ar/wsfecred/FECredService",
+WSDL = ["https://serviciosjava.afip.gob.ar/wsfecred/FECredService?wsdl",
         "https://fwshomo.afip.gov.ar/wsfecred/FECredService?wsdl"]
 
 DEBUG = False
 XML = False
 CONFIG_FILE = "rece.ini"
-HOMO = True
+HOMO = False
 ENCABEZADO = []
 
 
@@ -82,6 +82,7 @@ class WSFECred(BaseWS):
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'CrearFECred',  'AgregarFormasCancelacion', 'AgregarAjustesOperacion', 'AgregarRetenciones',
                         'AgregarConfirmarNotasDC',
+                        'ConsultarCtasCtes', 'LeerCtaCte',
                         'ConsultarTiposAjustesOperacion', 'ConsultarTiposFormasCancelacion',
                         'ConsultarTiposMotivosRechazo', 'ConsultarTiposRetenciones',
                         'ConsultarMontoObligadoRecepcion',
@@ -226,6 +227,7 @@ class WSFECred(BaseWS):
             })
         return True
 
+    @inicializar_y_capturar_excepciones
     def AceptarFECred(self):
         "Aceptar el saldo actual de la Cta. Cte. de una Factura de Crédito"
         # pudiendo indicar: pagos parciales, retenciones y/o embargos
@@ -246,6 +248,7 @@ class WSFECred(BaseWS):
             self.AnalizarFECred(ret)
         return True
 
+    @inicializar_y_capturar_excepciones
     def AnalizarFECred(self, ret, archivo=None):
         "Extrae el resultado de la Factura de Crédito Electrónica, si existen en la respuesta XML"
         if ret:
@@ -358,19 +361,7 @@ class WSFECred(BaseWS):
                 "InfoAgDptoCltv": Fecha informada a Agente de Deposito
         
         Returns:
-            list: a dict para cada elemento de la cuenta corriente: {
-                    'cod_cta_cte': 2561,
-                    'estado_cta_cte': 'Modificable',
-                    'fecha_hora_estado': datetime.datetime(2019, 5, 13, 9, 25, 32),
-                    'cuit_emisor': 20267565393,
-                    'tipo_cbte': 201,
-                    'nro_cbte': 22,
-                    'punto_vta': 999
-                    'cod_moneda': 'PES',
-                    'importe_total_fc': Decimal('12850000'),
-                    'saldo': Decimal('12850000'),
-                    'saldo_aceptado': Decimal('0')
-                    }
+            int: cantidad de cuentas corrientes
         """
         if not fecha_desde:
             fecha_desde = datetime.datetime.today().strftime("2019-01-01")
@@ -390,6 +381,7 @@ class WSFECred(BaseWS):
                             },
                         )
         ret = response.get('consultarCtasCtesReturn')
+        self.ctas_ctes = []
         if ret:
             self.__analizar_errores(ret)
             self.__analizar_observaciones(ret)
@@ -409,7 +401,38 @@ class WSFECred(BaseWS):
                     'saldo': cc['saldo'],
                     'saldo_aceptado': cc['saldoAceptado'],
                     }
-                yield cc
+                self.ctas_ctes.append(cc)
+        return len(self.ctas_ctes)
+
+
+    @inicializar_y_capturar_excepciones
+    def LeerCtaCte(self, pos=0):
+        """Leer la cuenta corriente generada a partir de la facturación
+
+        Args:
+            pos (int): posición de la cuenta corriente (0 a n)
+
+        Returns:
+            dict: elemento de la cuenta corriente: {
+                    'cod_cta_cte': 2561,
+                    'estado_cta_cte': 'Modificable',
+                    'fecha_hora_estado': datetime.datetime(2019, 5, 13, 9, 25, 32),
+                    'cuit_emisor': 20267565393,
+                    'tipo_cbte': 201,
+                    'nro_cbte': 22,
+                    'punto_vta': 999
+                    'cod_moneda': 'PES',
+                    'importe_total_fc': Decimal('12850000'),
+                    'saldo': Decimal('12850000'),
+                    'saldo_aceptado': Decimal('0')
+                    }
+        """
+        from win32com.client import Dispatch
+        d = Dispatch('Scripting.Dictionary')
+        cc = self.ctas_ctes.pop(pos) if pos < len(self.ctas_ctes) else {}
+        for k, v in cc.items():
+            d.Add(k, str(v))
+        return d
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
