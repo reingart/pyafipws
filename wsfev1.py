@@ -25,7 +25,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23a"
+__version__ = "1.23b"
 
 import datetime
 import decimal
@@ -789,6 +789,11 @@ class WSFEv1(BaseWS):
                             }}
                         for iva in f['iva']]
                         if f['iva'] else None,
+                    'Opcionales': [ 
+                        {'Opcional': {
+                            'Id': opcional['opcional_id'],
+                            'Valor': opcional['valor'],
+                            }} for opcional in f['opcionales']] or None,
                     'CAEA': f['caea'],
                     'CbteFchHsGen': f.get('fecha_hs_gen'),
                     }
