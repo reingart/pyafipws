@@ -34,7 +34,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 class WSMTXCA(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
-                        'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 
+                        'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 'AgregarOpcional',
                         'AutorizarComprobante', 'CAESolicitar', 'AutorizarAjusteIVA',
                         'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
                         'InformarComprobanteCAEA', 'InformarAjusteIVACAEA',
@@ -132,6 +132,7 @@ class WSMTXCA(BaseWS):
                 'tributos': [],
                 'iva': [],
                 'detalles': [],
+                'opcionales': [],
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
@@ -213,6 +214,16 @@ class WSMTXCA(BaseWS):
         else:
             return False
 
+    def AgregarOpcional(self, opcional_id=0, valor=None, valor2=None,
+                             valor3=None, valor4=None, valor5=None,
+                             valor6=None, **kwarg):
+        "Agrego un dato adicional a una factura (interna)"
+        op = { 'opcional_id': opcional_id, 'valor': valor, 'valor2': valor2,
+               'valor3': valor3, 'valor4': valor4, 'valor5': valor5,
+               'valor6': valor6 }
+        self.factura['opcionales'].append(op)
+        return True
+
     
     @inicializar_y_capturar_excepciones
     def AutorizarComprobante(self):
@@ -264,6 +275,15 @@ class WSMTXCA(BaseWS):
                 'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
+            'arrayDatosAdicionales': f['opcionales'] and [{'datoAdicional': { 
+                't': dato['opcional_id'], 
+                'c1': dato.get('valor'),
+                'c2': dato.get('valor2'),
+                'c3': dato.get('valor3'),
+                'c4': dato.get('valor4'),
+                'c5': dato.get('valor5'),
+                'c6': dato.get('valor6'),
+                }} for dato in f['opcionales']] or None,
             }
                 
         ret = self.client.autorizarComprobante(
@@ -370,6 +390,15 @@ class WSMTXCA(BaseWS):
                 'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
+            'arrayDatosAdicionales': f['opcionales'] and [{'datoAdicional': { 
+                't': dato['opcional_id'], 
+                'c1': dato.get('valor'),
+                'c2': dato.get('valor2'),
+                'c3': dato.get('valor3'),
+                'c4': dato.get('valor4'),
+                'c5': dato.get('valor5'),
+                'c6': dato.get('valor6'),
+                }} for dato in f['opcionales']] or None,
             }
                 
         ret = self.client.autorizarAjusteIVA(
@@ -1038,6 +1067,10 @@ def main():
                 #wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, 1, umed, 
                 #                    0, 0, iva_id, 0, 0)
             
+            # datos de Factura de Crédito Electrónica MiPyMEs (FCE):
+            if '--fce' in sys.argv:
+                wsmtxca.AgregarOpcional(21, "2850590940090418135201")  # CBU
+
             print wsmtxca.factura
             
             if '--caea' in sys.argv:
