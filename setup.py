@@ -42,6 +42,7 @@ if 'py2exe' in sys.argv:
     #import wsbfev1, receb1
     #import wsmtx, recem
     #import wsct, recet
+    #import wsfecred
     #import ws_sr_padron
     #import pyfepdf
     #import pyemail
@@ -277,6 +278,18 @@ if 'py2exe' in sys.argv:
             ]
         __version__ += "+wsct_" + wsct.__version__
         HOMO &= wsct.HOMO
+
+    if 'wsfecred' in globals():
+        kwargs['com_server'] += [
+            Target(module=wsfecred, modules="wsfecred"),
+            ]
+        kwargs['console'] += [
+            Target(module=wsfecred, script='wsfecred.py', dest_base="wsfecred_cli"),
+            ]
+        data_files += [
+            ]
+        __version__ += "+wsfecred_" + wsfecred.__version__
+        HOMO &= wsfecred.HOMO
 
     if 'pyfepdf' in globals():
         kwargs['com_server'] += [
