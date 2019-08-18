@@ -290,7 +290,8 @@ class WSCT(BaseWS):
         }
 
         res = self.client.autorizarComprobante(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
             comprobanteRequest=fact,
         )
         ret = res.get('autorizarComprobanteReturn', {})
@@ -303,7 +304,8 @@ class WSCT(BaseWS):
                     # guardo los mensajes xml originales
                     xml_request = self.client.xml_request
                     xml_response = self.client.xml_response
-                    cae = self.ConsultarComprobante(f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
+                    cae = self.ConsultarComprobante(
+                        f['tipo_cbte'], f['punto_vta'], f['cbt_desde'], reproceso=True)
                     if cae and self.EmisionTipo == 'CAE':
                         self.Reproceso = 'S'
                         self.Resultado = 'A'  # verificar O
@@ -321,7 +323,8 @@ class WSCT(BaseWS):
             self.PuntoVenta = cbteresp['numeroPuntoVenta']  # 4000
             # self. = cbteresp['cuit'] # 20267565393L
             # self. = cbteresp['codigoTipoComprobante']
-            self.Vencimiento = cbteresp['fechaVencimientoCAE'].strftime("%Y/%m/%d")
+            self.Vencimiento = cbteresp['fechaVencimientoCAE'].strftime(
+                "%Y/%m/%d")
             self.CAE = str(cbteresp['CAE'])  # 60423794871430L
         self.__analizar_errores(ret)
 
@@ -348,7 +351,8 @@ class WSCT(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarUltimoComprobanteAutorizado(self, tipo_cbte, punto_vta):
         res = self.client.consultarUltimoComprobanteAutorizado(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
             codigoTipoComprobante=tipo_cbte,
             numeroPuntoVenta=punto_vta,
         )
@@ -364,7 +368,8 @@ class WSCT(BaseWS):
     def ConsultarComprobante(self, tipo_cbte, punto_vta, cbte_nro, reproceso=False):
         "Recuperar los datos completos de un comprobante ya autorizado"
         res = self.client.consultarComprobanteTipoPVentaNro(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
             codigoTipoComprobante=tipo_cbte,
             numeroPuntoVenta=punto_vta,
             numeroComprobante=cbte_nro,
@@ -437,7 +442,8 @@ class WSCT(BaseWS):
             self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
             self.CbteNro = cbteresp['numeroComprobante']  # 1L
             self.PuntoVenta = cbteresp['numeroPuntoVenta']  # 4000
-            self.Vencimiento = cbteresp['fechaVencimiento'].strftime("%Y/%m/%d")
+            self.Vencimiento = cbteresp['fechaVencimiento'].strftime(
+                "%Y/%m/%d")
             self.ImpTotal = str(cbteresp['importeTotal'])
             self.CAE = str(cbteresp['codigoAutorizacion'])  # 60423794871430L
             self.EmisionTipo = cbteresp['codigoTipoAutorizacion'] == 'A' and 'CAEA' or 'CAE'
@@ -449,7 +455,8 @@ class WSCT(BaseWS):
     def ConsultarTiposComprobante(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         res = self.client.consultarTiposComprobantes(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
         ret = res['consultarTiposComprobantesReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
@@ -458,7 +465,8 @@ class WSCT(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarTiposDocumento(self):
         res = self.client.consultarTiposDocumento(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
         ret = res['consultarTiposDocumentoReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
@@ -468,7 +476,8 @@ class WSCT(BaseWS):
     def ConsultarTiposIVA(self):
         "Este método permite consultar los tipos de IVA habilitados en este ws"
         res = self.client.consultarTiposIVA(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
         ret = res['consultarTiposIVAReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcionString']
@@ -478,7 +487,8 @@ class WSCT(BaseWS):
     def ConsultarCondicionesIVA(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         res = self.client.consultarCondicionesIVA(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
         ret = res['consultarCondicionesIVAReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcionString']
@@ -488,7 +498,8 @@ class WSCT(BaseWS):
     def ConsultarMonedas(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         res = self.client.consultarMonedas(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
         ret = res['consultarMonedasReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcionString']
@@ -498,7 +509,8 @@ class WSCT(BaseWS):
     def ConsultarTiposItem(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         res = self.client.consultarTiposItem(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
         ret = res['consultarTiposItemReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
@@ -508,7 +520,8 @@ class WSCT(BaseWS):
     def ConsultarCodigosItemTurismo(self):
         "Este método permite consultar los códigos de los ítems de Turismo"
         res = self.client.consultarCodigosItemTurismo(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
         ret = res['consultarCodigosItemTurismoReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
@@ -518,7 +531,8 @@ class WSCT(BaseWS):
     def ConsultarTiposTributo(self):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         res = self.client.consultarTiposTributo(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
         ret = res['consultarTiposTributoReturn']
         return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcionString']
@@ -527,10 +541,12 @@ class WSCT(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarCotizacion(self, moneda_id):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
-        ret = self.client.consultarCotizacion(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+        res = self.client.consultarCotizacion(
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
             codigoMoneda=moneda_id,
         )
+        ret = res['consultarCotizacionReturn']
         self.__analizar_errores(ret)
         if 'cotizacionMoneda' in ret:
             return str(ret['cotizacionMoneda'])
@@ -539,16 +555,21 @@ class WSCT(BaseWS):
     def ConsultarPuntosVenta(self, fmt="%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s"):
         "Este método permite consultar los puntos de venta habilitados para CAE en este WS"
         res = self.client.consultarPuntosVenta(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit},
         )
+        result = res['consultarPuntosVentaReturn']
+        self.__analizar_errores(result)
         ret = []
-        self.__analizar_errores(ret)
-        for p in res['consultarPuntosVentaReturn'].get("arrayPuntosVenta", {}):
+        for p in result.get("arrayPuntosVenta", {}):
             p = p['puntoVenta']
             if 'fechaBaja' not in p:
                 p['fechaBaja'] = ""
             ret.append(fmt % p if fmt else p)
-        return ret
+        if ret:
+            return ret
+        else:
+            return self.ErrMsg
 
     @inicializar_y_capturar_excepciones
     def ConsultarPaises(self, sep="|"):
@@ -630,7 +651,8 @@ class WSCT(BaseWS):
     def ConsultarTiposTarjeta(self, forma_pago=None, sep="|"):
         "Recuperar lista de los tipos de tarjeta habilitados"
         ret = self.client.consultarTiposTarjeta(
-            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit, },
+            authRequest={'token': self.Token, 'sign': self.Sign,
+                         'cuitRepresentada': self.Cuit, },
             formaPago=forma_pago)
         result = ret['consultarTiposTarjetaReturn']
         self.__analizar_errores(result)
@@ -692,7 +714,8 @@ def main():
         try:
             tipo_cbte = 195
             punto_vta = 4000
-            cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+            cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(
+                tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             tipo_doc = 80
             nro_doc = "50000000059"
@@ -770,12 +793,15 @@ def main():
                 wsct.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
                 print("CAE consulta", wsct.CAE, wsct.CAE == cae)
                 print("NRO consulta", wsct.CbteNro, wsct.CbteNro == cbte_nro)
-                print("TOTAL consulta", wsct.ImpTotal, wsct.ImpTotal == imp_total)
+                print("TOTAL consulta", wsct.ImpTotal,
+                      wsct.ImpTotal == imp_total)
 
                 wsct.AnalizarXml("XmlResponse")
-                assert wsct.ObtenerTagXml('codigoAutorizacion') == str(wsct.CAE)
+                assert wsct.ObtenerTagXml(
+                    'codigoAutorizacion') == str(wsct.CAE)
                 assert wsct.ObtenerTagXml('codigoConcepto') == str(concepto)
-                assert wsct.ObtenerTagXml('arrayItems', 0, 'item', 'unidadesMtx') == '123456'
+                assert wsct.ObtenerTagXml(
+                    'arrayItems', 0, 'item', 'unidadesMtx') == '123456'
 
         except BaseException:
             print(wsct.XmlRequest)
