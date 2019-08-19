@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.04a"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -81,8 +81,10 @@ class WSFECred(BaseWS):
     "Interfaz para el WebService de Factura de Crédito Electronica"
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'CrearFECred',  'AgregarFormasCancelacion', 'AgregarAjustesOperacion', 'AgregarRetenciones',
-                        'AgregarConfirmarNotasDC',
+                        'AgregarConfirmarNotasDC', 'AgregarMotivoRechazo',
+                        'AceptarFECred', 'RechazarFECred',
                         'ConsultarCtasCtes', 'LeerCtaCte',
+                        'ConsultarComprobantes', 'LeerCampoComprobante',
                         'ConsultarTiposAjustesOperacion', 'ConsultarTiposFormasCancelacion',
                         'ConsultarTiposMotivosRechazo', 'ConsultarTiposRetenciones',
                         'ConsultarMontoObligadoRecepcion',
@@ -265,8 +267,6 @@ class WSFECred(BaseWS):
     def RechazarFECred(self):
         "Rechazar la Cta. Cte. de una Factura Electrónica de Crédito"
         # debiendo indicar el motivo del rechazo.
-        print self.client.help("rechazarFECred")
-        # pudiendo indicar: pagos parciales, retenciones y/o embargos
         params = {
             'authRequest': {
                 'cuitRepresentada': self.Cuit,
@@ -274,8 +274,6 @@ class WSFECred(BaseWS):
                 'token': self.Token
                 },
             }
-        #={u'idFactura': {u'CUITEmisor': <type 'long'>, u'codTipoCmp': <alias 'short' for '<type 'int'>'>, u'nroCmp': <type 'long'>, u'ptoVta': <type 'int'>}, u'codCtaCte': <type 'long'>}, 
-        # arrayMotivosRechazo=[{u'motivoRechazo': {u'descMotivo': <type 'unicode'>, u'justificacion': <type 'unicode'>, u'codMotivo': <alias 'short' for '<type 'int'>'>}}])
         params.update(self.factura)
         response = self.client.rechazarFECred(**params)
         ret = response.get("operacionFECredReturn")
@@ -473,6 +471,166 @@ class WSFECred(BaseWS):
         return d
 
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarComprobantes(self, cuit_contraparte=None, rol="Receptor",
+                          fecha_desde=None, fecha_hasta=None, fecha_tipo="Emision",
+                          cod_tipo_cmp=None, estado_cmp=None, cod_cta_cte=None, estado_cta_cte=None):
+        """Obtener información sobre los comprobantes Emitidos y Recibidos
+
+        Args:
+            cuit_contraparte (str): Cuit de la contraparte, que ocupa el rol opuesto (CUITContraparte)
+            rol (str): Identificar la CUIT Representada que origina la cuenta corriente (rolCUITRepresentada)
+                "Emisor" o "Receptor"
+            fecha_desde (str): Fecha Desde, si no se indica se usa "2019-01-01"
+            fecha_hasta (str): Fecha Hasta, si no se indica se usa la fecha de hoy
+            fecha_tipo (str): permite determinar sobre qué fecha vamos a hacer el filtro (TipoFechaSimpleType)
+                "Emision": Fecha de Emisión
+                "PuestaDispo": Fecha puesta a Disposición
+                "VenPago": Fecha vencimiento de pago
+                "VenAcep": Fecha vencimiento aceptación
+                "Acep": Fecha aceptación
+                "InfoAgDptoCltv": Fecha informada a Agente de Deposito
+            cod_tipo_cmp (int): Código del Tipo de comprobante
+            estado_cmp (str): Estado del comprobante
+                "PendienteRecepcion", "Recepcionado", "Aceptado", "Rechazado", "InformadaAgDpto"
+            cod_cta_cte (int): Código de la Cuenta Corriente
+            estado_cta_cte (str): Estado de la cuenta corriente a consultar
+                "Modificable", "Aceptada", "Rechazada", "CanceladaTotal", "InformadaAgDpto"        
+
+        Returns:
+            int: cantidad de comprobantes que coinciden con el filtro de búsqueda
+        """
+        if not fecha_desde:
+            fecha_desde = datetime.datetime.today().strftime("2019-01-01")
+        if not fecha_hasta:
+            fecha_hasta = datetime.datetime.today().strftime("%Y-%m-%d")
+        response = self.client.consultarComprobantes(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit,
+                            },
+                            CUITContraparte=cuit_contraparte,
+                            rolCUITRepresentada=rol,
+                            fecha={
+                                'desde': fecha_desde, 
+                                'hasta': fecha_hasta, 
+                                'tipo': fecha_tipo
+                            },
+                            codTipoCmp=cod_tipo_cmp,
+                            estadoCmp=estado_cmp,
+                            codCtaCte=cod_cta_cte,
+                            estadoCtaCte=estado_cta_cte,
+                        )
+        ret = response.get('consultarCmpReturn')
+        self.comprobantes = []
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            #import dbg ; dbg.set_trace()
+            array = ret.get('arrayComprobantes', [])
+            for c in [it['comprobante'] for it in array]:
+                cbte = {
+                    'cod_cta_cte': c['codCtaCte'], 
+                    'tipo_cbte': c['codTipoCmp'], 
+                    'punto_vta': c['ptovta'], 
+                    'cbte_nro': c['nroCmp'],
+                    'cuit_emisor': c['cuitEmisor'], 
+                    'cuit_receptor': c['cuitReceptor'], 
+                    'razon_social_emi': c.get('razonSocialEmi'), 
+                    'razon_social_recep': c['razonSocialRecep'],
+                    'cbu_emisor': c.get('CBUEmisor'),
+                    'datos_comerciales': c.get('datosComerciales'),
+                    'cbu_pago': c.get('CBUdePago'),
+                    'alias_emisor': c.get('AliasEmisor'),
+                    'es_post_aceptacion': c.get('esPostAceptacion'), 
+                    'moneda_id': c.get('codMoneda'), 
+                    'moneda_ctz': c.get('cotizacionMoneda'), 
+                    'tipo_cod_auto': c.get('tipoCodAuto'), 
+                    'cod_autorizacion': c.get('codAutorizacion'), 
+                    'datos_generales': c.get('datos_generales'),
+                    'fecha_emision': c.get('fechaEmision'), 
+                    'fecha_hora_acep': c.get('fechaHoraAcep'), 
+                    'fecha_venc_acep': c.get('fechaVenAcep'),
+                    'id_pago_ag_dpto_cltv': c.get('idPagoAgDptoCltv'),
+                    'tipo_acep': c.get('tipoAcep'),
+                    'es_anulacion': c.get('esAnulacion'), 
+                    'fecha_venc_pago': c.get('fechaVenPago'), 
+                    'estado': c['estado']['estado'],
+                    'fecha_hora_estado': c['estado']['fechaHoraEstado'],  
+                    'fecha_puesta_dispo': c.get('fechaPuestaDispo'), 
+                    'referencias_comerciales': [ref['texto'] for ref in c.get('referenciasComerciales', [])], 
+                    'imp_total': c.get('importeTotal'), 
+                    'leyenda_comercial': c.get('leyendaComercial'), 
+                    'fecha_info_ag_dpto_cltv': c.get('fechaInfoAgDptoCltv'), 
+                    'info_ag_dtpo_cltv': c.get('infoAgDtpoCltv'),
+                    'motivos_rechazo': [{
+                        'desc': mot['descMotivo'], 
+                        'justificacion': mot['justificacion'],
+                        'cod_motivo': mot['codMotivo'],
+                        } for mot in [arr['motivoRechazo'] for arr in c.get('arrayMotivosRechazo', [])]], 
+                    'items': [{
+                        'orden': item.get('orden'), 
+                        'ds': item.get('descripcion'), 
+                        'codigo': item.get('codigo'), 
+                        'umed': item.get('codigoUnidadMedida'), 
+                        'cantidad': item.get('cantidad'), 
+                        'precio': item.get('precioUnitario'), 
+                        'importe': item.get('importeItem'), 
+                        'importe_bonif': item.get('importeBonificacion'), 
+                        'ncm': item.get('codNomMercosur'), 
+                        'iva_id': item.get('codigoCondicionIVA'), 
+                        'imp_iva': item.get('importeIVA'), 
+                        'u_mtx': item.get('unidadesMtx'), 
+                        'cod_mtx': item.get('codigoMtx'),
+                        } for item in [arr['item'] for arr in c.get('arrayItems', [])]],
+                    'subtotales_iva': [{
+                        'base_imp': iva['baseImponible'], 
+                        'iva_id': iva['codigo'], 
+                        'importe': iva['importe'],
+                        } for iva in [arr['subtotalIVA'] for arr in c.get('arraySubtotalesIVA', [])]],
+                    'tributos': [{
+                        'tributo_id': trib.get('codigo'), 
+                        'base_imp': trib.get('baseImponible'),
+                        'importe': trib.get('importe'),
+                        'detalle': trib.get('detalle'),
+                        } for trib in [arr['otroTributo'] for arr in c.get('arrayOtrosTributos', [])]],
+                    'cbtes_asoc': [{
+                        'cuit': cbte_asoc['CUITEmisor'],
+                        'tipo': cbte_asoc['codTipoCmp'], 
+                        'pto_vta': cbte_asoc['ptoVta'],
+                        'nro': cbte_asoc['nroCmp'],
+                        } for cbte_asoc in ([c['idComprobanteAsociado']] if 'idComprobanteAsociado' in c else [])],
+                }
+                self.comprobantes.append(cbte)
+        return len(self.comprobantes)
+
+
+    @inicializar_y_capturar_excepciones
+    def LeerCampoComprobante(self, pos=0, *campos):
+        """Leer un campo del comprobante devuelto por ConsultarComprobantes
+
+        Args:
+            pos (int): posición del comprobante (0 a n)
+            campos (int o str): clave string (dict) o una posición int (list)
+
+        Returns:
+            str: valor del campo del comprobante
+        """
+        ret = self.comprobantes[pos]
+        for campo in campos:
+            if isinstance(ret, dict) and isinstance(campo, basestring):
+                ret = ret.get(campo)
+            elif isinstance(ret, list) and len(ret) > campo:
+                ret = ret[campo]
+            else:
+                self.Excepcion = u"El campo %s solicitado no existe" % campo
+                ret = None
+            if ret is None:
+                break
+        return str(ret)
+
+
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
@@ -577,10 +735,23 @@ if __name__ == '__main__':
             ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol="Emisor")
             print "Observaciones:", wsfecred.Obs
             import pprint
-            for cc in ret:
+            for cc in wsfecred.ctas_ctes:
                 pprint.pprint(cc)
+            print wsfecred.LeerCtaCte()
 
-        if '--prueba' in sys.argv:
+        if '--comprobantes' in sys.argv:
+            try:
+                cuit_contraparte = int(sys.argv[sys.argv.index("--comprobantes") + 1])
+            except IndexError, ValueError:
+                cuit_contraparte = None
+            ret = wsfecred.ConsultarComprobantes(cuit_contraparte, rol="Emisor")
+            print "Observaciones:", wsfecred.Obs
+            import pprint
+            for cc in wsfecred.comprobantes:
+                pprint.pprint(cc)
+            print wsfecred.LeerCampoComprobante(0, 'cod_cta_cte')
+
+        if '--aceptar' in sys.argv:
             fec = dict(
                 cuit_emisor=30999999999,
                 tipo_cbte=201, punto_vta=99, nro_cbte=22,
