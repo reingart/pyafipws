@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.03a"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -99,7 +99,7 @@ class WSFECred(BaseWS):
 
     # Variables globales para BaseWS:
     HOMO = HOMO
-    WSDL = WSDL[HOMO]
+    WSDL = WSDL[1]
     LanzarExcepciones = False
     Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
@@ -173,6 +173,7 @@ class WSFECred(BaseWS):
             'arrayFormasCancelacion': [],
             'arrayRetenciones': [],
             'arrayConfirmarNotasDC': [],
+            'arrayMotivosRechazo': [],
             }
         return True
 
@@ -228,6 +229,18 @@ class WSFECred(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
+    def AgregarMotivoRechazo(self, cod_motivo, desc, justificacion, **kwargs):
+        "Agrega la información referente al motivo de rechazo de una FCE"
+        self.factura['arrayMotivosRechazo'].append({
+            'motivoRechazo': {
+                'codMotivo': cod_motivo,
+                'descMotivo': desc,
+                'justificacion': justificacion,
+                }
+            })
+        return True
+
+    @inicializar_y_capturar_excepciones
     def AceptarFECred(self):
         "Aceptar el saldo actual de la Cta. Cte. de una Factura de Crédito"
         # pudiendo indicar: pagos parciales, retenciones y/o embargos
@@ -240,6 +253,31 @@ class WSFECred(BaseWS):
             }
         params.update(self.factura)
         response = self.client.aceptarFECred(**params)
+        ret = response.get("operacionFECredReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.AnalizarFECred(ret)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def RechazarFECred(self):
+        "Rechazar la Cta. Cte. de una Factura Electrónica de Crédito"
+        # debiendo indicar el motivo del rechazo.
+        print self.client.help("rechazarFECred")
+        # pudiendo indicar: pagos parciales, retenciones y/o embargos
+        params = {
+            'authRequest': {
+                'cuitRepresentada': self.Cuit,
+                'sign': self.Sign,
+                'token': self.Token
+                },
+            }
+        #={u'idFactura': {u'CUITEmisor': <type 'long'>, u'codTipoCmp': <alias 'short' for '<type 'int'>'>, u'nroCmp': <type 'long'>, u'ptoVta': <type 'int'>}, u'codCtaCte': <type 'long'>}, 
+        # arrayMotivosRechazo=[{u'motivoRechazo': {u'descMotivo': <type 'unicode'>, u'justificacion': <type 'unicode'>, u'codMotivo': <alias 'short' for '<type 'int'>'>}}])
+        params.update(self.factura)
+        response = self.client.rechazarFECred(**params)
         ret = response.get("operacionFECredReturn")
         if ret:
             self.__analizar_errores(ret)
@@ -337,8 +375,8 @@ class WSFECred(BaseWS):
             self.__analizar_errores(ret)
             self.__analizar_observaciones(ret)
             self.__analizar_evento(ret)
-            self.Resultado = ret['obligado']
-            return ret['montoDesde']
+            self.Resultado = ret.get('obligado', '')
+            return ret.get('montoDesde', -1)
 
 
     @inicializar_y_capturar_excepciones
@@ -485,7 +523,7 @@ if __name__ == '__main__':
         if config.has_option('WSFECred','URL') and not HOMO:
             wsfecred_url = config.get('WSFECred','URL')
         else:
-            wsfecred_url = WSDL[HOMO]
+            wsfecred_url = None
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
@@ -558,6 +596,17 @@ if __name__ == '__main__':
             print "Resultado", wsfecred.Resultado
             print "CodCtaCte", wsfecred.CodCtaCte
 
+
+        if '--rechazar' in sys.argv:
+            fec = dict(
+                cuit_emisor=30999999999,
+                tipo_cbte=201, punto_vta=99, nro_cbte=22,
+                )
+            wsfecred.CrearFECred(**fec)
+            wsfecred.AgregarMotivoRechazo(cod_motivo="6", desc="Falta de entrega", justificacion="prueba")
+            wsfecred.RechazarFECred()
+            print "Resultado", wsfecred.Resultado
+            print "CodCtaCte", wsfecred.CodCtaCte
 
         # Recuperar parámetros:
 
