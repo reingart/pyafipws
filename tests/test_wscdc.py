@@ -16,6 +16,7 @@ __license__ = "GPL 3.0"
 
 import os
 import sys
+import pytest
 
 from pyafipws.wsaa import WSAA
 from pyafipws.wscdc import WSCDC
@@ -38,6 +39,7 @@ wscdc.SetTicketAcceso(ta)
 wscdc.Conectar(CACHE, WSDL)
 
 
+@pytest.mark.skip
 def test_server_status():
     """Test de estado de servidores."""
     wscdc.Dummy()
