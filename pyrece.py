@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.31b"
+__version__ = "1.32a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -116,6 +116,15 @@ class PyRece(gui.Controller):
             12:u"Nota de Débito C",
             13:u"Nota de Crédito C",
             15:u"Recibo C",
+            201:u"Factura de Crédito A (FCE)",
+            202:u"Notas de Débito A (FCE)",
+            203:u"Notas de Crédito A (FCE)",
+            206:u"Facturas de Crédito B (FCE)",
+            207:u"Notas de Débito B (FCE)",
+            208:u"Notas de Crédito B(FCE)",
+            211:u"Factura de Crédito C (FCE)",
+            212:u"Nota de Débito C (FCE)",
+            213:u"Nota de Crédito C (FCE)",
             }
 
         self.component.bgcolor = "light gray"
@@ -196,14 +205,15 @@ class PyRece(gui.Controller):
         self.log(''.join(ex))
         gui.alert(text, 'Error %s' % code)
 
-    def verifica_ws(self):
+    def verifica_ws(self, dummy=True):
         if not self.ws:
             gui.alert("Debe seleccionar el webservice a utilizar!", 'Advertencia')
             raise RuntimeError()
         if not self.token or not self.sign:
             gui.alert("Debe autenticarse con AFIP!", 'Advertencia')
             raise RuntimeError()
-        self.ws.Dummy()
+        if dummy:
+            self.ws.Dummy()
 
     def on_btnMarcarTodo_click(self, event):
         for it in self.components.lvwListado.items:
@@ -339,9 +349,9 @@ class PyRece(gui.Controller):
         self.components.txtEstado.value = ""
 
     def on_menu_ayuda_mensajesXML_click(self, event):
-        self.verifica_ws()
+        self.verifica_ws(dummy=False)
         self.components.txtEstado.value = u"XmlRequest:\n%s\n\nXmlResponse:\n%s" % (
-            self.ws.xml_request, self.ws.xml_response)
+            self.ws.XmlRequest, self.ws.XmlResponse)
         self.component.size = (592, 517)
 
     def on_menu_ayuda_estado_click(self, event):
@@ -382,18 +392,21 @@ class PyRece(gui.Controller):
             else:
                 gui.alert('Debe seleccionar servicio web!', 'Advertencia')
                 return
-
-            self.log("Creando TRA %s ..." % service)
+            
             ws = wsaa.WSAA()
-            tra = ws.CreateTRA(service)
-            self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
-            cms = ws.SignTRA(str(tra),str(cert),str(privatekey))
-            self.log("Llamando a WSAA... " + wsaa_url)
-            ws.Conectar("", wsdl=wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
-            self.log("Proxy: %s" % proxy_dict)
-            xml = ws.LoginCMS(str(cms))
-            self.log("Procesando respuesta...")
-            if xml:
+            self.log("Solicitando TA para %s con %s %s via %s..." % (service, str(cert), str(privatekey), wsaa_url))
+            ta = ws.Autenticar(service, cert, privatekey, wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
+            if not ta:
+                self.log("Creando TRA %s ..." % service)
+                tra = ws.CreateTRA(service)
+                self.log("Frimando TRA (CMS) con %s %s..." % (str(cert),str(privatekey)))
+                cms = ws.SignTRA(str(tra),str(cert),str(privatekey))
+                self.log("Llamando a WSAA... " + wsaa_url)
+                ws.Conectar("", wsdl=wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
+                self.log("Proxy: %s" % proxy_dict)
+                ta = ws.LoginCMS(str(cms))
+                self.log("Procesando respuesta...")
+            if ta:
                 self.token = ws.Token
                 self.sign = ws.Sign
             if DEBUG:
@@ -406,7 +419,7 @@ class PyRece(gui.Controller):
                 self.ws.Token = self.token
                 self.ws.Sign = self.sign
 
-            if xml:
+            if ta:
                 gui.alert('Autenticado OK!', 'Advertencia')
             else:
                 gui.alert(u'Respuesta: %s' % ws.XmlResponse, u'No se pudo autenticar: %s' % ws.Excepcion)
@@ -581,8 +594,10 @@ class PyRece(gui.Controller):
                             tipo = kargs[k % 'tipo']
                             pto_vta = kargs[k % 'pto_vta']
                             nro = kargs[k % 'nro']
-                            if id:
-                                self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                            cuit = kargs.get(k % 'cuit')
+                            fecha = kargs.get(k % 'fecha')
+                            if tipo:
+                                self.ws.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha)
                         else:
                             break
 

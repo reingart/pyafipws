@@ -117,6 +117,22 @@ def aplanar(regs):
                     'tributo_alic_%s' % li: tributo['alic'],
                     'tributo_importe_%s' % li: tributo['importe'],
                     })
+        for i, opcional in enumerate(reg.get('opcionales', [])):
+            li = i+1
+            fila.update({
+                    'opcional_id_%s' % li: opcional['opcional_id'],
+                    'opcional_valor_%s' % li: opcional['valor'],
+                    })
+        for i, cbte_asoc in enumerate(reg.get('cbtes_asoc', [])):
+            li = i+1
+            fila.update({
+                    'cbte_asoc_tipo_%s' % li: cbte_asoc['cbte_tipo'],
+                    'cbte_asoc_pto_vta_%s' % li: cbte_asoc['cbte_punto_vta'],
+                    'cbte_asoc_nro_%s' % li: cbte_asoc['cbte_nro'],
+                    'cbte_asoc_cuit_%s' % li: cbte_asoc['cbte_cuit'],
+                    'cbte_asoc_fecha_%s' % li: cbte_asoc['cbte_fecha'],
+                    })
+
         filas.append(fila)
     
     
@@ -218,13 +234,21 @@ def desaplanar(filas):
                 'dst_merc': dic.pop('dst_merc_%s'  % li),
                 } for li in xrange(1, max_li("id_permiso_"))
                   if dic['id_permiso_%s'  % li]]
-                  
+
+        reg['opcionales'] = [{
+                'opcional_id': dic.pop('opcional_id_%s'  % li),
+                'valor': dic.pop('opcional_valor_%s'  % li),
+                } for li in xrange(1, max_li("opcional_id_"))
+                  if dic['opcional_id_%s'  % li]]
+
         reg['cbtes_asoc'] = [{
-                'cbte_tipo': dic.pop('cbte_tipo_%s'  % li),
-                'cbte_punto_vta': dic.pop('cbte_punto_vta_%s'  % li),
-                'cbte_nro': dic.pop('cbte_nro_%s'  % li),
-                } for li in xrange(1, max_li("cbte_tipo_"))
-                  if dic['cbte_tipo_%s'  % li]]
+                'cbte_tipo': dic.pop('cbte_asoc_tipo_%s'  % li),
+                'cbte_punto_vta': dic.pop('cbte_asoc_pto_vta_%s'  % li),
+                'cbte_nro': dic.pop('cbte_asoc_nro_%s'  % li),
+                'cbte_cuit': dic.pop('cbte_asoc_cuit_%s'  % li),
+                'cbte_fecha': dic.pop('cbte_asoc_fecha_%s'  % li),
+                } for li in xrange(1, max_li("cbte_asoc_tipo_"))
+                  if dic['cbte_asoc_tipo_%s'  % li]]
                 
         reg['forma_pago'] = dic.pop('forma_pago')
 
