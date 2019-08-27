@@ -172,11 +172,13 @@ class WSFEv1(BaseWS):
         else:
             return False
 
-    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, **kwarg):
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, fecha=None, **kwarg):
         "Agrego un comprobante asociado a una factura (interna)"
         cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
         if cuit is not None:
             cmp_asoc['cuit'] = cuit
+        if fecha is not None:
+            cmp_asoc['fecha'] = fecha
         self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
@@ -250,9 +252,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': f['cbtes_asoc'] and [
@@ -261,6 +260,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'],
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
+                            'CbteFch': cbte_asoc.get('fecha'),
                         }}
                         for cbte_asoc in f['cbtes_asoc']] or None,
                     'Tributos': f['tributos'] and [
@@ -572,9 +572,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': [
@@ -764,9 +761,6 @@ class WSFEv1(BaseWS):
                     'FchServDesde': f.get('fecha_serv_desde'),
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
-                    'FchServDesde': f.get('fecha_serv_desde'),
-                    'FchServHasta': f.get('fecha_serv_hasta'),
-                    'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CbtesAsoc': [
@@ -1030,7 +1024,6 @@ def main():
         punto_vta = 4001
         cbte_nro = int(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
-        concepto = 2 if ('--usados' not in sys.argv and '--rg4109' not in sys.argv) else 1
         tipo_doc = 80 if '--usados' not in sys.argv else 30
         nro_doc = "30500010912"
         cbt_desde = cbte_nro + 1
@@ -1042,15 +1035,15 @@ def main():
         imp_trib = "1.00"
         imp_op_ex = "0.00"
         fecha_cbte = fecha
-        # Fechas del per�odo del servicio facturado y vencimiento de pago:
+        fecha_venc_pago = fecha_serv_desde = fecha_serv_hasta = None
+        # Fechas del período del servicio facturado y vencimiento de pago:
         if concepto > 1:
             fecha_venc_pago = fecha
-            fecha_serv_desde = fecha
-            fecha_serv_hasta = fecha
-        else:
-            fecha_venc_pago = fecha_serv_desde = fecha_serv_hasta = None
-        moneda_id = 'PES'
-        moneda_ctz = '1.000'
+            fecha_serv_desde = fecha; fecha_serv_hasta = fecha
+        elif '--fce' in sys.argv:
+            # obligatorio en Factura de Crédito Electrónica MiPyMEs (FCE):
+            fecha_venc_pago = fecha
+        moneda_id = 'PES'; moneda_ctz = '1.000'
 
         # inicializar prueba de multiples comprobantes por solicitud
         if "--multiple" in sys.argv:
@@ -1075,13 +1068,15 @@ def main():
                 wsfev1.EstablecerCampoFactura("caea", caea)
                 wsfev1.EstablecerCampoFactura("fecha_hs_gen", "yyyymmddhhmiss")
 
-            # comprobantes asociados (notas de cr�dito / d�bito)
-            if tipo_cbte in (2, 3, 7, 8, 12, 13):
-                tipo = 3
-                pto_vta = 2
-                nro = 1234
+            # comprobantes asociados (notas de crédito / débito)
+            if tipo_cbte in (2, 3, 7, 8, 12, 13, 203, 208, 213):
+                tipo = 201 if tipo_cbte in (203, 208, 213) else 3
+                pto_vta = 4001
+                nro = 1
                 cuit = "20267565393"
-                wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit)
+                # obligatorio en Factura de Crédito Electrónica MiPyMEs (FCE):
+                fecha_cbte = fecha if tipo_cbte in (203, 208, 213) else None
+                wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha_cbte)
 
             # otros tributos:
             tributo_id = 99
@@ -1127,7 +1122,14 @@ def main():
                 wsfev1.AgregarComprador(80, "30500010912", 99.99)
                 wsfev1.AgregarComprador(80, "30999032083", 0.01)
 
-            # agregar la factura creada internamente para solicitud m�ltiple:
+            # datos de Factura de Crédito Electrónica MiPyMEs (FCE):
+            if '--fce' in sys.argv:
+                wsfev1.AgregarOpcional(2101, "2850590940090418135201")  # CBU
+                wsfev1.AgregarOpcional(2102, "pyafipws")               # alias
+                if tipo_cbte in (203, 208, 213):
+                    wsfev1.AgregarOpcional(22, "S")  # Anulación
+
+            # agregar la factura creada internamente para solicitud múltiple:
             if "--multiple" in sys.argv:
                 wsfev1.AgregarFacturaX()
 
