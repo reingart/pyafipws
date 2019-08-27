@@ -10,9 +10,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para obtener código de autorización electrónico (CAE) del web service
-WSBFEv1 de AFIP (Bonos Fiscales electronicos v1.1 - Factura Electrónica RG)
-a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
+"""Mï¿½dulo para obtener cï¿½digo de autorizaciï¿½n electrï¿½nico (CAE) del web service
+WSBFEv1 de AFIP (Bonos Fiscales electronicos v1.1 - Factura Electrï¿½nica RG)
+a fin de gestionar los Bonos en la Secretarï¿½a de Industria segï¿½n RG 2557
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
@@ -32,8 +32,8 @@ WSDL = "https://wswhomo.afip.gov.ar/wsbfev1/service.asmx?WSDL"
 
 
 class WSBFEv1(BaseWS):
-    "Interfaz para el WebService de Bono Fiscal Electrónico V1 (FE Bs. Capital)"
-    _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
+    "Interfaz para el WebService de Bono Fiscal Electrï¿½nico V1 (FE Bs. Capital)"
+    _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP', 'AgregarOpcional', 'AgregarCmpAsoc',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamUMed',
                         'GetParamTipoIVA', 'GetParamNCM', 'GetParamZonas',
                         'GetParamTipoDoc',
@@ -57,7 +57,7 @@ class WSBFEv1(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologaciï¿½n' or '')
     factura = None
 
     def inicializar(self):
@@ -93,7 +93,7 @@ class WSBFEv1(BaseWS):
                      imp_perc=0.00, imp_iibb=0.00, imp_perc_mun=0.00, imp_internos=0.00,
                      imp_moneda_id=0, imp_moneda_ctz=1.0, **kwargs):
         "Creo un objeto factura (interna)"
-        # Creo una factura para bonos fiscales electrónicos
+        # Creo una factura para bonos fiscales electrï¿½nicos
 
         fact = {'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
                 'cbte_nro': cbte_nro, 'fecha_cbte': fecha_cbte, 'zona': zona,
@@ -105,6 +105,7 @@ class WSBFEv1(BaseWS):
                 'imp_iibb': imp_iibb, 'imp_internos': imp_internos,
                 'imp_moneda_id': imp_moneda_id, 'imp_moneda_ctz': imp_moneda_ctz,
                 'cbtes_asoc': [],
+                'opcionales': [],
                 'iva': [],
                 'detalles': [],
                 }
@@ -125,6 +126,22 @@ class WSBFEv1(BaseWS):
             'iva_id': iva_id,
             'imp_total': imp_total,
         })
+        return True
+
+    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, fecha=None, **kwarg):
+        "Agrego un comprobante asociado a una factura (interna)"
+        cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
+        if cuit is not None:
+            cmp_asoc['cuit'] = cuit
+        if fecha is not None:
+            cmp_asoc['fecha'] = fecha
+        self.factura['cbtes_asoc'].append(cmp_asoc)
+        return True
+
+    def AgregarOpcional(self, opcional_id=0, valor="", **kwarg):
+        "Agrego un dato opcional a una factura (interna)"
+        op = { 'opcional_id': opcional_id, 'valor': valor }
+        self.factura['opcionales'].append(op)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -162,6 +179,20 @@ class WSBFEv1(BaseWS):
                         'Imp_total': d['imp_total'],
                         'Iva_id': d['iva_id'],
                     }} for d in f['detalles']],
+                'CbtesAsoc': f['cbtes_asoc'] and [
+                    {'CbteAsoc': {
+                        'Tipo_cbte': cbte_asoc['tipo'],
+                        'Punto_vta': cbte_asoc['pto_vta'],
+                        'Cbte_nro': cbte_asoc['nro'],
+                        'Cuit': cbte_asoc.get('cuit'),
+                        'Fecha_cbte': cbte_asoc.get('fecha'),
+                    }}
+                    for cbte_asoc in f['cbtes_asoc']] or None,
+                'Opcionales': [
+                    {'Opcional': {
+                        'Id': opcional['opcional_id'],
+                        'Valor': opcional['valor'],
+                        }} for opcional in f['opcionales']] or None,
             })
 
         result = ret['BFEAuthorizeResult']
@@ -224,7 +255,7 @@ class WSBFEv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetLastCMP(self, tipo_cbte, punto_vta):
-        "Recuperar último número de comprobante emitido"
+        "Recuperar ï¿½ltimo nï¿½mero de comprobante emitido"
         ret = self.client.BFEGetLast_CMP(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit,
                   "Tipo_cbte": tipo_cbte,
@@ -240,7 +271,7 @@ class WSBFEv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetLastID(self):
-        "Recuperar último número de transacción (ID)"
+        "Recuperar ï¿½ltimo nï¿½mero de transacciï¿½n (ID)"
         ret = self.client.BFEGetLast_ID(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['BFEGetLast_IDResult']
@@ -300,7 +331,7 @@ class WSBFEv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetParamTipoIVA(self):
-        "Recuperar lista de valores referenciales de tipos de IVA (alícuotas)"
+        "Recuperar lista de valores referenciales de tipos de IVA (alï¿½cuotas)"
         ret = self.client.BFEGetPARAM_Tipo_IVA(
             auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['BFEGetPARAM_Tipo_IVAResult']
@@ -360,7 +391,7 @@ class WSBFEv1(BaseWS):
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in tipos]
 
     def GetParamNCM(self):
-        "Recuperar lista de valores referenciales de códigos del Nomenclador Común del Mercosur"
+        "Recuperar lista de valores referenciales de cï¿½digos del Nomenclador Comï¿½n del Mercosur"
         ret = self.client.BFEGetPARAM_NCM(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['BFEGetPARAM_NCMResult']
@@ -399,7 +430,7 @@ class WSBFEv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetParamCtz(self, moneda_id):
-        "Recuperador de cotización de moneda"
+        "Recuperador de cotizaciï¿½n de moneda"
         ret = self.client.BFEGetPARAM_Ctz(
             auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             MonId=moneda_id,
@@ -421,7 +452,7 @@ class WSBFE(WSBFEv1):
 
     def __init__(self):
         WSBFEv1.__init__(self)
-        self.Version = "%s %s WSBFEv1" % (__version__, HOMO and 'Homologación' or '')
+        self.Version = "%s %s WSBFEv1" % (__version__, HOMO and 'Homologaciï¿½n' or '')
 
     def Conectar(self, cache=None, url="", **kwargs):
         # Ajustar URL de V0 a V1:
@@ -434,7 +465,7 @@ class WSBFE(WSBFEv1):
         return WSBFEv1.Conectar(self, cache=cache, wsdl=url, **kwargs)
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciï¿½n (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSBFEv1.InstallDir = get_install_dir()
 
 
@@ -451,9 +482,9 @@ if __name__ == "__main__":
             win32com.server.register.UseCommandLine(WSBFE)
     else:
 
-        # Crear objeto interface Web Service de Factura Electrónica de Exportación
+        # Crear objeto interface Web Service de Factura Electrï¿½nica de Exportaciï¿½n
         wsbfev1 = WSBFEv1()
-        # Setear token y sing de autorización (pasos previos)
+        # Setear token y sing de autorizaciï¿½n (pasos previos)
 
         # obteniendo el TA para pruebas
         from .wsaa import WSAA
@@ -463,7 +494,7 @@ if __name__ == "__main__":
         # CUIT del emisor (debe estar registrado en la AFIP)
         wsbfev1.Cuit = "20267565393"
 
-        # Conectar al Servicio Web de Facturación (homologación)
+        # Conectar al Servicio Web de Facturaciï¿½n (homologaciï¿½n)
         wsdl = "http://wswhomo.afip.gov.ar/WSBFEv1/service.asmx"
         cache = proxy = ""
         wrapper = "httplib2"
@@ -480,15 +511,15 @@ if __name__ == "__main__":
         if "--prueba" in sys.argv:
             try:
                 # Establezco los valores de la factura a autorizar:
-                tipo_cbte = '--nc' in sys.argv and 3 or 1  # FC/NC Expo (ver tabla de parámetros)
+                tipo_cbte = '--nc' in sys.argv and 3 or 1  # FC/NC Expo (ver tabla de parï¿½metros)
                 punto_vta = 5
                 tipo_doc = 80
                 nro_doc = 23111111113
                 zona = 0
-                # Obtengo el último número de comprobante y le agrego 1
+                # Obtengo el ï¿½ltimo nï¿½mero de comprobante y le agrego 1
                 cbte_nro = int(wsbfev1.GetLastCMP(tipo_cbte, punto_vta)) + 1
                 fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
-                imp_moneda_id = "PES"  # (ver tabla de parámetros)
+                imp_moneda_id = "PES"  # (ver tabla de parï¿½metros)
                 imp_moneda_ctz = 1
                 imp_neto = "390.00"
                 impto_liq = "81.90"      # 21% IVA
@@ -528,12 +559,29 @@ if __name__ == "__main__":
                 imp_total = "229.90"
                 ok = wsbfev1.AgregarItem(ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total)
 
-                # id = "99000000000100" # número propio de transacción
-                # obtengo el último ID y le adiciono 1
+                 # comprobantes asociados (notas de crÃ©dito / dÃ©bito)
+                if True:
+                    tipo = 91
+                    pto_vta = 4001
+                    nro = 1
+                    cuit = "20267565393"
+                    # obligatorio en Factura de CrÃ©dito ElectrÃ³nica MiPyMEs (FCE):
+                    fecha_cbte = fecha if tipo_cbte in (203, 208, 213) else None
+                    wsbfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha_cbte)
+
+                # datos de Factura de CrÃ©dito ElectrÃ³nica MiPyMEs (FCE):
+                if '--fce' in sys.argv:
+                    wsbfev1.AgregarOpcional(2101, "2850590940090418135201")  # CBU
+                    wsbfev1.AgregarOpcional(2102, "pyafipws")               # alias
+                    if tipo_cbte in (203, 208, 213):
+                        wsbfev1.AgregarOpcional(22, "S")  # AnulaciÃ³n
+
+                # id = "99000000000100" # nï¿½mero propio de transacciï¿½n
+                # obtengo el ï¿½ltimo ID y le adiciono 1
                 # (advertencia: evitar overflow y almacenar!)
                 id = int(wsbfev1.GetLastID()) + 1
 
-                # Llamo al WebService de Autorización para obtener el CAE
+                # Llamo al WebService de Autorizaciï¿½n para obtener el CAE
                 cae = wsbfev1.Authorize(id)
 
                 print("Comprobante", tipo_cbte, wsbfev1.CbteNro)
@@ -601,7 +649,7 @@ if __name__ == "__main__":
             print("=== Unidades de medida ===")
             print('\n'.join(wsbfev1.GetParamUMed()))
 
-            print("=== Códigos NCM ===")
+            print("=== Cï¿½digos NCM ===")
             print('\n'.join(wsbfev1.GetParamNCM()))
 
         if "--ctz" in sys.argv:
