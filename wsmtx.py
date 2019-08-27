@@ -1078,7 +1078,7 @@ def main():
             if '--fce' in sys.argv:
                 wsmtxca.AgregarOpcional(21, "2850590940090418135201")  # CBU
 
-            print wsmtxca.factura
+            print(wsmtxca.factura)
 
             if '--caea' in sys.argv:
                 wsmtxca.InformarComprobanteCAEA()
@@ -1190,14 +1190,14 @@ def main():
             raise
 
     if "--parametros" in sys.argv:
-        print wsmtxca.ConsultarTiposComprobante()
-        print wsmtxca.ConsultarTiposDocumento()
-        print wsmtxca.ConsultarAlicuotasIVA()
-        print wsmtxca.ConsultarCondicionesIVA()
-        print wsmtxca.ConsultarMonedas()
-        print wsmtxca.ConsultarUnidadesMedida()
-        print wsmtxca.ConsultarTiposTributo()
-        print wsmtxca.ConsultarTiposDatosAdicionales()
+        print(wsmtxca.ConsultarTiposComprobante())
+        print(wsmtxca.ConsultarTiposDocumento())
+        print(wsmtxca.ConsultarAlicuotasIVA())
+        print(wsmtxca.ConsultarCondicionesIVA())
+        print(wsmtxca.ConsultarMonedas())
+        print(wsmtxca.ConsultarUnidadesMedida())
+        print(wsmtxca.ConsultarTiposTributo())
+        print(wsmtxca.ConsultarTiposDatosAdicionales())
 
     if "--cotizacion" in sys.argv:
         print(wsmtxca.ConsultarCotizacionMoneda('DOL'))
