@@ -25,7 +25,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23b"
+__version__ = "1.23c"
 
 import datetime
 import decimal
@@ -71,7 +71,7 @@ class WSFEv1(BaseWS):
         'XmlRequest', 'XmlResponse', 'Version', 'Excepcion', 'LanzarExcepciones',
         'Resultado', 'Obs', 'Observaciones', 'Traceback', 'InstallDir',
         'CAE','Vencimiento', 'Eventos', 'Errores', 'ErrCode', 'ErrMsg',
-        'Reprocesar', 'Reproceso', 'EmisionTipo', 'CAEA',
+        'Reprocesar', 'Reproceso', 'EmisionTipo', 'CAEA', 'reintentos',
         'CbteNro', 'CbtDesde', 'CbtHasta', 'FechaCbte', 
         'ImpTotal', 'ImpNeto', 'ImptoLiq',
         'ImpIVA', 'ImpOpEx', 'ImpTrib',]
@@ -394,7 +394,7 @@ class WSFEv1(BaseWS):
                             'PtoVta': cbte_asoc['pto_vta'], 
                             'Nro': cbte_asoc['nro'],
                             'Cuit': cbte_asoc.get('cuit'),
-                            'CbteFch': cbte_asoc.get('fecha') or None,
+                            #'CbteFch': cbte_asoc.get('fecha') or None,
                         }}
                         for cbte_asoc in f['cbtes_asoc']],
                     'Tributos': [
