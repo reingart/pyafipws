@@ -82,7 +82,7 @@ class WSFECred(BaseWS):
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'CrearFECred',  'AgregarFormasCancelacion', 'AgregarAjustesOperacion', 'AgregarRetenciones',
                         'AgregarConfirmarNotasDC', 'AgregarMotivoRechazo',
-                        'AceptarFECred', 'RechazarFECred', 'RechazarNotaDC',
+                        'AceptarFECred', 'RechazarFECred', 'RechazarNotaDC', 'InformarCancelacionTotalFECred',
                         'ConsultarCtasCtes', 'LeerCtaCte',
                         'ConsultarComprobantes', 'LeerCampoComprobante',
                         'ConsultarTiposAjustesOperacion', 'ConsultarTiposFormasCancelacion',
@@ -167,6 +167,7 @@ class WSFECred(BaseWS):
             'codMoneda': cod_moneda,
             'cotizacionMonedaUlt': ctz_moneda_ult,
             'importeCancelado': importe_cancelado,
+            'importeCancelacion': importe_cancelado,
             'importeEmbargoPesos': importe_embargo_pesos,
             'importeTotalRetPesos': importe_total_ret_pesos,
             'saldoAceptado': saldo_aceptado,
@@ -301,6 +302,31 @@ class WSFECred(BaseWS):
         params['arrayMotivosRechazo'] = self.factura['arrayMotivosRechazo']
         response = self.client.rechazarNotaDC(**params)
         ret = response.get("rechazarNotaDCReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.AnalizarFECred(ret)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def InformarCancelacionTotalFECred(self):
+        """El Comprador informa que le ha cancelado (pagado) totalmente la deuda al vendedor
+
+        Debe indicar dentro los plazos establecidos, la forma de cancelación (habiendo aceptado previamente la FECRED).
+        """
+        params = {
+            'authRequest': {
+                'cuitRepresentada': self.Cuit,
+                'sign': self.Sign,
+                'token': self.Token
+                },
+            }
+        params.update(self.factura)
+        #params['idComprobante'] = self.factura['idCtaCte']['idFactura']
+        #params['arrayMotivosRechazo'] = self.factura['arrayMotivosRechazo']
+        response = self.client.informarCancelacionTotalFECred(**params)
+        ret = response.get("operacionFECredReturn")
         if ret:
             self.__analizar_errores(ret)
             self.__analizar_observaciones(ret)
@@ -791,7 +817,6 @@ if __name__ == '__main__':
             print "Resultado", wsfecred.Resultado
             print "CodCtaCte", wsfecred.CodCtaCte
 
-
         if '--rechazar' in sys.argv:
             fec = dict(
                 cuit_emisor=30999999999,
@@ -811,6 +836,18 @@ if __name__ == '__main__':
             wsfecred.CrearFECred(**fec)
             wsfecred.AgregarMotivoRechazo(cod_motivo="6", desc="Falta de entrega", justificacion="prueba")
             wsfecred.RechazarNotaDC()
+            print "Resultado", wsfecred.Resultado
+            print "CodCtaCte", wsfecred.CodCtaCte
+
+        if '--informar-cancelacion-total' in sys.argv:
+            fec = dict(
+                cuit_emisor=30999999999,
+                tipo_cbte=201, punto_vta=1, nro_cbte=1,
+                importe_cancelado=1000.00
+                )
+            wsfecred.CrearFECred(**fec)
+            wsfecred.AgregarFormasCancelacion(codigo=2, descripcion="Transferencia Bancaria")
+            wsfecred.InformarCancelacionTotalFECred()
             print "Resultado", wsfecred.Resultado
             print "CodCtaCte", wsfecred.CodCtaCte
 
