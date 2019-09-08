@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.05a"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -82,7 +82,7 @@ class WSFECred(BaseWS):
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'CrearFECred',  'AgregarFormasCancelacion', 'AgregarAjustesOperacion', 'AgregarRetenciones',
                         'AgregarConfirmarNotasDC', 'AgregarMotivoRechazo',
-                        'AceptarFECred', 'RechazarFECred',
+                        'AceptarFECred', 'RechazarFECred', 'RechazarNotaDC',
                         'ConsultarCtasCtes', 'LeerCtaCte',
                         'ConsultarComprobantes', 'LeerCampoComprobante',
                         'ConsultarTiposAjustesOperacion', 'ConsultarTiposFormasCancelacion',
@@ -277,6 +277,30 @@ class WSFECred(BaseWS):
         params.update(self.factura)
         response = self.client.rechazarFECred(**params)
         ret = response.get("operacionFECredReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.AnalizarFECred(ret)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def RechazarNotaDC(self):
+        """Rechazar Notas de Débito / Crédito mientras la Factura de Crédito no haya sido Aceptada o Rechazada
+
+        Al rechazarla no afectará a la Cta Cte. Debe indicar al menos un motivo de rechazo y justificarlo.        
+        """
+        params = {
+            'authRequest': {
+                'cuitRepresentada': self.Cuit,
+                'sign': self.Sign,
+                'token': self.Token
+                },
+            }
+        params['idComprobante'] = self.factura['idCtaCte']['idFactura']
+        params['arrayMotivosRechazo'] = self.factura['arrayMotivosRechazo']
+        response = self.client.rechazarNotaDC(**params)
+        ret = response.get("rechazarNotaDCReturn")
         if ret:
             self.__analizar_errores(ret)
             self.__analizar_observaciones(ret)
@@ -778,6 +802,18 @@ if __name__ == '__main__':
             wsfecred.RechazarFECred()
             print "Resultado", wsfecred.Resultado
             print "CodCtaCte", wsfecred.CodCtaCte
+
+        if '--rechazar-ndc' in sys.argv:
+            fec = dict(
+                cuit_emisor=30999999999,
+                tipo_cbte=203, punto_vta=1, nro_cbte=1,
+                )
+            wsfecred.CrearFECred(**fec)
+            wsfecred.AgregarMotivoRechazo(cod_motivo="6", desc="Falta de entrega", justificacion="prueba")
+            wsfecred.RechazarNotaDC()
+            print "Resultado", wsfecred.Resultado
+            print "CodCtaCte", wsfecred.CodCtaCte
+
 
         # Recuperar parámetros:
 
