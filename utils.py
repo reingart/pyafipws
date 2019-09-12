@@ -263,7 +263,13 @@ class BaseWS:
                     raise RuntimeError("Error de configuracion CACERT ver DebugLog")
                     return False
                     
-            self.log("Conectando a wsdl=%s cache=%s proxy=%s" % (wsdl, cache, proxy_dict))
+            if cacert and not os.path.isabs(cacert):
+                self.log("Fixing CACERT: %s" % cacert)
+                cacert = os.path.abspath(cacert)
+                self.log("Fixed CACERT: %s" % cacert)
+
+            ## cacert = "/etc/ssl/certs/ca-certificates.crt"
+            self.log("Conectando a wsdl=%s cache=%s proxy=%s cacert=%s" % (wsdl, cache, proxy_dict, cacert))
             # analizar espacio de nombres (axis vs .net):
             ns = 'ser' if self.WSDL[-5:] == "?wsdl" else None
             self.client = SoapClient(
@@ -761,6 +767,7 @@ def leer_dbf(formatos, conf_dbf):
         for reg in tabla:
             r = {}
             d = reg.scatter_fields() 
+            if DEBUG: print "scatter_fields", d
             claves = []
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
@@ -768,7 +775,9 @@ def leer_dbf(formatos, conf_dbf):
                 clave_dbf = dar_nombre_campo_dbf(clave, claves)
                 claves.append(clave_dbf)
                 v = d.get(clave_dbf)
-                r[clave] = v
+                if DEBUG: print "fmt", clave, clave_dbf, v
+                if r.get(clave) is None:
+                    r[clave] = v
             if isinstance(ld, dict):
                 ld.update(r)
             else:

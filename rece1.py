@@ -360,7 +360,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if '/debug'in sys.argv:
-        DEBUG = True
+        DEBUG = True        
         print "VERSION", __version__, "HOMO", HOMO
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
@@ -472,26 +472,35 @@ if __name__ == "__main__":
         from wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsfe", cert, privatekey, wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
+        if DEBUG:
+            print(wsaa.DebugLog())
         if not ta:
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
         ws.SetTicketAcceso(ta)
+        if DEBUG:
+            print "Ticket Acceso:", ta
+            print "Token:", ws.Token
+            print "Sign:", ws.Sign
                     
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
-            tipo_cbte = 3
+            if '--fce' in sys.argv:
+                tipo_cbte = 201
+            else:
+                tipo_cbte = 1
             punto_vta = 4002
             cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             if not cbte_nro: cbte_nro=0
             cbte_nro=int(cbte_nro)
             fecha = datetime.datetime.now().strftime("%Y%m%d")
-            concepto = 1
+            concepto = 3
             tipo_doc = 80; nro_doc = "30500010912"
             cbt_desde = cbte_nro + 1; cbt_hasta = cbte_nro + 1
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_iva = "21.00"; imp_trib = "1.00"; imp_op_ex = "0.00"
-            fecha_cbte = fecha; fecha_venc_pago = None # fecha
+            fecha_cbte = fecha; fecha_venc_pago = fecha
             # Fechas del período del servicio facturado (solo si concepto = 1?)
-            fecha_serv_desde = ""; fecha_serv_hasta = ""
+            fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
 
             ws.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
@@ -500,7 +509,7 @@ if __name__ == "__main__":
                 fecha_serv_desde, fecha_serv_hasta, #--
                 moneda_id, moneda_ctz)
             
-            if tipo_cbte not in (1, 2, 6, 7):
+            if tipo_cbte not in (1, 2, 6, 7, 201):
                 tipo = 1
                 pto_vta = 2
                 nro = 1234
@@ -528,6 +537,10 @@ if __name__ == "__main__":
             if '--rg4109' in sys.argv:
                 ws.AgregarComprador(80, "30500010912", 99.99)
                 ws.AgregarComprador(80, "30999032083", 0.01)
+
+            # datos de compradores RG 4109-E bienes muebles registrables (%)
+            if '--fce' in sys.argv:
+                ws.AgregarOpcional(2101, "2850590940090418135201")
 
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
@@ -753,3 +766,6 @@ if __name__ == "__main__":
         if DEBUG:
             raise
         sys.exit(5)
+    finally:
+        if DEBUG:
+            print(ws.DebugLog())
