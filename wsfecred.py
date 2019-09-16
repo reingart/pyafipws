@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -45,6 +45,11 @@ Opciones:
   --obligado: consultar monto obligado a recepcion (según CUIT)
   --ctasctes: consultar cuentas corrientes generadas a partir de facturación
 
+  --aceptar: Aceptar el saldo actual de la Cta. Cte. de una Factura de Crédito
+  --rechazar: Rechazar la Cta. Cte. de una Factura Electrónica de Crédito
+  --rechazar-ndc: Rechaza N/C o N/D (asociada a Factura Electrónica de Crédito)
+  --informar-cancelacion-total: informa la cancelación total (pago) de una FEC
+
   --tipos_ajuste: tabla de parametros para tipo de ajuste
   --tipos_cancelacion: tabla de parametros para formas cancelacion
   --tipos_retencion: tabla de parametros para tipo de retenciones
@@ -63,6 +68,7 @@ import utils
 
 # importo funciones compartidas:
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf, leer_txt, grabar_txt, formato_txt
 
 
 # constantes de configuración (producción/homologación):
@@ -74,7 +80,6 @@ DEBUG = False
 XML = False
 CONFIG_FILE = "rece.ini"
 HOMO = False
-ENCABEZADO = []
 
 
 class WSFECred(BaseWS):
@@ -216,11 +221,11 @@ class WSFECred(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarConfirmarNotasDC(self, cuit_emisor, tipo_cbte, punto_vta, nro_cbte, **kwargs):
+    def AgregarConfirmarNotasDC(self, cuit_emisor, tipo_cbte, punto_vta, nro_cbte, acepta='S', **kwargs):
         "Agrega la información referente al viaje del remito electrónico cárnico"
         self.factura['arrayConfirmarNotasDC'].append({
             'confirmarNota': {
-                'acepta': 'acepta',
+                'acepta': acepta,
                 'idNota': {
                     'CUITEmisor': cuit_emisor,
                     'codTipoCmp': tipo_cbte,
@@ -334,7 +339,6 @@ class WSFECred(BaseWS):
             self.AnalizarFECred(ret)
         return True
 
-    @inicializar_y_capturar_excepciones
     def AnalizarFECred(self, ret, archivo=None):
         "Extrae el resultado de la Factura de Crédito Electrónica, si existen en la respuesta XML"
         if ret:
@@ -692,6 +696,68 @@ else:
 INSTALL_DIR = WSFECred.InstallDir = get_install_dir()
 
 
+FORMATOS = {
+    "encabezado": [
+        ('tipo_reg', 1, N),
+        ("cuit_emisor", 11, N),
+        ("tipo_cbte", 3, N),
+        ("punto_vta", 11, N),
+        ("nro_cbte", 8, N),
+        ("cod_moneda", 3, A),
+        ("ctz_moneda_ult", 18, I, 6),
+        ("importe_cancelado", 17, I, 2),
+        ("importe_embargo_pesos", 17, I, 2),
+        ("importe_total_ret_pesos", 17, I, 2),
+        ("saldo_aceptado", 17, I, 2),
+        ("tipo_cancelacion", 3, A),
+        ("resultado", 1, A),
+        ("cod_cta_cte", 17, N),
+        ('obs', 1000, A),
+        ('err_code', 6, A),
+        ('err_msg', 1000, A),
+        ],
+    "formas_cancelacion": [
+            ('tipo_reg', 1, N),
+            ("codigo", 5, N),
+            ("descripcion", 100, A),
+        ],
+    "retenciones": [
+            ('tipo_reg', 1, N),
+            ("cod_tipo", 5, N),
+            ("porcentaje", 5, I),
+            ("importe", 17, I),
+            ("desc_motivo", 250, A),
+        ],
+    "ajuste_operacion": [
+            ('tipo_reg', 1, N),
+            ("codigo", 5, N),
+            ("importe", 17, I),
+        ],
+    "confirmar_nota_dc": [
+            ('tipo_reg', 1, N),
+            ("cuit_emisor", 11, N),
+            ("tipo_cbte", 3, N),
+            ("punto_vta", 11, N),
+            ("nro_cbte", 8, N),
+            ("acepta", 1, A),               # S/N
+        ],
+    "motivo_rechazo": [
+            ('tipo_reg', 1, N),
+            ("cod_motivo", 5, N),
+            ("desc", 250, A),
+            ("justificacion", 250, A),
+        ],
+   }
+REGISTROS = {
+    "0": "encabezado",
+    "1": "formas_cancelacion",
+    "2": "retenciones",
+    "3": "ajuste_operacion",
+    "4": "confirmar_nota_dc",
+    "5": "motivo_rechazo",
+    }
+
+
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
         print LICENCIA
@@ -780,14 +846,15 @@ if __name__ == '__main__':
         if '--ctasctes' in sys.argv:
             try:
                 cuit_contraparte = int(sys.argv[sys.argv.index("--ctasctes") + 1])
+                rol = sys.argv[sys.argv.index("--ctasctes") + 2]
             except IndexError, ValueError:
                 cuit_contraparte = None
-            ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol="Emisor")
+                rol = "Emisor"
+            ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol=rol)
             print "Observaciones:", wsfecred.Obs
             import pprint
             for cc in wsfecred.ctas_ctes:
                 pprint.pprint(cc)
-            print wsfecred.LeerCtaCte()
 
         if '--comprobantes' in sys.argv:
             try:
@@ -801,56 +868,69 @@ if __name__ == '__main__':
                 pprint.pprint(cc)
             print wsfecred.LeerCampoComprobante(0, 'cod_cta_cte')
 
-        if '--aceptar' in sys.argv:
+        if '--prueba' in sys.argv:
             fec = dict(
                 cuit_emisor=30999999999,
                 tipo_cbte=201, punto_vta=99, nro_cbte=22,
-                cod_moneda="PES", ctz_moneda_ult=1,
-                importe_cancelado=1000.00, importe_embargo_pesos=0.00, importe_total_ret_pesos=0.00,
+                cod_moneda="DOL", ctz_moneda_ult=57.50,
+                importe_cancelado=1000.00, importe_embargo_pesos=0.00, importe_total_ret_pesos=1000.00,
                 saldo_aceptado=1000.00, tipo_cancelacion="TOT",
-                )
+                )    
+            fec['formas_cancelacion'] = [dict(codigo=2, descripcion="Transferencia Bancaria")]
+            fec['retenciones'] = [dict(cod_tipo=1, desc_motivo="Ret Prueba", importe=1000, porcentaje=1.00)]
+            fec['ajuste_operacion'] = [dict(codigo=1, importe=57.00)]
+            fec['confirmar_nota_dc'] = [dict(cuit_emisor=30999999999, tipo_cbte=202, punto_vta=99, nro_cbte=1, acepta="S")]
+            fec['motivo_rechazo'] = [dict(cod_motivo="6", desc="Falta de entrega", justificacion="prueba")]
+            grabar_txt(FORMATOS, REGISTROS, ENTRADA, [fec])
+            if "--json" in sys.argv:
+                with open("wsfecred.json", "w") as f:
+                    json.dump([fec], f, indent=4)
 
+        if '--cargar' in sys.argv:
+            fecs = leer_txt(FORMATOS, REGISTROS, ENTRADA)
+            fec = fecs[0]
             wsfecred.CrearFECred(**fec)
-            wsfecred.AgregarFormasCancelacion(codigo=2, descripcion="Transferencia Bancaria")
-            wsfecred.AceptarFECred()
+            for it in fec.get('formas_cancelacion', []):
+                wsfecred.AgregarFormasCancelacion(**it)
+            for it in fec.get('retenciones', []):
+                wsfecred.AgregarRetenciones(**it)
+            for it in fec.get('ajuste_operacion', []):
+                wsfecred.AgregarAjustesOperacion(**it)
+            for it in fec.get('confirmar_nota_dc', []):
+                wsfecred.AgregarConfirmarNotasDC(**it)
+            for it in fec.get('motivo_rechazo', []):
+                wsfecred.AgregarMotivoRechazo(**it)
 
+        if '--aceptar' in sys.argv:
+            wsfecred.AceptarFECred()
             print "Resultado", wsfecred.Resultado
             print "CodCtaCte", wsfecred.CodCtaCte
 
         if '--rechazar' in sys.argv:
-            fec = dict(
-                cuit_emisor=30999999999,
-                tipo_cbte=201, punto_vta=99, nro_cbte=22,
-                )
-            wsfecred.CrearFECred(**fec)
-            wsfecred.AgregarMotivoRechazo(cod_motivo="6", desc="Falta de entrega", justificacion="prueba")
             wsfecred.RechazarFECred()
             print "Resultado", wsfecred.Resultado
             print "CodCtaCte", wsfecred.CodCtaCte
 
         if '--rechazar-ndc' in sys.argv:
-            fec = dict(
-                cuit_emisor=30999999999,
-                tipo_cbte=203, punto_vta=1, nro_cbte=1,
-                )
-            wsfecred.CrearFECred(**fec)
-            wsfecred.AgregarMotivoRechazo(cod_motivo="6", desc="Falta de entrega", justificacion="prueba")
             wsfecred.RechazarNotaDC()
             print "Resultado", wsfecred.Resultado
             print "CodCtaCte", wsfecred.CodCtaCte
 
         if '--informar-cancelacion-total' in sys.argv:
-            fec = dict(
-                cuit_emisor=30999999999,
-                tipo_cbte=201, punto_vta=1, nro_cbte=1,
-                importe_cancelado=1000.00
-                )
-            wsfecred.CrearFECred(**fec)
-            wsfecred.AgregarFormasCancelacion(codigo=2, descripcion="Transferencia Bancaria")
             wsfecred.InformarCancelacionTotalFECred()
             print "Resultado", wsfecred.Resultado
             print "CodCtaCte", wsfecred.CodCtaCte
 
+        if '--grabar' in sys.argv:
+            fec['resultado'] = wsfecred.Resultado
+            fec['cod_cta_cte'] = wsfecred.CodCtaCte
+            fec['obs'] = wsfecred.Obs
+            fec['err_code'] = wsfecred.ErrCode
+            fec['err_msg'] = wsfecred.ErrMsg
+            grabar_txt(FORMATOS, REGISTROS, SALIDA, [fec])
+
+        if '--formato' in sys.argv:
+            formato_txt(FORMATOS, REGISTROS)
 
         # Recuperar parámetros:
 
