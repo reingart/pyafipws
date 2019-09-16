@@ -661,6 +661,55 @@ I = 'Importe'       # 4
 C = A               # 1 (caracter alfabetico)
 B = A               # 9 (blanco)
 
+# Funciones para manejo de archivos de texto de ancho fijo
+
+def formato_txt(formatos, registros):
+    print "Formato:"
+    for tipo_reg, estructura in sorted(registros.items()):
+        formato = formatos[estructura]
+        comienzo = 1
+        print "=== %s ===" % estructura
+        for fmt in formato:
+            clave, longitud, tipo = fmt[0:3]
+            dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
+            f = ["Campo: %-20s" , "Posición: %3d", "Longitud: %4d", "Tipo: %s"]
+            v = [clave, comienzo, longitud, tipo]
+            if dec:
+                f.append("Decimales: %s")
+                v.append(dec)
+            if clave == "tipo_reg":
+                f.append("Valor: %s")
+                v.append(tipo_reg)
+            print " *", " ".join(f) % tuple(v)
+            comienzo += longitud
+
+def leer_txt(formatos, registros, nombre_archivo):
+    ret = []
+    with open(nombre_archivo, "r") as archivo:    
+        for linea in archivo:
+            tipo_reg = str(linea[0])
+            estructura = registros[tipo_reg]
+            formato = formatos[estructura]
+            d = leer(linea, formato)
+            if estructura == 'encabezado':
+                ret.append(d)
+                dic = d
+            else:
+                dic.setdefault(estructura, []).append(d)
+    return ret
+
+def grabar_txt(formatos, registros, nombre_archivo, dicts, agrega=False):
+    with open(nombre_archivo, agrega and "a" or "w") as archivo:
+        for dic in dicts:
+            encabezado = formatos['encabezado']
+            dic["tipo_reg"] = '0'
+            archivo.write(escribir(dic, encabezado))
+            for tipo_reg, estructura in sorted(registros.items()):
+                for d in dic.get(estructura, []):
+                    d["tipo_reg"] = tipo_reg
+                    archivo.write(escribir(d, formatos[estructura]))
+
+
 
 # Funciones para manejo de tablas en DBF
 
