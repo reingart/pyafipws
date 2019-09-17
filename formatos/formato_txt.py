@@ -87,6 +87,7 @@ ENCABEZADO = [
     ('emision_tipo', 4, A),
     ('imp_subtotal', (15,3), I), 
     ('cat_iva', 2, N),
+    ('tipo_cbte', 3, N), ('punto_vta', 5, N),   # FCE
     ]
 
 DETALLE = [
