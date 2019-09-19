@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.05c"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -747,6 +747,11 @@ FORMATOS = {
             ("desc", 250, A),
             ("justificacion", 250, A),
         ],
+    "obligado": [
+            ('tipo_reg', 1, A),
+            ("resultado", 1, A),
+            ("monto_desde", 19, I),
+        ],
    }
 REGISTROS = {
     "0": "encabezado",
@@ -755,6 +760,7 @@ REGISTROS = {
     "3": "ajuste_operacion",
     "4": "confirmar_nota_dc",
     "5": "motivo_rechazo",
+    "O": "obligado",
     }
 
 
@@ -842,6 +848,8 @@ if __name__ == '__main__':
             ret = wsfecred.ConsultarMontoObligadoRecepcion(cuit_consultar)
             print "Obligado:", wsfecred.Resultado
             print "Monto Desde:", ret
+            reg = {"obligado": [{"resultado": wsfecred.Resultado, "monto_desde": ret}]}
+            grabar_txt(FORMATOS, REGISTROS, SALIDA, [reg])
 
         if '--ctasctes' in sys.argv:
             try:
