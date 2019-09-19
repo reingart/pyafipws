@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05c"
+__version__ = "1.05d"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -752,6 +752,20 @@ FORMATOS = {
             ("resultado", 1, A),
             ("monto_desde", 19, I),
         ],
+    "cta_cte": [
+            ('tipo_reg', 1, N),
+            ("cod_cta_cte", 17, N),
+            ('estado_cta_cte', 20, A),
+            ('fecha_hora_estado', 19, A),
+            ("cuit_emisor", 11, N),
+            ("tipo_cbte", 3, N),
+            ("punto_vta", 11, N),
+            ("nro_cbte", 8, N),
+            ("cod_moneda", 3, A),
+            ("importe_total_fc", 19, I, 2),
+            ("saldo", 19, I, 2),
+            ("saldo_aceptado", 19, I, 2),
+        ],
    }
 REGISTROS = {
     "0": "encabezado",
@@ -761,6 +775,7 @@ REGISTROS = {
     "4": "confirmar_nota_dc",
     "5": "motivo_rechazo",
     "O": "obligado",
+    "C": "cta_cte",
     }
 
 
@@ -863,6 +878,8 @@ if __name__ == '__main__':
             import pprint
             for cc in wsfecred.ctas_ctes:
                 pprint.pprint(cc)
+            regs = {"cta_cte": [cta_cte for cta_cte in wsfecred.ctas_ctes]}
+            grabar_txt(FORMATOS, REGISTROS, SALIDA, [regs])
 
         if '--comprobantes' in sys.argv:
             try:
