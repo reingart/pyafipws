@@ -73,7 +73,7 @@ class COT:
     def Conectar(self, url=None, proxy="", wrapper=None, cacert=None, trace=False):
         if HOMO or not url:
             url = URL
-        self.client = WebClient(location=url, trace=trace, cacert=cacert)
+        self.client = WebClient(location=url, trace=trace, cacert=cacert, proxy=proxy)
 
     def PresentarRemito(self, filename, testing=""):
         self.limpiar()
@@ -232,8 +232,10 @@ if __name__=="__main__":
                 URL = arg
                 print "Usando URL:", URL
                 break
-        
-    cot.Conectar(URL, trace='--trace' in sys.argv, cacert=CACERT)
+
+    proxy = None if not "--proxy" in sys.argv else "user:pass@host:1234"
+
+    cot.Conectar(URL, trace='--trace' in sys.argv, cacert=CACERT, proxy=proxy)
     cot.PresentarRemito(filename, testing=test_response)
     
     if cot.Excepcion:

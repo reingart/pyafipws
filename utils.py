@@ -437,11 +437,19 @@ class WebClient:
     "Minimal webservice client to do POST request with multipart encoded FORM data"
 
     def __init__(self, location, enctype="multipart/form-data", trace=False,
-                       cacert=None, timeout=30):
+                       cacert=None, timeout=30, proxy=None):
         kwargs = {}
         kwargs['timeout'] = timeout
         kwargs['disable_ssl_certificate_validation'] = cacert is None
         kwargs['ca_certs'] = cacert
+        if proxy:
+            if isinstance(proxy, dict):
+                proxy_dict = proxy
+            else:
+                proxy_dict = parse_proxy(proxy)
+                print "using proxy", proxy_dict
+            import socks
+            kwargs['proxy_info'] = httplib2.ProxyInfo(proxy_type=socks.PROXY_TYPE_HTTP, **proxy_dict)
         self.http = httplib2.Http(**kwargs)
         self.trace = trace
         self.location = location
