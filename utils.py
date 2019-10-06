@@ -16,6 +16,7 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
 
+import csv
 import datetime
 import functools
 import inspect
@@ -717,6 +718,27 @@ def grabar_txt(formatos, registros, nombre_archivo, dicts, agrega=False):
                     d["tipo_reg"] = tipo_reg
                     archivo.write(escribir(d, formatos[estructura]))
 
+
+# Funciones para manejo de Panillas CSV y Tablas
+
+
+def generar_csv(filas, formato, fn="planilla.csv", delimiter=";"):
+    "Dado una lista de registros  escribe"
+    ext = os.path.splitext(fn)[1].lower()
+    if ext == '.csv':
+        with open(fn,"wb") as f:
+            fieldnames = [fmt[0] for fmt in formato]
+            csv_writer = csv.DictWriter(f, fieldnames, dialect='excel', delimiter=";")
+            csv_writer.writeheader()
+            for fila in filas:
+                csv_writer.writerow(fila)
+
+
+def tabular(filas, formato):
+    from tabulate import tabulate
+    columnas = [fmt[0] for fmt in formato if fmt[0] not in ("tipo_reg", )]
+    tabla = [[fila[col] for col in columnas] for fila in filas]
+    return tabulate(tabla, columnas, floatfmt=".2f")
 
 
 # Funciones para manejo de tablas en DBF

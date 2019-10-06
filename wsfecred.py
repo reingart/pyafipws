@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05d"
+__version__ = "1.05e"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -68,7 +68,8 @@ import utils
 
 # importo funciones compartidas:
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf, leer_txt, grabar_txt, formato_txt
+from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf, leer_txt, grabar_txt, formato_txt, \
+                  generar_csv, tabular
 
 
 # constantes de configuración (producción/homologación):
@@ -88,7 +89,7 @@ class WSFECred(BaseWS):
                         'CrearFECred',  'AgregarFormasCancelacion', 'AgregarAjustesOperacion', 'AgregarRetenciones',
                         'AgregarConfirmarNotasDC', 'AgregarMotivoRechazo',
                         'AceptarFECred', 'RechazarFECred', 'RechazarNotaDC', 'InformarCancelacionTotalFECred',
-                        'ConsultarCtasCtes', 'LeerCtaCte',
+                        'ConsultarCtasCtes', 'LeerCtaCte', 'LeerCampoCtaCte',
                         'ConsultarComprobantes', 'LeerCampoComprobante',
                         'ConsultarTiposAjustesOperacion', 'ConsultarTiposFormasCancelacion',
                         'ConsultarTiposMotivosRechazo', 'ConsultarTiposRetenciones',
@@ -524,6 +525,30 @@ class WSFECred(BaseWS):
             d.Add(k, str(v))
         return d
 
+    @inicializar_y_capturar_excepciones
+    def LeerCampoCtaCte(self, pos=0, *campos):
+        """Leer un campo de la cta. cte. devuelto por ConsultarCtasCtes
+
+        Args:
+            pos (int): posición del comprobante (0 a n)
+            campos (int o str): clave string (dict) o una posición int (list)
+
+        Returns:
+            str: valor del campo del comprobante
+        """
+        ret = self.ctas_ctes[pos]
+        for campo in campos:
+            if isinstance(ret, dict) and isinstance(campo, basestring):
+                ret = ret.get(campo)
+            elif isinstance(ret, list) and len(ret) > campo:
+                ret = ret[campo]
+            else:
+                self.Excepcion = u"El campo %s solicitado no existe" % campo
+                ret = None
+            if ret is None:
+                break
+        return str(ret)
+
 
     @inicializar_y_capturar_excepciones
     def ConsultarComprobantes(self, cuit_contraparte=None, rol="Receptor",
@@ -753,7 +778,7 @@ FORMATOS = {
             ("monto_desde", 19, I),
         ],
     "cta_cte": [
-            ('tipo_reg', 1, N),
+            ('tipo_reg', 1, A),
             ("cod_cta_cte", 17, N),
             ('estado_cta_cte', 20, A),
             ('fecha_hora_estado', 19, A),
@@ -875,11 +900,13 @@ if __name__ == '__main__':
                 rol = "Emisor"
             ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol=rol)
             print "Observaciones:", wsfecred.Obs
-            import pprint
-            for cc in wsfecred.ctas_ctes:
-                pprint.pprint(cc)
+            formato = FORMATOS["cta_cte"]
+            print tabular(wsfecred.ctas_ctes, formato)
             regs = {"cta_cte": [cta_cte for cta_cte in wsfecred.ctas_ctes]}
             grabar_txt(FORMATOS, REGISTROS, SALIDA, [regs])
+            generar_csv(wsfecred.ctas_ctes, formato)
+            if ret:
+                assert wsfecred.LeerCampoCtaCte(0, 'cod_cta_cte')
 
         if '--comprobantes' in sys.argv:
             try:
