@@ -750,8 +750,9 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
 
     tablas = {}
     for nombre, formato, l in formatos:
-        campos = []
+        campos = {}
         claves = []
+        claves_map = {}
         filename = conf_dbf.get(nombre.lower(), "%s.dbf" % nombre[:8])
         if DEBUG: print "=== tabla %s (%s) ===" %  (nombre, filename)
         for fmt in formato:
@@ -775,14 +776,17 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                 if longitud - 2 <= dec:
                     longitud += longitud - dec + 1      # ajusto long. decimales 
                 tipo = "N(%s,%s)" % (longitud, dec)
-            clave_dbf = dar_nombre_campo_dbf(clave, claves)
+            # unificar nombre de campos duplicados por compatibilidad hacia atrás:
+            clave_dbf = claves_map.get(clave, dar_nombre_campo_dbf(clave, claves))
+            if not clave in claves_map:
+                claves_map[clave] = clave_dbf
+                claves.append(clave_dbf)
             campo = "%s %s" % (clave_dbf, tipo)
             if DEBUG: print " * %s : %s" %  (campo, clave)
-            campos.append(campo)
-            claves.append(clave_dbf)
+            campos[clave_dbf] = campo
         if DEBUG: print "leyendo tabla", nombre, filename
         if agrega:
-            tabla = dbf.Table(filename, campos)
+            tabla = dbf.Table(filename, [campos[clave] for clave in claves])
         else:
             tabla = dbf.Table(filename)
 
@@ -793,6 +797,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                 continue
             r = {}
             claves = []
+            claves_map = {}
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 if agrega or clave in d:
@@ -811,8 +816,11 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                             v = str(v)
                         if len(v) > longitud:
                             v = v[:longitud]  # recorto el string para que quepa
-                    clave_dbf = dar_nombre_campo_dbf(clave, claves)
-                    claves.append(clave_dbf)
+                    # unificar nombre de campos duplicados por compatibilidad hacia atrás:
+                    clave_dbf = claves_map.get(clave, dar_nombre_campo_dbf(clave, claves))
+                    if not clave in claves_map:
+                        claves_map[clave] = clave_dbf
+                        claves.append(clave_dbf)
                     r[clave_dbf] = v
             # agregar si lo solicitaron o si la tabla no tiene registros:
             if agrega or not tabla:
