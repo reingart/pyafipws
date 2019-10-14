@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05e"
+__version__ = "1.05f"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -893,12 +893,15 @@ if __name__ == '__main__':
 
         if '--ctasctes' in sys.argv:
             try:
-                cuit_contraparte = int(sys.argv[sys.argv.index("--ctasctes") + 1])
-                rol = sys.argv[sys.argv.index("--ctasctes") + 2]
-            except IndexError, ValueError:
-                cuit_contraparte = None
-                rol = "Emisor"
-            ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol=rol)
+                argv = dict(enumerate(sys.argv[sys.argv.index("--ctasctes"):]))
+                cuit_contraparte = argv.get(1)
+                rol = argv.get(2, "Emisor")
+                fecha_desde = argv.get(3)
+                fecha_hasta = argv.get(4)
+                fecha_tipo= argv.get(5, "Emision")
+            except (IndexError, ValueError) as ex:
+                raise RuntimeError("Revise los parámetros: %s" % ex)
+            ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol, fecha_desde, fecha_hasta, fecha_tipo)
             print "Observaciones:", wsfecred.Obs
             formato = FORMATOS["cta_cte"]
             print tabular(wsfecred.ctas_ctes, formato)
