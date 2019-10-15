@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05f"
+__version__ = "1.06a"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -44,6 +44,7 @@ Opciones:
 
   --obligado: consultar monto obligado a recepcion (según CUIT)
   --ctasctes: consultar cuentas corrientes generadas a partir de facturación
+  --ctacte: consultar detalle de cuenta corriente de una FCE
 
   --aceptar: Aceptar el saldo actual de la Cta. Cte. de una Factura de Crédito
   --rechazar: Rechazar la Cta. Cte. de una Factura Electrónica de Crédito
@@ -89,7 +90,7 @@ class WSFECred(BaseWS):
                         'CrearFECred',  'AgregarFormasCancelacion', 'AgregarAjustesOperacion', 'AgregarRetenciones',
                         'AgregarConfirmarNotasDC', 'AgregarMotivoRechazo',
                         'AceptarFECred', 'RechazarFECred', 'RechazarNotaDC', 'InformarCancelacionTotalFECred',
-                        'ConsultarCtasCtes', 'LeerCtaCte', 'LeerCampoCtaCte',
+                        'ConsultarCtasCtes', 'ConsultarCtaCte', 'LeerCtaCte', 'LeerCampoCtaCte',
                         'ConsultarComprobantes', 'LeerCampoComprobante',
                         'ConsultarTiposAjustesOperacion', 'ConsultarTiposFormasCancelacion',
                         'ConsultarTiposMotivosRechazo', 'ConsultarTiposRetenciones',
@@ -551,6 +552,68 @@ class WSFECred(BaseWS):
 
 
     @inicializar_y_capturar_excepciones
+    def ConsultarCtaCte(self, cuit_emisor=None, tipo_cbte=None, punto_vta=None, nro_cbte=None, cod_cta_cte=None):
+        """Obtener el detalle y composición de una Cuenta Corriente de una Factura Electrónica de Crédito.
+
+        Args:
+            cuit_emisor (str): Cuit del emisor de la FCE
+            tipo_cbte (int): Tipo de comprobante de la FCE
+            punto_vta (int): Punto de Venta de la FCE
+            nro_cbte (int): Numero de comprobante de la FCE
+            cod_cta_cte (int): código que identifica la cta.cte. (alt)
+
+        Returns:
+            int: cantidad de cuentas corrientes
+        """
+        if cod_cta_cte:
+            id_cta_cte = {"codCtaCte": cod_cta_cte}
+        else:
+            id_cta_cte = {
+                "idFactura": {
+                    'CUITEmisor': cuit_emisor,
+                    'codTipoCmp': tipo_cbte,
+                    'ptoVta': punto_vta,
+                    'nroCmp': nro_cbte,
+                    }
+                }
+        response = self.client.consultarCtaCte(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit,
+                            },
+                           idCtaCte=id_cta_cte,
+                        )
+        ret = response.get('consultarCtaCteReturn')
+        self.ctas_ctes = []
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            cc = ret.get('ctaCte')
+            if cc:
+                cta_cte = {
+                    'cod_cta_cte': cc.get('codCtaCte'),
+                    'estado_cta_cte': cc['estadoCtaCte']['estado'],
+                    'fecha_hora_estado': cc['estadoCtaCte']['fechaHoraEstado'],
+                    'cuit_emisor': cc['factura']['cuitEmisor'],
+                    'tipo_cbte': cc['factura']['codTipoCmp'],
+                    'nro_cbte': cc['factura']['nroCmp'],
+                    'punto_vta': cc['factura']['ptovta'],
+                    'importe_total_fc': cc['importeInicial'],
+                    'importe_total_ndc': cc.get('importeTotalNotasDC'),
+                    'importe_cancelado': cc.get('importeTotalCancelado'),
+                    'importe_tot_ret_pes': cc.get('importeTotalRetPesos'),
+                    'importe_embargo_pes': cc.get('importeEmbargoPesos'),
+                    'saldo': cc['saldo'],
+                    'saldo_aceptado': cc.get('saldoAceptado'),
+                    'cod_moneda': cc['codMoneda'],
+                    'ctz_moneda_ult': cc['cotizacionMonedaUlt'],
+                    }
+                self.ctas_ctes.append(cta_cte)
+        return len(self.ctas_ctes)
+
+
+    @inicializar_y_capturar_excepciones
     def ConsultarComprobantes(self, cuit_contraparte=None, rol="Receptor",
                           fecha_desde=None, fecha_hasta=None, fecha_tipo="Emision",
                           cod_tipo_cmp=None, estado_cmp=None, cod_cta_cte=None, estado_cta_cte=None):
@@ -786,10 +849,15 @@ FORMATOS = {
             ("tipo_cbte", 3, N),
             ("punto_vta", 11, N),
             ("nro_cbte", 8, N),
-            ("cod_moneda", 3, A),
             ("importe_total_fc", 19, I, 2),
-            ("saldo", 19, I, 2),
+            ("importe_cancelado", 19, I, 2),
+            ("importe_total_ndc", 19, I, 2),
+            ("importe_tot_ret_pes", 19, I, 2),
+            ("importe_embargo_pes", 19, I, 2),
             ("saldo_aceptado", 19, I, 2),
+            ("saldo", 19, I, 2),
+            ("cod_moneda", 3, A),
+            ("ctz_moneda_ult", 18, I, 6),
         ],
    }
 REGISTROS = {
@@ -902,6 +970,30 @@ if __name__ == '__main__':
             except (IndexError, ValueError) as ex:
                 raise RuntimeError("Revise los parámetros: %s" % ex)
             ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol, fecha_desde, fecha_hasta, fecha_tipo)
+            print "Observaciones:", wsfecred.Obs
+            formato = FORMATOS["cta_cte"]
+            print tabular(wsfecred.ctas_ctes, formato)
+            regs = {"cta_cte": [cta_cte for cta_cte in wsfecred.ctas_ctes]}
+            grabar_txt(FORMATOS, REGISTROS, SALIDA, [regs])
+            generar_csv(wsfecred.ctas_ctes, formato)
+            if ret:
+                assert wsfecred.LeerCampoCtaCte(0, 'cod_cta_cte')
+
+        if '--ctacte' in sys.argv:
+            try:
+                argv = dict(enumerate(sys.argv[sys.argv.index("--ctacte"):]))
+                if len(argv) == 2:
+                    cod_cta_cte = argv.get(1)
+                    cuit_emisor = tipo_cbte = punto_vta = nro_cbte = None
+                else:
+                    cod_cta_cte = None
+                    cuit_emisor = argv.get(1)
+                    tipo_cbte = argv.get(2)
+                    punto_vta = argv.get(3)
+                    nro_cbte = argv.get(4)
+            except (IndexError, ValueError) as ex:
+                raise RuntimeError("Revise los parámetros: %s" % ex)
+            ret = wsfecred.ConsultarCtaCte(cuit_emisor, tipo_cbte, punto_vta, nro_cbte, cod_cta_cte)
             print "Observaciones:", wsfecred.Obs
             formato = FORMATOS["cta_cte"]
             print tabular(wsfecred.ctas_ctes, formato)
