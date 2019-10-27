@@ -19,7 +19,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09a"
+__version__ = "1.10a"
 
 import datetime
 import decimal
@@ -91,7 +91,7 @@ class WSFEXv1(BaseWS):
             nombre_cliente="", cuit_pais_cliente="", domicilio_cliente="",
             id_impositivo="", moneda_id="PES", moneda_ctz=1.0,
             obs_comerciales="", obs_generales="", forma_pago="", incoterms="", 
-            idioma_cbte=7, incoterms_ds=None, **kwargs):
+            idioma_cbte=7, incoterms_ds=None, fecha_pago=None, **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
 
@@ -108,6 +108,7 @@ class WSFEXv1(BaseWS):
                 'obs_comerciales': obs_comerciales,
                 'obs_generales': obs_generales,
                 'forma_pago': forma_pago,
+                'fecha_pago': fecha_pago, 
                 'incoterms': incoterms,
                 'incoterms_ds': incoterms_ds,
                 'tipo_expo': tipo_expo,
@@ -186,6 +187,7 @@ class WSFEXv1(BaseWS):
                         'Cbte_cuit': c['cbte_cuit'],
                     }} for c in f['cbtes_asoc']] or None,
                 'Forma_pago': f['forma_pago'],
+                'Fecha_pago': f['fecha_pago'],
                 'Incoterms': f['incoterms'],
                 'Incoterms_Ds': f['incoterms_ds'],
                 'Idioma_cbte':  f['idioma_cbte'],
@@ -635,8 +637,8 @@ if __name__ == "__main__":
                 # Obtengo el último número de comprobante y le agrego 1
                 cbte_nro = int(wsfexv1.GetLastCMP(tipo_cbte, punto_vta)) + 1
                 fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
-                tipo_expo = 1 # tipo de exportación (ver tabla de parámetros)
-                permiso_existente = (tipo_cbte not in (20, 21) or tipo_expo!=1) and "S" or ""
+                tipo_expo = 2 # tipo de exportación (ver tabla de parámetros)
+                permiso_existente = (tipo_cbte not in (20, 21) and tipo_expo==1) and "S" or ""
                 print "permiso_existente", permiso_existente
                 dst_cmp = 203 # país destino
                 cliente = "Joao Da Silva"
@@ -644,10 +646,11 @@ if __name__ == "__main__":
                 domicilio_cliente = u"Rúa Ñ°76 km 34.5 Alagoas"
                 id_impositivo = "PJ54482221-l"
                 moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de parámetros)
-                moneda_ctz = "8.00" # wsfexv1.GetParamCtz('DOL') <- no funciona
+                moneda_ctz = "60.2980" # wsfexv1.GetParamCtz('DOL') <- no funciona
                 obs_comerciales = "Observaciones comerciales"
                 obs = "Sin observaciones"
                 forma_pago = "30 dias"
+                fecha_pago = fecha_cbte
                 incoterms = "FOB" # (ver tabla de parámetros)
                 incoterms_ds = "Flete a Bordo" 
                 idioma_cbte = 1 # (ver tabla de parámetros)
@@ -659,7 +662,7 @@ if __name__ == "__main__":
                         cliente, cuit_pais_cliente, domicilio_cliente, 
                         id_impositivo, moneda_id, moneda_ctz, 
                         obs_comerciales, obs, forma_pago, incoterms, 
-                        idioma_cbte, incoterms_ds)
+                        idioma_cbte, incoterms_ds, fecha_pago)
                 
                 # Agrego un item:
                 codigo = "PRO1"

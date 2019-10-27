@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27e"
+__version__ = "1.28a"
 
 import datetime
 import os
@@ -81,6 +81,7 @@ if not '--pyfepdf' in sys.argv:
         ('excepcion', 100, A),
         ('err_code', 100, A),
         ('err_msg', 1000, A),
+        ('fecha_pago', 8, A),
         ]
 
     DETALLE = [
