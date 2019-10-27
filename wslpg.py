@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.32a"
+__version__ = "1.33a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -447,8 +447,8 @@ class WSLPG(BaseWS):
     "Interfaz para el WebService de Liquidación Primaria de Granos"    
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'AutorizarLiquidacion',
-                        'AutorizarLiquidacionSecundaria', 
-                        'AnularLiquidacionSecundaria','AnularLiquidacion',
+                        'AutorizarLiquidacionSecundaria', 'AnularLiquidacion',
+                        'AnularLiquidacionSecundaria', 'AnularContraDocumento',
                         'AutorizarAnticipo', 'CancelarAnticipo',
                         'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
@@ -2387,6 +2387,26 @@ class WSLPG(BaseWS):
         return self.COE
     
     @inicializar_y_capturar_excepciones
+    def AnularContraDocumento(self, pto_emision=None, nro_orden=None, coe=None):
+        "Anular liquidación mediante la generación automática de un contra-documento."
+        ret = self.client.lpgAnularContraDocumento(
+                        auth={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuit': self.Cuit, },
+                        anulacionBase={
+                            'puntoEmision': pto_emision,
+                            'nroOrden': nro_orden,
+                            'coeAnular':coe,
+                            }
+                        )
+        ret = ret['liqConsReturn']
+        self.__analizar_errores(ret)
+        if 'autorizacion' in ret:
+            aut = ret['autorizacion']
+            self.AnalizarAjuste(aut)
+        return True
+
+    @inicializar_y_capturar_excepciones
     def AnularLiquidacionSecundaria(self, coe):
         "Anular liquidación secundaria activa"
         ret = self.client.lsgAnular(
@@ -3777,9 +3797,11 @@ if __name__ == '__main__':
             escribir_archivo(dic, SALIDA, agrega=('--agrega' in sys.argv))  
             
         if '--anular' in sys.argv:
-            ##print wslpg.client.help("anularLiquidacion")
+            ##print wslpg.client.help("lpgAnularContraDocumento")
             try:
                 coe = sys.argv[sys.argv.index("--anular") + 1]
+                pto_emision = int(sys.argv[sys.argv.index("--anular") + 1])
+                nro_orden = int(sys.argv[sys.argv.index("--anular") + 2])
             except IndexError:
                 coe = 330100000357
 
@@ -3791,7 +3813,7 @@ if __name__ == '__main__':
                 ret = wslpg.AnularCertificacion(coe)
             else:
                 print "Anulando COE", coe
-                ret = wslpg.AnularLiquidacion(coe)
+                ret = wslpg.AnularContraDocumento(pto_emision, nro_orden, coe)
             if wslpg.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
                 if DEBUG: print >> sys.stderr, wslpg.Traceback
