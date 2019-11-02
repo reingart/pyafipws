@@ -18,7 +18,7 @@ productos) según RG2904 (opción A con detalle) y RG2926/10 (CAE anticipado).
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.14a"
+__version__ = "1.14b"
 
 import datetime
 import decimal
@@ -571,6 +571,15 @@ class WSMTXCA(BaseWS):
                 'importeIVA': it['imp_iva'] if int(f['tipo_cbte']) not in (6, 7, 8) and it['imp_iva'] is not None else None,
                 'importeItem': it['imp_subtotal'],
                 }} for it in f['detalles']] or None,
+            'arrayDatosAdicionales': f['opcionales'] and [{'datoAdicional': { 
+                't': dato['opcional_id'], 
+                'c1': dato.get('valor'),
+                'c2': dato.get('valor2'),
+                'c3': dato.get('valor3'),
+                'c4': dato.get('valor4'),
+                'c5': dato.get('valor5'),
+                'c6': dato.get('valor6'),
+                }} for dato in f['opcionales']] or None,
             }
                 
         # fecha de vencimiento opcional (igual al último día de vigencia del CAEA)
