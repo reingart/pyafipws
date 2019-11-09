@@ -17,7 +17,7 @@ del web service WSRemCarne versión 3.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.02a"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v3.0
@@ -206,8 +206,9 @@ class WSRemCarne(BaseWS):
     @inicializar_y_capturar_excepciones
     def GenerarRemito(self, id_req, archivo="qr.png"):
         "Informar los datos necesarios para la generación de un remito nuevo"
-        if not self.remito['arrayContingencias']:
-            del self.remito['arrayContingencias']
+        if not self.remito.get('arrayContingencias'):
+            if 'arrayContingencias' in self.remito: 
+                del self.remito['arrayContingencias']
         response = self.client.generarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 idReq=id_req, remito=self.remito) 
@@ -301,13 +302,14 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarRemito(self, cod_remito=None, id_req=None,
-                        tipo_comprobante=None, punto_emision=None, nro_comprobante=None):
+                        tipo_comprobante=None, punto_emision=None, nro_comprobante=None, cuit_emisor=None):
         "Obtener los datos de un remito generado"
         print(self.client.help("consultarRemito"))
         response = self.client.consultarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=cod_remito,
                                 idReq=id_req,
+                                cuitEmisor=cuit_emisor,
                                 tipoComprobante=tipo_comprobante,
                                 puntoEmision=punto_emision,
                                 nroComprobante=nro_comprobante)
@@ -621,6 +623,8 @@ if __name__ == '__main__':
             print "Errores:", wsremcarne.Errores
             print "Errores Formato:", wsremcarne.ErroresFormato
             print "Evento:", wsremcarne.Evento
+            rec['nro_remito'] = wsremcarne.NroRemito
+            rec['cod_autorizacion'] = wsremcarne.CodAutorizacion
             rec['cod_remito'] = wsremcarne.CodRemito
             rec['resultado'] = wsremcarne.Resultado
             rec['observaciones'] = wsremcarne.Observaciones
