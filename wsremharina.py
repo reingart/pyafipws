@@ -17,7 +17,7 @@ del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.02a"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -81,7 +81,7 @@ WSDL = ["https://serviciosjava.afip.gob.ar/wsremharina/RemHarinaService?wsdl",
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsremharina.ini"
-HOMO = True
+HOMO = False
 ENCABEZADO = []
 
 
@@ -316,13 +316,14 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarRemito(self, cod_remito=None, id_req=None,
-                        tipo_comprobante=None, punto_emision=None, nro_comprobante=None):
+                        tipo_comprobante=None, punto_emision=None, nro_comprobante=None, cuit_emisor=None):
         "Obtener los datos de un remito generado"
-        print(self.client.help("consultarRemito"))
+        ## print(self.client.help("consultarRemito"))
         response = self.client.consultarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=cod_remito,
                                 idReq=id_req,
+                                cuitEmisor=cuit_emisor,
                                 tipoComprobante=tipo_comprobante,
                                 puntoEmision=punto_emision,
                                 nroComprobante=nro_comprobante)
