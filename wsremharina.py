@@ -17,7 +17,7 @@ del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.03a"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -91,6 +91,7 @@ class WSRemHarina(BaseWS):
                         'GenerarRemito', 'EmitirRemito', 'AutorizarRemito', 'AnularRemito', 'ConsultarRemito',
                         'InformarContingencia', 'ModificarViaje', 'RegistrarRecepcion',  'ConsultarUltimoRemitoEmitido',
                         'CrearRemito', 'AgregarViaje', 'AgregarVehiculo', 'AgregarMercaderia',
+                        'AgregarReceptor', 'AgregarDepositario', 'AgregarTransportista',
                         'AgregarDatosAutorizacion', 'AgregarContingencia',
                         'ConsultarTiposMercaderia', 'ConsultarTiposEmbalaje', 'ConsultarTiposUnidades', 'ConsultarTiposComprobante',
                         'ConsultarTiposComprobante', 'ConsultarTiposContingencia', 'ConsultarCodigosDomicilio',
@@ -148,31 +149,60 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def CrearRemito(self, tipo_comprobante, punto_emision, tipo_movimiento,
-                    cuit_titular, 
-                    cuit_receptor, tipo_dom_receptor, cod_dom_receptor, 
+                    cuit_titular, es_entrega_mostrador=None, importe_cot=None,
                     tipo_emisor=None, ruca_est_emisor=None,
-                    tipo_depositario=None, cuit_depositario=None, ruca_est_depositario=None,
-                    tipo_dom_origen=None, cod_dom_origen=None, cod_rem_redestinar=None,
+                    cod_rem_redestinar=None,
                     cod_remito=None, estado=None,
                     **kwargs):
         "Inicializa internamente los datos de un remito para autorizar"
         self.remito = {'tipoCmp': tipo_comprobante, 'puntoEmision': punto_emision, 'tipoEmisor': tipo_emisor,
-                       'cuitTitular': cuit_titular, 'cuitDepositario': cuit_depositario,
-                       'tipoDomReceptor': tipo_dom_receptor, 'cuitReceptor': cuit_receptor, 'tipoDepositario': tipo_depositario, 
-                       'tipoDomOrigen': tipo_dom_origen,
-                       'codDomOrigen': cod_dom_origen, 'codDomReceptor': cod_dom_receptor, 'tipoMovimiento': tipo_movimiento, 
+                       'cuitTitular': cuit_titular, 
+                       'tipoMovimiento': tipo_movimiento, 
+                       'esEntregaMostrador': es_entrega_mostrador,  # S o N
+                       'importeCot': importe_cot,
                        'estado': estado, 'codRemito': cod_remito,
                        'codRemRedestinado': cod_rem_redestinar,
-                       'rucaEstDepositario': ruca_est_depositario, 'rucaEstEmisor': ruca_est_emisor,
+                       'rucaEstEmisor': ruca_est_emisor,
                        'arrayMercaderia': [], 'arrayContingencias': [],
                       }
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarViaje(self, cuit_transportista=None, cuit_conductor=None, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
+    def AgregarReceptor(self, cuit_pais_receptor,
+                        cuit_receptor=None, tipo_dom_receptor=None, cod_dom_receptor=None,
+                        cuit_despachante=None, codigo_aduana=None,
+                        denominacion_receptor=None, domicilio_receptor=None, **kwargs):
+        "Agrega la información referente al receptor  del remito electrónico azucarero"
+        receptor = {'cuitPaisReceptor': cuit_pais_receptor}
+        if cuit_receptor:
+            receptor['receptorNacional'] = {'codDomReceptor': cod_dom_receptor,
+                                            'tipoDomReceptor': tipo_dom_receptor,
+                                            'cuitReceptor':cuit_receptor}
+        else:
+            receptor['receptorExtranjero'] = {
+                                        'codigoAduana': codigo_aduana,
+                                        'cuitDespachante': cuit_despachante,
+                                        'denominacionReceptor': denominacion_receptor,
+                                        'domicilioReceptor': domicilio_receptor}
+        self.remito['receptor'] = receptor
+
+    @inicializar_y_capturar_excepciones
+    def AgregarDepositario(self, tipo_depositario, cuit_depositario=None, ruca_est_depositario=None,
+                                 tipo_dom_origen=None, cod_dom_origen=None,
+                                 **kwargs):
+        "Agrega la información referente al depositario del remito electrónico"
+        self.remito['depositario'] =  {
+                            'codDomOrigen': cod_dom_origen,
+                            'cuitDepositario': cuit_depositario,
+                            'rucaEstDepositario': ruca_est_depositario,
+                            'tipoDepositario': tipo_depositario,
+                            'tipoDomOrigen': tipo_dom_origen,
+                            }
+
+    @inicializar_y_capturar_excepciones
+    def AgregarViaje(self, cod_pais_transportista=None, cuit_transportista=None, cuit_conductor=None, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
         "Agrega la información referente al viaje del remito electrónico harinero"
-        self.remito['viaje'] = {'cuitTransportista': cuit_transportista, 
-                                'cuitConductor': cuit_conductor,
+        self.remito['viaje'] = {
                                 'fechaInicioViaje': fecha_inicio_viaje ,
                                 'distanciaKm': distancia_km,
                                 'vehiculo': {}
@@ -180,9 +210,34 @@ class WSRemHarina(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarVehiculo(self, cuit_conductor, dominio_vehiculo, dominio_acoplado=None, **kwargs):
+    def AgregarTransportista(self, cod_pais_transportista=None, 
+                                cuit_transportista=None, cuit_conductor=None, 
+                                apellido_conductor=None, cedula_conductor=None, denom_transportista=None,
+                                id_impositivo=None, nombre_conductor=None,
+                                **kwargs):
+        "Agrega la información referente al transportista del remito electrónico harinero"
+        self.remito['viaje']['transportista'] = {
+            'codPaisTransportista': cod_pais_transportista,
+            }
+        if cuit_transportista:
+            self.remito['viaje']['transportista']['transporteNacional'] = {
+                'cuitTransportista': cuit_transportista, 
+                'cuitConductor': cuit_conductor,
+            }
+        else:
+            self.remito['viaje']['transportista']['transporteExtranjero'] = {
+                'apellidoConductor': apellido_conductor,
+                'cedulaConductor': cedula_conductor,
+                'denomTransportista': denom_transportista,
+                'idImpositivo': id_impositivo,
+                'nombreConductor': nombre_conductor,
+            }
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarVehiculo(self, dominio_vehiculo, dominio_acoplado=None, **kwargs):
         "Agrega la información referente al vehiculo usado en el viaje del remito electrónico harinero"
-        vehiculo = {'cuitConductor': cuit_conductor, 
+        vehiculo = {
                     'dominioVehiculo': dominio_vehiculo, 
                     'arrayDominioAcoplado': [{'identificador': dominio_acoplado}]}
         self.remito['viaje']['vehiculo'] = {'automotor': vehiculo}
@@ -552,21 +607,39 @@ if __name__ == '__main__':
                     tipo_comprobante=993,   # 993 o 994
                     punto_emision=1, 
                     tipo_movimiento="ENV",  # ENV: envio, RET: retiro, CAN: canje, RED: redestino
-                    cuit_titular='20222222223', 
-                    cuit_receptor='20111111112',
-                    tipo_dom_receptor=1,    # 1: fiscal, 3: comercial
-                    cod_dom_receptor=1234,
-                    tipo_emisor=None, ruca_est_emisor=None,
-                    tipo_depositario=None, cuit_depositario=None, ruca_est_depositario=None,
-                    tipo_dom_origen=None, cod_dom_origen=None, cod_rem_redestinar=None,
+                    cuit_titular='20287531894', 
+                    es_entrega_mostrador='N',
+                    importe_cot='10000.0',
+                    tipo_emisor='I',        # U: Usiario de molienda de trigo I: Industrial
+                    ruca_est_emisor=1031,
+                    cod_rem_redestinar=None,
                     cod_remito=None, estado=None,
                     id_req=int(time.time()),
                 )
+            rec['receptor'] = dict(
+                    cuit_pais_receptor='55000002002',
+                    cuit_receptor='20111111112',
+                    tipo_dom_receptor=1,    # 1: fiscal, 3: comercial
+                    cod_dom_receptor=1234,
+                    cuit_despachante=None, codigo_aduana=None,
+                    denominacion_receptor=None, domicilio_receptor=None,
+                )
+            rec['depositario'] = dict(
+                    tipo_depositario="E",  # I: Industrial de Molino/Trigo
+                                           # E: Emisor D: Depositario
+                    cuit_depositario='23000000019',
+                    ruca_est_depositario=7297,
+                    tipo_dom_origen=1, cod_dom_origen=1,
+                )
             if "--autorizar" in sys.argv:
                 rec["estado"] = 'A'  # 'A': Autorizar, 'D': Denegar
-            rec['viaje'] = dict(cuit_transportista='20333333334', cuit_conductor='20333333334',
-                                   fecha_inicio_viaje='2018-10-01', distancia_km=999)
-            rec['viaje']['vehiculo'] = dict(cuit_conductor='20333333334', dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000')
+            rec['viaje'] = dict(fecha_inicio_viaje='2018-10-01', distancia_km=999)
+            rec['viaje']['transportista'] = dict(
+                    cod_pais_transportista=200,
+                    cuit_transportista='20138835899',
+                    cuit_conductor='20333333334',
+                )
+            rec['viaje']['vehiculo'] = dict(dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000')
             rec['mercaderias'] = [dict(orden=1, cod_tipo=0, cod_tipo_emb=0, cantidad_emb=0, cod_tipo_unidad=0, cant_unidad=0, )]
             rec['datos_autorizacion'] = None # dict(nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
             rec['contingencias'] = [dict(tipo=1, observacion="anulacion")]
@@ -577,8 +650,11 @@ if __name__ == '__main__':
             with open(ENTRADA, "r") as archivo:
                 rec = json.load(archivo)
             wsremharina.CrearRemito(**rec)
+            wsremharina.AgregarReceptor(**rec['receptor'])
+            wsremharina.AgregarDepositario(**rec['depositario'])
             wsremharina.AgregarViaje(**rec['viaje'])
             wsremharina.AgregarVehiculo(**rec['viaje']['vehiculo'])
+            wsremharina.AgregarTransportista(**rec['viaje']['transportista'])
             for mercaderia in rec['mercaderias']:
                 wsremharina.AgregarMercaderia(**mercaderia)
             datos_aut = rec['datos_autorizacion']
