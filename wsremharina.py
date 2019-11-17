@@ -200,7 +200,7 @@ class WSRemHarina(BaseWS):
                             }
 
     @inicializar_y_capturar_excepciones
-    def AgregarViaje(self, cod_pais_transportista=None, cuit_transportista=None, cuit_conductor=None, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
+    def AgregarViaje(self, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
         "Agrega la información referente al viaje del remito electrónico harinero"
         self.remito['viaje'] = {
                                 'fechaInicioViaje': fecha_inicio_viaje ,
