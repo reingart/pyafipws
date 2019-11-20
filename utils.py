@@ -737,7 +737,7 @@ def generar_csv(filas, formato, fn="planilla.csv", delimiter=";"):
 def tabular(filas, formato):
     from tabulate import tabulate
     columnas = [fmt[0] for fmt in formato if fmt[0] not in ("tipo_reg", )]
-    tabla = [[fila[col] for col in columnas] for fila in filas]
+    tabla = [[fila.get(col) for col in columnas] for fila in filas]
     return tabulate(tabla, columnas, floatfmt=".2f")
 
 
