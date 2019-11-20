@@ -17,7 +17,7 @@ del web service WSRemCarne versión 3.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.02b"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v3.0
@@ -94,7 +94,7 @@ class WSRemCarne(BaseWS):
                         'AgregarDatosAutorizacion', 'AgregarContingencia',
                         'ConsultarTiposCarne', 'ConsultarTiposCategoriaEmisor', 'ConsultarTiposCategoriaReceptor',
                         'ConsultarTiposComprobante', 'ConsultarTiposContingencia', 'ConsultarTiposEstado',
-                        'ConsultarCodigosDomicilio', 'ConsultarGruposCarne, ConsultarPuntosEmision',
+                        'ConsultarCodigosDomicilio', 'ConsultarGruposCarne', 'ConsultarPuntosEmision',
                         'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
     _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
@@ -304,7 +304,6 @@ class WSRemCarne(BaseWS):
     def ConsultarRemito(self, cod_remito=None, id_req=None,
                         tipo_comprobante=None, punto_emision=None, nro_comprobante=None, cuit_emisor=None):
         "Obtener los datos de un remito generado"
-        print(self.client.help("consultarRemito"))
         response = self.client.consultarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=cod_remito,
