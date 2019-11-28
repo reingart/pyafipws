@@ -269,13 +269,12 @@ class WSRemAzucar(BaseWS):
     def AnalizarRemito(self, ret, archivo=None):
         "Extrae el resultado del remito, si existen en la respuesta XML"
         if ret:
-            self.CodRemito = ret.get("codRemito")
-            self.TipoComprobante = ret.get("tipoComprobante")
-            self.PuntoEmision = ret.get("puntoEmision")
-            datos_aut = ret.get('datosEmision')
+            datos_aut = ret.get('remitoDatosAutorizacion')
             if datos_aut:
-                self.NroRemito = datos_aut.get('nroRemito')
-                self.CodAutorizacion = datos_aut.get('codAutorizacion')
+                self.CodRemito = datos_aut.get("codigoRemito")
+                self.TipoComprobante = datos_aut.get("idTipoComprobante")
+                self.NroRemito = datos_aut.get('nroComprobante')
+                self.CodAutorizacion = datos_aut.get('codigoAutorizacion')
                 self.FechaEmision = datos_aut.get('fechaEmision')
                 self.FechaVencimiento = datos_aut.get('fechaVencimiento')
             self.Estado = ret.get('estado')
