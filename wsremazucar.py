@@ -160,6 +160,7 @@ class WSRemAzucar(BaseWS):
                        'cuitAutorizadoRetirar': cuit_autorizado_retirar,
                        'cuitProductorContrato': cuit_productor_contrato,
                        'numeroMaquila': numero_maquila,
+                       'codRemito': cod_remito,
                        'arrayMercaderias': [], 'arrayContingencias': [],
                       }
         return True
@@ -290,8 +291,10 @@ class WSRemAzucar(BaseWS):
         "Emitir Remitos que se encuentren en estado Pendiente de Emitir."
         response = self.client.emitirRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                codRemito=self.remito['codRemito'],
-                                viaje=self.remito.get('viaje'))
+                                emitirRemito=dict(
+                                    codigoRemito=self.remito['codRemito'],
+                                    )
+                                )
         ret = response.get("emitirRemitoReturn")
         if ret:
             self.__analizar_errores(ret)
