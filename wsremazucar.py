@@ -17,7 +17,7 @@ del servicio web RemAzucarService versión 2.0.3 de AFIP (RG4519/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.02a"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Azúcar AFIP v2.0.3
@@ -94,7 +94,7 @@ class WSRemAzucar(BaseWS):
                         'CrearRemito', 'AgregarViaje', 'AgregarVehiculo', 'AgregarMercaderia', 'AgregarReceptor', 
                         'AgregarDatosAutorizacion', 'AgregarContingencia',
                         'ConsultarTiposMercaderia', 'ConsultarTiposEmbalaje', 'ConsultarTiposUnidades', 'ConsultarTiposComprobante',
-                        'ConsultarTiposComprobante', 'ConsultarTiposContingencia', 'ConsultarCodigosDomicilio',
+                        'ConsultarTiposComprobante', 'ConsultarTiposContingencia', 'ConsultarCodigosDomicilio', 'ConsultarPaises',
                         'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
     _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
@@ -389,6 +389,19 @@ class WSRemAzucar(BaseWS):
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
     @inicializar_y_capturar_excepciones
+    def ConsultarPaises(self, sep="||"):
+        "Obtener el código y descripción para los paises"
+        ret = self.client.consultarPaises(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit, },
+                                )['consultarCodigosPaisReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayPaises', [])
+        lista = [it['pais'] for it in array]
+        return [(u"%s {codigo} %s {cuit} %s {nombre} %s {tipoSujeto} %s" % (sep, sep, sep, sep, sep)).format(**it) if sep else it for it in lista]
+
+    @inicializar_y_capturar_excepciones
     def ConsultarTiposContingencia(self, sep="||"):
         "Obtener el código y descripción para cada tipo de contingencia que puede reportar"
         ret = self.client.consultarTiposContingencia(
@@ -436,7 +449,7 @@ class WSRemAzucar(BaseWS):
                                 'cuitRepresentada': self.Cuit, },
                                 )['codigoDescripcionReturn']
         self.__analizar_errores(ret)
-        array = ret.get('arrayUnidadesVenta', [])
+        array = ret.get('arrayCodigoDescripcion', [])
         lista = [it['codigoDescripcion'] for it in array]
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
@@ -578,7 +591,7 @@ if __name__ == '__main__':
                 import pprint
                 pprint.pprint(wsremazucar.remito)
 
-        wsremazucar.client.help("generarRemito")
+        ##wsremazucar.client.help("generarRemito")
         if '--prueba' in sys.argv:
             rec = dict(
                     tipo_comprobante=997, punto_emision=1,
@@ -698,6 +711,10 @@ if __name__ == '__main__':
 
         if '--tipos_estados' in sys.argv:
             ret = wsremazucar.ConsultarTiposEstado()
+            print "\n".join(ret)
+
+        if '--paises' in sys.argv:
+            ret = wsremazucar.ConsultarPaises()
             print "\n".join(ret)
 
         if '--grupos_azucar' in sys.argv:
