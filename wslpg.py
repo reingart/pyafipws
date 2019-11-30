@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33a"
+__version__ = "1.33b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -3800,8 +3800,8 @@ if __name__ == '__main__':
             ##print wslpg.client.help("lpgAnularContraDocumento")
             try:
                 coe = sys.argv[sys.argv.index("--anular") + 1]
-                pto_emision = int(sys.argv[sys.argv.index("--anular") + 1])
-                nro_orden = int(sys.argv[sys.argv.index("--anular") + 2])
+                pto_emision = int(sys.argv[sys.argv.index("--anular") + 2])
+                nro_orden = int(sys.argv[sys.argv.index("--anular") + 3])
             except IndexError:
                 coe = 330100000357
 
