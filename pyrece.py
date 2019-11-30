@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.32a"
+__version__ = "1.32b"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN

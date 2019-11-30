@@ -310,7 +310,7 @@ def desserializar(xml):
             iva = ivas['iva']
             reg['ivas'].append(mapear({}, iva, MAP_IVA))
 
-        for tributos in comp['tributos']:
+        for tributos in comp.get('tributos', []):
             tributo = tributos['tributo']
             reg['tributos'].append(mapear({}, tributo, MAP_TRIB))
 
