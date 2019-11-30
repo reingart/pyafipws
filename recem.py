@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.32a"
+__version__ = "1.34a"
 
 import datetime
 import os
@@ -50,7 +50,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 # definición del formato del archivo de intercambio:
 
 if not '--pyfepdf' in sys.argv:
-    TIPOS_REG = '0', '1', '2', '3', '4', '5'
+    TIPOS_REG = '0', '1', '2', '3', '4', '5', '6'
     ENCABEZADO = [
         ('tipo_reg', 1, N), # 0: encabezado
         ('fecha_cbte', 10, A),
@@ -81,6 +81,7 @@ if not '--pyfepdf' in sys.argv:
         ('reproceso', 1, A),
         ('emision_tipo', 4, A),
         ('observaciones', 1000, A),  # observaciones (opcional)
+        ('tipo_cbte', 3, N), ('punto_vta', 5, N),
         ]
 
     DETALLE = [
@@ -119,13 +120,25 @@ if not '--pyfepdf' in sys.argv:
         ('tipo', 3, N),         
         ('pto_vta', 4, N),
         ('nro', 8, N), 
+        ('fecha', 8, N),
+        ('cuit', 11, N),
+        ]
+
+    OPCIONAL = [
+        ('tipo_reg', 1, N), # 6: datos opcionales
+        ('opcional_id', 4, A),
+        ('valor', 250, A),
+        ('valor', 250, A),
+        ('valor', 250, A),
+        ('valor', 250, A),
+        ('valor', 250, A),
         ]
 
 else:
     print "!" * 78
     print "importando formato segun pyfepdf"
-    from formatos.formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
-    TIPOS_REG = '0', '5', '4', '3', '1'
+    from formatos.formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO, OPCIONAL
+    TIPOS_REG = '0', '5', '4', '3', '1', '6'
 
 
 
@@ -135,8 +148,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
     cbtasocs = []
     encabezado = []
     detalles = []
+    opcionales = []
     if '/dbf' in sys.argv:
-        formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs), ('Detalles', DETALLE, detalles)]
+        formatos = [('Encabezado', ENCABEZADO, encabezado), ('Tributo', TRIBUTO, tributos), ('Iva', IVA, ivas), ('Comprobante Asociado', CMP_ASOC, cbtasocs), ('Detalles', DETALLE, detalles), ('Datos Opcionales', OPCIONAL, opcionales),]
         dic = leer_dbf(formatos, conf_dbf)
         encabezado = encabezado[0]
     else:
@@ -157,7 +171,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 ivas.append(iva)
             elif str(linea[0])==TIPOS_REG[3]:
                 cbtasoc = leer(linea, CMP_ASOC)
-                if 'cbte_punto_vta' in cbteasoc:
+                if 'cbte_punto_vta' in cbtasoc  :
                     cbtasoc['tipo'] = cbtasoc['cbte_tipo']
                     cbtasoc['pto_vta'] = cbtasoc['cbte_punto_vta']
                     cbtasoc['nro'] = cbtasoc['cbte_nro']
@@ -167,6 +181,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 detalles.append(detalle)
                 if 'imp_subtotal' not in detalle:
                     detalle['imp_subtotal'] = detalle['importe']
+            elif str(linea[0])==TIPOS_REG[5]:
+                opcional = leer(linea, OPCIONAL)
+                opcionales.append(opcional)
             else:
                 print "Tipo de registro incorrecto:", linea[0]
        
@@ -188,6 +205,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         ws.AgregarIva(**iva)
     for cbtasoc in cbtasocs:
         ws.AgregarCmpAsoc(**cbtasoc)
+    for opcional in opcionales:
+        ws.AgregarOpcional(**opcional)
 
     if DEBUG:
         print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
@@ -232,9 +251,13 @@ def escribir_factura(dic, archivo, agrega=False):
             it['tipo_reg'] = TIPOS_REG[4]
             it['importe'] = it['imp_subtotal']
             archivo.write(escribir(it, DETALLE))
+    if 'opcionales' in dic:
+        for it in dic['opcionales']:
+            it['tipo_reg'] = TIPOS_REG[5]
+            archivo.write(escribir(it, OPCIONAL))
             
     if '/dbf' in sys.argv:
-        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic.get('tributos', [])), ('Iva', IVA, dic.get('iva', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])), ('Detalles', DETALLE, dic.get('detalles', []))]
+        formatos = [('Encabezado', ENCABEZADO, [dic]), ('Tributo', TRIBUTO, dic.get('tributos', [])), ('Iva', IVA, dic.get('iva', [])), ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])), ('Datos Opcionales', OPCIONAL, dic.get("opcionales", [])), ('Detalles', DETALLE, dic.get('detalles', []))]
         guardar_dbf(formatos, agrega, conf_dbf)
 
 def depurar_xml(client):
@@ -327,7 +350,7 @@ if __name__ == "__main__":
 
         if '/formato' in sys.argv:
             print "Formato:"
-            for msg, formato in [('Encabezado', ENCABEZADO), ('Tributo', TRIBUTO), ('Iva', IVA), ('Comprobante Asociado', CMP_ASOC), ('Detalle', DETALLE)]:
+            for msg, formato in [('Encabezado', ENCABEZADO), ('Tributo', TRIBUTO), ('Iva', IVA), ('Comprobante Asociado', CMP_ASOC), ('Detalle', DETALLE), ('Opcionales', OPCIONAL)]:
                 comienzo = 1
                 print "== %s ==" % msg
                 for fmt in formato:
@@ -360,7 +383,10 @@ if __name__ == "__main__":
             
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
-            tipo_cbte = 6
+            if '--fce' in sys.argv:
+                tipo_cbte = 201
+            else:
+                tipo_cbte = 1
             punto_vta = 4000
             cbte_nro = ws.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -382,11 +408,13 @@ if __name__ == "__main__":
                 fecha_serv_desde, fecha_serv_hasta, #--
                 moneda_id, moneda_ctz, obs)
             
-            if tipo_cbte not in (1, 2, 6, 7):
+            if tipo_cbte not in (1, 2, 6, 7, 201):
                 tipo = 1
                 pto_vta = 2
                 nro = 1234
-                ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                fecha = "20191010"
+                cuit = "20267565393"
+                ws.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha)
             
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
@@ -428,6 +456,14 @@ if __name__ == "__main__":
                 ws.AgregarItem(1, "DESC", "DESC", "Descuento", 0, 99, 0, 0, 
                             iva_id, 0.0, 1.21)
             
+
+            # datos de opcionales FCE (Factura Credito Electrónica):
+            if '--fce' in sys.argv:
+                if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):
+                    ws.AgregarOpcional(22, "N")
+                else:
+                    ws.AgregarOpcional(21, "2850590940090418135201")  # CBU
+
             f_entrada = open(entrada,"w")
                 
             if DEBUG:
