@@ -297,13 +297,13 @@ class WSRemHarina(BaseWS):
             self.CodRemito = ret.get("codRemito")
             self.TipoComprobante = ret.get("tipoComprobante")
             self.PuntoEmision = ret.get("puntoEmision")
-            datos_aut = ret.get('datosEmision')
+            datos_aut = ret.get('datosAutAFIP')
             if datos_aut:
                 self.NroRemito = datos_aut.get('nroRemito')
                 self.CodAutorizacion = datos_aut.get('codAutorizacion')
                 self.FechaEmision = datos_aut.get('fechaEmision')
                 self.FechaVencimiento = datos_aut.get('fechaVencimiento')
-            self.Estado = ret.get('estado')
+            self.Estado = ret.get('estado', ret.get('estadoRemito'))
             self.Resultado = ret.get('resultado')
             self.QR = ret.get('qr') or ""
             if archivo:
@@ -386,11 +386,11 @@ class WSRemHarina(BaseWS):
                                 nroComprobante=nro_comprobante)
         ret = response.get("consultarRemitoReturn", {})
         id_req = ret.get("idReq", 0)
-        self.remito = rec = ret.get("remito", {})
+        self.remito = rec = ret.get("remitoOutput", {})
         self.__analizar_errores(ret)
         self.__analizar_observaciones(ret)
         self.__analizar_evento(ret)
-        self.AnalizarRemito(rec)
+        self.AnalizarRemito(rec, archivo)
         return id_req
 
     @inicializar_y_capturar_excepciones
