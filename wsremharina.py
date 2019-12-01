@@ -17,7 +17,7 @@ del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.05a"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -57,6 +57,7 @@ Opciones:
   --tipos_unidades: tipo de mercaderias
   --tipos_embalaje: tipos de embalajes
   --tipos_estados: estados posibles en los que puede estar un remito harinero
+  --paises: consulta cuit y codigos de paises
   --puntos_emision: puntos de emision habilitados
   --codigos_domicilio: codigos de depositos habilitados para el cuit
 
@@ -94,6 +95,7 @@ class WSRemHarina(BaseWS):
                         'AgregarReceptor', 'AgregarDepositario', 'AgregarTransportista',
                         'AgregarDatosAutorizacion', 'AgregarContingencia',
                         'ConsultarTiposMercaderia', 'ConsultarTiposEmbalaje', 'ConsultarTiposUnidades', 'ConsultarTiposComprobante',
+                        'ConsultarPaises',
                         'ConsultarTiposEstado', 'ConsultarTiposContingencia', 'ConsultarCodigosDomicilio', 'ConsultarPuntosEmision',
                         'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
@@ -478,6 +480,19 @@ class WSRemHarina(BaseWS):
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
     @inicializar_y_capturar_excepciones
+    def ConsultarPaises(self, sep="||"):
+        "Obtener el código y descripción para los paises"
+        ret = self.client.consultarPaises(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit, },
+                                )['consultarCodigosPaisReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayPaises', [])
+        lista = [it['pais'] for it in array]
+        return [(u"%s {codigo} %s {cuit} %s {nombre} %s {tipoSujeto} %s" % (sep, sep, sep, sep, sep)).format(**it) if sep else it for it in lista]
+
+    @inicializar_y_capturar_excepciones
     def ConsultarCodigosDomicilio(self, cuit_titular=1, sep="||"):
         "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
         ret = self.client.consultarCodigosDomicilio(
@@ -756,6 +771,10 @@ if __name__ == '__main__':
 
         if '--tipos_estados' in sys.argv:
             ret = wsremharina.ConsultarTiposEstado()
+            print "\n".join(ret)
+
+        if '--paises' in sys.argv:
+            ret = wsremharina.ConsultarPaises()
             print "\n".join(ret)
 
         if '--codigos_domicilio' in sys.argv:
