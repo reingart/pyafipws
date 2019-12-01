@@ -17,7 +17,7 @@ del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.04a"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -53,11 +53,11 @@ Opciones:
 
   --tipos_comprobante: tabla de parametros para tipo de comprobante
   --tipos_contingencia: tipo de contingencia que puede reportar
-  --tipos_categoria_emisor: tipos de categorías de emisor
-  --tipos_categoria_receptor: tipos de categorías de receptor
+  --tipos_mercaderia: tipo de mercaderias
+  --tipos_unidades: tipo de mercaderias
+  --tipos_embalaje: tipos de embalajes
   --tipos_estados: estados posibles en los que puede estar un remito harinero
-  --grupos_harina' grupos de los distintos tipos de cortes de harina
-  --tipos_harina': tipos de corte de harina
+  --puntos_emision: puntos de emision habilitados
   --codigos_domicilio: codigos de depositos habilitados para el cuit
 
 Ver wsremharina.ini para parámetros de configuración (URL, certificados, etc.)"
@@ -94,7 +94,7 @@ class WSRemHarina(BaseWS):
                         'AgregarReceptor', 'AgregarDepositario', 'AgregarTransportista',
                         'AgregarDatosAutorizacion', 'AgregarContingencia',
                         'ConsultarTiposMercaderia', 'ConsultarTiposEmbalaje', 'ConsultarTiposUnidades', 'ConsultarTiposComprobante',
-                        'ConsultarTiposComprobante', 'ConsultarTiposContingencia', 'ConsultarCodigosDomicilio',
+                        'ConsultarTiposEstado', 'ConsultarTiposContingencia', 'ConsultarCodigosDomicilio', 'ConsultarPuntosEmision',
                         'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
     _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
@@ -408,7 +408,7 @@ class WSRemHarina(BaseWS):
                                 'cuitRepresentada': self.Cuit, },
                                 )['codigoDescripcionReturn']
         self.__analizar_errores(ret)
-        array = ret.get('arrayTiposComprobante', [])
+        array = ret.get('arrayCodigoDescripcion', [])
         lista = [it['codigoDescripcion'] for it in array]
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
@@ -445,7 +445,7 @@ class WSRemHarina(BaseWS):
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
                                 'cuitRepresentada': self.Cuit, },
-                                )['consultarTiposEmbalaje']
+                                )['codigoDescripcionReturn']
         self.__analizar_errores(ret)
         array = ret.get('arrayCodigoDescripcion', [])
         lista = [it['codigoDescripcion'] for it in array]
@@ -454,14 +454,27 @@ class WSRemHarina(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarTiposUnidades(self, sep="||"):
         "Obtener el código y descripción  códigos y la descripción para cada tipo de unidades de venta"
-        ret = self.client.consultarTiposUnidadesVenta(
+        ret = self.client.consultarUnidadesVenta(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
                                 'cuitRepresentada': self.Cuit, },
-                                )['consultarUnidadesVenta']
+                                )['codigoDescripcionReturn']
         self.__analizar_errores(ret)
-        array = ret.get('arrayUnidadesVenta', [])
+        array = ret.get('arrayCodigoDescripcion', [])
         lista = [it['codigoDescripcion'] for it in array]
+        return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarTiposEstado(self, sep="||"):
+        "Obtener el código y descripción  códigos y la descripción para cada tipo de estados por los cuales puede pasar un remito"
+        ret = self.client.consultarTiposEstado(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit, },
+                                )['codigoDescripcionReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayCodigoDescripcion', [])
+        lista = [it['codigoDescripcionString'] for it in array]
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
     @inicializar_y_capturar_excepciones
@@ -477,6 +490,21 @@ class WSRemHarina(BaseWS):
         array = ret.get('arrayDomicilios', [])
         lista = [it['codigoDescripcion'] for it in array]
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
+
+    def ConsultarPuntosEmision(self, sep="||"):
+        "Retorna los Puntos de Emision que posee la CUIT representada."
+        ret = self.client.consultarPuntosEmision(
+                        authRequest={
+                            'token': self.Token, 'sign': self.Sign,
+                            'cuitRepresentada': self.Cuit, },
+                            )['consultarPuntosEmisionReturn']
+        self.__analizar_errores(ret)
+        array = ret.get('arrayPuntosEmision', [])
+        if sep is None:
+            return dict([(it['codigo'], it['descripcion']) for it in array])
+        else:
+            return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
+                    (it['codigo'], it['descripcion']) for it in array]
 
 
 
@@ -726,30 +754,17 @@ if __name__ == '__main__':
             ret = wsremharina.ConsultarTiposUnidades()
             print "\n".join(ret)
 
-        if '--tipos_categoria_emisor' in sys.argv:
-            ret = wsremharina.ConsultarTiposCategoriaEmisor()
-            print "\n".join(ret)
-
-        if '--tipos_categoria_receptor' in sys.argv:
-            ret = wsremharina.ConsultarTiposCategoriaReceptor()
-            print "\n".join(ret)
-
         if '--tipos_estados' in sys.argv:
             ret = wsremharina.ConsultarTiposEstado()
             print "\n".join(ret)
 
-        if '--grupos_harina' in sys.argv:
-            ret = wsremharina.ConsultarGruposHarina()
-            print "\n".join(ret)
-
-        if '--tipos_harina' in sys.argv:
-            for grupo_harina in wsremharina.ConsultarGruposHarina(sep=None):
-                ret = wsremharina.ConsultarTiposHarina(grupo_harina['codigo'])
-                print "\n".join(ret)
-
         if '--codigos_domicilio' in sys.argv:
             cuit = raw_input("Cuit Titular Domicilio: ")
             ret = wsremharina.ConsultarCodigosDomicilio(cuit)
+            print "\n".join(ret)
+
+        if '--puntos_emision' in sys.argv:
+            ret = wsremharina.ConsultarPuntosEmision()
             print "\n".join(ret)
 
         if wsremharina.Errores or wsremharina.ErroresFormato:
