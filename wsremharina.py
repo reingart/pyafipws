@@ -17,7 +17,7 @@ del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -372,10 +372,9 @@ class WSRemHarina(BaseWS):
         return id_req
 
     @inicializar_y_capturar_excepciones
-    def ConsultarRemito(self, cod_remito=None, id_req=None,
-                        tipo_comprobante=None, punto_emision=None, nro_comprobante=None, cuit_emisor=None):
+    def ConsultarRemito(self, cod_remito=None, id_req=None, archivo="qr.jpg",
+                        tipo_comprobante=None, punto_emision=None, nro_comprobante=None, cuit_emisor=None, **kwargs):
         "Obtener los datos de un remito generado"
-        ## print(self.client.help("consultarRemito"))
         response = self.client.consultarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=cod_remito,
@@ -628,23 +627,6 @@ if __name__ == '__main__':
             print "Ultimo Nro de Remito", wsremharina.NroRemito
             print "Errores:", wsremharina.Errores
 
-        if '--consultar' in sys.argv:
-            try:
-                cod_remito = sys.argv[sys.argv.index("--consultar") + 1]
-            except IndexError, ValueError:
-                cod_remito = None
-            rec = {}
-            print "Consultando remito cod_remito=%s" % (cod_remito, )
-            ok = wsremharina.ConsultarRemito(cod_remito)
-            if wsremharina.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsremharina.Excepcion
-                if DEBUG: print >> sys.stderr, wsremharina.Traceback
-            print "Ultimo Nro de Remito", wsremharina.NroRemito
-            print "Errores:", wsremharina.Errores
-            if DEBUG:
-                import pprint
-                pprint.pprint(wsremharina.remito)
-
         if '--prueba' in sys.argv:
             rec = dict(
                     tipo_comprobante=993,   # 993 o 994
@@ -705,6 +687,25 @@ if __name__ == '__main__':
                 wsremharina.AgregarDatosAutorizacion(**datos_aut)
             for contingencia in rec['contingencias']:
                 wsremharina.AgregarContingencias(**contingencia)
+
+        if '--consultar' in sys.argv:
+            if not '--cargar' in sys.argv:
+                try:
+                        cod_remito = sys.argv[sys.argv.index("--consultar") + 1]
+                        rec = {"cod_remito": cod_remito}
+                except IndexError, ValueError:
+                    cod_remito = None
+            print "Consultando remito cod_remito=%s nro_comprobante=%s" % (rec.get('cod_remito'), rec.get('nro_comprobante'))
+            rec['cuit_emisor'] = wsremharina.Cuit
+            ok = wsremharina.ConsultarRemito(**rec)
+            if wsremharina.Excepcion:
+                print >> sys.stderr, "EXCEPCION:", wsremharina.Excepcion
+                if DEBUG: print >> sys.stderr, wsremharina.Traceback
+            print "Ultimo Nro de Remito", wsremharina.NroRemito
+            print "Errores:", wsremharina.Errores
+            if DEBUG:
+                import pprint
+                pprint.pprint(wsremharina.remito)
 
         if '--generar' in sys.argv:
             if '--testing' in sys.argv:
