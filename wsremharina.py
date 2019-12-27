@@ -17,7 +17,7 @@ del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.05d"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -187,6 +187,7 @@ class WSRemHarina(BaseWS):
                                         'denominacionReceptor': denominacion_receptor,
                                         'domicilioReceptor': domicilio_receptor}
         self.remito['receptor'] = receptor
+        return True
 
     @inicializar_y_capturar_excepciones
     def AgregarDepositario(self, tipo_depositario, cuit_depositario=None, ruca_est_depositario=None,
@@ -200,6 +201,7 @@ class WSRemHarina(BaseWS):
                             'tipoDepositario': tipo_depositario,
                             'tipoDomOrigen': tipo_dom_origen,
                             }
+        return True
 
     @inicializar_y_capturar_excepciones
     def AgregarViaje(self, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
@@ -363,12 +365,13 @@ class WSRemHarina(BaseWS):
                                 tipoComprobante=tipo_comprobante,
                                 puntoEmision=punto_emision)
         ret = response.get("consultarUltimoRemitoReturn", {})
-        id_req = ret.get("idReq", 0)
+        self.remito = ret = ret.get("remitoOutput", {})
         rec = ret.get("remito", {})
+        id_req = ret.get("idReqCliente", 0)
         self.__analizar_errores(ret)
         self.__analizar_observaciones(ret)
         self.__analizar_evento(ret)
-        self.AnalizarRemito(rec)
+        self.AnalizarRemito(ret)
         return id_req
 
     @inicializar_y_capturar_excepciones
@@ -615,7 +618,7 @@ if __name__ == '__main__':
             except IndexError, ValueError:
                 pto_emision = 1
             try:
-                tipo_cbte = int(sys.argv[sys.argv.index("--ult") + 1])
+                tipo_comprobante = int(sys.argv[sys.argv.index("--ult") + 1])
             except IndexError, ValueError:
                 tipo_comprobante = 995
             rec = {}
