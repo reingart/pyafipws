@@ -17,7 +17,7 @@ Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.07a"
 
 LICENCIA = """
 wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
@@ -859,6 +859,77 @@ FORMATOS = {
             ("cod_moneda", 3, A),
             ("ctz_moneda_ult", 18, I, 6),
         ],
+    "comprobante": [
+            ('tipo_reg', 1, A),
+            ("cod_cta_cte", 17, N),
+            ('estado', 20, A),
+            ('fecha_hora_estado', 19, A),
+            ('fecha_emision', 19, A),
+            ("cuit_emisor", 11, N),
+            ("tipo_cbte", 3, N),
+            ("punto_vta", 11, N),
+            ("cbte_nro", 8, N),
+            ("imp_total", 19, I, 2),
+            ("moneda_id", 3, A),
+            ("moneda_ctz", 18, I, 6),
+            ("cod_autorizacion", 20, A),
+            ("es_anulacion", 1, A),
+            ("es_post_aceptacion", 1, A),
+            ("fecha_puesta_dispo", 19, A),
+            ("fecha_venc_acep", 19, A),
+            ("tipo_acep", 1, A),
+            ('fecha_venc_pago', 19, A),
+            ("cbu_pago", 22, A),
+            ("alias_emisor", 40, A),
+            ("datos_comerciales", 250, A),
+            ("datos_generales", 250, A),
+            ("leyenda_comercial", 250, A),
+            ("info_ag_dtpo_cltv", 1, A),
+            ("fecha_info_ag_dpto_cltv", 19, A),
+            ("razon_social_emi", 30, A),
+            ("razon_social_recep", 30, A),
+        ],
+    "subtotales_iva": [
+            ('tipo_reg', 1, A),
+            ('iva_id', 16, N),
+            ('base_imp', 15, I, 2),
+            ('importe', 15, I, 2),
+        ],
+    "cbtes_asoc": [
+            ('tipo_reg', 1, A),
+            ('tipo', 3, N), ('pto_vta', 4, N),
+            ('nro', 8, N),
+            ('fecha', 8, N),
+            ('cuit', 11, N),
+        ],
+    "tributos": [
+            ('tipo_reg', 1, A),
+            ('tributo_id', 16, N),
+            ('base_imp', 15, I, 2),
+            ('alic', 15, I, 2),
+            ('importe', 15, I, 2),
+            ('detalle', 100, A),
+        ],
+    "motivos_rechazo": [
+            ('tipo_reg', 1, A),
+            ('cod_motivo', 16, N),
+            ('desc', 100, A),
+            ('justificacion', 100, A),
+        ],
+    'items': [
+            ('tipo_reg', 1, A),
+            ('u_mtx', 10, N),
+            ('cod_mtx', 30, A),
+            ('codigo', 30, A),
+            ('qty', 15, I, 3),
+            ('umed', 3, N),
+            ('precio', 15, I, 3),
+            ('bonif', 15, I, 3),
+            ('iva_id', 3, N),
+            ('imp_iva', 15, I, 2),
+            ('imp_subtotal', 15, I, 2),
+            ('ds', 4000, A),
+        ],
    }
 REGISTROS = {
     "0": "encabezado",
@@ -869,6 +940,12 @@ REGISTROS = {
     "5": "motivo_rechazo",
     "O": "obligado",
     "C": "cta_cte",
+    "c": "comprobante",
+    "s": "subtotales_iva",
+    "a": "cbtes_asoc",
+    "t": "tributos",
+    "i": "items",
+    "m": "motivos_rechazo",
     }
 
 
@@ -1004,22 +1081,48 @@ if __name__ == '__main__':
                 assert wsfecred.LeerCampoCtaCte(0, 'cod_cta_cte')
 
         if '--comprobantes' in sys.argv:
+            cuit_contraparte = None
+            desde = "2020-01-01"
+            hasta = "2020-03-31"
+            rol = "Emisor"
             try:
-                cuit_contraparte = int(sys.argv[sys.argv.index("--comprobantes") + 1])
+                rol = sys.argv[sys.argv.index("--comprobantes") + 1]
+                desde = sys.argv[sys.argv.index("--comprobantes") + 2]
+                hasta = sys.argv[sys.argv.index("--comprobantes") + 3]
+                cuit_contraparte = int(sys.argv[sys.argv.index("--comprobantes") + 4])
             except IndexError, ValueError:
-                cuit_contraparte = None
-            ret = wsfecred.ConsultarComprobantes(cuit_contraparte, rol="Emisor")
+                pass
+            ret = wsfecred.ConsultarComprobantes(cuit_contraparte, fecha_desde=desde, fecha_hasta=hasta, rol=rol)
             print "Observaciones:", wsfecred.Obs
-            import pprint
-            for cc in wsfecred.comprobantes:
-                pprint.pprint(cc)
-            print wsfecred.LeerCampoComprobante(0, 'cod_cta_cte')
+            formato = FORMATOS["comprobante"]
+            claves = [fmt[0] for fmt in formato]
+            print tabular(wsfecred.comprobantes, formato)
+            regs = []
+            for cbte in wsfecred.comprobantes:
+                r = {}
+                regs.append({"comprobante": [r]})
+                for k in cbte:
+                    if k in claves:
+                        r[k] = cbte[k]
+                    if k in FORMATOS:
+                        regs[-1][k] = cbte[k]
+            if DEBUG:
+                import pprint
+                pprint.pprint(regs)
+            grabar_txt(FORMATOS, REGISTROS, SALIDA, regs)
+            generar_csv([r["comprobante"][0] for r in regs], formato)
+            if "--json" in sys.argv:
+                with open("wsfecred.json", "w") as f:
+                    json.dump(wsfecred.comprobantes, f, indent=4, default=str)
+            ## for cc in wsfecred.comprobantes:
+            ##    print cc
+            ##    print wsfecred.LeerCampoComprobante(0, 'cod_cta_cte')
 
         if '--prueba' in sys.argv:
             fec = dict(
-                cuit_emisor=30999999999,
-                tipo_cbte=201, punto_vta=99, nro_cbte=22,
-                cod_moneda="DOL", ctz_moneda_ult=57.50,
+                cuit_emisor=20267565393,
+                tipo_cbte=201, punto_vta=4002, nro_cbte=27,
+                cod_moneda="PES", ctz_moneda_ult=1,
                 importe_cancelado=1000.00, importe_embargo_pesos=0.00, importe_total_ret_pesos=1000.00,
                 saldo_aceptado=1000.00, tipo_cancelacion="TOT",
                 )    
