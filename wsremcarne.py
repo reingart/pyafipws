@@ -17,7 +17,7 @@ del web service WSRemCarne versión 3.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02b"
+__version__ = "1.02c"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v3.0
@@ -229,7 +229,7 @@ class WSRemCarne(BaseWS):
             datos_aut = ret.get('datosEmision')
             if datos_aut:
                 self.NroRemito = datos_aut.get('nroRemito')
-                self.CodAutorizacion = datos_aut.get('codAutorizacion')
+                self.CodAutorizacion = str(datos_aut.get('codAutorizacion'))
                 self.FechaEmision = datos_aut.get('fechaEmision')
                 self.FechaVencimiento = datos_aut.get('fechaVencimiento')
             self.Estado = ret.get('estado')
