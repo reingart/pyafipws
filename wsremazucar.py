@@ -17,7 +17,7 @@ del servicio web RemAzucarService versión 2.0.3 de AFIP (RG4519/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02a"
+__version__ = "1.03b"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Azúcar AFIP v2.0.3
@@ -184,12 +184,22 @@ class WSRemAzucar(BaseWS):
         self.remito['receptor'] = receptor
 
     @inicializar_y_capturar_excepciones
-    def AgregarViaje(self, fecha_inicio_viaje, distancia_km, cod_pais_transportista, **kwargs):
+    def AgregarViaje(self, fecha_inicio_viaje, distancia_km, cod_pais_transportista, ducto=None, **kwargs):
         "Agrega la información referente al viaje del remito electrónico azucarero"
-        self.remito.update({'fechaInicioViaje': fecha_inicio_viaje ,
-                            'kmDistancia': distancia_km,
-                            'transporte': {'codPaisTransportista': cod_pais_transportista, },
-                           })
+        self.remito.update({
+            'viaje': {
+                'fechaInicioViaje': fecha_inicio_viaje ,
+                'kmDistancia': distancia_km,
+                'tramo': [{
+                }]
+            }})
+
+        if ducto:
+            transporte = self.remito['viaje']['tramo'][0]['ducto'] = ducto
+        else:
+            self.remito['viaje']['tramo'][0]['automotor'] = {
+                        'codPaisTransportista': cod_pais_transportista,
+                    }
         return True
 
     @inicializar_y_capturar_excepciones
@@ -199,7 +209,7 @@ class WSRemAzucar(BaseWS):
                         id_impositivo=None, nombre_conductor=None,
                         **kwargs):
         "Agrega la información referente al vehiculo usado en el viaje del remito electrónico azucarero"
-        transporte = self.remito['transporte']
+        transporte = self.remito['viaje']['tramo'][0]['automotor']
         vehiculo = {
                     'dominioVehiculo': dominio_vehiculo, 
                     'dominioAcoplado': dominio_acoplado,
