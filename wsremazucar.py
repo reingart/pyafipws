@@ -17,7 +17,7 @@ del servicio web RemAzucarService versión 2.0.3 de AFIP (RG4519/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03b"
+__version__ = "1.03c"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Azúcar AFIP v2.0.3
@@ -82,7 +82,7 @@ WSDL = ["https://serviciosjava.afip.gob.ar/wsremazucar/RemAzucarService?wsdl",
 DEBUG = False
 XML = False
 CONFIG_FILE = "wsremazucar.ini"
-HOMO = True
+HOMO = False
 ENCABEZADO = []
 
 
@@ -362,7 +362,7 @@ class WSRemAzucar(BaseWS):
     def ConsultarRemito(self, cod_remito=None, id_req=None,
                         tipo_comprobante=None, punto_emision=None, nro_comprobante=None):
         "Obtener los datos de un remito generado"
-        print(self.client.help("consultarRemito"))
+        ##print(self.client.help("consultarRemito"))
         response = self.client.consultarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=cod_remito,
@@ -587,13 +587,18 @@ if __name__ == '__main__':
             print "Errores:", wsremazucar.Errores
 
         if '--consultar' in sys.argv:
+            rec = {}
             try:
                 cod_remito = sys.argv[sys.argv.index("--consultar") + 1]
+                print "Consultando remito cod_remito=%s" % (cod_remito, )
+                ok = wsremazucar.ConsultarRemito(cod_remito=cod_remito)
             except IndexError, ValueError:
-                cod_remito = None
-            rec = {}
-            print "Consultando remito cod_remito=%s" % (cod_remito, )
-            ok = wsremazucar.ConsultarRemito(cod_remito)
+                pto_emision = raw_input("Punto de emision [1]:") or 1
+                tipo_cbte = raw_input("Tipo de comprobante [995]:") or 995
+                nro_comprobante = raw_input("Nro de comprobante:") or 1
+                ok = wsremazucar.ConsultarRemito(tipo_comprobante=tipo_cbte,
+                                                 punto_emision=pto_emision,
+                                                 nro_comprobante=nro_comprobante)
             if wsremazucar.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wsremazucar.Excepcion
                 if DEBUG: print >> sys.stderr, wsremazucar.Traceback
