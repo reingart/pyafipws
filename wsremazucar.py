@@ -17,7 +17,7 @@ del servicio web RemAzucarService versión 2.0.3 de AFIP (RG4519/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03c"
+__version__ = "1.03d"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Azúcar AFIP v2.0.3
@@ -366,6 +366,7 @@ class WSRemAzucar(BaseWS):
         response = self.client.consultarRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=cod_remito,
+                                cuitEmisor=self.Cuit,
                                 idReq=id_req,
                                 tipoComprobante=tipo_comprobante,
                                 puntoEmision=punto_emision,
@@ -627,13 +628,13 @@ if __name__ == '__main__':
                     cuit_receptor='20111111112', cod_dom_receptor=1,
                     cuit_despachante=None, codigo_aduana=None, 
                     denominacion_receptor=None, domicilio_receptor=None)
-            rec['viaje'] = dict(fecha_inicio_viaje='2018-10-01', distancia_km=999, cod_pais_transportista=200)
+            rec['viaje'] = dict(fecha_inicio_viaje='2020-04-01', distancia_km=999, cod_pais_transportista=200, ducto="S")
             rec['viaje']['vehiculo'] = dict(
                     dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000', 
                     cuit_transportista='20333333334', cuit_conductor='20333333334',  
                     apellido_conductor=None, cedula_conductor=None, denom_transportista=None,
                     id_impositivo=None, nombre_conductor=None)
-            rec['mercaderias'] = [dict(orden=1, cod_tipo_prod=0, cod_tipo_emb=0, cantidad_emb=0, cod_tipo_unidad=0, cant_unidad=1, 
+            rec['mercaderias'] = [dict(orden=1, cod_tipo_prod=1, cod_tipo_emb=1, cantidad_emb=1, cod_tipo_unidad=1, cant_unidad=1,
                                        anio_safra=2019 )]
             rec['datos_autorizacion'] = None # dict(nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
             rec['contingencias'] = [dict(tipo=1, observacion="anulacion")]
@@ -644,15 +645,18 @@ if __name__ == '__main__':
             with open(ENTRADA, "r") as archivo:
                 rec = json.load(archivo)
             wsremazucar.CrearRemito(**rec)
-            wsremazucar.AgregarReceptor(**rec['receptor'])
-            wsremazucar.AgregarViaje(**rec['viaje'])
-            wsremazucar.AgregarVehiculo(**rec['viaje']['vehiculo'])
-            for mercaderia in rec['mercaderias']:
+            if 'receptor' in rec:
+                wsremazucar.AgregarReceptor(**rec['receptor'])
+            if 'viaje' in rec:
+                wsremazucar.AgregarViaje(**rec['viaje'])
+                if not rec["viaje"].get("ducto"):
+                    wsremazucar.AgregarVehiculo(**rec['viaje']['vehiculo'])
+            for mercaderia in rec.get('mercaderias', []):
                 wsremazucar.AgregarMercaderia(**mercaderia)
-            datos_aut = rec['datos_autorizacion']
+            datos_aut = rec.get('datos_autorizacion')
             if datos_aut:
                 wsremazucar.AgregarDatosAutorizacion(**datos_aut)
-            for contingencia in rec['contingencias']:
+            for contingencia in rec.get('contingencias', []):
                 wsremazucar.AgregarContingencias(**contingencia)
 
         if '--generar' in sys.argv:
@@ -746,7 +750,7 @@ if __name__ == '__main__':
         if '--codigos_domicilio' in sys.argv:
             cuit = raw_input("Cuit Titular Domicilio: ")
             ret = wsremazucar.ConsultarCodigosDomicilio(cuit)
-            print "\n".join(ret)
+            print "\n".join(utils.norm(ret))
 
         if wsremazucar.Errores or wsremazucar.ErroresFormato:
             print "Errores:", wsremazucar.Errores, wsremazucar.ErroresFormato
