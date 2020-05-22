@@ -47,7 +47,7 @@ Opciones:
   
   --autorizar: Autorizar Liquidación Primaria de Granos (liquidacionAutorizar)
   --ajustar: Ajustar Liquidación Primaria de Granos (liquidacionAjustar)
-  --anular: Anular una Liquidación Primaria de Granos (liquidacionAnular)
+  --anular: Anular una Liquidación Primaria de Granos (lpgAnularContraDocumento)
   --autorizar-anticipo: Autoriza un Anticipo (lpgAutorizarAnticipo)
   --consultar: Consulta una liquidación (parámetros: nro de orden, COE, pdf)
     --cancelar-anticipo: anteponer para anticipos (lpgCancelarAnticipo)
@@ -448,7 +448,7 @@ class WSLPG(BaseWS):
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'AutorizarLiquidacion',
                         'AutorizarLiquidacionSecundaria', 
-                        'AnularLiquidacionSecundaria','AnularLiquidacion',
+                        'AnularLiquidacionSecundaria','AnularLiquidacionContraDocumento',
                         'AutorizarAnticipo', 'CancelarAnticipo',
                         'CrearLiquidacion', 'CrearLiqSecundariaBase',
                         'AgregarCertificado', 'AgregarRetencion', 
@@ -2373,18 +2373,24 @@ class WSLPG(BaseWS):
             return ""
 
     @inicializar_y_capturar_excepciones
-    def AnularLiquidacion(self, coe):
-        "Anular liquidación activa"
-        ret = self.client.liquidacionAnular(
+    def AnularLiquidacionContraDocumento(self, pto_emision=None, nro_orden=None, coe=None):
+        "Anular Liquidación activa por Contra Documento"
+        ret = self.client.lpgAnularContraDocumento(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
-                        coe=coe,
-                        )
-        ret = ret['anulacionReturn']
+                        anulacionBase={
+                            'puntoEmision': pto_emision,
+                            'nroOrden': nro_orden,
+                            'coeAnular': coe
+                        }
+        )
+        ret = ret['ajusteUnifReturn']
         self.__analizar_errores(ret)
-        self.Resultado = ret['resultado']
-        return self.COE
+        if 'ajusteUnificado' in ret:
+            aut = ret['ajusteUnificado']
+            self.AnalizarAjuste(aut)
+        return True
     
     @inicializar_y_capturar_excepciones
     def AnularLiquidacionSecundaria(self, coe):
@@ -3791,7 +3797,7 @@ if __name__ == '__main__':
                 ret = wslpg.AnularCertificacion(coe)
             else:
                 print "Anulando COE", coe
-                ret = wslpg.AnularLiquidacion(coe)
+                # ret = wslpg.AnularLiquidacion(coe)
             if wslpg.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wslpg.Excepcion
                 if DEBUG: print >> sys.stderr, wslpg.Traceback
