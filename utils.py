@@ -248,9 +248,13 @@ class BaseWS:
             # deshabilitar verificación cert. servidor si es nulo falso vacio
             if not cacert:
                 cacert = None
-            elif cacert is True:
+            elif cacert is True or cacert.lower() == 'default':
                 # usar certificados predeterminados que vienen en la biblioteca
-                cacert = os.path.join(httplib2.__path__[0], 'cacerts.txt')
+                try:
+                    import certifi
+                    cacert = certifi.where()
+                except ImportError:
+                    cacert = os.path.join(httplib2.__path__[0], 'cacerts.txt')
             elif cacert.startswith("-----BEGIN CERTIFICATE-----"):
                 pass
             else:
