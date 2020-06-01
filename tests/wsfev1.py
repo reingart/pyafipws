@@ -9,7 +9,7 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-
+from pyafipws import wsfev1
 from pyafipws.wsaa import WSAA
 from pyafipws.wsfev1 import WSFEv1
 "Pruebas para WSFEv1 de AFIP (Factura Electrónica Mercado Interno sin detalle)"

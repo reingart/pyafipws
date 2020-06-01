@@ -24,7 +24,7 @@ __license__ = "GPL 3.0"
 import os
 import sys
 from py2exe.build_exe import py2exe
-
+# import py2exe
 
 nsi_base_script = r"""\
 ; base.nsi

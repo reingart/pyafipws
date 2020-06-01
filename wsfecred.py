@@ -58,7 +58,7 @@ import datetime
 import os, sys, time, base64
 import traceback
 from pysimplesoap.client import SoapFault
-# import utils
+from . import utils
 
 # importo funciones compartidas:
 from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
