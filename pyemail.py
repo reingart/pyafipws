@@ -52,7 +52,7 @@ class PyEmail:
         self.Version = __version__
         self.Excepcion = self.Traceback = ""
         self.Motivo = self.Destinatario = self.ResponderA = ""
-        self.MensajeHTML = MensajeTexto = None
+        self.MensajeHTML = self.MensajeTexto = None
         self.adjuntos = []
         self.BCC = []
         self.CC = []
