@@ -18,7 +18,7 @@ productos) según RG2904 (opción A con detalle) y RG2926/10 (CAE anticipado).
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.14b"
+__version__ = "1.15a"
 
 import datetime
 import decimal
@@ -35,6 +35,7 @@ class WSMTXCA(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 'AgregarOpcional',
+                        'AgregarPeriodoComprobantesAsociados',
                         'AutorizarComprobante', 'CAESolicitar', 'AutorizarAjusteIVA',
                         'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
                         'InformarComprobanteCAEA', 'InformarAjusteIVACAEA',
@@ -163,6 +164,15 @@ class WSMTXCA(BaseWS):
         self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
+    def AgregarPeriodoComprobantesAsociados(self, fecha_desde=None, fecha_hasta=None, **kwargs):
+        "Agrego el perído de comprobante asociado a una factura (interna)"
+        p_cmp_asoc = {
+            'fecha_desde': fecha_desde,
+            'fecha_hasta': fecha_hasta,
+            }
+        self.factura['periodo_cbtes_asoc'] = p_cmp_asoc
+        return True
+
     def AgregarTributo(self, tributo_id, desc, base_imp, alic, importe, **kwargs):
         "Agrego un tributo a una factura (interna)"
         tributo = {
@@ -247,6 +257,10 @@ class WSMTXCA(BaseWS):
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
             'fechaHoraGen': f.get('fecha_hs_gen'),
+            'periodoComprobantesAsociados': {
+                'fechaDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
+                'fechaHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
+                } if 'periodo_cbtes_asoc' in f else None,
             'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
@@ -1085,6 +1099,9 @@ def main():
             if '--fce' in sys.argv:
                 wsmtxca.AgregarOpcional(21, "2850590940090418135201")  # CBU
 
+            if '--rg4540' in sys.argv:
+                wsmtxca.AgregarPeriodoComprobantesAsociados('2020-01-01', '2020-01-31')
+
             print wsmtxca.factura
             
             if '--caea' in sys.argv:
@@ -1120,6 +1137,7 @@ def main():
             print wsmtxca.XmlResponse        
             print wsmtxca.ErrCode
             print wsmtxca.ErrMsg
+            raise
 
     if "--ajustar" in sys.argv:
         ##print wsmtxca.client.help("autorizarComprobante").encode("latin1")
