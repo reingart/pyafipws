@@ -25,7 +25,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.23c"
+__version__ = "1.25a"
 
 import datetime
 import decimal
@@ -178,6 +178,15 @@ class WSFEv1(BaseWS):
         self.factura['cbtes_asoc'].append(cmp_asoc)
         return True
 
+    def AgregarPeriodoComprobantesAsociados(self, fecha_desde=None, fecha_hasta=None, **kwargs):
+        "Agrego el perído de comprobante asociado a una factura (interna)"
+        p_cmp_asoc = {
+            'fecha_desde': fecha_desde,
+            'fecha_hasta': fecha_hasta,
+            }
+        self.factura['periodo_cbtes_asoc'] = p_cmp_asoc
+        return True
+
     def AgregarTributo(self, tributo_id=0, desc="", base_imp=0.00, alic=0, importe=0.00, **kwarg):
         "Agrego un tributo a una factura (interna)"
         tributo = { 'tributo_id': tributo_id, 'desc': desc, 'base_imp': base_imp, 
@@ -250,6 +259,10 @@ class WSFEv1(BaseWS):
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],                
+                    'PeriodoAsoc': {
+                        'FchDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
+                        'FchHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
+                        } if 'periodo_cbtes_asoc' in f else None,
                     'CbtesAsoc': f['cbtes_asoc'] and [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -1018,7 +1031,7 @@ def main():
         else:
             tipo_cbte = 3
             concepto = 3 if ('--rg4109' not in sys.argv) else 1
-        punto_vta = 4001
+        punto_vta = 3
         cbte_nro = long(wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta) or 0)
         fecha = datetime.datetime.now().strftime("%Y%m%d")
         tipo_doc = 80 if '--usados' not in sys.argv else 30
@@ -1034,7 +1047,7 @@ def main():
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
         elif '--fce' in sys.argv:
             # obligatorio en Factura de Crédito Electrónica MiPyMEs (FCE):
-            fecha_venc_pago = fecha
+            fecha_venc_pago = fecha if tipo_cbte == 201 else None
         moneda_id = 'PES'; moneda_ctz = '1.000'
 
         # inicializar prueba de multiples comprobantes por solicitud
@@ -1061,13 +1074,13 @@ def main():
                 wsfev1.EstablecerCampoFactura("fecha_hs_gen", "yyyymmddhhmiss")
 
             # comprobantes asociados (notas de crédito / débito)
-            if tipo_cbte in (2, 3, 7, 8, 12, 13, 203, 208, 213):
-                tipo = 201 if tipo_cbte in (203, 208, 213) else 3
-                pto_vta = 4001
+            if tipo_cbte in (2, 3, 7, 8, 12, 13, 202, 203, 208, 213):
+                tipo = 201 if tipo_cbte in (202, 203, 208, 213) else 3
+                pto_vta = punto_vta
                 nro = 1
                 cuit = "20267565393"
                 # obligatorio en Factura de Crédito Electrónica MiPyMEs (FCE):
-                fecha_cbte = fecha if tipo_cbte in (203, 208, 213) else None
+                fecha_cbte = fecha if tipo_cbte in (3, 202, 203, 208, 213) else None
                 wsfev1.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha_cbte)
             
             # otros tributos:
@@ -1120,6 +1133,9 @@ def main():
                 wsfev1.AgregarOpcional(2102, "pyafipws")               # alias
                 if tipo_cbte in (203, 208, 213):
                     wsfev1.AgregarOpcional(22, "S")  # Anulación
+
+            if '--rg4540' in sys.argv:
+                wsfev1.AgregarPeriodoComprobantesAsociados('20200101', '20200131')
 
             # agregar la factura creada internamente para solicitud múltiple:
             if "--multiple" in sys.argv:
