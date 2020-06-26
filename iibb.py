@@ -100,7 +100,7 @@ class IIBB:
             self.xml.fechaHasta = fecha_hasta
             self.xml.contribuyentes.contribuyente.cuitContribuyente = cuit_contribuyente
 
-            xml = self.xml.as_xml()
+            xml = self.xml.as_xml().encode('utf8')
             self.CodigoHash = md5(xml).hexdigest()
             nombre = "DFEServicioConsulta_%s.xml" % self.CodigoHash
 
