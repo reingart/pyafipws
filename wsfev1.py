@@ -25,7 +25,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25a"
+__version__ = "1.25b"
 
 import datetime
 import decimal
@@ -46,7 +46,7 @@ class WSFEv1(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Version 1 - 2.13"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
-                        'AgregarComprador',
+                        'AgregarComprador', 'AgregarPeriodoComprobantesAsociados',
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
                         'CAEASinMovimientoInformar',
@@ -994,7 +994,7 @@ def main():
         wsdl = WSDL
     proxy = ""
     wrapper = "" #"pycurl"
-    cacert = "conf/afip_ca_info.crt"
+    cacert = "conf/afip_ca_info.crt" # "aaa.crt" #"/home/reingart/.local/lib/python2.7/site-packages/certifi/cacert.pem" #
 
     ok = wsfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
     
