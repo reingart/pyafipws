@@ -18,7 +18,7 @@ import warnings
 import sys
 
 try:  
-    rev = subprocess.check_output(['hg', 'tip', '--template', '{rev}'], 
+    rev = subprocess.check_output(['git', 'rev-list', '--count', '--all'],
                                   stderr=subprocess.PIPE).strip()
 except:
     rev = 0
