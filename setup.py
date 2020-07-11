@@ -47,6 +47,7 @@ if 'py2exe' in sys.argv:
     import pyfepdf
     #import pyemail
     #import pyi25
+    #import ws_sire
     #import wsctg
     #import wslpg
     #import wsltv
@@ -292,6 +293,18 @@ if 'py2exe' in sys.argv:
             ]
         __version__ += "+wsfecred_" + wsfecred.__version__
         HOMO &= wsfecred.HOMO
+
+    if 'ws_sire' in globals():
+        kwargs['com_server'] += [
+            Target(module=ws_sire, modules="ws_sire"),
+            ]
+        kwargs['console'] += [
+            Target(module=ws_sire, script='ws_sire.py', dest_base="ws_sire_cli"),
+            ]
+        data_files += [
+            ]
+        __version__ += "+sire_" + ws_sire.__version__
+        HOMO &= ws_sire.HOMO
 
     if 'pyfepdf' in globals():
         kwargs['com_server'] += [
