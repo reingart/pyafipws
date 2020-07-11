@@ -17,7 +17,7 @@ por parte de los sistemas del agente de retención.
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2020 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.01b"
 
 import datetime
 import decimal
@@ -46,6 +46,7 @@ class WSSIREc2005(BaseWS):
                         'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit',
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
+        'CertificadoNro', 'CodigoSeguridad',
         'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 
         'LanzarExcepciones', 'Excepcion', 'Traceback',
         ]
@@ -151,7 +152,7 @@ class WSSIREc2005(BaseWS):
             )
         # obtengo el resultado de AFIP :
         self.CertificadoNro = res["certificadoNro"]
-        self.CodigoSeguridad = data["codigoSeguridad"]
+        self.CodigoSeguridad = res["codigoSeguridad"]
         return True
 
 
@@ -202,13 +203,40 @@ def main():
         if "--testing" in sys.argv:
             sire.LoadTestXML("tests/xml/%s_resp.xml" % service)
         print "Consultando AFIP online via webservice...",
-        ok = sire.Emitir()
+        ok = sire.Emitir(
+                version=100,
+                impuesto=216,
+                regimen=831,
+                fecha_retencion='2020-07-11T11:16:00.000-03:00',
+                importe_retencion=2100.00,
+                importe_base_calculo=20000.00,
+                regimen_exclusion=False,
+                tipo_comprobante=1,
+                fecha_comprobante='2020-07-11T11:15:53.000-03:00',
+                importe_comprobante=22200.00,
+                cuit_retenido='30500010912',
+                fecha_retencion_certificado_original='2020-07-11T11:16:00.000-03:00',
+                codigo_trazabilidad=None,
+                condicion=1,    # 1: Inscripto, 2: No inscriptio
+                imposibilidad_retencion=False,
+                motivo_no_retencion=None,
+                porcentaje_exclusion=None,
+                fecha_publicacion=None,
+                numero_comprobante='00003-00008497',
+                coe=None,
+                coe_original=None,
+                cae=None,
+                motivo_emision_nota_credito=None,
+                numero_certificado_original=None,
+                importe_certificado_original=None,
+                motivo_anulacion=None,
 
-        if DEBUG:
-            print "Persona", sire.Persona
-            print sire.Excepcion
+            )
 
-        print 'ok' if ok else "error", sire.Excepcion
+        print "CertificadoNro: ", sire.CertificadoNro
+        print "CodigoSeguridad: ", sire.CodigoSeguridad
+
+        print 'ok' if ok else "error!"
         if sire.Excepcion:
             print "Excepcion:", sire.Excepcion
 
