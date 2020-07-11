@@ -35,9 +35,6 @@ WSDL = "https://ws-aplicativos-reca.homo.afip.gob.ar/sire/ws/v1/c2005/2005?wsdl"
 CONFIG_FILE = "rece.ini"
 
 
-XML_CERTIFICADO_BASE = """<?xml version = "1.0" encoding = "ISO-8859-1"?><certificado/>"""
-
-
 class WSSIREc2005(BaseWS):
     "Interfaz para el WebService de SIRE certificado 2005"
     _public_methods_ = ['Emitir',
@@ -52,7 +49,7 @@ class WSSIREc2005(BaseWS):
         ]
 
     _reg_progid_ = "WSSIREc2005"
-    _reg_clsid_ = "{}"
+    _reg_clsid_ = "{E941985A-5C1C-4B17-80C1-7FBB7BE7D713}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -109,12 +106,15 @@ class WSSIREc2005(BaseWS):
                 motivo_anulacion=None,
         ):
         """"Método para emitir el certificado 2005.
+
+        Recibe los datos del certificado que se desea emitir.
+        Establece el Nro y Código de seguridad del certificado emitido.
         
         Args:
-            Certificado que se desea emitir.
-        Return:
-            Devuelve el Nro de certificado 
-            Código de seguridad del certificado emitido.
+            **kwargs: campos del certificado a emitir
+
+        Returns:
+            bool: True si no hubo error
         """
         # llamar al webservice:
         res = self.client.emitir(
@@ -230,7 +230,6 @@ def main():
                 numero_certificado_original=None,
                 importe_certificado_original=None,
                 motivo_anulacion=None,
-
             )
 
         print "CertificadoNro: ", sire.CertificadoNro
