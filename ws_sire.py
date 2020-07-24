@@ -253,8 +253,8 @@ if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
-        win32com.server.register.UseCommandLine(WSSrPadronA4)
-        win32com.server.register.UseCommandLine(WSSrPadronA5)
+        win32com.server.register.UseCommandLine(WSSIREc2005)
+        win32com.server.register.UseCommandLine(WSSIREc2005)
     else:
         main()
 
