@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.37e"
+__version__ = "1.38a"
 
 import datetime
 import os
@@ -128,6 +128,12 @@ COMPRADOR = [
     ('porcentaje', 6, I, 2),
     ]
 
+PERIODO_ASOC = [
+    ('tipo_reg', 1, N), # 8: comprobante asociado
+    ('fecha_desde', 8, N),
+    ('fecha_hasta', 8, N),
+    ]
+
 # Constantes (tablas de parámetros):
 
 TIPO_CBTE = {1: "FAC A", 2: "N/D A", 3: "N/C A", 6: "FAC B", 7: "N/D B",
@@ -207,6 +213,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             elif str(linea[0])=='7':
                 comprador = leer(linea, COMPRADOR)
                 encabezado.setdefault("compradores", []).append(comprador)
+            elif str(linea[0])=='8':
+                periodo = leer(linea, PERIODO_ASOC)
+                encabezado["periodo_cbtes_asoc"] = periodo
             else:
                 print "Tipo de registro incorrecto:", linea[0]
 
@@ -235,6 +244,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         cbtasocs = encabezado.get('cbtasocs', [])
         opcionales = encabezado.get('opcionales', [])
         compradores = encabezado.get('compradores', [])
+        periodo_asoc = encabezado.get('periodo_cbtes_asoc', [])
 
         ws.CrearFactura(**encabezado)
         for tributo in tributos:
@@ -247,6 +257,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             ws.AgregarOpcional(**opcional)
         for comprador in compradores:
             ws.AgregarComprador(**comprador)
+        if periodo_asoc:
+            ws.AgregarPeriodoComprobantesAsociados(**periodo_asoc)
 
         if DEBUG:
             print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
@@ -319,6 +331,10 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                 for it in dic['compradores']:
                     it['tipo_reg'] = 7
                     archivo.write(escribir(it, COMPRADOR))
+            if 'periodo_cbtes_asoc' in dic:
+                it = dic['periodo_cbtes_asoc']
+                it['tipo_reg'] = 8
+                archivo.write(escribir(it, PERIODO_ASOC))
 
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, encabezados), 
@@ -449,6 +465,7 @@ if __name__ == "__main__":
                                  ('Comprobante Asociado', CMP_ASOC),
                                  ('Opcionales', OPCIONAL),
                                  ('Compradores', COMPRADOR),
+                                 ('Periodo Cbte Asoc', PERIODO_ASOC),
                                 ]:
                 if not '/dbf' in sys.argv:
                     comienzo = 1
@@ -485,7 +502,7 @@ if __name__ == "__main__":
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
             if '--fce' in sys.argv:
-                tipo_cbte = 201
+                tipo_cbte = 202
             else:
                 tipo_cbte = 1
             punto_vta = 4002
@@ -510,10 +527,10 @@ if __name__ == "__main__":
                 moneda_id, moneda_ctz)
             
             if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):
-                tipo = 1
-                pto_vta = 2
-                nro = 1234
-                fecha = "20190601"
+                tipo = 201
+                pto_vta = 4002
+                nro = 27
+                fecha = "20191010"
                 cuit = "20267565393"
                 ws.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha)
             
@@ -540,7 +557,14 @@ if __name__ == "__main__":
 
             # datos de compradores RG 4109-E bienes muebles registrables (%)
             if '--fce' in sys.argv:
-                ws.AgregarOpcional(2101, "2850590940090418135201")
+                if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):
+                    ws.AgregarOpcional(22, "N")
+                else:
+                    ws.AgregarOpcional(2101, "2850590940090418135201")
+
+            if '--rg4540' in sys.argv:
+                ws.AgregarPeriodoComprobantesAsociados('20200101', '20200131')
+
 
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
