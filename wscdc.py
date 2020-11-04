@@ -18,7 +18,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2013-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02e"
+__version__ = "1.03a"
 
 import sys, os, time
 from ConfigParser import SafeConfigParser
@@ -309,9 +309,15 @@ def main():
     else:
         conf_dbf = {}
 
+    if config.has_section('PROXY') and not HOMO:
+        proxy_dict = dict(("proxy_%s" % k,v) for k,v in config.items('PROXY'))
+        proxy_dict['proxy_port'] = int(proxy_dict['proxy_port'])
+    else:
+        proxy_dict = {}
+
     # instanciar la interfaz con el webservice
     wscdc = WSCDC()
-    ok = wscdc.Conectar("", url_wscdc)
+    ok = wscdc.Conectar("", url_wscdc, proxy=proxy_dict)
     
     if "--dummy" in sys.argv:
         #print wscdc.client.help("ComprobanteDummy")
