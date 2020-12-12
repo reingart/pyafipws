@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.09d"
+__version__ = "1.10a"
 
 DEBUG = False
 HOMO = False
@@ -69,11 +69,11 @@ class FEPDF:
                         'AgregarDato', 'EstablecerParametro',
                         'CargarFormato', 'AgregarCampo',
                         'CrearPlantilla', 'ProcesarPlantilla', 'GenerarPDF',
-                        'MostrarPDF',
+                        'MostrarPDF', 'GenerarQR',
                         ]
     _public_attrs_ = ['Version', 'Excepcion', 'Traceback', 'InstallDir',
                       'Locale', 'FmtCantidad', 'FmtPrecio', 'CUIT',
-                      'LanzarExcepciones',
+                      'LanzarExcepciones', 'archivo_qr',
                     ]
         
     _reg_progid_ = "PyFEPDF"
@@ -160,6 +160,7 @@ class FEPDF:
         #sys.stdout = self.log
         #sys.stderr = self.log
         self.LanzarExcepciones = True
+        self.archivo_qr = None
             
     def DebugLog(self):
         "Devolver bitácora de depuración"
@@ -871,6 +872,11 @@ class FEPDF:
                         for i, txt in enumerate(f.split_multicell(fact['en_letras'], 'EnLetras1')):
                             f.set('EnLetras%d' % (i+1), txt)
 
+                    if f.has_key('AFIP_QR'):
+                        if not self.archivo_qr:
+                            self.GenerarQR()
+                        f.set('AFIP_QR', self.archivo_qr)
+
             ret = True
         except Exception, e:
             # capturar la excepción manualmente, para imprimirla en el PDF:
@@ -923,6 +929,31 @@ class FEPDF:
             os.startfile(archivo, operation)
         return True
 
+
+    @utils.inicializar_y_capturar_excepciones_simple
+    def GenerarQR(self):
+        from pyqr import PyQR
+
+        pyqr = PyQR()
+        fact = self.factura
+        cuit = ''.join([c for c in self.CUIT if c.isdigit()])
+        f = fact['fecha_cbte']
+        fecha = "-".join([f[0:4], f[4:6], f[6:9]])
+        url = pyqr.GenerarImagen(fecha=fecha,
+                                 cuit=cuit,
+                                 pto_vta=fact['punto_vta'],
+                                 tipo_cmp=fact['tipo_cbte'],
+                                 nro_cmp=fact['cbte_nro'],
+                                 importe=fact['imp_total'],
+                                 moneda=fact.get('moneda_id', 'PES'),
+                                 ctz=fact.get('moneda_ctz', 1),
+                                 tipo_doc_rec=fact['tipo_doc'],
+                                 nro_doc_rec=fact['nro_doc'],
+                                 tipo_cod_aut="E",
+                                 cod_aut=fact['cae'])
+
+        self.archivo_qr = pyqr.Archivo
+        return url
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
