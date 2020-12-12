@@ -43,7 +43,7 @@ class PyQR:
                      ]
 
     _reg_progid_ = "PyQR"
-    _reg_clsid_ = "{}"
+    _reg_clsid_ = "{0868A2B6-2DC7-478D-8884-A10E92C588DE}"
 
     URL = "https://www.afip.gob.ar/fe/qr/?p=%s"
     Archivo = "qr.png"
