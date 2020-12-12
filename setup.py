@@ -47,6 +47,7 @@ if 'py2exe' in sys.argv:
     import pyfepdf
     #import pyemail
     #import pyi25
+    import pyqr
     #import ws_sire
     #import wsctg
     #import wslpg
@@ -121,7 +122,7 @@ if 'py2exe' in sys.argv:
 
     # includes for py2exe
     includes=['email.generator', 'email.iterators', 'email.message', 'email.utils',  'email.mime.text', 'email.mime.application', 'email.mime.multipart']
-    if 'pyi25' in globals() or 'pyfepdf' in globals():
+    if 'pyi25' in globals() or 'pyfepdf' in globals() or 'pyqr' in globals():
         includes.extend(["PIL.Image", "PIL.ImageFont", "PIL.ImageDraw"])
 
     includes.append("dbf")
@@ -352,6 +353,20 @@ if 'py2exe' in sys.argv:
         data_files += [
             ]
         __version__ += "+pyi25_" + pyi25.__version__
+
+    if 'pyqr' in globals():
+        kwargs['com_server'] += [
+            Target(module=pyqr, modules="pyqr", create_exe=False, create_dll=True),
+            ]
+        kwargs['console'] += [
+            Target(module=pyqr, script='pyqr.py', dest_base="pyqr"),
+            ]
+        kwargs['windows'] += [
+            Target(module=pyqr, script="pyqr.py", dest_base="pyqr_com"),
+            ]
+        data_files += [
+            ]
+        __version__ += "+pyqr_" + pyqr.__version__
 
     if 'designer' in globals():
         kwargs['windows'] += [
