@@ -124,39 +124,6 @@ if __name__ == '__main__':
             win32com.server.localserver.serve([PyQR._reg_clsid_])
         except Exception:
             raise
-    elif "py2exe" in sys.argv:
-        from distutils.core import setup
-        from nsis import build_installer, Target
-        import py2exe
-        import glob
-        VCREDIST = (
-            ".", glob.glob(r'c:\Program Files\Mercurial\mfc*.*') +
-                 glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
-            )
-        setup(
-            name="PyQR",
-            version=__version__,
-            description="Interfaz PyAfipWs QR %s",
-            long_description=__doc__,
-            author="Mariano Reingart",
-            author_email="reingart@gmail.com",
-            url="http://www.sistemasagiles.com.ar",
-            license="GNU LGPL v3",
-            com_server = [
-                {'modules': 'pyqr', 'create_exe': True, 'create_dll': True},
-                ],
-            console=[Target(module=sys.modules[__name__], script='pyqr.py', dest_base="pyqr_cli")],
-            windows=[Target(module=sys.modules[__name__], script="pyqr.py", dest_base="pyqr_win")],
-            options={
-                'py2exe': {
-                'includes': [],
-                'optimize': 2,
-                'excludes': ["pywin", "pywin.dialogs", "pywin.dialogs.list", "win32ui","distutils.core","py2exe","nsis"],
-                #'skip_archive': True,
-            }},
-            data_files = [VCREDIST, (".", ["licencia.txt"]),],
-            cmdclass = {"py2exe": build_installer}
-        )
     else:
 
         pyqr = PyQR()
