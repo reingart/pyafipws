@@ -129,7 +129,7 @@ if __name__ == '__main__':
         pyqr = PyQR()
 
         if '--datos' in sys.argv:
-            args = sys.argv[sys.argv.index("--barras")+1:]
+            args = sys.argv[sys.argv.index("--datos")+1:]
             (ver, fecha, cuit, pto_vta, tipo_cmp, nro_cmp, importe, moneda, ctz,
             tipo_doc_rec, nro_doc_rec, tipo_cod_aut, cod_aut) = args
         else:
