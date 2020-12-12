@@ -149,6 +149,8 @@ if __name__ == '__main__':
 
         if '--archivo' in sys.argv:
             pyqr.Archivo = sys.argv[sys.argv.index("--archivo")+1]
+        else:
+            pyqr.CrearArchivo()
 
         if '--url' in sys.argv:
             pyqr.URL = sys.argv[sys.argv.index("--url")+1]
