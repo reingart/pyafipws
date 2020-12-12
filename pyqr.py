@@ -150,6 +150,9 @@ if __name__ == '__main__':
         if '--archivo' in sys.argv:
             pyqr.Archivo = sys.argv[sys.argv.index("--archivo")+1]
 
+        if '--url' in sys.argv:
+            pyqr.URL = sys.argv[sys.argv.index("--url")+1]
+
         print "datos:", (ver, fecha, cuit, pto_vta, tipo_cmp, nro_cmp,
                          importe, moneda, ctz, tipo_doc_rec, nro_doc_rec,
                          tipo_cod_aut, cod_aut)
@@ -167,7 +170,6 @@ if __name__ == '__main__':
             assert url.startswith("https://www.afip.gob.ar/fe/qr/?p=")
             assert qr_data_test == qr_data_gen, "Diff: %r != %r" % (qr_data_test, qr_data_gen)
             print "QR data ok:", qr_data_gen
-
 
         if not '--mostrar' in sys.argv:
             pass
