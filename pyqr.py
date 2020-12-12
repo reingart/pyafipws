@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02e"
+__version__ = "1.03a"
 
 import base64
 import json
@@ -68,11 +68,20 @@ class PyQR:
         "Generar una imágen con el código QR"
         # basado en: https://www.afip.gob.ar/fe/qr/especificaciones.asp
         datos_cmp = {
-            "ver": ver, "fecha": fecha, "cuit": cuit,
-            "ptoVta": pto_vta, "tipoCmp": tipo_cmp, "nroCmp": nro_cmp,
-            "importe": importe, "moneda": moneda, "ctz": ctz,
-            "tipoDocRec": tipo_doc_rec, "nroDocRec": nro_doc_rec,
-            "tipoCodAut": tipo_cod_aut, "codAut": cod_aut}
+            "ver": int(ver),
+            "fecha": fecha,
+            "cuit": int(cuit),
+            "ptoVta": int(pto_vta),
+            "tipoCmp": int(tipo_cmp),
+            "nroCmp": int(nro_cmp),
+            "importe": float(importe),
+            "moneda": moneda,
+            "ctz": float(ctz),
+            "tipoDocRec": int(tipo_doc_rec),
+            "nroDocRec": int(nro_doc_rec),
+            "tipoCodAut": tipo_cod_aut,
+            "codAut": int(cod_aut),
+            }
 
         # convertir a representación json y codificar en base64:
         datos_cmp_json = json.dumps(datos_cmp)
