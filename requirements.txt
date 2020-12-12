@@ -7,3 +7,4 @@ Pillow>=2.0.0
 #pywin32==219
 tabulate==0.8.5
 certifi>=2020.4.5.1
+qrcode==6.1
