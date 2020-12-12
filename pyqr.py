@@ -15,12 +15,13 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.03b"
 
 import base64
 import json
 import os
 import sys
+import tempfile
 import traceback
 
 import qrcode
@@ -35,7 +36,7 @@ QiOiJFIiwiY29kQXV0Ijo3MDQxNzA1NDM2NzQ3Nn0=""".replace("\n", "")
 
 class PyQR:
     "Interfaz para generar Codigo QR de Factura Electrónica"
-    _public_methods_ = ['GenerarImagen',
+    _public_methods_ = ['GenerarImagen', 'CrearArchivo',
                         ]
     _public_attrs_ = ['Version', 'Excepcion', 'Traceback', "URL", "Archivo",
                       'qr_ver', 'box_size', 'border', 'error_correction',
@@ -56,6 +57,15 @@ class PyQR:
     def __init__(self):
         self.Version = __version__
         self.Exception = self.Traceback = ""
+
+    def CrearArchivo(self):
+        """Crea un nombre de archivo temporal"""
+        # para evitar errores de permisos y poder generar varios qr simultaneos
+        tmp = tempfile.NamedTemporaryFile(prefix="qr_afip_",
+                                          suffix=".png",
+                                          delete=False)
+        self.Archivo = tmp.name
+        return self.Archivo
 
     def GenerarImagen(self, ver=1,
                       fecha="2020-10-13",
