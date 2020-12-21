@@ -222,9 +222,13 @@ class BaseWS:
             # deshabilitar verificación cert. servidor si es nulo falso vacio
             if not cacert:
                 cacert = None
-            elif cacert is True:
+            elif cacert is True or cacert.lower() == 'default':
                 # usar certificados predeterminados que vienen en la biblioteca
-                cacert = os.path.join(httplib2.__path__[0], 'cacerts.txt')
+                try:
+                    import certifi
+                    cacert = certifi.where()
+                except ImportError:
+                    cacert = os.path.join(httplib2.__path__[0], 'cacerts.txt')
             elif cacert.startswith("-----BEGIN CERTIFICATE-----"):
                 pass
             else:
@@ -883,8 +887,11 @@ def get_install_dir():
 
     if hasattr(sys, "frozen"):
         # we are running as py2exe-packed executable
-        import pythoncom
-        pythoncom.frozen = 1
+        try:
+            import pythoncom
+            pythoncom.frozen = 1
+        except ModuleNotFoundError:
+            pass
         sys.argv[0] = sys.executable
 
     return os.path.dirname(os.path.abspath(basepath))

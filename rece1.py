@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.37b"
+__version__ = "1.37d"
 
 import datetime
 import os
@@ -111,6 +111,8 @@ CMP_ASOC = [
     ('tipo_reg', 1, N),  # 3: comprobante asociado
     ('tipo', 3, N), ('pto_vta', 4, N),
     ('nro', 8, N),
+    ('fecha', 8, N),
+    ('cuit', 11, N),
 ]
 
 OPCIONAL = [
@@ -159,7 +161,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ]
         dic = leer_dbf(formatos, conf_dbf)
 
-        # rearmar estructura asociando id (comparando, si se útiliza)
+        # rearmar estructura asociando id (comparando, si se utiliza)
         for encabezado in encabezados:
             for tributo in tributos:
                 if tributo.get("id") == encabezado.get("id"):
@@ -271,6 +273,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 'motivos_obs': ws.Obs,
                 'err_code': str(ws.ErrCode),
                 'err_msg': ws.ErrMsg,
+                'cbt_desde': ws.CbtDesde,
+                'cbt_hasta': ws.CbtHasta,
+                'fecha_cbte': ws.FechaCbte,
                 'reproceso': ws.Reproceso,
                 'emision_tipo': ws.EmisionTipo,
             })
@@ -479,7 +484,7 @@ if __name__ == "__main__":
 
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
-            tipo_cbte = 1
+            tipo_cbte = 3
             punto_vta = 4002
             cbte_nro = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
             if not cbte_nro:
@@ -515,7 +520,9 @@ if __name__ == "__main__":
                 tipo = 1
                 pto_vta = 2
                 nro = 1234
-                ws.AgregarCmpAsoc(tipo, pto_vta, nro)
+                fecha = "20190601"
+                cuit = "20267565393"
+                ws.AgregarCmpAsoc(tipo, pto_vta, nro, cuit, fecha)
 
             if '--proyectos' in sys.argv:
                 ws.AgregarOpcional(2, "1234")  # identificador del proyecto

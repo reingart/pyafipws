@@ -39,6 +39,7 @@ class WSFEXv1(BaseWS):
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms',
                         'GetParamDstPais', 'GetParamDstCUIT', 'GetParamIdiomas',
                         'GetParamIncoterms', 'GetParamDstCUIT',
+                        'GetParamMonConCotizacion',
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
@@ -50,7 +51,7 @@ class WSFEXv1(BaseWS):
                       'Resultado', 'Obs', 'Reproceso',
                       'CAE', 'Vencimiento', 'Eventos', 'ErrCode', 'ErrMsg', 'FchVencCAE',
                       'Excepcion', 'LanzarExcepciones', 'Traceback', "InstallDir",
-                      'PuntoVenta', 'CbteNro', 'FechaCbte', 'ImpTotal']
+                      'PuntoVenta', 'CbteNro', 'FechaCbte', 'ImpTotal', 'FchCotiz']
 
     _reg_progid_ = "WSFEXv1"
     _reg_clsid_ = "{8106F039-D132-4F87-8AFE-ADE47B5503D4}"
@@ -69,6 +70,7 @@ class WSFEXv1(BaseWS):
         self.CbteNro = self.FechaCbte = self.PuntoVenta = self.ImpTotal = None
         self.InstallDir = INSTALL_DIR
         self.FchVencCAE = ""              # retrocompatibilidad
+        self.FchCotiz = None
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -90,7 +92,7 @@ class WSFEXv1(BaseWS):
                      nombre_cliente="", cuit_pais_cliente="", domicilio_cliente="",
                      id_impositivo="", moneda_id="PES", moneda_ctz=1.0,
                      obs_comerciales="", obs_generales="", forma_pago="", incoterms="",
-                     idioma_cbte=7, incoterms_ds=None, **kwargs):
+                     idioma_cbte=7, incoterms_ds=None, fecha_pago=None, **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación
 
@@ -114,6 +116,7 @@ class WSFEXv1(BaseWS):
                 'cbtes_asoc': [],
                 'permisos': [],
                 'detalles': [],
+                'fecha_pago': fecha_pago,
                 }
         self.factura = fact
 
@@ -198,6 +201,7 @@ class WSFEXv1(BaseWS):
                         'Pro_bonificacion': d['bonif'],
                         'Pro_total_item': d['importe'],
                     }} for d in f['detalles']],
+                'Fecha_pago': f['fecha_pago'],
             })
 
         result = ret['FEXAuthorizeResult']
@@ -496,9 +500,40 @@ class WSFEXv1(BaseWS):
         res = ret['FEXGetPARAM_CtzResult'].get('FEXResultGet')
         if res:
             ctz = str(res.get('Mon_ctz', ""))
+            self.FchCotiz = res.get("Mon_fecha")
         else:
             ctz = ''
         return ctz
+
+    @inicializar_y_capturar_excepciones
+    def GetParamMonConCotizacion(self, fecha=None, sep="|"):
+        "Recupera el listado de monedas que tengan cotizacion de ADUANA"
+        if not fecha:
+            fecha = datetime.date.today().strftime("%Y%m%d")
+
+        ret = self.client.FEXGetPARAM_MON_CON_COTIZACION(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            Fecha_CTZ=fecha)
+        result = ret['FEXGetPARAM_MON_CON_COTIZACIONResult']
+        self.__analizar_errores(result)
+
+        mons = [] # monedas
+        for u in result['FEXResultGet']:
+            u = u['ClsFEXResponse_Mon_CON_Cotizacion']
+            try:
+                mon = {'id': u.get('Mon_Id'), 'ctz': u.get('Mon_ctz'),
+                       'fecha': u.get('Fecha_ctz')}
+            except Exception as e:
+                print(e)
+                if u is None:
+                    # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
+                    mon = {'id':'', 'ctz':'','fecha':''}
+            mons.append(mon)
+        if sep:
+            return [("\t%(id)s\t%(ctz)s\t%(fecha)s\t"
+                      % it).replace("\t", sep) for it in mons]
+        else:
+            return mons
 
     @inicializar_y_capturar_excepciones
     def GetParamPtosVenta(self, sep="|"):
@@ -756,6 +791,9 @@ if __name__ == "__main__":
 
         if "--ctz" in sys.argv:
             print(wsfexv1.GetParamCtz('DOL'))
+
+        if "--monctz" in sys.argv:
+            print(wsfexv1.GetParamMonConCotizacion())
 
         if "--ptosventa" in sys.argv:
             print(wsfexv1.GetParamPtosVenta())
