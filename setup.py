@@ -25,7 +25,7 @@ except BaseException:
 
 __version__ = "%s.%s.%s" % (sys.version_info[0:2] + (rev, ))
 
-HOMO = True
+HOMO = False
 
 # build a one-click-installer for windows:
 if 'py2exe' in sys.argv:
@@ -38,14 +38,14 @@ if 'py2exe' in sys.argv:
     #import pyrece
     from . import wsaa
     from . import wsfev1, rece1, rg3685
-    #import wsfexv1, recex1
+    import wsfexv1, recex1
     #import wsbfev1, receb1
     #import wsmtx, recem
     #import wsct, recet
-    #import ws_sr_padron
-    #import pyfepdf
-    #import pyemail
-    #import pyi25
+    import ws_sr_padron
+    import pyfepdf
+    import pyemail
+    import pyi25
     #import wsctg
     #import wslpg
     #import wsltv
@@ -53,7 +53,7 @@ if 'py2exe' in sys.argv:
     #import wslsp
     #import wsremcarne
     #import wscoc
-    #import wscdc
+    import wscdc
     #import cot
     #import iibb
     #import trazamed
@@ -61,8 +61,9 @@ if 'py2exe' in sys.argv:
     #import trazarenpre
     #import trazafito
     #import trazavet
-    #import padron
-    #import sired
+    import padron
+    import sired
+    import pyqr
 
     data_files = [
         (".", ["licencia.txt", ]),
