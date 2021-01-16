@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03b"
+__version__ = "1.04a"
 
 import base64
 import json
@@ -35,10 +35,11 @@ QiOiJFIiwiY29kQXV0Ijo3MDQxNzA1NDM2NzQ3Nn0=""".replace("\n", "")
 
 
 class PyQR:
-    "Interfaz para generar Codigo QR de Factura Electrónica"
+    "Interfaz para generar Codigo QR de Factura Electrï¿½nica"
     _public_methods_ = ['GenerarImagen', 'CrearArchivo',
                         ]
-    _public_attrs_ = ['Version', 'Excepcion', 'Traceback', "URL", "Archivo",
+    _public_attrs_ = ['Version', 'Excepcion', 'Traceback', "URL",
+                      "Archivo", "Extension",
                       'qr_ver', 'box_size', 'border', 'error_correction',
                      ]
 
@@ -47,6 +48,7 @@ class PyQR:
 
     URL = "https://www.afip.gob.ar/fe/qr/?p=%s"
     Archivo = "qr.png"
+    Extension = "PNG"
 
     # qrencode default parameters:
     qr_ver = 1
@@ -62,7 +64,7 @@ class PyQR:
         """Crea un nombre de archivo temporal"""
         # para evitar errores de permisos y poder generar varios qr simultaneos
         tmp = tempfile.NamedTemporaryFile(prefix="qr_afip_",
-                                          suffix=".png",
+                                          suffix=".%s" % self.Extension.lower(),
                                           delete=False)
         self.Archivo = tmp.name
         return self.Archivo
@@ -108,7 +110,8 @@ class PyQR:
 
         img = qr.make_image(fill_color="black", back_color="white")
 
-        img.save(self.Archivo, "PNG")
+        img.save(self.Archivo, self.Extension.upper())
+
         return url
 
 
@@ -149,6 +152,10 @@ if __name__ == '__main__':
 
         if '--archivo' in sys.argv:
             pyqr.Archivo = sys.argv[sys.argv.index("--archivo")+1]
+            ext = os.path.splitext(pyqr.Archivo)[1][1:].upper()
+            if ext == "JPG":
+                ext = "JPEG"
+            PyQR.Extension = ext
         else:
             pyqr.CrearArchivo()
 
@@ -159,6 +166,7 @@ if __name__ == '__main__':
                          importe, moneda, ctz, tipo_doc_rec, nro_doc_rec,
                          tipo_cod_aut, cod_aut)
         print "archivo", pyqr.Archivo
+        print "extension", pyqr.Extension
 
         url = pyqr.GenerarImagen(ver, fecha, cuit, pto_vta, tipo_cmp, nro_cmp,
                                 importe, moneda, ctz, tipo_doc_rec, nro_doc_rec,
