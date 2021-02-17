@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10a"
+__version__ = "1.10b"
 
 DEBUG = False
 HOMO = False
@@ -73,6 +73,7 @@ class FEPDF:
                         ]
     _public_attrs_ = ['Version', 'Excepcion', 'Traceback', 'InstallDir',
                       'Locale', 'FmtCantidad', 'FmtPrecio', 'CUIT',
+                      'TipoCodAut',
                       'LanzarExcepciones', 'archivo_qr',
                     ]
         
@@ -161,6 +162,7 @@ class FEPDF:
         #sys.stderr = self.log
         self.LanzarExcepciones = True
         self.archivo_qr = None
+        self.TipoCodAut = 'E'
             
     def DebugLog(self):
         "Devolver bitácora de depuración"
@@ -957,7 +959,7 @@ class FEPDF:
                                  ctz=fact.get('moneda_ctz', 1),
                                  tipo_doc_rec=fact['tipo_doc'],
                                  nro_doc_rec=fact['nro_doc'],
-                                 tipo_cod_aut="E",
+                                 tipo_cod_aut=fact.get('tipo_cod_aut') or self.TipoCodAut,
                                  cod_aut=fact['cae'])
 
         # guardar el nombre de archivo para usarlo en el PDF:
@@ -1029,6 +1031,10 @@ if __name__ == '__main__':
         # establezco formatos (cantidad de decimales) según configuración:
         fepdf.FmtCantidad = conf_fact.get("fmt_cantidad", "0.2")
         fepdf.FmtPrecio = conf_fact.get("fmt_precio", "0.2")
+
+        # CAE predeterminado (configurar "A" para CAEA)
+        if config.has_option('FACTURA', 'tipo_cod_aut'):
+            fepdf.TipoCodAut = conf_fact.get("tipo_cod_aut", "E")
 
         if '--cargar' in sys.argv:
             if '--dbf' in sys.argv:
