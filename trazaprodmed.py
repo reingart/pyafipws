@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,10 +10,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""M骴ulo para Trazabilidad de Productos M閐icos ANMAT - Disp. 2303/2014
-seg鷑 Especificaci髇 T閏nica para Pruebas de Servicios (17/09/2015)"""
+"""M贸dulo para Trazabilidad de Productos M茅dicos ANMAT - Disp. 2303/2014
+seg煤n Especificaci贸n T茅cnica para Pruebas de Servicios (17/09/2015)"""
 
-# Informaci髇 adicional y documentaci髇:
+# Informaci贸n adicional y documentaci贸n:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosMedicos
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -43,7 +43,7 @@ WSDL_PROD = "https://servicios.pami.org.ar/trazaprodmed.WebService?wsdl"
 
 
 class TrazaProdMed(BaseWS):
-    "Interfaz para el WebService de Trazabilidad de Productos M閐icos ANMAT - PAMI - INSSJP"
+    "Interfaz para el WebService de Trazabilidad de Productos M茅dicos ANMAT - PAMI - INSSJP"
     _public_methods_ = ['InformarProducto', 'CrearTransaccion',
                         'SendCancelacTransacc', 'SendCancelacTransaccParcial',
                         'GetTransaccionesWS', 'GetCatalogoElectronicoByGTIN',
@@ -68,7 +68,7 @@ class TrazaProdMed(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s %s" % (__version__, HOMO and 'Homologaci髇' or '', 
+    Version = "%s %s %s" % (__version__, HOMO and 'Homologaci贸n' or '', 
                             pysimplesoap.client.__version__)
 
     def __init__(self, reintentos=1):
@@ -92,7 +92,7 @@ class TrazaProdMed(BaseWS):
         self.Resultado = ret.get('resultado')
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
-        # Conecto usando el m閠odo estandard:
+        # Conecto usando el m茅todo estandard:
         print "timeout", timeout
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
                               soap_server="jetty")
@@ -119,7 +119,7 @@ class TrazaProdMed(BaseWS):
             nro_afiliado=None, cod_diagnostico=None, cod_hiv=None,
             id_motivo_devolucion=None, otro_motivo_devolucion=None):
         "Inicializa internamente una estructura TransaccionDTO para informar"
-        # creo la transacci髇 con los par醡etros para llamar a InformarProducto
+        # creo la transacci贸n con los par谩metros para llamar a InformarProducto
         tx = {
                 'fEvento': f_evento, 'hEvento': h_evento,
                 'glnOrigen': gln_origen, 'glnDestino': gln_destino,
@@ -144,8 +144,8 @@ class TrazaProdMed(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def InformarProducto(self, usuario, password):
-        "Realiza el registro de una transacci髇 de producto. "
-        # El usuario (titular del registro/distribuidor/m閐ico/establecimiento 
+        "Realiza el registro de una transacci贸n de producto. "
+        # El usuario (titular del registro/distribuidor/m茅dico/establecimiento 
         # asistencial) informa el evento ocurrido para cada uno de los productos.
         res = self.client.informarProducto(
             transacciones=self.Transacciones,
@@ -163,7 +163,7 @@ class TrazaProdMed(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendCancelacTransacc(self, usuario, password, codigo_transaccion):
-        " Realiza la cancelaci髇 de una transacci髇"
+        " Realiza la cancelaci贸n de una transacci贸n"
         res = self.client.sendCancelacTransacc(
             transaccion=codigo_transaccion, 
             usuario=usuario, 
@@ -180,7 +180,7 @@ class TrazaProdMed(BaseWS):
     @inicializar_y_capturar_excepciones
     def SendCancelacTransaccParcial(self, usuario, password, codigo_transaccion,
                                     gtin=None, numero_serial=None):
-        " Realiza la cancelaci髇 parcial de una transacci髇"
+        " Realiza la cancelaci贸n parcial de una transacci贸n"
         res = self.client.sendCancelacTransaccParcial(
             transaccion=codigo_transaccion, 
             usuario=usuario, 
@@ -203,7 +203,7 @@ class TrazaProdMed(BaseWS):
             self.params_out = self.Transacciones.pop(0)
             return True
         else:
-            # limpio los par醡etros
+            # limpio los par谩metros
             self.params_out = {}
             return False
 
@@ -229,7 +229,7 @@ class TrazaProdMed(BaseWS):
                 n_remito=None, n_factura=None, 
                 id_provincia=None, id_estado=None, nro_pag=1, offset=100,
                 ):
-        "Obtiene los movimientos realizados y permite filtros de b鷖queda"
+        "Obtiene los movimientos realizados y permite filtros de b煤squeda"
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
@@ -291,7 +291,7 @@ class TrazaProdMed(BaseWS):
                 gtin=None, gln=None, marca=None, modelo=None,
                 cuit=None, id_nombre_generico=None, nro_pag=1, offset=100,
                 ):
-        "Obtiene el Cat醠ogo Electr髇ico de Medicamentos"
+        "Obtiene el Cat谩logo Electr贸nico de Medicamentos"
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
@@ -335,11 +335,11 @@ class TrazaProdMed(BaseWS):
         self.Username = username
 
     def SetPassword(self, password):
-        "Establezco la contrase馻"        
+        "Establezco la contrase帽a"        
         self.Password = password
 
     def GetCodigoTransaccion(self):
-        "Devuelvo el c骴igo de transacci髇"        
+        "Devuelvo el c贸digo de transacci贸n"        
         return self.CodigoTransaccion
 
     def GetResultado(self):
@@ -349,7 +349,7 @@ class TrazaProdMed(BaseWS):
 
 
 def main():
-    "Funci髇 principal de pruebas (obtener CAE)"
+    "Funci贸n principal de pruebas (obtener CAE)"
     import os, time, sys
     global WSDL, LOCATION
 
@@ -476,12 +476,12 @@ def main():
             if len(argv)>16:
                 ws.CrearTransaccion(*argv[3:])
             else:
-                print "ERROR: no se indicaron todos los par醡etros requeridos"
+                print "ERROR: no se indicaron todos los par谩metros requeridos"
         if ws.Transacciones:
             try:
                 usuario, password = argv[1:3]
             except:
-                print "ADVERTENCIA: no se indico par醡etros usuario y passoword"
+                print "ADVERTENCIA: no se indico par谩metros usuario y passoword"
                 usuario = password = "pruebasws"
             ws.InformarProducto(usuario, password)
             for i, tx in enumerate(transacciones):
@@ -515,7 +515,7 @@ def main():
             archivo.close()
 
 
-# busco el directorio de instalaci髇 (global para que no cambie si usan otra dll)
+# busco el directorio de instalaci贸n (global para que no cambie si usan otra dll)
 INSTALL_DIR = TrazaProdMed.InstallDir = get_install_dir()
 
 

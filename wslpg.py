@@ -10,8 +10,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para obtener código de operación electrónico (COE) para 
-Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
+"""MÃ³dulo para obtener cÃ³digo de operaciÃ³n electrÃ³nico (COE) para 
+LiquidaciÃ³n Primaria ElectrÃ³nica de Granos del web service WSLPG de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -20,16 +20,16 @@ __license__ = "GPL 3.0"
 __version__ = "1.33b"
 
 LICENCIA = """
-wslpg.py: Interfaz para generar Código de Operación Electrónica para
-Liquidación Primaria de Granos (LpgService)
+wslpg.py: Interfaz para generar CÃ³digo de OperaciÃ³n ElectrÃ³nica para
+LiquidaciÃ³n Primaria de Granos (LpgService)
 Copyright (C) 2013-2018 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionPrimariaGranos
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo respetando la licencia GPLv3.
 
-Para información adicional sobre garantía, soporte técnico comercial
-e incorporación/distribución en programas propietarios ver PyAfipWs:
+Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
+e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -37,37 +37,37 @@ AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
-  --debug: modo depuración (detalla y confirma las operaciones)
+  --debug: modo depuraciÃ³n (detalla y confirma las operaciones)
   --formato: muestra el formato de los archivos de entrada/salida
-  --prueba: genera y autoriza una liquidación de prueba (no usar en producción!)
-  --xml: almacena los requerimientos y respuestas XML (depuración)
+  --prueba: genera y autoriza una liquidaciÃ³n de prueba (no usar en producciÃ³n!)
+  --xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)
   --dbf: utilizar tablas DBF (xBase) para los archivos de intercambio
   --json: utilizar formato json para el archivo de intercambio
   --dummy: consulta estado de servidores
   
-  --autorizar: Autorizar Liquidación Primaria de Granos (liquidacionAutorizar)
-  --ajustar: Ajustar Liquidación Primaria de Granos (liquidacionAjustar)
-  --anular: Anular una Liquidación Primaria de Granos (liquidacionAnular)
+  --autorizar: Autorizar LiquidaciÃ³n Primaria de Granos (liquidacionAutorizar)
+  --ajustar: Ajustar LiquidaciÃ³n Primaria de Granos (liquidacionAjustar)
+  --anular: Anular una LiquidaciÃ³n Primaria de Granos (liquidacionAnular)
   --autorizar-anticipo: Autoriza un Anticipo (lpgAutorizarAnticipo)
-  --consultar: Consulta una liquidación (parámetros: nro de orden, COE, pdf)
+  --consultar: Consulta una liquidaciÃ³n (parÃ¡metros: nro de orden, COE, pdf)
     --cancelar-anticipo: anteponer para anticipos (lpgCancelarAnticipo)
-  --ult: Consulta el último número de orden registrado en AFIP 
+  --ult: Consulta el Ãºltimo nÃºmero de orden registrado en AFIP 
          (liquidacionUltimoNroOrdenConsultar)
 
   --pdf: genera el formulario C 1116 B en formato PDF
   --mostrar: muestra el documento PDF generado (usar con --pdf)
   --imprimir: imprime el documento PDF generado (usar con --mostrar y --pdf)
 
-  --autorizar-lsg: Autoriza una Liquidación Secundaria de Granos (lsgAutorizar)
+  --autorizar-lsg: Autoriza una LiquidaciÃ³n Secundaria de Granos (lsgAutorizar)
     --lsg --anular: Anula una LSG (lsgAnular)
     --lsg --consular: Consulta una LSG por pto_emision, nro_orden o COE
-    --lsg --ult: Consulta el último Nº LSG emitida (lsgConsultarUltimoNroOrden)
+    --lsg --ult: Consulta el Ãºltimo NÂº LSG emitida (lsgConsultarUltimoNroOrden)
     --lsg --asociar: Asocia una liq. sec. a un contrato (lsgAsociarAContrato)
-  --ajustar-lsg: Ajusta una liquidación secundaria (lsgAjustar por COE/Contrato)
-  --autorizar-cg: Autorizar Certificación de Granos (cgAutorizar)
-    --cg --anular: Solicita anulación de un CG (cgSolicitarAnulacion)
+  --ajustar-lsg: Ajusta una liquidaciÃ³n secundaria (lsgAjustar por COE/Contrato)
+  --autorizar-cg: Autorizar CertificaciÃ³n de Granos (cgAutorizar)
+    --cg --anular: Solicita anulaciÃ³n de un CG (cgSolicitarAnulacion)
     --cg --consultar: Consulta una CG por pto_emision, nro_orden o COE
-    --cg --ult: Consulta el último Nº LSG emitida (cgConsultarUltimoNroOrden)
+    --cg --ult: Consulta el Ãºltimo NÂº LSG emitida (cgConsultarUltimoNroOrden)
   --informar-calidad: Informa la calidad de una CG (cgInformarCalidad)
   --buscar-ctg: devuelve los datos de la CTG a certificar
     espera tipo_certificado, cuit_depositante, nro_planta, cod_grano, campania
@@ -77,10 +77,10 @@ Opciones:
   --provincias: obtiene el listado de provincias
   --localidades: obtiene el listado de localidades por provincia
   --tipograno: obtiene el listado de los tipos de granos disponibles
-  --campanias: obtiene el listado de las campañas 
+  --campanias: obtiene el listado de las campaÃ±as 
   --gradoref: obtiene el listado de los grados de referencias
   --gradoent: obtiene el listado de los grados y valores entregados
-  --certdeposito: obtiene el listado de los tipos de certificados de depósito
+  --certdeposito: obtiene el listado de los tipos de certificados de depÃ³sito
   --deducciones: obtiene el listado de los tipos de deducciones
   --retenciones: obtiene el listado de los tipos de retenciones
   --puertos: obtiene el listado de los puertos habilitados
@@ -90,7 +90,7 @@ Opciones:
   --operaciones: obtiene el listado de las operaciones para el representado
 
 
-Ver wslpg.ini para parámetros de configuración (URL, certificados, etc.)"
+Ver wslpg.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
 """
 
 import os, sys, shelve
@@ -116,10 +116,10 @@ CONFIG_FILE = "wslpg.ini"
 TIMEOUT = 30
 HOMO = False
 
-# definición del formato del archivo de intercambio:
+# definiciÃ³n del formato del archivo de intercambio:
 
 ENCABEZADO = [
-    ('tipo_reg', 1, A), # 0: encabezado liquidación
+    ('tipo_reg', 1, A), # 0: encabezado liquidaciÃ³n
     ('nro_orden', 18, N), 
     ('cuit_comprador', 11, N),
     ('nro_act_comprador', 5, N),
@@ -198,10 +198,10 @@ ENCABEZADO = [
     ('subtotal_deb_cred', 17, I, 2), # 17.2
     ('total_base_deducciones', 17, I, 2), # 17.2
     
-    # Campos agregados WSLPGv1.6 (liquidación secundaria base):
+    # Campos agregados WSLPGv1.6 (liquidaciÃ³n secundaria base):
     ('cantidad_tn', 11, I, 3),      #  8.3
     ('nro_act_vendedor', 5, N),
-    # Campos agregados WSLPGv1.9 (liquidación secundaria base):
+    # Campos agregados WSLPGv1.9 (liquidaciÃ³n secundaria base):
     ('total_deducciones', 19, I , 2),    
     ('total_percepciones', 19, I , 2),
     ]
@@ -234,7 +234,7 @@ RETENCION = [
     ]
 
 DEDUCCION = [
-    ('tipo_reg', 1, A), # 3: Deducción
+    ('tipo_reg', 1, A), # 3: DeducciÃ³n
     ('codigo_concepto', 2, A), 
     ('detalle_aclaratorio', 30, A), # max 50 por WSLPGv1.2
     ('dias_almacenaje', 4, N),
@@ -262,7 +262,7 @@ OPCIONAL = [
     ]
 
 AJUSTE = [
-    ('tipo_reg', 1, A), # 4: ajuste débito / 5: crédito (WSLPGv1.4)
+    ('tipo_reg', 1, A), # 4: ajuste dÃ©bito / 5: crÃ©dito (WSLPGv1.4)
     ('concepto_importe_iva_0', 20, A),
     ('importe_ajustar_iva_0', 15, I, 2), # 11.2
     ('concepto_importe_iva_105', 20, A),
@@ -297,7 +297,7 @@ AJUSTE = [
     ]
 
 CERTIFICACION = [
-    ('tipo_reg', 1, A), # 7: encabezado certificación
+    ('tipo_reg', 1, A), # 7: encabezado certificaciÃ³n
     # campos de la cabecera para todas las certificaciones (WSLPGv1.6)
     ('pto_emision', 4, N),
     ('nro_orden', 8, N),
@@ -395,7 +395,7 @@ CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
 DET_MUESTRA_ANALISIS = [            # para cgAutorizarDeposito (WSLPGv1.6)
     ('tipo_reg', 1, A), # D: detalle muestra analisis
     ('descripcion_rubro', 400, A),
-    ('tipo_rubro', 1, A),           #  "B" (Bonificación) y "R" (Rebaja)
+    ('tipo_rubro', 1, A),           #  "B" (BonificaciÃ³n) y "R" (Rebaja)
     ('porcentaje', 5, I, 2),
     ('valor', 5, I, 2),
 ]
@@ -444,7 +444,7 @@ DATO = [
 
 
 class WSLPG(BaseWS):
-    "Interfaz para el WebService de Liquidación Primaria de Granos"    
+    "Interfaz para el WebService de LiquidaciÃ³n Primaria de Granos"    
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'AutorizarLiquidacion',
                         'AutorizarLiquidacionSecundaria', 'AnularLiquidacion',
@@ -519,7 +519,7 @@ class WSLPG(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     LanzarExcepciones = False
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
 
     def inicializar(self):
         BaseWS.inicializar(self)
@@ -542,11 +542,11 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=30):
-        "Establecer la conexión a los servidores de la AFIP"
+        "Establecer la conexiÃ³n a los servidores de la AFIP"
         # llamo al constructor heredado:
         ok = BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
         if ok:        
-            # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
+            # corrijo ubicaciÃ³n del servidor (puerto htttp 80 en el WSDL)
             location = self.client.services['LpgService']['ports']['LpgEndPoint']['location']
             if location.startswith("http://"):
                 print "Corrigiendo WSDL ...", location,
@@ -616,7 +616,7 @@ class WSLPG(BaseWS):
                nro_contrato=None,
                **kwargs
                ):
-        "Inicializa internamente los datos de una liquidación para autorizar"
+        "Inicializa internamente los datos de una liquidaciÃ³n para autorizar"
 
         # limpio los campos especiales (segun validaciones de AFIP)
         if alic_iva_operacion == 0:
@@ -644,7 +644,7 @@ class WSLPG(BaseWS):
         if val_grado_ent == 0:
             val_grado_ent = None
 
-        # creo el diccionario con los campos generales de la liquidación:
+        # creo el diccionario con los campos generales de la liquidaciÃ³n:
         self.liquidacion = dict(
                             ptoEmision=pto_emision,
                             nroOrden=nro_orden,
@@ -716,9 +716,9 @@ class WSLPG(BaseWS):
             cod_localidad_procedencia=None, cod_prov_procedencia=None,
             datos_adicionales=None,
             **kwargs):
-        "Inicializa los datos de una liquidación secundaria de granos (base)"
+        "Inicializa los datos de una liquidaciÃ³n secundaria de granos (base)"
  
-        # creo el diccionario con los campos generales de la liquidación:
+        # creo el diccionario con los campos generales de la liquidaciÃ³n:
         self.liquidacion = dict(
             ptoEmision=pto_emision, nroOrden=nro_orden,
             numeroContrato=nro_contrato or None, cuitComprador=cuit_comprador, 
@@ -755,10 +755,10 @@ class WSLPG(BaseWS):
                            peso_neto_total_certificado=None,
                            coe_certificado_deposito=None,       # WSLPGv1.6
                            **kwargs):
-        "Agrego el certificado a la liquidación / certificación de granos"
+        "Agrego el certificado a la liquidaciÃ³n / certificaciÃ³n de granos"
         # limpio campos opcionales:
         if not peso_neto_total_certificado:
-            peso_neto_total_certificado = None  # 0 no es válido
+            peso_neto_total_certificado = None  # 0 no es vÃ¡lido
         # coe_certificado_deposito no es para LPG, unificar en futuras versiones
         if tipo_certificado_deposito and int(tipo_certificado_deposito) == 332:
             if coe_certificado_deposito and long(coe_certificado_deposito):
@@ -790,7 +790,7 @@ class WSLPG(BaseWS):
                                fecha_certificado_retencion=None,
                                importe_certificado_retencion=None,
                                **kwargs):
-        "Agrega la información referente a las retenciones de la liquidación"
+        "Agrega la informaciÃ³n referente a las retenciones de la liquidaciÃ³n"
         # limpio los campos opcionales:
         if fecha_certificado_retencion is not None and not fecha_certificado_retencion.strip():
             fecha_certificado_retencion = None
@@ -816,8 +816,8 @@ class WSLPG(BaseWS):
                                dias_almacenaje=None, precio_pkg_diario=None,
                                comision_gastos_adm=None, base_calculo=None,
                                alicuota=None, **kwargs):
-        "Agrega la información referente a las deducciones de la liquidación."
-        # limpiar campo según validación (comision_gastos_adm puede ser 0.00!)
+        "Agrega la informaciÃ³n referente a las deducciones de la liquidaciÃ³n."
+        # limpiar campo segÃºn validaciÃ³n (comision_gastos_adm puede ser 0.00!)
         if codigo_concepto != "CO" and comision_gastos_adm is not None \
             and float(comision_gastos_adm) == 0:
             comision_gastos_adm = None
@@ -847,8 +847,8 @@ class WSLPG(BaseWS):
     def AgregarPercepcion(self, codigo_concepto=None, detalle_aclaratoria=None,
                                base_calculo=None, alicuota=None, importe_final=None,
                                **kwargs):
-        "Agrega la información referente a las percepciones de la liquidación"
-        # liquidación secundaria (sin importe final)
+        "Agrega la informaciÃ³n referente a las percepciones de la liquidaciÃ³n"
+        # liquidaciÃ³n secundaria (sin importe final)
         self.percepciones.append(dict(
                                 percepcion=dict(
                                     detalleAclaratoria=detalle_aclaratoria,
@@ -861,7 +861,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarOpcional(self, codigo=None, descripcion=None, **kwargs):
-        "Agrega la información referente a los opcionales de la liq. seq."
+        "Agrega la informaciÃ³n referente a los opcionales de la liq. seq."
         self.opcionales.append(dict(
                                     opcional=dict(
                                         codigo=codigo,
@@ -884,7 +884,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
-        "Autorizar Liquidación Primaria Electrónica de Granos"
+        "Autorizar LiquidaciÃ³n Primaria ElectrÃ³nica de Granos"
         
         # limpio los elementos que no correspondan por estar vacios:
         if not self.liquidacion['certificados']:
@@ -922,7 +922,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacionSecundaria(self):
-        "Autorizar Liquidación Secundaria Electrónica de Granos"
+        "Autorizar LiquidaciÃ³n Secundaria ElectrÃ³nica de Granos"
 
         # extraer y adaptar los campos para liq. sec.
         if self.deducciones:
@@ -958,7 +958,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AutorizarAnticipo(self):
-        "Autorizar Anticipo de una Liquidación Primaria Electrónica de Granos"
+        "Autorizar Anticipo de una LiquidaciÃ³n Primaria ElectrÃ³nica de Granos"
 
         # extraer y adaptar los campos para el anticipo
         anticipo = {"liquidacion": self.liquidacion}
@@ -993,7 +993,7 @@ class WSLPG(BaseWS):
     @inicializar_y_capturar_excepciones
     def CancelarAnticipo(self, pto_emision=None, nro_orden=None, coe=None, 
                                pdf=None):
-        "Cancelar Anticipo de una Liquidación Primaria Electrónica de Granos"
+        "Cancelar Anticipo de una LiquidaciÃ³n Primaria ElectrÃ³nica de Granos"
         
         # llamo al webservice:
         ret = self.client.lpgCancelarAnticipo(
@@ -1019,8 +1019,8 @@ class WSLPG(BaseWS):
         return True
 
     def AnalizarLiquidacion(self, aut, liq=None, ajuste=False):
-        "Método interno para analizar la respuesta de AFIP"
-        # proceso los datos básicos de la liquidación (devuelto por consultar):
+        "MÃ©todo interno para analizar la respuesta de AFIP"
+        # proceso los datos bÃ¡sicos de la liquidaciÃ³n (devuelto por consultar):
         if liq:
             self.params_out = dict(
                         pto_emision=liq.get('ptoEmision'),
@@ -1113,7 +1113,7 @@ class WSLPG(BaseWS):
             self.Estado = aut.get('estado', '')
             self.NroContrato = aut.get('numeroContrato', '')
 
-            # actualizo parámetros de salida:
+            # actualizo parÃ¡metros de salida:
             self.params_out['coe'] = self.COE
             self.params_out['coe_ajustado'] = self.COEAjustado
             self.params_out['estado'] = self.Estado
@@ -1211,9 +1211,9 @@ class WSLPG(BaseWS):
                comision_corredor=None,              # papel
                **kwargs
                ):
-        "Inicializa internamente los datos de una liquidación para ajustar"
+        "Inicializa internamente los datos de una liquidaciÃ³n para ajustar"
 
-        # ajusto nombre de campos para compatibilidad hacia atrás (encabezado):
+        # ajusto nombre de campos para compatibilidad hacia atrÃ¡s (encabezado):
         if 'cod_localidad_procedencia' in kwargs:
             cod_localidad = kwargs['cod_localidad_procedencia']
         if 'cod_provincia_procedencia' in kwargs:
@@ -1295,7 +1295,7 @@ class WSLPG(BaseWS):
                diferencia_precio_flete_tn=None,     # unificado
                **kwargs
                ):
-        "Inicializa internamente los datos del crédito del ajuste"
+        "Inicializa internamente los datos del crÃ©dito del ajuste"
 
         self.ajuste['ajusteCredito'] = {
             'diferenciaPesoNeto': diferencia_peso_neto,
@@ -1317,9 +1317,9 @@ class WSLPG(BaseWS):
             'percepciones': [],
             'certificados': [],
             }
-        # vinculación con AgregarOpcional:
+        # vinculaciÃ³n con AgregarOpcional:
         self.opcionales = self.ajuste['ajusteCredito']['opcionales']
-        # vinculación con AgregarRetencion y AgregarDeduccion
+        # vinculaciÃ³n con AgregarRetencion y AgregarDeduccion
         self.deducciones = self.ajuste['ajusteCredito']['deducciones']
         self.retenciones = self.ajuste['ajusteCredito']['retenciones']
         # para LSG:
@@ -1345,7 +1345,7 @@ class WSLPG(BaseWS):
                diferencia_precio_flete_tn=None,     # unificado
                **kwargs
                ):
-        "Inicializa internamente los datos del crédito del ajuste"
+        "Inicializa internamente los datos del crÃ©dito del ajuste"
 
         self.ajuste['ajusteDebito'] = {
             'diferenciaPesoNeto': diferencia_peso_neto,
@@ -1367,9 +1367,9 @@ class WSLPG(BaseWS):
             'percepciones': [],
             'certificados': [],
             }
-        # vinculación con AgregarOpcional:
+        # vinculaciÃ³n con AgregarOpcional:
         self.opcionales = self.ajuste['ajusteDebito']['opcionales']
-        # vinculación con AgregarRetencion y AgregarDeduccion
+        # vinculaciÃ³n con AgregarRetencion y AgregarDeduccion
         self.deducciones = self.ajuste['ajusteDebito']['deducciones']
         self.retenciones = self.ajuste['ajusteDebito']['retenciones']
         # para LSG:
@@ -1379,7 +1379,7 @@ class WSLPG(BaseWS):
         return True
 
     def AgregarFusion(self, nro_ing_brutos, nro_actividad, **kwargs):
-        "Datos de comprador o vendedor según liquidación a ajustar (fusión.)"
+        "Datos de comprador o vendedor segÃºn liquidaciÃ³n a ajustar (fusiÃ³n.)"
         self.ajuste['ajusteBase']['fusion'] = {'nroIngBrutos': nro_ing_brutos, 
                                                'nroActividad': nro_actividad,
                                               }
@@ -1387,7 +1387,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacionUnificado(self):
-        "Ajustar Liquidación Primaria de Granos"
+        "Ajustar LiquidaciÃ³n Primaria de Granos"
         
         # limpiar estructuras no utilizadas (si no hay deducciones / retenciones)
         for k in ('ajusteDebito', 'ajusteCredito'):
@@ -1416,7 +1416,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacionUnificadoPapel(self):
-        "Ajustar Liquidación realizada en un formulario F1116 B / C (papel)"
+        "Ajustar LiquidaciÃ³n realizada en un formulario F1116 B / C (papel)"
         
         # limpiar arrays no enviados:
         if not self.ajuste['ajusteBase']['certificados']:
@@ -1440,7 +1440,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacionContrato(self):
-        "Ajustar Liquidación activas relacionadas a un contrato"
+        "Ajustar LiquidaciÃ³n activas relacionadas a un contrato"
         
         # limpiar arrays no enviados:
         if not self.ajuste['ajusteBase']['certificados']:
@@ -1466,7 +1466,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacionSecundaria(self):
-        "Ajustar Liquidación Secundaria de Granos"
+        "Ajustar LiquidaciÃ³n Secundaria de Granos"
         
         # limpiar estructuras no utilizadas (si no hay deducciones / retenciones)
         for k in ('ajusteDebito', 'ajusteCredito'):
@@ -1519,7 +1519,7 @@ class WSLPG(BaseWS):
 
 
     def AnalizarAjuste(self, aut, base=True):
-        "Método interno para analizar la respuesta de AFIP (ajustes)"
+        "MÃ©todo interno para analizar la respuesta de AFIP (ajustes)"
 
         self.__ajuste_base = None
         self.__ajuste_debito = None
@@ -1533,7 +1533,7 @@ class WSLPG(BaseWS):
             
         # proceso la respuesta de autorizar, ajustar (y consultar):
         if aut:
-            # en caso de anulación o no ser ajuste, ahora no devuelve datos:
+            # en caso de anulaciÃ³n o no ser ajuste, ahora no devuelve datos:
             self.COE = str(aut.get('coe', ""))
             self.COEAjustado = aut.get('coeAjustado')
             self.NroContrato = aut.get('nroContrato')
@@ -1550,7 +1550,7 @@ class WSLPG(BaseWS):
             self.TotalIvaRg4310_18 = totunif.get('ivaRG4310_18')
             self.TotalPagoSegunCondicion = totunif.get('pagoSCondicion')
             
-            # actualizo parámetros de salida:
+            # actualizo parÃ¡metros de salida:
             self.params_out['coe'] = self.COE
             self.params_out['coe_ajustado'] = self.COEAjustado
             self.params_out['estado'] = self.Estado
@@ -1575,7 +1575,7 @@ class WSLPG(BaseWS):
                 self.params_out['total_iva_rg_4310_18'] = self.TotalIvaRg4310_18
                 self.params_out['total_pago_segun_condicion'] = self.TotalPagoSegunCondicion
             
-                # almaceno los datos de ajustes crédito y débito para usarlos luego
+                # almaceno los datos de ajustes crÃ©dito y dÃ©bito para usarlos luego
                 self.__ajuste_base = aut
                 self.__ajuste_debito = aut.get('ajusteDebito') or {}
                 self.__ajuste_credito = aut.get('ajusteCredito') or {}
@@ -1583,7 +1583,7 @@ class WSLPG(BaseWS):
     
     @inicializar_y_capturar_excepciones
     def AnalizarAjusteDebito(self):
-        "Método para analizar la respuesta de AFIP para Ajuste Debito"
+        "MÃ©todo para analizar la respuesta de AFIP para Ajuste Debito"
         # para compatibilidad con la generacion de PDF (completo datos)
         liq = {}
         if hasattr(self, "liquidacion") and self.liquidacion:
@@ -1598,7 +1598,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnalizarAjusteCredito(self):
-        "Método para analizar la respuesta de AFIP para Ajuste Credito"
+        "MÃ©todo para analizar la respuesta de AFIP para Ajuste Credito"
         liq = {}
         if hasattr(self, "liquidacion") and self.liquidacion:
             liq.update(self.liquidacion)
@@ -1618,7 +1618,7 @@ class WSLPG(BaseWS):
             cuit_corredor=None, cod_grano=None, campania=None, 
             datos_adicionales=None,
             **kwargs):
-        "Inicializa los datos de una certificación de granos (cabecera)"
+        "Inicializa los datos de una certificaciÃ³n de granos (cabecera)"
  
         self.certificacion = {}
         self.certificacion['cabecera'] = dict(
@@ -1747,7 +1747,7 @@ class WSLPG(BaseWS):
                              cod_grado=None, valor_grado=None, 
                              valor_contenido_proteico=None, valor_factor=None, 
                              **kwargs):
-        "Agrega la información sobre la calidad, al autorizar o posteriormente"
+        "Agrega la informaciÃ³n sobre la calidad, al autorizar o posteriormente"
         self.certificacion['primaria']['calidad'] = dict(
                 analisisMuestra=analisis_muestra,
                 nroBoletin=nro_boletin,
@@ -1764,7 +1764,7 @@ class WSLPG(BaseWS):
                                       tipo_rubro=None, porcentaje=None, 
                                       valor=None,
                                       **kwargs):
-        "Agrega la información referente al detalle de la certificación"
+        "Agrega la informaciÃ³n referente al detalle de la certificaciÃ³n"
         
         det = dict(
                 descripcionRubro=descripcion_rubro,
@@ -1825,7 +1825,7 @@ class WSLPG(BaseWS):
                          tarifa_zarandeo=None, 
                          peso_neto_confirmado_definitivo=None,
                          **kwargs):
-        "Agrega la información referente a una CTG de la certificación"
+        "Agrega la informaciÃ³n referente a una CTG de la certificaciÃ³n"
         
         ctg = dict(
                 nroCTG=nro_ctg,
@@ -1848,7 +1848,7 @@ class WSLPG(BaseWS):
                         fecha_emision_des=None,
                         fecha_emision_has=None,
                  ):
-        """Devuelve los certificados de depósito en los que un productor tiene
+        """Devuelve los certificados de depÃ³sito en los que un productor tiene
         saldo disponible para Liquidar/Retirar/Transferir"""
         
         ret = self.client.cgBuscarCertConSaldoDisponible(
@@ -1880,7 +1880,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AutorizarCertificacion(self):
-        "Autoriza una Certificación Primaria de Depósito de Granos (C1116A/RT)"
+        "Autoriza una CertificaciÃ³n Primaria de DepÃ³sito de Granos (C1116A/RT)"
         
         # limpio los elementos que no correspondan por estar vacios:
         for k1 in ('primaria', 'retiroTransferencia'):
@@ -1905,7 +1905,7 @@ class WSLPG(BaseWS):
         return True
 
     def AnalizarAutorizarCertificadoResp(self, ret):
-        "Metodo interno para extraer datos de la Respuesta de Certificación"
+        "Metodo interno para extraer datos de la Respuesta de CertificaciÃ³n"
         aut = ret.get('autorizacion')
         if aut:
             self.PtoEmision = aut['ptoEmision']
@@ -1913,7 +1913,7 @@ class WSLPG(BaseWS):
             self.FechaCertificacion = str(aut.get('fechaCertificacion', ""))
             self.COE = str(aut['coe'])
             self.Estado = aut['estado']
-            # actualizo parámetros de salida:
+            # actualizo parÃ¡metros de salida:
             self.params_out['coe'] = self.COE
             self.params_out['estado'] = self.Estado
             self.params_out['nro_orden'] = self.NroOrden
@@ -1936,7 +1936,7 @@ class WSLPG(BaseWS):
             self.params_out['servicio_otros'] = p.get("servicioOtros")
             self.params_out['servicio_total'] = p.get("servicioTotal")
             self.params_out['servicio_zarandeo'] = p.get("servicioZarandeo")
-        # datos devueltos según el tipo de certificacion (consultas):
+        # datos devueltos segÃºn el tipo de certificacion (consultas):
         cab = ret.get('cabecera')
         if cab:
             self.params_out['pto_emision'] = cab.get('ptoEmision')
@@ -2055,7 +2055,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnularCertificacion(self, coe):
-        "Anular liquidación activa"
+        "Anular liquidaciÃ³n activa"
         ret = self.client.cgSolicitarAnulacion(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -2074,7 +2074,7 @@ class WSLPG(BaseWS):
                                           cuit_corredor=None,
                                           cod_grano=None,
                                     **kwargs):
-        "Asociar una Liquidación a un contrato"
+        "Asociar una LiquidaciÃ³n a un contrato"
         
         ret = self.client.asociarLiquidacionAContrato(
                         auth={
@@ -2126,7 +2126,7 @@ class WSLPG(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, pto_emision=None, nro_orden=None, coe=None, 
                                    pdf=None):
-        "Consulta una liquidación por No de orden"
+        "Consulta una liquidaciÃ³n por No de orden"
         if coe:
             ret = self.client.liquidacionXCoeConsultar(
                         auth={
@@ -2157,7 +2157,7 @@ class WSLPG(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacionSecundaria(self, pto_emision=None, nro_orden=None, 
                                              coe=None, pdf=None):
-        "Consulta una liquidación sequndaria por No de orden o coe"
+        "Consulta una liquidaciÃ³n sequndaria por No de orden o coe"
         if coe:
             ret = self.client.lsgConsultarXCoe(
                         auth={
@@ -2222,7 +2222,7 @@ class WSLPG(BaseWS):
                                           cuit_corredor=None,
                                           cod_grano=None,
                                     **kwargs):
-        "Asociar una Liquidación a un contrato"
+        "Asociar una LiquidaciÃ³n a un contrato"
         
         ret = self.client.lsgAsociarAContrato(
                         auth={
@@ -2276,7 +2276,7 @@ class WSLPG(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarAjuste(self, pto_emision=None, nro_orden=None, nro_contrato=None,
                               coe=None, pdf=None):
-        "Consulta un ajuste de liquidación por No de orden o numero de contrato"
+        "Consulta un ajuste de liquidaciÃ³n por No de orden o numero de contrato"
         if nro_contrato:
             ret = self.client.ajustePorContratoConsultar(
                         auth={
@@ -2316,7 +2316,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltNroOrden(self, pto_emision=1):
-        "Consulta el último No de orden registrado"
+        "Consulta el Ãºltimo No de orden registrado"
         ret = self.client.liquidacionUltimoNroOrdenConsultar(
                     auth={
                         'token': self.Token, 'sign': self.Sign,
@@ -2330,7 +2330,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacionSecundariaUltNroOrden(self, pto_emision=1):
-        "Consulta el último No de orden registrado para LSG"
+        "Consulta el Ãºltimo No de orden registrado para LSG"
         ret = self.client.lsgConsultarUltimoNroOrden(
                     auth={
                         'token': self.Token, 'sign': self.Sign,
@@ -2344,7 +2344,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCertificacionUltNroOrden(self, pto_emision=1):
-        "Consulta el último No de orden registrado para CG"
+        "Consulta el Ãºltimo No de orden registrado para CG"
         ret = self.client.cgConsultarUltimoNroOrden(
                     auth={
                         'token': self.Token, 'sign': self.Sign,
@@ -2374,7 +2374,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnularLiquidacion(self, coe):
-        "Anular liquidación activa"
+        "Anular liquidaciÃ³n activa"
         ret = self.client.liquidacionAnular(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -2388,7 +2388,7 @@ class WSLPG(BaseWS):
     
     @inicializar_y_capturar_excepciones
     def AnularContraDocumento(self, pto_emision=None, nro_orden=None, coe=None):
-        "Anular liquidación mediante la generación automática de un contra-documento."
+        "Anular liquidaciÃ³n mediante la generaciÃ³n automÃ¡tica de un contra-documento."
         ret = self.client.lpgAnularContraDocumento(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -2408,7 +2408,7 @@ class WSLPG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnularLiquidacionSecundaria(self, coe):
-        "Anular liquidación secundaria activa"
+        "Anular liquidaciÃ³n secundaria activa"
         ret = self.client.lsgAnular(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -2452,7 +2452,7 @@ class WSLPG(BaseWS):
                for it in array]
 
     def ConsultarCodigoGradoReferencia(self, sep="||"):
-        "Consulta de Grados según Grano."
+        "Consulta de Grados segÃºn Grano."
         ret = self.client.codigoGradoReferenciaConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -2471,7 +2471,7 @@ class WSLPG(BaseWS):
                for it in array]
 
     def ConsultarGradoEntregadoXTipoGrano(self, cod_grano, sep="||"):
-        "Consulta de Grado y Valor según Grano Entregado."
+        "Consulta de Grado y Valor segÃºn Grano Entregado."
         ret = self.client.codigoGradoEntregadoXTipoGranoConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -2493,7 +2493,7 @@ class WSLPG(BaseWS):
                for it in array]
 
     def ConsultarTipoCertificadoDeposito(self, sep="||"):
-        "Consulta de tipos de Certificados de Depósito"
+        "Consulta de tipos de Certificados de DepÃ³sito"
         ret = self.client.tipoCertificadoDepositoConsultar(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -2624,7 +2624,7 @@ class WSLPG(BaseWS):
 
     def BuscarLocalidades(self, cod_prov, cod_localidad=None, consultar=True):
         "Devuelve la localidad o la consulta en AFIP (uso interno)"
-        # si no se especifíca cod_localidad, es util para reconstruir la cache
+        # si no se especifÃ­ca cod_localidad, es util para reconstruir la cache
         import wslpg_datos as datos
         if not str(cod_localidad) in datos.LOCALIDADES and consultar:
             d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
@@ -2638,7 +2638,7 @@ class WSLPG(BaseWS):
         return datos.LOCALIDADES.get(str(cod_localidad), "")
 
     def ConsultarTiposOperacion(self, sep="||"):
-        "Consulta tipo de Operación por Actividad."
+        "Consulta tipo de OperaciÃ³n por Actividad."
         ops = []
         ret = self.client.tipoActividadConsultar(
                         auth={
@@ -2697,7 +2697,7 @@ class WSLPG(BaseWS):
                     v = eval(v.strip())
                 args.append(v)
 
-            # corrijo path relativo para las imágenes:
+            # corrijo path relativo para las imÃ¡genes:
             if args[1] == 'I':
                 if not os.path.exists(args[14]):
                     args[14] = os.path.join(self.InstallDir, "plantillas", os.path.basename(args[14]))
@@ -2745,7 +2745,7 @@ class WSLPG(BaseWS):
 
 
     def CrearPlantillaPDF(self, papel="A4", orientacion="portrait"):
-        "Iniciar la creación del archivo PDF"
+        "Iniciar la creaciÃ³n del archivo PDF"
         
         # genero el renderizador con propiedades del PDF
         t = Template(
@@ -2761,7 +2761,7 @@ class WSLPG(BaseWS):
 
     def AgregarDatoPDF(self, campo, valor, pagina='T'):
         "Agrego un dato a la factura (internamente)"
-        # corrijo path relativo para las imágenes (compatibilidad hacia atrás):
+        # corrijo path relativo para las imÃ¡genes (compatibilidad hacia atrÃ¡s):
         if campo == 'fondo' and valor.startswith(self.InstallDir):
             if not os.path.exists(valor):
                 valor = os.path.join(self.InstallDir, "plantillas", os.path.basename(valor))
@@ -2771,17 +2771,17 @@ class WSLPG(BaseWS):
 
     def ProcesarPlantillaPDF(self, num_copias=1, lineas_max=24, qty_pos='izq', 
                                    clave=''):
-        "Generar el PDF según la factura creada y plantilla cargada"
+        "Generar el PDF segÃºn la factura creada y plantilla cargada"
         try:
             f = self.template
             liq = self.params_out
-            # actualizo los campos según la clave (ajuste debitos / creditos)
+            # actualizo los campos segÃºn la clave (ajuste debitos / creditos)
             if clave and clave in liq:
                 liq = liq.copy()
                 liq.update(liq[clave])  # unificar con AnalizarAjusteCredito/Debito
 
             if HOMO:
-                self.AgregarDatoPDF("homo", u"HOMOLOGACIÓN")
+                self.AgregarDatoPDF("homo", u"HOMOLOGACIÃN")
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado', 
                       4: 'Cuadruplicado', 5: 'Quintuplicado'}
@@ -2825,7 +2825,7 @@ class WSLPG(BaseWS):
                 return valor
 
             def buscar_localidad_provincia(cod_prov, cod_localidad): 
-                "obtener la descripción de la provincia/localidad (usar cache)"
+                "obtener la descripciÃ³n de la provincia/localidad (usar cache)"
                 cod_prov = int(cod_prov)
                 cod_localidad = str(cod_localidad)
                 provincia = datos.PROVINCIAS[cod_prov]
@@ -2851,8 +2851,8 @@ class WSLPG(BaseWS):
                     cod_tipo_ajuste = int(liq["cod_tipo_ajuste"] or '0')
                 except: 
                     cod_tipo_ajuste = None
-                f.set('tipo_ajuste', {3: u'Liquidación de Débito', 
-                                      4: u'Liquidación de Crédito',
+                f.set('tipo_ajuste', {3: u'LiquidaciÃ³n de DÃ©bito', 
+                                      4: u'LiquidaciÃ³n de CrÃ©dito',
                                       }.get(cod_tipo_ajuste, ''))
 
                 # limpio datos del corredor si no corresponden:
@@ -2860,7 +2860,7 @@ class WSLPG(BaseWS):
                     if liq.get('cuit_corredor', None) == 0:
                         del liq['cuit_corredor']
                     
-                # establezco campos según tabla encabezado:
+                # establezco campos segÃºn tabla encabezado:
                 for k,v in liq.items():
                     v = formatear(k, v, fmt_encabezado)
                     if isinstance(v, (basestring, int, long, float)):
@@ -2907,7 +2907,7 @@ class WSLPG(BaseWS):
                 f.set("cont_proteico", liq.get('cont_proteico', self.datos.get('cont_proteico', "")))
                 
                 if liq.get('certificados'):
-                    # uso la procedencia del certificado de depósito 
+                    # uso la procedencia del certificado de depÃ³sito 
                     cert = liq['certificados'][0]
                     localidad, provincia = buscar_localidad_provincia(
                         cert['cod_prov_procedencia'],
@@ -2921,7 +2921,7 @@ class WSLPG(BaseWS):
     
                 f.set("procedencia", "%s - %s" % (localidad, provincia))
                 
-                # si no se especifíca, uso la procedencia para el lugar
+                # si no se especifÃ­ca, uso la procedencia para el lugar
                 if not self.datos.get('lugar_y_fecha'):
                     localidad, provincia = buscar_localidad_provincia(
                         liq['cod_prov_procedencia'], 
@@ -2940,18 +2940,18 @@ class WSLPG(BaseWS):
                 if int(liq['cod_tipo_operacion'] or 0) == 1: 
                     f.set("comprador.L", "COMPRADOR:")
                     f.set("vendedor.L", "VENDEDOR:")
-                    f.set("formulario", u"Form. Electrónico 1116 B %s" % homo)
+                    f.set("formulario", u"Form. ElectrÃ³nico 1116 B %s" % homo)
                 else:
                     f.set("comprador.L", "MANDATARIO/CONSIGNATARIO:")
                     f.set("vendedor.L", "MANDANTE/COMITENTE:")
-                    f.set("formulario", u"Form. Electrónico 1116 C %s" % homo)
+                    f.set("formulario", u"Form. ElectrÃ³nico 1116 C %s" % homo)
                 
                 if int(liq.get("coe_ajustado") or 0) or int(liq.get("nro_contrato") or 0):
                     f.set("formulario", u"Ajuste Unificado %s" % homo)
 
                 certs = []
                 for cert in liq.get('certificados', []):
-                    certs.append(u"%s Nº %s" % (
+                    certs.append(u"%s NÂº %s" % (
                         datos.TIPO_CERT_DEP[int(cert['tipo_certificado_deposito'])],
                         cert['nro_certificado_deposito']))
                 f.set("certificados_deposito", ', '.join(certs))
@@ -2981,8 +2981,8 @@ class WSLPG(BaseWS):
                 # Ajustes:
                 
                 if clave:
-                    f.set('subtipo_ajuste', {'ajuste_debito': u'AJUSTE DÉBITO',
-                           'ajuste_credito': u'AJUSTE CRÉDITO'}[clave])
+                    f.set('subtipo_ajuste', {'ajuste_debito': u'AJUSTE DÃBITO',
+                           'ajuste_credito': u'AJUSTE CRÃDITO'}[clave])
                 
                 if int(liq.get('coe_ajustado') or 0):
                     f.set("leyenda_coe_nro", "COE Ajustado:")
@@ -3176,15 +3176,15 @@ def leer_archivo(nombre_archivo):
                 # encabezado base de las liquidaciones
                 d = leer(linea, ENCABEZADO)
                 if d['reservado1']:
-                    print "ADVERTENCIA: USAR datos adicionales (nueva posición)" 
+                    print "ADVERTENCIA: USAR datos adicionales (nueva posiciÃ³n)" 
                     d['datos_adicionales'] = d['reservado1'] 
                 dic.update(d)
-                # referenciar la liquidación para agregar ret. / ded.:
+                # referenciar la liquidaciÃ³n para agregar ret. / ded.:
                 liq = dic
             elif str(linea[0])=='1':
                 d = leer(linea, CERTIFICADO)
                 if d['reservado1']:
-                    print "ADVERTENCIA: USAR tipo_certificado_deposito (nueva posición)" 
+                    print "ADVERTENCIA: USAR tipo_certificado_deposito (nueva posiciÃ³n)" 
                     d['tipo_certificado_deposito'] = d['reservado1'] 
                 liq['certificados'].append(d)
             elif str(linea[0])=='2':
@@ -3236,7 +3236,7 @@ def leer_archivo(nombre_archivo):
     return dic
     
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSLPG.InstallDir = get_install_dir()
 
 
@@ -3267,7 +3267,7 @@ if __name__ == '__main__':
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                print " * Campo: %-20s PosiciÃ³n: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                     clave, comienzo, longitud, tipo, dec)
                 comienzo += longitud
         sys.exit(0)
@@ -3285,7 +3285,7 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print "VersiÃ³n: ", __version__
 
         if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
@@ -3325,7 +3325,7 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
+            print "Usando ConfiguraciÃ³n:"
             print "WSAA_URL:", WSAA_URL
             print "WSLPG_URL:", WSLPG_URL
             print "CACERT", CACERT
@@ -3357,10 +3357,10 @@ if __name__ == '__main__':
         
             if '--prueba' in sys.argv:
                 pto_emision = 99
-                # genero una liquidación de ejemplo:
+                # genero una liquidaciÃ³n de ejemplo:
                 dic = dict(
                     pto_emision=pto_emision,
-                    nro_orden=0,  # que lo calcule automáticamente
+                    nro_orden=0,  # que lo calcule automÃ¡ticamente
                     cuit_comprador='20400000000',  
                     nro_act_comprador=40, nro_ing_bruto_comprador='20400000000',
                     cod_tipo_operacion=2 if "--consign" in sys.argv else 1,
@@ -3470,7 +3470,7 @@ if __name__ == '__main__':
                     dic['cod_grado_ent'] = ""
                     dic['val_grado_ent'] = 0
                 if "--consign" in sys.argv:
-                    # agrego deducción por comisión de gastos administrativos
+                    # agrego deducciÃ³n por comisiÃ³n de gastos administrativos
                     dic['deducciones'].append(dict(
                             codigo_concepto="CO",
                             detalle_aclaratorio="COMISION",
@@ -3484,7 +3484,7 @@ if __name__ == '__main__':
             dic = leer_archivo(ENTRADA)
                 
             if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
-                # consulto el último número de orden emitido:
+                # consulto el Ãºltimo nÃºmero de orden emitido:
                 ok = wslpg.ConsultarUltNroOrden(dic['pto_emision'])
                 if ok:
                     dic['nro_orden'] = wslpg.NroOrden + 1
@@ -3494,7 +3494,7 @@ if __name__ == '__main__':
                 if DEBUG: print "%s = %s" % (k, v)
                 wslpg.SetParametro(k, v)
                 
-            # cargo la liquidación:
+            # cargo la liquidaciÃ³n:
             wslpg.CrearLiquidacion()
 
             for cert in dic.get('certificados', []):
@@ -3511,7 +3511,7 @@ if __name__ == '__main__':
 
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
-                # usar solo si no está operativo
+                # usar solo si no estÃ¡ operativo
                 if '--error' in sys.argv:
                     wslpg.LoadTestXML("wslpg_error.xml")     # cargo error
                 else:
@@ -3574,7 +3574,7 @@ if __name__ == '__main__':
         if '--ajustar' in sys.argv:
             print "Ajustando..."
             if '--prueba' in sys.argv:
-                # genero una liquidación de ejemplo:
+                # genero una liquidaciÃ³n de ejemplo:
                 dic = dict(
                     pto_emision=55, nro_orden=0, coe_ajustado='330100025869',
                     cod_localidad_procedencia=5544, cod_prov_procedencia=12,
@@ -3689,7 +3689,7 @@ if __name__ == '__main__':
             dic = leer_archivo(ENTRADA)
                             
             if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
-                # consulto el último número de orden emitido:
+                # consulto el Ãºltimo nÃºmero de orden emitido:
                 ok = wslpg.ConsultarUltNroOrden(dic['pto_emision'])
                 if ok:
                     dic['nro_orden'] = wslpg.NroOrden + 1
@@ -3835,7 +3835,7 @@ if __name__ == '__main__':
                 pass
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
-                # usar solo si no está operativo
+                # usar solo si no estÃ¡ operativo
                 wslpg.LoadTestXML("wslpg_cons_test.xml")     # cargo prueba
             print "Consultando: pto_emision=%s nro_orden=%s coe=%s" % (pto_emision, nro_orden, coe)
             if '--lsg' in sys.argv:
@@ -3875,7 +3875,7 @@ if __name__ == '__main__':
                 pass
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
-                # usar solo si no está operativo
+                # usar solo si no estÃ¡ operativo
                 wslpg.LoadTestXML("wslpg_cons_ajuste_test.xml")   # cargo prueba
             print "Consultando: pto_emision=%s nro_orden=%s nro_contrato=%s" % (
                     pto_emision, nro_orden, nro_contrato)
@@ -3944,7 +3944,7 @@ if __name__ == '__main__':
         if '--autorizar-lsg' in sys.argv:
         
             if '--prueba' in sys.argv:
-                # genero una liquidación de ejemplo:
+                # genero una liquidaciÃ³n de ejemplo:
                 dic = dict(
                     pto_emision=99,
                     nro_orden=1,  nro_contrato=100001232,
@@ -3976,7 +3976,7 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA, agrega=('--agrega' in sys.argv))
             dic = leer_archivo(ENTRADA)
             
-            # cargo la liquidación:
+            # cargo la liquidaciÃ³n:
             wslpg.CrearLiqSecundariaBase(**dic)
             
             for ded in dic.get('deducciones', []):
@@ -4020,7 +4020,7 @@ if __name__ == '__main__':
         if '--ajustar-lsg' in sys.argv:
             print "Ajustando LSG..."
             if '--prueba' in sys.argv:
-                # genero una liquidación de ejemplo:
+                # genero una liquidaciÃ³n de ejemplo:
                 dic = dict(
                     pto_emision=55, nro_orden=0, coe_ajustado='330100025869',
                     cod_localidad_procedencia=5544, cod_prov_procedencia=12,
@@ -4065,7 +4065,7 @@ if __name__ == '__main__':
             dic = leer_archivo(ENTRADA)
             
             if int(dic['nro_orden']) == 0 and not '--testing' in sys.argv:
-                # consulto el último número de orden emitido:
+                # consulto el Ãºltimo nÃºmero de orden emitido:
                 ok = wslpg.ConsultarLiquidacionSecundariaUltNroOrden(dic['pto_emision'])
                 if ok:
                     dic['nro_orden'] = wslpg.NroOrden + 1
@@ -4129,7 +4129,7 @@ if __name__ == '__main__':
         if '--autorizar-anticipo' in sys.argv:
         
             if '--prueba' in sys.argv:
-                # genero una liquidación de ejemplo:
+                # genero una liquidaciÃ³n de ejemplo:
                 dic = dict(
                     pto_emision=33,
                     nro_orden=1, 
@@ -4164,7 +4164,7 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA, agrega=('--agrega' in sys.argv))
             dic = leer_archivo(ENTRADA)
             
-            # cargo la liquidación:
+            # cargo la liquidaciÃ³n:
             wslpg.CrearLiquidacion(**dic)
             
             for ret in dic.get('retenciones', []):
@@ -4206,7 +4206,7 @@ if __name__ == '__main__':
                 # consulto ultimo numero de orden
                 pto_emision = 99
                 wslpg.ConsultarCertificacionUltNroOrden(pto_emision)
-                # genero una certificación de ejemplo a autorizar:
+                # genero una certificaciÃ³n de ejemplo a autorizar:
                 dic = dict(
                         pto_emision=pto_emision, nro_orden=wslpg.NroOrden + 1,  
                         tipo_certificado="P", nro_planta="3091",
@@ -4218,7 +4218,7 @@ if __name__ == '__main__':
                         cod_grano=2, campania=1314,
                         datos_adicionales="Prueba",)
            
-                # datos provisorios de prueba (segun tipo de certificación):
+                # datos provisorios de prueba (segun tipo de certificaciÃ³n):
                 if '--primaria' in sys.argv:
                     dep = dict(
                         nro_act_depositario=29,
@@ -4289,7 +4289,7 @@ if __name__ == '__main__':
                 escribir_archivo(dic, ENTRADA, agrega=('--agrega' in sys.argv))
             dic = leer_archivo(ENTRADA)
             
-            # cargar los datos según el tipo de certificación:
+            # cargar los datos segÃºn el tipo de certificaciÃ³n:
             
             wslpg.CrearCertificacionCabecera(**dic)
 
@@ -4405,7 +4405,7 @@ if __name__ == '__main__':
             if DEBUG:
                 print "1er COE", wslpg.GetParametro("certificados", 0, "coe")
             
-        # Recuperar parámetros:
+        # Recuperar parÃ¡metros:
         
         if '--campanias' in sys.argv:
             ret = wslpg.ConsultarCampanias()
@@ -4421,7 +4421,7 @@ if __name__ == '__main__':
 
         if '--gradoent' in sys.argv:
             ##wslpg.LoadTestXML("wslpg_cod.xml")     # cargo respuesta de ej
-            cod_grano = raw_input("Ingrese el código de grano: ")
+            cod_grano = raw_input("Ingrese el cÃ³digo de grano: ")
             ret = wslpg.ConsultarGradoEntregadoXTipoGrano(cod_grano=cod_grano)
             print "\n".join(ret)
         
@@ -4475,11 +4475,11 @@ if __name__ == '__main__':
             print "\n".join(ret)
                     
         if '--localidades' in sys.argv:
-            cod_prov = raw_input("Ingrese el código de provincia:")
+            cod_prov = raw_input("Ingrese el cÃ³digo de provincia:")
             ret = wslpg.ConsultarLocalidadesPorProvincia(cod_prov)
             print "\n".join(ret)
 
-        # Generación del PDF:
+        # GeneraciÃ³n del PDF:
 
         if '--pdf' in sys.argv:
         
@@ -4489,17 +4489,17 @@ if __name__ == '__main__':
             conf_liq = dict(config.items('LIQUIDACION'))
             conf_pdf = dict(config.items('PDF'))
         
-            # establezco formatos (cantidad de decimales) según configuración:
+            # establezco formatos (cantidad de decimales) segÃºn configuraciÃ³n:
             wslpg.FmtCantidad = conf_liq.get("fmt_cantidad", "0.2")
             wslpg.FmtPrecio = conf_liq.get("fmt_precio", "0.2")
 
-            # determino el formato según el tipo de liquidación y datos
+            # determino el formato segÃºn el tipo de liquidaciÃ³n y datos
             if '--ajuste' not in sys.argv:
-                # liquidación estándar
+                # liquidaciÃ³n estÃ¡ndar
                 formatos = [('formato', '')]
                 copias = int(conf_liq.get("copias", 3))
             else:
-                # ajustes (páginas distintas), revisar si hay debitos/creditos:
+                # ajustes (pÃ¡ginas distintas), revisar si hay debitos/creditos:
                 formatos = [('formato_ajuste_base', '')]
                 copias = 1
                 if liq['ajuste_debito']:
@@ -4535,7 +4535,7 @@ if __name__ == '__main__':
 
                 salida = conf_liq.get("salida", "")
 
-                # genero el nombre de archivo según datos de factura
+                # genero el nombre de archivo segÃºn datos de factura
                 d = os.path.join(conf_liq.get('directorio', "."), 
                                  liq['fecha_liquidacion'].replace("-", "_"))
                 if not os.path.isdir(d):
@@ -4546,9 +4546,9 @@ if __name__ == '__main__':
                 fn = fn.encode('ascii', 'replace').replace('?','_')
                 salida = os.path.join(d, "%s.pdf" % fn)
                 if num_formato == len(formatos) - 1:
-                    dest = "F"  # si es el último, escribir archivo
+                    dest = "F"  # si es el Ãºltimo, escribir archivo
                 else:
-                    dest = ""   # sino, no escribir archivo todavía
+                    dest = ""   # sino, no escribir archivo todavÃ­a
                 wslpg.GenerarPDF(archivo=salida, dest=dest)
                 print "Generando PDF", salida, dest
             if '--mostrar' in sys.argv:
@@ -4564,7 +4564,7 @@ if __name__ == '__main__':
         try:
             print >> sys.stderr, traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
         except:
-            print >> sys.stderr, "Excepción no disponible:", type(e)
+            print >> sys.stderr, "ExcepciÃ³n no disponible:", type(e)
         if DEBUG:
             raise
         sys.exit(5)

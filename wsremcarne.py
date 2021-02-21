@@ -10,8 +10,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para obtener Remito Electronico Carnico:
-del web service WSRemCarne versión 3.0 de AFIP (RG4256/18 y RG4303/18)
+"""MÃ³dulo para obtener Remito Electronico Carnico:
+del web service WSRemCarne versiÃ³n 3.0 de AFIP (RG4256/18 y RG4303/18)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -20,17 +20,17 @@ __license__ = "LGPL 3.0"
 __version__ = "1.02c"
 
 LICENCIA = """
-wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v3.0
+wsremcarne.py: Interfaz para generar Remito ElectrÃ³nico CÃ¡rnico AFIP v3.0
 Remito de Carnes y subproductos derivados de la faena de bovinos y porcinos
-Resolución General 4256/18 y Resolución General 4303/18.
+ResoluciÃ³n General 4256/18 y ResoluciÃ³n General 4303/18.
 Copyright (C) 2018-2019 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCarnico
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para información adicional sobre garantía, soporte técnico comercial
-e incorporación/distribución en programas propietarios ver PyAfipWs:
+Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
+e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -38,9 +38,9 @@ AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
-  --debug: modo depuración (detalla y confirma las operaciones)
-  --prueba: genera y autoriza una rec de prueba (no usar en producción!)
-  --xml: almacena los requerimientos y respuestas XML (depuración)
+  --debug: modo depuraciÃ³n (detalla y confirma las operaciones)
+  --prueba: genera y autoriza una rec de prueba (no usar en producciÃ³n!)
+  --xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)
   --dummy: consulta estado de servidores
 
   --generar: generar un remito
@@ -53,14 +53,14 @@ Opciones:
 
   --tipos_comprobante: tabla de parametros para tipo de comprobante
   --tipos_contingencia: tipo de contingencia que puede reportar
-  --tipos_categoria_emisor: tipos de categorías de emisor
-  --tipos_categoria_receptor: tipos de categorías de receptor
-  --tipos_estados: estados posibles en los que puede estar un remito cárnico
+  --tipos_categoria_emisor: tipos de categorÃ­as de emisor
+  --tipos_categoria_receptor: tipos de categorÃ­as de receptor
+  --tipos_estados: estados posibles en los que puede estar un remito cÃ¡rnico
   --grupos_carne' grupos de los distintos tipos de cortes de carne
   --tipos_carne': tipos de corte de carne
   --codigos_domicilio: codigos de depositos habilitados para el cuit
 
-Ver wsremcarne.ini para parámetros de configuración (URL, certificados, etc.)"
+Ver wsremcarne.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
@@ -73,7 +73,7 @@ import utils
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 
 
-# constantes de configuración (producción/homologación):
+# constantes de configuraciÃ³n (producciÃ³n/homologaciÃ³n):
 
 WSDL = ["https://serviciosjava.afip.gob.ar/wsremcarne/RemCarneService?wsdl",
         "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"]
@@ -110,7 +110,7 @@ class WSRemCarne(BaseWS):
     HOMO = HOMO
     WSDL = WSDL[HOMO]
     LanzarExcepciones = False
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
 
     def Conectar(self, *args, **kwargs):
         ret = BaseWS.Conectar(self, *args, **kwargs)
@@ -165,7 +165,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarViaje(self, cuit_transportista=None, cuit_conductor=None, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
-        "Agrega la información referente al viaje del remito electrónico cárnico"
+        "Agrega la informaciÃ³n referente al viaje del remito electrÃ³nico cÃ¡rnico"
         self.remito['viaje'] = {'cuitTransportista': cuit_transportista, 
                                 'cuitConductor': cuit_conductor,
                                 'fechaInicioViaje': fecha_inicio_viaje ,
@@ -176,13 +176,13 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarVehiculo(self, dominio_vehiculo=None, dominio_acoplado=None, **kwargs):
-        "Agrega la información referente al vehiculo usado en el viaje del remito electrónico cárnico"
+        "Agrega la informaciÃ³n referente al vehiculo usado en el viaje del remito electrÃ³nico cÃ¡rnico"
         self.remito['viaje']['vehiculo'] = {'dominioVehiculo': dominio_vehiculo, 'dominioAcoplado': dominio_acoplado}
         return True
 
     @inicializar_y_capturar_excepciones
     def AgregarMercaderia(self, orden=None, cod_tipo_prod=None, kilos=None, unidades=None, tropa=None, kilos_rec=None, unidades_rec=None, **kwargs):
-        "Agrega la información referente a la mercadería del remito electrónico cárnico"
+        "Agrega la informaciÃ³n referente a la mercaderÃ­a del remito electrÃ³nico cÃ¡rnico"
         mercaderia = dict(orden=orden, tropa=tropa, codTipoProd=cod_tipo_prod, kilos=kilos, unidades=unidades,
                           kilosRec=kilos_rec, unidadesRec=unidades_rec)
         self.remito['arrayMercaderias'].append(dict(mercaderia=mercaderia))
@@ -190,7 +190,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarDatosAutorizacion(self, nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None, **kwargs):
-        "Agrega la información referente a los datos de autorización del remito electrónico cárnico"
+        "Agrega la informaciÃ³n referente a los datos de autorizaciÃ³n del remito electrÃ³nico cÃ¡rnico"
         self.remito['datosEmision'] = dict(nroRemito=nro_remito, codAutorizacion=cod_autorizacion,
                                                 fechaEmision=fecha_emision, fechaVencimiento=fecha_vencimiento,
                                                )
@@ -198,14 +198,14 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarContingencias(self, tipo=None, observacion=None, **kwargs):
-        "Agrega la información referente a los opcionales de la liq. seq."
+        "Agrega la informaciÃ³n referente a los opcionales de la liq. seq."
         contingencia = dict(tipoContingencia=tipo, observacion=observacion)
         self.remito['arrayContingencias'].append(dict(contingencia=contingencia))
         return True
 
     @inicializar_y_capturar_excepciones
     def GenerarRemito(self, id_req, archivo="qr.png"):
-        "Informar los datos necesarios para la generación de un remito nuevo"
+        "Informar los datos necesarios para la generaciÃ³n de un remito nuevo"
         if not self.remito.get('arrayContingencias'):
             if 'arrayContingencias' in self.remito: 
                 del self.remito['arrayContingencias']
@@ -272,7 +272,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnularRemito(self):
-        "Anular un remito generado que aún no haya sido emitido"
+        "Anular un remito generado que aÃºn no haya sido emitido"
         response = self.client.anularRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=self.remito['codRemito'])
@@ -286,7 +286,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltimoRemitoEmitido(self, tipo_comprobante=995, punto_emision=1):
-        "Obtener el último número de remito que se emitió por tipo de comprobante y punto de emisión"
+        "Obtener el Ãºltimo nÃºmero de remito que se emitiÃ³ por tipo de comprobante y punto de emisiÃ³n"
         response = self.client.consultarUltimoRemitoEmitido(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 tipoComprobante=tipo_comprobante,
@@ -331,7 +331,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposComprobante(self, sep="||"):
-        "Obtener el código y descripción para tipo de comprobante"
+        "Obtener el cÃ³digo y descripciÃ³n para tipo de comprobante"
         ret = self.client.consultarTiposComprobante(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -344,7 +344,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposContingencia(self, sep="||"):
-        "Obtener el código y descripción para cada tipo de contingencia que puede reportar"
+        "Obtener el cÃ³digo y descripciÃ³n para cada tipo de contingencia que puede reportar"
         ret = self.client.consultarTiposContingencia(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -357,7 +357,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposCategoriaEmisor(self, sep="||"):
-        "Obtener el código y descripción para tipos de categorías de emisor"
+        "Obtener el cÃ³digo y descripciÃ³n para tipos de categorÃ­as de emisor"
         ret = self.client.consultarTiposCategoriaEmisor(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -370,7 +370,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposCategoriaReceptor(self, sep="||"):
-        "Obtener el código y descripción para cada tipos de categorías de receptor"
+        "Obtener el cÃ³digo y descripciÃ³n para cada tipos de categorÃ­as de receptor"
         ret = self.client.consultarTiposCategoriaReceptor(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -383,7 +383,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposEstado(self, sep="||"):
-        "Obtener el código y descripción para cada estado posibles en los que puede estar un remito cárnico"
+        "Obtener el cÃ³digo y descripciÃ³n para cada estado posibles en los que puede estar un remito cÃ¡rnico"
         ret = self.client.consultarTiposEstado(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -396,7 +396,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarGruposCarne(self, sep="||"):
-        "Obtener el código y descripción para los grupos de los distintos tipos de cortes de carne"
+        "Obtener el cÃ³digo y descripciÃ³n para los grupos de los distintos tipos de cortes de carne"
         ret = self.client.consultarGruposCarne(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -409,7 +409,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposCarne(self, cod_grupo_carne=1, sep="||"):
-        "Obtener el código y descripción para tipos de corte de carne"
+        "Obtener el cÃ³digo y descripciÃ³n para tipos de corte de carne"
         ret = self.client.consultarTiposCarne(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -423,7 +423,7 @@ class WSRemCarne(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCodigosDomicilio(self, cuit_titular=1, sep="||"):
-        "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
+        "Obtener el cÃ³digo de depositos que tiene habilitados para operar el cuit informado"
         ret = self.client.consultarCodigosDomicilio(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -437,7 +437,7 @@ class WSRemCarne(BaseWS):
 
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
 elif sys.frozen=='dll':
@@ -464,12 +464,12 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print "VersiÃ³n: ", __version__
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuración:", arg
+            print "Usando configuraciÃ³n:", arg
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -499,7 +499,7 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
+            print "Usando ConfiguraciÃ³n:"
             print "wsaa_url:", wsaa_url
             print "wsremcarne_url:", wsremcarne_url
 
@@ -637,7 +637,7 @@ if __name__ == '__main__':
             with open(SALIDA, "w") as archivo:
                 json.dump(rec, archivo, sort_keys=True, indent=4, default=json_serializer)
 
-        # Recuperar parámetros:
+        # Recuperar parÃ¡metros:
 
         if '--tipos_comprobante' in sys.argv:
             ret = wsremcarne.ConsultarTiposComprobante()

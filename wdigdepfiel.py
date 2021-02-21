@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""M骴ulo para interfaz Depositario Fiel web service wDigDepFiel de AFIP
+"""M贸dulo para interfaz Depositario Fiel web service wDigDepFiel de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -25,8 +25,8 @@ Copyright (C) 2010 Mariano Reingart reingart@gmail.com
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para informaci髇 adicional sobre garant韆, soporte t閏nico comercial
-e incorporaci髇/distribuci髇 en programas propietarios ver PyAfipWs:
+Para informaci贸n adicional sobre garant铆a, soporte t茅cnico comercial
+e incorporaci贸n/distribuci贸n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -112,7 +112,7 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "Versi髇: ", __version__
+            print "Versi贸n: ", __version__
 
         CERT='reingart.crt'
         PRIVATEKEY='reingart.key'

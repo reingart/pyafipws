@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Pruebas para WSMTX de AFIP (Factura Electr髇ica Mercado Interno con detalle)"
+"Pruebas para WSMTX de AFIP (Factura Electr贸nica Mercado Interno con detalle)"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
@@ -33,7 +33,7 @@ PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
 CACERT = "/home/reingart/pyafipws/afip_root_desa_ca.crt"
 CACHE = "/home/reingart/pyafipws/cache"
 
-# Autenticaci髇:
+# Autenticaci贸n:
 wsaa = WSAA()
 tra = wsaa.CreateTRA(service="wsmtxca")
 cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
@@ -59,13 +59,13 @@ class TestMTX(unittest.TestCase):
         print "AuthServerStatus", wsmtxca.AuthServerStatus
     
     def test_autorizar_comprobante(self, tipo_cbte=1, cbte_nro=None, servicios=True, tributos=True):
-        "Prueba de autorizaci髇 de un comprobante (obtenci髇 de CAE)"
+        "Prueba de autorizaci贸n de un comprobante (obtenci贸n de CAE)"
         wsmtxca = self.wsmtxca
         
         # datos generales del comprobante:
         punto_vta = 4000
         if not cbte_nro:
-            # si no me especif韈an nro de comprobante, busco el pr髕imo
+            # si no me especif铆can nro de comprobante, busco el pr贸ximo
             cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             cbte_nro = long(cbte_nro) + 1
         fecha = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -82,7 +82,7 @@ class TestMTX(unittest.TestCase):
         imp_op_ex = "0.00"; 
         imp_subtotal = "100.00"
         fecha_cbte = fecha
-        # Fechas del per韔do del servicio facturado (solo si concepto = 1?)
+        # Fechas del per铆odo del servicio facturado (solo si concepto = 1?)
         if servicios:
             concepto = 3
             fecha_venc_pago = fecha
@@ -99,7 +99,7 @@ class TestMTX(unittest.TestCase):
             fecha_serv_desde, fecha_serv_hasta, #--
             moneda_id, moneda_ctz, obs)
         
-        # agrego un comprobante asociado (solo notas de cr閐ito / d閎ito)
+        # agrego un comprobante asociado (solo notas de cr茅dito / d茅bito)
         if tipo_cbte in (2, 3):
             tipo = 1
             pv = 2
@@ -129,7 +129,7 @@ class TestMTX(unittest.TestCase):
         importe = 21
         wsmtxca.AgregarIva(iva_id, base_imp, importe)
         
-        # agrego un art韈ulo:
+        # agrego un art铆culo:
         u_mtx = 123456
         cod_mtx = 1234567890123
         codigo = "P0001"
@@ -144,7 +144,7 @@ class TestMTX(unittest.TestCase):
         wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif, 
                     iva_id, imp_iva, imp_subtotal)
         
-        # agrego bonificaci髇 general
+        # agrego bonificaci贸n general
         wsmtxca.AgregarItem(None, None, None, 'bonificacion', 0, 99, 1, None, 
                     5, -21, -121)
         
@@ -174,7 +174,7 @@ class TestMTX(unittest.TestCase):
     def test_reproceso_servicios(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsmtxca = self.wsmtxca
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -190,7 +190,7 @@ class TestMTX(unittest.TestCase):
     def test_reproceso_productos(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsmtxca = self.wsmtxca
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -207,7 +207,7 @@ class TestMTX(unittest.TestCase):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         # N/D con comprobantes asociados
         wsmtxca = self.wsmtxca
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 2
         punto_vta = 4000
         nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -223,7 +223,7 @@ class TestMTX(unittest.TestCase):
     def test_reproceso_sin_tributos(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsmtxca = self.wsmtxca
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)

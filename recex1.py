@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo de Intefase para archivos de texto (exportación version 1)"
+"MÃ³dulo de Intefase para archivos de texto (exportaciÃ³n version 1)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -23,7 +23,7 @@ import sys
 import time
 import traceback
 
-# revisar la instalación de pyafip.ws:
+# revisar la instalaciÃ³n de pyafip.ws:
 import wsfexv1
 from utils import SimpleXMLElement, SoapClient, SoapFault, date
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
@@ -36,18 +36,18 @@ TIMEOUT = 30
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
-recex.py: Interfaz de texto para generar Facturas Electrónica Exportación
+recex.py: Interfaz de texto para generar Facturas ElectrÃ³nica ExportaciÃ³n
 Copyright (C) 2010 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para información adicional sobre garantía, soporte técnico comercial
-e incorporación/distribución en programas propietarios ver PyAfipWs:
+Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
+e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-# definición del formato del archivo de intercambio:
+# definiciÃ³n del formato del archivo de intercambio:
 
 if not '--pyfepdf' in sys.argv:
     TIPOS_REG = '0', '1', '2', '3'
@@ -122,7 +122,7 @@ if '/recex' in sys.argv:
 
 
 def autorizar(ws, entrada, salida):
-    # recupero el último número de transacción
+    # recupero el Ãºltimo nÃºmero de transacciÃ³n
     ##id = wsfex.ultnro(client, token, sign, cuit)
 
     detalles = []
@@ -154,8 +154,8 @@ def autorizar(ws, entrada, salida):
 
     if not encabezado['id']:
         # TODO: habria que leer y/o grabar el id en el archivo
-        ##id += 1 # incremento el nº de transacción 
-        # Por el momento, el id se calcula con el tipo, pv y nº de comprobant
+        ##id += 1 # incremento el nÂº de transacciÃ³n 
+        # Por el momento, el id se calcula con el tipo, pv y nÂº de comprobant
         i = long(encabezado['cbte_nro'])
         i += (int(encabezado['cbte_nro'])*10**4 + int(encabezado['punto_vta']))*10**8
         encabezado['id'] = ws.GetLastID() + 1
@@ -238,15 +238,15 @@ if __name__ == "__main__":
         print "Opciones: "
         print " /ayuda: este mensaje"
         print " /dummy: consulta estado de servidores"
-        print " /prueba: genera y autoriza una factura de prueba (no usar en producción!)"
-        print " /ult: consulta último número de comprobante"
-        print " /debug: modo depuración (detalla y confirma las operaciones)"
+        print " /prueba: genera y autoriza una factura de prueba (no usar en producciÃ³n!)"
+        print " /ult: consulta Ãºltimo nÃºmero de comprobante"
+        print " /debug: modo depuraciÃ³n (detalla y confirma las operaciones)"
         print " /formato: muestra el formato de los archivos de entrada/salida"
-        print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
-        print " /xml: almacena los requerimientos y respuestas XML (depuración)"
-        print " /dbf: lee y almacena la información en tablas DBF"
+        print " /get: recupera datos de un comprobante autorizado previamente (verificaciÃ³n)"
+        print " /xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)"
+        print " /dbf: lee y almacena la informaciÃ³n en tablas DBF"
         print
-        print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
+        print "Ver rece.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
         sys.exit(0)
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
@@ -321,7 +321,7 @@ if __name__ == "__main__":
                     for fmt in formato:
                         clave, longitud, tipo = fmt[0:3]
                         dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                        print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                        print " * Campo: %-20s PosiciÃ³n: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                             clave, comienzo, longitud, tipo, dec)
                         comienzo += longitud
                 else:
@@ -341,29 +341,29 @@ if __name__ == "__main__":
         ws.SetTicketAcceso(ta)
         
         if '/prueba' in sys.argv:
-            # generar el archivo de prueba para la próxima factura
+            # generar el archivo de prueba para la prÃ³xima factura
             f_entrada = open(entrada,"w")
 
-            tipo_cbte = 21 # FC Expo (ver tabla de parámetros)
+            tipo_cbte = 21 # FC Expo (ver tabla de parÃ¡metros)
             punto_vta = 7
-            # Obtengo el último número de comprobante y le agrego 1
+            # Obtengo el Ãºltimo nÃºmero de comprobante y le agrego 1
             cbte_nro = int(ws.GetLastCMP(tipo_cbte, punto_vta)) + 1
             fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
-            tipo_expo = 1 # tipo de exportación (ver tabla de parámetros)
+            tipo_expo = 1 # tipo de exportaciÃ³n (ver tabla de parÃ¡metros)
             permiso_existente = "S"
-            dst_cmp = 203 # país destino
+            dst_cmp = 203 # paÃ­s destino
             cliente = "Joao Da Silva"
             cuit_pais_cliente = "50000000016"
             domicilio_cliente = "Rua 76 km 34.5 Alagoas"
             id_impositivo = "PJ54482221-l"
-            moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de parámetros)
+            moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de parÃ¡metros)
             moneda_ctz = 19.80
             obs_comerciales = "Observaciones comerciales"
             obs = "Sin observaciones"
             forma_pago = "30 dias"
-            incoterms = "FOB" # (ver tabla de parámetros)
+            incoterms = "FOB" # (ver tabla de parÃ¡metros)
             incoterms_ds = "Flete a Bordo" 
-            idioma_cbte = 1 # (ver tabla de parámetros)
+            idioma_cbte = 1 # (ver tabla de parÃ¡metros)
             imp_total = "250.00"
             
             # Creo una factura (internamente, no se llama al WebService):
@@ -379,15 +379,15 @@ if __name__ == "__main__":
             ds = "Producto Tipo 1 Exportacion MERCOSUR ISO 9001"
             qty = 2
             precio = "150.00"
-            umed = 1 # Ver tabla de parámetros (unidades de medida)
+            umed = 1 # Ver tabla de parÃ¡metros (unidades de medida)
             bonif = "50.00"
-            imp_total = "250.00" # importe total final del artículo
+            imp_total = "250.00" # importe total final del artÃ­culo
             # lo agrego a la factura (internamente, no se llama al WebService):
             ok = ws.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
 
             # Agrego un permiso (ver manual para el desarrollador)
             id = "99999AAXX999999A"
-            dst = 225 # país destino de la mercaderia
+            dst = 225 # paÃ­s destino de la mercaderia
             ok = ws.AgregarPermiso(id, dst)
 
             # Agrego un comprobante asociado (solo para N/C o N/D)

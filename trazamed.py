@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,10 +10,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""MÛdulo para Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP Disp. 3683/11
-seg˙n EspecificaciÛn TÈcnica para Pruebas de Servicios v2 (2013)"""
+"""M√≥dulo para Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP Disp. 3683/11
+seg√∫n Especificaci√≥n T√©cnica para Pruebas de Servicios v2 (2013)"""
 
-# InformaciÛn adicional y documentaciÛn:
+# Informaci√≥n adicional y documentaci√≥n:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -102,8 +102,8 @@ TRANSACCIONES = [
 
 # Formato para Errores
 ERRORES = [
-    ('c_error', 4, A),                 # cÛdigo
-    ('d_error', 250, A),               # descripciÛn
+    ('c_error', 4, A),                 # c√≥digo
+    ('d_error', 250, A),               # descripci√≥n
     ]
 
 
@@ -142,7 +142,7 @@ class TrazaMed(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s %s" % (__version__, HOMO and 'HomologaciÛn' or '', 
+    Version = "%s %s %s" % (__version__, HOMO and 'Homologaci√≥n' or '', 
                             pysimplesoap.client.__version__)
 
     def __init__(self, reintentos=1):
@@ -166,14 +166,14 @@ class TrazaMed(BaseWS):
         self.Resultado = ret.get('resultado')
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
-        # Conecto usando el mÈtodo estandard:
+        # Conecto usando el m√©todo estandard:
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
                               soap_server="jetty")
 
         if ok:
             # si el archivo es local, asumo que ya esta corregido:
             if not self.wsdl.startswith("file"):
-                # corrijo ubicaciÛn del servidor (localhost:9050 en el WSDL)
+                # corrijo ubicaci√≥n del servidor (localhost:9050 en el WSDL)
                 location = self.wsdl[:-5]
                 if 'IWebServiceService' in self.client.services:
                     ws = self.client.services['IWebServiceService']  # version 1
@@ -201,8 +201,8 @@ class TrazaMed(BaseWS):
                          n_postal='', fecha_nacimiento='', telefono='',
                          nro_asociado=None,
                          ):
-        "Realiza el registro de una transacciÛn de medicamentos. "
-        # creo los par·metros para esta llamada
+        "Realiza el registro de una transacci√≥n de medicamentos. "
+        # creo los par√°metros para esta llamada
         params = {  'f_evento': f_evento, 
                     'h_evento': h_evento, 
                     'gln_origen': gln_origen, 
@@ -257,8 +257,8 @@ class TrazaMed(BaseWS):
                          n_postal='', fecha_nacimiento='', telefono='',
                          nro_asociado=None, cantidad=None,
                          ):
-        "Realiza el registro de una transacciÛn de medicamentos fraccionados"
-        # creo los par·metros para esta llamada
+        "Realiza el registro de una transacci√≥n de medicamentos fraccionados"
+        # creo los par√°metros para esta llamada
         params = {  'f_evento': f_evento, 
                     'h_evento': h_evento, 
                     'gln_origen': gln_origen, 
@@ -315,8 +315,8 @@ class TrazaMed(BaseWS):
                          n_postal='', fecha_nacimiento='', telefono='',
                          nro_asociado=None,
                          ):
-        "EnvÌa un lote de medicamentos informando el desde-hasta n˙mero de serie"
-        # creo los par·metros para esta llamada
+        "Env√≠a un lote de medicamentos informando el desde-hasta n√∫mero de serie"
+        # creo los par√°metros para esta llamada
         params = {  'f_evento': f_evento, 
                     'h_evento': h_evento, 
                     'gln_origen': gln_origen, 
@@ -363,7 +363,7 @@ class TrazaMed(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendCancelacTransacc(self, usuario, password, codigo_transaccion):
-        " Realiza la cancelaciÛn de una transacciÛn"
+        " Realiza la cancelaci√≥n de una transacci√≥n"
         res = self.client.sendCancelacTransacc(
             arg0=codigo_transaccion, 
             arg1=usuario, 
@@ -380,7 +380,7 @@ class TrazaMed(BaseWS):
     @inicializar_y_capturar_excepciones
     def SendCancelacTransaccParcial(self, usuario, password, codigo_transaccion,
                                     gtin_medicamento=None, numero_serial=None):
-        " Realiza la cancelaciÛn parcial de una transacciÛn"
+        " Realiza la cancelaci√≥n parcial de una transacci√≥n"
         res = self.client.sendCancelacTransaccParcial(
             arg0=codigo_transaccion, 
             arg1=usuario, 
@@ -395,7 +395,7 @@ class TrazaMed(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendConfirmaTransacc(self, usuario, password, p_ids_transac, f_operacion):
-        "Confirma la recepciÛn de un medicamento"
+        "Confirma la recepci√≥n de un medicamento"
         res = self.client.sendConfirmaTransacc(
             arg0=usuario, 
             arg1=password,
@@ -408,7 +408,7 @@ class TrazaMed(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendAlertaTransacc(self, usuario, password, p_ids_transac_ws):
-        "Alerta un medicamento, acciÛn contraria a ìconfirmar la transacciÛnî."
+        "Alerta un medicamento, acci√≥n contraria a ¬ìconfirmar la transacci√≥n¬î."
         res = self.client.sendAlertaTransacc(
             arg0=usuario, 
             arg1=password,
@@ -430,7 +430,7 @@ class TrazaMed(BaseWS):
                 n_remito=None, n_factura=None,
                 estado=None, lote=None, numero_serial=None,
                 ):
-        "Trae un listado de las transacciones que no est·n confirmadas"
+        "Trae un listado de las transacciones que no est√°n confirmadas"
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
@@ -492,7 +492,7 @@ class TrazaMed(BaseWS):
             self.params_out = self.TransaccionPlainWS.pop(0)
             return True
         else:
-            # limpio los par·metros
+            # limpio los par√°metros
             self.params_out = {}
             return False
 
@@ -516,7 +516,7 @@ class TrazaMed(BaseWS):
                 fecha_desde_v=None, fecha_hasta_v=None, 
                 n_remito=None, n_factura=None,
                 ):
-        "Obtiene las distribuciones y envÌos propios que han sido alertados"
+        "Obtiene las distribuciones y env√≠os propios que han sido alertados"
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
@@ -574,7 +574,7 @@ class TrazaMed(BaseWS):
                 n_remito=None, n_factura=None,
                 id_estado=None, nro_pag=None,
                 ):
-        "Obtiene los movimientos realizados y permite filtros de b˙squeda"
+        "Obtiene los movimientos realizados y permite filtros de b√∫squeda"
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
@@ -628,7 +628,7 @@ class TrazaMed(BaseWS):
                 cuit_fabricante=None, gtin=None, descripcion=None, 
                 id_monodroga=None, 
                 ):
-        "Obtiene el Cat·logo ElectrÛnico de Medicamentos"
+        "Obtiene el Cat√°logo Electr√≥nico de Medicamentos"
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
@@ -710,11 +710,11 @@ class TrazaMed(BaseWS):
         self.Username = username
 
     def SetPassword(self, password):
-        "Establezco la contraseÒa"        
+        "Establezco la contrase√±a"        
         self.Password = password
 
     def GetCodigoTransaccion(self):
-        "Devuelvo el cÛdigo de transacciÛn"        
+        "Devuelvo el c√≥digo de transacci√≥n"        
         return self.CodigoTransaccion
 
     def GetResultado(self):
@@ -724,7 +724,7 @@ class TrazaMed(BaseWS):
 
 
 def main():
-    "FunciÛn principal de pruebas (obtener CAE)"
+    "Funci√≥n principal de pruebas (obtener CAE)"
     import os, time, sys
     global WSDL, LOCATION
 
@@ -939,12 +939,12 @@ def main():
                 else:
                     ws.SendMedicamentos(*argv[1:])
             else:
-                print "ERROR: no se indicaron todos los par·metros requeridos"
+                print "ERROR: no se indicaron todos los par√°metros requeridos"
         elif medicamentos:
             try:
                 usuario, password = argv[1:3]
             except:
-                print "ADVERTENCIA: no se indico par·metros usuario y passoword"
+                print "ADVERTENCIA: no se indico par√°metros usuario y passoword"
                 usuario = password = "pruebasws"
             for i, med in enumerate(medicamentos):
                 print "Procesando registro", i
@@ -998,7 +998,7 @@ def main():
             archivo.close()
 
 
-# busco el directorio de instalaciÛn (global para que no cambie si usan otra dll)
+# busco el directorio de instalaci√≥n (global para que no cambie si usan otra dll)
 INSTALL_DIR = TrazaMed.InstallDir = get_install_dir()
 
 

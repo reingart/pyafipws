@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -41,7 +41,7 @@ class TestTZM(unittest.TestCase):
         ws.Conectar(CACHE, WSDL)
     
     def test_basico(self):
-        "Prueba b醩ica para informar un medicamento"
+        "Prueba b谩sica para informar un medicamento"
         ws = self.ws
         ws.SetParametro('nro_asociado', "9999999999999")
         ws.SendMedicamentos(
@@ -68,7 +68,7 @@ class TestTZM(unittest.TestCase):
         self.assertEqual(len(ws.CodigoTransaccion), len("23312897")) 
 
     def test_fraccion(self):
-        "Prueba b醩ica para informar un medicamento fraccionado"
+        "Prueba b谩sica para informar un medicamento fraccionado"
         ws = self.ws
         ws.SetParametro('nro_asociado', "9999999999999")
         ws.SetParametro('cantidad', 5)
@@ -94,7 +94,7 @@ class TestTZM(unittest.TestCase):
         self.assertEqual(ws.Errores[0][:4], "3105")
  
     def test_dh(self):
-        "Prueba b醩ica para informar un medicamento desde - hasta"
+        "Prueba b谩sica para informar un medicamento desde - hasta"
         ws = self.ws
         ws.SetParametro('nro_asociado', "1234")
         ws.SendMedicamentosDHSerie(
@@ -113,7 +113,7 @@ class TestTZM(unittest.TestCase):
         self.assertEqual(len(ws.CodigoTransaccion), len("23312897")) 
 
     def test_cancela_parcial(self):
-        "Prueba de cancelaci髇 parcial"
+        "Prueba de cancelaci贸n parcial"
         ws = self.ws
         ws.SendCancelacTransaccParcial(
             usuario='pruebasws', password='pruebasws',
@@ -168,13 +168,13 @@ class TestTZM(unittest.TestCase):
             usuario='pruebasws', password='pruebasws',
             id_medicamento="GTIN1", 
             )
-        # no deber韆 haber error:
+        # no deber铆a haber error:
         self.assertFalse(ws.HayError)
         # 
         while ws.LeerTransaccion():
             _id_transaccion = ws.GetParametro('_id_transaccion')
             _f_operacion = datetime.datetime.now().strftime("%d/%m/%Y")
-            # confirmo la transacci髇:
+            # confirmo la transacci贸n:
             ws.SendConfirmaTransacc(
                 usuario='pruebasws', password='pruebasws',
                 p_ids_transac=_id_transaccion, 
@@ -185,7 +185,7 @@ class TestTZM(unittest.TestCase):
             # verifico que haya devuelto id_transac_asociada:
             self.assertIsInstance(ws.CodigoTransaccion, basestring)
             self.assertEqual(len(ws.CodigoTransaccion), len("23312897"))
-            # salgo del ciclo (solo confirmo una transacci髇)
+            # salgo del ciclo (solo confirmo una transacci贸n)
             break
         else:
             self.fail("no se devolvieron transacciones para confirmar!")    
@@ -199,19 +199,19 @@ class TestTZM(unittest.TestCase):
             usuario='pruebasws', password='pruebasws',
             id_medicamento="GTIN1", 
             )
-        # no deber韆 haber error:
+        # no deber铆a haber error:
         self.assertFalse(ws.HayError)
         # 
         while ws.LeerTransaccion():
             _id_transaccion = ws.GetParametro('_id_transaccion')
-            # alerto la transacci髇:
+            # alerto la transacci贸n:
             ws.SendAlertaTransacc(
                 usuario='pruebasws', password='pruebasws',
                 p_ids_transac_ws=_id_transaccion, 
                 )
             # verifico que se haya confirmado correctamente:
             self.assertTrue(ws.Resultado)
-            # salgo del ciclo (solo alerto una transacci髇)
+            # salgo del ciclo (solo alerto una transacci贸n)
             break
         else:
             self.fail("no se devolvieron transacciones para alertar!")    

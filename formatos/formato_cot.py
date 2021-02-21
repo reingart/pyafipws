@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -13,7 +13,7 @@
 # Based on MultipartPostHandler.py (C) 02/2006 Will Holcomb <wholcomb@gmail.com>
 # Ejemplos iniciales gracias a "Matias Gieco matigro@gmail.com"
 
-"Módulo para analizar el formato de un remito electrónico (COT)"
+"MÃ³dulo para analizar el formato de un remito electrÃ³nico (COT)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"

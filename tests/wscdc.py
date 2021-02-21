@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Pruebas para el servicio web Constatación de Comprobantes de AFIP"
+"Pruebas para el servicio web ConstataciÃ³n de Comprobantes de AFIP"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
@@ -39,7 +39,7 @@ PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
 CACERT = "/home/reingart/pyafipws/afip_root_desa_ca.crt"
 CACHE = "/home/reingart/pyafipws/cache"
 
-# Autenticación:
+# AutenticaciÃ³n:
 wsaa = WSAA()
 tra = wsaa.CreateTRA(service="wscdc")
 cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
@@ -58,7 +58,7 @@ class TestWSCDC(unittest.TestCase):
         wslpg.Sign = wsaa.Sign                    
                     
     def test_constatacion_no(self):
-        "Prueba de Constatación de Comprobantes (facturas electrónicas)"
+        "Prueba de ConstataciÃ³n de Comprobantes (facturas electrÃ³nicas)"
         wscdc = self.wscdc
         cbte_modo = "CAE"
         cuit_emisor = "20267565393"
@@ -75,7 +75,7 @@ class TestWSCDC(unittest.TestCase):
                              doc_tipo_receptor, doc_nro_receptor)
         self.assertTrue(ok)
         self.assertEqual(wscdc.Resultado, "R")  # Rechazado
-        self.assertEqual(wscdc.Obs, u"100: El N° de CAI/CAE/CAEA consultado no existe en las bases del organismo.") 
+        self.assertEqual(wscdc.Obs, u"100: El NÂ° de CAI/CAE/CAEA consultado no existe en las bases del organismo.") 
         self.assertEqual(wscdc.PuntoVenta, pto_vta)
         self.assertEqual(wscdc.CbteNro, cbte_nro)
         self.assertEqual(wscdc.ImpTotal, imp_total)

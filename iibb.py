@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo para consultar percepciones / retenciones ARBA IIBB"
+"MÃ³dulo para consultar percepciones / retenciones ARBA IIBB"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
@@ -23,7 +23,7 @@ from pysimplesoap.simplexml import SimpleXMLElement
 from utils import WebClient
 
 HOMO = False
-CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producción)
+CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producciÃ³n)
 
 URL = "https://dfe.test.arba.gov.ar/DomicilioElectronico/SeguridadCliente/dfeServicioConsulta.do"  # testing
 ##URL = "https://dfe.arba.gov.ar/DomicilioElectronico/SeguridadCliente/dfeServicioConsulta.do"  # produccion
@@ -56,7 +56,7 @@ class IIBB:
     _reg_progid_ = "IIBB"
     _reg_clsid_ = "{2C7E29D2-0C99-49D8-B04B-A16B807BB123}"
 
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
 
     def __init__(self):
         self.Usuario = self.Password = None
@@ -144,7 +144,7 @@ class IIBB:
                 return False
 
     def LeerContribuyente(self, pop=True):
-        "Leeo el próximo contribuyente"
+        "Leeo el prÃ³ximo contribuyente"
         # por compatibilidad hacia atras, la primera vez no remueve de la lista
         # (llamado de ConsultarContribuyentes con pop=False)
         if self.contribuyentes:
@@ -191,7 +191,7 @@ class IIBB:
         try:
             if self.xml:
                 xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
+                # por cada tag, lo busco segun su nombre o posiciÃ³n
                 for tag in tags:
                     xml = xml(tag) # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
@@ -200,7 +200,7 @@ class IIBB:
             self.Excepcion = u"%s" % (e)
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"):
     basepath = __file__
 elif sys.frozen=='dll':

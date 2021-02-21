@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo para Consulta de Operaciones Cambiarias"
+"MÃ³dulo para Consulta de Operaciones Cambiarias"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -59,11 +59,11 @@ def inicializar_y_capturar_excepciones(func):
             self.__detalles_solicitudes = []
             self.__detalles_cuit = []
 
-            # llamo a la función (sin reintentos)
+            # llamo a la funciÃ³n (sin reintentos)
             return func(self, *args, **kwargs)
 
         except SoapFault, e:
-            # guardo destalle de la excepción SOAP
+            # guardo destalle de la excepciÃ³n SOAP
             self.ErrCode = unicode(e.faultcode)
             self.ErrMsg = unicode(e.faultstring)
             self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
@@ -77,7 +77,7 @@ def inicializar_y_capturar_excepciones(func):
             if self.LanzarExcepciones:
                 raise
         finally:
-            # guardo datos de depuración
+            # guardo datos de depuraciÃ³n
             if self.client:
                 self.XmlRequest = self.client.xml_request
                 self.XmlResponse = self.client.xml_response
@@ -128,7 +128,7 @@ class WSCOC:
     _reg_progid_ = "WSCOC"
     _reg_clsid_ = "{B30406CE-326A-46D9-B807-B7916E3F1B96}"
 
-    Version = "%s %s %s" % (__version__, HOMO and 'Homologación' or '', pysimplesoap.client.__file__)
+    Version = "%s %s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '', pysimplesoap.client.__file__)
     LanzarExcepciones = False
 
     def __init__(self):
@@ -219,7 +219,7 @@ class WSCOC:
         self.Log.write('\n\r')
     
     def DebugLog(self):
-        "Devolver y limpiar la bitácora de depuración"
+        "Devolver y limpiar la bitÃ¡cora de depuraciÃ³n"
         if self.Log:
             msg = self.Log.getvalue()
             # limpiar log
@@ -260,7 +260,7 @@ class WSCOC:
             soap_ns="soapenv",
             soap_server="jbossas6",
             trace = "--trace" in sys.argv)
-        # corrijo ubicación del servidor (http en el WSDL)
+        # corrijo ubicaciÃ³n del servidor (http en el WSDL)
         self.client.services['COCService']['ports']['COCServiceHttpSoap11Endpoint']['location'] = location
         self.__log("Corrigiendo location=%s" % (location, ))
         return True
@@ -283,7 +283,7 @@ class WSCOC:
                                     djas=None, codigo_excepcion_djas=None,
                                     tipo=None, codigo=None,
                                     ):
-        "Generar una Solicitud de operación cambiaria"
+        "Generar una Solicitud de operaciÃ³n cambiaria"
         if tipo and codigo:
             referencia = {'tipo': tipo, 'codigo': codigo}
         else:
@@ -316,7 +316,7 @@ class WSCOC:
                                     codigo_moneda, cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
                                     ):
-        "Generar una Solicitud de operación cambiaria"
+        "Generar una Solicitud de operaciÃ³n cambiaria"
         res = self.client.generarSolicitudCompraDivisaTurExt(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             detalleTurExtComprador={
@@ -341,7 +341,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def InformarSolicitudCompraDivisa(self, codigo_solicitud, nuevo_estado):
-        "Informar la aceptación o desistir una solicitud generada con anterioridad"
+        "Informar la aceptaciÃ³n o desistir una solicitud generada con anterioridad"
 
         res = self.client.informarSolicitudCompraDivisa(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
@@ -359,7 +359,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarCUIT(self, numero_doc, tipo_doc=80, sep="|"):
-        "Consultar la CUIT, CDI ó CUIL, según corresponda, para un determinado tipo y número de documento."
+        "Consultar la CUIT, CDI Ã³ CUIL, segÃºn corresponda, para un determinado tipo y nÃºmero de documento."
         
         res = self.client.consultarCUIT(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
@@ -378,7 +378,7 @@ class WSCOC:
                     # agrego el detalle para consultarlo luego (LeerCUITConsultado)
                     det = detalle['detalleCUIT']
                     self.__detalles_cuit.append(det)
-                # devuelvo una lista de cuit/denominación
+                # devuelvo una lista de cuit/denominaciÃ³n
                 return [(u"%(cuit)s\t%(denominacion)s" % 
                             d['detalleCUIT']).replace("\t", sep)
                         for d in ret.get('arrayDetallesCUIT', [])]
@@ -435,7 +435,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarSolicitudCompraDivisa(self, codigo_solicitud):
-        "Consultar una Solicitud de Operación Cambiaria"
+        "Consultar una Solicitud de OperaciÃ³n Cambiaria"
         res = self.client.consultarSolicitudCompraDivisa(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             codigoSolicitud=codigo_solicitud,
@@ -466,13 +466,13 @@ class WSCOC:
         self.__analizar_errores(res)
         
         ret = res.get('consultarSolicitudesCompraDivisasReturn', {})
-        solicitudes = []                    # códigos a devolver
+        solicitudes = []                    # cÃ³digos a devolver
         self.__detalles_solicitudes = []    # diccionario para recorrerlo luego
         for array in ret.get('arrayDetallesSolicitudes', []):
             det = array['detalleSolicitudes']
             # guardo el detalle para procesarlo luego (LeerSolicitudConsultada)
             self.__detalles_solicitudes.append(det) 
-            # devuelvo solo el código de solicitud
+            # devuelvo solo el cÃ³digo de solicitud
             solicitudes.append(det.get("codigoSolicitud"))            
         return solicitudes
 
@@ -491,7 +491,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarDJAI(self, djai, cuit):
-        "Consultar Declaración Jurada Anticipada de Importación"
+        "Consultar DeclaraciÃ³n Jurada Anticipada de ImportaciÃ³n"
         res = self.client.consultarDJAI(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             djai=djai, cuit=cuit,
@@ -507,7 +507,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarDJAS(self, djas, cuit):
-        "Consultar Declaración Jurada Anticipada de Servicios"
+        "Consultar DeclaraciÃ³n Jurada Anticipada de Servicios"
         res = self.client.consultarDJAS(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             djas=djas, cuit=cuit,
@@ -523,7 +523,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarReferencia(self, tipo, codigo):
-        "Consultar una determinada referencia según su tipo (1: DJAI, 2: DJAS, 3: DJAT)"
+        "Consultar una determinada referencia segÃºn su tipo (1: DJAI, 2: DJAS, 3: DJAT)"
         res = self.client.consultarReferencia(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             referencia={'tipo': tipo, 'codigo': codigo},
@@ -539,7 +539,7 @@ class WSCOC:
         
     @inicializar_y_capturar_excepciones
     def ConsultarMonedas(self, sep="|"):
-        "Este método retorna el universo de Monedas disponibles en el presente WS, indicando código y descripción de cada una"
+        "Este mÃ©todo retorna el universo de Monedas disponibles en el presente WS, indicando cÃ³digo y descripciÃ³n de cada una"
         res = self.client.consultarMonedas(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -592,7 +592,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposEstadoSolicitud(self, sep="|"):
-        "Este método devuelve los diferentes tipos de estado que puede tener una solicitud."
+        "Este mÃ©todo devuelve los diferentes tipos de estado que puede tener una solicitud."
         res = self.client.consultarTiposEstadoSolicitud(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -603,7 +603,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarMotivosExcepcionDJAI(self, sep='|'):
-        "Este método retorna el universo de motivos de excepciones a la Declaración Jurada Anticipada de Importación"
+        "Este mÃ©todo retorna el universo de motivos de excepciones a la DeclaraciÃ³n Jurada Anticipada de ImportaciÃ³n"
         res = self.client.consultarMotivosExcepcionDJAI(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -614,7 +614,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarDestinosCompraDJAI(self, sep='|'):
-        "Este método retorna el subconjunto de los destinos de compra de divisas alcanzados por las normativas de la Declaración Jurada Anticipada de Importación."
+        "Este mÃ©todo retorna el subconjunto de los destinos de compra de divisas alcanzados por las normativas de la DeclaraciÃ³n Jurada Anticipada de ImportaciÃ³n."
         res = self.client.consultarDestinosCompraDJAI(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -625,7 +625,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarMotivosExcepcionDJAS(self, sep='|'):
-        "Este método retorna el universo de motivos de excepciones a la Declaración Jurada Anticipada de Servicios"
+        "Este mÃ©todo retorna el universo de motivos de excepciones a la DeclaraciÃ³n Jurada Anticipada de Servicios"
         res = self.client.consultarMotivosExcepcionDJAS(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -636,7 +636,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarDestinosCompraDJAS(self, sep='|'):
-        "Este método retorna el subconjunto de los destinos de compra de divisas alcanzados por las normativas de la Declaración Jurada Anticipada de Servicios"
+        "Este mÃ©todo retorna el subconjunto de los destinos de compra de divisas alcanzados por las normativas de la DeclaraciÃ³n Jurada Anticipada de Servicios"
         res = self.client.consultarDestinosCompraDJAS(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -647,7 +647,7 @@ class WSCOC:
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposReferencia(self, sep='|'):
-        "Este método retorna el conjunto de los tipos de referencia que pueden ser utilizados en la generación de una solicitud de compra de divisas según corresponda."
+        "Este mÃ©todo retorna el conjunto de los tipos de referencia que pueden ser utilizados en la generaciÃ³n de una solicitud de compra de divisas segÃºn corresponda."
         res = self.client.consultarTiposReferencia(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -658,7 +658,7 @@ class WSCOC:
                  
     @inicializar_y_capturar_excepciones
     def ConsultarDestinosCompraTipoReferencia(self, tipo, sep='|'):
-        "Este método retorna el subconjunto de los destinos de compra de divisas alcanzados por algunas de las normativas vigentes según el tipo de referencia requerido"
+        "Este mÃ©todo retorna el subconjunto de los destinos de compra de divisas alcanzados por algunas de las normativas vigentes segÃºn el tipo de referencia requerido"
         res = self.client.consultarDestinosCompraTipoReferencia(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             tipo=tipo,
@@ -725,7 +725,7 @@ class WSCOC:
         try:
             if self.xml:
                 xml = self.xml
-                # por cada tag, lo busco segun su nombre o posición
+                # por cada tag, lo busco segun su nombre o posiciÃ³n
                 for tag in tags:
                     xml = xml(tag) # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
@@ -739,7 +739,7 @@ def p_assert_eq(a,b):
 
 
 def main():
-    "Función principal de pruebas (obtener CAE)"
+    "FunciÃ³n principal de pruebas (obtener CAE)"
     import os, time
 
     DEBUG = '--debug' in sys.argv
@@ -805,7 +805,7 @@ def main():
             # recorro el detalle de los cuit devueltos:
             while ws.LeerCUITConsultado():
                 print "CUIT", ws.CUITConsultada
-                print "Denominación", ws.DenominacionConsultada
+                print "DenominaciÃ³n", ws.DenominacionConsultada
         except Exception, e:
             raise
             print "Exception", e
@@ -924,11 +924,11 @@ def main():
                                              estado_solicitud,
                                              fecha_emision_desde,
                                              fecha_emision_hasta,)
-        # muestro los resultados de la búsqueda
+        # muestro los resultados de la bÃºsqueda
         print "Solicitudes consultadas:"
         for sol in sols:
-            print "Código de Solicitud:", sol
-            # podría llamar a ws.ConsultarSolicitudCompraDivisa
+            print "CÃ³digo de Solicitud:", sol
+            # podrÃ­a llamar a ws.ConsultarSolicitudCompraDivisa
         print "hecho."
 
         ws.AnalizarXml("XmlResponse")
@@ -1013,7 +1013,7 @@ def main():
     if "--consultar_tipos_ref" in sys.argv:
         print ws.ConsultarTiposReferencia()
         
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
 elif sys.frozen=='dll':

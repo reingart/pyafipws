@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Régimen de información de Compras y Ventas RG3685/14 AFIP"
+"RÃ©gimen de informaciÃ³n de Compras y Ventas RG3685/14 AFIP"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
@@ -21,7 +21,7 @@ import sys
 from utils import leer, escribir, C, N, A, I, B, get_install_dir
 
 
-# Diseño de registro de Importación de comprobantes de Ventas
+# DiseÃ±o de registro de ImportaciÃ³n de comprobantes de Ventas
 
 REGINFO_CV_VENTAS_CBTE = [
     ('fecha_cbte', 8, N),
@@ -48,7 +48,7 @@ REGINFO_CV_VENTAS_CBTE = [
     ('fecha_venc_pago', 8, A),
     ]
 
-# Diseño de registro de Importación de Alícuotas de comprobantes de Ventas
+# DiseÃ±o de registro de ImportaciÃ³n de AlÃ­cuotas de comprobantes de Ventas
 
 REGINFO_CV_VENTAS_CBTE_ALICUOTA = [
     ('tipo_cbte', 3, N),

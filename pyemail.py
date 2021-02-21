@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"M骴ulo para enviar correos electr髇icos"
+"M贸dulo para enviar correos electr贸nicos"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -33,7 +33,7 @@ DEBUG = False
 
 
 class PyEmail:
-    "Interfaz para enviar correos de Factura Electr髇ica"
+    "Interfaz para enviar correos de Factura Electr贸nica"
     _public_methods_ = ['Conectar', 'Crear', 'Enviar',
                         'AgregarDestinatario', 'Adjuntar', 
                         'AgregarCC', 'AgregarBCC',
@@ -58,20 +58,20 @@ class PyEmail:
         self.CC = []
 
     def Conectar(self, servidor, usuario=None, clave=None, puerto=25):
-        "Iniciar conexi髇 al servidor de correo electronico"
+        "Iniciar conexi贸n al servidor de correo electronico"
         try:
             # convertir el nro de puerto a entero porque puede ser string:
             puerto = int(puerto)
             if puerto != 465:
                 self.smtp = smtplib.SMTP(servidor, puerto)
             else:
-                # creo una conexi髇 segura (SSL, no disponible en Python<2.6):
+                # creo una conexi贸n segura (SSL, no disponible en Python<2.6):
                 self.smtp = smtplib.SMTP_SSL(servidor, puerto)
             if DEBUG:
                 self.smtp.set_debuglevel(1)
             self.smtp.ehlo()
             if puerto == 587:
-                # inicio una sesi髇 segura (TLS)
+                # inicio una sesi贸n segura (TLS)
                 self.smtp.starttls()
             if usuario and clave:
                 # convertir a string (hmac necesita string "bytes")
@@ -96,17 +96,17 @@ class PyEmail:
         return True
 
     def AgregarDestinatario(self, destinatario):
-        "Agrega una direcci髇 de correo de destino"
+        "Agrega una direcci贸n de correo de destino"
         self.Destinatarios.append(destinatario)
         return True
         
     def AgregarCC(self, destinatario):
-        "Agrega una direcci髇 de correo de destino (copia carb髇ica)"
+        "Agrega una direcci贸n de correo de destino (copia carb贸nica)"
         self.CC.append(destinatario)
         return True
 
     def AgregarBCC(self, destinatario):
-        "Agrega una direcci髇 de correo de destino (copia carb髇ica invisible)"
+        "Agrega una direcci贸n de correo de destino (copia carb贸nica invisible)"
         self.BCC.append(destinatario)
         return True
 
@@ -172,7 +172,7 @@ class PyEmail:
             return False
 
     def Salir(self):
-        "Termino la conexi髇 al servidor de correo electronico"
+        "Termino la conexi贸n al servidor de correo electronico"
         try:
             self.smtp.quit()
             return True
@@ -240,7 +240,7 @@ if __name__ == '__main__':
             sys.argv.remove("/debug")
 
         if len(sys.argv)<3:
-            print "Par醡etros: motivo destinatario [mensaje] [archivo]"
+            print "Par谩metros: motivo destinatario [mensaje] [archivo]"
             sys.exit(1)
 
         conf_mail = dict(config.items('MAIL'))

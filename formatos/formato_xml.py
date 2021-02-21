@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"MÛdulo para manejo de archivos XML simil Facturador-Plus (RCEL)"
+"M√≥dulo para manejo de archivos XML simil Facturador-Plus (RCEL)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
@@ -259,7 +259,7 @@ MAP_CBTE_ASOC = {
     }
 
 
-# Esqueleto XML b·sico simil facturador-plus
+# Esqueleto XML b√°sico simil facturador-plus
 XML_BASE = """\
 <?xml version="1.0" encoding="UTF-8"?>
 <comprobantes/>
@@ -369,7 +369,7 @@ def serializar(regs):
         xml.marshall("comprobante", comprobante)
     return xml.as_xml()
 
-# pruebas b·sicas
+# pruebas b√°sicas
 if __name__ == '__main__':
     regs = leer("prueba_entrada.xml")
     regs[0]['cae']='1'*15

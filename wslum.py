@@ -12,8 +12,8 @@
 
 from __future__ import with_statement
 
-"""Módulo para obtener código de autorización electrónica (CAE) para 
-Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
+"""MÃ³dulo para obtener cÃ³digo de autorizaciÃ³n electrÃ³nica (CAE) para 
+LiquidaciÃ³n Ãnica Mensual (lecherÃ­a) del web service WSLUM de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -22,16 +22,16 @@ __license__ = "GPL 3.0"
 __version__ = "1.03b"
 
 LICENCIA = """
-wslum.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
-          Liquidación Única Mensual de lechería (LumService)
+wslum.py: Interfaz para generar CÃ³digo de AutorizaciÃ³n ElectrÃ³nica (CAE) para
+          LiquidaciÃ³n Ãnica Mensual de lecherÃ­a (LumService)
 Copyright (C) 2016 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionUnicaMensualLecheria
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo respetando la licencia GPLv3.
 
-Para información adicional sobre garantía, soporte técnico comercial
-e incorporación/distribución en programas propietarios ver PyAfipWs:
+Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
+e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -39,30 +39,30 @@ AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
-  --debug: modo depuración (detalla y confirma las operaciones)
+  --debug: modo depuraciÃ³n (detalla y confirma las operaciones)
   --formato: muestra el formato de los archivos de entrada/salida
-  --prueba: genera y autoriza una liquidación de prueba (no usar en producción!)
-  --xml: almacena los requerimientos y respuestas XML (depuración)
+  --prueba: genera y autoriza una liquidaciÃ³n de prueba (no usar en producciÃ³n!)
+  --xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)
   --json: utilizar formato json para el archivo de intercambio
   --dummy: consulta estado de servidores
   
-  --autorizar: Autorizar Liquidación Única Mensual (lechería) (generarLiquidacion)
-  --ult: Consulta el último número de orden registrado en AFIP 
+  --autorizar: Autorizar LiquidaciÃ³n Ãnica Mensual (lecherÃ­a) (generarLiquidacion)
+  --ult: Consulta el Ãºltimo nÃºmero de orden registrado en AFIP 
          (consultarUltimoComprobanteXPuntoVenta)
-  --consultar: Consulta una liquidación registrada en AFIP 
+  --consultar: Consulta una liquidaciÃ³n registrada en AFIP 
          (consultarLiquidacionXNroComprobante / consultarLiquidacionXCAE)
 
-  --pdf: descarga la liquidación en formato PDF
+  --pdf: descarga la liquidaciÃ³n en formato PDF
   --mostrar: muestra el documento PDF generado (usar con --pdf)
   --imprimir: imprime el documento PDF generado (usar con --mostrar y --pdf)
 
-  --provincias: obtiene el listado de provincias (código/descripción)
+  --provincias: obtiene el listado de provincias (cÃ³digo/descripciÃ³n)
   --localidades: obtiene el listado de localidades para una provincia 
   --bonificaciones_penalizaciones: obtiene el listado de tributos
   --otros_impuestos: obtiene el listado de las retenciones de tabaco
   --puntosventa: obtiene el listado de puntos de venta habilitados
 
-Ver wslum.ini para parámetros de configuración (URL, certificados, etc.)"
+Ver wslum.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
 """
 
 import os, sys, shelve
@@ -87,7 +87,7 @@ HOMO = True
 
 
 class WSLUM(BaseWS):
-    "Interfaz para el WebService de Liquidación Única Mensual (lechería)"    
+    "Interfaz para el WebService de LiquidaciÃ³n Ãnica Mensual (lecherÃ­a)"    
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'AutorizarLiquidacion', 
                         'CrearLiquidacion',
@@ -127,7 +127,7 @@ class WSLUM(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     LanzarExcepciones = False
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
 
     def inicializar(self):
         BaseWS.inicializar(self)
@@ -146,11 +146,11 @@ class WSLUM(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=30):
-        "Establecer la conexión a los servidores de la AFIP"
+        "Establecer la conexiÃ³n a los servidores de la AFIP"
         # llamo al constructor heredado:
         ok = BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
         if False and ok:        
-            # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
+            # corrijo ubicaciÃ³n del servidor (puerto htttp 80 en el WSDL)
             location = self.client.services['LumService']['ports']['LumEndPoint']['location']
             if location.startswith("http://"):
                 print "Corrigiendo WSDL ...", location,
@@ -189,8 +189,8 @@ class WSLUM(BaseWS):
                          iibb_adquirente=None, domicilio_sede=None,
                          inscripcion_registro_publico=None, 
                          datos_adicionales=None, alicuota_iva=None, **kwargs):
-        "Inicializa internamente los datos de una liquidación para autorizar"
-        # creo el diccionario con los campos generales de la liquidación:
+        "Inicializa internamente los datos de una liquidaciÃ³n para autorizar"
+        # creo el diccionario con los campos generales de la liquidaciÃ³n:
         liq = {'tipoComprobante': tipo_cbte, 'puntoVenta': pto_vta,
                 'nroComprobante': nro_cbte, 'fechaComprobante': fecha, 
                 'periodo': periodo, 'iibbAdquirente': iibb_adquirente, 
@@ -209,7 +209,7 @@ class WSLUM(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarCondicionVenta(self, codigo, descripcion=None, **kwargs):
-        "Agrego una o más condicion de venta a la liq."
+        "Agrego una o mÃ¡s condicion de venta a la liq."
         cond = {'codigo': codigo, 'descripcion': descripcion}
         self.solicitud['liquidacion']['condicionVenta'].append(cond)
         return True
@@ -253,7 +253,7 @@ class WSLUM(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarBalanceLitrosPorcentajesSolidos(self, litros_remitidos, litros_decomisados, 
                                                kg_grasa, kg_proteina, **kwargs):
-        "Agrega balance litros y porcentajes sólidos a la liq. (obligatorio)"
+        "Agrega balance litros y porcentajes sÃ³lidos a la liq. (obligatorio)"
         d = {'litrosRemitidos': litros_remitidos,
              'litrosDecomisados': litros_decomisados,
              'kgGrasa': kg_grasa,
@@ -266,7 +266,7 @@ class WSLUM(BaseWS):
                                               kg_crecimiento_gb, precio_por_kg_crecimiento_gb,
                                               kg_crecimiento_pr, precio_por_kg_crecimiento_pr,
                                                **kwargs):
-        "Agrega balance litros y porcentajes sólidos (mercado interno)"
+        "Agrega balance litros y porcentajes sÃ³lidos (mercado interno)"
         d = {'kgProduccionGB': kg_produccion_gb, 
              'precioPorKgProduccionGB': precio_por_kg_produccion_gb, 
              'kgProduccionPR': kg_produccion_pr, 
@@ -284,7 +284,7 @@ class WSLUM(BaseWS):
                                               kg_crecimiento_gb, precio_por_kg_crecimiento_gb,
                                               kg_crecimiento_pr, precio_por_kg_crecimiento_pr,
                                                **kwargs):
-        "Agrega balance litros y porcentajes sólidos (mercado externo)"
+        "Agrega balance litros y porcentajes sÃ³lidos (mercado externo)"
         d = {'kgProduccionGB': kg_produccion_gb, 
              'precioPorKgProduccionGB': precio_por_kg_produccion_gb, 
              'kgProduccionPR': kg_produccion_pr, 
@@ -298,7 +298,7 @@ class WSLUM(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarBonificacionPenalizacion(self, codigo, detalle, resultado=None, 
                                         porcentaje=None, importe=None, **kwargs):
-        "Agrega la información referente a las bonificaciones o penalizaciones"
+        "Agrega la informaciÃ³n referente a las bonificaciones o penalizaciones"
         ret = dict(codBonificacionPenalizacion=codigo, detalle=detalle,
                    resultado=resultado, porcentajeAAplicar=porcentaje, 
                    importe=importe)
@@ -307,7 +307,7 @@ class WSLUM(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarOtroImpuesto(self, tipo, base_imponible, alicuota, detalle=None):
-        "Agrega la información referente a otros tributos de la liquidación"
+        "Agrega la informaciÃ³n referente a otros tributos de la liquidaciÃ³n"
         trib = dict(tipo=tipo, baseImponible=base_imponible, alicuota=alicuota,
                     detalle=detalle)
         self.solicitud['otroImpuesto'].append(trib)
@@ -315,14 +315,14 @@ class WSLUM(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarRemito(self, nro_remito):
-        "Agrega la información referente a los remitos (multiples)"
+        "Agrega la informaciÃ³n referente a los remitos (multiples)"
         self.solicitud['remito'].append(nro_remito)
         return True
 
 
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
-        "Generar o ajustar una liquidación única y obtener del CAE"
+        "Generar o ajustar una liquidaciÃ³n Ãºnica y obtener del CAE"
         # limpio los elementos que no correspondan por estar vacios:
         for campo in ["bonificacionPenalizacion", "otroImpuesto"]:
             if campo in self.solicitud and not self.solicitud[campo]:
@@ -344,8 +344,8 @@ class WSLUM(BaseWS):
 
 
     def AnalizarLiquidacion(self, liq):
-        "Método interno para analizar la respuesta de AFIP"
-        # proceso los datos básicos de la liquidación (devuelto por consultar):
+        "MÃ©todo interno para analizar la respuesta de AFIP"
+        # proceso los datos bÃ¡sicos de la liquidaciÃ³n (devuelto por consultar):
         if liq:
             cab = liq['encabezado']
             self.CAE = str(cab['cae'])
@@ -362,7 +362,7 @@ class WSLUM(BaseWS):
             self.TotalOtrosImpuestos = tot['totalOtrosImpuestos']
             self.Total = tot['totalLiquidacion']
 
-            # parámetros de salida:
+            # parÃ¡metros de salida:
             self.params_out = dict(
                 tipo_cbte=liq['encabezado']['tipoComprobante'],
                 pto_vta=liq['encabezado']['puntoVenta'],
@@ -428,7 +428,7 @@ class WSLUM(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, tipo_cbte=None, pto_vta=None, nro_cbte=None,
                                    cae=None, cuit_comprador=None, pdf="liq.pdf"):
-        "Consulta una liquidación por No de Comprobante o CAE"
+        "Consulta una liquidaciÃ³n por No de Comprobante o CAE"
         if cae:
             ret = self.client.consultarLiquidacionPorCae(
                         auth={
@@ -465,7 +465,7 @@ class WSLUM(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltimoComprobante(self, tipo_cbte=151, pto_vta=1):
-        "Consulta el último No de Comprobante registrado"
+        "Consulta el Ãºltimo No de Comprobante registrado"
         ret = self.client.consultarUltimoNroComprobantePorPtoVta(
                     auth={
                         'token': self.Token, 'sign': self.Sign,
@@ -512,7 +512,7 @@ class WSLUM(BaseWS):
                     (it['codigo'], it['descripcion']) for it in array]
 
     def ConsultarCondicionesVenta(self, sep="||"):
-        "Retorna un listado de códigos y descripciones de las condiciones de ventas"
+        "Retorna un listado de cÃ³digos y descripciones de las condiciones de ventas"
         ret = self.client.consultarCondicionesVenta(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -527,7 +527,7 @@ class WSLUM(BaseWS):
                     (it['codigo'], it['descripcion']) for it in array]
 
     def ConsultarOtrosImpuestos(self, sep="||"):
-        "Retorna un listado de tributos con código, descripción y signo."
+        "Retorna un listado de tributos con cÃ³digo, descripciÃ³n y signo."
         ret = self.client.consultarOtrosImpuestos(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -542,7 +542,7 @@ class WSLUM(BaseWS):
                     (it['codigo'], it['descripcion']) for it in array]
 
     def ConsultarBonificacionesPenalizaciones(self, sep="||"):
-        "Retorna un listado de bonificaciones/penalizaciones con código y descripción"
+        "Retorna un listado de bonificaciones/penalizaciones con cÃ³digo y descripciÃ³n"
         ret = self.client.consultarBonificacionesPenalizaciones(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -602,7 +602,7 @@ class WSLUM(BaseWS):
             return False
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSLUM.InstallDir = get_install_dir()
 
 
@@ -619,7 +619,7 @@ if __name__ == '__main__':
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                print " * Campo: %-20s PosiciÃ³n: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                     clave, comienzo, longitud, tipo, dec)
                 comienzo += longitud
         sys.exit(0)
@@ -637,7 +637,7 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print "VersiÃ³n: ", __version__
 
         if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
@@ -674,7 +674,7 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
+            print "Usando ConfiguraciÃ³n:"
             print "WSAA_URL:", WSAA_URL
             print "WSLUM_URL:", WSLUM_URL
             print "CACERT", CACERT
@@ -705,7 +705,7 @@ if __name__ == '__main__':
 
             if '--prueba' in sys.argv:
 
-                # Solicitud 1: Alta de liquidación
+                # Solicitud 1: Alta de liquidaciÃ³n
                 wslum.CrearLiquidacion(tipo_cbte=27, pto_vta=1, nro_cbte=1, 
                         fecha="2015-12-31", periodo="2015/12",
                         iibb_adquirente="123456789012345", 
@@ -778,7 +778,7 @@ if __name__ == '__main__':
             
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
-                # usar solo si no está operativo, cargo respuesta:
+                # usar solo si no estÃ¡ operativo, cargo respuesta:
                 wslum.LoadTestXML("tests/xml/wslum_liq_test_pdf_response.xml")
                 import json
                 with open("wslum.json", "w") as f:
@@ -844,7 +844,7 @@ if __name__ == '__main__':
                 pass
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
-                # usar solo si no está operativo, cargo prueba:
+                # usar solo si no estÃ¡ operativo, cargo prueba:
                 wslum.LoadTestXML("tests/xml/wslum_cons_test.xml")
             print "Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte)
             ret = wslum.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte, 
@@ -877,7 +877,7 @@ if __name__ == '__main__':
             print "Errores:", wslum.Errores
             sys.exit(0)
 
-        # Recuperar parámetros:
+        # Recuperar parÃ¡metros:
         
         if '--provincias' in sys.argv:
             ret = wslum.ConsultarProvincias()
@@ -912,7 +912,7 @@ if __name__ == '__main__':
         try:
             print >> sys.stderr, traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
         except:
-            print >> sys.stderr, "Excepción no disponible:", type(e)
+            print >> sys.stderr, "ExcepciÃ³n no disponible:", type(e)
         if DEBUG:
             raise
         sys.exit(5)

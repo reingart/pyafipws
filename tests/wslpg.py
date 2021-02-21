@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Pruebas Liquidación Primaria Electrónica de Granos web service WSLPG (AFIP)"
+"Pruebas LiquidaciÃ³n Primaria ElectrÃ³nica de Granos web service WSLPG (AFIP)"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
@@ -39,7 +39,7 @@ PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
 CACERT = "/home/reingart/pyafipws/afip_root_desa_ca.crt"
 CACHE = "/home/reingart/pyafipws/cache"
 
-# Autenticación:
+# AutenticaciÃ³n:
 wsaa = WSAA()
 tra = wsaa.CreateTRA(service="wslpg")
 cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
@@ -58,7 +58,7 @@ class TestIssues(unittest.TestCase):
         wslpg.Sign = wsaa.Sign                    
                     
     def test_liquidacion(self):
-        "Prueba de autorización (obtener COE) liquidación electrónica de granos"
+        "Prueba de autorizaciÃ³n (obtener COE) liquidaciÃ³n electrÃ³nica de granos"
         wslpg = self.wslpg
         pto_emision = 99
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
@@ -178,7 +178,7 @@ class TestIssues(unittest.TestCase):
         self.assertEqual(wslpg.NroContrato, nro_contrato)
 
     def test_anular(self, coe=None):
-        "Prueba de anulación de una liquidación electrónica de granos"
+        "Prueba de anulaciÃ³n de una liquidaciÃ³n electrÃ³nica de granos"
         wslpg = self.wslpg
         if not coe:
             self.test_liquidacion()                 # autorizo una nueva liq.
@@ -188,12 +188,12 @@ class TestIssues(unittest.TestCase):
         self.assertEqual(wslpg.Resultado, "A")
 
     def test_ajuste_unificado(self):
-        "Prueba de ajuste unificado de una liquidación de granos (WSLPGv1.4)"
+        "Prueba de ajuste unificado de una liquidaciÃ³n de granos (WSLPGv1.4)"
         wslpg = self.wslpg
-        # solicito una liquidación para tener el COE autorizado a ajustar:
+        # solicito una liquidaciÃ³n para tener el COE autorizado a ajustar:
         self.test_liquidacion()
         coe = wslpg.COE
-        # solicito el último nro de orden para la nueva liquidación de ajuste:
+        # solicito el Ãºltimo nro de orden para la nueva liquidaciÃ³n de ajuste:
         pto_emision = 55
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
         self.assertTrue(ok)
@@ -213,7 +213,7 @@ class TestIssues(unittest.TestCase):
                        campania=1213,
                        fecha_cierre='2013-01-13',
                        peso_neto_total_certificado=10000)
-        # creo el ajuste de crédito (ver documentación AFIP)
+        # creo el ajuste de crÃ©dito (ver documentaciÃ³n AFIP)
         wslpg.CrearAjusteCredito(
                 diferencia_peso_neto=1000, diferencia_precio_operacion=100,
                 cod_grado="G2", val_grado=1.0, factor=100,
@@ -237,7 +237,7 @@ class TestIssues(unittest.TestCase):
                                detalle_aclaratorio="Ret IVA",
                                base_calculo=1000,
                                alicuota=10.5, )
-        # creo el ajuste de débito (ver documentación AFIP)
+        # creo el ajuste de dÃ©bito (ver documentaciÃ³n AFIP)
         wslpg.CrearAjusteDebito(
                 diferencia_peso_neto=500, diferencia_precio_operacion=100,
                 cod_grado="G2", val_grado=1.0, factor=100,
@@ -301,19 +301,19 @@ class TestIssues(unittest.TestCase):
             self.assertEqual(wslpg.GetParametro("retenciones", 0, "importe_retencion"), "10.50")
             
         finally:
-            # anulo el ajuste para evitar subsiguiente validación AFIP:
+            # anulo el ajuste para evitar subsiguiente validaciÃ³n AFIP:
             if coe:
                 self.test_anular(coe)
             if coe_ajustado:
-                self.test_anular(coe_ajustado)   # anulo también la liq. orig.
+                self.test_anular(coe_ajustado)   # anulo tambiÃ©n la liq. orig.
         
     def test_ajuste_contrato(self, nro_contrato=27):
-        "Prueba de ajuste por contrato de una liquidación de granos (WSLPGv1.4)"
+        "Prueba de ajuste por contrato de una liquidaciÃ³n de granos (WSLPGv1.4)"
         wslpg = self.wslpg        
-        # solicito una liquidación para tener el COE autorizado a ajustar:
+        # solicito una liquidaciÃ³n para tener el COE autorizado a ajustar:
         self.test_liquidacion_contrato(nro_contrato)
         coe_ajustado = wslpg.COE
-        # solicito el último nro de orden para la nueva liquidación de ajuste:
+        # solicito el Ãºltimo nro de orden para la nueva liquidaciÃ³n de ajuste:
         pto_emision = 55
         ok = wslpg.ConsultarUltNroOrden(pto_emision)
         self.assertTrue(ok)
@@ -397,18 +397,18 @@ class TestIssues(unittest.TestCase):
             self.assertEqual(float(wslpg.GetParametro("deducciones", 0, "importe_deduccion")), 110.50)
         
         finally:
-            # anulo el ajuste para evitar subsiguiente validación AFIP:
+            # anulo el ajuste para evitar subsiguiente validaciÃ³n AFIP:
             # 2105: No puede relacionar la liquidacion con el contrato, porque el contrato tiene un Ajuste realizado.
             # 2106: No puede ajustar el contrato, porque tiene liquidaciones relacionadas con ajuste.
-            # anular primero el ajuste para evitar la validación de AFIP:
-            # 2108: No puede anular la liquidación porque está relacionada a un contrato con ajuste vigente.
+            # anular primero el ajuste para evitar la validaciÃ³n de AFIP:
+            # 2108: No puede anular la liquidaciÃ³n porque estÃ¡ relacionada a un contrato con ajuste vigente.
             if coe:
                 self.test_anular(coe)
             if coe_ajustado:
-                self.test_anular(coe_ajustado)   # anulo también el COE ajustado
+                self.test_anular(coe_ajustado)   # anulo tambiÃ©n el COE ajustado
                     
     def atest_ajuste_papel(self):
-        # deshabilitado ya que el método esta "en estudio" por parte de AFIP
+        # deshabilitado ya que el mÃ©todo esta "en estudio" por parte de AFIP
         wslpg = self.wslpg
         wslpg.CrearAjusteBase(pto_emision=50,
                               nro_orden=1,
@@ -447,11 +447,11 @@ class TestIssues(unittest.TestCase):
         
     def test_asociaciar_coe_contrato(self, nro_contrato=27):
         wslpg = self.wslpg
-        # solicito una liquidación para tener el COE autorizado a asociar:
+        # solicito una liquidaciÃ³n para tener el COE autorizado a asociar:
         self.test_liquidacion()
         coe = wslpg.COE
         try:
-            # Asocio la liquidación con el contrato:
+            # Asocio la liquidaciÃ³n con el contrato:
             wslpg.AsociarLiquidacionAContrato(coe=coe,
                                               nro_contrato=nro_contrato, 
                                               cuit_comprador="20400000000", 
@@ -463,7 +463,7 @@ class TestIssues(unittest.TestCase):
             self.assertEqual(len(wslpg.COE), len("330100013133"))
             self.assertEqual(wslpg.Estado, "AC")
         finally:
-            # anulo el ajuste para evitar subsiguiente validación AFIP:
+            # anulo el ajuste para evitar subsiguiente validaciÃ³n AFIP:
             # 2105: No puede relacionar la liquidacion con el contrato, porque el contrato tiene un Ajuste realizado.
             # 2112: La liquidacion ya esta relacionada al contrato.
             try:
@@ -494,7 +494,7 @@ class TestIssues(unittest.TestCase):
             self.assertIsInstance(wslpg.COE, basestring) 
             self.assertEqual(wslpg.COE, str(coe))
             self.assertEqual(wslpg.Estado, "")  # por el momento no lo devuelve
-            # leo el próximo numero
+            # leo el prÃ³ximo numero
             wslpg.LeerDatosLiquidacion()
 
     def test_consultar_ajuste_unificado(self):

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"M骴ulo de Intefase para archivos de intercambio(Comprobantes Turismo)"
+"M贸dulo de Intefase para archivos de intercambio(Comprobantes Turismo)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
@@ -24,7 +24,7 @@ import sys
 import time
 import traceback
 
-# revisar la instalaci髇 de pyafip.ws:
+# revisar la instalaci贸n de pyafip.ws:
 import wsct
 from utils import SimpleXMLElement, SoapClient, SoapFault, date
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
@@ -37,18 +37,18 @@ XML = False
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
-recet.py: Interfaz de texto para generar Facturas Electr髇ica Turismo
+recet.py: Interfaz de texto para generar Facturas Electr贸nica Turismo
 Copyright (C) 2017 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para informaci髇 adicional sobre garant韆, soporte t閏nico comercial
-e incorporaci髇/distribuci髇 en programas propietarios ver PyAfipWs:
+Para informaci贸n adicional sobre garant铆a, soporte t茅cnico comercial
+e incorporaci贸n/distribuci贸n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-# definici髇 del formato del archivo de intercambio:
+# definici贸n del formato del archivo de intercambio:
 
 TIPOS_REG = '0', '1', '2', '3', '4', '5', '6'
 ENCABEZADO = [
@@ -97,8 +97,8 @@ DETALLE = [
 
 TRIBUTO = [
     ('tipo_reg', 1, N),     # 1: tributo
-    ('tributo_id', 3, A),   # c骴igo de otro tributo
-    ('desc', 100, A),       # descripci髇
+    ('tributo_id', 3, A),   # c贸digo de otro tributo
+    ('desc', 100, A),       # descripci贸n
     ('base_imp', 15, I, 2), 
     ('alic', 15, I, 2),     # no se usa...
     ('importe', 15, I, 2),  
@@ -106,7 +106,7 @@ TRIBUTO = [
 
 IVA = [
     ('tipo_reg', 1, N),     # 2: IVA
-    ('iva_id', 3, A),       # c骴igo de al韈uota
+    ('iva_id', 3, A),       # c贸digo de al铆cuota
     ('base_imp', 15, I, 2), # no se usa... 
     ('importe', 15, I, 2),  
     ]
@@ -286,16 +286,16 @@ if __name__ == "__main__":
         print "Opciones: "
         print " /ayuda: este mensaje"
         print " /dummy: consulta estado de servidores"
-        print " /prueba: genera y autoriza una factura de prueba (no usar en producci髇!)"
-        print " /ult: consulta 鷏timo n鷐ero de comprobante"
-        print " /debug: modo depuraci髇 (detalla y confirma las operaciones)"
+        print " /prueba: genera y autoriza una factura de prueba (no usar en producci贸n!)"
+        print " /ult: consulta 煤ltimo n煤mero de comprobante"
+        print " /debug: modo depuraci贸n (detalla y confirma las operaciones)"
         print " /formato: muestra el formato de los archivos de entrada/salida"
-        print " /get: recupera datos de un comprobante autorizado previamente (verificaci髇)"
-        print " /xml: almacena los requerimientos y respuestas XML (depuraci髇)"
-        print " /dbf: lee y almacena la informaci髇 en tablas DBF"
+        print " /get: recupera datos de un comprobante autorizado previamente (verificaci贸n)"
+        print " /xml: almacena los requerimientos y respuestas XML (depuraci贸n)"
+        print " /dbf: lee y almacena la informaci贸n en tablas DBF"
         print " /json: utiliza el formato JSON para el archivo de entrada"
         print
-        print "Ver rece.ini para par醡etros de configuraci髇 (URL, certificados, etc.)"
+        print "Ver rece.ini para par谩metros de configuraci贸n (URL, certificados, etc.)"
         sys.exit(0)
 
     if '/debug'in sys.argv:
@@ -395,7 +395,7 @@ if __name__ == "__main__":
             sys.exit(0)
             
         if '/prueba' in sys.argv:
-            # generar el archivo de prueba para la pr髕ima factura
+            # generar el archivo de prueba para la pr贸xima factura
             tipo_cbte = 195
             punto_vta = 4000
             cbte_nro = ws.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -407,7 +407,7 @@ if __name__ == "__main__":
             cod_relacion = 3      # Alojamiento Directo a Turista No Residente
             imp_total = "101.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
-            imp_reintegro = -21.00      # validaci髇 AFIP 346
+            imp_reintegro = -21.00      # validaci贸n AFIP 346
             cod_pais = 203
             domicilio = "Rua N.76 km 34.5 Alagoas"
             fecha_cbte = fecha
@@ -433,7 +433,7 @@ if __name__ == "__main__":
             ws.AgregarIva(iva_id, base_imp, importe)
             
             tipo = 0    # Item General
-            cod_tur = 1 # Servicio de hoteler韆 - alojamiento sin desayuno
+            cod_tur = 1 # Servicio de hoteler铆a - alojamiento sin desayuno
             codigo = "T0001"
             ds = "Descripcion del producto P0001"
             iva_id = 5
@@ -442,8 +442,8 @@ if __name__ == "__main__":
             ws.AgregarItem(tipo, cod_tur, codigo, ds, 
                              iva_id, imp_iva, imp_subtotal)
             
-            codigo = 68             # tarjeta de cr閐ito
-            tipo_tarjeta = 99       # otra (ver tabla de par醡etros)
+            codigo = 68             # tarjeta de cr茅dito
+            tipo_tarjeta = 99       # otra (ver tabla de par谩metros)
             numero_tarjeta = "999999"
             swift_code = None
             tipo_cuenta = None

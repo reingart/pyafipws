@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,8 +10,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""M骴ulo para emitir un certificado C2005 en AFIP mediante WebService (SOAP), 
-por parte de los sistemas del agente de retenci髇.
+"""M贸dulo para emitir un certificado C2005 en AFIP mediante WebService (SOAP), 
+por parte de los sistemas del agente de retenci贸n.
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -54,7 +54,7 @@ class WSSIREc2005(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s" % (__version__, HOMO and 'Homologaci髇' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologaci贸n' or '')
     Reprocesar = True  # recuperar automaticamente CAE emitidos
     LanzarExcepciones = LANZAR_EXCEPCIONES
 
@@ -105,10 +105,10 @@ class WSSIREc2005(BaseWS):
                 importe_certificado_original=None,
                 motivo_anulacion=None,
         ):
-        """"M閠odo para emitir el certificado 2005.
+        """"M茅todo para emitir el certificado 2005.
 
         Recibe los datos del certificado que se desea emitir.
-        Establece el Nro y C骴igo de seguridad del certificado emitido.
+        Establece el Nro y C贸digo de seguridad del certificado emitido.
         
         Args:
             **kwargs: campos del certificado a emitir
@@ -157,7 +157,7 @@ class WSSIREc2005(BaseWS):
 
 
 def main():
-    "Funci髇 principal de pruebas (obtener CAE)"
+    "Funci贸n principal de pruebas (obtener CAE)"
     import os, time
     global CONFIG_FILE
 
@@ -245,7 +245,7 @@ def main():
         print sire.XmlResponse
 
 
-# busco el directorio de instalaci髇 (global para que no cambie si usan otra dll)
+# busco el directorio de instalaci贸n (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSSIREc2005.InstallDir = get_install_dir()
 
 

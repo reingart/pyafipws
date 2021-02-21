@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo para manejo de archivos TXT simil SIAP-RECE (Cobol et. al.)"
+"MÃ³dulo para manejo de archivos TXT simil SIAP-RECE (Cobol et. al.)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -22,7 +22,7 @@ CHARSET = 'latin1'
 
 # Formato de entrada/salida similar a SIAP RECE, con agregados
 
-# definición del formato del archivo de intercambio:
+# definiciÃ³n del formato del archivo de intercambio:
 N = 'Numerico'
 A = 'Alfanumerico'
 I = 'Importe'
@@ -126,7 +126,7 @@ CMP_ASOC = [
     ]
 
 IVA = [
-    ('tipo_reg', 1, N), # 4: alícuotas de iva
+    ('tipo_reg', 1, N), # 4: alÃ­cuotas de iva
     ('iva_id', 5, N),
     ('base_imp', (15, 3), I), 
     ('importe', (15, 3), I), 
@@ -342,7 +342,7 @@ def ayuda():
                 longitud, decimales = longitud
             else:
                 decimales = 2
-            print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+            print " * Campo: %-20s PosiciÃ³n: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                 clave, comienzo, longitud, tipo, decimales)
             comienzo += longitud
 

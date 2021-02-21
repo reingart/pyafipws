@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,9 +10,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo para utilizar el servicio web Constatación de Comprobantes de AFIP"
+"MÃ³dulo para utilizar el servicio web ConstataciÃ³n de Comprobantes de AFIP"
 
-# Información adicional y documentación:
+# InformaciÃ³n adicional y documentaciÃ³n:
 # http://www.sistemasagiles.com.ar/trac/wiki/ConstatacionComprobantes
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
@@ -31,22 +31,22 @@ WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL"
 HOMO = False
 CONFIG_FILE = "rece.ini"
 
-# No debería ser necesario modificar nada despues de esta linea
+# No deberÃ­a ser necesario modificar nada despues de esta linea
 
-# definición del formato del archivo de intercambio (sólo para linea de comandos):
+# definiciÃ³n del formato del archivo de intercambio (sÃ³lo para linea de comandos):
 
 ENCABEZADO = [
     ('tipo_reg', 1, A, u"0: encabezado"),
-    ('cbte_modo', 4, A, u"Modalidad de autorización (CAI, CAE, CAEA)"),
+    ('cbte_modo', 4, A, u"Modalidad de autorizaciÃ³n (CAI, CAE, CAEA)"),
     ('cuit_emisor', 11, A, u"CUIT del emisor del comprobante"),
     ('pto_vta', 4, N, u"Punto de Venta del comprobante"),
     ('cbte_tipo', 3, N, u"Tipo de comprobante"),
-    ('cbte_nro', 8, N, u"Número de comprobante"),
+    ('cbte_nro', 8, N, u"NÃºmero de comprobante"),
     ('cbte_fch', 8, A, u"Fecha en formato AAAAMMDD"),
     ('imp_total', 15, I, u"Importe total Double (13 + 2)"),
-    ('cod_autorizacion', 14, A, u"Número de CAI, CAE, CAEA"),
+    ('cod_autorizacion', 14, A, u"NÃºmero de CAI, CAE, CAEA"),
     ('doc_tipo_receptor', 2, A, u"Tipo de documento del receptor"),
-    ('doc_nro_receptor', 20, A, u"N° de documento del receptor"),
+    ('doc_nro_receptor', 20, A, u"NÂ° de documento del receptor"),
     # campos devueltos por AFIP (respuesta)
     ('resultado', 1, A, u"Resultado (A: Aprobado, O: Observado, R: rechazado)"),
     ('fch_proceso', 14, A, u"Fecha y hora de procesamiento"),
@@ -54,7 +54,7 @@ ENCABEZADO = [
 
 OBSERVACION = [
     ('tipo_reg', 1, A, u"O: observaciones devueltas por AFIP"),
-    ('code', 5, N, u"Código de Observación / Error / Evento"),
+    ('code', 5, N, u"CÃ³digo de ObservaciÃ³n / Error / Evento"),
     ('msg', 255, A, u"Mensaje"),
     ]
 
@@ -62,7 +62,7 @@ EVENTO = ERROR = OBSERVACION        # misma estructura, cambia tipo de registro
 
 
 class WSCDC(BaseWS):
-    "Interfaz para el WebService de Constatación de Comprobantes"
+    "Interfaz para el WebService de ConstataciÃ³n de Comprobantes"
     _public_methods_ = ['Conectar', 'SetTicketAcceso', 'DebugLog',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'ConstatarComprobante', 'Dummy',
@@ -88,7 +88,7 @@ class WSCDC(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
 
     def inicializar(self):
         BaseWS.inicializar(self)
@@ -116,7 +116,7 @@ class WSCDC(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
-        "Método Dummy para verificación de funcionamiento de infraestructura"
+        "MÃ©todo Dummy para verificaciÃ³n de funcionamiento de infraestructura"
         result = self.client.ComprobanteDummy()['ComprobanteDummyResult']
         self.AppServerStatus = result['AppServer']
         self.DbServerStatus = result['DbServer']
@@ -129,7 +129,7 @@ class WSCDC(BaseWS):
                              cbte_nro, cbte_fch, imp_total, cod_autorizacion, 
                              doc_tipo_receptor=None, doc_nro_receptor=None,
                              **kwargs):
-        "Método de Constatación de Comprobantes"
+        "MÃ©todo de ConstataciÃ³n de Comprobantes"
         response = self.client.ComprobanteConstatar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
                     CmpReq={
@@ -177,7 +177,7 @@ class WSCDC(BaseWS):
         
     @inicializar_y_capturar_excepciones
     def ConsultarModalidadComprobantes(self, sep="|"):
-        "Recuperador de modalidades de autorización de comprobantes"
+        "Recuperador de modalidades de autorizaciÃ³n de comprobantes"
         response = self.client.ComprobantesModalidadConsultar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
                     )
@@ -188,7 +188,7 @@ class WSCDC(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTipoComprobantes(self, sep="|"):
-        "Recuperador de valores referenciales de códigos de Tipos de comprobante"
+        "Recuperador de valores referenciales de cÃ³digos de Tipos de comprobante"
         response = self.client.ComprobantesTipoConsultar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
                     )
@@ -199,7 +199,7 @@ class WSCDC(BaseWS):
         
     @inicializar_y_capturar_excepciones
     def ConsultarTipoDocumentos(self, sep="|"):
-        "Recuperador de valores referenciales de códigos de Tipos de Documentos"
+        "Recuperador de valores referenciales de cÃ³digos de Tipos de Documentos"
         response = self.client.DocumentosTipoConsultar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
                     )
@@ -210,7 +210,7 @@ class WSCDC(BaseWS):
                          
     @inicializar_y_capturar_excepciones
     def ConsultarTipoOpcionales(self, sep="|"):
-        "Recuperador de valores referenciales de códigos de Tipos de datos Opcionales"
+        "Recuperador de valores referenciales de cÃ³digos de Tipos de datos Opcionales"
         response = self.client.OpcionalesTipoConsultar(
                     Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
                     )
@@ -221,7 +221,7 @@ class WSCDC(BaseWS):
                  for p in res]
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSCDC.InstallDir = get_install_dir()
 
 
@@ -281,7 +281,7 @@ def main():
             comienzo = 1
             print "=== %s ===" % msg
             print "|| %-20s || %8s || %9s || %-12s || %-20s ||" % (
-                "Campo", "Posición", "Longitud", "Tipo", "Descripción")
+                "Campo", "PosiciÃ³n", "Longitud", "Tipo", "DescripciÃ³n")
             for fmt in formato:
                 clave, longitud, tipo, desc = fmt
                 print "|| %-20s || %8d || %9d || %-12s || %-20s ||" % (
@@ -301,7 +301,7 @@ def main():
     url_wsaa = config.get('WSAA', 'URL') if config.has_option('WSAA','URL') else ""
     url_wscdc = config.get('WSCDC', 'URL') if config.has_option('WSCDC','URL') else ""
     
-    # leo configuración de archivos de intercambio
+    # leo configuraciÃ³n de archivos de intercambio
     ENTRADA = config.get('WSCDC','ENTRADA')
     SALIDA = config.get('WSCDC','SALIDA')
     if config.has_section('DBF'):

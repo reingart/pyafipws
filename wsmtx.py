@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,9 +10,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""M骴ulo para obtener c骴igo de autorizaci髇 electr髇ico CAE/CAEA webservice 
-WSMTX de AFIP (Factura Electr髇ica Mercado Interno con codificaci髇 de 
-productos) seg鷑 RG2904 (opci髇 A con detalle) y RG2926/10 (CAE anticipado).
+"""M贸dulo para obtener c贸digo de autorizaci贸n electr贸nico CAE/CAEA webservice 
+WSMTX de AFIP (Factura Electr贸nica Mercado Interno con codificaci贸n de 
+productos) seg煤n RG2904 (opci贸n A con detalle) y RG2926/10 (CAE anticipado).
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -32,7 +32,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 
     
 class WSMTXCA(BaseWS):
-    "Interfaz para el WebService de Factura Electr髇ica Mercado Interno WSMTXCA"
+    "Interfaz para el WebService de Factura Electr贸nica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 'AgregarOpcional',
                         'AgregarPeriodoComprobantesAsociados',
@@ -71,7 +71,7 @@ class WSMTXCA(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s" % (__version__, HOMO and 'Homologaci髇' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologaci贸n' or '')
     Reprocesar = True  # recuperar automaticamente CAE emitidos
     LanzarExcepciones = LANZAR_EXCEPCIONES
     factura = None
@@ -117,7 +117,7 @@ class WSMTXCA(BaseWS):
             **kwargs
             ):
         "Creo un objeto factura (interna)"
-        # Creo una factura electronica de exportaci髇 
+        # Creo una factura electronica de exportaci贸n 
         fact = {'tipo_doc': tipo_doc, 'nro_doc':  nro_doc,
                 'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
                 'cbt_desde': cbt_desde, 'cbt_hasta': cbt_hasta,
@@ -165,7 +165,7 @@ class WSMTXCA(BaseWS):
         return True
 
     def AgregarPeriodoComprobantesAsociados(self, fecha_desde=None, fecha_hasta=None, **kwargs):
-        "Agrego el per韉o de comprobante asociado a una factura (interna)"
+        "Agrego el per铆do de comprobante asociado a una factura (interna)"
         p_cmp_asoc = {
             'fecha_desde': fecha_desde,
             'fecha_hasta': fecha_hasta,
@@ -358,7 +358,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AutorizarAjusteIVA(self):
-        "Env韆 la informaci髇 del comprobante de ajuste de IVA que desea autorizar"
+        "Env铆a la informaci贸n del comprobante de ajuste de IVA que desea autorizar"
         f = self.factura
         # contruyo la estructura a convertir en XML:
         fact = {
@@ -447,7 +447,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SolicitarCAEA(self, periodo, orden):
-        "Obtener un CAEA y su respectivo per韔do de vigencia"
+        "Obtener un CAEA y su respectivo per铆odo de vigencia"
         ret = self.client.solicitarCAEA(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             solicitudCAEA = {
@@ -471,7 +471,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCAEA(self, periodo=None, orden=None, caea=None):
-        "M閠odo de consulta de CAEA"
+        "M茅todo de consulta de CAEA"
         if periodo and orden:
             anio, mes = int(periodo[0:4]), int(periodo[4:6])
             if int(orden)==1:
@@ -517,7 +517,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCAEAEntreFechas(self, fecha_desde, fecha_hasta):
-        "M閠odo de consulta de CAEA"
+        "M茅todo de consulta de CAEA"
 
         ret = self.client.consultarCAEAEntreFechas(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
@@ -534,7 +534,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def InformarComprobanteCAEA(self):
-        "Env韆 la informaci髇 del comprobante emitido y asociado a un CAEA"
+        "Env铆a la informaci贸n del comprobante emitido y asociado a un CAEA"
         f = self.factura
         # contruyo la estructura a convertir en XML:
         fact = {
@@ -596,7 +596,7 @@ class WSMTXCA(BaseWS):
                 }} for dato in f['opcionales']] or None,
             }
                 
-        # fecha de vencimiento opcional (igual al 鷏timo d韆 de vigencia del CAEA)
+        # fecha de vencimiento opcional (igual al 煤ltimo d铆a de vigencia del CAEA)
         if 'fch_venc_cae' in f:
             fact['fechaVencimiento'] =  f['fch_venc_cae']
 
@@ -650,7 +650,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def InformarAjusteIVACAEA(self):
-        "Env韆 la informaci髇 del comprobante de ajuste de IVA emitidos"
+        "Env铆a la informaci贸n del comprobante de ajuste de IVA emitidos"
         f = self.factura
         # contruyo la estructura a convertir en XML:
         fact = {
@@ -701,7 +701,7 @@ class WSMTXCA(BaseWS):
                 }} for it in f['detalles']] or None,
             }
                 
-        # fecha de vencimiento opcional (igual al 鷏timo d韆 de vigencia del CAEA)
+        # fecha de vencimiento opcional (igual al 煤ltimo d铆a de vigencia del CAEA)
         if 'fch_venc_cae' in f:
             fact['fechaVencimiento'] =  f['fch_venc_cae']
             
@@ -878,7 +878,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposComprobante(self):
-        "Este m閠odo permite consultar los tipos de comprobantes habilitados en este WS"
+        "Este m茅todo permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarTiposComprobante(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -895,7 +895,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarAlicuotasIVA(self):
-        "Este m閠odo permite consultar los tipos de comprobantes habilitados en este WS"
+        "Este m茅todo permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarAlicuotasIVA(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -904,7 +904,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCondicionesIVA(self):
-        "Este m閠odo permite consultar los tipos de comprobantes habilitados en este WS"
+        "Este m茅todo permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarCondicionesIVA(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -912,7 +912,7 @@ class WSMTXCA(BaseWS):
                  for p in ret['arrayCondicionesIVA']]
     @inicializar_y_capturar_excepciones
     def ConsultarMonedas(self):
-        "Este m閠odo permite consultar los tipos de comprobantes habilitados en este WS"
+        "Este m茅todo permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarMonedas(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -921,7 +921,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarUnidadesMedida(self):
-        "Este m閠odo permite consultar los tipos de comprobantes habilitados en este WS"
+        "Este m茅todo permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarUnidadesMedida(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -930,7 +930,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposTributo(self):
-        "Este m閠odo permite consultar los tipos de comprobantes habilitados en este WS"
+        "Este m茅todo permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarTiposTributo(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -939,7 +939,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposDatosAdicionales(self):
-        "Este m閠odo permite consultar los tipos de datos adicionales."
+        "Este m茅todo permite consultar los tipos de datos adicionales."
         ret = self.client.consultarTiposDatosAdicionales(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -948,7 +948,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCotizacionMoneda(self, moneda_id):
-        "Este m閠odo permite consultar los tipos de comprobantes habilitados en este WS"
+        "Este m茅todo permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarCotizacionMoneda(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             codigoMoneda=moneda_id,
@@ -959,7 +959,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarPuntosVentaCAE(self, fmt="%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s"):
-        "Este m閠odo permite consultar los puntos de venta habilitados para CAE en este WS"
+        "Este m茅todo permite consultar los puntos de venta habilitados para CAE en este WS"
         res = self.client.consultarPuntosVentaCAE(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -973,7 +973,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarPuntosVentaCAEA(self, fmt="%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s"):
-        "Este m閠odo permite consultar los puntos de venta habilitados para CAEA en este WS"
+        "Este m茅todo permite consultar los puntos de venta habilitados para CAEA en este WS"
         res = self.client.consultarPuntosVentaCAEA(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             )
@@ -987,7 +987,7 @@ class WSMTXCA(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarPtosVtaCAEANoInformados(self, caea):
-        "Este m閠odo permite  consultar que puntos de venta a鷑 no fueron informados para  un  CAEA determinado."
+        "Este m茅todo permite  consultar que puntos de venta a煤n no fueron informados para  un  CAEA determinado."
         ret = self.client.consultarPtosVtaCAEANoInformados(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             CAEA=caea,
@@ -998,7 +998,7 @@ class WSMTXCA(BaseWS):
 
 
 def main():
-    "Funci髇 principal de pruebas (obtener CAE)"
+    "Funci贸n principal de pruebas (obtener CAE)"
     import os, time
 
     DEBUG = '--debug' in sys.argv
@@ -1039,7 +1039,7 @@ def main():
             imp_total = "122.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "1.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
-            # Fechas del per韔do del servicio facturado (solo si concepto = 1?)
+            # Fechas del per铆odo del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
@@ -1091,11 +1091,11 @@ def main():
                 # ejemplo descuento (sin precio unitario)
                 wsmtxca.AgregarItem(None, None, None, 'bonificacion', 
                                     None, 99, None, None, 5, -21, -121)
-                # ejemplo item solo descripci髇:                
+                # ejemplo item solo descripci贸n:                
                 #wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, 1, umed, 
                 #                    0, 0, iva_id, 0, 0)
             
-            # datos de Factura de Cr閐ito Electr髇ica MiPyMEs (FCE):
+            # datos de Factura de Cr茅dito Electr贸nica MiPyMEs (FCE):
             if '--fce' in sys.argv:
                 wsmtxca.AgregarOpcional(21, "2850590940090418135201")  # CBU
 
@@ -1153,7 +1153,7 @@ def main():
             imp_total = "21.00"; imp_tot_conc = "0.00"; imp_neto = None
             imp_trib = "0.00"; imp_op_ex = "0.00"; imp_subtotal = "0.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
-            # Fechas del per韔do del servicio facturado (solo si concepto = 1?)
+            # Fechas del per铆odo del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
@@ -1248,7 +1248,7 @@ def main():
             print "fch_proceso:", wsmtxca.FchProceso
         
 
-# busco el directorio de instalaci髇 (global para que no cambie si usan otra dll)
+# busco el directorio de instalaci贸n (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSMTXCA.InstallDir = get_install_dir()
 
 

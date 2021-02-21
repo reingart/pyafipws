@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Módulo de Intefase para archivos de texto (bono fiscal version 1)"
+"MÃ³dulo de Intefase para archivos de texto (bono fiscal version 1)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009 Mariano Reingart"
@@ -23,7 +23,7 @@ import sys
 import time
 import traceback
 
-# revisar la instalación de pyafip.ws:
+# revisar la instalaciÃ³n de pyafip.ws:
 import wsaa, wsbfev1
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
@@ -33,18 +33,18 @@ XML = False
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
-receb.py: Interfaz de texto para generar Facturas Electrónicas Bienes de Capital
+receb.py: Interfaz de texto para generar Facturas ElectrÃ³nicas Bienes de Capital
 Copyright (C) 2008/2009 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para información adicional sobre garantía, soporte técnico comercial
-e incorporación/distribución en programas propietarios ver PyAfipWs:
+Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
+e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-# definición del formato del archivo de intercambio:
+# definiciÃ³n del formato del archivo de intercambio:
 N = 'Numerico'
 A = 'Alfanumerico'
 I = 'Importe'
@@ -120,7 +120,7 @@ def escribir(dic, formato):
 
 
 def autorizar(ws, entrada, salida):
-    # recupero el último número de transacción
+    # recupero el Ãºltimo nÃºmero de transacciÃ³n
     ##id = wsbfe.ultnro(client, token, sign, cuit)
 
    
@@ -143,8 +143,8 @@ def autorizar(ws, entrada, salida):
 
     if isinstance(encabezado['id'], basestring) and not encabezado['id'].strip():
         # TODO: habria que leer y/o grabar el id en el archivo
-        ##id += 1 # incremento el nº de transacción 
-        # Por el momento, el id se calcula con el tipo, pv y nº de comprobant
+        ##id += 1 # incremento el nÂº de transacciÃ³n 
+        # Por el momento, el id se calcula con el tipo, pv y nÂº de comprobant
         i = long(encabezado['cbte_nro'])
         i += (int(encabezado['cbte_nro'])*10**4 + int(encabezado['punto_vta']))*10**8
         encabezado['id'] = i
@@ -209,16 +209,16 @@ if __name__ == "__main__":
         print "Opciones: "
         print " /ayuda: este mensaje"
         print " /dummy: consulta estado de servidores"
-        print " /prueba: genera y autoriza una factura de prueba (no usar en producción!)"
-        print " /ult: consulta último número de comprobante"
-        print " /id: consulta último ID"
-        print " /debug: modo depuración (detalla y confirma las operaciones)"
+        print " /prueba: genera y autoriza una factura de prueba (no usar en producciÃ³n!)"
+        print " /ult: consulta Ãºltimo nÃºmero de comprobante"
+        print " /id: consulta Ãºltimo ID"
+        print " /debug: modo depuraciÃ³n (detalla y confirma las operaciones)"
         print " /formato: muestra el formato de los archivos de entrada/salida"
-        print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
-        print " /xml: almacena los requerimientos y respuestas XML (depuración)"
-        print " /dbf: lee y almacena la información en tablas DBF"
+        print " /get: recupera datos de un comprobante autorizado previamente (verificaciÃ³n)"
+        print " /xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)"
+        print " /dbf: lee y almacena la informaciÃ³n en tablas DBF"
         print
-        print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
+        print "Ver rece.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
         sys.exit(0)
 
     if '/debug'in sys.argv:
@@ -272,7 +272,7 @@ if __name__ == "__main__":
                 comienzo = 1
                 print "== %s ==" % msg
                 for (clave, longitud, tipo) in formato:
-                    print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s" % (
+                    print " * Campo: %-20s PosiciÃ³n: %3d Longitud: %4d Tipo: %s" % (
                         clave, comienzo, longitud, tipo)
                     comienzo += longitud
             sys.exit(0)
@@ -287,7 +287,7 @@ if __name__ == "__main__":
 
 
         if '/prueba' in sys.argv or False:
-            # generar el archivo de prueba para la próxima factura
+            # generar el archivo de prueba para la prÃ³xima factura
             fecha = datetime.datetime.now().strftime("%Y%m%d")
             tipo_cbte = 1
             punto_vta = 2

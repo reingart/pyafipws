@@ -10,8 +10,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para obtener Código de Trazabilidad de Granos
-del web service WSCTG versión 4.0 de AFIP (RG3593/14)
+"""MÃ³dulo para obtener CÃ³digo de Trazabilidad de Granos
+del web service WSCTG versiÃ³n 4.0 de AFIP (RG3593/14)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -20,15 +20,15 @@ __license__ = "LGPL 3.0"
 __version__ = "1.14e"
 
 LICENCIA = """
-wsctg.py: Interfaz para generar Código de Trazabilidad de Granos AFIP v1.1
+wsctg.py: Interfaz para generar CÃ³digo de Trazabilidad de Granos AFIP v1.1
 Copyright (C) 2014-2015 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CodigoTrazabilidadGranos
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para información adicional sobre garantía, soporte técnico comercial
-e incorporación/distribución en programas propietarios ver PyAfipWs:
+Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
+e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -36,19 +36,19 @@ AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
-  --debug: modo depuración (detalla y confirma las operaciones)
+  --debug: modo depuraciÃ³n (detalla y confirma las operaciones)
   --formato: muestra el formato de los archivos de entrada/salida
-  --prueba: genera y autoriza una CTG de prueba (no usar en producción!)
-  --xml: almacena los requerimientos y respuestas XML (depuración)
+  --prueba: genera y autoriza una CTG de prueba (no usar en producciÃ³n!)
+  --xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)
 
   --dummy: consulta estado de servidores
-  --solicitar: obtiene el CTG (según archivo de entrada en TXT o CSV)
-  --confirmar: confirma el CTG (según archivo de entrada en TXT o CSV)
+  --solicitar: obtiene el CTG (segÃºn archivo de entrada en TXT o CSV)
+  --confirmar: confirma el CTG (segÃºn archivo de entrada en TXT o CSV)
   --anular: anula el CTG
   --rechazar: permite al destino rechazar el CTG
   --confirmar_arribo: confirma el arribo de un CTG
   --confirmar_definitivo: confirma el arribo definitivo de un CTG
-  --regresar_a_origen_rechazado: tomar la acción de "Regresar a Origen"
+  --regresar_a_origen_rechazado: tomar la acciÃ³n de "Regresar a Origen"
   --cambiar_destino_destinatario_rechazado: "Cambio de Destino y Destinatario"
 
   --consultar: consulta las CTG generadas
@@ -64,7 +64,7 @@ Opciones:
   --especies: obtiene el listado de especies
   --cosechas: obtiene el listado de cosechas
 
-Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
+Ver wsctg.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
@@ -77,7 +77,7 @@ import utils
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
-# constantes de configuración (homologación):
+# constantes de configuraciÃ³n (homologaciÃ³n):
 
 WSDL = "https://fwshomo.afip.gov.ar/wsctg/services/CTGService_v4.0?wsdl"
 
@@ -86,7 +86,7 @@ XML = False
 CONFIG_FILE = "wsctg.ini"
 HOMO = False
 
-# definición del formato del archivo de intercambio:
+# definiciÃ³n del formato del archivo de intercambio:
 
 ENCABEZADO = [
     # datos enviados
@@ -139,7 +139,7 @@ ENCABEZADO = [
 
 
 class WSCTG(BaseWS):
-    "Interfaz para el WebService de Código de Trazabilidad de Granos (Version 3)"    
+    "Interfaz para el WebService de CÃ³digo de Trazabilidad de Granos (Version 3)"    
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'SolicitarCTGInicial', 'SolicitarCTGDatoPendiente',
                         'ConfirmarArribo', 'ConfirmarDefinitivo',
@@ -176,11 +176,11 @@ class WSCTG(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     LanzarExcepciones = False
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
 
     def Conectar(self, *args, **kwargs):
         ret = BaseWS.Conectar(self, *args, **kwargs)
-        # corregir descripción de servicio WSDL publicado por AFIP
+        # corregir descripciÃ³n de servicio WSDL publicado por AFIP
         # kmARecorrer -> kmRecorridos (ConsultarDetalleCTG) 
         port = self.client.services['CTGService_v4.0']['ports']['CTGServiceHttpSoap20Endpoint']
         msg = port['operations']['consultarDetalleCTG']['output']['consultarDetalleCTGResponse']
@@ -228,7 +228,7 @@ class WSCTG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnularCTG(self, carta_porte, ctg):
-        "Anular el CTG si se creó el mismo por error"
+        "Anular el CTG si se creÃ³ el mismo por error"
         response = self.client.anularCTG(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -246,7 +246,7 @@ class WSCTG(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def RechazarCTG(self, carta_porte, ctg, motivo):
-        "El Destino puede rechazar el CTG a través de la siguiente operatoria"
+        "El Destino puede rechazar el CTG a travÃ©s de la siguiente operatoria"
         response = self.client.rechazarCTG(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -273,7 +273,7 @@ class WSCTG(BaseWS):
         turno=None,
         **kwargs):
         "Solicitar CTG Desde el Inicio"
-        # ajusto parámetros según validaciones de AFIP:
+        # ajusto parÃ¡metros segÃºn validaciones de AFIP:
         if not cuit_canjeador or int(cuit_canjeador) == 0:
             cuit_canjeador = None         # nulo
         if not cuit_corredor or int(cuit_corredor) == 0:
@@ -327,7 +327,7 @@ class WSCTG(BaseWS):
     def SolicitarCTGDatoPendiente(self, numero_carta_de_porte, cant_horas, 
         patente_vehiculo, cuit_transportista, patente=None, turno=None):
         "Solicitud que permite completar los datos faltantes de un Pre-CTG "
-        "generado anteriormente a través de la operación solicitarCTGInicial"
+        "generado anteriormente a travÃ©s de la operaciÃ³n solicitarCTGInicial"
         ret = self.client.solicitarCTGDatoPendiente(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -438,7 +438,7 @@ class WSCTG(BaseWS):
                             cuit_destino=None, cuit_destinatario=None,
                             km_a_recorrer=None, turno=None,
                             **kwargs):
-        "Tomar acción de Cambio de Destino y Destinatario para CTG rechazado"
+        "Tomar acciÃ³n de Cambio de Destino y Destinatario para CTG rechazado"
         ret = self.client.cambiarDestinoDestinatarioCTGRechazado(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -466,7 +466,7 @@ class WSCTG(BaseWS):
     def ConsultarCTG(self, numero_carta_de_porte=None, numero_ctg=None, 
                      patente=None, cuit_solicitante=None, cuit_destino=None,
                      fecha_emision_desde=None, fecha_emision_hasta=None):
-        "Operación que realiza consulta de CTGs según el criterio ingresado."
+        "OperaciÃ³n que realiza consulta de CTGs segÃºn el criterio ingresado."
         ret = self.client.consultarCTG(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -547,7 +547,7 @@ class WSCTG(BaseWS):
         "Recorro los datos devueltos y devuelvo el primero si existe"
                 
         if clave and self.DatosCTG:
-            # obtengo la lista por estado pendiente de resolución ("array")
+            # obtengo la lista por estado pendiente de resoluciÃ³n ("array")
             datos = self.DatosCTG[clave]
         else:
             # uso directamente la lista devuelta por la consulta
@@ -593,7 +593,7 @@ class WSCTG(BaseWS):
                      patente=None, cuit_solicitante=None, cuit_destino=None,
                      fecha_emision_desde=None, fecha_emision_hasta=None,
                      archivo="planilla.xls"):
-        "Operación que realiza consulta de CTGs, graba una planilla xls"
+        "OperaciÃ³n que realiza consulta de CTGs, graba una planilla xls"
         ret = self.client.consultarCTGExcel(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -616,7 +616,7 @@ class WSCTG(BaseWS):
         
     @inicializar_y_capturar_excepciones
     def ConsultarDetalleCTG(self, numero_ctg=None):
-        "Operación mostrar este detalle de la  solicitud de CTG seleccionada."
+        "OperaciÃ³n mostrar este detalle de la  solicitud de CTG seleccionada."
         ret = self.client.consultarDetalleCTG(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -639,7 +639,7 @@ class WSCTG(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarConstanciaCTGPDF(self, numero_ctg=None, 
                                         archivo="constancia.pdf"):
-        "Operación Consultar Constancia de CTG en PDF"
+        "OperaciÃ³n Consultar Constancia de CTG en PDF"
         ret = self.client.consultarConstanciaCTGPDF(request=dict(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -784,7 +784,7 @@ class WSCTGv2(BaseWS):
     _reg_clsid_ = "{ACDEFB8A-34E1-48CF-94E8-6AF6ADA0717A}"
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
 elif sys.frozen=='dll':
@@ -808,7 +808,7 @@ if __name__ == '__main__':
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                print " * Campo: %-20s PosiciÃ³n: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                     clave, comienzo, longitud, tipo, dec)
                 comienzo += longitud
         sys.exit(0)
@@ -816,7 +816,7 @@ if __name__ == '__main__':
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSCTG)
-        # Compatibilidad hacia atrás:
+        # Compatibilidad hacia atrÃ¡s:
         win32com.server.register.UseCommandLine(WSCTGv2)
         sys.exit(0)
 
@@ -826,12 +826,12 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print "VersiÃ³n: ", __version__
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuración:", arg
+            print "Usando configuraciÃ³n:", arg
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -861,7 +861,7 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
+            print "Usando ConfiguraciÃ³n:"
             print "wsaa_url:", wsaa_url
             print "wsctg_url:", wsctg_url
 
@@ -922,7 +922,7 @@ if __name__ == '__main__':
             sys.exit(0)
 
 
-        # Recuperar parámetros:
+        # Recuperar parÃ¡metros:
         
         if '--provincias' in sys.argv:
             ret = wsctg.ConsultarProvincias()

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"M�dulo para generar c�digos QR"
+"Módulo para generar códigos QR"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -35,7 +35,7 @@ QiOiJFIiwiY29kQXV0Ijo3MDQxNzA1NDM2NzQ3Nn0=""".replace("\n", "")
 
 
 class PyQR:
-    "Interfaz para generar Codigo QR de Factura Electr�nica"
+    "Interfaz para generar Codigo QR de Factura Electrï¿½nica"
     _public_methods_ = ['GenerarImagen', 'CrearArchivo',
                         ]
     _public_attrs_ = ['Version', 'Excepcion', 'Traceback', "URL",
@@ -77,7 +77,7 @@ class PyQR:
                       tipo_doc_rec=80, nro_doc_rec=20000000001,
                       tipo_cod_aut="E", cod_aut=70417054367476,
                       ):
-        "Generar una im�gen con el c�digo QR"
+        "Generar una imágen con el código QR"
         # basado en: https://www.afip.gob.ar/fe/qr/especificaciones.asp
         datos_cmp = {
             "ver": int(ver),
@@ -95,7 +95,7 @@ class PyQR:
             "codAut": int(cod_aut),
             }
 
-        # convertir a representaci�n json y codificar en base64:
+        # convertir a representación json y codificar en base64:
         datos_cmp_json = json.dumps(datos_cmp)
         url = self.URL % (base64.b64encode(datos_cmp_json))
 

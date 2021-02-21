@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,9 +10,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"MÛdulo Trazabilidad de Productos Veterinarios SENASA ResoluciÛn 369/2013"
+"M√≥dulo Trazabilidad de Productos Veterinarios SENASA Resoluci√≥n 369/2013"
 
-# InformaciÛn adicional y documentaciÛn:
+# Informaci√≥n adicional y documentaci√≥n:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosVeterinarios
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -117,8 +117,8 @@ TRANSACCIONES = [
 
 # Formato para Errores
 ERRORES = [
-    ('_c_error', 4, A),                 # cÛdigo
-    ('_d_error', 250, A),               # descripciÛn
+    ('_c_error', 4, A),                 # c√≥digo
+    ('_d_error', 250, A),               # descripci√≥n
     ]
 
 
@@ -148,7 +148,7 @@ class TrazaVet(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s %s" % (__version__, HOMO and 'HomologaciÛn' or '', 
+    Version = "%s %s %s" % (__version__, HOMO and 'Homologaci√≥n' or '', 
                             pysimplesoap.client.__version__)
 
     def __init__(self, reintentos=1):
@@ -172,13 +172,13 @@ class TrazaVet(BaseWS):
         self.Resultado = ret.get('resultado')
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
-        # Conecto usando el mÈtodo estandard:
+        # Conecto usando el m√©todo estandard:
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
                               soap_server="jetty")
         if ok:
             # si el archivo es local, asumo que ya esta corregido:
             if not self.wsdl.startswith("file"):
-                # corrijo ubicaciÛn del servidor (localhost:59050 en el WSDL)
+                # corrijo ubicaci√≥n del servidor (localhost:59050 en el WSDL)
                 location = self.wsdl[:-5]
                 ws = self.client.services['IWebServiceSenasa']
                 ws['ports']['IWebServiceSenasaPort']['location'] = location
@@ -205,8 +205,8 @@ class TrazaVet(BaseWS):
                         direccion=None, numero=None, localidad=None, 
                         provincia=None, n_postal=None, cuit=None
                          ):
-        "Realiza el registro de una transacciÛn de productos fitosanitarios. "
-        # creo los par·metros para esta llamada
+        "Realiza el registro de una transacci√≥n de productos fitosanitarios. "
+        # creo los par√°metros para esta llamada
         params = {  'gln_origen': gln_origen,
                     'gln_destino': gln_destino,
                     'f_operacion': f_operacion,
@@ -246,7 +246,7 @@ class TrazaVet(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendCancelaTransac(self, usuario, password, codigo_transaccion):
-        " Realiza la cancelaciÛn de una transacciÛn"
+        " Realiza la cancelaci√≥n de una transacci√≥n"
         res = self.client.sendCancelaTransac(
             arg0=codigo_transaccion, 
             arg1=usuario, 
@@ -259,7 +259,7 @@ class TrazaVet(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendConfirmaTransacc(self, usuario, password, p_ids_transac, f_operacion, n_cantidad=None):
-        "Confirma la recepciÛn de un medicamento"
+        "Confirma la recepci√≥n de un medicamento"
         res = self.client.sendConfirmaTransacc(
             arg0=usuario, 
             arg1=password,
@@ -274,7 +274,7 @@ class TrazaVet(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def SendAlertaTransacc(self, usuario, password, p_ids_transac_ws):
-        "Alerta un medicamento, acciÛn contraria a ìconfirmar la transacciÛnî."
+        "Alerta un medicamento, acci√≥n contraria a ¬ìconfirmar la transacci√≥n¬î."
         res = self.client.sendAlertaTransacc(
             arg0=usuario, 
             arg1=password,
@@ -294,7 +294,7 @@ class TrazaVet(BaseWS):
                 gtin_elemento=None, n_lote=None, n_serie=None,
                 n_remito_factura=None,
                 ):
-        "Trae un listado de las transacciones que no est·n confirmadas"
+        "Trae un listado de las transacciones que no est√°n confirmadas"
 
         # preparo los parametros de entrada opcionales:
         kwargs = {}
@@ -348,7 +348,7 @@ class TrazaVet(BaseWS):
             self.params_out = self.TransaccionSenasa.pop(0)
             return True
         else:
-            # limpio los par·metros
+            # limpio los par√°metros
             self.params_out = {}
             return False
 
@@ -367,11 +367,11 @@ class TrazaVet(BaseWS):
         self.Username = username
 
     def SetPassword(self, password):
-        "Establezco la contraseÒa"        
+        "Establezco la contrase√±a"        
         self.Password = password
 
     def GetCodigoTransaccion(self):
-        "Devuelvo el cÛdigo de transacciÛn"        
+        "Devuelvo el c√≥digo de transacci√≥n"        
         return self.CodigoTransaccion
 
     def GetResultado(self):
@@ -380,7 +380,7 @@ class TrazaVet(BaseWS):
 
 
 def main():
-    "FunciÛn principal de pruebas (obtener CAE)"
+    "Funci√≥n principal de pruebas (obtener CAE)"
     import os, time, sys
     global WSDL, LOCATION
 
@@ -521,12 +521,12 @@ def main():
             if len(argv)>10:
                 ws.SaveTransaccion(*argv[1:])
             else:
-                print "ERROR: no se indicaron todos los par·metros requeridos"
+                print "ERROR: no se indicaron todos los par√°metros requeridos"
         elif transaccion_dto:
             try:
                 usuario, password = argv[-2:]
             except:
-                print "ADVERTENCIA: no se indico par·metros usuario y passoword"
+                print "ADVERTENCIA: no se indico par√°metros usuario y passoword"
                 usuario, password = "senasaws", "Clave2013"
             for i, dto in enumerate(transaccion_dto):
                 print "Procesando registro", i
@@ -568,7 +568,7 @@ def main():
             archivo.close()
 
 
-# busco el directorio de instalaciÛn (global para que no cambie si usan otra dll)
+# busco el directorio de instalaci√≥n (global para que no cambie si usan otra dll)
 INSTALL_DIR = TrazaVet.InstallDir = get_install_dir()
 
 

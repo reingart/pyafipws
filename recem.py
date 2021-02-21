@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"M骴ulo de Intefase para archivos de texto (MATRIX mercado interno con detalle)"
+"M贸dulo de Intefase para archivos de texto (MATRIX mercado interno con detalle)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -23,7 +23,7 @@ import sys
 import time
 import traceback
 
-# revisar la instalaci髇 de pyafip.ws:
+# revisar la instalaci贸n de pyafip.ws:
 import wsmtx
 from utils import SimpleXMLElement, SoapClient, SoapFault, date
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
@@ -36,18 +36,18 @@ XML = False
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
-recem.py: Interfaz de texto para generar Facturas Electr髇ica MATRIX
+recem.py: Interfaz de texto para generar Facturas Electr贸nica MATRIX
 Copyright (C) 2010 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para informaci髇 adicional sobre garant韆, soporte t閏nico comercial
-e incorporaci髇/distribuci髇 en programas propietarios ver PyAfipWs:
+Para informaci贸n adicional sobre garant铆a, soporte t茅cnico comercial
+e incorporaci贸n/distribuci贸n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-# definici髇 del formato del archivo de intercambio:
+# definici贸n del formato del archivo de intercambio:
 
 if not '--pyfepdf' in sys.argv:
     TIPOS_REG = '0', '1', '2', '3', '4', '5', '6'
@@ -89,9 +89,9 @@ if not '--pyfepdf' in sys.argv:
         ('u_mtx', 10, N),
         ('cod_mtx', 30, A),
         ('codigo', 30, A),
-        ('qty', 15, I, 3),      # deber韆 ser 18,6 pero el DBF no lo soporta
+        ('qty', 15, I, 3),      # deber铆a ser 18,6 pero el DBF no lo soporta
         ('umed', 3, N),
-        ('precio', 15, I, 3),   # deber韆 ser 18,6 pero el DBF no lo soporta
+        ('precio', 15, I, 3),   # deber铆a ser 18,6 pero el DBF no lo soporta
         ('bonif', 15, I, 3),
         ('iva_id', 3, N),
         ('imp_iva', 15, I, 2),
@@ -101,8 +101,8 @@ if not '--pyfepdf' in sys.argv:
 
     TRIBUTO = [
         ('tipo_reg', 1, N),     # 1: tributo
-        ('tributo_id', 3, A),   # c骴igo de otro tributo
-        ('desc', 100, A),       # descripci髇
+        ('tributo_id', 3, A),   # c贸digo de otro tributo
+        ('desc', 100, A),       # descripci贸n
         ('base_imp', 15, I, 2), 
         ('alic', 15, I, 2),     # no se usa...
         ('importe', 15, I, 2),  
@@ -110,7 +110,7 @@ if not '--pyfepdf' in sys.argv:
 
     IVA = [
         ('tipo_reg', 1, N),     # 2: IVA
-        ('iva_id', 3, A),       # c骴igo de al韈uota
+        ('iva_id', 3, A),       # c贸digo de al铆cuota
         ('base_imp', 15, I, 2), # no se usa... 
         ('importe', 15, I, 2),  
         ]
@@ -277,15 +277,15 @@ if __name__ == "__main__":
         print "Opciones: "
         print " /ayuda: este mensaje"
         print " /dummy: consulta estado de servidores"
-        print " /prueba: genera y autoriza una factura de prueba (no usar en producci髇!)"
-        print " /ult: consulta 鷏timo n鷐ero de comprobante"
-        print " /debug: modo depuraci髇 (detalla y confirma las operaciones)"
+        print " /prueba: genera y autoriza una factura de prueba (no usar en producci贸n!)"
+        print " /ult: consulta 煤ltimo n煤mero de comprobante"
+        print " /debug: modo depuraci贸n (detalla y confirma las operaciones)"
         print " /formato: muestra el formato de los archivos de entrada/salida"
-        print " /get: recupera datos de un comprobante autorizado previamente (verificaci髇)"
-        print " /xml: almacena los requerimientos y respuestas XML (depuraci髇)"
-        print " /dbf: lee y almacena la informaci髇 en tablas DBF"
+        print " /get: recupera datos de un comprobante autorizado previamente (verificaci贸n)"
+        print " /xml: almacena los requerimientos y respuestas XML (depuraci贸n)"
+        print " /dbf: lee y almacena la informaci贸n en tablas DBF"
         print
-        print "Ver rece.ini para par醡etros de configuraci髇 (URL, certificados, etc.)"
+        print "Ver rece.ini para par谩metros de configuraci贸n (URL, certificados, etc.)"
         sys.exit(0)
 
     if '/debug'in sys.argv:
@@ -359,7 +359,7 @@ if __name__ == "__main__":
                         longitud, dec = longitud
                     else:
                         dec = len(fmt)>3 and fmt[3] or 2
-                    print " * Campo: %-20s Posici髇: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    print " * Campo: %-20s Posici贸n: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                         clave, comienzo, longitud, tipo, dec)
                     comienzo += longitud
             sys.exit(0)
@@ -382,7 +382,7 @@ if __name__ == "__main__":
             sys.exit(0)
             
         if '/prueba' in sys.argv:
-            # generar el archivo de prueba para la pr髕ima factura
+            # generar el archivo de prueba para la pr贸xima factura
             if '--fce' in sys.argv:
                 tipo_cbte = 201
             else:
@@ -397,7 +397,7 @@ if __name__ == "__main__":
             imp_total = "121.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
             imp_trib = "0.00"; imp_op_ex = "0.00"; imp_subtotal = "100.00"
             fecha_cbte = fecha; fecha_venc_pago = fecha
-            # Fechas del per韔do del servicio facturado (solo si concepto = 1?)
+            # Fechas del per铆odo del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
@@ -457,7 +457,7 @@ if __name__ == "__main__":
                             iva_id, 0.0, 1.21)
             
 
-            # datos de opcionales FCE (Factura Credito Electr髇ica):
+            # datos de opcionales FCE (Factura Credito Electr贸nica):
             if '--fce' in sys.argv:
                 if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):
                     ws.AgregarOpcional(22, "N")
@@ -531,7 +531,7 @@ if __name__ == "__main__":
                 periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
                 orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
             else:
-                periodo = raw_input("Periodo (a駉-mes, ej 201108): ")
+                periodo = raw_input("Periodo (a帽o-mes, ej 201108): ")
                 orden = raw_input("Orden (quincena, 1 u 2): ")
                 
             if DEBUG: 
