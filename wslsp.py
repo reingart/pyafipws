@@ -12,8 +12,8 @@
 
 from __future__ import with_statement
 
-"""MÃ³dulo para obtener cÃ³digo de autorizaciÃ³n electrÃ³nica (CAE) para 
-LiquidaciÃ³n Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
+"""Módulo para obtener código de autorización electrónica (CAE) para 
+Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -22,16 +22,16 @@ __license__ = "GPL 3.0"
 __version__ = "1.07a"
 
 LICENCIA = """
-wslsp.py: Interfaz para generar CÃ³digo de AutorizaciÃ³n ElectrÃ³nica (CAE) para
-          LiquidaciÃ³n Sector Pecuario (LspService)
+wslsp.py: Interfaz para generar Código de Autorización Electrónica (CAE) para
+          Liquidación Sector Pecuario (LspService)
 Copyright (C) 2016 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionSectorPecuario
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo respetando la licencia GPLv3.
 
-Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
-e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
+Para información adicional sobre garantía, soporte técnico comercial
+e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -39,27 +39,27 @@ AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
-  --debug: modo depuraciÃ³n (detalla y confirma las operaciones)
+  --debug: modo depuración (detalla y confirma las operaciones)
   --formato: muestra el formato de los archivos de entrada/salida
-  --prueba: genera y autoriza una liquidaciÃ³n de prueba (no usar en producciÃ³n!)
-  --xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)
+  --prueba: genera y autoriza una liquidación de prueba (no usar en producción!)
+  --xml: almacena los requerimientos y respuestas XML (depuración)
   --json: utilizar formato json para el archivo de intercambio
   --dummy: consulta estado de servidores
   
-  --autorizar: Autorizar LiquidaciÃ³n Ãnica (generarLiquidacion)
-  --ajustar: Ajuste FÃ­sico/Monetario/Financiero, Credito/Debito (generarAjuste)
-  --ult: Consulta el Ãºltimo nÃºmero de orden registrado en AFIP 
+  --autorizar: Autorizar Liquidación Única (generarLiquidacion)
+  --ajustar: Ajuste Físico/Monetario/Financiero, Credito/Debito (generarAjuste)
+  --ult: Consulta el último número de orden registrado en AFIP 
          (consultarUltimoComprobanteXPuntoVenta)
-  --consultar: Consulta una liquidaciÃ³n registrada en AFIP 
+  --consultar: Consulta una liquidación registrada en AFIP 
          (consultarLiquidacionXNroComprobante / consultarLiquidacionXCAE)
 
-  --provincias: obtiene el listado de provincias (cÃ³digo/descripciÃ³n)
+  --provincias: obtiene el listado de provincias (código/descripción)
   --localidades: obtiene el listado de localidades para una provincia 
   --tributos: obtiene el listado de los tipos de tributos
   --gastos: obtiene el listado de los tipos de gastos
   --puntosventa: obtiene el listado de puntos de venta habilitados
 
-Ver wslsp.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
+Ver wslsp.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, shelve
@@ -84,7 +84,7 @@ HOMO = False
 
 
 class WSLSP(BaseWS):
-    "Interfaz para el WebService de LiquidaciÃ³n Ãnica Mensual (lecherÃ­a)"    
+    "Interfaz para el WebService de Liquidación Única Mensual (lechería)"    
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'AutorizarLiquidacion', 
                         'CrearLiquidacion', 'AgregarFrigorifico',
@@ -128,7 +128,7 @@ class WSLSP(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     LanzarExcepciones = False
-    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
     def inicializar(self):
         BaseWS.inicializar(self)
@@ -144,11 +144,11 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, url="", proxy="", wrapper="", cacert=None, timeout=60):
-        "Establecer la conexiÃ³n a los servidores de la AFIP"
+        "Establecer la conexión a los servidores de la AFIP"
         # llamo al constructor heredado:
         ok = BaseWS.Conectar(self, cache, url, proxy, wrapper, cacert, timeout)
         if False and ok:        
-            # corrijo ubicaciÃ³n del servidor (puerto htttp 80 en el WSDL)
+            # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
             location = self.client.services['LspService']['ports']['LumEndPoint']['location']
             if location.startswith("http://"):
                 print "Corrigiendo WSDL ...", location,
@@ -189,8 +189,8 @@ class WSLSP(BaseWS):
                          lugar_realizacion=None,
                          fecha_recepcion=None, fecha_faena=None, 
                          datos_adicionales=None, **kwargs):
-        "Inicializa internamente los datos de una liquidaciÃ³n para autorizar"
-        # creo el diccionario con los campos generales de la liquidaciÃ³n:
+        "Inicializa internamente los datos de una liquidación para autorizar"
+        # creo el diccionario con los campos generales de la liquidación:
         liq = { 'fechaComprobante': fecha_cbte, 'fechaOperacion': fecha_op, 
                 'lugarRealizacion': lugar_realizacion, 
                 'codMotivo': cod_motivo, 
@@ -213,7 +213,7 @@ class WSLSP(BaseWS):
     
     @inicializar_y_capturar_excepciones
     def AgregarFrigorifico(self, cuit, nro_planta):
-        "Agrego el frigorifico a la liquidacÃ­on (opcional)."
+        "Agrego el frigorifico a la liquidacíon (opcional)."
         frig = {'cuit': cuit, 'nroPlanta': nro_planta}
         self.solicitud['datosLiquidacion']['frigorifico']  = frig
         return True
@@ -262,7 +262,7 @@ class WSLSP(BaseWS):
                            precio_recupero=None, detalle_raza=None,
                            nro_item=None,
                            **kwargs):
-        "Agrega el detalle de item de la liquidaciÃ³n"
+        "Agrega el detalle de item de la liquidación"
         d = {'cuitCliente': cuit_cliente,
              'codCategoria': cod_categoria,
              'tipoLiquidacion': tipo_liquidacion, 
@@ -283,7 +283,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarCompraAsociada(self, tipo_cbte, pto_vta, nro_cbte, cant_asoc, nro_item):
-        "Agrega la informaciÃ³n referente a la liquidaciÃ³n compra asociada"
+        "Agrega la información referente a la liquidación compra asociada"
         d = {'tipoComprobante': tipo_cbte, 
              'puntoVenta': pto_vta,
              'nroComprobante': nro_cbte, 
@@ -301,10 +301,10 @@ class WSLSP(BaseWS):
     def AgregarGasto(self, cod_gasto, descripcion=None, base_imponible=None,
                      alicuota=None, importe=None, alicuota_iva=None,
                      tipo_iva_nulo=None):
-        "Agrega la informaciÃ³n referente a los gastos de la liquidaciÃ³n"
+        "Agrega la información referente a los gastos de la liquidación"
         # WSLSPv1.4.1: tipo_iva_nulo debe ser NG, NA, EX: Exento.
         if alicuota_iva == 0:
-            alicuota_iva = None         # sÃ³lo acepta [10.5, 21.0]
+            alicuota_iva = None         # sólo acepta [10.5, 21.0]
         elif alicuota_iva:
             tipo_iva_nulo = None
         gasto = {'codGasto': cod_gasto, 'descripcion': descripcion, 
@@ -321,7 +321,7 @@ class WSLSP(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarTributo(self, cod_tributo, descripcion=None,     
                        base_imponible=None, alicuota=None, importe=None):
-        "Agrega la informaciÃ³n referente a los tributos de la liquidaciÃ³n"
+        "Agrega la información referente a los tributos de la liquidación"
         trib = {'codTributo': cod_tributo, 'descripcion': descripcion, 
                 'baseImponible': base_imponible, 'alicuota': alicuota, 
                 'importe': importe}
@@ -333,21 +333,21 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarDTE(self, nro_dte, nro_renspa=None):
-        "Agrega la informaciÃ³n referente a DTE (multiples)"
+        "Agrega la información referente a DTE (multiples)"
         d = {"nroDTE": nro_dte, "nroRenspa": nro_renspa}
         self.solicitud['dte'].append(d)
         return True
 
     @inicializar_y_capturar_excepciones
     def AgregarGuia(self, nro_guia):
-        "Agrega la informaciÃ³n referente a las guÃ­as (multiples)"
+        "Agrega la información referente a las guías (multiples)"
         self.solicitud['guia'].append({"nroGuia": nro_guia})
         return True
 
 
     @inicializar_y_capturar_excepciones
     def AutorizarLiquidacion(self):
-        "Generar o ajustar una liquidaciÃ³n Ãºnica y obtener del CAE"
+        "Generar o ajustar una liquidación única y obtener del CAE"
         # limpio los elementos que no correspondan por estar vacios:
         for campo in ["guia", "dte", "gasto", "tributo"]:
             if campo in self.solicitud and not self.solicitud[campo]:
@@ -370,8 +370,8 @@ class WSLSP(BaseWS):
 
 
     def AnalizarLiquidacion(self, liq):
-        "MÃ©todo interno para analizar la respuesta de AFIP"
-        # proceso los datos bÃ¡sicos de la liquidaciÃ³n (devuelto por consultar):
+        "Método interno para analizar la respuesta de AFIP"
+        # proceso los datos básicos de la liquidación (devuelto por consultar):
         cab = liq.get('cabecera')
         if cab:
             self.CAE = str(cab.get('cae', ''))
@@ -391,7 +391,7 @@ class WSLSP(BaseWS):
             self.ImporteIVASobreGastos = tot.get('importeIVASobreGastos')
             receptor = liq.get('receptor', {})
 
-            # parÃ¡metros de salida:
+            # parámetros de salida:
             self.params_out = dict(
                 tipo_cbte=emisor.get('tipoComprobante'),
                 pto_vta=emisor.get('puntoVenta'),
@@ -455,7 +455,7 @@ class WSLSP(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarLiquidacion(self, tipo_cbte=None, pto_vta=None, nro_cbte=None,
                                    cae=None, cuit_comprador=None, pdf="liq.pdf"):
-        "Consulta una liquidaciÃ³n por No de Comprobante o CAE"
+        "Consulta una liquidación por No de Comprobante o CAE"
         if cae:
             ret = self.client.consultarLiquidacionPorCae(
                         auth={
@@ -489,7 +489,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltimoComprobante(self, tipo_cbte=151, pto_vta=1):
-        "Consulta el Ãºltimo No de Comprobante registrado"
+        "Consulta el último No de Comprobante registrado"
         ret = self.client.consultarUltimoNroComprobantePorPtoVta(
                     auth={
                         'token': self.Token, 'sign': self.Sign,
@@ -506,8 +506,8 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def CrearAjuste(self, tipo_ajuste,  fecha_cbte, datos_adicionales=None, **kwargs):
-        "Inicializa internamente los datos de una liquidaciÃ³n para ajustar"
-        # creo el diccionario con los campos generales de la liquidaciÃ³n:
+        "Inicializa internamente los datos de una liquidación para ajustar"
+        # creo el diccionario con los campos generales de la liquidación:
         self.solicitud = dict(tipoAjuste=tipo_ajuste, 
                               fechaComprobante=fecha_cbte,
                               emisor={},
@@ -526,7 +526,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarItemDetalleAjuste(self, nro_item_ajustar, **kwargs):
-        "Agrega el detalle de item a un ajuste de liquidaciÃ³n"
+        "Agrega el detalle de item a un ajuste de liquidación"
         d = {'nroItemAjustar': nro_item_ajustar, 'ajusteCompraAsociada': []}
         self.solicitud['itemDetalleAjusteLiquidacion'].append(d)
         return True
@@ -562,7 +562,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AjustarLiquidacion(self):
-        "Generar y ajustar una liquidaciÃ³n para obtener del CAE"
+        "Generar y ajustar una liquidación para obtener del CAE"
         # limpio los elementos que no correspondan por estar vacios:
         for item_liq in self.solicitud['itemDetalleAjusteLiquidacion']:
             campo = 'ajusteCompraAsociada'
@@ -620,7 +620,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarOperaciones(self, sep="||"):
-        "Retorna un listado de cÃ³digo y descripciÃ³n de operaciones permitidas"
+        "Retorna un listado de código y descripción de operaciones permitidas"
         ret = self.client.consultarOperaciones(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -636,7 +636,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTributos(self, sep="||"):
-        "Retorna un listado de tributos con cÃ³digo, descripciÃ³n y signo."
+        "Retorna un listado de tributos con código, descripción y signo."
         ret = self.client.consultarTributos(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -652,7 +652,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarGastos(self, sep="||"):
-        "Retorna un listado de gastos con cÃ³digo y descripciÃ³n"
+        "Retorna un listado de gastos con código y descripción"
         ret = self.client.consultarGastos(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -668,7 +668,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposComprobante(self, sep="||"):
-        "Retorna un listado de tipos de comprobantes con cÃ³digo y descripciÃ³n"
+        "Retorna un listado de tipos de comprobantes con código y descripción"
         ret = self.client.consultarTiposComprobante(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -684,7 +684,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposLiquidacion(self, sep="||"):
-        "Retorna un listado de tipos de liquidaciÃ³n con cÃ³digo y descripciÃ³n"
+        "Retorna un listado de tipos de liquidación con código y descripción"
         ret = self.client.consultarTiposLiquidacion(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -700,7 +700,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCaracteres(self, sep="||"):
-        "Retorna listado de caracteres emisor/receptor (cÃ³digo, descripciÃ³n)"
+        "Retorna listado de caracteres emisor/receptor (código, descripción)"
         ret = self.client.consultarCaracteresParticipante(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -716,7 +716,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCategorias(self, sep="||"):
-        "Retorna listado de categorÃ­as existentes (cÃ³digo, descripciÃ³n)"
+        "Retorna listado de categorías existentes (código, descripción)"
         ret = self.client.consultarCategorias(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -732,7 +732,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarMotivos(self, sep="||"):
-        "Retorna listado de motivos existentes (cÃ³digo, descripciÃ³n)"
+        "Retorna listado de motivos existentes (código, descripción)"
         ret = self.client.consultarMotivos(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -748,7 +748,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarRazas(self, sep="||"):
-        "Retorna listado de razas -vacunas y porcinos- (cÃ³digo, descripciÃ³n)"
+        "Retorna listado de razas -vacunas y porcinos- (código, descripción)"
         ret = self.client.consultarRazas(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -764,7 +764,7 @@ class WSLSP(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCortes(self, sep="||"):
-        "Retorna listado de cortes -carnes- (cÃ³digo, descripciÃ³n)"
+        "Retorna listado de cortes -carnes- (código, descripción)"
         ret = self.client.consultarCortes(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
@@ -809,7 +809,7 @@ class WSLSP(BaseWS):
             return False
 
 
-# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSLSP.InstallDir = get_install_dir()
 
 
@@ -826,7 +826,7 @@ if __name__ == '__main__':
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s PosiciÃ³n: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
                     clave, comienzo, longitud, tipo, dec)
                 comienzo += longitud
         sys.exit(0)
@@ -844,7 +844,7 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "VersiÃ³n: ", __version__
+            print "Versión: ", __version__
 
         if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
@@ -882,7 +882,7 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando ConfiguraciÃ³n:"
+            print "Usando Configuración:"
             print "WSAA_URL:", WSAA_URL
             print "WSLSP_URL:", WSLSP_URL
             print "CACERT", CACERT
@@ -914,7 +914,7 @@ if __name__ == '__main__':
             if '--prueba' in sys.argv:
                 print wslsp.client.help("generarLiquidacion")
 
-                # Solicitud 1: Cuenta de Venta y LÃ­quido Producto - Hacienda
+                # Solicitud 1: Cuenta de Venta y Líquido Producto - Hacienda
                 wslsp.CrearLiquidacion(
                         cod_operacion=1, 
                         fecha_cbte='2017-04-23', 
@@ -984,7 +984,7 @@ if __name__ == '__main__':
             
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
-                # usar solo si no estÃ¡ operativo, cargo respuesta:
+                # usar solo si no está operativo, cargo respuesta:
                 wslsp.LoadTestXML("tests/xml/wslsp_liq_ok_response.xml")
                 import json
                 with open(ENTRADA, "w") as f:
@@ -1027,7 +1027,7 @@ if __name__ == '__main__':
 
         if '--ajustar' in sys.argv:
             if '--prueba' in sys.argv:
-                # ejemplo documentaciÃ³n AFIP:
+                # ejemplo documentación AFIP:
                 if '--testing' in sys.argv:
                     wslsp.LoadTestXML("tests/xml/wslsp_ajuste_test.xml")
                 wslsp.CrearAjuste(tipo_ajuste='C', fecha_cbte='2017-01-06', 
@@ -1039,7 +1039,7 @@ if __name__ == '__main__':
                 wslsp.AgregarCompraAsociada(tipo_cbte=185, pto_vta=3000,
                                             nro_cbte=33, cant_asoc=2, 
                                             nro_item=1)
-                # ValidaciÃ³n de AFIP 3002: 
+                # Validación de AFIP 3002: 
                 # No se pueden realizar ajustes fisicos y monetario en un mismo comprobante.
                 wslsp.AgregarAjusteFisico(   
                         cantidad=1,
@@ -1094,7 +1094,7 @@ if __name__ == '__main__':
                 pass
             if '--testing' in sys.argv:
                 # mensaje de prueba (no realiza llamada remota), 
-                # usar solo si no estÃ¡ operativo, cargo prueba:
+                # usar solo si no está operativo, cargo prueba:
                 wslsp.LoadTestXML("tests/xml/wslsp_cons_test.xml")
             print "Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte)
             ret = wslsp.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte, 
@@ -1136,7 +1136,7 @@ if __name__ == '__main__':
                 json.dump(liq, f,  default=str, 
                           indent=2, sort_keys=True, encoding="utf-8")
 
-        # Recuperar parÃ¡metros:
+        # Recuperar parámetros:
         
         if '--provincias' in sys.argv:
             ret = wslsp.ConsultarProvincias()
@@ -1203,7 +1203,7 @@ if __name__ == '__main__':
         try:
             print >> sys.stderr, traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
         except:
-            print >> sys.stderr, "ExcepciÃ³n no disponible:", type(e)
+            print >> sys.stderr, "Excepción no disponible:", type(e)
         if DEBUG:
             raise
         sys.exit(5)

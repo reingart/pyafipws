@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"MÃ³dulo con funciones auxiliares para el manejo de errores y temas comunes"
+"Módulo con funciones auxiliares para el manejo de errores y temas comunes"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
@@ -88,11 +88,11 @@ DEBUG = False
 
 def exception_info(current_filename=None, index=-1):
     "Analizar el traceback y armar un dict con la info amigable user-friendly"
-    # guardo el traceback original (por si hay una excepciÃ³n):
+    # guardo el traceback original (por si hay una excepción):
     info = sys.exc_info() #         exc_type, exc_value, exc_traceback
     # importante: no usar unpacking porque puede causar memory leak
     if not current_filename:
-        # genero un call stack para ver quien me llamÃ³ y limitar la traza: 
+        # genero un call stack para ver quien me llamó y limitar la traza: 
         # advertencia: esto es necesario ya que en py2exe no tengo __file__ 
         try:
             raise ZeroDivisionError
@@ -100,8 +100,8 @@ def exception_info(current_filename=None, index=-1):
             f = sys.exc_info()[2].tb_frame.f_back
         current_filename = os.path.normpath(os.path.abspath(f.f_code.co_filename))
 
-    # extraer la Ãºltima traza del archivo solicitado:
-    # (Ãºtil para no alargar demasiado la traza con lineas de las librerÃ­as)
+    # extraer la última traza del archivo solicitado:
+    # (útil para no alargar demasiado la traza con lineas de las librerías)
     ret = {'filename': "", 'lineno': 0, 'function_name': "", 'code': ""}
     try:
         for (filename, lineno, fn, text) in traceback.extract_tb(info[2]):
@@ -145,12 +145,12 @@ def inicializar_y_capturar_excepciones(func):
             self.ErrCode = self.ErrMsg = self.Obs = ""
             # limpio variables especificas del webservice:
             self.inicializar()
-            # actualizo los parÃ¡metros
+            # actualizo los parámetros
             kwargs.update(self.params_in)
-            # limpio los parÃ¡metros
+            # limpio los parámetros
             self.params_in = {}
             self.params_out = {}
-            # llamo a la funciÃ³n (con reintentos)
+            # llamo a la función (con reintentos)
             retry = self.reintentos + 1
             while retry:
                 try:
@@ -158,7 +158,7 @@ def inicializar_y_capturar_excepciones(func):
                     return func(self, *args, **kwargs)
                 except socket.error, e:
                     if e[0] not in (10054, 10053):
-                        # solo reintentar si el error es de conexiÃ³n
+                        # solo reintentar si el error es de conexión
                         # (10054, 'Connection reset by peer')
                         # (10053, 'Software caused connection abort')
                         raise
@@ -167,7 +167,7 @@ def inicializar_y_capturar_excepciones(func):
                         self.log(exception_info().get("msg", ""))
 
         except SoapFault, e:
-            # guardo destalle de la excepciÃ³n SOAP
+            # guardo destalle de la excepción SOAP
             self.ErrCode = unicode(e.faultcode)
             self.ErrMsg = unicode(e.faultstring)
             self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
@@ -185,7 +185,7 @@ def inicializar_y_capturar_excepciones(func):
             else:
                 self.ErrMsg = self.Excepcion
         finally:
-            # guardo datos de depuraciÃ³n
+            # guardo datos de depuración
             if self.client:
                 self.XmlRequest = self.client.xml_request
                 self.XmlResponse = self.client.xml_response
@@ -193,7 +193,7 @@ def inicializar_y_capturar_excepciones(func):
 
 
 def inicializar_y_capturar_excepciones_simple(func):
-    "Decorador para inicializar y capturar errores (versiÃ³n bÃ¡sica indep.)"
+    "Decorador para inicializar y capturar errores (versión básica indep.)"
     @functools.wraps(func)
     def capturar_errores_wrapper(self, *args, **kwargs):
         self.inicializar()
@@ -239,13 +239,13 @@ class BaseWS:
                 self.log("Proxy Dict: %s" % str(proxy_dict))
             if self.HOMO or not wsdl:
                 wsdl = self.WSDL
-            # agregar sufijo para descargar descripciÃ³n del servicio ?WSDL o ?wsdl
+            # agregar sufijo para descargar descripción del servicio ?WSDL o ?wsdl
             if not wsdl.endswith(self.WSDL[-5:]) and wsdl.startswith("http"):
                 wsdl += self.WSDL[-5:]
             if not cache or self.HOMO:
                 # use 'cache' from installation base directory 
                 cache = os.path.join(self.InstallDir, 'cache')
-            # deshabilitar verificaciÃ³n cert. servidor si es nulo falso vacio
+            # deshabilitar verificación cert. servidor si es nulo falso vacio
             if not cacert:
                 cacert = None
             elif cacert is True or cacert.lower() == 'default':
@@ -287,7 +287,7 @@ class BaseWS:
                 trace = "--trace" in sys.argv)
             self.cache = cache  # utilizado por WSLPG y WSAA (Ticket de Acceso)
             self.wsdl = wsdl    # utilizado por TrazaMed (para corregir el location)
-            # corrijo ubicaciÃ³n del servidor (puerto http 80 en el WSDL AFIP)
+            # corrijo ubicación del servidor (puerto http 80 en el WSDL AFIP)
             for service in self.client.services.values():
                 for port  in service['ports'].values():
                     location = port['location']
@@ -314,7 +314,7 @@ class BaseWS:
             return False
 
     def log(self, msg):
-        "Dejar mensaje en bitacora de depuraciÃ³n (mÃ©todo interno)"
+        "Dejar mensaje en bitacora de depuración (método interno)"
         if not isinstance(msg, unicode):
             msg = unicode(msg, 'utf8', 'ignore')
         if not self.Log:
@@ -325,7 +325,7 @@ class BaseWS:
             warnings.warn(msg)
 
     def DebugLog(self):
-        "Devolver y limpiar la bitÃ¡cora de depuraciÃ³n"
+        "Devolver y limpiar la bitácora de depuración"
         if self.Log:
             msg = self.Log.getvalue()
             # limpiar log
@@ -336,7 +336,7 @@ class BaseWS:
         return msg    
 
     def LoadTestXML(self, xml):
-        "Cargar un archivo de pruebas con la respuesta simulada (depuraciÃ³n)"
+        "Cargar un archivo de pruebas con la respuesta simulada (depuración)"
         # si el parametro es un nombre de archivo, cargar el contenido:
         if os.path.exists(xml):
             xml = open(xml).read()
@@ -374,7 +374,7 @@ class BaseWS:
         try:
             if self.xml:
                 xml = self.xml
-                # por cada tag, lo busco segun su nombre o posiciÃ³n
+                # por cada tag, lo busco segun su nombre o posición
                 for tag in tags:
                     xml = xml(tag) # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
@@ -383,7 +383,7 @@ class BaseWS:
             self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
 
     def SetParametros(self, cuit, token, sign):
-        "Establece un parÃ¡metro general"
+        "Establece un parámetro general"
         self.Token = token
         self.Sign = sign
         self.Cuit = cuit
@@ -401,14 +401,14 @@ class BaseWS:
             raise RuntimeError("Ticket de Acceso vacio!")
 
     def SetParametro(self, clave, valor):
-        "Establece un parÃ¡metro de entrada (a usarse en llamada posterior)"
-        # Ãºtil para parÃ¡metros de entrada (por ej. VFP9 no soporta mÃ¡s de 27)
+        "Establece un parámetro de entrada (a usarse en llamada posterior)"
+        # útil para parámetros de entrada (por ej. VFP9 no soporta más de 27)
         self.params_in[str(clave)] = valor
         return True
 
     def GetParametro(self, clave, clave1=None, clave2=None, clave3=None, clave4=None):
-        "Devuelve un parÃ¡metro de salida (establecido por llamada anterior)"
-        # Ãºtil para parÃ¡metros de salida (por ej. campos de TransaccionPlainWS)
+        "Devuelve un parámetro de salida (establecido por llamada anterior)"
+        # útil para parámetros de salida (por ej. campos de TransaccionPlainWS)
         valor = self.params_out.get(clave)
         # busco datos "anidados" (listas / diccionarios)
         for clave in (clave1, clave2, clave3, clave4):
@@ -620,7 +620,7 @@ def leer(linea, formato, expandir_fechas=False):
             else:
                 valor = valor.decode("ascii","ignore")
             if not valor and clave in dic and len(linea) <= comienzo:
-                pass    # ignorar - compatibilidad hacia atrÃ¡s (cambios tamaÃ±o)
+                pass    # ignorar - compatibilidad hacia atrás (cambios tamaño)
             else:
                 dic[clave] = valor
             comienzo += longitud
@@ -665,7 +665,7 @@ def escribir(dic, formato, contraer_fechas=False):
     return linea + "\n"
 
 
-# Tipos de datos (cÃ³digo RG1361)
+# Tipos de datos (código RG1361)
 
 
 N = 'Numerico'      # 2
@@ -685,7 +685,7 @@ def formato_txt(formatos, registros):
         for fmt in formato:
             clave, longitud, tipo = fmt[0:3]
             dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-            f = ["Campo: %-20s" , "PosiciÃ³n: %3d", "Longitud: %4d", "Tipo: %s"]
+            f = ["Campo: %-20s" , "Posición: %3d", "Longitud: %4d", "Tipo: %s"]
             v = [clave, comienzo, longitud, tipo]
             if dec:
                 f.append("Decimales: %s")
@@ -780,7 +780,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                 if longitud - 2 <= dec:
                     longitud += longitud - dec + 1      # ajusto long. decimales 
                 tipo = "N(%s,%s)" % (longitud, dec)
-            # unificar nombre de campos duplicados por compatibilidad hacia atrÃ¡s:
+            # unificar nombre de campos duplicados por compatibilidad hacia atrás:
             clave_dbf = claves_map.get(clave, dar_nombre_campo_dbf(clave, claves))
             if not clave in claves_map:
                 claves_map[clave] = clave_dbf
@@ -820,7 +820,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                             v = str(v)
                         if len(v) > longitud:
                             v = v[:longitud]  # recorto el string para que quepa
-                    # unificar nombre de campos duplicados por compatibilidad hacia atrÃ¡s:
+                    # unificar nombre de campos duplicados por compatibilidad hacia atrás:
                     clave_dbf = claves_map.get(clave, dar_nombre_campo_dbf(clave, claves))
                     if not clave in claves_map:
                         claves_map[clave] = clave_dbf
@@ -840,7 +840,7 @@ def guardar_dbf(formatos, agrega=False, conf_dbf=None):
                 reg.write_record(**r)
                 # mover de registro para no actualizar siempre el primero:
                 if not tabla.eof() and len(l) > 1:
-                    if DEBUG: print "Moviendo al prÃ³ximo registro ", tabla.record_number
+                    if DEBUG: print "Moviendo al próximo registro ", tabla.record_number
                     tabla.next()
         tabla.close()
 
@@ -879,7 +879,7 @@ def dar_nombre_campo_dbf(clave, claves):
     "Reducir nombre de campo a 10 caracteres, sin espacios ni _, sin repetir"
     # achico el nombre del campo para que quepa en la tabla:
     nombre = clave.replace("_","")[:10]
-    # si el campo esta repetido, le agrego un nÃºmero
+    # si el campo esta repetido, le agrego un número
     i = 0
     while nombre in claves:
         i += 1    
@@ -928,7 +928,7 @@ def verifica(ver_list, res_dict, difs):
             if float(res_dict.get(k)) != float(v):
                 difs.append("%s: %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
         elif unicode(res_dict.get(k)) != unicode(v):
-            # tipos diferentes, comparo la representaciÃ³n  
+            # tipos diferentes, comparo la representación  
             difs.append("%s: str %s!=%s" % (k, repr(v), repr(res_dict.get(k))))
         else:
             pass
@@ -998,10 +998,10 @@ def get_install_dir():
 
         
 def abrir_conf(config_file, debug=False):
-    "Abrir el archivo de configuraciÃ³n (usar primer parÃ¡metro como ruta)"
+    "Abrir el archivo de configuración (usar primer parámetro como ruta)"
     # en principio, usar el nombre de archivo predeterminado
-    # si se pasa el archivo de configuraciÃ³n por parÃ¡metro, confirmar que exista
-    # y descartar que sea una opciÃ³n
+    # si se pasa el archivo de configuración por parámetro, confirmar que exista
+    # y descartar que sea una opción
     if len(sys.argv)>1:
         if os.path.splitext(sys.argv[1])[1].lower() == ".ini":
             config_file = sys.argv.pop(1)

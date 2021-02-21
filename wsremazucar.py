@@ -10,8 +10,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""MÃ³dulo para obtener Remito Electronico Azucar:
-del servicio web RemAzucarService versiÃ³n 2.0.3 de AFIP (RG4519/19)
+"""Módulo para obtener Remito Electronico Azucar:
+del servicio web RemAzucarService versión 2.0.3 de AFIP (RG4519/19)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -20,18 +20,18 @@ __license__ = "LGPL 3.0"
 __version__ = "1.03d"
 
 LICENCIA = """
-wsremhairna.py: Interfaz para generar Remito ElectrÃ³nico AzÃºcar AFIP v2.0.3
-remisiones de los productos obtenidos de la industrializaciÃ³n de la
-caÃ±a de azÃºcar (azÃºcar, alcohol, bagazo y melaza)
-ResoluciÃ³n General Conjunta 4519/2019
+wsremhairna.py: Interfaz para generar Remito Electrónico Azúcar AFIP v2.0.3
+remisiones de los productos obtenidos de la industrialización de la
+caña de azúcar (azúcar, alcohol, bagazo y melaza)
+Resolución General Conjunta 4519/2019
 Copyright (C) 2019 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoAzucar
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
-e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
+Para información adicional sobre garantía, soporte técnico comercial
+e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -39,9 +39,9 @@ AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
-  --debug: modo depuraciÃ³n (detalla y confirma las operaciones)
-  --prueba: genera y autoriza una rec de prueba (no usar en producciÃ³n!)
-  --xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)
+  --debug: modo depuración (detalla y confirma las operaciones)
+  --prueba: genera y autoriza una rec de prueba (no usar en producción!)
+  --xml: almacena los requerimientos y respuestas XML (depuración)
   --dummy: consulta estado de servidores
 
   --generar: generar un remito
@@ -54,14 +54,14 @@ Opciones:
 
   --tipos_comprobante: tabla de parametros para tipo de comprobante
   --tipos_contingencia: tipo de contingencia que puede reportar
-  --tipos_categoria_emisor: tipos de categorÃ­as de emisor
-  --tipos_categoria_receptor: tipos de categorÃ­as de receptor
+  --tipos_categoria_emisor: tipos de categorías de emisor
+  --tipos_categoria_receptor: tipos de categorías de receptor
   --tipos_estados: estados posibles en los que puede estar un remito azucarero
   --grupos_azucar' grupos de los distintos tipos de cortes de azucar
   --tipos_azucar': tipos de corte de azucar
   --codigos_domicilio: codigos de depositos habilitados para el cuit
 
-Ver wsremazucar.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
+Ver wsremazucar.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
@@ -74,7 +74,7 @@ import utils
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 
 
-# constantes de configuraciÃ³n (producciÃ³n/homologaciÃ³n):
+# constantes de configuración (producción/homologación):
 
 WSDL = ["https://serviciosjava.afip.gob.ar/wsremazucar/RemAzucarService?wsdl",
         "https://fwshomo.afip.gov.ar/wsremazucar/RemAzucarService?wsdl"]
@@ -110,7 +110,7 @@ class WSRemAzucar(BaseWS):
     HOMO = HOMO
     WSDL = WSDL[HOMO]
     LanzarExcepciones = False
-    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
     def Conectar(self, *args, **kwargs):
         ret = BaseWS.Conectar(self, *args, **kwargs)
@@ -170,7 +170,7 @@ class WSRemAzucar(BaseWS):
                         cuit_receptor=None, cod_dom_receptor=None,
                         cuit_despachante=None, codigo_aduana=None, 
                         denominacion_receptor=None, domicilio_receptor=None, **kwargs):
-        "Agrega la informaciÃ³n referente al viaje del remito electrÃ³nico azucarero"
+        "Agrega la información referente al viaje del remito electrónico azucarero"
         receptor = {'cuitPaisReceptor': cuit_pais_receptor}
         if cuit_receptor:
             receptor['receptorNacional'] = {'codDomReceptor': cod_dom_receptor,
@@ -185,7 +185,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarViaje(self, fecha_inicio_viaje, distancia_km, cod_pais_transportista, ducto=None, **kwargs):
-        "Agrega la informaciÃ³n referente al viaje del remito electrÃ³nico azucarero"
+        "Agrega la información referente al viaje del remito electrónico azucarero"
         self.remito.update({
             'viaje': {
                 'fechaInicioViaje': fecha_inicio_viaje ,
@@ -208,7 +208,7 @@ class WSRemAzucar(BaseWS):
                         apellido_conductor=None, cedula_conductor=None, denom_transportista=None,
                         id_impositivo=None, nombre_conductor=None,
                         **kwargs):
-        "Agrega la informaciÃ³n referente al vehiculo usado en el viaje del remito electrÃ³nico azucarero"
+        "Agrega la información referente al vehiculo usado en el viaje del remito electrónico azucarero"
         transporte = self.remito['viaje']['tramo'][0]['automotor']
         vehiculo = {
                     'dominioVehiculo': dominio_vehiculo, 
@@ -235,7 +235,7 @@ class WSRemAzucar(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarMercaderia(self, orden, cod_tipo_prod, cod_tipo_emb, cantidad_emb, cod_tipo_unidad, cant_unidad, 
                           anio_safra, **kwargs):
-        "Agrega la informaciÃ³n referente a la mercaderÃ­a del remito electrÃ³nico azucarero"
+        "Agrega la información referente a la mercadería del remito electrónico azucarero"
         mercaderia = dict(orden=orden,  
                           tipoProducto=cod_tipo_prod,
                           tipoEmbalaje=cod_tipo_emb,
@@ -248,7 +248,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarDatosAutorizacion(self, nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None, **kwargs):
-        "Agrega la informaciÃ³n referente a los datos de autorizaciÃ³n del remito electrÃ³nico azucarero"
+        "Agrega la información referente a los datos de autorización del remito electrónico azucarero"
         self.remito['datosEmision'] = dict(nroRemito=nro_remito, codAutorizacion=cod_autorizacion,
                                                 fechaEmision=fecha_emision, fechaVencimiento=fecha_vencimiento,
                                                )
@@ -256,14 +256,14 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarContingencias(self, tipo=None, observacion=None, **kwargs):
-        "Agrega la informaciÃ³n referente a los opcionales de la liq. seq."
+        "Agrega la información referente a los opcionales de la liq. seq."
         contingencia = dict(tipoContingencia=tipo, observacion=observacion)
         self.remito['arrayContingencias'].append(dict(contingencia=contingencia))
         return True
 
     @inicializar_y_capturar_excepciones
     def GenerarRemito(self, id_req, archivo="qr.png"):
-        "Informar los datos necesarios para la generaciÃ³n de un remito nuevo"
+        "Informar los datos necesarios para la generación de un remito nuevo"
         if not self.remito['arrayContingencias']:
             del self.remito['arrayContingencias']
         response = self.client.generarRemito(
@@ -330,7 +330,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnularRemito(self):
-        "Anular un remito generado que aÃºn no haya sido emitido"
+        "Anular un remito generado que aún no haya sido emitido"
         response = self.client.anularRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=self.remito['codRemito'])
@@ -344,7 +344,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltimoRemitoEmitido(self, tipo_comprobante=995, punto_emision=1):
-        "Obtener el Ãºltimo nÃºmero de remito que se emitiÃ³ por tipo de comprobante y punto de emisiÃ³n"
+        "Obtener el último número de remito que se emitió por tipo de comprobante y punto de emisión"
         response = self.client.consultarUltimoRemitoEmitido(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 tipoComprobante=tipo_comprobante,
@@ -390,7 +390,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposComprobante(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n para tipo de comprobante"
+        "Obtener el código y descripción para tipo de comprobante"
         ret = self.client.consultarTiposComprobante(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -403,7 +403,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarPaises(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n para los paises"
+        "Obtener el código y descripción para los paises"
         ret = self.client.consultarPaises(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -416,7 +416,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposContingencia(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n para cada tipo de contingencia que puede reportar"
+        "Obtener el código y descripción para cada tipo de contingencia que puede reportar"
         ret = self.client.consultarTiposContingencia(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -429,7 +429,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposMercaderia(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n  cÃ³digos y la descripciÃ³n para cada tipo de mercaderÃ­a"
+        "Obtener el código y descripción  códigos y la descripción para cada tipo de mercadería"
         ret = self.client.consultarTiposMercaderia(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -442,7 +442,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposEmbalaje(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n  cÃ³digos y la descripciÃ³n para cada tipo de embalaje"
+        "Obtener el código y descripción  códigos y la descripción para cada tipo de embalaje"
         ret = self.client.consultarTiposEmbalaje(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -455,7 +455,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposUnidades(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n  cÃ³digos y la descripciÃ³n para cada tipo de unidades de venta"
+        "Obtener el código y descripción  códigos y la descripción para cada tipo de unidades de venta"
         ret = self.client.consultarUnidadesMedida(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -468,7 +468,7 @@ class WSRemAzucar(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCodigosDomicilio(self, cuit_titular=1, sep="||"):
-        "Obtener el cÃ³digo de depositos que tiene habilitados para operar el cuit informado"
+        "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
         ret = self.client.consultarCodigosDomicilio(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -482,7 +482,7 @@ class WSRemAzucar(BaseWS):
 
 
 
-# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
 elif sys.frozen=='dll':
@@ -509,12 +509,12 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "VersiÃ³n: ", __version__
+            print "Versión: ", __version__
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuraciÃ³n:", arg
+            print "Usando configuración:", arg
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -544,7 +544,7 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando ConfiguraciÃ³n:"
+            print "Usando Configuración:"
             print "wsaa_url:", wsaa_url
             print "wsremazucar_url:", wsremazucar_url
 
@@ -700,7 +700,7 @@ if __name__ == '__main__':
             with open(SALIDA, "w") as archivo:
                 json.dump(rec, archivo, sort_keys=True, indent=4, default=json_serializer)
 
-        # Recuperar parÃ¡metros:
+        # Recuperar parámetros:
 
         if '--tipos_comprobante' in sys.argv:
             ret = wsremazucar.ConsultarTiposComprobante()

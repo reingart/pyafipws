@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 from decimal import Decimal
 
-TIPOS_OP = {1: 'Compraventa de granos', 2: u'ConsignaciÃ³n de granos'}
+TIPOS_OP = {1: 'Compraventa de granos', 2: u'Consignación de granos'}
 GRANOS = {
         1: 'LINO', 2: 'GIRASOL', 3: 'MANI EN CAJA', 
         4: 'GIRASOL DESCASCARADO', 5: 'MANI PARA INDUSTRIA DE SELECCION', 
@@ -29,13 +29,13 @@ PUERTOS = {1: "SAN LORENZO/SAN MARTIN", 2: "ROSARIO",
 
 PROVINCIAS = {1: 'BUENOS AIRES', 0: 'CAPITAL FEDERAL', 
               2: 'CATAMARCA', 16: 'CHACO', 17: 'CHUBUT', 
-              4: 'CORRIENTES', 3: u'CÃRDOBA', 5: 'ENTRE RIOS',
+              4: 'CORRIENTES', 3: u'CÓRDOBA', 5: 'ENTRE RIOS',
               18: 'FORMOSA', 6: 'JUJUY', 21: 'LA PAMPA',
               8: 'LA RIOJA', 7: 'MENDOZA', 19: 'MISIONES', 
-              20: u'NEUQUÃN', 22: 'RIO NEGRO', 9: 'SALTA',
+              20: u'NEUQUÉN', 22: 'RIO NEGRO', 9: 'SALTA',
               10: 'SAN JUAN', 11: 'SAN LUIS', 23: 'SANTA CRUZ',
               12: 'SANTA FE', 13: 'SANTIAGO DEL ESTERO',
-              24: 'TIERRA DEL FUEGO', 14: u'TUCUMÃN'}
+              24: 'TIERRA DEL FUEGO', 14: u'TUCUMÁN'}
 
 TIPO_CERT_DEP = {1: "F1116/RT", 5: "F1116/A", 332: u"Cert.Elec."}
 
@@ -46,7 +46,7 @@ CAMPANIAS = {1213: "2012/2013", 1112: "2011/2012", 1011: "2010/2011",
 
 ACTIVIDADES = {41: "FRACCIONADOR DE GRANOS", 29: "ACOPIADOR - CONSIGNATARIO",
                33: "CANJEADOR DE BIENES Y/O SERVICIOS POR GRANO", 
-               40: "EXPORTADOR", 31: u"ACOPIADOR DE MANÃ", 
+               40: "EXPORTADOR", 31: u"ACOPIADOR DE MANÍ", 
                30: "ACOPIADOR DE LEGUMBRES", 
                35: "COMPRADOR DE GRANO PARA CONSUMO PROPIO",
                44: "INDUSTRIAL ACEITERO", 47: "INDUSTRIAL BIOCOMBUSTIBLE",

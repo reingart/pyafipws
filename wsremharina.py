@@ -10,8 +10,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""MÃ³dulo para obtener Remito Electronico Harinero:
-del servicio web RemHarinaService versiÃ³n 2.0 de AFIP (RG4514/19)
+"""Módulo para obtener Remito Electronico Harinero:
+del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -20,17 +20,17 @@ __license__ = "LGPL 3.0"
 __version__ = "1.05d"
 
 LICENCIA = """
-wsremhairna.py: Interfaz para generar Remito ElectrÃ³nico Harinero AFIP v2.0
+wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
 traslado de harinas de trigo y subproductos derivados de la molienda de trigo.
-ResoluciÃ³n General Conjunta 4514/2019
+Resolución General Conjunta 4514/2019
 Copyright (C) 2019 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoHarinero
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
-e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
+Para información adicional sobre garantía, soporte técnico comercial
+e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -38,9 +38,9 @@ AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
-  --debug: modo depuraciÃ³n (detalla y confirma las operaciones)
-  --prueba: genera y autoriza una rec de prueba (no usar en producciÃ³n!)
-  --xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)
+  --debug: modo depuración (detalla y confirma las operaciones)
+  --prueba: genera y autoriza una rec de prueba (no usar en producción!)
+  --xml: almacena los requerimientos y respuestas XML (depuración)
   --dummy: consulta estado de servidores
 
   --generar: generar un remito
@@ -61,7 +61,7 @@ Opciones:
   --puntos_emision: puntos de emision habilitados
   --codigos_domicilio: codigos de depositos habilitados para el cuit
 
-Ver wsremharina.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
+Ver wsremharina.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
@@ -74,7 +74,7 @@ import utils
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 
 
-# constantes de configuraciÃ³n (producciÃ³n/homologaciÃ³n):
+# constantes de configuración (producción/homologación):
 
 WSDL = ["https://serviciosjava.afip.gob.ar/wsremharina/RemHarinaService?wsdl",
         "https://fwshomo.afip.gov.ar/wsremharina/RemHarinaService?wsdl"]
@@ -112,7 +112,7 @@ class WSRemHarina(BaseWS):
     HOMO = HOMO
     WSDL = WSDL[HOMO]
     LanzarExcepciones = False
-    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
     def Conectar(self, *args, **kwargs):
         ret = BaseWS.Conectar(self, *args, **kwargs)
@@ -174,7 +174,7 @@ class WSRemHarina(BaseWS):
                         cuit_receptor=None, tipo_dom_receptor=None, cod_dom_receptor=None,
                         cuit_despachante=None, codigo_aduana=None,
                         denominacion_receptor=None, domicilio_receptor=None, **kwargs):
-        "Agrega la informaciÃ³n referente al receptor  del remito electrÃ³nico azucarero"
+        "Agrega la información referente al receptor  del remito electrónico azucarero"
         receptor = {'cuitPaisReceptor': cuit_pais_receptor}
         if cuit_receptor:
             receptor['receptorNacional'] = {'codDomReceptor': cod_dom_receptor,
@@ -193,7 +193,7 @@ class WSRemHarina(BaseWS):
     def AgregarDepositario(self, tipo_depositario, cuit_depositario=None, ruca_est_depositario=None,
                                  tipo_dom_origen=None, cod_dom_origen=None,
                                  **kwargs):
-        "Agrega la informaciÃ³n referente al depositario del remito electrÃ³nico"
+        "Agrega la información referente al depositario del remito electrónico"
         self.remito['depositario'] =  {
                             'codDomOrigen': cod_dom_origen,
                             'cuitDepositario': cuit_depositario,
@@ -205,7 +205,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarViaje(self, fecha_inicio_viaje=None, distancia_km=None, **kwargs):
-        "Agrega la informaciÃ³n referente al viaje del remito electrÃ³nico harinero"
+        "Agrega la información referente al viaje del remito electrónico harinero"
         self.remito['viaje'] = {
                                 'fechaInicioViaje': fecha_inicio_viaje ,
                                 'distanciaKm': distancia_km,
@@ -219,7 +219,7 @@ class WSRemHarina(BaseWS):
                                 apellido_conductor=None, cedula_conductor=None, denom_transportista=None,
                                 id_impositivo=None, nombre_conductor=None,
                                 **kwargs):
-        "Agrega la informaciÃ³n referente al transportista del remito electrÃ³nico harinero"
+        "Agrega la información referente al transportista del remito electrónico harinero"
         self.remito['viaje']['transportista'] = {
             'codPaisTransportista': cod_pais_transportista,
             }
@@ -240,7 +240,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarVehiculo(self, dominio_vehiculo, dominio_acoplado=None, **kwargs):
-        "Agrega la informaciÃ³n referente al vehiculo usado en el viaje del remito electrÃ³nico harinero"
+        "Agrega la información referente al vehiculo usado en el viaje del remito electrónico harinero"
         vehiculo = {
                     'dominioVehiculo': dominio_vehiculo, 
                     'arrayDominioAcoplado': [{'identificador': dominio_acoplado}]}
@@ -251,7 +251,7 @@ class WSRemHarina(BaseWS):
     def AgregarMercaderia(self, orden, cod_tipo, cod_tipo_emb, cantidad_emb, cod_tipo_unidad, cant_unidad, 
                           peso_neto_kg=None, peso_neto_rec_kg=None, peso_neto_per_kg=None,
                           peso_neto_red_kg=None, peso_neto_rei_kg=None, **kwargs):
-        "Agrega la informaciÃ³n referente a la mercaderÃ­a del remito electrÃ³nico harinero"
+        "Agrega la información referente a la mercadería del remito electrónico harinero"
         mercaderia = dict(orden=orden,  
                           codTipo=cod_tipo, codTipoEmb=cod_tipo_emb,
                           cantidadEmb=cantidad_emb, 
@@ -264,7 +264,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarDatosAutorizacion(self, nro_remito=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None, **kwargs):
-        "Agrega la informaciÃ³n referente a los datos de autorizaciÃ³n del remito electrÃ³nico harinero"
+        "Agrega la información referente a los datos de autorización del remito electrónico harinero"
         self.remito['datosEmision'] = dict(nroRemito=nro_remito, codAutorizacion=cod_autorizacion,
                                                 fechaEmision=fecha_emision, fechaVencimiento=fecha_vencimiento,
                                                )
@@ -272,14 +272,14 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarContingencias(self, tipo=None, observacion=None, **kwargs):
-        "Agrega la informaciÃ³n referente a los opcionales de la liq. seq."
+        "Agrega la información referente a los opcionales de la liq. seq."
         contingencia = dict(tipoContingencia=tipo, observacion=observacion)
         self.remito['arrayContingencias'].append(dict(contingencia=contingencia))
         return True
 
     @inicializar_y_capturar_excepciones
     def GenerarRemito(self, id_req, archivo="qr.png"):
-        "Informar los datos necesarios para la generaciÃ³n de un remito nuevo"
+        "Informar los datos necesarios para la generación de un remito nuevo"
         if not self.remito['arrayContingencias']:
             del self.remito['arrayContingencias']
         response = self.client.generarRemito(
@@ -345,7 +345,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnularRemito(self):
-        "Anular un remito generado que aÃºn no haya sido emitido"
+        "Anular un remito generado que aún no haya sido emitido"
         response = self.client.anularRemito(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 codRemito=self.remito['codRemito'])
@@ -359,7 +359,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarUltimoRemitoEmitido(self, tipo_comprobante=995, punto_emision=1):
-        "Obtener el Ãºltimo nÃºmero de remito que se emitiÃ³ por tipo de comprobante y punto de emisiÃ³n"
+        "Obtener el último número de remito que se emitió por tipo de comprobante y punto de emisión"
         response = self.client.consultarUltimoRemitoEmitido(
                                 authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
                                 tipoComprobante=tipo_comprobante,
@@ -405,7 +405,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposComprobante(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n para tipo de comprobante"
+        "Obtener el código y descripción para tipo de comprobante"
         ret = self.client.consultarTiposComprobante(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -418,7 +418,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposContingencia(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n para cada tipo de contingencia que puede reportar"
+        "Obtener el código y descripción para cada tipo de contingencia que puede reportar"
         ret = self.client.consultarTiposContingencia(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -431,7 +431,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposMercaderia(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n  cÃ³digos y la descripciÃ³n para cada tipo de mercaderÃ­a"
+        "Obtener el código y descripción  códigos y la descripción para cada tipo de mercadería"
         ret = self.client.consultarTiposMercaderia(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -444,7 +444,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposEmbalaje(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n  cÃ³digos y la descripciÃ³n para cada tipo de embalaje"
+        "Obtener el código y descripción  códigos y la descripción para cada tipo de embalaje"
         ret = self.client.consultarTiposEmbalaje(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -457,7 +457,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposUnidades(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n  cÃ³digos y la descripciÃ³n para cada tipo de unidades de venta"
+        "Obtener el código y descripción  códigos y la descripción para cada tipo de unidades de venta"
         ret = self.client.consultarUnidadesVenta(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -470,7 +470,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposEstado(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n  cÃ³digos y la descripciÃ³n para cada tipo de estados por los cuales puede pasar un remito"
+        "Obtener el código y descripción  códigos y la descripción para cada tipo de estados por los cuales puede pasar un remito"
         ret = self.client.consultarTiposEstado(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -483,7 +483,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarPaises(self, sep="||"):
-        "Obtener el cÃ³digo y descripciÃ³n para los paises"
+        "Obtener el código y descripción para los paises"
         ret = self.client.consultarPaises(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -496,7 +496,7 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCodigosDomicilio(self, cuit_titular=1, sep="||"):
-        "Obtener el cÃ³digo de depositos que tiene habilitados para operar el cuit informado"
+        "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
         ret = self.client.consultarCodigosDomicilio(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -525,7 +525,7 @@ class WSRemHarina(BaseWS):
 
 
 
-# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
 elif sys.frozen=='dll':
@@ -552,12 +552,12 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "VersiÃ³n: ", __version__
+            print "Versión: ", __version__
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuraciÃ³n:", arg
+            print "Usando configuración:", arg
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -587,7 +587,7 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando ConfiguraciÃ³n:"
+            print "Usando Configuración:"
             print "wsaa_url:", wsaa_url
             print "wsremharina_url:", wsremharina_url
 
@@ -751,7 +751,7 @@ if __name__ == '__main__':
             with open(SALIDA, "w") as archivo:
                 json.dump(rec, archivo, sort_keys=True, indent=4, default=json_serializer)
 
-        # Recuperar parÃ¡metros:
+        # Recuperar parámetros:
 
         if '--tipos_comprobante' in sys.argv:
             ret = wsremharina.ConsultarTiposComprobante()

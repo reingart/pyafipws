@@ -10,8 +10,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""MÃ³dulo para la GestiÃ³n de cuentas corrientes de Facturas ElectrÃ³nicas de
-CrÃ©dito del servicio web FECredService versiÃ³n 1.0.1-rc1 (RG4367/18)
+"""Módulo para la Gestión de cuentas corrientes de Facturas Electrónicas de
+Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -20,16 +20,16 @@ __license__ = "LGPL 3.0"
 __version__ = "1.07a"
 
 LICENCIA = """
-wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÃDITO ELECTRÃNICA MiPyMEs
-ResoluciÃ³n General 4367/2018.
+wsfecred.py: Interfaz para REGISTRO DE FACTURAS de CRÉDITO ELECTRÓNICA MiPyMEs
+Resolución General 4367/2018.
 Copyright (C) 2019 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/FacturaCreditoElectronica
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para informaciÃ³n adicional sobre garantÃ­a, soporte tÃ©cnico comercial
-e incorporaciÃ³n/distribuciÃ³n en programas propietarios ver PyAfipWs:
+Para información adicional sobre garantía, soporte técnico comercial
+e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -37,26 +37,26 @@ AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
-  --debug: modo depuraciÃ³n (detalla y confirma las operaciones)
-  --prueba: genera y autoriza una rec de prueba (no usar en producciÃ³n!)
-  --xml: almacena los requerimientos y respuestas XML (depuraciÃ³n)
+  --debug: modo depuración (detalla y confirma las operaciones)
+  --prueba: genera y autoriza una rec de prueba (no usar en producción!)
+  --xml: almacena los requerimientos y respuestas XML (depuración)
   --dummy: consulta estado de servidores
 
-  --obligado: consultar monto obligado a recepcion (segÃºn CUIT)
-  --ctasctes: consultar cuentas corrientes generadas a partir de facturaciÃ³n
+  --obligado: consultar monto obligado a recepcion (según CUIT)
+  --ctasctes: consultar cuentas corrientes generadas a partir de facturación
   --ctacte: consultar detalle de cuenta corriente de una FCE
 
-  --aceptar: Aceptar el saldo actual de la Cta. Cte. de una Factura de CrÃ©dito
-  --rechazar: Rechazar la Cta. Cte. de una Factura ElectrÃ³nica de CrÃ©dito
-  --rechazar-ndc: Rechaza N/C o N/D (asociada a Factura ElectrÃ³nica de CrÃ©dito)
-  --informar-cancelacion-total: informa la cancelaciÃ³n total (pago) de una FEC
+  --aceptar: Aceptar el saldo actual de la Cta. Cte. de una Factura de Crédito
+  --rechazar: Rechazar la Cta. Cte. de una Factura Electrónica de Crédito
+  --rechazar-ndc: Rechaza N/C o N/D (asociada a Factura Electrónica de Crédito)
+  --informar-cancelacion-total: informa la cancelación total (pago) de una FEC
 
   --tipos_ajuste: tabla de parametros para tipo de ajuste
   --tipos_cancelacion: tabla de parametros para formas cancelacion
   --tipos_retencion: tabla de parametros para tipo de retenciones
   --tipos_rechazo: tabla de parametros para tipo de motivos de rechazo
 
-Ver rece.ini para parÃ¡metros de configuraciÃ³n (URL, certificados, etc.)"
+Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 from collections import OrderedDict
@@ -73,7 +73,7 @@ from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf, le
                   generar_csv, tabular
 
 
-# constantes de configuraciÃ³n (producciÃ³n/homologaciÃ³n):
+# constantes de configuración (producción/homologación):
 
 WSDL = ["https://serviciosjava.afip.gob.ar/wsfecred/FECredService?wsdl",
         "https://fwshomo.afip.gov.ar/wsfecred/FECredService?wsdl"]
@@ -85,7 +85,7 @@ HOMO = False
 
 
 class WSFECred(BaseWS):
-    "Interfaz para el WebService de Factura de CrÃ©dito Electronica"
+    "Interfaz para el WebService de Factura de Crédito Electronica"
     _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
                         'CrearFECred',  'AgregarFormasCancelacion', 'AgregarAjustesOperacion', 'AgregarRetenciones',
                         'AgregarConfirmarNotasDC', 'AgregarMotivoRechazo',
@@ -110,7 +110,7 @@ class WSFECred(BaseWS):
     HOMO = HOMO
     WSDL = WSDL[1]
     LanzarExcepciones = False
-    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
 
     def Conectar(self, *args, **kwargs):
         ret = BaseWS.Conectar(self, *args, **kwargs)
@@ -160,7 +160,7 @@ class WSFECred(BaseWS):
                     importe_cancelado=0.00, importe_embargo_pesos=0.00, importe_total_ret_pesos=0.00,
                     saldo_aceptado=0.00, tipo_cancelacion="TOT",
                     **kwargs):
-        "Inicializa internamente los datos de una Factura de CrÃ©dito ElectrÃ³nica para aceptacion/rechazo"
+        "Inicializa internamente los datos de una Factura de Crédito Electrónica para aceptacion/rechazo"
         self.factura = {
             'idCtaCte': {
                 ## "codCtaCte": 2561,
@@ -189,7 +189,7 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarAjustesOperacion(self, codigo=None, importe=0.00, **kwargs):
-        "Agrega la informaciÃ³n de los ajustes a la Factura de CrÃ©dito ElectrÃ³nica"
+        "Agrega la información de los ajustes a la Factura de Crédito Electrónica"
         self.factura['arrayAjustesOperacion'].append({
             'ajuste': {
                 'codigo': codigo,
@@ -200,7 +200,7 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarFormasCancelacion(self, codigo=None, descripcion=None, **kwargs):
-        "Agrega la informaciÃ³n de las formas de cancelaciÃ³n a la Factura de CrÃ©dito ElectrÃ³nica"
+        "Agrega la información de las formas de cancelación a la Factura de Crédito Electrónica"
         self.factura['arrayFormasCancelacion'].append({
             'codigoDescripcion': {
                 'codigo': codigo,
@@ -211,7 +211,7 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarRetenciones(self, cod_tipo=None, desc_motivo=None, importe=None, porcentaje=None, **kwargs):
-        "Agrega la informaciÃ³n de las retenciones a la Factura de CrÃ©dito ElectrÃ³nica"
+        "Agrega la información de las retenciones a la Factura de Crédito Electrónica"
         self.factura['arrayRetenciones'].append({
             'retencion': {
                 'codTipo': cod_tipo,
@@ -224,7 +224,7 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarConfirmarNotasDC(self, cuit_emisor, tipo_cbte, punto_vta, nro_cbte, acepta='S', **kwargs):
-        "Agrega la informaciÃ³n referente al viaje del remito electrÃ³nico cÃ¡rnico"
+        "Agrega la información referente al viaje del remito electrónico cárnico"
         self.factura['arrayConfirmarNotasDC'].append({
             'confirmarNota': {
                 'acepta': acepta,
@@ -240,7 +240,7 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarMotivoRechazo(self, cod_motivo, desc, justificacion, **kwargs):
-        "Agrega la informaciÃ³n referente al motivo de rechazo de una FCE"
+        "Agrega la información referente al motivo de rechazo de una FCE"
         self.factura['arrayMotivosRechazo'].append({
             'motivoRechazo': {
                 'codMotivo': cod_motivo,
@@ -252,7 +252,7 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AceptarFECred(self):
-        "Aceptar el saldo actual de la Cta. Cte. de una Factura de CrÃ©dito"
+        "Aceptar el saldo actual de la Cta. Cte. de una Factura de Crédito"
         # pudiendo indicar: pagos parciales, retenciones y/o embargos
         params = {
             'authRequest': {
@@ -273,7 +273,7 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def RechazarFECred(self):
-        "Rechazar la Cta. Cte. de una Factura ElectrÃ³nica de CrÃ©dito"
+        "Rechazar la Cta. Cte. de una Factura Electrónica de Crédito"
         # debiendo indicar el motivo del rechazo.
         params = {
             'authRequest': {
@@ -294,9 +294,9 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def RechazarNotaDC(self):
-        """Rechazar Notas de DÃ©bito / CrÃ©dito mientras la Factura de CrÃ©dito no haya sido Aceptada o Rechazada
+        """Rechazar Notas de Débito / Crédito mientras la Factura de Crédito no haya sido Aceptada o Rechazada
 
-        Al rechazarla no afectarÃ¡ a la Cta Cte. Debe indicar al menos un motivo de rechazo y justificarlo.        
+        Al rechazarla no afectará a la Cta Cte. Debe indicar al menos un motivo de rechazo y justificarlo.        
         """
         params = {
             'authRequest': {
@@ -320,7 +320,7 @@ class WSFECred(BaseWS):
     def InformarCancelacionTotalFECred(self):
         """El Comprador informa que le ha cancelado (pagado) totalmente la deuda al vendedor
 
-        Debe indicar dentro los plazos establecidos, la forma de cancelaciÃ³n (habiendo aceptado previamente la FECRED).
+        Debe indicar dentro los plazos establecidos, la forma de cancelación (habiendo aceptado previamente la FECRED).
         """
         params = {
             'authRequest': {
@@ -342,7 +342,7 @@ class WSFECred(BaseWS):
         return True
 
     def AnalizarFECred(self, ret, archivo=None):
-        "Extrae el resultado de la Factura de CrÃ©dito ElectrÃ³nica, si existen en la respuesta XML"
+        "Extrae el resultado de la Factura de Crédito Electrónica, si existen en la respuesta XML"
         if ret:
             id_cta_cte = ret.get("idCtaCte", {})
             self.CodCtaCte = id_cta_cte.get("codCtaCte")
@@ -357,7 +357,7 @@ class WSFECred(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarTiposAjustesOperacion(self, sep="||"):
         "Listar los tipos de ajustes disponibles"
-        # para informar la aceptaciÃ³n de una Factura ElectrÃ³nica de CrÃ©dito y su Cuenta Corriente vinculada
+        # para informar la aceptación de una Factura Electrónica de Crédito y su Cuenta Corriente vinculada
         ret = self.client.consultarTiposAjustesOperacion(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -370,8 +370,8 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposFormasCancelacion(self, sep="||"):
-        "Listar los tipos de formas de cancelaciÃ³n habilitados para una Factura ElectrÃ³nica de CrÃ©dito"
-        # para informar la aceptaciÃ³n de una Factura ElectrÃ³nica de CrÃ©dito y su Cuenta Corriente vinculada
+        "Listar los tipos de formas de cancelación habilitados para una Factura Electrónica de Crédito"
+        # para informar la aceptación de una Factura Electrónica de Crédito y su Cuenta Corriente vinculada
         ret = self.client.consultarTiposFormasCancelacion(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -385,7 +385,7 @@ class WSFECred(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarTiposMotivosRechazo(self, sep="||"):
         "Listar los tipos de  motivos de rechazo habilitados para una cta. cte."
-        # para informar la aceptaciÃ³n de una Factura ElectrÃ³nica de CrÃ©dito y su Cuenta Corriente vinculada
+        # para informar la aceptación de una Factura Electrónica de Crédito y su Cuenta Corriente vinculada
         ret = self.client.consultarTiposMotivosRechazo(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -398,8 +398,8 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarTiposRetenciones(self, sep="||"):
-        "Listar los tipos de retenciones habilitados para una Factura ElectrÃ³nica de CrÃ©dito"
-        # para informar la aceptaciÃ³n de una Factura ElectrÃ³nica de CrÃ©dito y su Cuenta Corriente vinculada
+        "Listar los tipos de retenciones habilitados para una Factura Electrónica de Crédito"
+        # para informar la aceptación de una Factura Electrónica de Crédito y su Cuenta Corriente vinculada
         ret = self.client.consultarTiposRetenciones(
                             authRequest={
                                 'token': self.Token, 'sign': self.Sign,
@@ -413,7 +413,7 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarMontoObligadoRecepcion(self, cuit_consultada, fecha_emision=None):
-        "Conocer la obligaciÃ³n respecto a la emisiÃ³n o recepciÃ³n de Facturas de CrÃ©ditos"
+        "Conocer la obligación respecto a la emisión o recepción de Facturas de Créditos"
         if not fecha_emision:
             fecha_emision = datetime.datetime.today().strftime("%Y-%m-%d")
         response = self.client.consultarMontoObligadoRecepcion(
@@ -436,7 +436,7 @@ class WSFECred(BaseWS):
     @inicializar_y_capturar_excepciones
     def ConsultarCtasCtes(self, cuit_contraparte=None, rol="Receptor",
                           fecha_desde=None, fecha_hasta=None, fecha_tipo="Emision"):
-        """Obtener las cuentas corrientes que fueron generadas a partir de la facturaciÃ³n
+        """Obtener las cuentas corrientes que fueron generadas a partir de la facturación
 
         Args:
             cuit_contraparte (str): Cuit de la contraparte, que ocupa el rol opuesto (CUITContraparte)
@@ -444,12 +444,12 @@ class WSFECred(BaseWS):
                 "Emisor" o "Receptor"
             fecha_desde (str): Fecha Desde, si no se indica se usa "2019-01-01"
             fecha_hasta (str): Fecha Hasta, si no se indica se usa la fecha de hoy
-            fecha_tipo (str): permite determinar sobre quÃ© fecha vamos a hacer el filtro (TipoFechaSimpleType)
-                "Emision": Fecha de EmisiÃ³n
-                "PuestaDispo": Fecha puesta a DisposiciÃ³n
+            fecha_tipo (str): permite determinar sobre qué fecha vamos a hacer el filtro (TipoFechaSimpleType)
+                "Emision": Fecha de Emisión
+                "PuestaDispo": Fecha puesta a Disposición
                 "VenPago": Fecha vencimiento de pago
-                "VenAcep": Fecha vencimiento aceptaciÃ³n
-                "Acep": Fecha aceptaciÃ³n
+                "VenAcep": Fecha vencimiento aceptación
+                "Acep": Fecha aceptación
                 "InfoAgDptoCltv": Fecha informada a Agente de Deposito
         
         Returns:
@@ -499,10 +499,10 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def LeerCtaCte(self, pos=0):
-        """Leer la cuenta corriente generada a partir de la facturaciÃ³n
+        """Leer la cuenta corriente generada a partir de la facturación
 
         Args:
-            pos (int): posiciÃ³n de la cuenta corriente (0 a n)
+            pos (int): posición de la cuenta corriente (0 a n)
 
         Returns:
             dict: elemento de la cuenta corriente: {
@@ -531,8 +531,8 @@ class WSFECred(BaseWS):
         """Leer un campo de la cta. cte. devuelto por ConsultarCtasCtes
 
         Args:
-            pos (int): posiciÃ³n del comprobante (0 a n)
-            campos (int o str): clave string (dict) o una posiciÃ³n int (list)
+            pos (int): posición del comprobante (0 a n)
+            campos (int o str): clave string (dict) o una posición int (list)
 
         Returns:
             str: valor del campo del comprobante
@@ -553,14 +553,14 @@ class WSFECred(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def ConsultarCtaCte(self, cuit_emisor=None, tipo_cbte=None, punto_vta=None, nro_cbte=None, cod_cta_cte=None):
-        """Obtener el detalle y composiciÃ³n de una Cuenta Corriente de una Factura ElectrÃ³nica de CrÃ©dito.
+        """Obtener el detalle y composición de una Cuenta Corriente de una Factura Electrónica de Crédito.
 
         Args:
             cuit_emisor (str): Cuit del emisor de la FCE
             tipo_cbte (int): Tipo de comprobante de la FCE
             punto_vta (int): Punto de Venta de la FCE
             nro_cbte (int): Numero de comprobante de la FCE
-            cod_cta_cte (int): cÃ³digo que identifica la cta.cte. (alt)
+            cod_cta_cte (int): código que identifica la cta.cte. (alt)
 
         Returns:
             int: cantidad de cuentas corrientes
@@ -617,7 +617,7 @@ class WSFECred(BaseWS):
     def ConsultarComprobantes(self, cuit_contraparte=None, rol="Receptor",
                           fecha_desde=None, fecha_hasta=None, fecha_tipo="Emision",
                           cod_tipo_cmp=None, estado_cmp=None, cod_cta_cte=None, estado_cta_cte=None):
-        """Obtener informaciÃ³n sobre los comprobantes Emitidos y Recibidos
+        """Obtener información sobre los comprobantes Emitidos y Recibidos
 
         Args:
             cuit_contraparte (str): Cuit de la contraparte, que ocupa el rol opuesto (CUITContraparte)
@@ -625,22 +625,22 @@ class WSFECred(BaseWS):
                 "Emisor" o "Receptor"
             fecha_desde (str): Fecha Desde, si no se indica se usa "2019-01-01"
             fecha_hasta (str): Fecha Hasta, si no se indica se usa la fecha de hoy
-            fecha_tipo (str): permite determinar sobre quÃ© fecha vamos a hacer el filtro (TipoFechaSimpleType)
-                "Emision": Fecha de EmisiÃ³n
-                "PuestaDispo": Fecha puesta a DisposiciÃ³n
+            fecha_tipo (str): permite determinar sobre qué fecha vamos a hacer el filtro (TipoFechaSimpleType)
+                "Emision": Fecha de Emisión
+                "PuestaDispo": Fecha puesta a Disposición
                 "VenPago": Fecha vencimiento de pago
-                "VenAcep": Fecha vencimiento aceptaciÃ³n
-                "Acep": Fecha aceptaciÃ³n
+                "VenAcep": Fecha vencimiento aceptación
+                "Acep": Fecha aceptación
                 "InfoAgDptoCltv": Fecha informada a Agente de Deposito
-            cod_tipo_cmp (int): CÃ³digo del Tipo de comprobante
+            cod_tipo_cmp (int): Código del Tipo de comprobante
             estado_cmp (str): Estado del comprobante
                 "PendienteRecepcion", "Recepcionado", "Aceptado", "Rechazado", "InformadaAgDpto"
-            cod_cta_cte (int): CÃ³digo de la Cuenta Corriente
+            cod_cta_cte (int): Código de la Cuenta Corriente
             estado_cta_cte (str): Estado de la cuenta corriente a consultar
                 "Modificable", "Aceptada", "Rechazada", "CanceladaTotal", "InformadaAgDpto"        
 
         Returns:
-            int: cantidad de comprobantes que coinciden con el filtro de bÃºsqueda
+            int: cantidad de comprobantes que coinciden con el filtro de búsqueda
         """
         if not fecha_desde:
             fecha_desde = datetime.datetime.today().strftime("2019-01-01")
@@ -753,8 +753,8 @@ class WSFECred(BaseWS):
         """Leer un campo del comprobante devuelto por ConsultarComprobantes
 
         Args:
-            pos (int): posiciÃ³n del comprobante (0 a n)
-            campos (int o str): clave string (dict) o una posiciÃ³n int (list)
+            pos (int): posición del comprobante (0 a n)
+            campos (int o str): clave string (dict) o una posición int (list)
 
         Returns:
             str: valor del campo del comprobante
@@ -773,7 +773,7 @@ class WSFECred(BaseWS):
         return str(ret)
 
 
-# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
     basepath = __file__
 elif sys.frozen=='dll':
@@ -965,12 +965,12 @@ if __name__ == '__main__':
     try:
     
         if "--version" in sys.argv:
-            print "VersiÃ³n: ", __version__
+            print "Versión: ", __version__
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuraciÃ³n:", arg
+            print "Usando configuración:", arg
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -1000,7 +1000,7 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando ConfiguraciÃ³n:"
+            print "Usando Configuración:"
             print "wsaa_url:", wsaa_url
             print "wsfecred_url:", wsfecred_url
 
@@ -1045,7 +1045,7 @@ if __name__ == '__main__':
                 fecha_hasta = argv.get(4)
                 fecha_tipo= argv.get(5, "Emision")
             except (IndexError, ValueError) as ex:
-                raise RuntimeError("Revise los parÃ¡metros: %s" % ex)
+                raise RuntimeError("Revise los parámetros: %s" % ex)
             ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol, fecha_desde, fecha_hasta, fecha_tipo)
             print "Observaciones:", wsfecred.Obs
             formato = FORMATOS["cta_cte"]
@@ -1069,7 +1069,7 @@ if __name__ == '__main__':
                     punto_vta = argv.get(3)
                     nro_cbte = argv.get(4)
             except (IndexError, ValueError) as ex:
-                raise RuntimeError("Revise los parÃ¡metros: %s" % ex)
+                raise RuntimeError("Revise los parámetros: %s" % ex)
             ret = wsfecred.ConsultarCtaCte(cuit_emisor, tipo_cbte, punto_vta, nro_cbte, cod_cta_cte)
             print "Observaciones:", wsfecred.Obs
             formato = FORMATOS["cta_cte"]
@@ -1182,7 +1182,7 @@ if __name__ == '__main__':
         if '--formato' in sys.argv:
             formato_txt(FORMATOS, REGISTROS)
 
-        # Recuperar parÃ¡metros:
+        # Recuperar parámetros:
 
         if '--tipos_ajuste' in sys.argv:
             ret = wsfecred.ConsultarTiposAjustesOperacion()

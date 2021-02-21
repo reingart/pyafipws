@@ -10,9 +10,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"Herramienta para procesar y consultar el PadrÃ³n Unico de Contribuyentes AFIP"
+"Herramienta para procesar y consultar el Padrón Unico de Contribuyentes AFIP"
 
-# DocumentaciÃ³n e informaciÃ³n adicional: 
+# Documentación e información adicional: 
 #    http://www.sistemasagiles.com.ar/trac/wiki/PadronContribuyentesAFIP
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -37,7 +37,7 @@ from utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
                   exception_info
 
 
-# formato y ubicaciÃ³n archivo completo de la condiciÃ³n tributaria segÃºn RG 1817
+# formato y ubicación archivo completo de la condición tributaria según RG 1817
 
 FORMATO = [
     ("nro_doc", 11, N, ""),
@@ -71,7 +71,7 @@ URL_API = "https://soa.afip.gob.ar/"
 
 
 class PadronAFIP():
-    "Interfaz para consultar situaciÃ³n tributaria (Constancia de Inscripcion)"
+    "Interfaz para consultar situación tributaria (Constancia de Inscripcion)"
 
     _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
                         'ConsultarDomicilios', 'Consultar', 'Conectar',
@@ -241,7 +241,7 @@ class PadronAFIP():
     @inicializar_y_capturar_excepciones_simple
     def Buscar(self, nro_doc, tipo_doc=80):
         "Devuelve True si fue encontrado y establece atributos con datos"
-        # cuit: codigo Ãºnico de identificaciÃ³n tributaria del contribuyente
+        # cuit: codigo único de identificación tributaria del contribuyente
         #       (sin guiones)
         self.cursor.execute("SELECT * FROM padron WHERE "
                             " tipo_doc=? AND nro_doc=?", [tipo_doc, nro_doc])
@@ -258,7 +258,7 @@ class PadronAFIP():
             self.cuit = self.nro_doc
         elif self.tipo_doc == 96:
             self.dni = self.nro_doc
-        # determinar categorÃ­a de IVA (tentativa)
+        # determinar categoría de IVA (tentativa)
         try:
             cat_iva = int(self.cat_iva)
         except ValueError:
@@ -322,7 +322,7 @@ class PadronAFIP():
 
     @inicializar_y_capturar_excepciones_simple
     def Consultar(self, nro_doc):
-        "Llama a la API pÃºblica de AFIP para obtener los datos de una persona"
+        "Llama a la API pública de AFIP para obtener los datos de una persona"
         n = 0
         while n <= 4:
             n += 1                          # reintentar 3 veces
@@ -421,7 +421,7 @@ class PadronAFIP():
 
     @inicializar_y_capturar_excepciones_simple
     def ObtenerTablaParametros(self, tipo_recurso, sep="||"):
-        "Devuelve un array de elementos que tienen id y descripciÃ³n"        
+        "Devuelve un array de elementos que tienen id y descripción"        
         if not self.client:
             self.Conectar()
         self.response = self.client("parametros", "v1", tipo_recurso)
@@ -445,7 +445,7 @@ class PadronAFIP():
         
 
 
-# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
+# busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
 if __name__ == "__main__":
@@ -506,7 +506,7 @@ if __name__ == "__main__":
                         print "Consultando AFIP local...", cuit,
                         ok = padron.Buscar(cuit)
                     print 'ok' if ok else "error", padron.Excepcion
-                    # domicilio posiblemente estÃ© en Latin1, normalizar
+                    # domicilio posiblemente esté en Latin1, normalizar
                     csv_writer.writerow([norm(getattr(padron, campo, ""))
                                          for campo in columnas])
         elif "--reconex" in sys.argv:

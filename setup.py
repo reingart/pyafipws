@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf8 -*-
+# -*- coding: latin-1 -*-
 
 # Para hacer el ejecutable:
 #       python setup.py py2exe 
@@ -81,12 +81,12 @@ if 'py2exe' in sys.argv:
             import designer     
     except ImportError:
         # el script pyfpdf/tools/designer.py no esta disponible:
-        print "IMPORTANTE: no se incluye el diseÃ±ador de plantillas PDF"
+        print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
 
     # parametros para setup:
     kwargs = {}
 
-    # incluyo mis certificados para homologaciÃ³n (si existen)
+    # incluyo mis certificados para homologación (si existen)
     if os.path.exists("reingart.crt"):
         data_files.append(("conf", ["reingart.crt", "reingart.key"]))
         
@@ -643,7 +643,7 @@ if 'py2exe' in sys.argv:
     except ImportError:
         pass
 
-    # agrego tag de homologaciÃ³n (testing - modo evaluaciÃ³n):
+    # agrego tag de homologación (testing - modo evaluación):
     __version__ += "-homo" if HOMO else "-full"
     
     # agrego ejemplos
@@ -662,10 +662,10 @@ else:
 
 
 long_desc = ("Interfases, herramientas y aplicativos para Servicios Web"  
-             "AFIP (Factura ElectrÃ³nica, Granos, Aduana, etc.), "
+             "AFIP (Factura Electrónica, Granos, Aduana, etc.), "
              "ANMAT (Trazabilidad de Medicamentos), "
-             "RENPRE (Trazabilidad de Precursores QuÃ­micos), "
-             "ARBA (Remito ElectrÃ³nico)")
+             "RENPRE (Trazabilidad de Precursores Químicos), "
+             "ARBA (Remito Electrónico)")
 
 # convert the README and format in restructured text (only when registering)
 if "sdist" in sys.argv and os.path.exists("README.md") and sys.platform == "linux2":
