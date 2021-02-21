@@ -1,6 +1,6 @@
 httplib2==0.9.2
 pysimplesoap==1.08.14
-m2crypto>=0.18
+#m2crypto>=0.18
 fpdf>=1.7.2
 dbf>=0.88.019
 Pillow>=2.0.0
