@@ -33,6 +33,3 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-
-# Pycharm
-.idea*
