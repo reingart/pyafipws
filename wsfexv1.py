@@ -536,7 +536,7 @@ class WSFEXv1(BaseWS):
             return mons
 
     @inicializar_y_capturar_excepciones
-    def GetParamPtosVenta(self, sep="|"):
+    def GetParamPtosVenta(self):
         "Recupera el listado de los puntos de venta para exportacion y estado"
         ret = self.client.FEXGetPARAM_PtoVenta(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
@@ -547,8 +547,8 @@ class WSFEXv1(BaseWS):
         for pu in res:
             p = pu['ClsFEXResponse_PtoVenta']
             try:
-                r = {'nro': p.get('Pve_Nro'), 'baja': p.get('Pve_FchBaj'),
-                     'bloqueado': p.get('Pve_Bloqueado'), }
+                r = {'nro': u.get('Pve_Nro'), 'baja': u.get('Pve_FchBaj'),
+                     'bloqueado': u.get('Pve_Bloqueado'), }
             except Exception, e:
                 print e
             ret.append(r)
