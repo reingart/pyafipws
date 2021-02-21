@@ -749,7 +749,7 @@ def main():
     if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
         import wsaa
         tra = wsaa.create_tra(service="wscoc")
-        cms = wsaa.sign_tra(tra,"olano.crt", "olanoycia.key")
+        cms = wsaa.sign_tra(tra,"reingart.crt", "reingart.key")
         ta_string = wsaa.call_wsaa(cms, trace='--trace' in sys.argv)
         open(TA,"w").write(ta_string)
     
