@@ -42,7 +42,11 @@ from decimal import Decimal
 from urllib.parse import urlencode
 from urllib.parse import urlparse
 import unicodedata
-import mimetools, mimetypes
+import mimetypes
+try:
+    from mimetools import choose_boundary
+except ImportError:
+    from email.generator import _make_boundary as choose_boundary
 from html.parser import HTMLParser
 from http.cookies import SimpleCookie
 from configparser import SafeConfigParser
@@ -474,7 +478,7 @@ class WebClient(object):
 
     def multipart_encode(self, vars):
         "Enconde form data (vars dict)"
-        boundary = mimetools.choose_boundary()
+        boundary = choose_boundary()
         buf = StringIO()
         for key, value in list(vars.items()):
             if not isinstance(value, file):
@@ -953,7 +957,7 @@ def safe_console():
                 self.errors = 'replace'
                 self.encode_to = 'latin-1'
             def write(self, s):
-                self.target.write(self.intercept(s))        
+                self.target.write(self.intercept(s).decode("utf8"))        
             def flush(self):
                 self.target.flush()
             def intercept(self, s):
