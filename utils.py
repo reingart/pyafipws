@@ -336,7 +336,7 @@ class BaseWS(object):
         if not self.Log:
             self.Log = StringIO()
         self.Log.write(msg)
-        self.Log.write(str('\n\r', 'utf8', 'ignore'))
+        self.Log.write(u'\n\r')
         if DEBUG:
             warnings.warn(msg)
 
