@@ -379,7 +379,7 @@ class FEPDF(object):
         
         if DEBUG: print("abriendo archivo ", archivo)
 
-        for lno, linea in enumerate(open(archivo.encode('latin1'), encoding="latin1").readlines()):
+        for lno, linea in enumerate(open(archivo.encode('latin1')).readlines()):
             if DEBUG: print("procesando linea ", lno, linea)
             args = []
             for i,v in enumerate(linea.split(";")):
