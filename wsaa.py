@@ -268,7 +268,7 @@ class WSAA(BaseWS):
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
         results = self.client.loginCms(in0=str(cms))
-        ta_xml = results['loginCmsReturn'].encode("utf-8")
+        ta_xml = results['loginCmsReturn']
         self.xml = ta = SimpleXMLElement(ta_xml)
         self.Token = str(ta.credentials.token)
         self.Sign = str(ta.credentials.sign)
