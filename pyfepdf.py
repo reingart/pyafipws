@@ -1004,7 +1004,7 @@ if __name__ == '__main__':
         # start the server.
         win32com.server.localserver.serve([FEPDF._reg_clsid_])
     else:
-        from configparser import SafeConfigParser
+        from .utils import SafeConfigParser
 
         DEBUG = '--debug' in sys.argv
         utils.safe_console()
@@ -1255,6 +1255,7 @@ if __name__ == '__main__':
 
         fepdf.CrearPlantilla(papel=conf_fact.get("papel", "legal"), 
                              orientacion=conf_fact.get("orientacion", "portrait"))
+
         fepdf.ProcesarPlantilla(num_copias=int(conf_fact.get("copias", 1)),
                                 lineas_max=int(conf_fact.get("lineas_max", 24)),
                                 qty_pos=conf_fact.get("cant_pos") or 'izq')
