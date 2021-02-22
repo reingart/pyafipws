@@ -49,7 +49,10 @@ except ImportError:
     from email.generator import _make_boundary as choose_boundary
 from html.parser import HTMLParser
 from http.cookies import SimpleCookie
-from configparser import SafeConfigParser
+try:
+    from ConfigParser import SafeConfigParser
+except ImportError:
+    from configparser import ConfigParser as SafeConfigParser 
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
@@ -333,7 +336,7 @@ class BaseWS(object):
         if not self.Log:
             self.Log = StringIO()
         self.Log.write(msg)
-        self.Log.write('\n\r')
+        self.Log.write(str('\n\r', 'utf8', 'ignore'))
         if DEBUG:
             warnings.warn(msg)
 
