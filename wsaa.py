@@ -107,8 +107,11 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
         s.write(out, p7)                        # Generar p7 en formato mail
         #Rand.save_file('randpool.dat')         # Guardar el estado del PRNG's
 
+        msg_out = out.read()
+        if isinstance(msg_out, bytes):
+            msg_out = msg_out.decode("utf8")
         # extraer el cuerpo del mensaje (parte firmada)
-        msg = email.message_from_string(out.read())
+        msg = email.message_from_string(msg_out)
         for part in msg.walk():
             filename = part.get_filename()
             if filename == "smime.p7m":                 # es la parte firmada?
