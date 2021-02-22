@@ -91,11 +91,11 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
         # soporte de contraseña de encriptación (clave privada, opcional)
         callback = lambda *args, **kwarg: passphrase
         # Cargar clave privada y certificado
-        if not privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
+        if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
             # leer contenido desde archivo (evitar problemas Applink / MSVCRT)
             if os.path.exists(privatekey) and os.path.exists(cert):
-                privatekey = open(privatekey).read()
-                cert = open(cert).read()
+                privatekey = open(privatekey, "rb").read()
+                cert = open(cert, "rb").read()
             else:
                 raise RuntimeError("Archivos no encontrados: %s, %s" % (privatekey, cert))
         # crear buffers en memoria de la clave privada y certificado:
