@@ -68,29 +68,24 @@ except ImportError:
 try:
     import httplib2
     # corregir temas de negociacion de SSL en algunas versiones de ubuntu:
-    import platform
-    dist, ver, nick = platform.linux_distribution() if sys.version_info > (2, 6) else ("", "", "")
-    release, ver, csd, ptype = platform.win32_ver() if sys.version_info > (2, 6) else ("", "", "", "")
+    import platform, distro
+    dist, ver, nick = distro.linux_distribution() if sys.version_info > (2, 6) else ("", "", "")
+    release, winver, csd, ptype = platform.win32_ver() if sys.version_info > (2, 6) else ("", "", "", "")
     from pysimplesoap.client import SoapClient
-    monkey_patch = httplib2._ssl_wrap_socket.__module__ != "httplib2"
+    monkey_patch = httplib2._build_ssl_context.__module__ != "httplib2"
     if dist:
-        needs_patch = (dist == 'Ubuntu' and ver == '14.04')
+        needs_patch = (dist == 'Ubuntu' and ver == '14.04') or (dist == 'Ubuntu' and ver >= '20.04')
     elif release:
         needs_patch = (release in 'XP')
     else:
         needs_patch = False 
     if needs_patch and not monkey_patch:
-        import ssl
-        def _ssl_wrap_socket(sock, key_file, cert_file,
-                             disable_validation, ca_certs):
-            if disable_validation:
-                cert_reqs = ssl.CERT_NONE
-            else:
-                cert_reqs = ssl.CERT_REQUIRED
-            return ssl.wrap_socket(sock, keyfile=key_file, certfile=cert_file,
-                           cert_reqs=cert_reqs, ca_certs=ca_certs,
-                           ssl_version=ssl.PROTOCOL_TLSv1)
-        httplib2._ssl_wrap_socket = _ssl_wrap_socket
+        _build_ssl_context = httplib2._build_ssl_context
+        def _build_ssl_context_new(*args, **kwargs):
+            context = _build_ssl_context(*args, **kwargs)
+            context.set_ciphers("AES128-SHA")
+            return context
+        httplib2._build_ssl_context = _build_ssl_context_new
 
 except:
     print("para soporte de WebClient debe instalar httplib2")
