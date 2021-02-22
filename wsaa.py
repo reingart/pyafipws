@@ -300,7 +300,7 @@ class WSAA(BaseWS):
                 if not os.access(filename,os.R_OK):
                     raise RuntimeError("Imposible abrir %s\n" % filename)
             # creo el nombre para el archivo del TA (según credenciales y ws) 
-            fn = "TA-%s.xml" % hashlib.md5(service + crt + key).hexdigest()
+            fn = "TA-%s.xml" % hashlib.md5((service + crt + key).encode("utf8")).hexdigest()
             if cache:
                 fn = os.path.join(cache, fn)
             else:
