@@ -436,10 +436,13 @@ class FEPDF(object):
         # sanity check:
         for field in self.elements:
             # si la imagen no existe, eliminar nombre para que no falle fpdf
-            if field['type'] == 'I' and not os.path.exists(field["text"]):
+            text = field["text"]
+            if text and not isinstance(text, str):
+                text = str(text, "latin1", "ignore")
+            if field['type'] == 'I' and not os.path.exists(text):
                 # ajustar rutas relativas a las imágenes predeterminadas:
-                if os.path.exists(os.path.join(self.InstallDir, field["text"])):
-                    field['text'] = os.path.join(self.InstallDir, field["text"])
+                if os.path.exists(os.path.join(self.InstallDir, text)):
+                    field['text'] = os.path.join(self.InstallDir, text)
                 else:
                     field['text'] = ""
                     ##field['type'] = "T"
