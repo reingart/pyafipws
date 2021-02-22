@@ -408,7 +408,7 @@ class FEPDF(object):
         # convierto colores de string (en hexadecimal)
         if isinstance(foreground, basestring): foreground = int(foreground, 16)
         if isinstance(background, basestring): background = int(background, 16)
-        if isinstance(text, str): text = text.encode("latin1")
+        if isinstance(text, str): text = text
         field = {
                 'name': nombre, 
                 'type': tipo, 
