@@ -52,7 +52,10 @@ from http.cookies import SimpleCookie
 try:
     from ConfigParser import SafeConfigParser
 except ImportError:
-    from configparser import ConfigParser as SafeConfigParser 
+    # python3 workaround to read config files not in utf8
+    from configparser import ConfigParser as SafeConfigParser
+    import codecs
+    SafeConfigParser.read = lambda self, filename: self.read_file(codecs.open(filename, "r", "latin1"))
 
 from pysimplesoap.client import SimpleXMLElement, SoapClient, SoapFault, parse_proxy, set_http_wrapper
 
