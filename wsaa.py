@@ -85,7 +85,7 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
 
     if BIO:
         # Firmar el texto (tra) usando m2crypto (openssl bindings para python)
-        buf = BIO.MemoryBuffer(tra)             # Crear un buffer desde el texto
+        buf = BIO.MemoryBuffer(tra.encode("utf8"))             # Crear un buffer desde el texto
         #Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
         s = SMIME.SMIME()                       # Instanciar un SMIME
         # soporte de contraseña de encriptación (clave privada, opcional)
