@@ -12,10 +12,15 @@
 
 """Módulo para Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP Disp. 3683/11
 según Especificación Técnica para Pruebas de Servicios v2 (2013)"""
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Información adicional y documentación:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -30,10 +35,10 @@ import pysimplesoap.client
 from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
                                 set_http_wrapper
 from pysimplesoap.simplexml import SimpleXMLElement
-from cStringIO import StringIO
+from io import StringIO
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf, get_install_dir, BaseWS, inicializar_y_capturar_excepciones
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf, get_install_dir, BaseWS, inicializar_y_capturar_excepciones
 
 HOMO = False
 TYPELIB = False
@@ -737,7 +742,7 @@ def main():
     
     if '--prod' in sys.argv and not HOMO:
         WSDL = "https://trazabilidad.pami.org.ar:9050/trazamed.WebService"
-        print "Usando WSDL:", WSDL
+        print("Usando WSDL:", WSDL)
         sys.argv.pop(sys.argv.index("--prod"))
 
     # Inicializo las variables y estructuras para el archivo de intercambio:
@@ -750,19 +755,19 @@ def main():
                ]
 
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato, lista in formatos:
             comienzo = 1
-            print "=== %s ===" % msg
-            print "|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (  
-                "Nombre", "Tipo", "Long.", "Pos(txt)", "Campo(dbf)")
+            print("=== %s ===" % msg)
+            print("|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (  
+                "Nombre", "Tipo", "Long.", "Pos(txt)", "Campo(dbf)"))
             claves = []
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 clave_dbf = dar_nombre_campo_dbf(clave, claves)
                 claves.append(clave_dbf)
-                print "|| %-25s || %-12s || %5d ||   %4d   || %-10s ||" % (
-                    clave, tipo, longitud, comienzo, clave_dbf)
+                print("|| %-25s || %-12s || %5d ||   %4d   || %-10s ||" % (
+                    clave, tipo, longitud, comienzo, clave_dbf))
                 comienzo += longitud
         sys.exit(0)
         
@@ -784,13 +789,13 @@ def main():
                 archivo.close()
                 if DEBUG:
                     for campo in campos:
-                        print campo[0], "=", lista[0][campo[0]]
+                        print(campo[0], "=", lista[0][campo[0]])
         
     ws.Conectar("", WSDL)
     
     if ws.Excepcion:
-        print ws.Excepcion
-        print ws.Traceback
+        print(ws.Excepcion)
+        print(ws.Traceback)
         sys.exit(-1)
     
     # Datos de pruebas:
@@ -903,31 +908,31 @@ def main():
                                 #lote=88745,
                                 #numero_serial=894124788,
                                 )
-        print "CantPaginas", ws.CantPaginas
-        print "HayError", ws.HayError
+        print("CantPaginas", ws.CantPaginas)
+        print("HayError", ws.HayError)
         #print "TransaccionPlainWS", ws.TransaccionPlainWS
         # parametros comunes de salida (columnas de la tabla):
         claves = [k for k, v, l in TRANSACCIONES]
         # extiendo la lista de resultado para el archivo de intercambio:
         transacciones.extend(ws.TransaccionPlainWS)
         # encabezado de la tabla:
-        print "||", "||".join(["%s" % clave for clave in claves]), "||"
+        print("||", "||".join(["%s" % clave for clave in claves]), "||")
         # recorro los datos devueltos (TransaccionPlainWS):
         while ws.LeerTransaccion():     
             for clave in claves:
-                print "||", ws.GetParametro(clave),         # imprimo cada fila
-            print "||"
+                print("||", ws.GetParametro(clave), end=' ')         # imprimo cada fila
+            print("||")
     elif '--catalogo' in sys.argv:
         ret = ws.GetCatalogoElectronicoByGTIN(
                                 *sys.argv[sys.argv.index("--catalogo")+1:]
                                 )
-        for catalogo in ws.params_out.values():
-            print catalogo        # imprimo cada fila
+        for catalogo in list(ws.params_out.values()):
+            print(catalogo)        # imprimo cada fila
     elif '--stock' in sys.argv:
         ret = ws.GetConsultaStock(
                             *sys.argv[sys.argv.index("--stock")+1:]
                             )
-        print "\n".join([str(s) for s in ws.params_out.values()])
+        print("\n".join([str(s) for s in list(ws.params_out.values())]))
     else:
         argv = [argv for argv in sys.argv if not argv.startswith("--")]
         if not medicamentos:
@@ -939,15 +944,15 @@ def main():
                 else:
                     ws.SendMedicamentos(*argv[1:])
             else:
-                print "ERROR: no se indicaron todos los parámetros requeridos"
+                print("ERROR: no se indicaron todos los parámetros requeridos")
         elif medicamentos:
             try:
                 usuario, password = argv[1:3]
             except:
-                print "ADVERTENCIA: no se indico parámetros usuario y passoword"
+                print("ADVERTENCIA: no se indico parámetros usuario y passoword")
                 usuario = password = "pruebasws"
             for i, med in enumerate(medicamentos):
-                print "Procesando registro", i
+                print("Procesando registro", i)
                 del med['codigo_transaccion']
                 if med.get("cantidad"):
                     del med["desde_numero_serial"]
@@ -964,23 +969,23 @@ def main():
                     ws.SendMedicamentos(usuario, password, **med)
                 med['codigo_transaccion'] = ws.CodigoTransaccion
                 errores.extend(ws.errores)
-                print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+                print("|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                     ws.Resultado,
                     ws.CodigoTransaccion,
                     '|'.join(ws.Errores or []),
-                    )
+                    ))
         else:
-            print "ERROR: no se especificaron medicamentos a informar"
+            print("ERROR: no se especificaron medicamentos a informar")
             
     if not medicamentos:
-        print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+        print("|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                 ws.Resultado,
                 ws.CodigoTransaccion,
                 '|'.join(ws.Errores or []),
-                )
+                ))
 
     if ws.Excepcion:
-        print ws.Traceback
+        print(ws.Traceback)
 
     if '--grabar' in sys.argv:
         if '--dbf' in sys.argv:
@@ -1015,7 +1020,7 @@ if __name__ == '__main__':
         if TYPELIB: 
             if '--register' in sys.argv:
                 tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "trazamed.tlb"))
-                print "Registering %s" % (tlb,)
+                print("Registering %s" % (tlb,))
                 tli=pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)
             elif '--unregister' in sys.argv:
@@ -1025,7 +1030,7 @@ if __name__ == '__main__':
                                             k._typelib_version_[1], 
                                             0, 
                                             pythoncom.SYS_WIN32)
-                print "Unregistered typelib"
+                print("Unregistered typelib")
         import win32com.server.register
         win32com.server.register.UseCommandLine(TrazaMed)
     elif "/Automate" in sys.argv:

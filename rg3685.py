@@ -11,68 +11,70 @@
 # for more details.
 
 "Régimen de información de Compras y Ventas RG3685/14 AFIP"
+from __future__ import print_function
+from __future__ import absolute_import
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
 __version__ = "1.01a"
 
-import sys 
-from utils import leer, escribir, C, N, A, I, B, get_install_dir
+import sys
+from .utils import leer, escribir, C, N, A, I, B, get_install_dir
 
 
 # Diseño de registro de Importación de comprobantes de Ventas
 
 REGINFO_CV_VENTAS_CBTE = [
-    ('fecha_cbte', 8, N),
-    ('tipo_cbte', 3, N),
-    ('punto_vta', 5, N),
-    ('cbt_desde', 20, N),
-    ('cbt_hasta', 20, N),
-    ('tipo_doc', 2, N),
-    ('nro_doc', 20, N),
-    ('nombre', 30, A),
-    ('imp_total', 15, I),
-    ('imp_tot_conc', 15, I),
-    ('impto_liq_rni', 15, I),
-    ('imp_op_ex', 15, I),
-    ('impto_perc', 15, I),
-    ('imp_iibb', 15, I),
-    ('impto_perc_mun', 15, I),
-    ('imp_internos', 15, I),
-    ('moneda_id', 3, A),
-    ('moneda_ctz', 10, I, 6),
-    ('cant_alicuota_iva', 1, N),
-    ('codigo_operacion', 1, C),
-    ('imp_trib', 15, I),
-    ('fecha_venc_pago', 8, A),
-    ]
+    ("fecha_cbte", 8, N),
+    ("tipo_cbte", 3, N),
+    ("punto_vta", 5, N),
+    ("cbt_desde", 20, N),
+    ("cbt_hasta", 20, N),
+    ("tipo_doc", 2, N),
+    ("nro_doc", 20, N),
+    ("nombre", 30, A),
+    ("imp_total", 15, I),
+    ("imp_tot_conc", 15, I),
+    ("impto_liq_rni", 15, I),
+    ("imp_op_ex", 15, I),
+    ("impto_perc", 15, I),
+    ("imp_iibb", 15, I),
+    ("impto_perc_mun", 15, I),
+    ("imp_internos", 15, I),
+    ("moneda_id", 3, A),
+    ("moneda_ctz", 10, I, 6),
+    ("cant_alicuota_iva", 1, N),
+    ("codigo_operacion", 1, C),
+    ("imp_trib", 15, I),
+    ("fecha_venc_pago", 8, A),
+]
 
 # Diseño de registro de Importación de Alícuotas de comprobantes de Ventas
 
 REGINFO_CV_VENTAS_CBTE_ALICUOTA = [
-    ('tipo_cbte', 3, N),
-    ('punto_vta', 5, N),
-    ('cbt_numero', 20, N),
-    ('base_imp', 15, I),
-    ('iva_id', 4, N),
-    ('importe', 15, I),
-    ]
+    ("tipo_cbte", 3, N),
+    ("punto_vta", 5, N),
+    ("cbt_numero", 20, N),
+    ("base_imp", 15, I),
+    ("iva_id", 4, N),
+    ("importe", 15, I),
+]
 
 
 if __name__ == "__main__":
 
-    print "Usando formato registro RG3685 (regimen informativo compras/ventas)"
+    print("Usando formato registro RG3685 (regimen informativo compras/ventas)")
 
-    if '--caea' in sys.argv:
-        caea = sys.argv[sys.argv.index("--caea")+1]
-        print "Usando CAEA:", caea
+    if "--caea" in sys.argv:
+        caea = sys.argv[sys.argv.index("--caea") + 1]
+        print("Usando CAEA:", caea)
     else:
         caea = ""
-    
-    if '--serv' in sys.argv:
-        fecha_serv_desde = sys.argv[sys.argv.index("--serv")+1]
-        fecha_serv_hasta = sys.argv[sys.argv.index("--serv")+2]
+
+    if "--serv" in sys.argv:
+        fecha_serv_desde = sys.argv[sys.argv.index("--serv") + 1]
+        fecha_serv_hasta = sys.argv[sys.argv.index("--serv") + 2]
         concepto = 2
     else:
         concepto = 1
@@ -86,10 +88,10 @@ if __name__ == "__main__":
             reg["fecha_serv_desde"] = fecha_serv_desde
             reg["fecha_serv_hasta"] = fecha_serv_hasta
         else:
-            del reg['fecha_venc_pago']
+            del reg["fecha_venc_pago"]
         key = (reg["tipo_cbte"], reg["punto_vta"], reg["cbt_desde"])
         ops[key] = reg
-        print key
+        print(key)
 
     for linea in open("ALI.txt"):
         iva = leer(linea, REGINFO_CV_VENTAS_CBTE_ALICUOTA)
@@ -99,10 +101,12 @@ if __name__ == "__main__":
         reg["imp_iva"] = reg.get("imp_iva", 0.00) + iva["importe"]
         reg.setdefault("iva", []).append(iva)
 
-    import rece1
-    facts = sorted(ops.values(), 
-                key=lambda f: (f["tipo_cbte"], f["punto_vta"], f["cbt_desde"]))
-    rece1.escribir_facturas(facts, open("entrada.txt", "w"))
-    
-    print "Hecho."
+    from . import rece1
 
+    facts = sorted(
+        list(ops.values()),
+        key=lambda f: (f["tipo_cbte"], f["punto_vta"], f["cbt_desde"]),
+    )
+    rece1.escribir_facturas(facts, open("entrada.txt", "w"))
+
+    print("Hecho.")

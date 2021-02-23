@@ -12,7 +12,10 @@
 
 """Módulo para interfaz Depositario Fiel web service wDigDepFiel de AFIP
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import str
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -31,7 +34,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
 import os, sys, time
-from utils import date, SimpleXMLElement, SoapClient, SoapFault
+from .utils import date, SimpleXMLElement, SoapClient, SoapFault
 
 WSDDFURL = "https://testdia.afip.gov.ar/Dia/Ws/wDigDepFiel/wDigDepFiel.asmx"
 SOAP_ACTION = 'ar.gov.afip.dia.serviciosWeb.wDigDepFiel/'
@@ -51,7 +54,7 @@ def dummy(client):
         appserver = str(result.appserver)
         dbserver = str(result.dbserver)
         authserver = str(result.authserver)
-    except (RuntimeError, IndexError, AttributeError), e:
+    except (RuntimeError, IndexError, AttributeError) as e:
         pass
     return {'appserver': appserver,
             'dbserver': dbserver,
@@ -99,20 +102,20 @@ def aviso_digit(client, token, sign, cuit, tipo_agente, rol,
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
 
     import csv
     import traceback
     import datetime
 
-    import wsaa
+    from . import wsaa
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         CERT='reingart.crt'
         PRIVATEKEY='reingart.key'
@@ -137,7 +140,7 @@ if __name__ == '__main__':
         
         if '--dummy' in sys.argv:
             ret = dummy(client)
-            print '\n'.join(["%s: %s" % it for it in ret.items()])    
+            print('\n'.join(["%s: %s" % it for it in list(ret.items())]))    
 
         # ejemplos aviso recep acept (prueba):
             
@@ -152,7 +155,7 @@ if __name__ == '__main__':
         r = aviso_recep_acept(client, token, sign, cuit, tipo_agente, rol,
                               nro_legajo, cuit_declarante, cuit_psad, cuit_ie,
                               codigo, fecha_hora_acept, ticket)
-        print r
+        print(r)
 
 
         # ejemplos aviso digit (prueba):
@@ -171,14 +174,14 @@ if __name__ == '__main__':
         r = aviso_digit(client, token, sign, cuit, tipo_agente, rol,
                         nro_legajo, cuit_declarante, cuit_psad, cuit_ie, cuit_ata,
                         codigo, url, familias, ticket, hashing, cantidad_total)
-        print r
-        print "hecho."
+        print(r)
+        print("hecho.")
         
-    except SoapFault,e:
-        print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
         sys.exit(3)
-    except Exception, e:
-        print unicode(e).encode("ascii","ignore")
+    except Exception as e:
+        print(str(e).encode("ascii","ignore"))
         if DEBUG:
             raise
         sys.exit(5)

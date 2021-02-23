@@ -11,7 +11,9 @@
 # for more details.
 
 "Módulo para generar códigos QR"
+from __future__ import print_function
 
+from builtins import object
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -34,7 +36,7 @@ Y3R6Ijo2NSwidGlwb0RvY1JlYyI6ODAsIm5yb0RvY1JlYyI6MjAwMDAwMDAwMDEsInRpcG9Db2RBdX
 QiOiJFIiwiY29kQXV0Ijo3MDQxNzA1NDM2NzQ3Nn0=""".replace("\n", "")
 
 
-class PyQR:
+class PyQR(object):
     "Interfaz para generar Codigo QR de Factura Electrï¿½nica"
     _public_methods_ = ['GenerarImagen', 'CrearArchivo',
                         ]
@@ -162,24 +164,24 @@ if __name__ == '__main__':
         if '--url' in sys.argv:
             pyqr.URL = sys.argv[sys.argv.index("--url")+1]
 
-        print "datos:", (ver, fecha, cuit, pto_vta, tipo_cmp, nro_cmp,
+        print("datos:", (ver, fecha, cuit, pto_vta, tipo_cmp, nro_cmp,
                          importe, moneda, ctz, tipo_doc_rec, nro_doc_rec,
-                         tipo_cod_aut, cod_aut)
-        print "archivo", pyqr.Archivo
-        print "extension", pyqr.Extension
+                         tipo_cod_aut, cod_aut))
+        print("archivo", pyqr.Archivo)
+        print("extension", pyqr.Extension)
 
         url = pyqr.GenerarImagen(ver, fecha, cuit, pto_vta, tipo_cmp, nro_cmp,
                                 importe, moneda, ctz, tipo_doc_rec, nro_doc_rec,
                                 tipo_cod_aut, cod_aut)
 
-        print "url generada:", url
+        print("url generada:", url)
 
         if "--prueba" in sys.argv:
             qr_data_test = json.loads(base64.b64decode(TEST_QR_DATA))
             qr_data_gen = json.loads(base64.b64decode(url[33:]))
             assert url.startswith("https://www.afip.gob.ar/fe/qr/?p=")
             assert qr_data_test == qr_data_gen, "Diff: %r != %r" % (qr_data_test, qr_data_gen)
-            print "QR data ok:", qr_data_gen
+            print("QR data ok:", qr_data_gen)
 
         if not '--mostrar' in sys.argv:
             pass

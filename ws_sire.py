@@ -13,7 +13,11 @@
 """Módulo para emitir un certificado C2005 en AFIP mediante WebService (SOAP), 
 por parte de los sistemas del agente de retención.
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2020 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -25,8 +29,8 @@ import json
 import os
 import sys
 
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm, SoapFault, SimpleXMLElement
-from ConfigParser import SafeConfigParser
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm, SoapFault, SimpleXMLElement
+from configparser import SafeConfigParser
 
 
 HOMO = False
@@ -182,7 +186,7 @@ def main():
         url_ws = config.get(SECTION, 'URL')
 
     # obteniendo el TA para pruebas
-    from wsaa import WSAA
+    from .wsaa import WSAA
 
     cache = ""
     ta = WSAA().Autenticar(service, crt, key, url_wsaa)
@@ -192,17 +196,17 @@ def main():
     sire.Conectar(cache, url_ws, cacert="conf/afip_ca_info.crt")
 
     if "--dummy" in sys.argv:
-        print sire.client.help("dummy")
+        print(sire.client.help("dummy"))
         sire.Dummy()
-        print "AppServerStatus", sire.AppServerStatus
-        print "DbServerStatus", sire.DbServerStatus
-        print "AuthServerStatus", sire.AuthServerStatus
+        print("AppServerStatus", sire.AppServerStatus)
+        print("DbServerStatus", sire.DbServerStatus)
+        print("AuthServerStatus", sire.AuthServerStatus)
 
     try:
 
         if "--testing" in sys.argv:
             sire.LoadTestXML("tests/xml/%s_resp.xml" % service)
-        print "Consultando AFIP online via webservice...",
+        print("Consultando AFIP online via webservice...", end=' ')
         ok = sire.Emitir(
                 version=100,
                 impuesto=216,
@@ -232,17 +236,17 @@ def main():
                 motivo_anulacion=None,
             )
 
-        print "CertificadoNro: ", sire.CertificadoNro
-        print "CodigoSeguridad: ", sire.CodigoSeguridad
+        print("CertificadoNro: ", sire.CertificadoNro)
+        print("CodigoSeguridad: ", sire.CodigoSeguridad)
 
-        print 'ok' if ok else "error!"
+        print('ok' if ok else "error!")
         if sire.Excepcion:
-            print "Excepcion:", sire.Excepcion
+            print("Excepcion:", sire.Excepcion)
 
     except:
         raise
-        print sire.XmlRequest
-        print sire.XmlResponse
+        print(sire.XmlRequest)
+        print(sire.XmlResponse)
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)

@@ -14,7 +14,11 @@
 # Ejemplos iniciales gracias a "Matias Gieco matigro@gmail.com"
 
 "Módulo para obtener remito electrónico automático (COT)"
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import str
+from builtins import object
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -23,7 +27,7 @@ __version__ = "1.03a"
 import os, sys, traceback
 from pysimplesoap.simplexml import SimpleXMLElement
 
-from utils import WebClient
+from .utils import WebClient
 
 HOMO = False
 CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producción)
@@ -34,7 +38,7 @@ URL = "http://cot.test.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRe
 #URL = "https://cot.arba.gov.ar/TransporteBienes/SeguridadCliente/presentarRemitos.do"  # prod.
 
 
-class COT:
+class COT(object):
     "Interfaz para el servicio de Remito Electronico ARBA"
     _public_methods_ = ['Conectar', 'PresentarRemito', 'LeerErrorValidacion', 
                         'LeerValidacionRemito',
@@ -120,11 +124,11 @@ class COT:
                     # establecer valores del primer remito (sin eliminarlo)
                     self.LeerValidacionRemito(pop=False)
             return True      
-        except Exception, e:
-                ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+        except Exception as e:
+                ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
                 self.Traceback = ''.join(ex)
                 try:
-                    self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+                    self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
                 except:
                     self.Excepcion = u"<no disponible>"
                 return False
@@ -168,7 +172,7 @@ class COT:
                 xml = self.XmlResponse 
             self.xml = SimpleXMLElement(xml)
             return True
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = u"%s" % (e)
             return False
 
@@ -183,7 +187,7 @@ class COT:
                     xml = xml(tag) # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
                 return str(xml)
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = u"%s" % (e)
 
 
@@ -205,7 +209,7 @@ if __name__=="__main__":
         win32com.server.register.UseCommandLine(COT)
         sys.exit(0)
     elif len(sys.argv)<4:
-        print "Se debe especificar el nombre de archivo, usuario y clave como argumentos!"
+        print("Se debe especificar el nombre de archivo, usuario y clave como argumentos!")
         sys.exit(1)
         
     cot = COT()
@@ -226,11 +230,11 @@ if __name__=="__main__":
             if arg.startswith("--prod"):
                 URL = URL.replace("http://cot.test.arba.gov.ar", 
                                   "https://cot.arba.gov.ar")
-                print "Usando URL:", URL
+                print("Usando URL:", URL)
                 break
             if arg.startswith("https"):
                 URL = arg
-                print "Usando URL:", URL
+                print("Usando URL:", URL)
                 break
 
     proxy = None if not "--proxy" in sys.argv else "user:pass@host:1234"
@@ -239,27 +243,27 @@ if __name__=="__main__":
     cot.PresentarRemito(filename, testing=test_response)
     
     if cot.Excepcion:
-        print "Excepcion:", cot.Excepcion
-        print "Traceback:", cot.Traceback
+        print("Excepcion:", cot.Excepcion)
+        print("Traceback:", cot.Traceback)
 
     # datos generales:
-    print "CUIT Empresa:", cot.CuitEmpresa
-    print "Numero Comprobante:", cot.NumeroComprobante
-    print "Nombre Archivo:", cot.NombreArchivo
-    print "Codigo Integridad:", cot.CodigoIntegridad
+    print("CUIT Empresa:", cot.CuitEmpresa)
+    print("Numero Comprobante:", cot.NumeroComprobante)
+    print("Nombre Archivo:", cot.NombreArchivo)
+    print("Codigo Integridad:", cot.CodigoIntegridad)
 
-    print "Error General:", cot.TipoError, "|", cot.CodigoError, "|", cot.MensajeError
+    print("Error General:", cot.TipoError, "|", cot.CodigoError, "|", cot.MensajeError)
     
     # recorro los remitos devueltos e imprimo sus datos por cada uno:
     while cot.LeerValidacionRemito():
-        print "Numero Unico:", cot.NumeroUnico
-        print "Procesado:", cot.Procesado
-        print "COT:", cot.COT
+        print("Numero Unico:", cot.NumeroUnico)
+        print("Procesado:", cot.Procesado)
+        print("COT:", cot.COT)
         while cot.LeerErrorValidacion():
-            print "Error Validacion:", "|", cot.CodigoError, "|", cot.MensajeError
+            print("Error Validacion:", "|", cot.CodigoError, "|", cot.MensajeError)
 
     # Ejemplos de uso ObtenerTagXml
     if False:
-        print "cuit", cot.ObtenerTagXml('cuitEmpresa')
-        print "p0", cot.ObtenerTagXml('validacionesRemitos', 'remito', 0, 'procesado')
-        print "p1", cot.ObtenerTagXml('validacionesRemitos', 'remito', 1, 'procesado')
+        print("cuit", cot.ObtenerTagXml('cuitEmpresa'))
+        print("p0", cot.ObtenerTagXml('validacionesRemitos', 'remito', 0, 'procesado'))
+        print("p1", cot.ObtenerTagXml('validacionesRemitos', 'remito', 1, 'procesado'))

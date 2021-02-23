@@ -11,6 +11,8 @@
 # for more details.
 
 "Módulo para Trazabilidad de Precursores Químicos RENPRE Resolución 900/12"
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Información adicional y documentación:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadPrecursoresQuimicos
@@ -28,7 +30,7 @@ import sys
 import datetime, time
 import pysimplesoap.client
 from pysimplesoap.client import SoapFault
-from utils import BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from .utils import BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 HOMO = False
 TYPELIB = False
@@ -289,14 +291,14 @@ def main():
     
     if '--prod' in sys.argv and not HOMO:
         WSDL = "https://trazabilidad.pami.org.ar:59050/trazamed.WebServiceSDRN?wsdl"
-        print "Usando WSDL:", WSDL
+        print("Usando WSDL:", WSDL)
         sys.argv.pop(0)
     
     ws.Conectar("", WSDL)
     
     if ws.Excepcion:
-        print ws.Excepcion
-        print ws.Traceback
+        print(ws.Excepcion)
+        print(ws.Traceback)
         sys.exit(-1)
     
     #print ws.client.services
@@ -316,10 +318,10 @@ def main():
             n_remito=123,
             n_serie=112,
             )
-        print "Resultado", ws.Resultado
-        print "CodigoTransaccion", ws.CodigoTransaccion
-        print "Excepciones", ws.Excepcion
-        print "Erroes", ws.Errores
+        print("Resultado", ws.Resultado)
+        print("CodigoTransaccion", ws.CodigoTransaccion)
+        print("Excepciones", ws.Excepcion)
+        print("Erroes", ws.Errores)
     elif '--cancela' in sys.argv:
         ws.SendCancelacTransacc(*sys.argv[sys.argv.index("--cancela")+1:])
     elif '--consulta' in sys.argv:
@@ -329,13 +331,13 @@ def main():
                                 )
     else:
         ws.SaveTransacciones(*sys.argv[1:])
-    print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+    print("|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
             ws.Resultado,
             ws.CodigoTransaccion,
             '|'.join(ws.Errores),
-            )
+            ))
     if ws.Excepcion:
-        print ws.Traceback
+        print(ws.Traceback)
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = TrazaRenpre.InstallDir = get_install_dir()

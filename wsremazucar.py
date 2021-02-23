@@ -13,7 +13,13 @@
 """Módulo para obtener Remito Electronico Azucar:
 del servicio web RemAzucarService versión 2.0.3 de AFIP (RG4519/19)
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -65,13 +71,13 @@ Ver wsremazucar.ini para parámetros de configuración (URL, certificados, etc.)
 """
 
 import os, sys, time, base64
-from utils import date
+from .utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
+from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 
 
 # constantes de configuración (producción/homologación):
@@ -495,8 +501,8 @@ INSTALL_DIR = WSRemAzucar.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -504,17 +510,17 @@ if __name__ == '__main__':
         win32com.server.register.UseCommandLine(WSRemAzucar)
         sys.exit(0)
 
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuración:", arg
+            print("Usando configuración:", arg)
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -536,7 +542,7 @@ if __name__ == '__main__':
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
 
@@ -544,12 +550,12 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "wsaa_url:", wsaa_url
-            print "wsremazucar_url:", wsremazucar_url
+            print("Usando Configuración:")
+            print("wsaa_url:", wsaa_url)
+            print("wsremazucar_url:", wsremazucar_url)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsremazucar", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
         if not ta:
@@ -564,47 +570,47 @@ if __name__ == '__main__':
         
         if '--dummy' in sys.argv:
             ret = wsremazucar.Dummy()
-            print "AppServerStatus", wsremazucar.AppServerStatus
-            print "DbServerStatus", wsremazucar.DbServerStatus
-            print "AuthServerStatus", wsremazucar.AuthServerStatus
+            print("AppServerStatus", wsremazucar.AppServerStatus)
+            print("DbServerStatus", wsremazucar.DbServerStatus)
+            print("AuthServerStatus", wsremazucar.AuthServerStatus)
             sys.exit(0)
 
         if '--ult' in sys.argv:
             try:
                 pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 pto_emision = 1
             try:
                 tipo_cbte = int(sys.argv[sys.argv.index("--ult") + 1])
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 tipo_comprobante = 995
             rec = {}
-            print "Consultando ultimo remito pto_emision=%s tipo_comprobante=%s" % (pto_emision, tipo_comprobante)
+            print("Consultando ultimo remito pto_emision=%s tipo_comprobante=%s" % (pto_emision, tipo_comprobante))
             ok = wsremazucar.ConsultarUltimoRemitoEmitido(tipo_comprobante, pto_emision)
             if wsremazucar.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsremazucar.Excepcion
-                if DEBUG: print >> sys.stderr, wsremazucar.Traceback
-            print "Ultimo Nro de Remito", wsremazucar.NroRemito
-            print "Errores:", wsremazucar.Errores
+                print("EXCEPCION:", wsremazucar.Excepcion, file=sys.stderr)
+                if DEBUG: print(wsremazucar.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Remito", wsremazucar.NroRemito)
+            print("Errores:", wsremazucar.Errores)
 
         if '--consultar' in sys.argv:
             rec = {}
             try:
                 cod_remito = sys.argv[sys.argv.index("--consultar") + 1]
-                print "Consultando remito cod_remito=%s" % (cod_remito, )
+                print("Consultando remito cod_remito=%s" % (cod_remito, ))
                 ok = wsremazucar.ConsultarRemito(cod_remito=cod_remito)
-            except IndexError, ValueError:
-                pto_emision = raw_input("Punto de emision [1]:") or 1
-                tipo_cbte = raw_input("Tipo de comprobante [995]:") or 995
-                nro_comprobante = raw_input("Nro de comprobante:") or 1
+            except IndexError as ValueError:
+                pto_emision = input("Punto de emision [1]:") or 1
+                tipo_cbte = input("Tipo de comprobante [995]:") or 995
+                nro_comprobante = input("Nro de comprobante:") or 1
                 ok = wsremazucar.ConsultarRemito(tipo_comprobante=tipo_cbte,
                                                  punto_emision=pto_emision,
                                                  nro_comprobante=nro_comprobante)
             if wsremazucar.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsremazucar.Excepcion
-                if DEBUG: print >> sys.stderr, wsremazucar.Traceback
-            print "Ultimo Nro de Remito", wsremazucar.NroRemito
-            print "Errores:", wsremazucar.Errores
+                print("EXCEPCION:", wsremazucar.Excepcion, file=sys.stderr)
+                if DEBUG: print(wsremazucar.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Remito", wsremazucar.NroRemito)
+            print("Errores:", wsremazucar.Errores)
             if DEBUG:
                 import pprint
                 pprint.pprint(wsremazucar.remito)
@@ -675,18 +681,18 @@ if __name__ == '__main__':
             ok = wsremazucar.AnularRemito()
 
         if ok is not None:
-            print "Resultado: ", wsremazucar.Resultado
-            print "Cod Remito: ", wsremazucar.CodRemito
+            print("Resultado: ", wsremazucar.Resultado)
+            print("Cod Remito: ", wsremazucar.CodRemito)
             if wsremazucar.CodAutorizacion:
-                print "Numero Remito: ", wsremazucar.NroRemito
-                print "Cod Autorizacion: ", wsremazucar.CodAutorizacion
-                print "Fecha Emision", wsremazucar.FechaEmision
-                print "Fecha Vencimiento", wsremazucar.FechaVencimiento
-            print "Estado: ", wsremazucar.Estado
-            print "Observaciones: ", wsremazucar.Observaciones
-            print "Errores:", wsremazucar.Errores
-            print "Errores Formato:", wsremazucar.ErroresFormato
-            print "Evento:", wsremazucar.Evento
+                print("Numero Remito: ", wsremazucar.NroRemito)
+                print("Cod Autorizacion: ", wsremazucar.CodAutorizacion)
+                print("Fecha Emision", wsremazucar.FechaEmision)
+                print("Fecha Vencimiento", wsremazucar.FechaVencimiento)
+            print("Estado: ", wsremazucar.Estado)
+            print("Observaciones: ", wsremazucar.Observaciones)
+            print("Errores:", wsremazucar.Errores)
+            print("Errores Formato:", wsremazucar.ErroresFormato)
+            print("Evento:", wsremazucar.Evento)
             rec['cod_remito'] = wsremazucar.CodRemito
             rec['resultado'] = wsremazucar.Resultado
             rec['observaciones'] = wsremazucar.Observaciones
@@ -704,65 +710,65 @@ if __name__ == '__main__':
 
         if '--tipos_comprobante' in sys.argv:
             ret = wsremazucar.ConsultarTiposComprobante()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_contingencia' in sys.argv:
             ret = wsremazucar.ConsultarTiposContingencia()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_mercaderia' in sys.argv:
             ret = wsremazucar.ConsultarTiposMercaderia()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_embalaje' in sys.argv:
             ret = wsremazucar.ConsultarTiposEmbalaje()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_unidades' in sys.argv:
             ret = wsremazucar.ConsultarTiposUnidades()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_categoria_emisor' in sys.argv:
             ret = wsremazucar.ConsultarTiposCategoriaEmisor()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_categoria_receptor' in sys.argv:
             ret = wsremazucar.ConsultarTiposCategoriaReceptor()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_estados' in sys.argv:
             ret = wsremazucar.ConsultarTiposEstado()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--paises' in sys.argv:
             ret = wsremazucar.ConsultarPaises()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--grupos_azucar' in sys.argv:
             ret = wsremazucar.ConsultarGruposAzucar()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_azucar' in sys.argv:
             for grupo_azucar in wsremazucar.ConsultarGruposAzucar(sep=None):
                 ret = wsremazucar.ConsultarTiposAzucar(grupo_azucar['codigo'])
-                print "\n".join(ret)
+                print("\n".join(ret))
 
         if '--codigos_domicilio' in sys.argv:
-            cuit = raw_input("Cuit Titular Domicilio: ")
+            cuit = input("Cuit Titular Domicilio: ")
             ret = wsremazucar.ConsultarCodigosDomicilio(cuit)
-            print "\n".join(utils.norm(ret))
+            print("\n".join(utils.norm(ret)))
 
         if wsremazucar.Errores or wsremazucar.ErroresFormato:
-            print "Errores:", wsremazucar.Errores, wsremazucar.ErroresFormato
+            print("Errores:", wsremazucar.Errores, wsremazucar.ErroresFormato)
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         ex = utils.exception_info()
-        print ex
+        print(ex)
         if DEBUG:
             raise
         sys.exit(5)

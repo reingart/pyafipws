@@ -11,7 +11,11 @@
 # for more details.
 
 "Módulo para manejo de archivos CSV (planillas de cálculo)"
+from __future__ import print_function
 
+from builtins import zip
+from builtins import range
+from past.builtins import basestring
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -73,8 +77,8 @@ def aplanar(regs):
         fila['pdf'] = reg.get('pdf', "")
 
         # datos adicionales (escalares):            
-        for k, v in reg.items():
-            if k not in MAP_ENC and isinstance(k, (basestring, int, long)):
+        for k, v in list(reg.items()):
+            if k not in MAP_ENC and isinstance(k, (basestring, int)):
                 fila[k] = v
 
         
@@ -149,7 +153,7 @@ def aplanar(regs):
         ]
 
     # filtro y ordeno las columnas
-    l = [k for f in filas for k in f.keys()]
+    l = [k for f in filas for k in list(f.keys())]
     s = set(l) - set(cols)
     cols = cols + list(s)
  
@@ -204,7 +208,7 @@ def desaplanar(filas):
                 'dato_d': ('dato_d%s' % li) in dic and dic.pop('dato_d%s' % li),
                 'dato_e': ('dato_e%s' % li) in dic and dic.pop('dato_e%s' % li),
 
-                } for li in xrange(1, max_li("cantidad")) 
+                } for li in range(1, max_li("cantidad")) 
                   if dic['cantidad%s' % li] is not None]
                 
         # descartar filas espurias vacias al final
@@ -219,26 +223,26 @@ def desaplanar(filas):
                 'base_imp': dic.pop('tributo_base_imp_%s'  % li),
                 'alic': dic.pop('tributo_alic_%s'  % li),
                 'importe': dic.pop('tributo_importe_%s'  % li),
-                } for li in xrange(1, max_li("tributo_id_"))
+                } for li in range(1, max_li("tributo_id_"))
                   if dic['tributo_id_%s'  % li]]
 
         reg['ivas'] = [{
                 'iva_id': dic.pop('iva_id_%s'  % li),
                 'base_imp': dic.pop('iva_base_imp_%s'  % li),
                 'importe': dic.pop('iva_importe_%s'  % li),
-                } for li in xrange(1, max_li("iva_id_"))
+                } for li in range(1, max_li("iva_id_"))
                   if dic['iva_id_%s'  % li]]
 
         reg['permisos'] = [{
                 'id_permiso': dic.pop('id_permiso_%s'  % li),
                 'dst_merc': dic.pop('dst_merc_%s'  % li),
-                } for li in xrange(1, max_li("id_permiso_"))
+                } for li in range(1, max_li("id_permiso_"))
                   if dic['id_permiso_%s'  % li]]
 
         reg['opcionales'] = [{
                 'opcional_id': dic.pop('opcional_id_%s'  % li),
                 'valor': dic.pop('opcional_valor_%s'  % li),
-                } for li in xrange(1, max_li("opcional_id_"))
+                } for li in range(1, max_li("opcional_id_"))
                   if dic['opcional_id_%s'  % li]]
 
         reg['cbtes_asoc'] = [{
@@ -247,7 +251,7 @@ def desaplanar(filas):
                 'cbte_nro': dic.pop('cbte_asoc_nro_%s'  % li),
                 'cbte_cuit': dic.pop('cbte_asoc_cuit_%s'  % li),
                 'cbte_fecha': dic.pop('cbte_asoc_fecha_%s'  % li),
-                } for li in xrange(1, max_li("cbte_asoc_tipo_"))
+                } for li in range(1, max_li("cbte_asoc_tipo_"))
                   if dic['cbte_asoc_tipo_%s'  % li]]
                 
         reg['forma_pago'] = dic.pop('forma_pago')
@@ -257,7 +261,7 @@ def desaplanar(filas):
                 'campo': campo, 
                 'valor': valor, 
                 'pagina': '',
-                } for campo, valor in dic.items()
+                } for campo, valor in list(dic.items())
                 ]
 
 
@@ -275,7 +279,7 @@ def escribir(filas, fn="salida.csv", delimiter=";"):
         # TODO: filas = aplanar(regs)
         for fila in filas:
             # convertir a ISO-8859-1 (evita error de encoding de csv writer):
-            fila = [celda.encode("latin1") if isinstance(celda, unicode) else celda
+            fila = [celda.encode("latin1") if isinstance(celda, str) else celda
                     for celda in fila]
             csv_writer.writerow(fila)
         f.close()
@@ -293,15 +297,15 @@ if __name__ == '__main__':
     ##import pdb; pdb.set_trace()
     filas = leer("facturas-wsfev1-bis.csv")
     regs1 = desaplanar(filas)
-    print filas
+    print(filas)
     filas1 = aplanar(regs1)   
-    print filas1
-    print filas1 == filas
+    print(filas1)
+    print(filas1 == filas)
     escribir(filas1, "facturas-wsfev1-bis-sal.csv")
     escribir(filas1, "facturas-wsfev1-bis-sal.xlsx")
     filas2 = leer("facturas-wsfev1-bis-sal.xlsx")
     for fila1, fila2 in zip(filas1, filas2):
         for celda1, celda2 in zip(fila1, fila2):
             if celda1 != celda2:
-                print celda1, celda2
+                print(celda1, celda2)
 

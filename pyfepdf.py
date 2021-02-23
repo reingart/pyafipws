@@ -11,7 +11,18 @@
 # for more details.
 
 "Módulo para generar PDF de facturas electrónicas"
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import str
+from builtins import range
+from past.builtins import basestring
+from builtins import object
+from past.utils import old_div
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -55,13 +66,13 @@ import os
 import sys
 import tempfile
 import traceback
-from cStringIO import StringIO
+from io import StringIO
 from decimal import Decimal
 from fpdf import Template
-import utils
+from . import utils
 
 
-class FEPDF:
+class FEPDF(object):
     "Interfaz para generar PDF de Factura Electrónica"
     _public_methods_ = ['CrearFactura', 
                         'AgregarDetalleItem', 'AgregarIva', 'AgregarTributo', 
@@ -326,10 +337,10 @@ class FEPDF:
         "Formatear tipo, letra y punto de venta y número de factura"
         n = "%05d-%08d" % (int(punto_vta), int(cbte_nro))
         t, l = tipo_cbte, ''
-        for k,v in self.tipos_fact.items():
+        for k,v in list(self.tipos_fact.items()):
             if int(tipo_cbte) in k:
                 t = v
-        for k,v in self.letras_fact.items():
+        for k,v in list(self.letras_fact.items()):
             if int(int(tipo_cbte)) in k:
                 l = v
         return t, l, n
@@ -349,7 +360,7 @@ class FEPDF:
         # Etapa 4: sumar los resultados obtenidos en las etapas 2 y 3.
         etapa4 = etapa2 + etapa3
         # Etapa 5: buscar el menor número que sumado al resultado obtenido en la etapa 4 dé un número múltiplo de 10. Este será el valor del dígito verificador del módulo 10.
-        digito = 10 - (etapa4 - (int(etapa4 / 10) * 10))
+        digito = 10 - (etapa4 - (int(old_div(etapa4, 10)) * 10))
         if digito == 10:
             digito = 0
         return str(digito)
@@ -366,10 +377,10 @@ class FEPDF:
         if not os.path.exists(archivo):
             archivo = os.path.join(self.InstallDir, "plantillas", os.path.basename(archivo))
         
-        if DEBUG: print "abriendo archivo ", archivo
+        if DEBUG: print("abriendo archivo ", archivo)
 
         for lno, linea in enumerate(open(archivo.encode('latin1')).readlines()):
-            if DEBUG: print "procesando linea ", lno, linea
+            if DEBUG: print("procesando linea ", lno, linea)
             args = []
             for i,v in enumerate(linea.split(";")):
                 if not v.startswith("'"): 
@@ -395,7 +406,7 @@ class FEPDF:
         # convierto colores de string (en hexadecimal)
         if isinstance(foreground, basestring): foreground = int(foreground, 16)
         if isinstance(background, basestring): background = int(background, 16)
-        if isinstance(text, unicode): text = text.encode("latin1")
+        if isinstance(text, str): text = text.encode("latin1")
         field = {
                 'name': nombre, 
                 'type': tipo, 
@@ -474,7 +485,7 @@ class FEPDF:
                 codigo = it['codigo']
                 umed = it['umed']
                 # si umed es 0 (desc.), no imprimir cant/importes en 0
-                if umed is not None and umed <> "":
+                if umed is not None and umed != "":
                     umed = int(umed)
                 ds = it['ds'] or ""
                 if '\x00' in ds:
@@ -483,11 +494,11 @@ class FEPDF:
                 if '<br/>' in ds:
                     # reemplazar saltos de linea:
                     ds = ds.replace('<br/>', '\n')
-                if DEBUG: print "dividiendo", ds
+                if DEBUG: print("dividiendo", ds)
                 # divido la descripción (simil célda múltiple de PDF) 
                 n_li = 0
                 for ds in f.split_multicell(ds, 'Item.Descripcion01'):
-                    if DEBUG: print "multicell", ds
+                    if DEBUG: print("multicell", ds)
                     # agrego un item por linea (sin precio ni importe):
                     li_items.append(dict(codigo=codigo, ds=ds, qty=qty, 
                                          umed=umed if not n_li else None, 
@@ -519,13 +530,13 @@ class FEPDF:
                     fact[k] = ds.replace('<br/>', '\n')
 
             # divido las observaciones por linea:
-            if fact.get('obs_generales') and not f.has_key('obs') and not f.has_key('ObservacionesGenerales1'):
+            if fact.get('obs_generales') and 'obs' not in f and 'ObservacionesGenerales1' not in f:
                 obs="\n<U>Observaciones:</U>\n\n" + fact['obs_generales']
                 # limpiar texto (campos dbf) y reemplazar saltos de linea:
                 obs = obs.replace('\x00', '').replace('<br/>', '\n')
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
-            if fact.get('obs_comerciales') and not f.has_key('obs_comerciales') and not f.has_key('ObservacionesComerciales1'):
+            if fact.get('obs_comerciales') and 'obs_comerciales' not in f and 'ObservacionesComerciales1' not in f:
                 obs="\n<U>Observaciones Comerciales:</U>\n\n" + fact['obs_comerciales']
                 # limpiar texto (campos dbf) y reemplazar saltos de linea:
                 obs = obs.replace('\x00', '').replace('<br/>', '\n')
@@ -537,12 +548,12 @@ class FEPDF:
                          p['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc'])) 
                          for p in fact.get('permisos',[])]
             #import dbg; dbg.set_trace()
-            if f.has_key('permiso.id1') and f.has_key("permiso.delivery1"):
+            if 'permiso.id1' in f and "permiso.delivery1" in f:
                 for i, p in enumerate(fact.get('permisos', [])):
                     self.AgregarDato("permiso.id%d" % (i+1), p['id_permiso'])
                     pais_dst = self.paises.get(p['dst_merc'], p['dst_merc'])
                     self.AgregarDato("permiso.delivery%d" % (i+1), pais_dst)
-            elif not f.has_key('permisos') and permisos:
+            elif 'permisos' not in f and permisos:
                 obs="\n<U>Permisos de Embarque:</U>\n\n" + '\n'.join(permisos)
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -551,7 +562,7 @@ class FEPDF:
             # agrego comprobantes asociados
             cmps_asoc = [u'%s %s %s' % self.fmt_fact(c['cbte_tipo'], c['cbte_punto_vta'], c['cbte_nro']) 
                           for c in fact.get('cbtes_asoc',[])]
-            if not f.has_key('cmps_asoc') and cmps_asoc:
+            if 'cmps_asoc' not in f and cmps_asoc:
                 obs="\n<U>Comprobantes Asociados:</U>\n\n" + '\n'.join(cmps_asoc)
                 for ds in f.split_multicell(obs, 'Item.Descripcion01'):
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
@@ -560,7 +571,7 @@ class FEPDF:
             # calcular cantidad de páginas:
             lineas = len(li_items)
             if lineas_max>0:
-                hojas = lineas / (lineas_max - 1)
+                hojas = old_div(lineas, (lineas_max - 1))
                 if lineas % (lineas_max - 1): hojas = hojas + 1
                 if not hojas:
                     hojas = 1
@@ -572,8 +583,8 @@ class FEPDF:
 
             # mostrar las validaciones no excluyentes de AFIP (observaciones)
             
-            if fact.get('motivos_obs') and fact['motivos_obs']<>'00':
-                if not f.has_key('motivos_ds.L'):
+            if fact.get('motivos_obs') and fact['motivos_obs']!='00':
+                if 'motivos_ds.L' not in f:
                     motivos_ds = u"Irregularidades observadas por AFIP (F136): %s" % fact['motivos_obs']
                 else:
                     motivos_ds = u"%s" % fact['motivos_obs']
@@ -584,7 +595,7 @@ class FEPDF:
 
             if letra_fact in ('A', 'M'):
                 msg_no_iva = u"\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
-                if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
+                if 'leyenda_credito_fiscal' not in f and motivos_ds:
                     motivos_ds += msg_no_iva
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
@@ -612,7 +623,7 @@ class FEPDF:
                     f.set('continua_de', s)
                     f.set('Item.Descripcion%02d' % (0), s)
 
-                    if DEBUG: print u"generando pagina %s de %s" % (hoja, hojas)
+                    if DEBUG: print(u"generando pagina %s de %s" % (hoja, hojas))
                     
                     # establezco datos según configuración:
                     for d in self.datos:
@@ -624,7 +635,7 @@ class FEPDF:
                         f.set(d['campo'], d['valor'])
 
                     # establezco campos según tabla encabezado:
-                    for k,v in fact.items():
+                    for k,v in list(fact.items()):
                         f.set(k,v)
 
                     f.set('Numero', numero_fact)
@@ -679,14 +690,14 @@ class FEPDF:
                                 subtotal -= Decimal("%.6f" % float(it['imp_iva']))
                         # agregar el item si encuadra en la hoja especificada:
                         if k > (hoja - 1) * (lineas_max - 1):
-                            if DEBUG: print "it", it
+                            if DEBUG: print("it", it)
                             li += 1
                             if it['qty'] is not None:
                                 f.set('Item.Cantidad%02d' % li, self.fmt_qty(it['qty']))
                             if it['codigo'] is not None:
                                 f.set('Item.Codigo%02d' % li, it['codigo'])
                             if it['umed'] is not None:
-                                if it['umed'] and f.has_key("Item.Umed_ds01"):
+                                if it['umed'] and "Item.Umed_ds01" in f:
                                     # recortar descripción:
                                     umed_ds = self.umeds_ds.get(int(it['umed']))
                                     s = f.split_multicell(umed_ds, 'Item.Umed_ds01')
@@ -790,7 +801,7 @@ class FEPDF:
                             f.set('LeyendaIVA',"")
                             
                             # limpio etiquetas y establezco subtotal de iva liq.
-                            for p in self.ivas_ds.values():
+                            for p in list(self.ivas_ds.values()):
                                 f.set('IVA%s.L' % p, "")
                             for iva in fact['ivas']:
                                 p = self.ivas_ds[int(iva['iva_id'])]
@@ -804,7 +815,7 @@ class FEPDF:
                             f.set('NETO.L',"")
                             f.set('IVA.L',"")
                             f.set('LeyendaIVA', "")
-                            for p in self.ivas_ds.values():
+                            for p in list(self.ivas_ds.values()):
                                 f.set('IVA%s.L' % p, "")
                                 f.set('NETO%s.L' % p,"")
                         f.set('Total.L', 'Total:')
@@ -817,7 +828,7 @@ class FEPDF:
                                   'NGRA.L', 'EXENTO.L', 'descuento.L', 'descuento', 'subtotal.L',
                                   'NETO.L', 'NETO', 'IVA.L', 'LeyendaIVA'):
                             f.set(k,"")
-                        for p in self.ivas_ds.values():
+                        for p in list(self.ivas_ds.values()):
                             f.set('IVA%s.L' % p, "")
                             f.set('NETO%s.L' % p,"")
                         f.set('Total.L', 'Subtotal:')
@@ -828,9 +839,9 @@ class FEPDF:
 
                     # Datos del pie de factura (obtenidos desde AFIP):
                     f.set('motivos_ds', motivos_ds)
-                    if f.has_key('motivos_ds1') and motivos_ds:
+                    if 'motivos_ds1' in f and motivos_ds:
                         if letra_fact in ('A', 'M'):
-                            if f.has_key('leyenda_credito_fiscal'):
+                            if 'leyenda_credito_fiscal' in f:
                                 f.set('leyenda_credito_fiscal', msg_no_iva)
                         for i, txt in enumerate(f.split_multicell(motivos_ds, 'motivos_ds1')):
                             f.set('motivos_ds%d' % (i+1), txt)
@@ -862,30 +873,30 @@ class FEPDF:
                         f.set('estado', "") # compatibilidad hacia atras
 
                     # colocar campos de observaciones (si no van en ds)
-                    if f.has_key('observacionesgenerales1') and 'obs_generales' in fact:
+                    if 'observacionesgenerales1' in f and 'obs_generales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_generales'], 'ObservacionesGenerales1')):
                             f.set('ObservacionesGenerales%d' % (i+1), txt)
-                    if f.has_key('observacionescomerciales1') and 'obs_comerciales' in fact:
+                    if 'observacionescomerciales1' in f and 'obs_comerciales' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['obs_comerciales'], 'ObservacionesComerciales1')):
                             f.set('ObservacionesComerciales%d' % (i+1), txt)
-                    if f.has_key('enletras1') and 'en_letras' in fact:
+                    if 'enletras1' in f and 'en_letras' in fact:
                         for i, txt in enumerate(f.split_multicell(fact['en_letras'], 'EnLetras1')):
                             f.set('EnLetras%d' % (i+1), txt)
 
-                    if f.has_key('AFIP_QR'):
+                    if 'AFIP_QR' in f:
                         if not self.archivo_qr:
                             self.GenerarQR()
                         f.set('AFIP_QR', self.archivo_qr)
                         if DEBUG:
-                            print "Usando imagen codigo QR:", self.archivo_qr
+                            print("Usando imagen codigo QR:", self.archivo_qr)
 
             ret = True
-        except Exception, e:
+        except Exception as e:
             # capturar la excepción manualmente, para imprimirla en el PDF:
             ex = utils.exception_info()
             if DEBUG:
-                print self.Excepcion
-                print self.Traceback
+                print(self.Excepcion)
+                print(self.Traceback)
             
             # guardar la traza de la excepción en un archivo temporal:
             fname = os.path.join(tempfile.gettempdir(), "traceback.txt")
@@ -898,11 +909,11 @@ class FEPDF:
                   size=10, rotate=0, foreground=0xF00000, priority=-1, 
                   text="Excepcion %(name)s:%(lineno)s" % ex)
             if DEBUG:
-                print "grabando...", fname, self.Excepcion, self.Traceback,ex
+                print("grabando...", fname, self.Excepcion, self.Traceback,ex)
             f = open(fname, "w")
             try:
                 f.write(str(ex))
-            except Exception, e:
+            except Exception as e:
                 f.write("imposible grabar")
             finally:
                 f.close()
@@ -934,7 +945,7 @@ class FEPDF:
 
     @utils.inicializar_y_capturar_excepciones_simple
     def GenerarQR(self):
-        from pyqr import PyQR
+        from .pyqr import PyQR
 
         # instanciar el objeto para codigos QR y crear un archivo temporal:
         pyqr = PyQR()
@@ -988,7 +999,7 @@ if __name__ == '__main__':
         # start the server.
         win32com.server.localserver.serve([FEPDF._reg_clsid_])
     else:
-        from ConfigParser import SafeConfigParser
+        from configparser import SafeConfigParser
 
         DEBUG = '--debug' in sys.argv
         utils.safe_console()
@@ -996,7 +1007,7 @@ if __name__ == '__main__':
         # leeo configuración (primer argumento o rece.ini por defecto)
         if len(sys.argv)>1 and not sys.argv[1].startswith("--"):
             CONFIG_FILE = sys.argv.pop(1)
-        if DEBUG: print "CONFIG_FILE:", CONFIG_FILE
+        if DEBUG: print("CONFIG_FILE:", CONFIG_FILE)
         
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
@@ -1004,19 +1015,19 @@ if __name__ == '__main__':
         conf_pdf = dict(config.items('PDF'))
 
         if '--ayuda' in sys.argv:
-            print AYUDA
+            print(AYUDA)
             sys.exit(0)
 
         if '--licencia' in sys.argv:
-            print LICENCIA
+            print(LICENCIA)
             sys.exit(0)
             
         if '--formato' in sys.argv:
             if '--dbf' in sys.argv:
-                from formatos import formato_dbf
+                from .formatos import formato_dbf
                 formato_dbf.ayuda()
             else:
-                from formatos import formato_txt
+                from .formatos import formato_txt
                 formato_txt.ayuda()
             sys.exit(0)
 
@@ -1032,29 +1043,29 @@ if __name__ == '__main__':
 
         if '--cargar' in sys.argv:
             if '--dbf' in sys.argv:
-                from formatos import formato_dbf
+                from .formatos import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
-                if DEBUG: print "conf_dbf", conf_dbf
-                regs = formato_dbf.leer(conf_dbf).values()
+                if DEBUG: print("conf_dbf", conf_dbf)
+                regs = list(formato_dbf.leer(conf_dbf).values())
             elif '--json' in sys.argv:
-                from formatos import formato_json
+                from .formatos import formato_json
                 if '--entrada' in sys.argv:
                     entrada = sys.argv[sys.argv.index("--entrada")+1]
                 else:
                     entrada = conf_fact.get("entrada", "entrada.txt")
-                if DEBUG: print "entrada", entrada
+                if DEBUG: print("entrada", entrada)
                 regs = formato_json.leer(entrada)
             else:
-                from formatos import formato_txt
+                from .formatos import formato_txt
                 if '--entrada' in sys.argv:
                     entrada = sys.argv[sys.argv.index("--entrada")+1]
                 else:
                     entrada = conf_fact.get("entrada", "entrada.txt")
-                if DEBUG: print "entrada", entrada
+                if DEBUG: print("entrada", entrada)
                 regs = formato_txt.leer(entrada)
             if DEBUG: 
-                print regs
-                raw_input("continuar...")
+                print(regs)
+                input("continuar...")
             fepdf.factura = regs[0]
             for d in regs[0]['datos']:
                 fepdf.AgregarDato(d['campo'], d['valor'], d['pagina'])
@@ -1206,7 +1217,7 @@ if __name__ == '__main__':
             fepdf.AgregarDato("custom-pedido", "1234")
             fepdf.AgregarDato("custom-remito", "12345")
             fepdf.AgregarDato("custom-transporte", "Camiones Ej.")
-            print "Prueba!"
+            print("Prueba!")
 
         # grabar muestra en dbf:
         if '--grabar' in sys.argv:
@@ -1215,24 +1226,24 @@ if __name__ == '__main__':
             reg['datos'] = fepdf.datos
             reg['err_code'] = 'OK'
             if '--dbf' in sys.argv:
-                from formatos import formato_dbf
+                from .formatos import formato_dbf
                 conf_dbf = dict(config.items('DBF'))
-                if DEBUG: print "conf_dbf", conf_dbf
+                if DEBUG: print("conf_dbf", conf_dbf)
                 regs = formato_dbf.escribir([reg], conf_dbf)
             elif '--json' in sys.argv:
-                from formatos import formato_json
+                from .formatos import formato_json
                 archivo =  conf_fact.get("entrada", "entrada.txt")
-                if DEBUG: print "Escribiendo", archivo
+                if DEBUG: print("Escribiendo", archivo)
                 regs = formato_json.escribir([reg], archivo)
             else:
-                from formatos import formato_txt
+                from .formatos import formato_txt
                 archivo =  conf_fact.get("entrada", "entrada.txt")
-                if DEBUG: print "Escribiendo", archivo
+                if DEBUG: print("Escribiendo", archivo)
                 regs = formato_txt.escribir([reg], archivo)
 
 
         # datos fijos:
-        for k, v in conf_pdf.items():
+        for k, v in list(conf_pdf.items()):
             fepdf.AgregarDato(k, v)
             if k.upper() == 'CUIT':
                 fepdf.CUIT = v  # CUIT del emisor para código de barras
@@ -1264,11 +1275,11 @@ if __name__ == '__main__':
             it['numero'] = numero_fact
             it['mes'] = fact['fecha_cbte'][4:6]
             it['año'] = fact['fecha_cbte'][0:4]
-            fn = u''.join([unicode(it.get(ff,ff)) for ff in fs])
+            fn = u''.join([str(it.get(ff,ff)) for ff in fs])
             fn = fn.encode('ascii', 'replace').replace('?','_')
             salida = os.path.join(d, "%s.pdf" % fn)
         if DEBUG:
-            print "archivo generado", salida
+            print("archivo generado", salida)
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
             fepdf.MostrarPDF(archivo=salida,imprimir='--imprimir' in sys.argv)

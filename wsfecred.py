@@ -13,7 +13,14 @@
 """Módulo para la Gestión de cuentas corrientes de Facturas Electrónicas de
 Crédito del servicio web FECredService versión 1.0.1-rc1 (RG4367/18)
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import str
+from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -62,14 +69,14 @@ Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
 from collections import OrderedDict
 import datetime
 import os, sys, time, base64
-from utils import date
+from .utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf, leer_txt, grabar_txt, formato_txt, \
+from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf, leer_txt, grabar_txt, formato_txt, \
                   generar_csv, tabular
 
 
@@ -522,7 +529,7 @@ class WSFECred(BaseWS):
         from win32com.client import Dispatch
         d = Dispatch('Scripting.Dictionary')
         cc = self.ctas_ctes.pop(pos) if pos < len(self.ctas_ctes) else {}
-        for k, v in cc.items():
+        for k, v in list(cc.items()):
             d.Add(k, str(v))
         return d
 
@@ -951,8 +958,8 @@ REGISTROS = {
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -960,17 +967,17 @@ if __name__ == '__main__':
         win32com.server.register.UseCommandLine(WSFECred)
         sys.exit(0)
 
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuración:", arg
+            print("Usando configuración:", arg)
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -992,7 +999,7 @@ if __name__ == '__main__':
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
 
@@ -1000,12 +1007,12 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "wsaa_url:", wsaa_url
-            print "wsfecred_url:", wsfecred_url
+            print("Usando Configuración:")
+            print("wsaa_url:", wsaa_url)
+            print("wsfecred_url:", wsfecred_url)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsfecred", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
         if not ta:
@@ -1020,19 +1027,19 @@ if __name__ == '__main__':
 
         if '--dummy' in sys.argv:
             ret = wsfecred.Dummy()
-            print "AppServerStatus", wsfecred.AppServerStatus
-            print "DbServerStatus", wsfecred.DbServerStatus
-            print "AuthServerStatus", wsfecred.AuthServerStatus
+            print("AppServerStatus", wsfecred.AppServerStatus)
+            print("DbServerStatus", wsfecred.DbServerStatus)
+            print("AuthServerStatus", wsfecred.AuthServerStatus)
             sys.exit(0)
 
         if '--obligado' in sys.argv:
             try:
                 cuit_consultar = int(sys.argv[sys.argv.index("--obligado") + 1])
-            except IndexError, ValueError:
-                cuit_consultar = raw_input("Cuit a Consultar: ")
+            except IndexError as ValueError:
+                cuit_consultar = input("Cuit a Consultar: ")
             ret = wsfecred.ConsultarMontoObligadoRecepcion(cuit_consultar)
-            print "Obligado:", wsfecred.Resultado
-            print "Monto Desde:", ret
+            print("Obligado:", wsfecred.Resultado)
+            print("Monto Desde:", ret)
             reg = {"obligado": [{"resultado": wsfecred.Resultado, "monto_desde": ret}]}
             grabar_txt(FORMATOS, REGISTROS, SALIDA, [reg])
 
@@ -1047,9 +1054,9 @@ if __name__ == '__main__':
             except (IndexError, ValueError) as ex:
                 raise RuntimeError("Revise los parámetros: %s" % ex)
             ret = wsfecred.ConsultarCtasCtes(cuit_contraparte, rol, fecha_desde, fecha_hasta, fecha_tipo)
-            print "Observaciones:", wsfecred.Obs
+            print("Observaciones:", wsfecred.Obs)
             formato = FORMATOS["cta_cte"]
-            print tabular(wsfecred.ctas_ctes, formato)
+            print(tabular(wsfecred.ctas_ctes, formato))
             regs = {"cta_cte": [cta_cte for cta_cte in wsfecred.ctas_ctes]}
             grabar_txt(FORMATOS, REGISTROS, SALIDA, [regs])
             generar_csv(wsfecred.ctas_ctes, formato)
@@ -1071,9 +1078,9 @@ if __name__ == '__main__':
             except (IndexError, ValueError) as ex:
                 raise RuntimeError("Revise los parámetros: %s" % ex)
             ret = wsfecred.ConsultarCtaCte(cuit_emisor, tipo_cbte, punto_vta, nro_cbte, cod_cta_cte)
-            print "Observaciones:", wsfecred.Obs
+            print("Observaciones:", wsfecred.Obs)
             formato = FORMATOS["cta_cte"]
-            print tabular(wsfecred.ctas_ctes, formato)
+            print(tabular(wsfecred.ctas_ctes, formato))
             regs = {"cta_cte": [cta_cte for cta_cte in wsfecred.ctas_ctes]}
             grabar_txt(FORMATOS, REGISTROS, SALIDA, [regs])
             generar_csv(wsfecred.ctas_ctes, formato)
@@ -1090,13 +1097,13 @@ if __name__ == '__main__':
                 desde = sys.argv[sys.argv.index("--comprobantes") + 2]
                 hasta = sys.argv[sys.argv.index("--comprobantes") + 3]
                 cuit_contraparte = int(sys.argv[sys.argv.index("--comprobantes") + 4])
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 pass
             ret = wsfecred.ConsultarComprobantes(cuit_contraparte, fecha_desde=desde, fecha_hasta=hasta, rol=rol)
-            print "Observaciones:", wsfecred.Obs
+            print("Observaciones:", wsfecred.Obs)
             formato = FORMATOS["comprobante"]
             claves = [fmt[0] for fmt in formato]
-            print tabular(wsfecred.comprobantes, formato)
+            print(tabular(wsfecred.comprobantes, formato))
             regs = []
             for cbte in wsfecred.comprobantes:
                 r = {}
@@ -1153,23 +1160,23 @@ if __name__ == '__main__':
 
         if '--aceptar' in sys.argv:
             wsfecred.AceptarFECred()
-            print "Resultado", wsfecred.Resultado
-            print "CodCtaCte", wsfecred.CodCtaCte
+            print("Resultado", wsfecred.Resultado)
+            print("CodCtaCte", wsfecred.CodCtaCte)
 
         if '--rechazar' in sys.argv:
             wsfecred.RechazarFECred()
-            print "Resultado", wsfecred.Resultado
-            print "CodCtaCte", wsfecred.CodCtaCte
+            print("Resultado", wsfecred.Resultado)
+            print("CodCtaCte", wsfecred.CodCtaCte)
 
         if '--rechazar-ndc' in sys.argv:
             wsfecred.RechazarNotaDC()
-            print "Resultado", wsfecred.Resultado
-            print "CodCtaCte", wsfecred.CodCtaCte
+            print("Resultado", wsfecred.Resultado)
+            print("CodCtaCte", wsfecred.CodCtaCte)
 
         if '--informar-cancelacion-total' in sys.argv:
             wsfecred.InformarCancelacionTotalFECred()
-            print "Resultado", wsfecred.Resultado
-            print "CodCtaCte", wsfecred.CodCtaCte
+            print("Resultado", wsfecred.Resultado)
+            print("CodCtaCte", wsfecred.CodCtaCte)
 
         if '--grabar' in sys.argv:
             fec['resultado'] = wsfecred.Resultado
@@ -1186,31 +1193,31 @@ if __name__ == '__main__':
 
         if '--tipos_ajuste' in sys.argv:
             ret = wsfecred.ConsultarTiposAjustesOperacion()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_cancelacion' in sys.argv:
             ret = wsfecred.ConsultarTiposFormasCancelacion()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_retencion' in sys.argv:
             ret = wsfecred.ConsultarTiposRetenciones()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_rechazo' in sys.argv:
             ret = wsfecred.ConsultarTiposMotivosRechazo()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if wsfecred.Errores or wsfecred.ErroresFormato:
-            print "Errores:", wsfecred.Errores, wsfecred.ErroresFormato
+            print("Errores:", wsfecred.Errores, wsfecred.ErroresFormato)
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         ex = utils.exception_info()
-        print ex
+        print(ex)
         if DEBUG:
             raise
         sys.exit(5)

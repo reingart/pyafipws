@@ -15,7 +15,10 @@ del web service WSFEXv1 de AFIP (Factura Electrónica Exportación Versión 1)
 según RG2758/2010 (Registros Especiales Aduaneros) y RG3689/14 (servicios)
 http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -25,7 +28,7 @@ import datetime
 import decimal
 import os
 import sys
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
@@ -298,8 +301,8 @@ class WSFEXv1(BaseWS):
                 umed = {'id': u.get('Umed_Id'), 'ds': u.get('Umed_Ds'), 
                         'vig_desde': u.get('Umed_vig_desde'), 
                         'vig_hasta': u.get('Umed_vig_hasta')}
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 if u is None:
                     # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
                     umed = {'id':'', 'ds':'','vig_desde':'','vig_hasta':''}
@@ -328,8 +331,8 @@ class WSFEXv1(BaseWS):
                 mon = {'id': u.get('Mon_Id'), 'ds': u.get('Mon_Ds'), 
                         'vig_desde': u.get('Mon_vig_desde'), 
                         'vig_hasta': u.get('Mon_vig_hasta')}
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 if u is None:
                     # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
                     mon = {'id':'', 'ds':'','vig_desde':'','vig_hasta':''}
@@ -357,8 +360,8 @@ class WSFEXv1(BaseWS):
             u = u['ClsFEXResponse_DST_pais']
             try:
                 r = {'codigo': u.get('DST_Codigo'), 'ds': u.get('DST_Ds'), }
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             
             ret.append(r)
         if sep:
@@ -380,8 +383,8 @@ class WSFEXv1(BaseWS):
             u = u['ClsFEXResponse_DST_cuit']
             try:
                 r = {'codigo': u.get('DST_CUIT'), 'ds': u.get('DST_Ds'), }
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             
             ret.append(r)
         if sep:
@@ -406,8 +409,8 @@ class WSFEXv1(BaseWS):
                      'ds': u.get('Cbte_Ds').replace('\n', '').replace('\r', ''),
                      'vig_desde': u.get('Cbte_vig_desde'), 
                      'vig_hasta': u.get('Cbte_vig_hasta')}
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             
             ret.append(r)
         if sep:
@@ -431,8 +434,8 @@ class WSFEXv1(BaseWS):
                 r = {'codigo': u.get('Tex_Id'), 'ds': u.get('Tex_Ds'),
                      'vig_desde': u.get('Tex_vig_desde'), 
                      'vig_hasta': u.get('Tex_vig_hasta')}
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             
             ret.append(r)
         if sep:
@@ -456,8 +459,8 @@ class WSFEXv1(BaseWS):
                 r = {'codigo': u.get('Idi_Id'), 'ds': u.get('Idi_Ds'),
                      'vig_desde': u.get('Idi_vig_hasta'), 
                      'vig_hasta': u.get('Idi_vig_desde')}
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             
             ret.append(r)
         if sep:
@@ -480,8 +483,8 @@ class WSFEXv1(BaseWS):
                 r = {'codigo': u.get('Inc_Id'), 'ds': u.get('Inc_Ds'),
                      'vig_desde': u.get('Inc_vig_hasta'), 
                      'vig_hasta': u.get('Inc_vig_desde')}
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             
             ret.append(r)
         if sep:
@@ -523,8 +526,8 @@ class WSFEXv1(BaseWS):
             try:
                 mon = {'id': u.get('Mon_Id'), 'ctz': u.get('Mon_ctz'), 
                        'fecha': u.get('Fecha_ctz')}
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
                 if u is None:
                     # <ClsFEXResponse_UMed xsi:nil="true"/> WTF!
                     mon = {'id':'', 'ctz':'','fecha':''}
@@ -549,8 +552,8 @@ class WSFEXv1(BaseWS):
             try:
                 r = {'nro': u.get('Pve_Nro'), 'baja': u.get('Pve_FchBaj'),
                      'bloqueado': u.get('Pve_Bloqueado'), }
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             ret.append(r)
         return [(u"%(nro)s\tBloqueado:%(bloqueado)s\tFchBaja:%(baja)s" % r).replace("\t", sep)
                  for r in ret]
@@ -582,7 +585,7 @@ INSTALL_DIR = WSFEXv1.InstallDir = get_install_dir()
 
 
 def p_assert_eq(a,b):
-    print a, a==b and '==' or '!=', b
+    print(a, a==b and '==' or '!=', b)
 
 
 if __name__ == "__main__":
@@ -605,7 +608,7 @@ if __name__ == "__main__":
         # Setear token y sing de autorización (pasos previos)
 
         # obteniendo el TA para pruebas
-        from wsaa import WSAA
+        from .wsaa import WSAA
         ta = WSAA().Autenticar("wsfex", "reingart.crt", "reingart.key")
         wsfexv1.SetTicketAcceso(ta)
 
@@ -624,10 +627,10 @@ if __name__ == "__main__":
     
         if '--dummy' in sys.argv:
             #wsfexv1.LanzarExcepciones = False
-            print wsfexv1.Dummy()
-            print "AppServerStatus", wsfexv1.AppServerStatus
-            print "DbServerStatus", wsfexv1.DbServerStatus
-            print "AuthServerStatus", wsfexv1.AuthServerStatus
+            print(wsfexv1.Dummy())
+            print("AppServerStatus", wsfexv1.AppServerStatus)
+            print("DbServerStatus", wsfexv1.DbServerStatus)
+            print("AuthServerStatus", wsfexv1.AuthServerStatus)
         
         if "--prueba" in sys.argv:
             try:
@@ -639,7 +642,7 @@ if __name__ == "__main__":
                 fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
                 tipo_expo = 2 # tipo de exportación (ver tabla de parámetros)
                 permiso_existente = (tipo_cbte not in (20, 21) and tipo_expo==1) and "S" or ""
-                print "permiso_existente", permiso_existente
+                print("permiso_existente", permiso_existente)
                 dst_cmp = 203 # país destino
                 cliente = "Joao Da Silva"
                 cuit_pais_cliente = "50000000016"
@@ -694,30 +697,30 @@ if __name__ == "__main__":
                 ##id = "99000000000100" # número propio de transacción
                 # obtengo el último ID y le adiciono 1 
                 # (advertencia: evitar overflow y almacenar!)
-                id = long(wsfexv1.GetLastID()) + 1
+                id = int(wsfexv1.GetLastID()) + 1
 
                 # Llamo al WebService de Autorización para obtener el CAE
                 cae = wsfexv1.Authorize(id)
 
-                print "Comprobante", tipo_cbte, wsfexv1.CbteNro
-                print "Resultado", wsfexv1.Resultado
-                print "CAE", wsfexv1.CAE
-                print "Vencimiento", wsfexv1.Vencimiento
+                print("Comprobante", tipo_cbte, wsfexv1.CbteNro)
+                print("Resultado", wsfexv1.Resultado)
+                print("CAE", wsfexv1.CAE)
+                print("Vencimiento", wsfexv1.Vencimiento)
 
                 if wsfexv1.Resultado and False:
-                    print wsfexv1.client.help("FEXGetCMP").encode("latin1")
+                    print(wsfexv1.client.help("FEXGetCMP").encode("latin1"))
                     wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
-                    print "CAE consulta", wsfexv1.CAE, wsfexv1.CAE==cae 
-                    print "NRO consulta", wsfexv1.CbteNro, wsfexv1.CbteNro==cbte_nro 
-                    print "TOTAL consulta", wsfexv1.ImpTotal, wsfexv1.ImpTotal==imp_total
+                    print("CAE consulta", wsfexv1.CAE, wsfexv1.CAE==cae) 
+                    print("NRO consulta", wsfexv1.CbteNro, wsfexv1.CbteNro==cbte_nro) 
+                    print("TOTAL consulta", wsfexv1.ImpTotal, wsfexv1.ImpTotal==imp_total)
 
-            except Exception, e:
-                print wsfexv1.XmlRequest        
-                print wsfexv1.XmlResponse        
-                print wsfexv1.ErrCode
-                print wsfexv1.ErrMsg
-                print wsfexv1.Excepcion
-                print wsfexv1.Traceback
+            except Exception as e:
+                print(wsfexv1.XmlRequest)        
+                print(wsfexv1.XmlResponse)        
+                print(wsfexv1.ErrCode)
+                print(wsfexv1.ErrMsg)
+                print(wsfexv1.Excepcion)
+                print(wsfexv1.Traceback)
                 raise
 
         if "--get" in sys.argv:
@@ -728,12 +731,12 @@ if __name__ == "__main__":
 
             wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
 
-            print "FechaCbte = ", wsfexv1.FechaCbte
-            print "CbteNro = ", wsfexv1.CbteNro
-            print "PuntoVenta = ", wsfexv1.PuntoVenta
-            print "ImpTotal =", wsfexv1.ImpTotal
-            print "CAE = ", wsfexv1.CAE
-            print "Vencimiento = ", wsfexv1.Vencimiento
+            print("FechaCbte = ", wsfexv1.FechaCbte)
+            print("CbteNro = ", wsfexv1.CbteNro)
+            print("PuntoVenta = ", wsfexv1.PuntoVenta)
+            print("ImpTotal =", wsfexv1.ImpTotal)
+            print("CAE = ", wsfexv1.CAE)
+            print("Vencimiento = ", wsfexv1.Vencimiento)
 
             wsfexv1.AnalizarXml("XmlResponse")
             p_assert_eq(wsfexv1.ObtenerTagXml('Cae'), str(wsfexv1.CAE))
@@ -746,55 +749,55 @@ if __name__ == "__main__":
             import codecs, locale
             sys.stdout = codecs.getwriter('latin1')(sys.stdout); 
 
-            print "=== Incoterms ==="
+            print("=== Incoterms ===")
             idiomas = wsfexv1.GetParamIncoterms(sep="||")
             for idioma in idiomas:
-                print idioma
+                print(idioma)
 
-            print "=== Idiomas ==="
+            print("=== Idiomas ===")
             idiomas = wsfexv1.GetParamIdiomas(sep="||")
             for idioma in idiomas:
-                print idioma
+                print(idioma)
 
-            print "=== Tipos Comprobantes ==="
+            print("=== Tipos Comprobantes ===")
             tipos = wsfexv1.GetParamTipoCbte(sep=False)    
             for t in tipos:
-                print "||%(codigo)s||%(ds)s||" % t
+                print("||%(codigo)s||%(ds)s||" % t)
 
-            print "=== Tipos Expo ==="
+            print("=== Tipos Expo ===")
             tipos = wsfexv1.GetParamTipoExpo(sep=False)    
             for t in tipos:
-                print "||%(codigo)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % t
+                print("||%(codigo)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % t)
             #umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
                 
-            print "=== Monedas ==="
+            print("=== Monedas ===")
             mons = wsfexv1.GetParamMon(sep=False)    
             for m in mons:
-                print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % m
+                print("||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % m)
             #umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
 
-            print "=== Unidades de medida ==="
+            print("=== Unidades de medida ===")
             umedidas = wsfexv1.GetParamUMed(sep=False)    
             for u in umedidas:
-                print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u
+                print("||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u)
             umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
 
-            print u"=== Código Pais Destino ==="
+            print(u"=== Código Pais Destino ===")
             ret = wsfexv1.GetParamDstPais(sep=False)    
             for r in ret:
-                print "||%(codigo)s||%(ds)s||" % r
+                print("||%(codigo)s||%(ds)s||" % r)
 
-            print u"=== CUIT Pais Destino ==="
+            print(u"=== CUIT Pais Destino ===")
             ret = wsfexv1.GetParamDstCUIT(sep=False)    
             for r in ret:
-                print "||%(codigo)s||%(ds)s||" % r
+                print("||%(codigo)s||%(ds)s||" % r)
             
         if "--ctz" in sys.argv:
-            print wsfexv1.GetParamCtz('DOL')
+            print(wsfexv1.GetParamCtz('DOL'))
             
         if "--monctz" in sys.argv:
-            print wsfexv1.GetParamMonConCotizacion()
+            print(wsfexv1.GetParamMonConCotizacion())
             
         if "--ptosventa" in sys.argv:
-            print wsfexv1.GetParamPtosVenta()
+            print(wsfexv1.GetParamPtosVenta())
 

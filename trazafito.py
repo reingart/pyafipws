@@ -11,10 +11,14 @@
 # for more details.
 
 "Módulo Trazabilidad de Productos Fitosanitarios SENASA Resolución 369/2013"
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Información adicional y documentación:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosFitosanitarios
 
+from future import standard_library
+standard_library.install_aliases()
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2014 Mariano Reingart"
 __license__ = "GPL 3.0+"
@@ -31,10 +35,10 @@ import pysimplesoap.client
 from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
                                 set_http_wrapper
 from pysimplesoap.simplexml import SimpleXMLElement
-from cStringIO import StringIO
+from io import StringIO
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, \
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, \
                   dar_nombre_campo_dbf, get_install_dir, BaseWS, \
                   inicializar_y_capturar_excepciones
 
@@ -393,7 +397,7 @@ def main():
     
     if '--prod' in sys.argv and not HOMO:
         WSDL = "https://servicios.pami.org.ar/trazaagr.WebService?wsdl"
-        print "Usando WSDL:", WSDL
+        print("Usando WSDL:", WSDL)
         sys.argv.pop(sys.argv.index("--prod"))
 
     # Inicializo las variables y estructuras para el archivo de intercambio:
@@ -406,19 +410,19 @@ def main():
                ]
 
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato, lista in formatos:
             comienzo = 1
-            print "=== %s ===" % msg
-            print "|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (  
-                "Nombre", "Tipo", "Long.", "Pos(txt)", "Campo(dbf)")
+            print("=== %s ===" % msg)
+            print("|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (  
+                "Nombre", "Tipo", "Long.", "Pos(txt)", "Campo(dbf)"))
             claves = []
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 clave_dbf = dar_nombre_campo_dbf(clave, claves)
                 claves.append(clave_dbf)
-                print "|| %-25s || %-12s || %5d ||   %4d   || %-10s ||" % (
-                    clave, tipo, longitud, comienzo, clave_dbf)
+                print("|| %-25s || %-12s || %5d ||   %4d   || %-10s ||" % (
+                    clave, tipo, longitud, comienzo, clave_dbf))
                 comienzo += longitud
         sys.exit(0)
         
@@ -442,8 +446,8 @@ def main():
     ws.Conectar("", WSDL)
     
     if ws.Excepcion:
-        print ws.Excepcion
-        print ws.Traceback
+        print(ws.Excepcion)
+        print(ws.Traceback)
         sys.exit(-1)
     
     # Datos de pruebas:
@@ -494,56 +498,56 @@ def main():
         ws.GetTransacciones(
                             *sys.argv[sys.argv.index("--consulta")+1:]
                             )
-        print "CantPaginas", ws.CantPaginas
-        print "HayError", ws.HayError
+        print("CantPaginas", ws.CantPaginas)
+        print("HayError", ws.HayError)
         #print "TransaccionSenasa", ws.TransaccionSenasa
         # parametros comunes de salida (columnas de la tabla):
         claves = [k for k, v, l in TRANSACCIONES]
         # extiendo la lista de resultado para el archivo de intercambio:
         transacciones.extend(ws.TransaccionSenasa)
         # encabezado de la tabla:
-        print "||", "||".join(["%s" % clave for clave in claves]), "||"
+        print("||", "||".join(["%s" % clave for clave in claves]), "||")
         # recorro los datos devueltos (TransaccionSenasa):
         while ws.LeerTransaccion():     
             for clave in claves:
-                print "||", ws.GetParametro(clave),         # imprimo cada fila
-            print "||"
+                print("||", ws.GetParametro(clave), end=' ')         # imprimo cada fila
+            print("||")
     else:
         argv = [argv for argv in sys.argv if not argv.startswith("--")]
         if not transaccion_dto:
             if len(argv)>10:
                 ws.SaveTransaccion(*argv[1:])
             else:
-                print "ERROR: no se indicaron todos los parámetros requeridos"
+                print("ERROR: no se indicaron todos los parámetros requeridos")
         elif transaccion_dto:
             try:
                 usuario, password = argv[-2:]
             except:
-                print "ADVERTENCIA: no se indico parámetros usuario y passoword"
+                print("ADVERTENCIA: no se indico parámetros usuario y passoword")
                 usuario, password = "senasaws", "Clave2013"
             for i, dto in enumerate(transaccion_dto):
-                print "Procesando registro", i
+                print("Procesando registro", i)
                 del dto['codigo_transaccion']
                 ws.SaveTransaccion(usuario, password, **dto)
                 dto['codigo_transaccion'] = ws.CodigoTransaccion
                 errores.extend(ws.errores)
-                print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+                print("|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                     ws.Resultado,
                     ws.CodigoTransaccion,
                     '|'.join(ws.Errores or []),
-                    )
+                    ))
         else:
-            print "ERROR: no se especificaron productos a informar"
+            print("ERROR: no se especificaron productos a informar")
             
     if not transaccion_dto:
-        print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+        print("|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                 ws.Resultado,
                 ws.CodigoTransaccion,
                 '|'.join(ws.Errores or []),
-                )
+                ))
 
     if ws.Excepcion:
-        print ws.Traceback
+        print(ws.Traceback)
 
     if '--grabar' in sys.argv:
         if '--dbf' in sys.argv:

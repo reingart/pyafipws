@@ -11,6 +11,7 @@
 # for more details.
 
 "Módulo para manejo de archivos JSON"
+from __future__ import print_function
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
@@ -24,7 +25,7 @@ except ImportError:
     try:
         import simplejson as json 
     except:
-        print "para soporte de JSON debe instalar simplejson"
+        print("para soporte de JSON debe instalar simplejson")
 
         
 def leer(fn="entrada.json"):

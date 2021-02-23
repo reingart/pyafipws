@@ -14,7 +14,12 @@
 de AFIP (WS-SR-PADRON de AFIP). Consulta a Padrón Alcance 4 version 1.1
 Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import next
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -27,9 +32,9 @@ import json
 import os
 import sys
 
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm, SoapFault
-from ConfigParser import SafeConfigParser
-from padron import TIPO_CLAVE, PROVINCIAS
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm, SoapFault
+from configparser import SafeConfigParser
+from .padron import TIPO_CLAVE, PROVINCIAS
 
 
 HOMO = False
@@ -280,7 +285,7 @@ def main():
         url_ws = config.get(SECTION, 'URL')
 
     # obteniendo el TA para pruebas
-    from wsaa import WSAA
+    from .wsaa import WSAA
 
     cache = ""
     ta = WSAA().Autenticar(service, crt, key, url_wsaa)
@@ -290,11 +295,11 @@ def main():
     padron.Conectar(cache, url_ws, cacert="conf/afip_ca_info.crt")
 
     if "--dummy" in sys.argv:
-        print padron.client.help("dummy")
+        print(padron.client.help("dummy"))
         wssrpadron4.Dummy()
-        print "AppServerStatus", wssrpadron4.AppServerStatus
-        print "DbServerStatus", wssrpadron4.DbServerStatus
-        print "AuthServerStatus", wssrpadron4.AuthServerStatus
+        print("AppServerStatus", wssrpadron4.AppServerStatus)
+        print("DbServerStatus", wssrpadron4.DbServerStatus)
+        print("AuthServerStatus", wssrpadron4.AuthServerStatus)
 
     if '--csv' in sys.argv:
         csv_reader = csv.reader(open("entrada.csv", "rU"), 
@@ -312,14 +317,14 @@ def main():
         for fila in csv_reader:
             cuit = (fila[0] if fila else "").replace("-", "")
             if cuit.isdigit():
-                print "Consultando AFIP online...", cuit,
+                print("Consultando AFIP online...", cuit, end=' ')
                 try:
                     ok = padron.Consultar(cuit)
                 except SoapFault as e:
                     ok = None
                     if e.faultstring != "No existe persona con ese Id":
                         raise
-                print 'ok' if ok else "error", padron.Excepcion
+                print('ok' if ok else "error", padron.Excepcion)
                 # domicilio posiblemente esté en Latin1, normalizar
                 csv_writer.writerow([norm(getattr(padron, campo, ""))
                                      for campo in columnas])
@@ -334,35 +339,35 @@ def main():
 
         if "--testing" in sys.argv:
             padron.LoadTestXML("tests/xml/%s_resp.xml" % service)
-        print "Consultando AFIP online via webservice...",
+        print("Consultando AFIP online via webservice...", end=' ')
         ok = padron.Consultar(id_persona)
 
         if DEBUG:
-            print "Persona", padron.Persona
-            print padron.Excepcion
+            print("Persona", padron.Persona)
+            print(padron.Excepcion)
 
-        print 'ok' if ok else "error", padron.Excepcion
-        print "Denominacion:", padron.denominacion
-        print "Tipo:", padron.tipo_persona, padron.tipo_doc, padron.nro_doc
-        print "Estado:", padron.estado
-        print "Direccion:", padron.direccion
-        print "Localidad:", padron.localidad
-        print "Provincia:", padron.provincia
-        print "Codigo Postal:", padron.cod_postal
-        print "Impuestos:", padron.impuestos
-        print "Actividades:", padron.actividades
-        print "IVA", padron.imp_iva
-        print "MT", padron.monotributo, padron.actividad_monotributo
-        print "Empleador", padron.empleador
+        print('ok' if ok else "error", padron.Excepcion)
+        print("Denominacion:", padron.denominacion)
+        print("Tipo:", padron.tipo_persona, padron.tipo_doc, padron.nro_doc)
+        print("Estado:", padron.estado)
+        print("Direccion:", padron.direccion)
+        print("Localidad:", padron.localidad)
+        print("Provincia:", padron.provincia)
+        print("Codigo Postal:", padron.cod_postal)
+        print("Impuestos:", padron.impuestos)
+        print("Actividades:", padron.actividades)
+        print("IVA", padron.imp_iva)
+        print("MT", padron.monotributo, padron.actividad_monotributo)
+        print("Empleador", padron.empleador)
 
         if padron.Excepcion:
-            print "Excepcion:", padron.Excepcion
+            print("Excepcion:", padron.Excepcion)
             # ver padron.errores para el detalle
 
     except:
         raise
-        print padron.XmlRequest
-        print padron.XmlResponse
+        print(padron.XmlRequest)
+        print(padron.XmlResponse)
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)

@@ -13,7 +13,13 @@
 """Módulo para obtener Remito Electronico Carnico:
 del web service WSRemCarne versión 3.0 de AFIP (RG4256/18 y RG4303/18)
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import input
+from builtins import str
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -64,13 +70,13 @@ Ver wsremcarne.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
-from utils import date
+from .utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
+from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 
 
 # constantes de configuración (producción/homologación):
@@ -450,8 +456,8 @@ INSTALL_DIR = WSRemCarne.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -459,17 +465,17 @@ if __name__ == '__main__':
         win32com.server.register.UseCommandLine(WSRemCarne)
         sys.exit(0)
 
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuración:", arg
+            print("Usando configuración:", arg)
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -491,7 +497,7 @@ if __name__ == '__main__':
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
 
@@ -499,12 +505,12 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "wsaa_url:", wsaa_url
-            print "wsremcarne_url:", wsremcarne_url
+            print("Usando Configuración:")
+            print("wsaa_url:", wsaa_url)
+            print("wsremcarne_url:", wsremcarne_url)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsremcarne", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
         if not ta:
@@ -519,42 +525,42 @@ if __name__ == '__main__':
 
         if '--dummy' in sys.argv:
             ret = wsremcarne.Dummy()
-            print "AppServerStatus", wsremcarne.AppServerStatus
-            print "DbServerStatus", wsremcarne.DbServerStatus
-            print "AuthServerStatus", wsremcarne.AuthServerStatus
+            print("AppServerStatus", wsremcarne.AppServerStatus)
+            print("DbServerStatus", wsremcarne.DbServerStatus)
+            print("AuthServerStatus", wsremcarne.AuthServerStatus)
             sys.exit(0)
 
         if '--ult' in sys.argv:
             try:
                 pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 pto_emision = 1
             try:
                 tipo_cbte = int(sys.argv[sys.argv.index("--ult") + 1])
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 tipo_comprobante = 995
             rec = {}
-            print "Consultando ultimo remito pto_emision=%s tipo_comprobante=%s" % (pto_emision, tipo_comprobante)
+            print("Consultando ultimo remito pto_emision=%s tipo_comprobante=%s" % (pto_emision, tipo_comprobante))
             ok = wsremcarne.ConsultarUltimoRemitoEmitido(tipo_comprobante, pto_emision)
             if wsremcarne.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsremcarne.Excepcion
-                if DEBUG: print >> sys.stderr, wsremcarne.Traceback
-            print "Ultimo Nro de Remito", wsremcarne.NroRemito
-            print "Errores:", wsremcarne.Errores
+                print("EXCEPCION:", wsremcarne.Excepcion, file=sys.stderr)
+                if DEBUG: print(wsremcarne.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Remito", wsremcarne.NroRemito)
+            print("Errores:", wsremcarne.Errores)
 
         if '--consultar' in sys.argv:
             try:
                 cod_remito = sys.argv[sys.argv.index("--consultar") + 1]
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 cod_remito = None
             rec = {}
-            print "Consultando remito cod_remito=%s" % (cod_remito, )
+            print("Consultando remito cod_remito=%s" % (cod_remito, ))
             ok = wsremcarne.ConsultarRemito(cod_remito)
             if wsremcarne.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsremcarne.Excepcion
-                if DEBUG: print >> sys.stderr, wsremcarne.Traceback
-            print "Ultimo Nro de Remito", wsremcarne.NroRemito
-            print "Errores:", wsremcarne.Errores
+                print("EXCEPCION:", wsremcarne.Excepcion, file=sys.stderr)
+                if DEBUG: print(wsremcarne.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Remito", wsremcarne.NroRemito)
+            print("Errores:", wsremcarne.Errores)
             if DEBUG:
                 import pprint
                 pprint.pprint(wsremcarne.remito)
@@ -610,18 +616,18 @@ if __name__ == '__main__':
             ok = wsremcarne.AnularRemito()
 
         if ok is not None:
-            print "Resultado: ", wsremcarne.Resultado
-            print "Cod Remito: ", wsremcarne.CodRemito
+            print("Resultado: ", wsremcarne.Resultado)
+            print("Cod Remito: ", wsremcarne.CodRemito)
             if wsremcarne.CodAutorizacion:
-                print "Numero Remito: ", wsremcarne.NroRemito
-                print "Cod Autorizacion: ", wsremcarne.CodAutorizacion
-                print "Fecha Emision", wsremcarne.FechaEmision
-                print "Fecha Vencimiento", wsremcarne.FechaVencimiento
-            print "Estado: ", wsremcarne.Estado
-            print "Observaciones: ", wsremcarne.Observaciones
-            print "Errores:", wsremcarne.Errores
-            print "Errores Formato:", wsremcarne.ErroresFormato
-            print "Evento:", wsremcarne.Evento
+                print("Numero Remito: ", wsremcarne.NroRemito)
+                print("Cod Autorizacion: ", wsremcarne.CodAutorizacion)
+                print("Fecha Emision", wsremcarne.FechaEmision)
+                print("Fecha Vencimiento", wsremcarne.FechaVencimiento)
+            print("Estado: ", wsremcarne.Estado)
+            print("Observaciones: ", wsremcarne.Observaciones)
+            print("Errores:", wsremcarne.Errores)
+            print("Errores Formato:", wsremcarne.ErroresFormato)
+            print("Evento:", wsremcarne.Evento)
             rec['nro_remito'] = wsremcarne.NroRemito
             rec['cod_autorizacion'] = wsremcarne.CodAutorizacion
             rec['cod_remito'] = wsremcarne.CodRemito
@@ -641,49 +647,49 @@ if __name__ == '__main__':
 
         if '--tipos_comprobante' in sys.argv:
             ret = wsremcarne.ConsultarTiposComprobante()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_contingencia' in sys.argv:
             ret = wsremcarne.ConsultarTiposContingencia()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_categoria_emisor' in sys.argv:
             ret = wsremcarne.ConsultarTiposCategoriaEmisor()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_categoria_receptor' in sys.argv:
             ret = wsremcarne.ConsultarTiposCategoriaReceptor()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_estados' in sys.argv:
             ret = wsremcarne.ConsultarTiposEstado()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--grupos_carne' in sys.argv:
             ret = wsremcarne.ConsultarGruposCarne()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_carne' in sys.argv:
             for grupo_carne in wsremcarne.ConsultarGruposCarne(sep=None):
                 ret = wsremcarne.ConsultarTiposCarne(grupo_carne['codigo'])
-                print "\n".join(ret)
+                print("\n".join(ret))
 
         if '--codigos_domicilio' in sys.argv:
-            cuit = raw_input("Cuit Titular Domicilio: ")
+            cuit = input("Cuit Titular Domicilio: ")
             ret = wsremcarne.ConsultarCodigosDomicilio(cuit)
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if wsremcarne.Errores or wsremcarne.ErroresFormato:
-            print "Errores:", wsremcarne.Errores, wsremcarne.ErroresFormato
+            print("Errores:", wsremcarne.Errores, wsremcarne.ErroresFormato)
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         ex = utils.exception_info()
-        print ex
+        print(ex)
         if DEBUG:
             raise
         sys.exit(5)

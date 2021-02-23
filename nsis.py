@@ -12,11 +12,14 @@
 # for more details.
 
 "Py2Exe extension to build NSIS Installers"
+from __future__ import print_function
 
 # Based on py2exe/samples/extending/setup.py:
 #   "A setup script showing how to extend py2exe."
 #   Copyright (c) 2000-2008 Thomas Heller, Mark Hammond, Jimmy Retzlaff
 
+from builtins import str
+from builtins import object
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -197,14 +200,14 @@ class build_installer(py2exe):
                             self.windows_exe_files,
                             self.lib_files,
                             comserver_files)
-        print "*** creating the nsis script***"
+        print("*** creating the nsis script***")
         script.create()
-        print "*** compiling the nsis script***"
+        print("*** compiling the nsis script***")
         script.compile()
         # Note: By default the final setup.exe will be in an Output subdirectory.
  
 
-class NSISScript:
+class NSISScript(object):
     def __init__(self,
                  metadata,
                  lib_dir,
@@ -270,7 +273,7 @@ class NSISScript:
         os.startfile(pathname, 'compile')
         
         
-class Target():
+class Target(object):
     def __init__(self, module, **kw):
         self.__dict__.update(kw)
         # for the version info resources (Properties -- Version)

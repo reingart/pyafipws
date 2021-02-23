@@ -11,6 +11,7 @@
 # for more details.
 
 "Módulo para manejo de archivos XML simil Facturador-Plus (RCEL)"
+from __future__ import print_function
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
@@ -26,14 +27,14 @@ XML_FORMAT = {
             'tipo': int,
             'ptovta': int,
             'numero': int,
-            'cuitemisor': long,
+            'cuitemisor': int,
             'fechaemision': str,
             'idioma': int,
             'concepto': int,
             'moneda': str,
             'tipocambio': Decimal,
             'tipodocreceptor': int,
-            'nrodocreceptor': long,
+            'nrodocreceptor': int,
             'receptor': str,
             'domicilioreceptor': str,
             'localidadreceptor': str,
@@ -146,7 +147,7 @@ XML_FORMAT = {
             'fechavencpago': str,
 
             'resultado': str,
-            'cae': long,
+            'cae': int,
             'fecha_vto': str, 
             'reproceso': str,
             'motivo': str,
@@ -267,13 +268,13 @@ XML_BASE = """\
 
 def mapear(new, old, MAP, swap=False):
     try:
-        for k, v in MAP.items():
+        for k, v in list(MAP.items()):
             if swap:
                 k, v = v, k
             new[k] = old.get(v)
         return new
     except:
-        print new, old, MAP
+        print(new, old, MAP)
         raise
 
 def leer(fn="entrada.xml"):
@@ -338,7 +339,7 @@ def serializar(regs):
     comprobantes = []
     for reg in regs:
         dic = {}
-        for k, v in MAP_ENC.items():
+        for k, v in list(MAP_ENC.items()):
             dic[v] = reg[k]
                 
         dic.update({

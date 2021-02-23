@@ -11,7 +11,11 @@
 # for more details.
 
 "Módulo para consultar percepciones / retenciones ARBA IIBB"
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import str
+from builtins import object
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -20,7 +24,7 @@ __version__ = "1.01b"
 import md5, os, sys, tempfile, traceback
 from pysimplesoap.simplexml import SimpleXMLElement
 
-from utils import WebClient
+from .utils import WebClient
 
 HOMO = False
 CACERT = "conf/arba.crt"   # establecimiento de canal seguro (en producción)
@@ -40,7 +44,7 @@ XML_ENTRADA_BASE = """<?xml version = "1.0" encoding = "ISO-8859-1"?>
 """
 
 
-class IIBB:
+class IIBB(object):
     "Interfaz para el servicio de IIBB ARBA"
     _public_methods_ = ['Conectar', 'ConsultarContribuyentes',
                         'LeerContribuyente', 'LeerErrorValidacion',
@@ -134,11 +138,11 @@ class IIBB:
                     # establecer valores del primer contrib (sin eliminarlo)
                     self.LeerContribuyente(pop=False)
             return True
-        except Exception, e:
-                ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+        except Exception as e:
+                ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
                 self.Traceback = ''.join(ex)
                 try:
-                    self.Excepcion = traceback.format_exception_only( sys.exc_type, sys.exc_value)[0]
+                    self.Excepcion = traceback.format_exception_only( sys.exc_info()[0], sys.exc_info()[1])[0]
                 except:
                     self.Excepcion = u"<no disponible>"
                 return False
@@ -181,7 +185,7 @@ class IIBB:
                 xml = self.XmlResponse
             self.xml = SimpleXMLElement(xml)
             return True
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = u"%s" % (e)
             return False
 
@@ -196,7 +200,7 @@ class IIBB:
                     xml = xml(tag) # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
                 return str(xml)
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = u"%s" % (e)
 
 
@@ -218,7 +222,7 @@ if __name__=="__main__":
         win32com.server.register.UseCommandLine(IIBB)
         sys.exit(0)
     elif len(sys.argv)<6:
-        print "Se debe especificar usuario, clave, fecha desde/hasta y cuit como argumentos!"
+        print("Se debe especificar usuario, clave, fecha desde/hasta y cuit como argumentos!")
         sys.exit(1)
 
     iibb = IIBB()
@@ -239,36 +243,36 @@ if __name__=="__main__":
             if arg.startswith("--prod"):
                 URL = URL.replace("https://dfe.test.arba.gov.ar/",
                                   "https://dfe.arba.gov.ar/")
-                print "Usando URL:", URL
+                print("Usando URL:", URL)
                 break
             if arg.startswith("https"):
                 URL = arg
-                print "Usando URL:", URL
+                print("Usando URL:", URL)
                 break
 
     iibb.Conectar(URL, trace='--trace' in sys.argv, cacert=CACERT, testing=test_response)
     iibb.ConsultarContribuyentes(fecha_desde, fecha_hasta, cuit_contribuyente)
 
     if iibb.Excepcion:
-        print "Excepcion:", iibb.Excepcion
-        print "Traceback:", iibb.Traceback
+        print("Excepcion:", iibb.Excepcion)
+        print("Traceback:", iibb.Traceback)
 
     # datos generales:
-    print "Numero Comprobante:", iibb.NumeroComprobante
-    print "Codigo HASH:", iibb.CodigoHash
-    print "Error General:", iibb.TipoError, "|", iibb.CodigoError, "|", iibb.MensajeError
+    print("Numero Comprobante:", iibb.NumeroComprobante)
+    print("Codigo HASH:", iibb.CodigoHash)
+    print("Error General:", iibb.TipoError, "|", iibb.CodigoError, "|", iibb.MensajeError)
 
     # recorro los contribuyentes devueltos e imprimo sus datos por cada uno:
     while iibb.LeerContribuyente():
-        print "CUIT Contribuytente:", iibb.CuitContribuyente
-        print "AlicuotaPercepcion:", iibb.AlicuotaPercepcion
-        print "AlicuotaRetencion:", iibb.AlicuotaRetencion
-        print "GrupoPercepcion:", iibb.GrupoPercepcion
-        print "GrupoRetencion:", iibb.GrupoRetencion
+        print("CUIT Contribuytente:", iibb.CuitContribuyente)
+        print("AlicuotaPercepcion:", iibb.AlicuotaPercepcion)
+        print("AlicuotaRetencion:", iibb.AlicuotaRetencion)
+        print("GrupoPercepcion:", iibb.GrupoPercepcion)
+        print("GrupoRetencion:", iibb.GrupoRetencion)
 
     # Ejemplos de uso ObtenerTagXml
     if False:
-        print "desde", iibb.ObtenerTagXml('fechaDesde')
-        print "hasta", iibb.ObtenerTagXml('fechaHasta')
-        print "cuit", iibb.ObtenerTagXml('contribuyentes', 'contribuyente', 0, 'cuitContribuyente')
-        print "alicuota", iibb.ObtenerTagXml('contribuyentes', 'contribuyente', 0, 'alicuotapercepcion')
+        print("desde", iibb.ObtenerTagXml('fechaDesde'))
+        print("hasta", iibb.ObtenerTagXml('fechaHasta'))
+        print("cuit", iibb.ObtenerTagXml('contribuyentes', 'contribuyente', 0, 'cuitContribuyente'))
+        print("alicuota", iibb.ObtenerTagXml('contribuyentes', 'contribuyente', 0, 'alicuotapercepcion'))

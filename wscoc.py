@@ -11,7 +11,13 @@
 # for more details.
 
 "Módulo para Consulta de Operaciones Cambiarias"
+from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import object
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -25,7 +31,7 @@ import pysimplesoap.client
 from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
                                 set_http_wrapper
 from pysimplesoap.simplexml import SimpleXMLElement
-from cStringIO import StringIO
+from io import StringIO
 
 HOMO = True
 
@@ -62,16 +68,16 @@ def inicializar_y_capturar_excepciones(func):
             # llamo a la función (sin reintentos)
             return func(self, *args, **kwargs)
 
-        except SoapFault, e:
+        except SoapFault as e:
             # guardo destalle de la excepción SOAP
-            self.ErrCode = unicode(e.faultcode)
-            self.ErrMsg = unicode(e.faultstring)
+            self.ErrCode = str(e.faultcode)
+            self.ErrMsg = str(e.faultstring)
             self.Excepcion = u"%s: %s" % (e.faultcode, e.faultstring, )
             if self.LanzarExcepciones:
                 raise
-        except Exception, e:
-            ex = traceback.format_exception(sys.exc_type, sys.exc_value,
-                                            sys.exc_traceback)
+        except Exception as e:
+            ex = traceback.format_exception(sys.exc_info()[0], sys.exc_info()[1],
+                                            sys.exc_info()[2])
             self.Traceback = ''.join(ex)
             self.Excepcion = u"%s" % (e)
             if self.LanzarExcepciones:
@@ -84,7 +90,7 @@ def inicializar_y_capturar_excepciones(func):
     return capturar_errores_wrapper
 
 
-class WSCOC:
+class WSCOC(object):
     "Interfaz para el WebService de Consulta de Operaciones Cambiarias"
     _public_methods_ = ['GenerarSolicitudCompraDivisa',
                         'GenerarSolicitudCompraDivisaTurExt',
@@ -211,8 +217,8 @@ class WSCOC:
                     ))
 
     def __log(self, msg):
-        if not isinstance(msg, unicode):
-            msg = unicode(msg, 'utf8', 'ignore')
+        if not isinstance(msg, str):
+            msg = str(msg, 'utf8', 'ignore')
         if not self.Log:
             self.Log = StringIO()
         self.Log.write(msg)
@@ -699,7 +705,7 @@ class WSCOC:
             return ""
 
     def LoadTestXML(self, xml_file):
-        class DummyHTTP:
+        class DummyHTTP(object):
             def __init__(self, xml_response):
                 self.xml_response = xml_response
             def request(self, location, method, body, headers):
@@ -715,7 +721,7 @@ class WSCOC:
                 xml = self.XmlRequest 
             self.xml = SimpleXMLElement(xml)
             return True
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = u"%s" % (e)
             return False
 
@@ -730,12 +736,12 @@ class WSCOC:
                     xml = xml(tag) # atajo a getitem y getattr
                 # vuelvo a convertir a string el objeto xml encontrado
                 return str(xml)
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = u"%s" % (e)
 
 
 def p_assert_eq(a,b):
-    print a, a==b and '==' or '!=', b
+    print(a, a==b and '==' or '!=', b)
 
 
 def main():
@@ -747,7 +753,7 @@ def main():
     # obteniendo el TA
     TA = "TA-wscoc.xml"
     if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
-        import wsaa
+        from . import wsaa
         tra = wsaa.create_tra(service="wscoc")
         cms = wsaa.sign_tra(tra,"reingart.crt", "reingart.key")
         ta_string = wsaa.call_wsaa(cms, trace='--trace' in sys.argv)
@@ -770,50 +776,50 @@ def main():
         ##print ws.client.help("dummy")
         try:
             ws.Dummy()
-            print "AppServerStatus", ws.AppServerStatus
-            print "DbServerStatus", ws.DbServerStatus
-            print "AuthServerStatus", ws.AuthServerStatus
-        except Exception, e:
+            print("AppServerStatus", ws.AppServerStatus)
+            print("DbServerStatus", ws.DbServerStatus)
+            print("AuthServerStatus", ws.AuthServerStatus)
+        except Exception as e:
             raise
-            print "Exception", e
-            print ws.XmlRequest
-            print ws.XmlResponse
+            print("Exception", e)
+            print(ws.XmlRequest)
+            print(ws.XmlResponse)
 
     if "--monedas" in sys.argv:
-        print ws.client.help("consultarMonedas")
+        print(ws.client.help("consultarMonedas"))
         try:
             for moneda in ws.ConsultarMonedas():
-                print moneda
-        except Exception, e:
+                print(moneda)
+        except Exception as e:
             raise
-            print "Exception", e
-            print ws.XmlRequest
-            print ws.XmlResponse
+            print("Exception", e)
+            print(ws.XmlRequest)
+            print(ws.XmlResponse)
 
     if "--motivos_ex_djai" in sys.argv:
-        print ws.ConsultarMotivosExcepcionDJAI()
+        print(ws.ConsultarMotivosExcepcionDJAI())
     if "--destinos_djai" in sys.argv:
-        print ws.ConsultarDestinosCompraDJAI()
+        print(ws.ConsultarDestinosCompraDJAI())
         
     if "--consultar_cuit" in sys.argv:
-        print ws.client.help("consultarCUIT")
+        print(ws.client.help("consultarCUIT"))
         try:
-            print "Consultado CUITs...."
+            print("Consultado CUITs....")
             nro_doc = 26756539
             tipo_doc = 96
-            print ws.ConsultarCUIT(nro_doc, tipo_doc)
+            print(ws.ConsultarCUIT(nro_doc, tipo_doc))
             # recorro el detalle de los cuit devueltos:
             while ws.LeerCUITConsultado():
-                print "CUIT", ws.CUITConsultada
-                print "Denominación", ws.DenominacionConsultada
-        except Exception, e:
+                print("CUIT", ws.CUITConsultada)
+                print("Denominación", ws.DenominacionConsultada)
+        except Exception as e:
             raise
-            print "Exception", e
-            print ws.XmlRequest
-            print ws.XmlResponse
+            print("Exception", e)
+            print(ws.XmlRequest)
+            print(ws.XmlResponse)
     
     if "--prueba" in sys.argv:
-        print ws.client.help("generarSolicitudCompraDivisa").encode("latin1")
+        print(ws.client.help("generarSolicitudCompraDivisa").encode("latin1"))
         try:
             cuit_comprador = 20267565393
             codigo_moneda = 1
@@ -834,7 +840,7 @@ def main():
                     tipo, codigo = 1, '12345DJAI000067C'
                 else:
                     tipo, codigo = None, None
-                print "djai", djai
+                print("djai", djai)
                 ok = ws.GenerarSolicitudCompraDivisa(cuit_comprador, codigo_moneda,
                                     cotizacion_moneda, monto_pesos,
                                     cuit_representante, codigo_destino,
@@ -842,7 +848,7 @@ def main():
                                     djas=djas, codigo_excepcion_djas=cod_ex_djas, 
                                     tipo=tipo, codigo=codigo,)
             else:
-                print "Turista!"
+                print("Turista!")
                 tipo_doc=91
                 numero_doc=1234567
                 apellido_nombre="Nombre y Apellido del turista extranjero"
@@ -856,27 +862,27 @@ def main():
                 i = ws.LeerInconsistencia()
                 if not i:
                     break
-                print "Inconsistencia...", i
+                print("Inconsistencia...", i)
                 
             assert ok
-            print 'Resultado', ws.Resultado
+            print('Resultado', ws.Resultado)
             assert ws.Resultado == 'A'
-            print 'COC', ws.COC
+            print('COC', ws.COC)
             assert len(str(ws.COC)) == 12
-            print "FechaEmisionCOC", ws.FechaEmisionCOC
-            print 'CodigoSolicitud', ws.CodigoSolicitud
+            print("FechaEmisionCOC", ws.FechaEmisionCOC)
+            print('CodigoSolicitud', ws.CodigoSolicitud)
             assert ws.CodigoSolicitud is not None
-            print "EstadoSolicitud", ws.EstadoSolicitud
+            print("EstadoSolicitud", ws.EstadoSolicitud)
             assert ws.EstadoSolicitud == 'OT'
-            print "FechaEstado", ws.FechaEstado
-            print "DetalleCUITComprador", ws.CUITComprador, ws.DenominacionComprador
-            print "CodigoMoneda", ws.CodigoMoneda
+            print("FechaEstado", ws.FechaEstado)
+            print("DetalleCUITComprador", ws.CUITComprador, ws.DenominacionComprador)
+            print("CodigoMoneda", ws.CodigoMoneda)
             assert ws.CodigoMoneda == 1
-            print "CotizacionMoneda", ws.CotizacionMoneda
+            print("CotizacionMoneda", ws.CotizacionMoneda)
             assert round(ws.CotizacionMoneda, 2) == 4.26
-            print "MontoPesos", ws.MontoPesos
+            print("MontoPesos", ws.MontoPesos)
             assert ws.MontoPesos - monto_pesos <= 0.01
-            print "CodigoDestino", ws.CodigoDestino
+            print("CodigoDestino", ws.CodigoDestino)
             assert ws.CodigoDestino == codigo_destino
 
             coc = ws.COC
@@ -885,34 +891,34 @@ def main():
             nuevo_estado =  'CO'
             ok = ws.InformarSolicitudCompraDivisa(codigo_solicitud, nuevo_estado)
             assert ok
-            print 'Resultado', ws.Resultado
+            print('Resultado', ws.Resultado)
             assert ws.Resultado == 'A'
-            print 'COC', ws.COC
+            print('COC', ws.COC)
             assert ws.COC == coc
-            print "EstadoSolicitud", ws.EstadoSolicitud
+            print("EstadoSolicitud", ws.EstadoSolicitud)
             assert ws.EstadoSolicitud == nuevo_estado
 
             ok = ws.AnularCOC(coc, cuit_comprador)
             assert ok
-            print 'Resultado', ws.Resultado
+            print('Resultado', ws.Resultado)
             assert ws.Resultado == 'A'
-            print 'COC', ws.COC
+            print('COC', ws.COC)
             assert ws.COC == coc
-            print "EstadoSolicitud", ws.EstadoSolicitud
+            print("EstadoSolicitud", ws.EstadoSolicitud)
             assert ws.EstadoSolicitud == 'AN'
 
             ok = ws.ConsultarSolicitudCompraDivisa(codigo_solicitud)
             assert ok
-            print 'CodigoSolicitud', ws.CodigoSolicitud
+            print('CodigoSolicitud', ws.CodigoSolicitud)
             assert ws.CodigoSolicitud == codigo_solicitud
-            print "EstadoSolicitud", ws.EstadoSolicitud
+            print("EstadoSolicitud", ws.EstadoSolicitud)
             assert ws.EstadoSolicitud == 'AN'
             
         except:
-            print ws.XmlRequest
-            print ws.XmlResponse
-            print ws.ErrCode
-            print ws.ErrMsg
+            print(ws.XmlRequest)
+            print(ws.XmlResponse)
+            print(ws.ErrCode)
+            print(ws.ErrMsg)
             raise
 
     if "--consultar_solicitudes" in sys.argv:
@@ -925,93 +931,93 @@ def main():
                                              fecha_emision_desde,
                                              fecha_emision_hasta,)
         # muestro los resultados de la búsqueda
-        print "Solicitudes consultadas:"
+        print("Solicitudes consultadas:")
         for sol in sols:
-            print "Código de Solicitud:", sol
+            print("Código de Solicitud:", sol)
             # podría llamar a ws.ConsultarSolicitudCompraDivisa
-        print "hecho."
+        print("hecho.")
 
         ws.AnalizarXml("XmlResponse")
                
         # recorro las solicitudes devueltas
         i = 0
         while ws.LeerSolicitudConsultada():
-            print "-" * 80
+            print("-" * 80)
             coc = ws.ObtenerTagXml('arrayDetallesSolicitudes', 'detalleSolicitudes', i, 'coc')
             cuit = ws.ObtenerTagXml('arrayDetallesSolicitudes', 'detalleSolicitudes', i, 'cuit')
             p_assert_eq(coc, ws.COC)
-            print 'CUIT', cuit
-            print "FechaEmisionCOC", ws.FechaEmisionCOC
-            print 'CodigoSolicitud', ws.CodigoSolicitud
-            print "EstadoSolicitud", ws.EstadoSolicitud
-            print "FechaEstado", ws.FechaEstado
-            print "DetalleCUITComprador", ws.CUITComprador, ws.DenominacionComprador
-            print "CodigoMoneda", ws.CodigoMoneda
-            print "CotizacionMoneda", ws.CotizacionMoneda
-            print "MontoPesos", ws.MontoPesos
-            print "CodigoDestino", ws.CodigoDestino
-            print "=" * 80
+            print('CUIT', cuit)
+            print("FechaEmisionCOC", ws.FechaEmisionCOC)
+            print('CodigoSolicitud', ws.CodigoSolicitud)
+            print("EstadoSolicitud", ws.EstadoSolicitud)
+            print("FechaEstado", ws.FechaEstado)
+            print("DetalleCUITComprador", ws.CUITComprador, ws.DenominacionComprador)
+            print("CodigoMoneda", ws.CodigoMoneda)
+            print("CotizacionMoneda", ws.CotizacionMoneda)
+            print("MontoPesos", ws.MontoPesos)
+            print("CodigoDestino", ws.CodigoDestino)
+            print("=" * 80)
             i = i + 1
 
 
 
     if "--parametros" in sys.argv:
-        print "=== Tipos de Estado Solicitud ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposEstadoSolicitud(sep="||")])
-        print "=== Monedas ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarMonedas(sep="||")])
-        print "=== Destinos de Compra ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompra(sep="||")])
-        print "=== Tipos de Documento ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposDocumento(sep="||")])
-        print "=== Tipos Estado Solicitud ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposEstadoSolicitud(sep="||")])
-        print "=== Motivos Excepcion DJAI ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarMotivosExcepcionDJAI(sep="||")])
-        print "=== Destinos Compra DJAI ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompraDJAI(sep="||")])
-        print "=== Motivos Excepcion DJAS ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarMotivosExcepcionDJAS(sep="||")])
-        print "=== Destinos Compra DJAS ==="
-        print u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompraDJAS(sep="||")])
+        print("=== Tipos de Estado Solicitud ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposEstadoSolicitud(sep="||")]))
+        print("=== Monedas ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarMonedas(sep="||")]))
+        print("=== Destinos de Compra ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompra(sep="||")]))
+        print("=== Tipos de Documento ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposDocumento(sep="||")]))
+        print("=== Tipos Estado Solicitud ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarTiposEstadoSolicitud(sep="||")]))
+        print("=== Motivos Excepcion DJAI ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarMotivosExcepcionDJAI(sep="||")]))
+        print("=== Destinos Compra DJAI ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompraDJAI(sep="||")]))
+        print("=== Motivos Excepcion DJAS ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarMotivosExcepcionDJAS(sep="||")]))
+        print("=== Destinos Compra DJAS ===")
+        print(u'\n'.join(["||%s||" % s for s in ws.ConsultarDestinosCompraDJAS(sep="||")]))
     
     if "--consultar_djai" in sys.argv:
         djai = "12345DJAI000001N"
         cuit = 20267565393
         ws.ConsultarDJAI(djai, cuit)
-        print "DJAI", ws.DJAI
-        print "Monto FOB", ws.MontoFOB
-        print "Codigo Moneda", ws.CodigoMoneda
-        print "Estado DJAI", ws.EstadoDJAI
-        print "Errores", ws.Errores
-        print "ErroresFormato", ws.ErroresFormato
+        print("DJAI", ws.DJAI)
+        print("Monto FOB", ws.MontoFOB)
+        print("Codigo Moneda", ws.CodigoMoneda)
+        print("Estado DJAI", ws.EstadoDJAI)
+        print("Errores", ws.Errores)
+        print("ErroresFormato", ws.ErroresFormato)
 
     if "--consultar_djas" in sys.argv:
         djas = "12001DJAS000901N"
         cuit = 20267565393
         ws.ConsultarDJAS(djas, cuit)
-        print "DJAS", ws.DJAS
-        print "Monto FOB", ws.MontoFOB
-        print "Codigo Moneda", ws.CodigoMoneda
-        print "Estado DJAI", ws.EstadoDJAI
-        print "Errores", ws.Errores
-        print "ErroresFormato", ws.ErroresFormato
+        print("DJAS", ws.DJAS)
+        print("Monto FOB", ws.MontoFOB)
+        print("Codigo Moneda", ws.CodigoMoneda)
+        print("Estado DJAI", ws.EstadoDJAI)
+        print("Errores", ws.Errores)
+        print("ErroresFormato", ws.ErroresFormato)
         
     if "--consultar_ref" in sys.argv:
         codigo = "12345DJAI000067C"
         cuit = 20267565393
         ws.ConsultarReferencia(1, codigo)
-        print "Monto FOB", ws.MontoFOB
-        print "Codigo Moneda", ws.CodigoMoneda
-        print "Estado", ws.Estado
-        print "Errores", ws.Errores
-        print "ErroresFormato", ws.ErroresFormato
+        print("Monto FOB", ws.MontoFOB)
+        print("Codigo Moneda", ws.CodigoMoneda)
+        print("Estado", ws.Estado)
+        print("Errores", ws.Errores)
+        print("ErroresFormato", ws.ErroresFormato)
       
     if "--consultar_dest_ref" in sys.argv:
-        print ws.ConsultarDestinosCompraTipoReferencia(1)
+        print(ws.ConsultarDestinosCompraTipoReferencia(1))
 
     if "--consultar_tipos_ref" in sys.argv:
-        print ws.ConsultarTiposReferencia()
+        print(ws.ConsultarTiposReferencia())
         
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 

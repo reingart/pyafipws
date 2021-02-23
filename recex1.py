@@ -11,7 +11,11 @@
 # for more details.
 
 "Módulo de Intefase para archivos de texto (exportación version 1)"
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import input
+from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -24,9 +28,9 @@ import time
 import traceback
 
 # revisar la instalación de pyafip.ws:
-import wsfexv1
-from utils import SimpleXMLElement, SoapClient, SoapFault, date
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from . import wsfexv1
+from .utils import SimpleXMLElement, SoapClient, SoapFault, date
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfexv1.HOMO
@@ -107,8 +111,8 @@ if not '--pyfepdf' in sys.argv:
         ('cbte_nro', 8, N), ('cbte_cuit', 11, N), 
         ]
 else:
-    print "!" * 78
-    print "importando formato segun pyfepdf"
+    print("!" * 78)
+    print("importando formato segun pyfepdf")
     from formato_txt import ENCABEZADO, DETALLE, PERMISO, CMP_ASOC, IVA, TRIBUTO
     TIPOS_REG = '0', '1', '2', '3'
 
@@ -150,18 +154,18 @@ def autorizar(ws, entrada, salida):
                 cbtasoc = leer(linea, CMP_ASOC)
                 cbtasocs.append(cbtasoc)
             else:
-                print "Tipo de registro incorrecto:", linea[0]
+                print("Tipo de registro incorrecto:", linea[0])
 
     if not encabezado['id']:
         # TODO: habria que leer y/o grabar el id en el archivo
         ##id += 1 # incremento el nº de transacción 
         # Por el momento, el id se calcula con el tipo, pv y nº de comprobant
-        i = long(encabezado['cbte_nro'])
+        i = int(encabezado['cbte_nro'])
         i += (int(encabezado['cbte_nro'])*10**4 + int(encabezado['punto_vta']))*10**8
         encabezado['id'] = ws.GetLastID() + 1
     
     if '/testing' in sys.argv:
-        encabezado['id'] = long(ws.GetLastID()) + 1
+        encabezado['id'] = int(ws.GetLastID()) + 1
         encabezado['cbte_nro'] = int(ws.GetLastCMP(encabezado['tipo_cbte'], encabezado['punto_vta'])) + 1
         encabezado['fecha_cbte'] = datetime.datetime.now().strftime("%Y%m%d")
 
@@ -175,13 +179,13 @@ def autorizar(ws, entrada, salida):
 
     if DEBUG:
         #print f.to_dict()
-        print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in encabezado.items()])
+        print('\n'.join(["%s='%s'" % (k,str(v)) for k,v in list(encabezado.items())]))
         for detalle in detalles:
-            print ', '.join(["%s='%s'" % (k,str(v)) for k,v in detalle.items()])
-            print "DIF:", detalle['qty'] * detalle['precio'] - detalle['importe']
+            print(', '.join(["%s='%s'" % (k,str(v)) for k,v in list(detalle.items())]))
+            print("DIF:", detalle['qty'] * detalle['precio'] - detalle['importe'])
             
-        print 'id:', encabezado['id']
-    if not DEBUG or not sys.stdout.isatty() or raw_input("Facturar?")=="S":
+        print('id:', encabezado['id'])
+    if not DEBUG or not sys.stdout.isatty() or input("Facturar?")=="S":
         ws.LanzarExcepcion = False
         cae = ws.Authorize(id=encabezado['id'])
         dic = ws.factura
@@ -195,12 +199,12 @@ def autorizar(ws, entrada, salida):
             'reproceso': ws.Reproceso or '',
             })
         escribir_factura(dic, salida)
-        print "ID:", encabezado['id'], "NRO:", dic['cbte_nro'], "Resultado:", dic['resultado'],
-        print "CAE:", dic['cae'], "Obs:", dic['motivos_obs'].encode("ascii", "ignore"),
-        print "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
+        print("ID:", encabezado['id'], "NRO:", dic['cbte_nro'], "Resultado:", dic['resultado'], end=' ')
+        print("CAE:", dic['cae'], "Obs:", dic['motivos_obs'].encode("ascii", "ignore"), end=' ')
+        print("Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso'])
         if ws.Excepcion:
-            print "Excepcion:", ws.Excepcion.encode("ascii", "ignore")
-            print "Traceback:", ws.Traceback.encode("ascii", "ignore")
+            print("Excepcion:", ws.Excepcion.encode("ascii", "ignore"))
+            print("Traceback:", ws.Traceback.encode("ascii", "ignore"))
 
 def escribir_factura(dic, archivo, agrega=False):
     dic['tipo_reg'] = TIPOS_REG[0]
@@ -233,20 +237,20 @@ def depurar_xml(client):
 
 if __name__ == "__main__":
     if '/ayuda' in sys.argv:
-        print LICENCIA
-        print
-        print "Opciones: "
-        print " /ayuda: este mensaje"
-        print " /dummy: consulta estado de servidores"
-        print " /prueba: genera y autoriza una factura de prueba (no usar en producción!)"
-        print " /ult: consulta último número de comprobante"
-        print " /debug: modo depuración (detalla y confirma las operaciones)"
-        print " /formato: muestra el formato de los archivos de entrada/salida"
-        print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
-        print " /xml: almacena los requerimientos y respuestas XML (depuración)"
-        print " /dbf: lee y almacena la información en tablas DBF"
-        print
-        print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
+        print(LICENCIA)
+        print()
+        print("Opciones: ")
+        print(" /ayuda: este mensaje")
+        print(" /dummy: consulta estado de servidores")
+        print(" /prueba: genera y autoriza una factura de prueba (no usar en producción!)")
+        print(" /ult: consulta último número de comprobante")
+        print(" /debug: modo depuración (detalla y confirma las operaciones)")
+        print(" /formato: muestra el formato de los archivos de entrada/salida")
+        print(" /get: recupera datos de un comprobante autorizado previamente (verificación)")
+        print(" /xml: almacena los requerimientos y respuestas XML (depuración)")
+        print(" /dbf: lee y almacena la información en tablas DBF")
+        print()
+        print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
         sys.exit(0)
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
@@ -279,7 +283,7 @@ if __name__ == "__main__":
 
     if config.has_section('DBF'):
         conf_dbf = dict(config.items('DBF'))
-        if DEBUG: print "conf_dbf", conf_dbf
+        if DEBUG: print("conf_dbf", conf_dbf)
     else:
         conf_dbf = {}
         
@@ -290,12 +294,12 @@ if __name__ == "__main__":
         XML = True
 
     if DEBUG:
-        print "wsaa_url %s\nwsfexv1_url %s" % (wsaa_url, wsfexv1_url)
-        if proxy_dict: print "proxy_dict=",proxy_dict
-        print "timeout:", TIMEOUT
-        print "Config_file:", CONFIG_FILE
-        print "Entrada: ", entrada
-        print "Salida:", salida
+        print("wsaa_url %s\nwsfexv1_url %s" % (wsaa_url, wsfexv1_url))
+        if proxy_dict: print("proxy_dict=",proxy_dict)
+        print("timeout:", TIMEOUT)
+        print("Config_file:", CONFIG_FILE)
+        print("Entrada: ", entrada)
+        print("Salida:", salida)
     
     try:
         ws = wsfexv1.WSFEXv1()
@@ -303,37 +307,37 @@ if __name__ == "__main__":
         ws.Cuit = cuit
 
         if '/dummy' in sys.argv:
-            print "Consultando estado de servidores..."
+            print("Consultando estado de servidores...")
             ws.Dummy()
-            print "AppServerStatus", ws.AppServerStatus
-            print "DbServerStatus", ws.DbServerStatus
-            print "AuthServerStatus", ws.AuthServerStatus
+            print("AppServerStatus", ws.AppServerStatus)
+            print("DbServerStatus", ws.DbServerStatus)
+            print("AuthServerStatus", ws.AuthServerStatus)
             sys.exit(0)
 
 
         if '/formato' in sys.argv:
-            from formatos.formato_dbf import definir_campos
-            print "Formato:"
+            from .formatos.formato_dbf import definir_campos
+            print("Formato:")
             for msg, formato in [('Encabezado', ENCABEZADO), ('Detalle', DETALLE), ('Permiso', PERMISO), ('Comprobante Asociado', CMP_ASOC)]:
                 if not '/dbf' in sys.argv:
                     comienzo = 1
-                    print "== %s ==" % msg
+                    print("== %s ==" % msg)
                     for fmt in formato:
                         clave, longitud, tipo = fmt[0:3]
                         dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                        print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                            clave, comienzo, longitud, tipo, dec)
+                        print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                            clave, comienzo, longitud, tipo, dec))
                         comienzo += longitud
                 else:
                     filename =  "%s.dbf" % msg.lower()[:8]
-                    print "==== %s (%s) ====" % (msg, filename)
+                    print("==== %s (%s) ====" % (msg, filename))
                     claves, campos = definir_campos(formato)
                     for campo in campos:
-                        print " * Campo: %s" % (campo,)
+                        print(" * Campo: %s" % (campo,))
             sys.exit(0)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsfex", cert, privatekey, wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
         if not ta:
@@ -409,11 +413,11 @@ if __name__ == "__main__":
                tipo_cbte = int(sys.argv[i+1])
                punto_vta = int(sys.argv[i+2])
             else:
-               tipo_cbte = int(raw_input("Tipo de comprobante: "))
-               punto_vta = int(raw_input("Punto de venta: "))
+               tipo_cbte = int(input("Tipo de comprobante: "))
+               punto_vta = int(input("Punto de venta: "))
             ult_cbte = ws.GetLastCMP(tipo_cbte, punto_vta)
-            print "Ultimo numero: ", ult_cbte
-            print ws.ErrMsg
+            print("Ultimo numero: ", ult_cbte)
+            print(ws.ErrMsg)
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
                               'punto_vta': punto_vta, 
@@ -424,25 +428,25 @@ if __name__ == "__main__":
             sys.exit(0)
 
         if '/get' in sys.argv:
-            print "Recuperar comprobante:"
+            print("Recuperar comprobante:")
             i = sys.argv.index("/get")
             if i+3<len(sys.argv):
                tipo_cbte = int(sys.argv[i+1])
                punto_vta = int(sys.argv[i+2])
                cbte_nro = int(sys.argv[i+3])
             else:
-               tipo_cbte = int(raw_input("Tipo de comprobante: "))
-               punto_vta = int(raw_input("Punto de venta: "))
-               cbte_nro = int(raw_input("Numero de comprobante: "))
+               tipo_cbte = int(input("Tipo de comprobante: "))
+               punto_vta = int(input("Punto de venta: "))
+               cbte_nro = int(input("Numero de comprobante: "))
             ws.GetCMP(tipo_cbte, punto_vta, cbte_nro)
 
-            print "FechaCbte = ", ws.FechaCbte
-            print "CbteNro = ", ws.CbteNro
-            print "PuntoVenta = ", ws.PuntoVenta
-            print "ImpTotal =", ws.ImpTotal
-            print "CAE = ", ws.CAE
-            print "Vencimiento = ", ws.Vencimiento
-            print ws.ErrMsg 
+            print("FechaCbte = ", ws.FechaCbte)
+            print("CbteNro = ", ws.CbteNro)
+            print("PuntoVenta = ", ws.PuntoVenta)
+            print("ImpTotal =", ws.ImpTotal)
+            print("CAE = ", ws.CAE)
+            print("Vencimiento = ", ws.Vencimiento)
+            print(ws.ErrMsg) 
 
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
@@ -461,10 +465,10 @@ if __name__ == "__main__":
             if i+1<len(sys.argv):
                moneda_id = sys.argv[i+1]
             else:
-               moneda_id = raw_input("Id de moneda (DOL): ") or 'DOL'
+               moneda_id = input("Id de moneda (DOL): ") or 'DOL'
             ctz = ws.GetParamCtz(moneda_id)
-            print "Cotizacion: ", ctz
-            print ws.ErrMsg
+            print("Cotizacion: ", ctz)
+            print(ws.ErrMsg)
             sys.exit(0)
 
         if '/monctz' in sys.argv:
@@ -472,10 +476,10 @@ if __name__ == "__main__":
             if i+1<len(sys.argv):
                fecha = sys.argv[i+1]
             else:
-               fecha = raw_input("Fecha (AAAAMMDD): ") or None
+               fecha = input("Fecha (AAAAMMDD): ") or None
             ctz = ws.GetParamMonConCotizacion(fecha)
-            print "\n".join(ctz)
-            print ws.ErrMsg
+            print("\n".join(ctz))
+            print(ws.ErrMsg)
             sys.exit(0)
 
         f_entrada = f_salida = None
@@ -494,8 +498,8 @@ if __name__ == "__main__":
                 depurar_xml(ws.client)
         sys.exit(0)
     
-    except Exception, e:
-        print unicode(e).encode("ascii","ignore")
+    except Exception as e:
+        print(str(e).encode("ascii","ignore"))
         if DEBUG or True:
             raise
         sys.exit(5)

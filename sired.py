@@ -11,7 +11,16 @@
 # for more details.
 
 "Almacenamiento de duplicados electrónicos RG1361/02 y RG1579/03 AFIP"
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import input
+from builtins import str
+from builtins import zip
+from past.builtins import basestring
+from builtins import object
+from past.utils import old_div
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -39,7 +48,7 @@ import unicodedata
 import sqlite3
 import traceback
 
-from utils import leer, escribir, C, N, A, I, B, get_install_dir
+from .utils import leer, escribir, C, N, A, I, B, get_install_dir
 
 CUIT = '20267565393'
 
@@ -203,7 +212,7 @@ VENTAS_TIPO2 = [
 
 # Regimen de informacion de compras y ventas
 
-from rg3685 import REGINFO_CV_VENTAS_CBTE, REGINFO_CV_VENTAS_CBTE_ALICUOTA
+from .rg3685 import REGINFO_CV_VENTAS_CBTE, REGINFO_CV_VENTAS_CBTE_ALICUOTA
 
 def format_as_dict(format):
     return dict([(k[0], None) for k in format])
@@ -258,7 +267,7 @@ def generar_encabezado(items):
     for item in items:
         vals = format_as_dict(CAB_FAC_TIPO1)
         vals['fecha_anulacion'] = ''
-        for k in item.keys():
+        for k in list(item.keys()):
             vals[k] = item[k]
             if k in totales and k in IMPORTES:
                 totales[k] = totales[k] + Decimal(item[k])
@@ -330,7 +339,7 @@ def generar_detalle(items):
                 vals['alicuota_iva'] = alicuota or '0.00'
             else:
                 # tomar datos generales:
-                vals['alicuota_iva'] = (Decimal(item['imp_total'])/Decimal(item['imp_neto']) - 1) * 100
+                vals['alicuota_iva'] = (old_div(Decimal(item['imp_total']),Decimal(item['imp_neto'])) - 1) * 100
                 if float(item.get('impto_liq', item.get('imp_iva', 0))) == 0:
                     vals['gravado'] = 'E'
                 else:
@@ -392,7 +401,7 @@ def generar_ventas(items):
                 vals['alicuota_iva'] = alicuota or '0.00'
             else:
                 # tomar datos generales: 
-                vals['alicuota_iva'] = (Decimal(item['imp_total'])/Decimal(item['imp_neto']) - 1) * 100
+                vals['alicuota_iva'] = (old_div(Decimal(item['imp_total']),Decimal(item['imp_neto'])) - 1) * 100
                 vals['alicuotas_iva'] = '01'
                 if float(item.get('impto_liq', item.get('imp_iva', 0))) == 0:
                     vals['codigo_operacion'] = 'E'
@@ -423,7 +432,7 @@ def generar_ventas(items):
     out.close()
 
 
-class SIRED():
+class SIRED(object):
     "Componente para Sistema Resúmen Electrónico de Datos RG1361/02 RG1579/03"
 
     _public_methods_ = ['CrearBD', 
@@ -448,8 +457,8 @@ class SIRED():
         self.db.row_factory = sqlite3.Row
         self.cursor = self.db.cursor()
         if crear:
-            from formatos.formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
-            from formatos.formato_sql import esquema_sql
+            from .formatos.formato_txt import ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
+            from .formatos.formato_sql import esquema_sql
             tipos_registro =  [
                 ('encabezado', ENCABEZADO),
                 ('detalle', DETALLE),
@@ -564,18 +573,18 @@ class SIRED():
         return True
     
     def GuardarFactura(self):
-        from formatos.formato_sql import escribir
+        from .formatos.formato_sql import escribir
         escribir([self.factura], self.db)
         return self.factura['id']
 
     def ActualizarFactura(self, id_factura):
-        from formatos.formato_sql import modificar
+        from .formatos.formato_sql import modificar
         self.factura["id"] = id_factura
         modificar(self.factura, self.db)
         return True
 
     def ObtenerFactura(self, id_factura=None):
-        from formatos.formato_sql import leer, max_id
+        from .formatos.formato_sql import leer, max_id
         if not id_factura:
             id_factura = max_id(self.db) 
         facts = list(leer(self.db, ids=[id_factura]))
@@ -584,7 +593,7 @@ class SIRED():
         return True
 
     def Consultar(self, **kwargs):
-        from formatos.formato_sql import leer
+        from .formatos.formato_sql import leer
         return leer(self.db, **kwargs)
 
 
@@ -686,7 +695,7 @@ if __name__ == '__main__':
                     precio, bonif, iva_id, imp_iva, importe, despacho)
 
             sired.AgregarDato("prueba", "1234")
-            print "Prueba!"
+            print("Prueba!")
             id_factura = sired.GuardarFactura()
             fact = sired.factura.copy()
             ok = sired.ObtenerFactura(id_factura)
@@ -698,7 +707,7 @@ if __name__ == '__main__':
                 global difs
                 if difs is None:
                     difs = []
-                for k in set(d1.keys() + d2.keys()):
+                for k in set(list(d1.keys()) + list(d2.keys())):
                     if k in d1 and k in d2:
                         if isinstance(d1[k], list):
                             for i, (v1, v2) in enumerate(zip(d1[k], d2[k])):
@@ -707,14 +716,14 @@ if __name__ == '__main__':
                             if isinstance(d1[k], Decimal) or isinstance(d2[k], Decimal):
                                 d1[k] = float(d1[k])
                                 d2[k] = float(d2[k])
-                            if isinstance(d1[k], long) or isinstance(d2[k], long):
-                                d1[k] = long(d1[k])
-                                d2[k] = long(d2[k])
+                            if isinstance(d1[k], int) or isinstance(d2[k], int):
+                                d1[k] = int(d1[k])
+                                d2[k] = int(d2[k])
                             if d1[k] != d2[k]:
                                 difs.append(("Dif", prefijo, k, d1[k], d2[k]))
             cmp_dict(fact, f)
             for dif in difs:
-                print dif
+                print(dif)
                 
             sired.EstablecerParametro("cae", "61123022925855")
             sired.EstablecerParametro("fch_venc_cae", "20110320")
@@ -727,12 +736,12 @@ if __name__ == '__main__':
 
         if '--leer' in sys.argv:
             if '--completar_padron' in sys.argv:
-                from padron import PadronAFIP
+                from .padron import PadronAFIP
                 padron = PadronAFIP()
                 padron.Conectar(trace="--trace" in sys.argv)
-                from formatos import formato_txt
+                from .formatos import formato_txt
                 formato = formato_txt.ENCABEZADO
-                categorias_iva = dict([(int(v), k) for k, v in categorias.items()])
+                categorias_iva = dict([(int(v), k) for k, v in list(categorias.items())])
 
             else:
                 formato = VENTAS_TIPO1
@@ -747,9 +756,9 @@ if __name__ == '__main__':
 
                     if '--completar_padron' in sys.argv:
                         cuit = datos['nro_doc']
-                        print "Consultando AFIP online...", cuit,
+                        print("Consultando AFIP online...", cuit, end=' ')
                         ok = padron.Consultar(cuit)
-                        print padron.direccion, padron.provincia
+                        print(padron.direccion, padron.provincia)
                         datos["nombre_cliente"] = padron.denominacion.encode("latin1")
                         datos["domicilio_cliente"] = padron.direccion.encode("latin1")
                         datos["localidad_cliente"] = "%s (CP %s) " % (
@@ -767,13 +776,13 @@ if __name__ == '__main__':
 
                 # pre-procesar:
                 for factura in facturas:
-                    for k, v in factura.items():
+                    for k, v in list(factura.items()):
                         # decodificar strings (evitar problemas unicode)
                         if isinstance(v, basestring):
                             if isinstance(v, str):
                                 v = v.decode("latin1", "ignore")
                             factura[k] = unicodedata.normalize('NFKD', v).encode('ASCII', 'ignore')
-                            print k,factura[k]
+                            print(k,factura[k])
                         # convertir tipos de datos desde los strings del CSV
                         if k.startswith("imp"):
                             factura[k] = float(v)
@@ -793,10 +802,10 @@ if __name__ == '__main__':
                                )
                     for prefijo in prefijos:
                         fn = os.path.join(ruta, "%s.csv" % (prefijo % factura))
-                        print "Detalle: ", fn
+                        print("Detalle: ", fn)
                         if os.path.exists(fn):
                             det = fn
-                            print "encontrado!"
+                            print("encontrado!")
                             break
                     else:
                         if 'detalles' in entrada:
@@ -813,7 +822,7 @@ if __name__ == '__main__':
                             det['ds'] = det['ds'].decode("latin1", "ignore")
                         if 'ds' in det:
                             det['ds'] = unicodedata.normalize('NFKD', det['ds']).encode('ASCII', 'ignore')
-                        print det
+                        print(det)
                         if iva_id:
                             iva_id = int(iva_id)
                             if iva_id not in ivas:
@@ -829,12 +838,12 @@ if __name__ == '__main__':
                                 if not iva and iva_id > 3:
                                     # extraer IVA incluido factura B:
                                     if factura["tipo_cbte"] in (6, 7, 8):
-                                        neto = round(importe / ((100 + alicuotas[iva_id]) / 100.), 2)
+                                        neto = round(old_div(importe, ((100 + alicuotas[iva_id]) / 100.)), 2)
                                         iva = importe - neto
                                     else:
                                         neto = importe
                                         iva = round(neto * alicuotas[iva_id] /100., 2)
-                                    print "importe iva calc:", importe, iva
+                                    print("importe iva calc:", importe, iva)
                                 else:
                                     neto = importe
                                     # descontar IVA incluido factura B:
@@ -847,11 +856,11 @@ if __name__ == '__main__':
 
                     # rearmar estructuras internas:
                     factura['detalles'] = detalles
-                    factura['ivas'] = ivas.values()
+                    factura['ivas'] = list(ivas.values())
                     factura['datos'] = []
                     factura['tributos'] = []
                     if 'imp_iva' not in factura or factura['imp_iva'] == "":
-                        print "debe agregar el IVA total en el encabezado..."
+                        print("debe agregar el IVA total en el encabezado...")
                         factura['imp_iva'] = imp_iva
                     if 'cbt_numero' in factura:
                         factura['cbt_desde'] = factura['cbt_numero']
@@ -871,25 +880,25 @@ if __name__ == '__main__':
                 items = leer_json(entrada['encabezados'])
 
                 
-            print "Generando encabezado..."
+            print("Generando encabezado...")
             generar_encabezado(items)
-            print "Generando detalle..."
+            print("Generando detalle...")
             generar_detalle(items)
-            print "Generando ventas..."
+            print("Generando ventas...")
             generar_ventas(items)
             if '--json' in sys.argv:
                 grabar_json()
 
-        print "Hecho."
-    except Exception, e:
+        print("Hecho.")
+    except Exception as e:
         if '--debug' in sys.argv:
             raise
-        print "Error: por favor corriga los datos y vuelva a intentar:"
-        print str(e)
+        print("Error: por favor corriga los datos y vuelva a intentar:")
+        print(str(e))
         f = open("traceback.txt", "w+")
         import traceback
         traceback.print_exc(file=f)
         f.close()
     if '--debug' in sys.argv:
-        raw_input("presione enter para continuar...")
+        input("presione enter para continuar...")
     ##sys.stdout.close()

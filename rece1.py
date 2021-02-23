@@ -11,7 +11,11 @@
 # for more details.
 
 "Módulo de Intefase para archivos de texto (mercado interno versión 1)"
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import input
+from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -25,9 +29,9 @@ import traceback
 import warnings
 
 # revisar la instalación de pyafip.ws:
-import wsfev1
-from utils import SimpleXMLElement, SoapClient, SoapFault, date
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from . import wsfev1
+from .utils import SimpleXMLElement, SoapClient, SoapFault, date
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfev1.HOMO
@@ -155,7 +159,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         encabezados = []
         opcionales = []
         compradores = []
-        if DEBUG: print "Leyendo DBF..."
+        if DEBUG: print("Leyendo DBF...")
 
         formatos = [('Encabezado', ENCABEZADO, encabezados), 
                     ('Tributo', TRIBUTO, tributos), 
@@ -197,7 +201,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             if str(linea[0])=='0':
                 encabezado = leer(linea, ENCABEZADO)
                 encabezados.append(encabezado)
-                if DEBUG: print len(encabezados), "Leida factura %(cbt_desde)s" % encabezado 
+                if DEBUG: print(len(encabezados), "Leida factura %(cbt_desde)s" % encabezado) 
             elif str(linea[0])=='1':
                 tributo = leer(linea, TRIBUTO)
                 encabezado.setdefault("tributos", []).append(tributo)
@@ -217,7 +221,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 periodo = leer(linea, PERIODO_ASOC)
                 encabezado["periodo_cbtes_asoc"] = periodo
             else:
-                print "Tipo de registro incorrecto:", linea[0]
+                print("Tipo de registro incorrecto:", linea[0])
 
     if not encabezados:
         raise RuntimeError("No se pudieron leer los registros de la entrada")
@@ -261,20 +265,20 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             ws.AgregarPeriodoComprobantesAsociados(**periodo_asoc)
 
         if DEBUG:
-            print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
-        if not DEBUG or raw_input("Facturar (S/n)?")=="S":
+            print('\n'.join(["%s='%s'" % (k,str(v)) for k,v in list(ws.factura.items())]))
+        if not DEBUG or input("Facturar (S/n)?")=="S":
             if not informar_caea:
                 cae = ws.CAESolicitar()
                 dic = ws.factura
             else:
                 cae = ws.CAEARegInformativo()
                 dic = ws.factura
-            print "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f" % (
+            print("Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f" % (
                 TIPO_CBTE.get(dic['tipo_cbte'], dic['tipo_cbte']), 
                 dic['punto_vta'], dic['cbt_desde'], dic['cbt_hasta'], 
                 TIPO_DOC.get(dic['tipo_doc'], dic['tipo_doc']), dic['nro_doc'], 
                 float(dic['imp_total']), 
-                float(dic['imp_iva'] if dic['imp_iva'] is not None else 'NaN')) 
+                float(dic['imp_iva'] if dic['imp_iva'] is not None else 'NaN'))) 
             dic.update(encabezado)         # preservar la estructura leida
             dic.update({
                 'cae': cae and str(cae) or '',
@@ -290,7 +294,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                 'emision_tipo': ws.EmisionTipo,
                 })
             dicts.append(dic)
-            print "NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso']
+            print("NRO:", dic['cbt_desde'], "Resultado:", dic['resultado'], "%s:" % ws.EmisionTipo,dic['cae'],"Obs:",dic['motivos_obs'].encode("ascii", "ignore"), "Err:", dic['err_msg'].encode("ascii", "ignore"), "Reproceso:", dic['reproceso'])
     if dicts:
         escribir_facturas(dicts, salida)
 
@@ -359,25 +363,25 @@ def depurar_xml(client, ruta="."):
 
 if __name__ == "__main__":
     if '/ayuda' in sys.argv:
-        print LICENCIA
-        print
-        print "Opciones: "
-        print " /ayuda: este mensaje"
-        print " /dummy: consulta estado de servidores"
-        print " /prueba: genera y autoriza una factura de prueba (no usar en producción!)"
-        print " /ult: consulta último número de comprobante"
-        print " /debug: modo depuración (detalla y confirma las operaciones)"
-        print " /formato: muestra el formato de los archivos de entrada/salida"
-        print " /get: recupera datos de un comprobante autorizado previamente (verificación)"
-        print " /xml: almacena los requerimientos y respuestas XML (depuración)"
-        print " /dbf: lee y almacena la información en tablas DBF"
-        print
-        print "Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
+        print(LICENCIA)
+        print()
+        print("Opciones: ")
+        print(" /ayuda: este mensaje")
+        print(" /dummy: consulta estado de servidores")
+        print(" /prueba: genera y autoriza una factura de prueba (no usar en producción!)")
+        print(" /ult: consulta último número de comprobante")
+        print(" /debug: modo depuración (detalla y confirma las operaciones)")
+        print(" /formato: muestra el formato de los archivos de entrada/salida")
+        print(" /get: recupera datos de un comprobante autorizado previamente (verificación)")
+        print(" /xml: almacena los requerimientos y respuestas XML (depuración)")
+        print(" /dbf: lee y almacena la información en tablas DBF")
+        print()
+        print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
         sys.exit(0)
 
     if '/debug'in sys.argv:
         DEBUG = True        
-        print "VERSION", __version__, "HOMO", HOMO
+        print("VERSION", __version__, "HOMO", HOMO)
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
     cert = config.get('WSAA','CERT')
@@ -413,7 +417,7 @@ if __name__ == "__main__":
 
     if config.has_section('DBF'):
         conf_dbf = dict(config.items('DBF'))
-        if DEBUG: print "conf_dbf", conf_dbf
+        if DEBUG: print("conf_dbf", conf_dbf)
     else:
         conf_dbf = {}
 
@@ -434,9 +438,9 @@ if __name__ == "__main__":
     RUTA_XML = config.has_option('WSFEv1', 'XML') and config.get('WSFEv1', 'XML') or "."
 
     if DEBUG:
-        print "wsaa_url %s\nwsfev1_url %s\ncuit %s" % (wsaa_url, wsfev1_url, cuit)
-        if proxy_dict: print "proxy_dict=",proxy_dict
-        print "timeout:", TIMEOUT
+        print("wsaa_url %s\nwsfev1_url %s\ncuit %s" % (wsaa_url, wsfev1_url, cuit))
+        if proxy_dict: print("proxy_dict=",proxy_dict)
+        print("timeout:", TIMEOUT)
 
     if '/x' in sys.argv:
         escribir_facturas([{'err_msg': "Prueba",
@@ -451,15 +455,15 @@ if __name__ == "__main__":
             ws.Reprocesar = wsfev1_reprocesar
 
         if '/dummy' in sys.argv:
-            print "Consultando estado de servidores..."
+            print("Consultando estado de servidores...")
             ws.Dummy()
-            print "AppServerStatus", ws.AppServerStatus
-            print "DbServerStatus", ws.DbServerStatus
-            print "AuthServerStatus", ws.AuthServerStatus
+            print("AppServerStatus", ws.AppServerStatus)
+            print("DbServerStatus", ws.DbServerStatus)
+            print("AuthServerStatus", ws.AuthServerStatus)
             sys.exit(0)
 
         if '/formato' in sys.argv:
-            print "Formato:"
+            print("Formato:")
             for msg, formato in [('Encabezado', ENCABEZADO), 
                                  ('Tributo', TRIBUTO), ('Iva', IVA), 
                                  ('Comprobante Asociado', CMP_ASOC),
@@ -469,24 +473,24 @@ if __name__ == "__main__":
                                 ]:
                 if not '/dbf' in sys.argv:
                     comienzo = 1
-                    print "== %s ==" % msg
+                    print("== %s ==" % msg)
                     for fmt in formato:
                         clave, longitud, tipo = fmt[0:3]
                         dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                        print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                            clave, comienzo, longitud, tipo, dec)
+                        print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                            clave, comienzo, longitud, tipo, dec))
                         comienzo += longitud
                 else:
-                    from formatos.formato_dbf import definir_campos
+                    from .formatos.formato_dbf import definir_campos
                     filename =  "%s.dbf" % msg.lower()[:8]
-                    print "==== %s (%s) ====" % (msg, filename)
+                    print("==== %s (%s) ====" % (msg, filename))
                     claves, campos = definir_campos(formato)
                     for campo in campos:
-                        print " * Campo: %s" % (campo,)
+                        print(" * Campo: %s" % (campo,))
             sys.exit(0)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsfe", cert, privatekey, wsaa_url, proxy=proxy_dict, cacert=CACERT, wrapper=WRAPPER)
         if DEBUG:
@@ -495,9 +499,9 @@ if __name__ == "__main__":
             sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
         ws.SetTicketAcceso(ta)
         if DEBUG:
-            print "Ticket Acceso:", ta
-            print "Token:", ws.Token
-            print "Sign:", ws.Sign
+            print("Ticket Acceso:", ta)
+            print("Token:", ws.Token)
+            print("Sign:", ws.Sign)
                     
         if '/prueba' in sys.argv:
             # generar el archivo de prueba para la próxima factura
@@ -581,24 +585,24 @@ if __name__ == "__main__":
             f_entrada = open(entrada,"w")
                 
             if DEBUG:
-                print ws.factura
+                print(ws.factura)
 
             dic = ws.factura
             escribir_facturas([dic], f_entrada, agrega=True)
             f_entrada.close()
       
         if '/ult' in sys.argv:
-            print "Consultar ultimo numero:"
+            print("Consultar ultimo numero:")
             i = sys.argv.index("/ult")
             if i+2<len(sys.argv):
                tipo_cbte = int(sys.argv[i+1])
                punto_vta = int(sys.argv[i+2])
             else:
-               tipo_cbte = int(raw_input("Tipo de comprobante: "))
-               punto_vta = int(raw_input("Punto de venta: "))
+               tipo_cbte = int(input("Tipo de comprobante: "))
+               punto_vta = int(input("Punto de venta: "))
             ult_cbte = ws.CompUltimoAutorizado(tipo_cbte, punto_vta)
-            print "Ultimo numero: ", ult_cbte
-            print ws.ErrMsg
+            print("Ultimo numero: ", ult_cbte)
+            print(ws.ErrMsg)
             depurar_xml(ws.client, RUTA_XML)
             escribir_facturas([{'tipo_cbte': tipo_cbte, 
                               'punto_vta': punto_vta, 
@@ -609,29 +613,29 @@ if __name__ == "__main__":
             sys.exit(0)
 
         if '/get' in sys.argv:
-            print "Recuperar comprobante:"
+            print("Recuperar comprobante:")
             i = sys.argv.index("/get")
             if i+3<len(sys.argv):
                tipo_cbte = int(sys.argv[i+1])
                punto_vta = int(sys.argv[i+2])
                cbte_nro = int(sys.argv[i+3])
             else:
-               tipo_cbte = int(raw_input("Tipo de comprobante: "))
-               punto_vta = int(raw_input("Punto de venta: "))
-               cbte_nro = int(raw_input("Numero de comprobante: "))
+               tipo_cbte = int(input("Tipo de comprobante: "))
+               punto_vta = int(input("Punto de venta: "))
+               cbte_nro = int(input("Numero de comprobante: "))
             ws.CompConsultar(tipo_cbte, punto_vta, cbte_nro)
 
             ws.AnalizarXml("XmlResponse")
-            print "FechaCbte = ", ws.FechaCbte
-            print "CbteNro = ", ws.CbteNro
-            print "PuntoVenta = ", ws.PuntoVenta
-            print "TipoDoc = ", ws.ObtenerTagXml('DocTipo')
-            print "NroDoc = ", ws.ObtenerTagXml('DocNro')
-            print "ImpTotal =", ws.ImpTotal
-            print "CAE = ", ws.CAE
-            print "Vencimiento = ", ws.Vencimiento
-            print "EmisionTipo = ", ws.EmisionTipo
-            print ws.ErrMsg 
+            print("FechaCbte = ", ws.FechaCbte)
+            print("CbteNro = ", ws.CbteNro)
+            print("PuntoVenta = ", ws.PuntoVenta)
+            print("TipoDoc = ", ws.ObtenerTagXml('DocTipo'))
+            print("NroDoc = ", ws.ObtenerTagXml('DocNro'))
+            print("ImpTotal =", ws.ImpTotal)
+            print("CAE = ", ws.CAE)
+            print("Vencimiento = ", ws.Vencimiento)
+            print("EmisionTipo = ", ws.EmisionTipo)
+            print(ws.ErrMsg) 
 
             depurar_xml(ws.client, RUTA_XML)
             # grabar todos los datos devueltos por AFIP:
@@ -666,35 +670,35 @@ if __name__ == "__main__":
                 periodo = sys.argv[sys.argv.index("/solicitarcaea")+1]
                 orden = sys.argv[sys.argv.index("/solicitarcaea")+2]
             else:
-                periodo = raw_input("Periodo: ")
-                orden = raw_input("Orden: ")
+                periodo = input("Periodo: ")
+                orden = input("Orden: ")
                 
             if DEBUG: 
-                print "Solicitando CAEA para periodo %s orden %s" % (periodo, orden)
+                print("Solicitando CAEA para periodo %s orden %s" % (periodo, orden))
             
             caea = ws.CAEASolicitar(periodo, orden)
-            print "CAEA:", caea
+            print("CAEA:", caea)
 
             if ws.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in ws.Errores:
-                    print error
+                    print(error)
 
             depurar_xml(ws.client, RUTA_XML)
 
             if not caea:
                 if DEBUG: 
-                    print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
+                    print("Consultando CAEA para periodo %s orden %s" % (periodo, orden))
                 caea = ws.CAEAConsultar(periodo, orden)
-                print "CAEA:", caea
+                print("CAEA:", caea)
                 
             if DEBUG:
-                print "Periodo:", ws.Periodo 
-                print "Orden:", ws.Orden 
-                print "FchVigDesde:", ws.FchVigDesde 
-                print "FchVigHasta:", ws.FchVigHasta 
-                print "FchTopeInf:", ws.FchTopeInf 
-                print "FchProceso:", ws.FchProceso
+                print("Periodo:", ws.Periodo) 
+                print("Orden:", ws.Orden) 
+                print("FchVigDesde:", ws.FchVigDesde) 
+                print("FchVigHasta:", ws.FchVigHasta) 
+                print("FchTopeInf:", ws.FchTopeInf) 
+                print("FchProceso:", ws.FchProceso)
 
             escribir_facturas([{'cae': str(caea), 
                               'emision_tipo': "CAEA", 
@@ -708,33 +712,33 @@ if __name__ == "__main__":
                 periodo = sys.argv[sys.argv.index("/consultarcaea")+1]
                 orden = sys.argv[sys.argv.index("/consultarcaea")+2]
             else:
-                periodo = raw_input("Periodo: ")
-                orden = raw_input("Orden: ")
+                periodo = input("Periodo: ")
+                orden = input("Orden: ")
 
             if DEBUG: 
-                print "Consultando CAEA para periodo %s orden %s" % (periodo, orden)
+                print("Consultando CAEA para periodo %s orden %s" % (periodo, orden))
             
             caea = ws.CAEAConsultar(periodo, orden)
-            print "CAEA:", caea
+            print("CAEA:", caea)
 
             if ws.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in ws.Errores:
-                    print error
+                    print(error)
                 
             if DEBUG:
-                print "Periodo:", ws.Periodo 
-                print "Orden:", ws.Orden 
-                print "FchVigDesde:", ws.FchVigDesde 
-                print "FchVigHasta:", ws.FchVigHasta 
-                print "FchTopeInf:", ws.FchTopeInf
-                print "FchProceso:", ws.FchProceso
+                print("Periodo:", ws.Periodo) 
+                print("Orden:", ws.Orden) 
+                print("FchVigDesde:", ws.FchVigDesde) 
+                print("FchVigHasta:", ws.FchVigHasta) 
+                print("FchTopeInf:", ws.FchTopeInf)
+                print("FchProceso:", ws.FchProceso)
             sys.exit(0)
 
         if '/ptosventa' in sys.argv:
 
-            print "=== Puntos de Venta ==="
-            print u'\n'.join(ws.ParamGetPtosVenta())
+            print("=== Puntos de Venta ===")
+            print(u'\n'.join(ws.ParamGetPtosVenta()))
             sys.exit(0)
 
         if '/informarcaeanoutilizadoptovta' in sys.argv:
@@ -743,17 +747,17 @@ if __name__ == "__main__":
                 caea = sys.argv[i+1]
                 pto_vta = sys.argv[i+2]
             else:
-                caea = raw_input("CAEA: ")
-                pto_vta = raw_input("Punto de Venta: ")
+                caea = input("CAEA: ")
+                pto_vta = input("Punto de Venta: ")
             if DEBUG: 
-                print "Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta)
+                print("Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta))
             ok = ws.CAEASinMovimientoInformar(pto_vta, caea)
-            print "Resultado:", ok
-            print "FchProceso:", ws.FchProceso            
+            print("Resultado:", ok)
+            print("FchProceso:", ws.FchProceso)            
             if ws.Errores:
-                print "Errores:"
+                print("Errores:")
                 for error in ws.Errores:
-                    print error
+                    print(error)
             sys.exit(0)
 
         ws.LanzarExcepciones = False
@@ -762,7 +766,7 @@ if __name__ == "__main__":
             f_entrada = open(entrada,"r")
             f_salida = open(salida,"w")
             try:
-                if DEBUG: print "Autorizando usando entrada:", entrada
+                if DEBUG: print("Autorizando usando entrada:", entrada)
                 autorizar(ws, f_entrada, f_salida, '/informarcaea' in sys.argv)
             except SoapFault:
                 XML = True
@@ -774,17 +778,17 @@ if __name__ == "__main__":
                 depurar_xml(ws.client, RUTA_XML)
         sys.exit(0)
     
-    except SoapFault, e:
-        print "SoapFault:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("SoapFault:", e.faultcode, e.faultstring.encode("ascii","ignore"))
         sys.exit(3)
-    except Exception, e:
-        e_str = unicode(e).encode("ascii","ignore")
+    except Exception as e:
+        e_str = str(e).encode("ascii","ignore")
         if not e_str:
             e_str = repr(e)
-        print "Excepcion:", e_str
+        print("Excepcion:", e_str)
         escribir_facturas([{'err_msg': e_str,
                          }], open(salida,"w"))
-        ex = traceback.format_exception( sys.exc_type, sys.exc_value, sys.exc_traceback)
+        ex = traceback.format_exception( sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
         open("traceback.txt", "wb").write('\n'.join(ex))
 
         if DEBUG:

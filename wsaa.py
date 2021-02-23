@@ -11,11 +11,15 @@
 # for more details.
 
 "Módulo para obtener un ticket de autorización del web service WSAA de AFIP"
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Basado en wsaa-client.php de Gerardo Fisanotti - DvSHyS/DiOPIN/AFIP - 13-apr-07
 # Definir WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL
 # Devuelve TA.xml (ticket de autorización de WSAA)
 
+from builtins import input
+from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -24,7 +28,7 @@ __version__ = "2.11c"
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
 from pysimplesoap.client import SimpleXMLElement
-from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
+from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
      exception_info, safe_console, date
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
@@ -124,7 +128,7 @@ def sign_tra(tra,cert=CERT,privatekey=PRIVATEKEY,passphrase=""):
                          "-outform","DER", "-nodetach"], 
                         stdin=PIPE, stdout=PIPE, stderr=PIPE).communicate(tra)[0]
             return b64encode(out)
-        except Exception, e:
+        except Exception as e:
             if e.errno == 2:
                 warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
             raise
@@ -228,9 +232,9 @@ class WSAA(BaseWS):
         self.x509_req = X509.Request ()
 
         # normalizar encoding (reemplazar acentos, eñe, etc.)
-        if isinstance(empresa, unicode):
+        if isinstance(empresa, str):
             empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII', 'ignore')
-        if isinstance(nombre, unicode):
+        if isinstance(nombre, str):
             nombre = unicodedata.normalize('NFKD', nombre).encode('ASCII', 'ignore')
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
@@ -306,30 +310,30 @@ class WSAA(BaseWS):
             if not os.path.exists(fn) or os.path.getsize(fn) == 0 or \
                os.path.getmtime(fn) + (DEFAULT_TTL) < time.time():    
                 # ticket de acceso (TA) vencido, crear un nuevo req. (TRA) 
-                if DEBUG: print "Creando TRA..."
+                if DEBUG: print("Creando TRA...")
                 tra = self.CreateTRA(service=service, ttl=DEFAULT_TTL)
                 # firmarlo criptográficamente
-                if DEBUG: print "Frimando TRA..."
+                if DEBUG: print("Frimando TRA...")
                 cms = self.SignTRA(tra, crt, key)
                 # concectar con el servicio web:
-                if DEBUG: print "Conectando a WSAA..."
+                if DEBUG: print("Conectando a WSAA...")
                 ok = self.Conectar(cache, wsdl, proxy, wrapper, cacert)
                 if not ok or self.Excepcion:
                     raise RuntimeError(u"Fallo la conexión: %s" % self.Excepcion)
                 # llamar al método remoto para solicitar el TA
-                if DEBUG: print "Llamando WSAA..."
+                if DEBUG: print("Llamando WSAA...")
                 ta = self.LoginCMS(cms)
                 if not ta:
                     raise RuntimeError("Ticket de acceso vacio: %s" % WSAA.Excepcion)
                 # grabar el ticket de acceso para poder reutilizarlo luego
-                if DEBUG: print "Grabando TA en %s..." % fn
+                if DEBUG: print("Grabando TA en %s..." % fn)
                 try:
                     open(fn, "w").write(ta)
-                except IOError, e:
+                except IOError as e:
                     self.Excepcion = u"Imposible grabar ticket de accesso: %s" % fn                
             else:
                 # leer el ticket de acceso del archivo en cache
-                if DEBUG: print "Leyendo TA de %s..." % fn
+                if DEBUG: print("Leyendo TA de %s..." % fn)
                 ta = open(fn, "r").read()
             # analizar el ticket de acceso y extraer los datos relevantes 
             self.AnalizarXml(xml=ta)
@@ -339,8 +343,8 @@ class WSAA(BaseWS):
             ta = ""
             if not self.Excepcion:
                 # avoid encoding problem when reporting exceptions to the user:
-                self.Excepcion = traceback.format_exception_only(sys.exc_type, 
-                                                          sys.exc_value)[0]
+                self.Excepcion = traceback.format_exception_only(sys.exc_info()[0], 
+                                                          sys.exc_info()[1])[0]
                 self.Traceback = ""
             if DEBUG or debug:
                 raise
@@ -360,7 +364,7 @@ if __name__=="__main__":
         if TYPELIB: 
             if '--register' in sys.argv:
                 tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "wsaa.tlb"))
-                print "Registering %s" % (tlb,)
+                print("Registering %s" % (tlb,))
                 tli=pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)
             elif '--unregister' in sys.argv:
@@ -370,7 +374,7 @@ if __name__=="__main__":
                                             k._typelib_version_[1], 
                                             0, 
                                             pythoncom.SYS_WIN32)
-                print "Unregistered typelib"
+                print("Unregistered typelib")
         import win32com.server.register
         win32com.server.register.UseCommandLine(WSAA)
     elif "/Automate" in sys.argv:
@@ -384,21 +388,21 @@ if __name__=="__main__":
         wsaa = WSAA()
         args = [arg for arg in sys.argv if not arg.startswith("--")]
         # obtengo el CUIT y lo normalizo:
-        cuit = len(args)>1 and args[1] or raw_input("Ingrese un CUIT: ")
+        cuit = len(args)>1 and args[1] or input("Ingrese un CUIT: ")
         cuit = ''.join([c for c in cuit if c.isdigit()])
         nombre = len(args)>2 and args[2] or "PyAfipWs"
         # consultar el padrón online de AFIP si no se especificó razón social:
         empresa = len(args)>3 and args[3] or ""
         if not empresa:
-            from padron import PadronAFIP
+            from .padron import PadronAFIP
             padron = PadronAFIP()
             ok = padron.Consultar(cuit)
             if ok and padron.denominacion:
-                print u"Denominación según AFIP:", padron.denominacion
+                print(u"Denominación según AFIP:", padron.denominacion)
                 empresa = padron.denominacion
             else:
-                print u"CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion)
-                empresa = raw_input("Empresa: ")
+                print(u"CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion))
+                empresa = input("Empresa: ")
         # longitud de la clave (2048 predeterminada a partir de 8/2016)
         key_length = len(args)>4 and args[4] or ""
         try:
@@ -409,12 +413,12 @@ if __name__=="__main__":
         ts = datetime.datetime.now().strftime("%Y%m%d%M%S")
         clave_privada = "clave_privada_%s_%s.key" % (cuit, ts)
         pedido_cert = "pedido_cert_%s_%s.csr" % (cuit, ts)
-        print "Longitud clave %s (bits)" % key_length
+        print("Longitud clave %s (bits)" % key_length)
         wsaa.CrearClavePrivada(clave_privada, key_length)
         wsaa.CrearPedidoCertificado(cuit, empresa, nombre, pedido_cert)
-        print "Se crearon los archivos:"
-        print clave_privada
-        print pedido_cert
+        print("Se crearon los archivos:")
+        print(clave_privada)
+        print(pedido_cert)
         # convertir a terminación de linea windows y abrir con bloc de notas
         if sys.platform == "win32":
             txt = open(pedido_cert + ".txt", "wb")
@@ -436,44 +440,44 @@ if __name__=="__main__":
         cacert = len(argv)>7 and argv[7] or CACERT
         DEBUG = "--debug" in args
 
-        print >> sys.stderr, "Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl)
+        print("Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl), file=sys.stderr)
 
         # creo el objeto para comunicarme con el ws
         wsaa = WSAA()
         wsaa.LanzarExcepciones = True
 
-        print >> sys.stderr, "WSAA Version %s %s" % (WSAA.Version, HOMO)
+        print("WSAA Version %s %s" % (WSAA.Version, HOMO), file=sys.stderr)
         
         if '--proxy' in args:
             proxy = sys.argv[sys.argv.index("--proxy")+1]
-            print >> sys.stderr, "Usando PROXY:", proxy
+            print("Usando PROXY:", proxy, file=sys.stderr)
         else:
             proxy = None
 
         if '--analizar' in sys.argv:
             wsaa.AnalizarCertificado(crt)
-            print wsaa.Identidad
-            print wsaa.Caducidad
-            print wsaa.Emisor
-            print wsaa.CertX509
+            print(wsaa.Identidad)
+            print(wsaa.Caducidad)
+            print(wsaa.Emisor)
+            print(wsaa.CertX509)
 
         ta = wsaa.Autenticar(service, crt, key, url, proxy, wrapper, cacert)
         if not ta:
             if DEBUG:
-                print >> sys.stderr, wsaa.Traceback
+                print(wsaa.Traceback, file=sys.stderr)
             sys.exit(u"Excepcion: %s" % wsaa.Excepcion)
                 
         else:
-            print ta
+            print(ta)
         
         if wsaa.Excepcion:
-            print >> sys.stderr, wsaa.Excepcion
+            print(wsaa.Excepcion, file=sys.stderr)
 
         if DEBUG:
-            print "Source:", wsaa.ObtenerTagXml('source')
-            print "UniqueID Time:", wsaa.ObtenerTagXml('uniqueId')
-            print "Generation Time:", wsaa.ObtenerTagXml('generationTime')
-            print "Expiration Time:", wsaa.ObtenerTagXml('expirationTime')
-            print "Expiro?", wsaa.Expirado()
+            print("Source:", wsaa.ObtenerTagXml('source'))
+            print("UniqueID Time:", wsaa.ObtenerTagXml('uniqueId'))
+            print("Generation Time:", wsaa.ObtenerTagXml('generationTime'))
+            print("Expiration Time:", wsaa.ObtenerTagXml('expirationTime'))
+            print("Expiro?", wsaa.Expirado())
             ##import time; time.sleep(10)
             ##print "Expiro?", wsaa.Expirado()

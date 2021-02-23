@@ -12,10 +12,14 @@
 
 """Módulo para Trazabilidad de Productos Médicos ANMAT - Disp. 2303/2014
 según Especificación Técnica para Pruebas de Servicios (17/09/2015)"""
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Información adicional y documentación:
 # http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadProductosMedicos
 
+from future import standard_library
+standard_library.install_aliases()
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2016 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -30,10 +34,10 @@ import pysimplesoap.client
 from pysimplesoap.client import SoapClient, SoapFault, parse_proxy, \
                                 set_http_wrapper
 from pysimplesoap.simplexml import SimpleXMLElement
-from cStringIO import StringIO
+from io import StringIO
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf, get_install_dir, BaseWS, inicializar_y_capturar_excepciones
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, dar_nombre_campo_dbf, get_install_dir, BaseWS, inicializar_y_capturar_excepciones
 
 HOMO = False
 TYPELIB = False
@@ -93,7 +97,7 @@ class TrazaProdMed(BaseWS):
 
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30):
         # Conecto usando el método estandard:
-        print "timeout", timeout
+        print("timeout", timeout)
         ok = BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, 
                               soap_server="jetty")
 
@@ -362,7 +366,7 @@ def main():
     
     if '--prod' in sys.argv and not HOMO:
         WSDL = WSDL_PROD
-        print "Usando WSDL:", WSDL
+        print("Usando WSDL:", WSDL)
         sys.argv.pop(sys.argv.index("--prod"))
 
     # Inicializo las variables y estructuras para el archivo de intercambio:
@@ -371,19 +375,19 @@ def main():
     formatos = []
 
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato, lista in formatos:
             comienzo = 1
-            print "=== %s ===" % msg
-            print "|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (  
-                "Nombre", "Tipo", "Long.", "Pos(txt)", "Campo(dbf)")
+            print("=== %s ===" % msg)
+            print("|| %-25s || %-12s || %-5s || %-4s || %-10s ||" % (  
+                "Nombre", "Tipo", "Long.", "Pos(txt)", "Campo(dbf)"))
             claves = []
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 clave_dbf = dar_nombre_campo_dbf(clave, claves)
                 claves.append(clave_dbf)
-                print "|| %-25s || %-12s || %5d ||   %4d   || %-10s ||" % (
-                    clave, tipo, longitud, comienzo, clave_dbf)
+                print("|| %-25s || %-12s || %5d ||   %4d   || %-10s ||" % (
+                    clave, tipo, longitud, comienzo, clave_dbf))
                 comienzo += longitud
         sys.exit(0)
         
@@ -407,8 +411,8 @@ def main():
     ws.Conectar("", WSDL)
     
     if ws.Excepcion:
-        print ws.Excepcion
-        print ws.Traceback
+        print(ws.Excepcion)
+        print(ws.Traceback)
         sys.exit(-1)
     
     # Datos de pruebas:
@@ -449,55 +453,55 @@ def main():
         ws.GetTransaccionesWS(
                             *sys.argv[sys.argv.index("--consulta")+1:]
                             )
-        print "CantPaginas", ws.CantPaginas
-        print "HayError", ws.HayError
+        print("CantPaginas", ws.CantPaginas)
+        print("HayError", ws.HayError)
         #print "TransaccionPlainWS", ws.TransaccionPlainWS
         # parametros comunes de salida (columnas de la tabla):
-        TRANSACCIONES = ws.Transacciones[0].keys() if ws.Transacciones else []
+        TRANSACCIONES = list(ws.Transacciones[0].keys()) if ws.Transacciones else []
         claves = [k for k in TRANSACCIONES]
         # extiendo la lista de resultado para el archivo de intercambio:
         transacciones.extend(ws.Transacciones)
         # encabezado de la tabla:
-        print "||", "||".join(["%s" % clave for clave in claves]), "||"
+        print("||", "||".join(["%s" % clave for clave in claves]), "||")
         # recorro los datos devueltos (TransaccionPlainWS):
         while ws.LeerTransaccion():     
             for clave in claves:
-                print "||", ws.GetParametro(clave),         # imprimo cada fila
-            print "||"
+                print("||", ws.GetParametro(clave), end=' ')         # imprimo cada fila
+            print("||")
     elif '--catalogo' in sys.argv:
         ret = ws.GetCatalogoElectronicoByGTIN(
                                 *sys.argv[sys.argv.index("--catalogo")+1:]
                                 )
-        for catalogo in ws.params_out.values():
-            print catalogo        # imprimo cada fila
+        for catalogo in list(ws.params_out.values()):
+            print(catalogo)        # imprimo cada fila
     else:
         argv = [argv for argv in sys.argv if not argv.startswith("--")]
         if not transacciones:
             if len(argv)>16:
                 ws.CrearTransaccion(*argv[3:])
             else:
-                print "ERROR: no se indicaron todos los parámetros requeridos"
+                print("ERROR: no se indicaron todos los parámetros requeridos")
         if ws.Transacciones:
             try:
                 usuario, password = argv[1:3]
             except:
-                print "ADVERTENCIA: no se indico parámetros usuario y passoword"
+                print("ADVERTENCIA: no se indico parámetros usuario y passoword")
                 usuario = password = "pruebasws"
             ws.InformarProducto(usuario, password)
             for i, tx in enumerate(transacciones):
-                print "Procesando registro", i
+                print("Procesando registro", i)
                 tx['codigo_transaccion'] = ws.CodigoTransaccion
                 errores.extend(ws.errores)
-            print "|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
+            print("|Resultado %5s|CodigoTransaccion %10s|Errores|%s|" % (
                 ws.Resultado,
                 ws.CodigoTransaccion,
                 '|'.join(ws.Errores or []),
-                )
+                ))
         else:
-            print "ERROR: no se especificaron productos a informar"
+            print("ERROR: no se especificaron productos a informar")
 
     if ws.Excepcion:
-        print ws.Traceback
+        print(ws.Traceback)
 
     if '--grabar' in sys.argv:
         if '--dbf' in sys.argv:
@@ -532,7 +536,7 @@ if __name__ == '__main__':
         if TYPELIB: 
             if '--register' in sys.argv:
                 tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "trazaprodmed.tlb"))
-                print "Registering %s" % (tlb,)
+                print("Registering %s" % (tlb,))
                 tli=pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)
             elif '--unregister' in sys.argv:
@@ -542,7 +546,7 @@ if __name__ == '__main__':
                                             k._typelib_version_[1], 
                                             0, 
                                             pythoncom.SYS_WIN32)
-                print "Unregistered typelib"
+                print("Unregistered typelib")
         import win32com.server.register
         win32com.server.register.UseCommandLine(TrazaProdMed)
     elif "/Automate" in sys.argv:

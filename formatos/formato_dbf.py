@@ -11,7 +11,9 @@
 # for more details.
 
 "Módulo para manejo de Facturas Electrónicas en tablas DBF (dBase, FoxPro, Clipper et.al.)"
+from __future__ import print_function
 
+from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -92,7 +94,7 @@ def dar_nombre_campo(clave):
 
 def leer(archivos=None, carpeta=None):
     "Leer las tablas dbf y devolver una lista de diccionarios con las facturas"
-    if DEBUG: print "Leyendo DBF..."
+    if DEBUG: print("Leyendo DBF...")
     if archivos is None: archivos = {}
     regs = {}
     formatos = [('Encabezado', ENCABEZADO, None), 
@@ -110,7 +112,7 @@ def leer(archivos=None, carpeta=None):
         # construir ruta absoluta si se especifica carpeta
         if carpeta is not None:
             filename = os.path.join(carpeta, filename)
-        if DEBUG: print "leyendo tabla", nombre, filename
+        if DEBUG: print("leyendo tabla", nombre, filename)
         tabla = dbf.Table(filename, codepage=CODEPAGE)
         for reg in tabla:
             r = {}
@@ -139,7 +141,7 @@ def leer(archivos=None, carpeta=None):
 
 def escribir(regs, archivos=None, carpeta=None):
     "Grabar en talbas dbf la lista de diccionarios con la factura"
-    if DEBUG: print "Creando DBF..."
+    if DEBUG: print("Creando DBF...")
     if not archivos: filenames = {}
     
     for reg in regs:
@@ -157,7 +159,7 @@ def escribir(regs, archivos=None, carpeta=None):
             # construir ruta absoluta si se especifica carpeta
             if carpeta is not None:
                 filename = os.path.join(carpeta, filename)
-            if DEBUG: print "leyendo tabla", nombre, filename
+            if DEBUG: print("leyendo tabla", nombre, filename)
             tabla = dbf.Table(filename, campos)
 
             for d in l:
@@ -168,13 +170,13 @@ def escribir(regs, archivos=None, carpeta=None):
                         v = reg['id']
                     else:
                         v = d.get(clave, None)
-                    if DEBUG: print clave,v, tipo
+                    if DEBUG: print(clave,v, tipo)
                     if v is None and tipo == A:
                         v = ''
                     if (v is None or v=='') and tipo in (I, N):
                         v = 0
                     if tipo == A:
-                        if isinstance(v, unicode):
+                        if isinstance(v, str):
                             v = v.encode('utf8', 'ignore')
                         elif isinstance(v, str):
                             v = v.decode('latin1', 'ignore').encode('utf8', 'ignore')
@@ -187,7 +189,7 @@ def escribir(regs, archivos=None, carpeta=None):
 
 def ayuda():
     "Imprimir ayuda con las tablas DBF y definición de campos"
-    print "=== Formato DBF: ==="
+    print("=== Formato DBF: ===")
     tipos_registro =  [
         ('Encabezado', ENCABEZADO),
         ('Detalle Item', DETALLE),
@@ -199,10 +201,10 @@ def ayuda():
         ]
     for msg, formato in tipos_registro:
         filename =  "%s.dbf" % msg.lower()[:8]
-        print "==== %s (%s) ====" % (msg, filename)
+        print("==== %s (%s) ====" % (msg, filename))
         claves, campos = definir_campos(formato)
         for campo in campos:
-            print " * Campo: %s" % (campo,)
+            print(" * Campo: %s" % (campo,))
 
 
 if __name__ == "__main__":

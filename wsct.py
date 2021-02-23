@@ -14,7 +14,10 @@
 WSCT de AFIP (Factura Electrónica Comprobantes de Turismo) 
 Resolución Conjunta General 3971 y Resolución 566/2016.
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import str
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -24,7 +27,7 @@ import datetime
 import decimal
 import os
 import sys
-from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 LANZAR_EXCEPCIONES = True
@@ -434,7 +437,7 @@ class WSCT(BaseWS):
                         }
                     verifica(verificaciones, cbteresp, difs)
                     if difs:
-                        print "Diferencias:", difs
+                        print("Diferencias:", difs)
                         self.log("Diferencias: %s" % difs)
                 self.FechaCbte = cbteresp['fechaEmision'].strftime("%Y/%m/%d")
                 self.CbteNro = cbteresp['numeroComprobante'] # 1L
@@ -566,8 +569,8 @@ class WSCT(BaseWS):
             u = u['codigoDescripcionString']
             try:
                 r = {'codigo': u.get('codigo'), 'ds': u.get('descripcion'), }
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             
             ret.append(r)
         if sep:
@@ -589,8 +592,8 @@ class WSCT(BaseWS):
             u = u['codigoDescripcionString']
             try:
                 r = {'codigo': u.get('codigo'), 'ds': u.get('descripcion'), }
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
             
             ret.append(r)
         if sep:
@@ -668,7 +671,7 @@ def main():
     DEBUG = '--debug' in sys.argv
 
     # obteniendo el TA para pruebas
-    from wsaa import WSAA
+    from .wsaa import WSAA
     ta = WSAA().Autenticar("wsct", "reingart.crt", "reingart.key")
 
     wsct = WSCT()
@@ -683,11 +686,11 @@ def main():
     wsct.Conectar(cache, wsdl, cacert="conf/afip_ca_info.crt")
     
     if "--dummy" in sys.argv:
-        print wsct.client.help("dummy")
+        print(wsct.client.help("dummy"))
         wsct.Dummy()
-        print "AppServerStatus", wsct.AppServerStatus
-        print "DbServerStatus", wsct.DbServerStatus
-        print "AuthServerStatus", wsct.AuthServerStatus
+        print("AppServerStatus", wsct.AppServerStatus)
+        print("DbServerStatus", wsct.DbServerStatus)
+        print("AuthServerStatus", wsct.AuthServerStatus)
     
     if "--prueba" in sys.argv:
         ##print wsct.client.help("autorizarComprobante").encode("latin1")
@@ -697,7 +700,7 @@ def main():
             cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             tipo_doc = 80; nro_doc = "50000000059"
-            cbte_nro = long(cbte_nro) + 1
+            cbte_nro = int(cbte_nro) + 1
             id_impositivo = 9     # "Cliente del Exterior"
             cod_relacion = 3      # Alojamiento Directo a Turista No Residente
             imp_total = "101.00"; imp_tot_conc = "0.00"; imp_neto = "100.00"
@@ -746,27 +749,27 @@ def main():
             wsct.AgregarFormaPago(codigo, tipo_tarjeta, numero_tarjeta, 
                                   swift_code, tipo_cuenta, numero_cuenta)
 
-            print wsct.factura
+            print(wsct.factura)
             
             wsct.AutorizarComprobante()
 
-            print "Resultado", wsct.Resultado
-            print "CAE", wsct.CAE
-            print "Vencimiento", wsct.Vencimiento
-            print "Reproceso", wsct.Reproceso
-            print "Errores", wsct.ErrMsg
+            print("Resultado", wsct.Resultado)
+            print("CAE", wsct.CAE)
+            print("Vencimiento", wsct.Vencimiento)
+            print("Reproceso", wsct.Reproceso)
+            print("Errores", wsct.ErrMsg)
             
-            print wsct.Excepcion
-            print wsct.ErrMsg
+            print(wsct.Excepcion)
+            print(wsct.ErrMsg)
             
             cae = wsct.CAE
             
             if cae:
                 
                 wsct.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
-                print "CAE consulta", wsct.CAE, wsct.CAE==cae 
-                print "NRO consulta", wsct.CbteNro, wsct.CbteNro==cbte_nro 
-                print "TOTAL consulta", wsct.ImpTotal, wsct.ImpTotal==imp_total
+                print("CAE consulta", wsct.CAE, wsct.CAE==cae) 
+                print("NRO consulta", wsct.CbteNro, wsct.CbteNro==cbte_nro) 
+                print("TOTAL consulta", wsct.ImpTotal, wsct.ImpTotal==imp_total)
 
                 wsct.AnalizarXml("XmlResponse")
                 assert wsct.ObtenerTagXml('codigoAutorizacion') == str(wsct.CAE)
@@ -775,33 +778,33 @@ def main():
 
 
         except:
-            print wsct.XmlRequest        
-            print wsct.XmlResponse        
-            print wsct.ErrCode
-            print wsct.ErrMsg
+            print(wsct.XmlRequest)        
+            print(wsct.XmlResponse)        
+            print(wsct.ErrCode)
+            print(wsct.ErrMsg)
 
     if "--ptosventa" in sys.argv:
-        print wsct.ConsultarPuntosVenta()
+        print(wsct.ConsultarPuntosVenta())
 
     if "--parametros" in sys.argv:
-        print wsct.ConsultarTiposDatosAdicionales()
-        print wsct.ConsultarTiposComprobante()
-        print wsct.ConsultarTiposDocumento()
-        print wsct.ConsultarTiposIVA()
-        print wsct.ConsultarCondicionesIVA()
-        print wsct.ConsultarMonedas()
-        print wsct.ConsultarTiposItem()
-        print wsct.ConsultarCodigosItemTurismo()
-        print wsct.ConsultarTiposTributo()
-        print wsct.ConsultarFomasPago()
+        print(wsct.ConsultarTiposDatosAdicionales())
+        print(wsct.ConsultarTiposComprobante())
+        print(wsct.ConsultarTiposDocumento())
+        print(wsct.ConsultarTiposIVA())
+        print(wsct.ConsultarCondicionesIVA())
+        print(wsct.ConsultarMonedas())
+        print(wsct.ConsultarTiposItem())
+        print(wsct.ConsultarCodigosItemTurismo())
+        print(wsct.ConsultarTiposTributo())
+        print(wsct.ConsultarFomasPago())
         for forma_pago in wsct.ConsultarFomasPago(sep=None)[:2]:
-            print wsct.ConsultarTiposTarjeta(forma_pago["codigo"])
-        print wsct.ConsultarTiposCuenta()
-        print "\n".join(wsct.ConsultarPaises())
-        print "\n".join(wsct.ConsultarCUITsPaises())
+            print(wsct.ConsultarTiposTarjeta(forma_pago["codigo"]))
+        print(wsct.ConsultarTiposCuenta())
+        print("\n".join(wsct.ConsultarPaises()))
+        print("\n".join(wsct.ConsultarCUITsPaises()))
 
     if "--cotizacion" in sys.argv:
-        print wsct.ConsultarCotizacionMoneda('DOL')
+        print(wsct.ConsultarCotizacionMoneda('DOL'))
         
         
 

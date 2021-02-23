@@ -10,6 +10,11 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 from __future__ import with_statement
 
 """Módulo para obtener código de autorización electrónica (CAE) para 
@@ -75,10 +80,10 @@ import traceback
 import pprint
 from pysimplesoap.client import SoapFault
 from fpdf import Template
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
@@ -156,10 +161,10 @@ class WSLTV(BaseWS):
             # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
             location = self.client.services['LtvService']['ports']['LtvEndPoint']['location']
             if location.startswith("http://"):
-                print "Corrigiendo WSDL ...", location,
+                print("Corrigiendo WSDL ...", location, end=' ')
                 location = location.replace("http://", "https://").replace(":80", ":443")
                 self.client.services['LtvService']['ports']['LtvEndPoint']['location'] = location
-                print location            
+                print(location)            
         return ok
 
     def __analizar_errores(self, ret):
@@ -680,7 +685,7 @@ class WSLTV(BaseWS):
                 operation = imprimir and "print" or ""
                 os.startfile(archivo, operation)
             return True
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = str(e)
             return False
 
@@ -691,19 +696,19 @@ INSTALL_DIR = WSLTV.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato in []:
             comienzo = 1
-            print "=== %s ===" % msg
+            print("=== %s ===" % msg)
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                    clave, comienzo, longitud, tipo, dec)
+                print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    clave, comienzo, longitud, tipo, dec))
                 comienzo += longitud
         sys.exit(0)
 
@@ -713,18 +718,18 @@ if __name__ == '__main__':
         sys.exit(0)
 
     import csv
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
-    from wsaa import WSAA
+    from .wsaa import WSAA
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
-            print "Usando configuracion:", CONFIG_FILE
+            print("Usando configuracion:", CONFIG_FILE)
          
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
@@ -753,7 +758,7 @@ if __name__ == '__main__':
         
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
             
@@ -761,14 +766,14 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "WSAA_URL:", WSAA_URL
-            print "WSLTV_URL:", WSLTV_URL
-            print "CACERT", CACERT
-            print "WRAPPER", WRAPPER
-            print "timeout:", TIMEOUT
+            print("Usando Configuración:")
+            print("WSAA_URL:", WSAA_URL)
+            print("WSLTV_URL:", WSLTV_URL)
+            print("CACERT", CACERT)
+            print("WRAPPER", WRAPPER)
+            print("timeout:", TIMEOUT)
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsltv", CERT, PRIVATEKEY, wsdl=WSAA_URL, 
                                proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
@@ -784,9 +789,9 @@ if __name__ == '__main__':
 
         if '--dummy' in sys.argv:
             ret = wsltv.Dummy()
-            print "AppServerStatus", wsltv.AppServerStatus
-            print "DbServerStatus", wsltv.DbServerStatus
-            print "AuthServerStatus", wsltv.AuthServerStatus
+            print("AppServerStatus", wsltv.AppServerStatus)
+            print("DbServerStatus", wsltv.DbServerStatus)
+            print("AuthServerStatus", wsltv.AuthServerStatus)
             ##sys.exit(0)
 
         if '--json' in sys.argv and os.path.exists("wsltv.json"):
@@ -884,30 +889,30 @@ if __name__ == '__main__':
                 # usar solo si no está operativo, cargo respuesta:
                 wsltv.LoadTestXML("tests/xml/wsltv_aut_test_pdf.xml")
 
-            print "Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
+            print("Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
                     wsltv.solicitud['liquidacion']['puntoVenta'],
                     wsltv.solicitud['liquidacion']['nroComprobante'], 
                     wsltv.solicitud['liquidacion']['tipoComprobante'],
-                    )
+                    ))
             
             if not '--dummy' in sys.argv:        
-                print "Autorizando..." 
+                print("Autorizando...") 
                 ret = wsltv.AutorizarLiquidacion()
                     
             if wsltv.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsltv.Excepcion
-                if DEBUG: print >> sys.stderr, wsltv.Traceback
-            print "Errores:", wsltv.Errores
-            print "CAE", wsltv.CAE
-            print "FechaLiquidacion", wsltv.FechaLiquidacion
-            print "NroComprobante", wsltv.NroComprobante
-            print "ImporteNeto", wsltv.ImporteNeto
-            print "AlicuotaIVA", wsltv.AlicuotaIVA
-            print "ImporteIVA", wsltv.ImporteIVA
-            print "Subtotal", wsltv.Subtotal
-            print "TotalRetenciones", wsltv.TotalRetenciones
-            print "TotalTributos", wsltv.TotalTributos
-            print "Total", wsltv.Total
+                print("EXCEPCION:", wsltv.Excepcion, file=sys.stderr)
+                if DEBUG: print(wsltv.Traceback, file=sys.stderr)
+            print("Errores:", wsltv.Errores)
+            print("CAE", wsltv.CAE)
+            print("FechaLiquidacion", wsltv.FechaLiquidacion)
+            print("NroComprobante", wsltv.NroComprobante)
+            print("ImporteNeto", wsltv.ImporteNeto)
+            print("AlicuotaIVA", wsltv.AlicuotaIVA)
+            print("ImporteIVA", wsltv.ImporteIVA)
+            print("Subtotal", wsltv.Subtotal)
+            print("TotalRetenciones", wsltv.TotalRetenciones)
+            print("TotalTributos", wsltv.TotalTributos)
+            print("Total", wsltv.Total)
 
             pdf = wsltv.GetParametro("pdf")
             if pdf:
@@ -945,7 +950,7 @@ if __name__ == '__main__':
                                  )
                 wsltv.AgregarComprobanteAAjustar(tipo_cbte=151, pto_vta=3697, nro_cbte=2)
             wsltv.GenerarAjusteFisico()
-            print "CAE Ajustado:", wsltv.GetParametro("cae_ajustado")
+            print("CAE Ajustado:", wsltv.GetParametro("cae_ajustado"))
             if '--testing' in sys.argv:
                 assert wsltv.GetParametro("cae_ajustado") == "86029002591067"
 
@@ -966,7 +971,7 @@ if __name__ == '__main__':
                 wsltv.AgregarRetencion(cod_retencion=11, descripcion=None, importe=20)
                 wsltv.AgregarTributo(codigo_tributo=99, descripcion="Descripcion otros tributos", base_imponible=2, alicuota=2, importe=10)
             wsltv.AjustarLiquidacion()
-            print "CAE:", wsltv.CAE
+            print("CAE:", wsltv.CAE)
             if '--testing' in sys.argv:
                 assert wsltv.GetParametro("cae") == "86011002510675"
 
@@ -984,10 +989,10 @@ if __name__ == '__main__':
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo prueba:
                 wsltv.LoadTestXML("tests/xml/wsltv_cons_test.xml")
-            print "Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte)
+            print("Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte))
             ret = wsltv.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte)
-            print "CAE", wsltv.CAE
-            print "Errores:", wsltv.Errores
+            print("CAE", wsltv.CAE)
+            print("Errores:", wsltv.Errores)
 
             if DEBUG: 
                 pprint.pprint(wsltv.params_out)
@@ -1010,55 +1015,55 @@ if __name__ == '__main__':
             except IndexError:
                 pass
 
-            print "Consultando ultimo nro_cbte para pto_vta=%s" % pto_vta,
+            print("Consultando ultimo nro_cbte para pto_vta=%s" % pto_vta, end=' ')
             ret = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
             if wsltv.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsltv.Excepcion
-                if DEBUG: print >> sys.stderr, wsltv.Traceback
-            print "Ultimo Nro de Comprobante", wsltv.NroComprobante
-            print "Errores:", wsltv.Errores
+                print("EXCEPCION:", wsltv.Excepcion, file=sys.stderr)
+                if DEBUG: print(wsltv.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Comprobante", wsltv.NroComprobante)
+            print("Errores:", wsltv.Errores)
             sys.exit(0)
 
         # Recuperar parámetros:
         
         if '--provincias' in sys.argv:
             ret = wsltv.ConsultarProvincias()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--condicionesventa' in sys.argv:
             ret = wsltv.ConsultarCondicionesVenta()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tributos' in sys.argv:
             ret = wsltv.ConsultarTributos()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--retenciones' in sys.argv:
             ret = wsltv.ConsultarRetencionesTabacaleras()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--variedades' in sys.argv:
             ret = wsltv.ConsultarVariedadesClasesTabaco()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--depositos' in sys.argv:
             ret = wsltv.ConsultarDepositosAcopio()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--puntosventa' in sys.argv:
             ret = wsltv.ConsultarPuntosVentas()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print >> sys.stderr, "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"), file=sys.stderr)
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         try:
-            print >> sys.stderr, traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
+            print(traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0], file=sys.stderr)
         except:
-            print >> sys.stderr, "Excepción no disponible:", type(e)
+            print("Excepción no disponible:", type(e), file=sys.stderr)
         if DEBUG:
             raise
         sys.exit(5)

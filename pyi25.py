@@ -11,7 +11,14 @@
 # for more details.
 
 "Módulo para generar códigos de barra en Entrelazado 2 de 5 (I25)"
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import str
+from builtins import range
+from builtins import object
+from past.utils import old_div
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -23,7 +30,7 @@ import traceback
 from PIL import Image, ImageFont, ImageDraw
 
 
-class PyI25:
+class PyI25(object):
     "Interfaz para generar PDF de Factura Electrónica"
     _public_methods_ = ['GenerarImagen', 
                         'DigitoVerificadorModulo10'
@@ -46,7 +53,7 @@ class PyI25:
         #  * http://code.activestate.com/recipes/426069/
 
         wide = basewidth
-        narrow = basewidth / 3
+        narrow = old_div(basewidth, 3)
 
         # códigos ancho/angostos (wide/narrow) para los dígitos
         bars = ("nnwwn", "wnnnw", "nwnnw", "wwnnn", "nnwnw", "wnwnn", "nwwnn", 
@@ -58,7 +65,7 @@ class PyI25:
 
         if not width:
             width = (len(codigo) * 3) * basewidth + (10 * narrow)
-            print width
+            print(width)
             #width = 380
         # crear una nueva imágen
         im = Image.new("1",(width, height))
@@ -112,7 +119,7 @@ class PyI25:
         # Etapa 4: sumar los resultados obtenidos en las etapas 2 y 3.
         etapa4 = etapa2 + etapa3
         # Etapa 5: buscar el menor número que sumado al resultado obtenido en la etapa 4 dé un número múltiplo de 10. Este será el valor del dígito verificador del módulo 10.
-        digito = 10 - (etapa4 - (int(etapa4 / 10) * 10))
+        digito = 10 - (etapa4 - (int(old_div(etapa4, 10)) * 10))
         if digito == 10:
             digito = 0
         return str(digito)
@@ -133,7 +140,7 @@ if __name__ == '__main__':
             raise
     elif "py2exe" in sys.argv:
         from distutils.core import setup
-        from nsis import build_installer, Target
+        from .nsis import build_installer, Target
         import py2exe
         import glob
         VCREDIST = (
@@ -193,8 +200,8 @@ if __name__ == '__main__':
             archivo="prueba-cae-i25.png"
             extension = 'PNG'
         
-        print "barras", barras
-        print "archivo", archivo
+        print("barras", barras)
+        print("archivo", archivo)
         pyi25.GenerarImagen(barras, archivo, extension=extension)
 
         if not '--mostrar' in sys.argv:

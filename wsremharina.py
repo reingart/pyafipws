@@ -13,7 +13,13 @@
 """Módulo para obtener Remito Electronico Harinero:
 del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 """
+from __future__ import print_function
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -65,13 +71,13 @@ Ver wsremharina.ini para parámetros de configuración (URL, certificados, etc.)
 """
 
 import os, sys, time, base64
-from utils import date
+from .utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
+from .utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 
 
 # constantes de configuración (producción/homologación):
@@ -538,8 +544,8 @@ INSTALL_DIR = WSRemHarina.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -547,17 +553,17 @@ if __name__ == '__main__':
         win32com.server.register.UseCommandLine(WSRemHarina)
         sys.exit(0)
 
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuración:", arg
+            print("Usando configuración:", arg)
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -579,7 +585,7 @@ if __name__ == '__main__':
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
 
@@ -587,12 +593,12 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "wsaa_url:", wsaa_url
-            print "wsremharina_url:", wsremharina_url
+            print("Usando Configuración:")
+            print("wsaa_url:", wsaa_url)
+            print("wsremharina_url:", wsremharina_url)
 
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsremharina", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
         if not ta:
@@ -607,28 +613,28 @@ if __name__ == '__main__':
         
         if '--dummy' in sys.argv:
             ret = wsremharina.Dummy()
-            print "AppServerStatus", wsremharina.AppServerStatus
-            print "DbServerStatus", wsremharina.DbServerStatus
-            print "AuthServerStatus", wsremharina.AuthServerStatus
+            print("AppServerStatus", wsremharina.AppServerStatus)
+            print("DbServerStatus", wsremharina.DbServerStatus)
+            print("AuthServerStatus", wsremharina.AuthServerStatus)
             sys.exit(0)
 
         if '--ult' in sys.argv:
             try:
                 pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 pto_emision = 1
             try:
                 tipo_comprobante = int(sys.argv[sys.argv.index("--ult") + 1])
-            except IndexError, ValueError:
+            except IndexError as ValueError:
                 tipo_comprobante = 995
             rec = {}
-            print "Consultando ultimo remito pto_emision=%s tipo_comprobante=%s" % (pto_emision, tipo_comprobante)
+            print("Consultando ultimo remito pto_emision=%s tipo_comprobante=%s" % (pto_emision, tipo_comprobante))
             ok = wsremharina.ConsultarUltimoRemitoEmitido(tipo_comprobante, pto_emision)
             if wsremharina.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsremharina.Excepcion
-                if DEBUG: print >> sys.stderr, wsremharina.Traceback
-            print "Ultimo Nro de Remito", wsremharina.NroRemito
-            print "Errores:", wsremharina.Errores
+                print("EXCEPCION:", wsremharina.Excepcion, file=sys.stderr)
+                if DEBUG: print(wsremharina.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Remito", wsremharina.NroRemito)
+            print("Errores:", wsremharina.Errores)
 
         if '--prueba' in sys.argv:
             rec = dict(
@@ -696,16 +702,16 @@ if __name__ == '__main__':
                 try:
                         cod_remito = sys.argv[sys.argv.index("--consultar") + 1]
                         rec = {"cod_remito": cod_remito}
-                except IndexError, ValueError:
+                except IndexError as ValueError:
                     cod_remito = None
-            print "Consultando remito cod_remito=%s nro_comprobante=%s" % (rec.get('cod_remito'), rec.get('nro_comprobante'))
+            print("Consultando remito cod_remito=%s nro_comprobante=%s" % (rec.get('cod_remito'), rec.get('nro_comprobante')))
             rec['cuit_emisor'] = wsremharina.Cuit
             ok = wsremharina.ConsultarRemito(**rec)
             if wsremharina.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wsremharina.Excepcion
-                if DEBUG: print >> sys.stderr, wsremharina.Traceback
-            print "Ultimo Nro de Remito", wsremharina.NroRemito
-            print "Errores:", wsremharina.Errores
+                print("EXCEPCION:", wsremharina.Excepcion, file=sys.stderr)
+                if DEBUG: print(wsremharina.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Remito", wsremharina.NroRemito)
+            print("Errores:", wsremharina.Errores)
             if DEBUG:
                 import pprint
                 pprint.pprint(wsremharina.remito)
@@ -726,18 +732,18 @@ if __name__ == '__main__':
             ok = wsremharina.AnularRemito()
 
         if ok is not None:
-            print "Resultado: ", wsremharina.Resultado
-            print "Cod Remito: ", wsremharina.CodRemito
+            print("Resultado: ", wsremharina.Resultado)
+            print("Cod Remito: ", wsremharina.CodRemito)
             if wsremharina.CodAutorizacion:
-                print "Numero Remito: ", wsremharina.NroRemito
-                print "Cod Autorizacion: ", wsremharina.CodAutorizacion
-                print "Fecha Emision", wsremharina.FechaEmision
-                print "Fecha Vencimiento", wsremharina.FechaVencimiento
-            print "Estado: ", wsremharina.Estado
-            print "Observaciones: ", wsremharina.Observaciones
-            print "Errores:", wsremharina.Errores
-            print "Errores Formato:", wsremharina.ErroresFormato
-            print "Evento:", wsremharina.Evento
+                print("Numero Remito: ", wsremharina.NroRemito)
+                print("Cod Autorizacion: ", wsremharina.CodAutorizacion)
+                print("Fecha Emision", wsremharina.FechaEmision)
+                print("Fecha Vencimiento", wsremharina.FechaVencimiento)
+            print("Estado: ", wsremharina.Estado)
+            print("Observaciones: ", wsremharina.Observaciones)
+            print("Errores:", wsremharina.Errores)
+            print("Errores Formato:", wsremharina.ErroresFormato)
+            print("Evento:", wsremharina.Evento)
             rec['cod_remito'] = wsremharina.CodRemito
             rec['resultado'] = wsremharina.Resultado
             rec['observaciones'] = wsremharina.Observaciones
@@ -755,52 +761,52 @@ if __name__ == '__main__':
 
         if '--tipos_comprobante' in sys.argv:
             ret = wsremharina.ConsultarTiposComprobante()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_contingencia' in sys.argv:
             ret = wsremharina.ConsultarTiposContingencia()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_mercaderia' in sys.argv:
             ret = wsremharina.ConsultarTiposMercaderia()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_embalaje' in sys.argv:
             ret = wsremharina.ConsultarTiposEmbalaje()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_unidades' in sys.argv:
             ret = wsremharina.ConsultarTiposUnidades()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_estados' in sys.argv:
             ret = wsremharina.ConsultarTiposEstado()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--paises' in sys.argv:
             ret = wsremharina.ConsultarPaises()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--codigos_domicilio' in sys.argv:
-            cuit = raw_input("Cuit Titular Domicilio: ")
+            cuit = input("Cuit Titular Domicilio: ")
             ret = wsremharina.ConsultarCodigosDomicilio(cuit)
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--puntos_emision' in sys.argv:
             ret = wsremharina.ConsultarPuntosEmision()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if wsremharina.Errores or wsremharina.ErroresFormato:
-            print "Errores:", wsremharina.Errores, wsremharina.ErroresFormato
+            print("Errores:", wsremharina.Errores, wsremharina.ErroresFormato)
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         ex = utils.exception_info()
-        print ex
+        print(ex)
         if DEBUG:
             raise
         sys.exit(5)

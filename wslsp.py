@@ -10,6 +10,12 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import input
 from __future__ import with_statement
 
 """Módulo para obtener código de autorización electrónica (CAE) para 
@@ -68,10 +74,10 @@ import traceback
 import pprint
 from pysimplesoap.client import SoapFault
 from fpdf import Template
-import utils
+from . import utils
 
 # importo funciones compartidas:
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
@@ -151,10 +157,10 @@ class WSLSP(BaseWS):
             # corrijo ubicación del servidor (puerto htttp 80 en el WSDL)
             location = self.client.services['LspService']['ports']['LumEndPoint']['location']
             if location.startswith("http://"):
-                print "Corrigiendo WSDL ...", location,
+                print("Corrigiendo WSDL ...", location, end=' ')
                 location = location.replace("http://", "https://").replace(":80", ":443")
                 self.client.services['LspService']['ports']['LspEndPoint']['location'] = location
-                print location
+                print(location)
         return ok
 
     def __analizar_errores(self, ret):
@@ -804,7 +810,7 @@ class WSLSP(BaseWS):
                 operation = imprimir and "print" or ""
                 os.startfile(archivo, operation)
             return True
-        except Exception, e:
+        except Exception as e:
             self.Excepcion = str(e)
             return False
 
@@ -815,19 +821,19 @@ INSTALL_DIR = WSLSP.InstallDir = get_install_dir()
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato in []:
             comienzo = 1
-            print "=== %s ===" % msg
+            print("=== %s ===" % msg)
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
-                    clave, comienzo, longitud, tipo, dec)
+                print(" * Campo: %-20s Posición: %3d Longitud: %4d Tipo: %s Decimales: %s" % (
+                    clave, comienzo, longitud, tipo, dec))
                 comienzo += longitud
         sys.exit(0)
 
@@ -837,18 +843,18 @@ if __name__ == '__main__':
         sys.exit(0)
 
     import csv
-    from ConfigParser import SafeConfigParser
+    from configparser import SafeConfigParser
 
-    from wsaa import WSAA
+    from .wsaa import WSAA
 
     try:
     
         if "--version" in sys.argv:
-            print "Versión: ", __version__
+            print("Versión: ", __version__)
 
         if len(sys.argv)>1 and sys.argv[1].endswith(".ini"):
             CONFIG_FILE = sys.argv[1]
-            print "Usando configuracion:", CONFIG_FILE
+            print("Usando configuracion:", CONFIG_FILE)
          
         config = SafeConfigParser()
         config.read(CONFIG_FILE)
@@ -874,7 +880,7 @@ if __name__ == '__main__':
         
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
             
@@ -882,13 +888,13 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG:
-            print "Usando Configuración:"
-            print "WSAA_URL:", WSAA_URL
-            print "WSLSP_URL:", WSLSP_URL
-            print "CACERT", CACERT
-            print "WRAPPER", WRAPPER
+            print("Usando Configuración:")
+            print("WSAA_URL:", WSAA_URL)
+            print("WSLSP_URL:", WSLSP_URL)
+            print("CACERT", CACERT)
+            print("WRAPPER", WRAPPER)
         # obteniendo el TA
-        from wsaa import WSAA
+        from .wsaa import WSAA
         wsaa = WSAA()
         ta = wsaa.Autenticar("wslsp", CERT, PRIVATEKEY, wsdl=WSAA_URL, 
                                proxy=PROXY, wrapper=WRAPPER, cacert=CACERT)
@@ -904,15 +910,15 @@ if __name__ == '__main__':
 
         if '--dummy' in sys.argv:
             ret = wslsp.Dummy()
-            print "AppServerStatus", wslsp.AppServerStatus
-            print "DbServerStatus", wslsp.DbServerStatus
-            print "AuthServerStatus", wslsp.AuthServerStatus
+            print("AppServerStatus", wslsp.AppServerStatus)
+            print("DbServerStatus", wslsp.DbServerStatus)
+            print("AuthServerStatus", wslsp.AuthServerStatus)
             ##sys.exit(0)
 
         if '--autorizar' in sys.argv:
 
             if '--prueba' in sys.argv:
-                print wslsp.client.help("generarLiquidacion")
+                print(wslsp.client.help("generarLiquidacion"))
 
                 # Solicitud 1: Cuenta de Venta y Líquido Producto - Hacienda
                 wslsp.CrearLiquidacion(
@@ -990,30 +996,30 @@ if __name__ == '__main__':
                 with open(ENTRADA, "w") as f:
                     json.dump(wslsp.solicitud, f, sort_keys=True, indent=4, encoding="utf-8",)
 
-            print "Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
+            print("Liquidacion: pto_vta=%s nro_cbte=%s tipo_cbte=%s" % (
                     wslsp.solicitud['emisor']['puntoVenta'],
                     wslsp.solicitud['emisor']['nroComprobante'], 
                     wslsp.solicitud['emisor']['tipoComprobante'],
-                    )
+                    ))
             
             if not '--dummy' in sys.argv:        
-                print "Autorizando..." 
+                print("Autorizando...") 
                 ret = wslsp.AutorizarLiquidacion()
                     
             if wslsp.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslsp.Excepcion
-                if DEBUG: print >> sys.stderr, wslsp.Traceback
-            print "Errores:", wslsp.Errores
-            print "CAE", wslsp.CAE
-            print "NroCodigoBarras", wslsp.NroCodigoBarras
-            print "FechaProcesoAFIP", wslsp.FechaProcesoAFIP
-            print "FechaComprobante", wslsp.FechaComprobante
-            print "NroComprobante", wslsp.NroComprobante
-            print "ImporteBruto", wslsp.ImporteBruto
-            print "ImporteTotalNeto", wslsp.ImporteTotalNeto
-            print "ImporteIVA Sobre Bruto", wslsp.ImporteIVASobreBruto
-            print "ImporteIVA Sobre Gastos", wslsp.ImporteIVASobreGastos
-            print "ImporteTotalNeto", wslsp.ImporteTotalNeto
+                print("EXCEPCION:", wslsp.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslsp.Traceback, file=sys.stderr)
+            print("Errores:", wslsp.Errores)
+            print("CAE", wslsp.CAE)
+            print("NroCodigoBarras", wslsp.NroCodigoBarras)
+            print("FechaProcesoAFIP", wslsp.FechaProcesoAFIP)
+            print("FechaComprobante", wslsp.FechaComprobante)
+            print("NroComprobante", wslsp.NroComprobante)
+            print("ImporteBruto", wslsp.ImporteBruto)
+            print("ImporteTotalNeto", wslsp.ImporteTotalNeto)
+            print("ImporteIVA Sobre Bruto", wslsp.ImporteIVASobreBruto)
+            print("ImporteIVA Sobre Gastos", wslsp.ImporteIVASobreGastos)
+            print("ImporteTotalNeto", wslsp.ImporteTotalNeto)
 
             pdf = wslsp.GetParametro("pdf")
             if pdf:
@@ -1065,10 +1071,10 @@ if __name__ == '__main__':
                     wslsp.solicitud = json.load(f, encoding="utf-8")
 
             wslsp.AjustarLiquidacion()
-            print "CAE:", wslsp.CAE
-            print "Tipo Ajuste:", wslsp.GetParametro("tipo_ajuste")
-            print "Modo Ajuste:", wslsp.GetParametro("modo_ajuste")
-            print "Errores:", wslsp.Errores
+            print("CAE:", wslsp.CAE)
+            print("Tipo Ajuste:", wslsp.GetParametro("tipo_ajuste"))
+            print("Modo Ajuste:", wslsp.GetParametro("modo_ajuste"))
+            print("Errores:", wslsp.Errores)
             if '--testing' in sys.argv:
                 assert wslsp.GetParametro("cae") == "97029023118043"
                 assert wslsp.GetParametro("cbte_ajuste", "tipo_cbte") == '186'
@@ -1096,11 +1102,11 @@ if __name__ == '__main__':
                 # mensaje de prueba (no realiza llamada remota), 
                 # usar solo si no está operativo, cargo prueba:
                 wslsp.LoadTestXML("tests/xml/wslsp_cons_test.xml")
-            print "Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte)
+            print("Consultando: tipo_cbte=%s pto_vta=%s nro_cbte=%s" % (tipo_cbte, pto_vta, nro_cbte))
             ret = wslsp.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte, 
                                              cuit_comprador=cuit)
-            print "CAE", wslsp.CAE
-            print "Errores:", wslsp.Errores
+            print("CAE", wslsp.CAE)
+            print("Errores:", wslsp.Errores)
 
             if DEBUG: 
                 pprint.pprint(wslsp.params_out)
@@ -1118,13 +1124,13 @@ if __name__ == '__main__':
             except IndexError:
                 pass
 
-            print "Consultando ultimo nro_cbte para pto_vta=%s" % pto_vta,
+            print("Consultando ultimo nro_cbte para pto_vta=%s" % pto_vta, end=' ')
             ret = wslsp.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
             if wslsp.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wslsp.Excepcion
-                if DEBUG: print >> sys.stderr, wslsp.Traceback
-            print "Ultimo Nro de Comprobante", wslsp.NroComprobante
-            print "Errores:", wslsp.Errores
+                print("EXCEPCION:", wslsp.Excepcion, file=sys.stderr)
+                if DEBUG: print(wslsp.Traceback, file=sys.stderr)
+            print("Ultimo Nro de Comprobante", wslsp.NroComprobante)
+            print("Errores:", wslsp.Errores)
             sys.exit(0)
 
         if "--guardar" in sys.argv:
@@ -1140,70 +1146,70 @@ if __name__ == '__main__':
         
         if '--provincias' in sys.argv:
             ret = wslsp.ConsultarProvincias()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--localidades' in sys.argv:
             try:
                 cod_provincia = sys.argv[sys.argv.index("--localidades") + 1]
             except:
-                cod_provincia = raw_input("Codigo Provincia:")
+                cod_provincia = input("Codigo Provincia:")
             ret = wslsp.ConsultarLocalidades(cod_provincia)
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--operaciones' in sys.argv:
             ret = wslsp.ConsultarOperaciones()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tributos' in sys.argv:
             ret = wslsp.ConsultarTributos()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--gastos' in sys.argv:
             ret = wslsp.ConsultarGastos()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_cbte' in sys.argv:
             ret = wslsp.ConsultarTiposComprobante()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--tipos_liq' in sys.argv:
             ret = wslsp.ConsultarTiposLiquidacion()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--caracteres' in sys.argv:
             ret = wslsp.ConsultarCaracteres()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--categorias' in sys.argv:
             ret = wslsp.ConsultarCategorias()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--motivos' in sys.argv:
             ret = wslsp.ConsultarMotivos()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--razas' in sys.argv:
             ret = wslsp.ConsultarRazas()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--cortes' in sys.argv:
             ret = wslsp.ConsultarCortes()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
         if '--puntosventa' in sys.argv:
             ret = wslsp.ConsultarPuntosVentas()
-            print "\n".join(ret)
+            print("\n".join(ret))
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault, e:
-        print >> sys.stderr, "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"), file=sys.stderr)
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         try:
-            print >> sys.stderr, traceback.format_exception_only(sys.exc_type, sys.exc_value)[0]
+            print(traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])[0], file=sys.stderr)
         except:
-            print >> sys.stderr, "Excepción no disponible:", type(e)
+            print("Excepción no disponible:", type(e), file=sys.stderr)
         if DEBUG:
             raise
         sys.exit(5)
