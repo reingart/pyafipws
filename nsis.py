@@ -20,6 +20,7 @@ from __future__ import print_function
 
 from builtins import str
 from builtins import object
+
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -179,6 +180,7 @@ install_vcredist = r"""
     
 """
 
+
 class build_installer(py2exe):
     # This class first builds the exe file(s), then creates a Windows installer.
     # You need NSIS (Nullsoft Scriptable Install System) for it.
@@ -194,27 +196,31 @@ class build_installer(py2exe):
         metadata = self.distribution.metadata
 
         # create the Installer, using the files py2exe has created.
-        script = NSISScript(metadata,
-                            lib_dir,
-                            dist_dir,
-                            self.windows_exe_files,
-                            self.lib_files,
-                            comserver_files)
+        script = NSISScript(
+            metadata,
+            lib_dir,
+            dist_dir,
+            self.windows_exe_files,
+            self.lib_files,
+            comserver_files,
+        )
         print("*** creating the nsis script***")
         script.create()
         print("*** compiling the nsis script***")
         script.compile()
         # Note: By default the final setup.exe will be in an Output subdirectory.
- 
+
 
 class NSISScript(object):
-    def __init__(self,
-                 metadata,
-                 lib_dir,
-                 dist_dir,
-                 windows_exe_files = [],
-                 lib_files = [],
-                 comserver_files = []):
+    def __init__(
+        self,
+        metadata,
+        lib_dir,
+        dist_dir,
+        windows_exe_files=[],
+        lib_files=[],
+        comserver_files=[],
+    ):
         self.lib_dir = lib_dir
         self.dist_dir = dist_dir
         if not self.dist_dir[-1] in "\\/":
@@ -226,60 +232,107 @@ class NSISScript(object):
         self.url = metadata.get_url()
         self.windows_exe_files = [self.chop(p) for p in windows_exe_files]
         self.lib_files = [self.chop(p) for p in lib_files]
-        self.comserver_files_exe = [self.chop(p) for p in comserver_files if p.lower().endswith(".exe")]
-        self.comserver_files_dll = [self.chop(p) for p in comserver_files if p.lower().endswith(".dll")]
+        self.comserver_files_exe = [
+            self.chop(p) for p in comserver_files if p.lower().endswith(".exe")
+        ]
+        self.comserver_files_dll = [
+            self.chop(p) for p in comserver_files if p.lower().endswith(".dll")
+        ]
         self.comserver_files_tlb = []
         if not self.comserver_files_exe and self.windows_exe_files:
             for file in self.windows_exe_files:
-                if file in ("wsaa.exe", "wsfev1.exe"): 
+                if file in ("wsaa.exe", "wsfev1.exe"):
                     self.comserver_files_tlb.append(file)
 
     def chop(self, pathname):
         global install_vcredist
-        #print pathname, self.dist_dir
-        #assert pathname.startswith(self.dist_dir)
-        if 'Microsoft.VC90.CRT.manifest' in pathname:
+        # print pathname, self.dist_dir
+        # assert pathname.startswith(self.dist_dir)
+        if "Microsoft.VC90.CRT.manifest" in pathname:
             # clean redistributable instructions (DLL files already included)
             install_vcredist = ""
-        return pathname[len(self.dist_dir):]
-    
+        return pathname[len(self.dist_dir) :]
+
     def create(self, pathname="base.nsi"):
         self.pathname = pathname
         ofi = self.file = open(pathname, "w")
         ver = self.version
         if "-" in ver:
-            ver = ver[:ver.index("-")]  
+            ver = ver[: ver.index("-")]
         rev = self.version.endswith("-full") and ".1" or ".0"
-        ver= [c in '0123456789.' and c or ".%s" % (ord(c)-96) for c in ver]+[rev]
-        ofi.write(nsi_base_script % {
-            'name': self.name,
-            'description': "%s version %s" % (self.description, self.version),
-            'product_version': ''.join(ver),
-            'company_name': self.url,
-            'copyright': self.copyright,
-            'install_dir': self.name,
-            'reg_key': self.name,
-            'out_file': "%s-%s.exe" % (self.name, self.version if len(self.version)<128 else (self.version[:14] + self.version[-5:])),
-            'install_vcredist': install_vcredist if sys.version_info > (2, 7) else "",
-            'register_com_servers_tlb': ''.join([register_com_server_tlb % comserver for comserver in self.comserver_files_tlb]),
-            'register_com_servers_exe': ''.join([register_com_server_exe % comserver for comserver in self.comserver_files_exe]),
-            'register_com_servers_dll': ''.join([register_com_server_dll % comserver for comserver in self.comserver_files_dll]),
-            'unregister_com_servers_exe': ''.join([unregister_com_server_exe % comserver for comserver in self.comserver_files_exe]),
-            'unregister_com_servers_dll': ''.join([unregister_com_server_dll % comserver for comserver in self.comserver_files_dll]),
-            'unregister_com_servers_exe': ''.join([unregister_com_server_tlb % comserver for comserver in self.comserver_files_tlb]),
-        })
+        ver = [c in "0123456789." and c or ".%s" % (ord(c) - 96) for c in ver] + [rev]
+        ofi.write(
+            nsi_base_script
+            % {
+                "name": self.name,
+                "description": "%s version %s" % (self.description, self.version),
+                "product_version": "".join(ver),
+                "company_name": self.url,
+                "copyright": self.copyright,
+                "install_dir": self.name,
+                "reg_key": self.name,
+                "out_file": "%s-%s.exe"
+                % (
+                    self.name,
+                    self.version
+                    if len(self.version) < 128
+                    else (self.version[:14] + self.version[-5:]),
+                ),
+                "install_vcredist": install_vcredist
+                if sys.version_info > (2, 7)
+                else "",
+                "register_com_servers_tlb": "".join(
+                    [
+                        register_com_server_tlb % comserver
+                        for comserver in self.comserver_files_tlb
+                    ]
+                ),
+                "register_com_servers_exe": "".join(
+                    [
+                        register_com_server_exe % comserver
+                        for comserver in self.comserver_files_exe
+                    ]
+                ),
+                "register_com_servers_dll": "".join(
+                    [
+                        register_com_server_dll % comserver
+                        for comserver in self.comserver_files_dll
+                    ]
+                ),
+                "unregister_com_servers_exe": "".join(
+                    [
+                        unregister_com_server_exe % comserver
+                        for comserver in self.comserver_files_exe
+                    ]
+                ),
+                "unregister_com_servers_dll": "".join(
+                    [
+                        unregister_com_server_dll % comserver
+                        for comserver in self.comserver_files_dll
+                    ]
+                ),
+                "unregister_com_servers_exe": "".join(
+                    [
+                        unregister_com_server_tlb % comserver
+                        for comserver in self.comserver_files_tlb
+                    ]
+                ),
+            }
+        )
 
     def compile(self, pathname="base.nsi"):
-        os.startfile(pathname, 'compile')
-        
-        
+        os.startfile(pathname, "compile")
+
+
 class Target(object):
     def __init__(self, module, **kw):
         self.__dict__.update(kw)
         # for the version info resources (Properties -- Version)
         # convertir 1.21a en 1.21.1
         try:
-            self.version = module.__version__[:-1]+"."+str(ord(module.__version__[-1])-96)
+            self.version = (
+                module.__version__[:-1] + "." + str(ord(module.__version__[-1]) - 96)
+            )
         except AttributeError:
             self.version = "0.0.1"
         self.description = module.__doc__
@@ -288,4 +341,6 @@ class Target(object):
             self.copyright = module.__copyright__
         except AttributeError:
             self.copyright = ""
-        self.name = "Interfaz PyAfipWs - %s" % os.path.basename(module.__file__).replace(".pyc", ".py")
+        self.name = "Interfaz PyAfipWs - %s" % os.path.basename(
+            module.__file__
+        ).replace(".pyc", ".py")

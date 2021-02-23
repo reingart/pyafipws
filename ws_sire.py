@@ -17,6 +17,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 from future import standard_library
+
 standard_library.install_aliases()
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2020 Mariano Reingart"
@@ -29,7 +30,16 @@ import json
 import os
 import sys
 
-from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm, SoapFault, SimpleXMLElement
+from .utils import (
+    inicializar_y_capturar_excepciones,
+    BaseWS,
+    get_install_dir,
+    json_serializer,
+    abrir_conf,
+    norm,
+    SoapFault,
+    SimpleXMLElement,
+)
 from configparser import SafeConfigParser
 
 
@@ -41,16 +51,36 @@ CONFIG_FILE = "rece.ini"
 
 class WSSIREc2005(BaseWS):
     "Interfaz para el WebService de SIRE certificado 2005"
-    _public_methods_ = ['Emitir',
-                        'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
-                        'SetParametros', 'SetTicketAcceso', 'GetParametro',
-                        'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso']
-    _public_attrs_ = ['Token', 'Sign', 'Cuit',
-        'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
-        'CertificadoNro', 'CodigoSeguridad',
-        'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 
-        'LanzarExcepciones', 'Excepcion', 'Traceback',
-        ]
+    _public_methods_ = [
+        "Emitir",
+        "AnalizarXml",
+        "ObtenerTagXml",
+        "LoadTestXML",
+        "SetParametros",
+        "SetTicketAcceso",
+        "GetParametro",
+        "Dummy",
+        "Conectar",
+        "DebugLog",
+        "SetTicketAcceso",
+    ]
+    _public_attrs_ = [
+        "Token",
+        "Sign",
+        "Cuit",
+        "AppServerStatus",
+        "DbServerStatus",
+        "AuthServerStatus",
+        "CertificadoNro",
+        "CodigoSeguridad",
+        "XmlRequest",
+        "XmlResponse",
+        "Version",
+        "InstallDir",
+        "LanzarExcepciones",
+        "Excepcion",
+        "Traceback",
+    ]
 
     _reg_progid_ = "WSSIREc2005"
     _reg_clsid_ = "{E941985A-5C1C-4B17-80C1-7FBB7BE7D713}"
@@ -58,7 +88,7 @@ class WSSIREc2005(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and "Homologación" or "")
     Reprocesar = True  # recuperar automaticamente CAE emitidos
     LanzarExcepciones = LANZAR_EXCEPCIONES
 
@@ -68,52 +98,64 @@ class WSSIREc2005(BaseWS):
         self.data = {}
         self.errores = []
 
-    def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30, soap_server="oracle"):
-        return BaseWS.Conectar(self, cache, wsdl, proxy, wrapper, cacert, timeout, soap_server)
+    def Conectar(
+        self,
+        cache=None,
+        wsdl=None,
+        proxy="",
+        wrapper=None,
+        cacert=None,
+        timeout=30,
+        soap_server="oracle",
+    ):
+        return BaseWS.Conectar(
+            self, cache, wsdl, proxy, wrapper, cacert, timeout, soap_server
+        )
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
         "Obtener el estado de los servidores de la AFIP"
         result = self.client.dummy()
-        self.AppServerStatus = result['appserver']
-        self.DbServerStatus = result['dbserver']
-        self.AuthServerStatus = result['authserver']
+        self.AppServerStatus = result["appserver"]
+        self.DbServerStatus = result["dbserver"]
+        self.AuthServerStatus = result["authserver"]
         return True
 
     @inicializar_y_capturar_excepciones
-    def Emitir(self,
-                version=100,
-                impuesto=216,
-                regimen=831,
-                fecha_retencion='2019-11-26T11:22:00.969-03:00',
-                importe_retencion=0,
-                importe_base_calculo=0,
-                regimen_exclusion=False,
-                tipo_comprobante=1,
-                fecha_comprobante='2019-11-26T11:22:00.969-03:00',
-                importe_comprobante=0.00,
-                cuit_retenido='30500010912',
-                fecha_retencion_certificado_original='2019-11-26T11:22:00.969-03:00',
-                codigo_trazabilidad=None,
-                condicion=1,    # 1: Inscripto, 2: No inscriptio
-                imposibilidad_retencion=False,
-                motivo_no_retencion=None,
-                porcentaje_exclusion=None,
-                fecha_publicacion=None, 
-                numero_comprobante='99999-99999999',
-                coe=None,
-                coe_original=None,
-                cae=None,
-                motivo_emision_nota_credito=None,
-                numero_certificado_original=None,
-                importe_certificado_original=None,
-                motivo_anulacion=None,
-        ):
-        """"Método para emitir el certificado 2005.
+    def Emitir(
+        self,
+        version=100,
+        impuesto=216,
+        regimen=831,
+        fecha_retencion="2019-11-26T11:22:00.969-03:00",
+        importe_retencion=0,
+        importe_base_calculo=0,
+        regimen_exclusion=False,
+        tipo_comprobante=1,
+        fecha_comprobante="2019-11-26T11:22:00.969-03:00",
+        importe_comprobante=0.00,
+        cuit_retenido="30500010912",
+        fecha_retencion_certificado_original="2019-11-26T11:22:00.969-03:00",
+        codigo_trazabilidad=None,
+        condicion=1,  # 1: Inscripto, 2: No inscriptio
+        imposibilidad_retencion=False,
+        motivo_no_retencion=None,
+        porcentaje_exclusion=None,
+        fecha_publicacion=None,
+        numero_comprobante="99999-99999999",
+        coe=None,
+        coe_original=None,
+        cae=None,
+        motivo_emision_nota_credito=None,
+        numero_certificado_original=None,
+        importe_certificado_original=None,
+        motivo_anulacion=None,
+    ):
+        """ "Método para emitir el certificado 2005.
 
         Recibe los datos del certificado que se desea emitir.
         Establece el Nro y Código de seguridad del certificado emitido.
-        
+
         Args:
             **kwargs: campos del certificado a emitir
 
@@ -131,29 +173,29 @@ class WSSIREc2005(BaseWS):
                 impuesto=impuesto,
                 regimen=regimen,
                 fechaRetencion=fecha_retencion,
-                condicion=condicion,  #opt
-                imposibilidadRetencion=imposibilidad_retencion, # opt
-                motivoNoRetencion=motivo_no_retencion, # opt motivoNoRetencion>
+                condicion=condicion,  # opt
+                imposibilidadRetencion=imposibilidad_retencion,  # opt
+                motivoNoRetencion=motivo_no_retencion,  # opt motivoNoRetencion>
                 importeRetencion=importe_retencion,
                 importeBaseCalculo=importe_base_calculo,
                 regimenExclusion=regimen_exclusion,
-                porcentajeExclusion=porcentaje_exclusion, # opt
-                fechaPublicacion=fecha_publicacion, 
+                porcentajeExclusion=porcentaje_exclusion,  # opt
+                fechaPublicacion=fecha_publicacion,
                 tipoComprobante=tipo_comprobante,
                 fechaComprobante=fecha_comprobante,
-                numeroComprobante=numero_comprobante, # opt
+                numeroComprobante=numero_comprobante,  # opt
                 coe=coe,
-                coeOriginal=coe_original, # opt
+                coeOriginal=coe_original,  # opt
                 cae=cae,
                 importeComprobante=importe_comprobante,
-                motivoEmisionNotaCredito=motivo_emision_nota_credito, # opt
-                cuitRetenido=cuit_retenido, # opt
+                motivoEmisionNotaCredito=motivo_emision_nota_credito,  # opt
+                cuitRetenido=cuit_retenido,  # opt
                 numeroCertificadoOriginal=numero_certificado_original,
                 fechaRetencionCertificadoOriginal=fecha_retencion_certificado_original,
                 importeCertificadoOriginal=importe_certificado_original,
                 motivoAnulacion=motivo_anulacion,
-                )
-            )
+            ),
+        )
         # obtengo el resultado de AFIP :
         self.CertificadoNro = res["certificadoNro"]
         self.CodigoSeguridad = res["codigoSeguridad"]
@@ -163,27 +205,28 @@ class WSSIREc2005(BaseWS):
 def main():
     "Función principal de pruebas (obtener CAE)"
     import os, time
+
     global CONFIG_FILE
 
-    DEBUG = '--debug' in sys.argv
+    DEBUG = "--debug" in sys.argv
 
     sire = WSSIREc2005()
-    SECTION = 'WSSIREc2005'
+    SECTION = "WSSIREc2005"
     service = "sire-ws"
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
-    if config.has_section('WSAA'):
-        crt = config.get('WSAA', 'CERT')
-        key = config.get('WSAA', 'PRIVATEKEY')
-        cuit = config.get(SECTION, 'CUIT')
+    if config.has_section("WSAA"):
+        crt = config.get("WSAA", "CERT")
+        key = config.get("WSAA", "PRIVATEKEY")
+        cuit = config.get(SECTION, "CUIT")
     else:
         crt, key = "reingart.crt", "reingart.key"
         cuit = "20267565393"
     url_wsaa = url_ws = None
-    if config.has_option('WSAA','URL'):
-        url_wsaa = config.get('WSAA', 'URL')
-    if config.has_option(SECTION,'URL') and not HOMO:
-        url_ws = config.get(SECTION, 'URL')
+    if config.has_option("WSAA", "URL"):
+        url_wsaa = config.get("WSAA", "URL")
+    if config.has_option(SECTION, "URL") and not HOMO:
+        url_ws = config.get(SECTION, "URL")
 
     # obteniendo el TA para pruebas
     from .wsaa import WSAA
@@ -206,40 +249,40 @@ def main():
 
         if "--testing" in sys.argv:
             sire.LoadTestXML("tests/xml/%s_resp.xml" % service)
-        print("Consultando AFIP online via webservice...", end=' ')
+        print("Consultando AFIP online via webservice...", end=" ")
         ok = sire.Emitir(
-                version=100,
-                impuesto=216,
-                regimen=831,
-                fecha_retencion='2020-07-11T11:16:00.000-03:00',
-                importe_retencion=2100.00,
-                importe_base_calculo=20000.00,
-                regimen_exclusion=False,
-                tipo_comprobante=1,
-                fecha_comprobante='2020-07-11T11:15:53.000-03:00',
-                importe_comprobante=22200.00,
-                cuit_retenido='30500010912',
-                fecha_retencion_certificado_original='2020-07-11T11:16:00.000-03:00',
-                codigo_trazabilidad=None,
-                condicion=1,    # 1: Inscripto, 2: No inscriptio
-                imposibilidad_retencion=False,
-                motivo_no_retencion=None,
-                porcentaje_exclusion=None,
-                fecha_publicacion=None,
-                numero_comprobante='00003-00008497',
-                coe=None,
-                coe_original=None,
-                cae=None,
-                motivo_emision_nota_credito=None,
-                numero_certificado_original=None,
-                importe_certificado_original=None,
-                motivo_anulacion=None,
-            )
+            version=100,
+            impuesto=216,
+            regimen=831,
+            fecha_retencion="2020-07-11T11:16:00.000-03:00",
+            importe_retencion=2100.00,
+            importe_base_calculo=20000.00,
+            regimen_exclusion=False,
+            tipo_comprobante=1,
+            fecha_comprobante="2020-07-11T11:15:53.000-03:00",
+            importe_comprobante=22200.00,
+            cuit_retenido="30500010912",
+            fecha_retencion_certificado_original="2020-07-11T11:16:00.000-03:00",
+            codigo_trazabilidad=None,
+            condicion=1,  # 1: Inscripto, 2: No inscriptio
+            imposibilidad_retencion=False,
+            motivo_no_retencion=None,
+            porcentaje_exclusion=None,
+            fecha_publicacion=None,
+            numero_comprobante="00003-00008497",
+            coe=None,
+            coe_original=None,
+            cae=None,
+            motivo_emision_nota_credito=None,
+            numero_certificado_original=None,
+            importe_certificado_original=None,
+            motivo_anulacion=None,
+        )
 
         print("CertificadoNro: ", sire.CertificadoNro)
         print("CodigoSeguridad: ", sire.CodigoSeguridad)
 
-        print('ok' if ok else "error!")
+        print("ok" if ok else "error!")
         if sire.Excepcion:
             print("Excepcion:", sire.Excepcion)
 
@@ -253,12 +296,12 @@ def main():
 INSTALL_DIR = WSSIREc2005.InstallDir = get_install_dir()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
+
         win32com.server.register.UseCommandLine(WSSIREc2005)
         win32com.server.register.UseCommandLine(WSSIREc2005)
     else:
         main()
-

@@ -16,6 +16,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 from builtins import str
+
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "LGPL 3.0"
@@ -37,8 +38,8 @@ import os, sys, time
 from .utils import date, SimpleXMLElement, SoapClient, SoapFault
 
 WSDDFURL = "https://testdia.afip.gov.ar/Dia/Ws/wDigDepFiel/wDigDepFiel.asmx"
-SOAP_ACTION = 'ar.gov.afip.dia.serviciosWeb.wDigDepFiel/'
-SOAP_NS = 'ar.gov.afip.dia.serviciosWeb.wDigDepFiel'
+SOAP_ACTION = "ar.gov.afip.dia.serviciosWeb.wDigDepFiel/"
+SOAP_NS = "ar.gov.afip.dia.serviciosWeb.wDigDepFiel"
 
 DEBUG = True
 XML = False
@@ -56,52 +57,83 @@ def dummy(client):
         authserver = str(result.authserver)
     except (RuntimeError, IndexError, AttributeError) as e:
         pass
-    return {'appserver': appserver,
-            'dbserver': dbserver,
-            'authserver': authserver}
+    return {"appserver": appserver, "dbserver": dbserver, "authserver": authserver}
 
-def aviso_recep_acept(client, token, sign, cuit, tipo_agente, rol, 
-                      nro_legajo, cuit_declarante, cuit_psad, cuit_ie,
-                          codigo, fecha_hora_acept, ticket):
+
+def aviso_recep_acept(
+    client,
+    token,
+    sign,
+    cuit,
+    tipo_agente,
+    rol,
+    nro_legajo,
+    cuit_declarante,
+    cuit_psad,
+    cuit_ie,
+    codigo,
+    fecha_hora_acept,
+    ticket,
+):
     "Aviso de recepcion y aceptacion."
     response = client.AvisoRecepAcept(
-                autentica=dict(Cuit=cuit, Token=token, Sign=sign, TipoAgente=tipo_agente, Rol=rol),
-                nroLegajo=nro_legajo,
-                cuitDeclarante=cuit_declarante,
-                cuitPSAD=cuit_psad,
-                cuitIE=cuit_ie,
-                codigo=codigo,
-                fechaHoraAcept=fecha_hora_acept,
-                ticket=ticket,
-                )
+        autentica=dict(
+            Cuit=cuit, Token=token, Sign=sign, TipoAgente=tipo_agente, Rol=rol
+        ),
+        nroLegajo=nro_legajo,
+        cuitDeclarante=cuit_declarante,
+        cuitPSAD=cuit_psad,
+        cuitIE=cuit_ie,
+        codigo=codigo,
+        fechaHoraAcept=fecha_hora_acept,
+        ticket=ticket,
+    )
     result = response.AvisoRecepAceptResult
-    return str(result.codError), str(result.descError) 
+    return str(result.codError), str(result.descError)
 
 
-def aviso_digit(client, token, sign, cuit, tipo_agente, rol, 
-                nro_legajo, cuit_declarante, cuit_psad, cuit_ie, cuit_ata,
-                codigo, url, familias, ticket, hashing, cantidad_total):
+def aviso_digit(
+    client,
+    token,
+    sign,
+    cuit,
+    tipo_agente,
+    rol,
+    nro_legajo,
+    cuit_declarante,
+    cuit_psad,
+    cuit_ie,
+    cuit_ata,
+    codigo,
+    url,
+    familias,
+    ticket,
+    hashing,
+    cantidad_total,
+):
     "Aviso de digitalizacion."
     response = client.AvisoDigit(
-                autentica=dict(Cuit=cuit, Token=token, Sign=sign, TipoAgente=tipo_agente, Rol=rol),
-                nroLegajo=nro_legajo,
-                cuitDeclarante=cuit_declarante,
-                cuitPSAD=cuit_psad,
-                cuitIE=cuit_ie,
-                cuitATA=cuit_ata,
-                codigo=codigo,
-                url=url,
-                familias=familias,
-                ticket=ticket,
-                hashing=hashing,
-                cantidadTotal=cantidad_total,
-                )
+        autentica=dict(
+            Cuit=cuit, Token=token, Sign=sign, TipoAgente=tipo_agente, Rol=rol
+        ),
+        nroLegajo=nro_legajo,
+        cuitDeclarante=cuit_declarante,
+        cuitPSAD=cuit_psad,
+        cuitIE=cuit_ie,
+        cuitATA=cuit_ata,
+        codigo=codigo,
+        url=url,
+        familias=familias,
+        ticket=ticket,
+        hashing=hashing,
+        cantidadTotal=cantidad_total,
+    )
     result = response.AvisoDigitResult
-    return str(result.codError), str(result.descError) 
+    return str(result.codError), str(result.descError)
 
 
-if __name__ == '__main__':
-    if '--ayuda' in sys.argv:
+if __name__ == "__main__":
+    if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
         sys.exit(0)
@@ -113,75 +145,110 @@ if __name__ == '__main__':
     from . import wsaa
 
     try:
-    
+
         if "--version" in sys.argv:
             print("Versión: ", __version__)
 
-        CERT='reingart.crt'
-        PRIVATEKEY='reingart.key'
+        CERT = "reingart.crt"
+        PRIVATEKEY = "reingart.key"
         # obteniendo el TA
         TA = "wsddf-ta.xml"
-        if not os.path.exists(TA) or os.path.getmtime(TA)+(60*60*5)<time.time():
+        if not os.path.exists(TA) or os.path.getmtime(TA) + (60 * 60 * 5) < time.time():
             tra = wsaa.create_tra(service="wDigDepFiel")
-            cms = wsaa.sign_tra(tra,CERT,PRIVATEKEY)
+            cms = wsaa.sign_tra(tra, CERT, PRIVATEKEY)
             ta_string = wsaa.call_wsaa(cms)
-            open(TA,"w").write(ta_string)
-        ta_string=open(TA).read()
+            open(TA, "w").write(ta_string)
+        ta_string = open(TA).read()
         ta = SimpleXMLElement(ta_string)
         token = str(ta.credentials.token)
         sign = str(ta.credentials.sign)
         # fin TA
-    
+
         # cliente soap del web service
-        client = SoapClient(WSDDFURL, 
-            action = SOAP_ACTION, 
-            namespace = SOAP_NS, exceptions = True,
-            trace = True, ns = 'ar', soap_ns='soap')
-        
-        if '--dummy' in sys.argv:
+        client = SoapClient(
+            WSDDFURL,
+            action=SOAP_ACTION,
+            namespace=SOAP_NS,
+            exceptions=True,
+            trace=True,
+            ns="ar",
+            soap_ns="soap",
+        )
+
+        if "--dummy" in sys.argv:
             ret = dummy(client)
-            print('\n'.join(["%s: %s" % it for it in list(ret.items())]))    
+            print("\n".join(["%s: %s" % it for it in list(ret.items())]))
 
         # ejemplos aviso recep acept (prueba):
-            
-        cuit = 20267565393
-        tipo_agente = 'DESP' # 'DESP'
-        rol = 'EXTE'
-        nro_legajo = '0'*16 # '1234567890123456'
-        cuit_declarante = cuit_psad = cuit_ie = cuit
-        codigo = '000' # carpeta completa, '0001' carpeta adicional
-        fecha_hora_acept = datetime.datetime.now().isoformat()
-        ticket = '1234'
-        r = aviso_recep_acept(client, token, sign, cuit, tipo_agente, rol,
-                              nro_legajo, cuit_declarante, cuit_psad, cuit_ie,
-                              codigo, fecha_hora_acept, ticket)
-        print(r)
 
+        cuit = 20267565393
+        tipo_agente = "DESP"  # 'DESP'
+        rol = "EXTE"
+        nro_legajo = "0" * 16  # '1234567890123456'
+        cuit_declarante = cuit_psad = cuit_ie = cuit
+        codigo = "000"  # carpeta completa, '0001' carpeta adicional
+        fecha_hora_acept = datetime.datetime.now().isoformat()
+        ticket = "1234"
+        r = aviso_recep_acept(
+            client,
+            token,
+            sign,
+            cuit,
+            tipo_agente,
+            rol,
+            nro_legajo,
+            cuit_declarante,
+            cuit_psad,
+            cuit_ie,
+            codigo,
+            fecha_hora_acept,
+            ticket,
+        )
+        print(r)
 
         # ejemplos aviso digit (prueba):
 
         cuit = 20267565393
-        tipo_agente = 'DESP' # 'DESP'
-        rol = 'EXTE'
-        nro_legajo = '0'*16 # '1234567890123456'
+        tipo_agente = "DESP"  # 'DESP'
+        rol = "EXTE"
+        nro_legajo = "0" * 16  # '1234567890123456'
         cuit_declarante = cuit_psad = cuit_ie = cuit_ata = cuit
-        codigo = '000' # carpeta completa, '0001' carpeta adicional
-        ticket = '1234'
-        url = 'http://www.example.com'
-        hashing = 'db1491eda47d78532cdfca19c62875aade941dc2'
-        familias = [ {'Familia': {'codigo': '02', 'cantidad': 1}}, {'Familia': {'codigo': '03', 'cantidad': 3}}, ] 
+        codigo = "000"  # carpeta completa, '0001' carpeta adicional
+        ticket = "1234"
+        url = "http://www.example.com"
+        hashing = "db1491eda47d78532cdfca19c62875aade941dc2"
+        familias = [
+            {"Familia": {"codigo": "02", "cantidad": 1}},
+            {"Familia": {"codigo": "03", "cantidad": 3}},
+        ]
         cantidad_total = 4
-        r = aviso_digit(client, token, sign, cuit, tipo_agente, rol,
-                        nro_legajo, cuit_declarante, cuit_psad, cuit_ie, cuit_ata,
-                        codigo, url, familias, ticket, hashing, cantidad_total)
+        r = aviso_digit(
+            client,
+            token,
+            sign,
+            cuit,
+            tipo_agente,
+            rol,
+            nro_legajo,
+            cuit_declarante,
+            cuit_psad,
+            cuit_ie,
+            cuit_ata,
+            codigo,
+            url,
+            familias,
+            ticket,
+            hashing,
+            cantidad_total,
+        )
         print(r)
         print("hecho.")
-        
+
     except SoapFault as e:
-        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore"))
+        print("Falla SOAP:", e.faultcode, e.faultstring.encode("ascii", "ignore"))
         sys.exit(3)
     except Exception as e:
-        print(str(e).encode("ascii","ignore"))
+        print(str(e).encode("ascii", "ignore"))
         if DEBUG:
             raise
         sys.exit(5)

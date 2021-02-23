@@ -15,4 +15,3 @@
 __author__ = "Mariano Reingart (mariano@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-
