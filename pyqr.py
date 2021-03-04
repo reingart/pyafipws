@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.04a"
+__version__ = "1.04b"
 
 import base64
 import json
@@ -158,6 +158,12 @@ if __name__ == '__main__':
             PyQR.Extension = ext
         else:
             pyqr.CrearArchivo()
+
+        if '--size' in sys.argv:
+            pyqr.box_size = int(sys.argv[sys.argv.index("--size")+1])
+
+        if '--border' in sys.argv:
+            pyqr.border = int(sys.argv[sys.argv.index("--border")+1])
 
         if '--url' in sys.argv:
             pyqr.URL = sys.argv[sys.argv.index("--url")+1]
