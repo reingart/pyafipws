@@ -48,16 +48,15 @@ CONSTRUCTOR static void initialize(void) {
         pName = PyString_FromString(buf);
         if (PyList_Insert(pSysPath, 0, pName))
             MessageBox(NULL, "PyList_Insert", "LibPyAfipWs Initialize", 0);
-        Py_XDECREF(pName);   /* note that pSysPath is a Borrowed reference! */
+        Py_XDECREF(pName);   
         MessageBox(NULL, "done!", "LibPyAfipWs Initialize", 0);
     #else
         Py_Initialize();
         puts(Py_GetPath());
-        /* on linux, add the current directory so python can find the modules */
+        
         PyRun_SimpleString("import sys, os");
         PyRun_SimpleString("sys.path.append(os.curdir)");
-        /* preliminary fix, it could not work on some cases and there could be 
-           some security concerns. It should add the base path of the .so */
+       
     #endif
 }
 
@@ -117,18 +116,18 @@ BSTR cstr(void *pStr) {
     char *str;
     size_t len;
     
-    /* get the string val/size, remember to copy '\0' termination character */
+
     len = PyString_Size((PyObject*) pStr) + 1; 
     str = PyString_AsString((PyObject*) pStr);
 
     #ifdef WIN32
-        /* on windows, returns a automation string */
+        
         ret = SysAllocStringByteLen(str, len);
     #else
-        /* allocate memory for the c string */
+        
         ret = (char *) malloc(len);
         if (ret) {
-            /* copy the py string to c (note that it may have \0 characters */
+            
             strncpy(ret, str, len);
         }
     #endif
@@ -137,7 +136,7 @@ BSTR cstr(void *pStr) {
 
 #define FMT "%s: %s - File %s, line %d, in %s"
 
-/* format exception: simplified PyErr_PrintEx (to not write to stdout) */
+
 BSTR format_ex(void) {
     char buf[2000];
     BSTR ret;
@@ -164,10 +163,7 @@ BSTR format_ex(void) {
         v = PyString_AsString(PyObject_Str(value));
     }
 
-    /* PyTracebackObject seems defined at frameobject.h, it should be included
-       to avoid "error: dereferencing pointer to incomplete type"
-       tb is NULL if the failure is in the c-api (for example in PyImport_Import)
-    */
+   
     tb1 = (PyTracebackObject *)tb;
     
     /* tb_printinternal (traceback.c) */
@@ -200,7 +196,7 @@ BSTR format_ex(void) {
     return ret;
 }
 
-/* CreateObject: import the module, instantiate the object and return the ref */
+
 EXPORT void * STDCALL PYAFIPWS_CreateObject(char *module, char *name) {
 
     PyObject *pName, *pModule, *pClass, *pObject=NULL;
@@ -225,14 +221,14 @@ EXPORT void * STDCALL PYAFIPWS_CreateObject(char *module, char *name) {
     }
 }
 
-/* DestroyObject: decrement the reference to the module */
+
 EXPORT void STDCALL PYAFIPWS_DestroyObject(void * object) {
 
     Py_DECREF((PyObject *) object);
     
 }
 
-/* Get: generic method to get an attribute of an object (returns a string) */
+
 EXPORT BSTR STDCALL PYAFIPWS_Get(void * object, char * name) {
     PyObject *pValue;
     BSTR ret=NULL;
