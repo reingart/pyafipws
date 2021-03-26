@@ -81,7 +81,7 @@ if 'py2exe' in sys.argv:
             import designer     
     except ImportError:
         # el script pyfpdf/tools/designer.py no esta disponible:
-        print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
+        print("IMPORTANTE: no se incluye el diseñador de plantillas PDF")
 
     # parametros para setup:
     kwargs = {}
