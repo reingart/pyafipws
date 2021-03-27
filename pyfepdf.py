@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10b"
+__version__ = "1.10c"
 
 DEBUG = False
 HOMO = False
@@ -212,6 +212,7 @@ class FEPDF:
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
+        self.archivo_qr = None
 
         self.factura = fact
         return True
@@ -942,6 +943,7 @@ class FEPDF:
         pyqr = PyQR()
         pyqr.CrearArchivo()
 
+        if DEBUG: print("Archivo:", pyqr.Archivo)
         # convertir campos al formato que requiere AFIP:
         fact = self.factura
         cuit = ''.join([c for c in self.CUIT if c.isdigit()])   # sólo numeros
