@@ -76,7 +76,7 @@ if 'py2exe' in sys.argv:
             import designer
     except ImportError:
         # el script pyfpdf/tools/designer.py no esta disponible:
-        print("IMPORTANTE: no se incluye el diseñador de plantillas PDF")
+        print "IMPORTANTE: no se incluye el diseñador de plantillas PDF"
 
     # parametros para setup:
     kwargs = {}
@@ -92,9 +92,9 @@ if 'py2exe' in sys.argv:
                 ".", glob.glob(r'c:\Program Files\Mercurial\msvc*.dll')
                 + glob.glob(r'c:\Program Files\Mercurial\Microsoft.VC90.CRT.manifest'),
             )]
-        # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
-        # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
-        # NOTE: on windows 8.1 64 bits, this is stored in C:\Users\REINGART\AppData\\Local\Temp\gen_py\2.7
+    # fix permission denied runtime error on win32com.client.gencache.GenGeneratePath
+    # (expects a __init__.py not pyc, also dicts.dat pickled or _LoadDicts/_SaveDicts will fail too)
+    # NOTE: on windows 8.1 64 bits, this is stored in C:\Users\REINGART\AppData\\Local\Temp\gen_py\2.7
         from win32com.client import gencache
         gen_py_path = gencache.GetGeneratePath() or r"C:\Python27\lib\site-packages\win32com\gen_py"
         data_files += [(
