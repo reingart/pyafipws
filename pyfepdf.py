@@ -20,7 +20,7 @@ import sys
 import os
 import decimal
 import datetime
-"Módulo para generar PDF de facturas electrónicas"
+"Mï¿½dulo para generar PDF de facturas electrï¿½nicas"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
@@ -32,14 +32,14 @@ HOMO = False
 CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
-pyfepdf.py: Interfaz para generar Facturas Electrónica en formato PDF
+pyfepdf.py: Interfaz para generar Facturas Electrï¿½nica en formato PDF
 Copyright (C) 2011-2015 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
 
-Para información adicional sobre garantía, soporte técnico comercial
-e incorporación/distribución en programas propietarios ver PyAfipWs:
+Para informaciï¿½n adicional sobre garantï¿½a, soporte tï¿½cnico comercial
+e incorporaciï¿½n/distribuciï¿½n en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
@@ -48,21 +48,21 @@ Opciones:
   --ayuda: este mensaje
   --licencia: muestra la licencia del programa
 
-  --debug: modo depuración (detalla y confirma las operaciones)
+  --debug: modo depuraciï¿½n (detalla y confirma las operaciones)
   --formato: muestra el formato de los archivos de entrada/salida
-  --prueba: genera y autoriza una factura de prueba (no usar en producción!)
+  --prueba: genera y autoriza una factura de prueba (no usar en producciï¿½n!)
   --cargar: carga un archivo de entrada (txt) a la base de datos
   --grabar: graba un archivo de salida (txt) con los datos de los comprobantes procesados
-  --pdf: genera la imágen de factura en PDF
+  --pdf: genera la imï¿½gen de factura en PDF
   --dbf: utiliza tablas DBF en lugar del archivo de entrada TXT
   --json: utiliza el formato JSON para el archivo de entrada
 
-Ver rece.ini para parámetros de configuración "
+Ver rece.ini para parï¿½metros de configuraciï¿½n "
 """
 
 
 class FEPDF:
-    "Interfaz para generar PDF de Factura Electrónica"
+    "Interfaz para generar PDF de Factura Electrï¿½nica"
     _public_methods_ = ['CrearFactura',
                         'AgregarDetalleItem', 'AgregarIva', 'AgregarTributo',
                         'AgregarCmpAsoc', 'AgregarPermiso',
@@ -81,17 +81,17 @@ class FEPDF:
 
     tipos_doc = {80: 'CUIT', 86: 'CUIL', 96: 'DNI', 99: '', 87: "CDI",
                  89: "LE", 90: "LC", 91: "CI Extranjera",
-                 92: "en trámite", 93: "Acta Nacimiento", 94: "Pasaporte",
+                 92: "en trï¿½mite", 93: "Acta Nacimiento", 94: "Pasaporte",
                  95: "CI Bs. As. RNP",
-                 0: "CI Policía Federal", 1: "CI Buenos Aires",
-                 2: "CI Catamarca", 3: "CI Córdoba", 4: "CI Corrientes",
-                 5: "CI Entre Ríos", 6: "CI Jujuy", 7: "CI Mendoza",
+                 0: "CI Policï¿½a Federal", 1: "CI Buenos Aires",
+                 2: "CI Catamarca", 3: "CI Cï¿½rdoba", 4: "CI Corrientes",
+                 5: "CI Entre Rï¿½os", 6: "CI Jujuy", 7: "CI Mendoza",
                  8: "CI La Rioja", 9: "CI Salta", 10: "CI San Juan",
                  11: "CI San Luis", 12: "CI Santa Fe",
-                 13: "CI Santiago del Estero", 14: "CI Tucumán",
+                 13: "CI Santiago del Estero", 14: "CI Tucumï¿½n",
                  16: "CI Chaco", 17: "CI Chubut", 18: "CI Formosa",
-                 19: "CI Misiones", 20: "CI Neuquén", 21: "CI La Pampa",
-                 22: "CI Río Negro", 23: "CI Santa Cruz",
+                 19: "CI Misiones", 20: "CI Neuquï¿½n", 21: "CI La Pampa",
+                 22: "CI Rï¿½o Negro", 23: "CI Santa Cruz",
                  24: "CI Tierra del Fuego",
                  }
 
@@ -105,27 +105,27 @@ class FEPDF:
                 53: 'kg base', 54: 'gruesa', 61: 'kg bruto',
                 62: 'uiactant', 63: 'muiactant', 64: 'uiactig', 65: 'muiactig', 66: 'kg activo',
                 67: 'gramo activo', 68: 'gramo base', 96: 'packs', 97: 'hormas',
-                96: 'packs', 97: 'seña/anticipo',
+                96: 'packs', 97: 'seï¿½a/anticipo',
                 99: 'bonificaci\xf3n', 98: 'otras unidades'}
 
     ivas_ds = {3: 0, 4: 10.5, 5: 21, 6: 27, 8: 5, 9: 2.5}
 
     paises = {512: 'FIJI, ISLAS', 513: 'PAPUA NUEVA GUINEA', 514: 'KIRIBATI, ISLAS', 515: 'MICRONESIA,EST.FEDER', 516: 'PALAU', 517: 'TUVALU', 518: 'SALOMON,ISLAS', 519: 'TONGA', 520: 'MARSHALL,ISLAS', 521: 'MARIANAS,ISLAS', 597: 'RESTO OCEANIA', 598: 'INDET.(OCEANIA)', 101: 'BURKINA FASO', 102: 'ARGELIA', 103: 'BOTSWANA', 104: 'BURUNDI', 105: 'CAMERUN', 107: 'REP. CENTROAFRICANA.', 108: 'CONGO', 109: 'REP.DEMOCRAT.DEL CONGO EX ZAIRE', 110: 'COSTA DE MARFIL', 111: 'CHAD', 112: 'BENIN', 113: 'EGIPTO', 115: 'GABON', 116: 'GAMBIA', 117: 'GHANA', 118: 'GUINEA', 119: 'GUINEA ECUATORIAL', 120: 'KENYA', 121: 'LESOTHO', 122: 'LIBERIA', 123: 'LIBIA', 124: 'MADAGASCAR', 125: 'MALAWI', 126: 'MALI', 127: 'MARRUECOS', 128: 'MAURICIO,ISLAS', 129: 'MAURITANIA', 130: 'NIGER', 131: 'NIGERIA', 132: 'ZIMBABWE', 133: 'RWANDA', 134: 'SENEGAL', 135: 'SIERRA LEONA', 136: 'SOMALIA', 137: 'SWAZILANDIA', 138: 'SUDAN', 139: 'TANZANIA', 140: 'TOGO', 141: 'TUNEZ', 142: 'UGANDA', 144: 'ZAMBIA', 145: 'TERRIT.VINCULADOS AL R UNIDO', 146: 'TERRIT.VINCULADOS A ESPA\xd1A', 147: 'TERRIT.VINCULADOS A FRANCIA', 149: 'ANGOLA', 150: 'CABO VERDE', 151: 'MOZAMBIQUE', 152: 'SEYCHELLES', 153: 'DJIBOUTI', 155: 'COMORAS', 156: 'GUINEA BISSAU', 157: 'STO.TOME Y PRINCIPE', 158: 'NAMIBIA', 159: 'SUDAFRICA', 160: 'ERITREA', 161: 'ETIOPIA', 197: 'RESTO (AFRICA)', 198: 'INDETERMINADO (AFRICA)', 200: 'ARGENTINA', 201: 'BARBADOS', 202: 'BOLIVIA', 203: 'BRASIL', 204: 'CANADA', 205: 'COLOMBIA', 206: 'COSTA RICA', 207: 'CUBA', 208: 'CHILE', 209: 'REP\xdaBLICA DOMINICANA', 210: 'ECUADOR', 211: 'EL SALVADOR', 212: 'ESTADOS UNIDOS', 213: 'GUATEMALA', 214: 'GUYANA', 215: 'HAITI', 216: 'HONDURAS', 217: 'JAMAICA', 218: 'MEXICO', 219: 'NICARAGUA', 220: 'PANAMA', 221: 'PARAGUAY', 222: 'PERU', 223: 'PUERTO RICO', 224: 'TRINIDAD Y TOBAGO', 225: 'URUGUAY', 226: 'VENEZUELA', 227: 'TERRIT.VINCULADO AL R.UNIDO', 228: 'TER.VINCULADOS A DINAMARCA', 229: 'TERRIT.VINCULADOS A FRANCIA AMERIC.', 230: 'TERRIT. HOLANDESES', 231: 'TER.VINCULADOS A ESTADOS UNIDOS', 232: 'SURINAME', 233: 'DOMINICA', 234: 'SANTA LUCIA', 235: 'SAN VICENTE Y LAS GRANADINAS', 236: 'BELICE', 237: 'ANTIGUA Y BARBUDA', 238: 'S.CRISTOBAL Y NEVIS', 239: 'BAHAMAS', 240: 'GRENADA', 241: 'ANTILLAS HOLANDESAS', 250: 'AAE Tierra del Fuego - ARGENTINA', 251: 'ZF La Plata - ARGENTINA', 252: 'ZF Justo Daract - ARGENTINA', 253: 'ZF R\xedo Gallegos - ARGENTINA', 254: 'Islas Malvinas - ARGENTINA', 255: 'ZF Tucum\xe1n - ARGENTINA', 256: 'ZF C\xf3rdoba - ARGENTINA', 257: 'ZF Mendoza - ARGENTINA', 258: 'ZF General Pico - ARGENTINA', 259: 'ZF Comodoro Rivadavia - ARGENTINA', 260: 'ZF Iquique', 261: 'ZF Punta Arenas', 262: 'ZF Salta - ARGENTINA', 263: 'ZF Paso de los Libres - ARGENTINA', 264: 'ZF Puerto Iguaz\xfa - ARGENTINA', 265: 'SECTOR ANTARTICO ARG.', 270: 'ZF Col\xf3n - REP\xdaBLICA DE PANAM\xc1', 271: 'ZF Winner (Sta. C. de la Sierra) - BOLIVIA', 280: 'ZF Colonia - URUGUAY', 281: 'ZF Florida - URUGUAY', 282: 'ZF Libertad - URUGUAY', 283: 'ZF Zonamerica - URUGUAY', 284: 'ZF Nueva Helvecia - URUGUAY', 285: 'ZF Nueva Palmira - URUGUAY', 286: 'ZF R\xedo Negro - URUGUAY', 287: 'ZF Rivera - URUGUAY', 288: 'ZF San Jos\xe9 - URUGUAY', 291: 'ZF Manaos - BRASIL', 295: 'MAR ARG ZONA ECO.EX', 296: 'RIOS ARG NAVEG INTER', 297: 'RESTO AMERICA', 298: 'INDETERMINADO (AMERICA)', 301: 'AFGANISTAN', 302: 'ARABIA SAUDITA', 303: 'BAHREIN', 304: 'MYANMAR (EX-BIRMANIA)', 305: 'BUTAN', 306: 'CAMBODYA (EX-KAMPUCHE)', 307: 'SRI LANKA', 308: 'COREA DEMOCRATICA', 309: 'COREA REPUBLICANA', 310: 'CHINA', 312: 'FILIPINAS', 313: 'TAIWAN', 315: 'INDIA', 316: 'INDONESIA', 317: 'IRAK', 318: 'IRAN', 319: 'ISRAEL', 320: 'JAPON', 321: 'JORDANIA', 322: 'QATAR', 323: 'KUWAIT', 324: 'LAOS', 325: 'LIBANO', 326: 'MALASIA', 327: 'MALDIVAS ISLAS', 328: 'OMAN', 329: 'MONGOLIA', 330: 'NEPAL', 331: 'EMIRATOS ARABES UNIDOS', 332: 'PAKIST\xc1N', 333: 'SINGAPUR', 334: 'SIRIA', 335: 'THAILANDIA', 337: 'VIETNAM', 341: 'HONG KONG', 344: 'MACAO', 345: 'BANGLADESH', 346: 'BRUNEI', 348: 'REPUBLICA DE YEMEN', 349: 'ARMENIA', 350: 'AZERBAIJAN', 351: 'GEORGIA', 352: 'KAZAJSTAN', 353: 'KIRGUIZISTAN', 354: 'TAYIKISTAN', 355: 'TURKMENISTAN', 356: 'UZBEKISTAN', 357: 'TERR. AU. PALESTINOS', 397: 'RESTO DE ASIA', 398: 'INDET.(ASIA)', 401: 'ALBANIA', 404: 'ANDORRA', 405: 'AUSTRIA', 406: 'BELGICA', 407: 'BULGARIA', 409: 'DINAMARCA', 410: 'ESPA\xd1A', 411: 'FINLANDIA', 412: 'FRANCIA', 413: 'GRECIA', 414: 'HUNGRIA', 415: 'IRLANDA', 416: 'ISLANDIA', 417: 'ITALIA', 418: 'LIECHTENSTEIN', 419: 'LUXEMBURGO', 420: 'MALTA', 421: 'MONACO', 422: 'NORUEGA', 423: 'PAISES BAJOS', 424: 'POLONIA', 425: 'PORTUGAL', 426: 'REINO UNIDO', 427: 'RUMANIA', 428: 'SAN MARINO', 429: 'SUECIA', 430: 'SUIZA', 431: 'VATICANO(SANTA SEDE)', 433: 'POS.BRIT.(EUROPA)', 435: 'CHIPRE', 436: 'TURQUIA', 438: 'ALEMANIA,REP.FED.', 439: 'BIELORRUSIA', 440: 'ESTONIA', 441: 'LETONIA', 442: 'LITUANIA', 443: 'MOLDAVIA', 444: 'RUSIA', 445: 'UCRANIA', 446: 'BOSNIA HERZEGOVINA', 447: 'CROACIA', 448: 'ESLOVAQUIA', 449: 'ESLOVENIA', 450: 'MACEDONIA', 451: 'REP. CHECA', 453: 'MONTENEGRO', 454: 'SERBIA', 997: 'RESTO CONTINENTE', 998: 'INDET.(CONTINENTE)', 497: 'RESTO EUROPA', 498: 'INDET.(EUROPA)', 501: 'AUSTRALIA', 503: 'NAURU', 504: 'NUEVA ZELANDIA', 505: 'VANATU', 506: 'SAMOA OCCIDENTAL', 507: 'TERRITORIO VINCULADOS A AUSTRALIA', 508: 'TERRITORIOS VINCULADOS AL R. UNIDO', 509: 'TERRITORIOS VINCULADOS A FRANCIA', 510: 'TER VINCULADOS A NUEVA. ZELANDA', 511: 'TER. VINCULADOS A ESTADOS UNIDOS'}
 
-    monedas_ds = {'DOL': 'USD: Dólar', 'PES': 'ARS: Pesos', '010': 'MXN: Pesos Mejicanos', '011': 'UYU: Pesos Uruguayos', '012': 'BRL: Real', '014': 'Coronas Danesas', '015': 'Coronas Noruegas', '016': 'Coronas Suecas', '019': 'JPY: Yens', '018': 'CAD: D\xf3lar Canadiense', '033': 'CLP: Peso Chileno', '056': 'Forint (Hungr\xeda)', '031': 'BOV: Peso Boliviano', '036': 'Sucre Ecuatoriano', '051': 'D\xf3lar de Hong Kong', '034': 'Rand Sudafricano', '053': 'D\xf3lar de Jamaica', '057': 'Baht (Tailandia)', '043': 'Balboas Paname\xf1as', '042': 'Peso Dominicano', '052': 'D\xf3lar de Singapur', '032': 'Peso Colombiano', '035': 'Nuevo Sol Peruano', '061': 'Zloty Polaco', '060': 'EUR: Euro', '063': 'Lempira Hondure\xf1a', '062': 'Rupia Hind\xfa', '064': 'Yuan (Rep. Pop. China)', '009': 'Franco Suizo', '025': 'Dinar Yugoslavo', '002': 'USD: D\xf3lar Libre EEUU', '027': 'Dracma Griego', '026': 'D\xf3lar Australiano', '007': 'Florines Holandeses', '023': 'VEB: Bol\xedvar Venezolano', '047': 'Riyal Saudita', '046': 'Libra Egipcia', '045': 'Dirham Marroqu\xed', '044': 'C\xf3rdoba Nicarag\xfcense', '029': 'G\xfcaran\xed', '028': 'Flor\xedn (Antillas Holandesas)', '054': 'D\xf3lar de Taiwan', '040': 'Lei Rumano', '024': 'Corona Checa', '030': 'Shekel (Israel)', '021': 'Libra Esterlina', '055': 'Quetzal Guatemalteco', '059': 'Dinar Kuwaiti'}
+    monedas_ds = {'DOL': 'USD: Dï¿½lar', 'PES': 'ARS: Pesos', '010': 'MXN: Pesos Mejicanos', '011': 'UYU: Pesos Uruguayos', '012': 'BRL: Real', '014': 'Coronas Danesas', '015': 'Coronas Noruegas', '016': 'Coronas Suecas', '019': 'JPY: Yens', '018': 'CAD: D\xf3lar Canadiense', '033': 'CLP: Peso Chileno', '056': 'Forint (Hungr\xeda)', '031': 'BOV: Peso Boliviano', '036': 'Sucre Ecuatoriano', '051': 'D\xf3lar de Hong Kong', '034': 'Rand Sudafricano', '053': 'D\xf3lar de Jamaica', '057': 'Baht (Tailandia)', '043': 'Balboas Paname\xf1as', '042': 'Peso Dominicano', '052': 'D\xf3lar de Singapur', '032': 'Peso Colombiano', '035': 'Nuevo Sol Peruano', '061': 'Zloty Polaco', '060': 'EUR: Euro', '063': 'Lempira Hondure\xf1a', '062': 'Rupia Hind\xfa', '064': 'Yuan (Rep. Pop. China)', '009': 'Franco Suizo', '025': 'Dinar Yugoslavo', '002': 'USD: D\xf3lar Libre EEUU', '027': 'Dracma Griego', '026': 'D\xf3lar Australiano', '007': 'Florines Holandeses', '023': 'VEB: Bol\xedvar Venezolano', '047': 'Riyal Saudita', '046': 'Libra Egipcia', '045': 'Dirham Marroqu\xed', '044': 'C\xf3rdoba Nicarag\xfcense', '029': 'G\xfcaran\xed', '028': 'Flor\xedn (Antillas Holandesas)', '054': 'D\xf3lar de Taiwan', '040': 'Lei Rumano', '024': 'Corona Checa', '030': 'Shekel (Israel)', '021': 'Libra Esterlina', '055': 'Quetzal Guatemalteco', '059': 'Dinar Kuwaiti'}
 
     tributos_ds = {1: 'Impuestos nacionales', 2: 'Impuestos provinciales', 3: 'Impuestos municipales', 4: 'Impuestos Internos', 99: 'Otro'}
 
     tipos_fact = {
         (1, 6, 11, 19, 51): 'Factura',
-        (2, 7, 12, 20, 52): 'Nota de Débito',
-        (3, 8, 13, 21, 53): 'Nota de Crédito',
+        (2, 7, 12, 20, 52): 'Nota de Dï¿½bito',
+        (3, 8, 13, 21, 53): 'Nota de Crï¿½dito',
         (4, 9, 15, 54): 'Recibo',
         (10, 5): 'Nota de Venta al contado',
-        (60, 61): 'Cuenta de Venta y Líquido producto',
-        (63, 64): 'Liquidación',
+        (60, 61): 'Cuenta de Venta y Lï¿½quido producto',
+        (63, 64): 'Liquidaciï¿½n',
         (91, ): 'Remito',
-        (39, 40): '???? (R.G. N° 3419)'}
+        (39, 40): '???? (R.G. Nï¿½ 3419)'}
 
     letras_fact = {(1, 2, 3, 4, 5, 39, 60, 63): 'A',
                    (6, 7, 8, 9, 10, 40, 61, 64): 'B',
@@ -159,7 +159,7 @@ class FEPDF:
         self.LanzarExcepciones = True
 
     def DebugLog(self):
-        "Devolver bitácora de depuración"
+        "Devolver bitï¿½cora de depuraciï¿½n"
         msg = self.log.getvalue()
         return msg
 
@@ -287,7 +287,7 @@ class FEPDF:
             return "%s/%s/%s" % (d[6:8], d[4:6], d[0:4])
 
     def fmt_num(self, i, fmt="%0.2f", monetary=True):
-        "Formatear un número"
+        "Formatear un nï¿½mero"
         if i is not None and str(i) and not isinstance(i, bool):
             loc = self.Locale
             if loc:
@@ -320,7 +320,7 @@ class FEPDF:
         return ''
 
     def fmt_fact(self, tipo_cbte, punto_vta, cbte_nro):
-        "Formatear tipo, letra y punto de venta y número de factura"
+        "Formatear tipo, letra y punto de venta y nï¿½mero de factura"
         n = "%05d-%08d" % (int(punto_vta), int(cbte_nro))
         t, l = tipo_cbte, ''
         for k, v in list(self.tipos_fact.items()):
@@ -332,26 +332,26 @@ class FEPDF:
         return t, l, n
 
     def digito_verificador_modulo10(self, codigo):
-        "Rutina para el cálculo del dígito verificador 'módulo 10'"
+        "Rutina para el cï¿½lculo del dï¿½gito verificador 'mï¿½dulo 10'"
         # http://www.consejo.org.ar/Bib_elect/diciembre04_CT/documentos/rafip1702.htm
         # Etapa 1: comenzar desde la izquierda, sumar todos los caracteres ubicados en las posiciones impares.
         codigo = codigo.strip()
         if not codigo or not codigo.isdigit():
             return ''
         etapa1 = sum([int(c) for i, c in enumerate(codigo) if not i % 2])
-        # Etapa 2: multiplicar la suma obtenida en la etapa 1 por el número 3
+        # Etapa 2: multiplicar la suma obtenida en la etapa 1 por el nï¿½mero 3
         etapa2 = etapa1 * 3
-        # Etapa 3: comenzar desde la izquierda, sumar todos los caracteres que están ubicados en las posiciones pares.
+        # Etapa 3: comenzar desde la izquierda, sumar todos los caracteres que estï¿½n ubicados en las posiciones pares.
         etapa3 = sum([int(c) for i, c in enumerate(codigo) if i % 2])
         # Etapa 4: sumar los resultados obtenidos en las etapas 2 y 3.
         etapa4 = etapa2 + etapa3
-        # Etapa 5: buscar el menor número que sumado al resultado obtenido en la etapa 4 dé un número múltiplo de 10. Este será el valor del dígito verificador del módulo 10.
+        # Etapa 5: buscar el menor nï¿½mero que sumado al resultado obtenido en la etapa 4 dï¿½ un nï¿½mero mï¿½ltiplo de 10. Este serï¿½ el valor del dï¿½gito verificador del mï¿½dulo 10.
         digito = 10 - (etapa4 - (int(etapa4 / 10) * 10))
         if digito == 10:
             digito = 0
         return str(digito)
 
-    # Funciones públicas:
+    # Funciones pï¿½blicas:
 
     @utils.inicializar_y_capturar_excepciones_simple
     def CargarFormato(self, archivo="factura.csv"):
@@ -408,7 +408,7 @@ class FEPDF:
 
     @utils.inicializar_y_capturar_excepciones_simple
     def CrearPlantilla(self, papel="A4", orientacion="portrait"):
-        "Iniciar la creación del archivo PDF"
+        "Iniciar la creaciï¿½n del archivo PDF"
 
         fact = self.factura
         tipo, letra, nro = self.fmt_fact(fact['tipo_cbte'], fact['punto_vta'], fact['cbte_nro'])
@@ -421,7 +421,7 @@ class FEPDF:
         for field in self.elements:
             # si la imagen no existe, eliminar nombre para que no falle fpdf
             if field['type'] == 'I' and not os.path.exists(field["text"]):
-                # ajustar rutas relativas a las imágenes predeterminadas:
+                # ajustar rutas relativas a las imï¿½genes predeterminadas:
                 if os.path.exists(os.path.join(self.InstallDir, field["text"])):
                     field['text'] = os.path.join(self.InstallDir, field["text"])
                 else:
@@ -436,14 +436,14 @@ class FEPDF:
                      title="%s %s %s" % (tipo.encode("latin1", "ignore"), letra, nro),
                      author="CUIT %s" % self.CUIT,
                      subject="CAE %s" % fact['cae'],
-                     keywords="AFIP Factura Electrónica",
+                     keywords="AFIP Factura Electrï¿½nica",
                      creator='PyFEPDF %s (http://www.PyAfipWs.com.ar)' % __version__,)
         self.template = t
         return True
 
     @utils.inicializar_y_capturar_excepciones_simple
     def ProcesarPlantilla(self, num_copias=3, lineas_max=36, qty_pos='izq'):
-        "Generar el PDF según la factura creada y plantilla cargada"
+        "Generar el PDF segï¿½n la factura creada y plantilla cargada"
 
         ret = False
         try:
@@ -458,11 +458,11 @@ class FEPDF:
             tipo_fact, letra_fact, numero_fact = self.fmt_fact(fact['tipo_cbte'], fact['punto_vta'], fact['cbte_nro'])
             fact['_fmt_fact'] = tipo_fact, letra_fact, numero_fact
             if fact['tipo_cbte'] in (19, 20, 21):
-                tipo_fact_ex = tipo_fact + " de Exportación"
+                tipo_fact_ex = tipo_fact + " de Exportaciï¿½n"
             else:
                 tipo_fact_ex = tipo_fact
 
-            # dividir y contar líneas:
+            # dividir y contar lï¿½neas:
             lineas = 0
             li_items = []
             for it in fact['detalles']:
@@ -474,14 +474,14 @@ class FEPDF:
                     umed = int(umed)
                 ds = it['ds'] or ""
                 if '\x00' in ds:
-                    # limpiar descripción (campos dbf):
+                    # limpiar descripciï¿½n (campos dbf):
                     ds = ds.replace('\x00', '')
                 if '<br/>' in ds:
                     # reemplazar saltos de linea:
                     ds = ds.replace('<br/>', '\n')
                 if DEBUG:
                     print("dividiendo", ds)
-                # divido la descripción (simil célda múltiple de PDF)
+                # divido la descripciï¿½n (simil cï¿½lda mï¿½ltiple de PDF)
                 n_li = 0
                 for ds in f.split_multicell(ds, 'Item.Descripcion01'):
                     if DEBUG:
@@ -490,10 +490,10 @@ class FEPDF:
                     li_items.append(dict(codigo=codigo, ds=ds, qty=qty,
                                          umed=umed if not n_li else None,
                                          precio=None, importe=None))
-                    # limpio cantidad y código (solo en el primero)
+                    # limpio cantidad y cï¿½digo (solo en el primero)
                     qty = codigo = None
                     n_li += 1
-                # asigno el precio a la última línea del item
+                # asigno el precio a la ï¿½ltima lï¿½nea del item
                 li_items[-1].update(importe=it['importe'] if float(it['importe'] or 0) or umed else None,
                                     despacho=it.get('despacho'),
                                     precio=it['precio'] if float(it['precio'] or 0) or umed else None,
@@ -531,7 +531,7 @@ class FEPDF:
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
 
             # agrego permisos a descripciones (si corresponde)
-            permisos = ['Codigo de Despacho %s - Destino de la mercadería: %s' % (
+            permisos = ['Codigo de Despacho %s - Destino de la mercaderï¿½a: %s' % (
                 p['id_permiso'], self.paises.get(p['dst_merc'], p['dst_merc']))
                 for p in fact.get('permisos', [])]
 
@@ -555,7 +555,7 @@ class FEPDF:
                     li_items.append(dict(codigo=None, ds=ds, qty=None, umed=None, precio=None, importe=None))
             cmps_asoc_ds = ', '.join(cmps_asoc)
 
-            # calcular cantidad de páginas:
+            # calcular cantidad de pï¿½ginas:
             lineas = len(li_items)
             if lineas_max > 0:
                 hojas = lineas // (lineas_max - 1)
@@ -567,7 +567,7 @@ class FEPDF:
                 hojas = 1
 
             if HOMO:
-                self.AgregarDato("homo", "HOMOLOGACIÓN")
+                self.AgregarDato("homo", "HOMOLOGACIï¿½N")
 
             # mostrar las validaciones no excluyentes de AFIP (observaciones)
 
@@ -577,12 +577,12 @@ class FEPDF:
                 else:
                     motivos_ds = "%s" % fact['motivos_obs']
             elif HOMO:
-                motivos_ds = "Ejemplo Sin validez fiscal - Homologación - Testing"
+                motivos_ds = "Ejemplo Sin validez fiscal - Homologaciï¿½n - Testing"
             else:
                 motivos_ds = ""
 
             if letra_fact in ('A', 'M'):
-                msg_no_iva = "\nEl IVA discriminado no puede computarse como Crédito Fiscal (RG2485/08 Art. 30 inc. c)."
+                msg_no_iva = "\nEl IVA discriminado no puede computarse como Crï¿½dito Fiscal (RG2485/08 Art. 30 inc. c)."
                 if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
                     motivos_ds += msg_no_iva
 
@@ -598,14 +598,14 @@ class FEPDF:
                     f.set('hojas', str(hojas))
                     f.set('pagina', 'Pagina %s de %s' % (hoja, hojas))
                     if hojas > 1 and hoja < hojas:
-                        s = 'Continúa en hoja %s' % (hoja + 1)
+                        s = 'Continï¿½a en hoja %s' % (hoja + 1)
                     else:
                         s = ''
                     f.set('continua', s)
                     f.set('Item.Descripcion%02d' % (lineas_max + 1), s)
 
                     if hoja > 1:
-                        s = 'Continúa de hoja %s' % (hoja - 1)
+                        s = 'Continï¿½a de hoja %s' % (hoja - 1)
                     else:
                         s = ''
                     f.set('continua_de', s)
@@ -614,16 +614,16 @@ class FEPDF:
                     if DEBUG:
                         print("generando pagina %s de %s" % (hoja, hojas))
 
-                    # establezco datos según configuración:
+                    # establezco datos segï¿½n configuraciï¿½n:
                     for d in self.datos:
                         if d['pagina'] == 'P' and hoja != 1:
                             continue
                         if d['pagina'] == 'U' and hojas != hoja:
-                            # no es la última hoja
+                            # no es la ï¿½ltima hoja
                             continue
                         f.set(d['campo'], d['valor'])
 
-                    # establezco campos según tabla encabezado:
+                    # establezco campos segï¿½n tabla encabezado:
                     for k, v in list(fact.items()):
                         f.set(k, v)
 
@@ -688,7 +688,7 @@ class FEPDF:
                                 f.set('Item.Codigo%02d' % li, it['codigo'])
                             if it['umed'] is not None:
                                 if it['umed'] and f.has_key("Item.Umed_ds01"):
-                                    # recortar descripción:
+                                    # recortar descripciï¿½n:
                                     umed_ds = self.umeds_ds.get(int(it['umed']))
                                     s = f.split_multicell(umed_ds, 'Item.Umed_ds01')
                                     f.set('Item.Umed_ds%02d' % li, s[0])
@@ -723,7 +723,7 @@ class FEPDF:
                                     f.set('Item.%s%02d' % (adic, li), it[adic])
 
                     if hojas == hoja:
-                        # última hoja, imprimo los totales
+                        # ï¿½ltima hoja, imprimo los totales
                         li += 1
 
                         # agrego otros tributos
@@ -777,7 +777,7 @@ class FEPDF:
                         f.set('imp_tot_conc', self.fmt_imp(fact['imp_tot_conc']))
                         f.set('imp_op_ex', self.fmt_imp(fact['imp_op_ex']))
 
-                        # campos antiguos (por compatibilidad hacia atrás)
+                        # campos antiguos (por compatibilidad hacia atrï¿½s)
                         f.set('IMPTO_PERC', self.fmt_imp(fact.get('impto_perc')))
                         f.set('IMP_OP_EX', self.fmt_imp(fact.get('imp_op_ex')))
                         f.set('IMP_IIBB', self.fmt_imp(fact.get('imp_iibb')))
@@ -811,7 +811,7 @@ class FEPDF:
                         f.set('Total.L', 'Total:')
                         f.set('TOTAL', self.fmt_imp(fact['imp_total']))
                     else:
-                        # limpio todas las etiquetas (no es la última hoja)
+                        # limpio todas las etiquetas (no es la ï¿½ltima hoja)
                         for k in ('imp_neto', 'impto_liq', 'imp_total', 'impto_perc',
                                   'imp_iva', 'impto_liq_nri', 'imp_trib', 'imp_op_ex', 'imp_tot_conc',
                                   'imp_op_ex', 'IMP_IIBB', 'imp_iibb', 'impto_perc_mun', 'imp_internos',
@@ -875,16 +875,16 @@ class FEPDF:
 
             ret = True
         except Exception as e:
-            # capturar la excepción manualmente, para imprimirla en el PDF:
+            # capturar la excepciï¿½n manualmente, para imprimirla en el PDF:
             ex = utils.exception_info()
             if DEBUG:
                 print(self.Excepcion)
                 print(self.Traceback)
 
-            # guardar la traza de la excepción en un archivo temporal:
+            # guardar la traza de la excepciï¿½n en un archivo temporal:
             fname = os.path.join(tempfile.gettempdir(), "traceback.txt")
             self.template.add_page()
-            # agregar el texto de la excepción y ubicación de la traza al PDF:
+            # agregar el texto de la excepciï¿½n y ubicaciï¿½n de la traza al PDF:
             self.AgregarCampo("traceback", 'T', 25, 270, 0, 0,
                               size=10, rotate=0, foreground=0xF00000, priority=-1,
                               text="Traceback %s" % (fname, ))
@@ -900,8 +900,8 @@ class FEPDF:
                 f.write("imposible grabar")
             finally:
                 f.close()
-            # guardar la info de la excepcion a lo último, para que no sea
-            # limpiada por el decorador de otros métodos (AgregarCampo) ...
+            # guardar la info de la excepcion a lo ï¿½ltimo, para que no sea
+            # limpiada por el decorador de otros mï¿½todos (AgregarCampo) ...
             self.Excepcion = ex['msg']
             self.Traceback = ex['tb']
         finally:
@@ -926,7 +926,7 @@ class FEPDF:
         return True
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciï¿½n (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"):
     basepath = __file__
 elif sys.frozen == 'dll':
@@ -954,7 +954,7 @@ if __name__ == '__main__':
         DEBUG = '--debug' in sys.argv
         utils.safe_console()
 
-        # leeo configuración (primer argumento o rece.ini por defecto)
+        # leeo configuraciï¿½n (primer argumento o rece.ini por defecto)
         if len(sys.argv) > 1 and not sys.argv[1].startswith("--"):
             CONFIG_FILE = sys.argv.pop(1)
         if DEBUG:
@@ -987,7 +987,7 @@ if __name__ == '__main__':
         # cargo el formato CSV por defecto (factura.csv)
         fepdf.CargarFormato(conf_fact.get("formato", "factura.csv"))
 
-        # establezco formatos (cantidad de decimales) según configuración:
+        # establezco formatos (cantidad de decimales) segï¿½n configuraciï¿½n:
         fepdf.FmtCantidad = conf_fact.get("fmt_cantidad", "0.2")
         fepdf.FmtPrecio = conf_fact.get("fmt_precio", "0.2")
 
@@ -1044,13 +1044,13 @@ if __name__ == '__main__':
             imp_subtotal = "105.00"
             fecha_cbte = fecha
             fecha_venc_pago = fecha
-            # Fechas del período del servicio facturado (solo si concepto> 1)
+            # Fechas del perï¿½odo del servicio facturado (solo si concepto> 1)
             fecha_serv_desde = fecha
             fecha_serv_hasta = fecha
-            # campos p/exportación (ej): DOL para USD, indicando cotización:
+            # campos p/exportaciï¿½n (ej): DOL para USD, indicando cotizaciï¿½n:
             moneda_id = 'DOL' if '--expo' in sys.argv else 'PES'
             moneda_ctz = 1 if moneda_id == 'PES' else 14.90
-            incoterms = 'FOB'                   # solo exportación
+            incoterms = 'FOB'                   # solo exportaciï¿½n
             idioma_cbte = 1                     # 1: es, 2: en, 3: pt
 
             # datos adicionales del encabezado:
@@ -1110,7 +1110,7 @@ if __name__ == '__main__':
             importe = "0.00"
             fepdf.AgregarTributo(tributo_id, desc, base_imp, alic, importe)
 
-            # subtotales por alícuota de IVA:
+            # subtotales por alï¿½cuota de IVA:
             iva_id = 5  # 21%
             base_imp = 100
             importe = 21
@@ -1119,7 +1119,7 @@ if __name__ == '__main__':
             for id in (4, 6):
                 fepdf.AgregarIva(iva_id=id, base_imp=0.00, importe=0.00)
 
-            # detalle de artículos:
+            # detalle de artï¿½culos:
             u_mtx = 123456
             cod_mtx = 1234567890123
             codigo = "P0001"
@@ -1137,14 +1137,14 @@ if __name__ == '__main__':
             bonif = 0.00
             iva_id = 5
             importe = 133.10
-            despacho = 'Nº 123456'
+            despacho = 'Nï¿½ 123456'
             dato_a = "Dato A"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed,
                                      precio, bonif, iva_id, imp_iva, importe, despacho, dato_a)
 
             # descuento general (a tasa 21%):
             u_mtx = cod_mtx = codigo = None
-            ds = "Bonificación/Descuento 10%"
+            ds = "Bonificaciï¿½n/Descuento 10%"
             qty = precio = bonif = None
             umed = 99
             iva_id = 5
@@ -1157,18 +1157,18 @@ if __name__ == '__main__':
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed,
                                      precio, bonif, iva_id, imp_iva, importe, "")
 
-            # descripción (sin importes ni cantidad):
+            # descripciï¿½n (sin importes ni cantidad):
             u_mtx = cod_mtx = codigo = None
             qty = precio = bonif = iva_id = imp_iva = importe = None
             umed = 0
-            ds = "Descripción Ejemplo"
+            ds = "Descripciï¿½n Ejemplo"
             fepdf.AgregarDetalleItem(u_mtx, cod_mtx, codigo, ds, qty, umed,
                                      precio, bonif, iva_id, imp_iva, importe, "")
 
             # Agrego un permiso (ver manual para el desarrollador WSFEXv1)
             if '--expo' in sys.argv:
                 id_permiso = "99999AAXX999999A"
-                dst_merc = 225  # país destino de la mercaderia
+                dst_merc = 225  # paï¿½s destino de la mercaderia
                 ok = fepdf.AgregarPermiso(id_permiso, dst_merc)
 
             # completo campos personalizados de la plantilla:
@@ -1207,7 +1207,7 @@ if __name__ == '__main__':
         for k, v in list(conf_pdf.items()):
             fepdf.AgregarDato(k, v)
             if k.upper() == 'CUIT':
-                fepdf.CUIT = v  # CUIT del emisor para código de barras
+                fepdf.CUIT = v  # CUIT del emisor para cï¿½digo de barras
 
         fepdf.CrearPlantilla(papel=conf_fact.get("papel", "legal"),
                              orientacion=conf_fact.get("orientacion", "portrait"))
@@ -1221,7 +1221,7 @@ if __name__ == '__main__':
         elif 'pdf' in fact and fact['pdf']:
             salida = fact['pdf']
         else:
-            # genero el nombre de archivo según datos de factura
+            # genero el nombre de archivo segï¿½n datos de factura
             d = conf_fact.get('directorio', ".")
             clave_subdir = conf_fact.get('subdirectorio', 'fecha_cbte')
             if clave_subdir:
@@ -1235,7 +1235,7 @@ if __name__ == '__main__':
             it['letra'] = letra_fact
             it['numero'] = numero_fact
             it['mes'] = fact['fecha_cbte'][4:6]
-            it['año'] = fact['fecha_cbte'][0:4]
+            it['aï¿½o'] = fact['fecha_cbte'][0:4]
             fn = ''.join([str(it.get(ff, ff)) for ff in fs])
             fn = fn.encode('ascii', 'replace').replace('?', '_')
             salida = os.path.join(d, "%s.pdf" % fn)
@@ -1244,3 +1244,21 @@ if __name__ == '__main__':
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
             fepdf.MostrarPDF(archivo=salida, imprimir='--imprimir' in sys.argv)
+#Al pasarle caracteres acentuados
+import unicodedata
+def strip_accents(text):
+
+    try:
+        text = unicode(text, 'utf-8')
+    except NameError:
+        pass
+
+    text = unicodedata.normalize('NFD', text)\
+           .encode('ascii', 'ignore')\
+           .decode("utf-8")
+    return str(text)
+
+
+s = strip_accents('Ã‘')
+
+print s
