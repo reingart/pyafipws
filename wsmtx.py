@@ -1213,6 +1213,9 @@ def main():
         print wsmtxca.ConsultarTiposTributo()
         print wsmtxca.ConsultarTiposDatosAdicionales()
 
+    if "--puntosventa" in sys.argv:
+        print wsmtxca.ConsultarPuntosVentaCAE()
+
     if "--cotizacion" in sys.argv:
         print wsmtxca.ConsultarCotizacionMoneda('DOL')
         
