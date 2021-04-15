@@ -145,7 +145,7 @@ class WSMTXCA(BaseWS):
         return True
 
     def EstablecerCampoFactura(self, campo, valor):
-        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae'):
+        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae', 'fecha_hs_gen'):
             self.factura[campo] = valor
             return True
         else:
@@ -257,10 +257,6 @@ class WSMTXCA(BaseWS):
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
             'fechaHoraGen': f.get('fecha_hs_gen'),
-            'periodoComprobantesAsociados': {
-                'fechaDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
-                'fechaHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
-                } if 'periodo_cbtes_asoc' in f else None,
             'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
