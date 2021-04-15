@@ -18,7 +18,7 @@ productos) según RG2904 (opción A con detalle) y RG2926/10 (CAE anticipado).
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15a"
+__version__ = "1.15d"
 
 import datetime
 import decimal
@@ -257,6 +257,10 @@ class WSMTXCA(BaseWS):
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
             'fechaHoraGen': f.get('fecha_hs_gen'),
+            'periodoComprobantesAsociados': {
+                'fechaDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
+                'fechaHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
+                } if 'periodo_cbtes_asoc' in f else None,
             'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
@@ -551,6 +555,10 @@ class WSMTXCA(BaseWS):
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'periodoComprobantesAsociados': {
+                'fechaDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
+                'fechaHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
+                } if 'periodo_cbtes_asoc' in f else None,
             'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
