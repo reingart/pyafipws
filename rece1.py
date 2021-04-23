@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.38a"
+__version__ = "1.38b"
 
 import datetime
 import os
@@ -155,6 +155,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         encabezados = []
         opcionales = []
         compradores = []
+        periodos_asoc = []
         if DEBUG: print "Leyendo DBF..."
 
         formatos = [('Encabezado', ENCABEZADO, encabezados), 
@@ -163,6 +164,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ('Comprobante Asociado', CMP_ASOC, cbtasocs),
                     ('Datos Opcionales', OPCIONAL, opcionales),
                     ('Compradores', COMPRADOR, compradores),
+                    ('Periodo Asociado', PERIODO_ASOC, periodos_asoc),
                     ]
         dic = leer_dbf(formatos, conf_dbf)
         
@@ -183,6 +185,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             for comprador in compradores:
                 if comprador.get("id") == encabezado.get("id"):
                     encabezado.setdefault("compradores", []).append(comprador)
+            for periodo in periodos_asoc:
+                if periodo.get("id") == encabezado.get("id"):
+                    encabezado["periodo_cbtes_asoc"] = periodo
             if encabezado.get("id") is None and len(encabezados) > 1:
                 # compatibilidad hacia atrás, descartar si hay más de 1 factura
                 warnings.warn("Para múltiples registros debe usar campo id!")
@@ -343,6 +348,7 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                     ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])),
                     ('Datos Opcionales', OPCIONAL, dic.get("opcionales", [])),
                     ('Compradores', COMPRADOR, dic.get("compradores", [])),
+                    ('Periodo Asociado', PERIODO_ASOC, [dic['periodo_cbtes_asoc']])
                     ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
