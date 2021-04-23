@@ -124,6 +124,7 @@ CMP_ASOC = [
     ('tipo_reg', 1, N), # 3: comprobante asociado
     ('cbte_tipo', 3, N), ('cbte_punto_vta', 4, N),
     ('cbte_nro', 8, N), 
+    ('cbte_fecha', 8, N), ('cbte_cuit', 11, N),
     ]
 
 IVA = [
