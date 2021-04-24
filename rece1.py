@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.38b"
+__version__ = "1.38c"
 
 import datetime
 import os
@@ -246,7 +246,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         # extraer sub-registros:
         ivas = encabezado.get('ivas', encabezado.get('iva', []))
         tributos = encabezado.get('tributos', [])
-        cbtasocs = encabezado.get('cbtasocs', [])
+        cbtasocs = encabezado.get('cbtasocs', encabezado.get('cbtes_asoc', []))
         opcionales = encabezado.get('opcionales', [])
         compradores = encabezado.get('compradores', [])
         periodo_asoc = encabezado.get('periodo_cbtes_asoc', [])
