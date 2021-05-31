@@ -10,7 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-from . import utils
+import utils
 from fpdf import Template
 from decimal import Decimal
 from io import StringIO
@@ -1244,21 +1244,3 @@ if __name__ == '__main__':
         fepdf.GenerarPDF(archivo=salida)
         if '--mostrar' in sys.argv:
             fepdf.MostrarPDF(archivo=salida, imprimir='--imprimir' in sys.argv)
-#Al pasarle caracteres acentuados
-import unicodedata
-def strip_accents(text):
-
-    try:
-        text = unicode(text, 'utf-8')
-    except NameError:
-        pass
-
-    text = unicodedata.normalize('NFD', text)\
-           .encode('ascii', 'ignore')\
-           .decode("utf-8")
-    return str(text)
-
-
-s = strip_accents('Ñ')
-
-print s

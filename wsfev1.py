@@ -30,7 +30,7 @@ __version__ = "1.22b"
 import datetime
 import os
 import sys
-from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False                    # solo homologaci�n
 TYPELIB = False                 # usar librer�a de tipos (TLB)

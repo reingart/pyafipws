@@ -31,7 +31,7 @@ import traceback
 import warnings
 import unicodedata
 from pysimplesoap.client import SimpleXMLElement
-from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
+from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, \
     exception_info, safe_console, date
 try:
     from M2Crypto import BIO, Rand, SMIME, SSL
