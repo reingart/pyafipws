@@ -52,7 +52,7 @@ DATO = [('id', 15, N)] + DATO
 
 def definir_campos(formato):
     "Procesar la definición de campos para DBF según el formato txt"
-    claves, campos = [], []
+    claves, campos = [], {}
     for fmt in formato:
         clave, longitud, tipo = fmt[0:3]
         if isinstance(longitud, tuple):
@@ -71,9 +71,10 @@ def definir_campos(formato):
             raise RuntimeError("Tipo desconocido: %s %s %s %s" % (tipo, clave, longitud, decimales))
         nombre =dar_nombre_campo(clave)
         campo = "%s %s" % (nombre, tipo)
-        campos.append(campo)
-        claves.append(nombre)
-    return claves, campos
+        campos[clave] = campo
+        if nombre not in claves:
+            claves.append(nombre)
+    return claves, list(campos.values())
 
 
 CLAVES_ESPECIALES = {

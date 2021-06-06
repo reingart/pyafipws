@@ -30,7 +30,7 @@ from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.25b"
+__version__ = "1.25c"
 
 import datetime
 import decimal
@@ -595,6 +595,10 @@ class WSFEv1(BaseWS):
                     'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],                
+                    'PeriodoAsoc': {
+                        'FchDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
+                        'FchHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
+                        } if 'periodo_cbtes_asoc' in f else None,
                     'CbtesAsoc': [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -788,6 +792,10 @@ class WSFEv1(BaseWS):
                     'FchVtoPago': f['fecha_venc_pago'],
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],                
+                    'PeriodoAsoc': {
+                        'FchDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
+                        'FchHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
+                        } if 'periodo_cbtes_asoc' in f else None,
                     'CbtesAsoc': [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],

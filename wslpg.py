@@ -25,7 +25,7 @@ from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33b"
+__version__ = "1.34a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -2415,19 +2415,25 @@ class WSLPG(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AnularLiquidacionSecundaria(self, coe):
-        "Anular liquidación secundaria activa"
-        ret = self.client.lsgAnular(
+    def AnularLiquidacionSecundaria(self, pto_emision=None, nro_orden=None, coe=None):
+        "Anular liquidación secundaria emitiendo un contra-documento"
+        ret = self.client.lsgAnularContraDocumento(
                         auth={
                             'token': self.Token, 'sign': self.Sign,
                             'cuit': self.Cuit, },
-                        coe=coe,
+                        anulacionBase={
+                            'puntoEmision': pto_emision,
+                            'nroOrden': nro_orden,
+                            'coeAnular':coe,
+                            },
                         )
-        ret = ret['anulacionReturn']
+        ret = ret['liqConsReturn']
         self.__analizar_errores(ret)
-        self.Resultado = ret['resultado']
-        return self.COE
-        
+        if 'autorizacion' in ret:
+            aut = ret['autorizacion']
+            self.AnalizarAjuste(aut)
+        return True
+
     def ConsultarCampanias(self, sep="||"):
         ret = self.client.campaniasConsultar(
                         auth={

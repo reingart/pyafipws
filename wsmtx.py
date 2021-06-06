@@ -21,7 +21,7 @@ from builtins import str
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.15a"
+__version__ = "1.15d"
 
 import datetime
 import decimal
@@ -148,7 +148,7 @@ class WSMTXCA(BaseWS):
         return True
 
     def EstablecerCampoFactura(self, campo, valor):
-        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae'):
+        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae', 'fecha_hs_gen'):
             self.factura[campo] = valor
             return True
         else:
@@ -558,6 +558,10 @@ class WSMTXCA(BaseWS):
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'periodoComprobantesAsociados': {
+                'fechaDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
+                'fechaHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
+                } if 'periodo_cbtes_asoc' in f else None,
             'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
@@ -1219,6 +1223,9 @@ def main():
         print(wsmtxca.ConsultarUnidadesMedida())
         print(wsmtxca.ConsultarTiposTributo())
         print(wsmtxca.ConsultarTiposDatosAdicionales())
+
+    if "--puntosventa" in sys.argv:
+        print wsmtxca.ConsultarPuntosVentaCAE()
 
     if "--cotizacion" in sys.argv:
         print(wsmtxca.ConsultarCotizacionMoneda('DOL'))
