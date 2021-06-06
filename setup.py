@@ -10,7 +10,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2008-2016 Mariano Reingart"
+__copyright__ = "Copyright (C) 2008-2021 Mariano Reingart"
 
 from distutils.core import setup
 import glob
@@ -69,7 +69,7 @@ setup(
     author="Mariano Reingart",
     author_email="reingart@gmail.com",
     url="https://github.com/reingart/pyafipws",
-    license="GNU GPL v3+",
+    license="LGPL-3.0-or-later",
     options=opts,
     data_files=data_files,
     classifiers=[
@@ -77,7 +77,7 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: End Users/Desktop",
         "Intended Audience :: Financial and Insurance Industry",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.9",

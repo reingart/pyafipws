@@ -7,7 +7,7 @@
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY
-# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
 # for more details.
 
 """Módulo para emitir un certificado C2005 en AFIP mediante WebService (SOAP), 
@@ -20,9 +20,9 @@ from future import standard_library
 
 standard_library.install_aliases()
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2020 Mariano Reingart"
-__license__ = "LGPL 3.0"
-__version__ = "1.01b"
+__copyright__ = "Copyright (C) 2020-2021 Mariano Reingart"
+__license__ = "LGPL-3.0-or-later"
+__version__ = "3.01b"
 
 import datetime
 import decimal

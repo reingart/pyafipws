@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by the
+# it under the terms of the GNU Lesser General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
 # version.
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY
-# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
 # for more details.
 
 """Módulo para obtener código de autorización electrónico CAE/CAEA webservice 
@@ -20,9 +20,9 @@ from __future__ import absolute_import
 from builtins import str
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
-__license__ = "GPL 3.0"
-__version__ = "1.15d"
+__copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
+__license__ = "LGPL-3.0-or-later"
+__version__ = "3.15d"
 
 import datetime
 import decimal

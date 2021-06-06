@@ -8,7 +8,7 @@
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY
-# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
 # for more details.
 
 "Py2Exe extension to build NSIS Installers"
@@ -22,8 +22,8 @@ from builtins import str
 from builtins import object
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011 Mariano Reingart"
-__license__ = "GPL 3.0"
+__copyright__ = "Copyright (C) 2011-2021 Mariano Reingart"
+__license__ = "LGPL-3.0-or-later"
 
 import os
 import sys

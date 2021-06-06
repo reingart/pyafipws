@@ -7,7 +7,7 @@
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY
-# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
 # for more details.
 
 # Based on MultipartPostHandler.py (C) 02/2006 Will Holcomb <wholcomb@gmail.com>
@@ -18,7 +18,7 @@ from __future__ import print_function
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
-__license__ = "LGPL 3.0"
+__license__ = "LGPL-3.0-or-later"
 
 import sys
 
