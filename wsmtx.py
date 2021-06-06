@@ -1225,7 +1225,7 @@ def main():
         print(wsmtxca.ConsultarTiposDatosAdicionales())
 
     if "--puntosventa" in sys.argv:
-        print wsmtxca.ConsultarPuntosVentaCAE()
+        print(wsmtxca.ConsultarPuntosVentaCAE())
 
     if "--cotizacion" in sys.argv:
         print(wsmtxca.ConsultarCotizacionMoneda('DOL'))
