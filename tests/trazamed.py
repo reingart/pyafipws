@@ -12,6 +12,7 @@
 
 "Pruebas para Trazabilidad de Medicamentos ANMAT - PAMI - INSSJP Disp. 3683/11"
 
+from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"

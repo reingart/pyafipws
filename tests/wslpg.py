@@ -11,7 +11,10 @@
 # for more details.
 
 "Pruebas LiquidaciÃ³n Primaria ElectrÃ³nica de Granos web service WSLPG (AFIP)"
+from __future__ import print_function
 
+from builtins import str
+from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -28,7 +31,7 @@ from pyafipws.wsaa import WSAA
 from pyafipws.wslpg import WSLPG
 
 import pysimplesoap.client
-print pysimplesoap.client.__version__
+print(pysimplesoap.client.__version__)
 #assert pysimplesoap.client.__version__ >= "1.08c"
 
 

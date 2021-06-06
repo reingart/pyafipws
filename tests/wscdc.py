@@ -11,6 +11,7 @@
 # for more details.
 
 "Pruebas para el servicio web ConstataciÃ³n de Comprobantes de AFIP"
+from __future__ import print_function
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013 Mariano Reingart"
@@ -28,7 +29,7 @@ from pyafipws.wsaa import WSAA
 from pyafipws.wscdc import WSCDC
 
 import pysimplesoap.client
-print pysimplesoap.client.__version__
+print(pysimplesoap.client.__version__)
 #assert pysimplesoap.client.__version__ >= "1.08c"
 
 

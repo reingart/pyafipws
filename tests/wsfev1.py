@@ -11,7 +11,10 @@
 # for more details.
 
 "Pruebas para WSFEv1 de AFIP (Factura Electrónica Mercado Interno sin detalle)"
+from __future__ import print_function
 
+from builtins import str
+from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
@@ -52,11 +55,11 @@ class TestFE(unittest.TestCase):
         wsfev1.Conectar(CACHE, WSDL)
     
     def atest_dummy(self):
-        print wsfev1.client.help("dummy")
+        print(wsfev1.client.help("dummy"))
         wsfev1.Dummy()
-        print "AppServerStatus", wsfev1.AppServerStatus
-        print "DbServerStatus", wsfev1.DbServerStatus
-        print "AuthServerStatus", wsfev1.AuthServerStatus
+        print("AppServerStatus", wsfev1.AppServerStatus)
+        print("DbServerStatus", wsfev1.DbServerStatus)
+        print("AuthServerStatus", wsfev1.AuthServerStatus)
     
     def test_autorizar_comprobante(self, tipo_cbte=1, cbte_nro=None, servicios=True):
         "Prueba de autorización de un comprobante (obtención de CAE)"
@@ -67,7 +70,7 @@ class TestFE(unittest.TestCase):
         if not cbte_nro:
             # si no me especifícan nro de comprobante, busco el próximo
             cbte_nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
-            cbte_nro = long(cbte_nro) + 1
+            cbte_nro = int(cbte_nro) + 1
         fecha = datetime.datetime.now().strftime("%Y%m%d")
         tipo_doc = 80; nro_doc = "30000000007" ##"30500010912" # CUIT BNA
         cbt_desde = cbte_nro; cbt_hasta = cbt_desde
@@ -157,7 +160,7 @@ class TestFE(unittest.TestCase):
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
-        cbte_nro = long(nro) + 1
+        cbte_nro = int(nro) + 1
         # obtengo CAE
         wsfev1.Reprocesar = True
         self.test_autorizar_comprobante(tipo_cbte, cbte_nro)
@@ -173,7 +176,7 @@ class TestFE(unittest.TestCase):
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
-        cbte_nro = long(nro) + 1
+        cbte_nro = int(nro) + 1
         # obtengo CAE
         wsfev1.Reprocesar = True
         self.test_autorizar_comprobante(tipo_cbte, cbte_nro, servicios=False)
@@ -190,7 +193,7 @@ class TestFE(unittest.TestCase):
         tipo_cbte = 2
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
-        cbte_nro = long(nro) + 1
+        cbte_nro = int(nro) + 1
         # obtengo CAE
         wsfev1.Reprocesar = True
         self.test_autorizar_comprobante(tipo_cbte, cbte_nro, servicios=False)
