@@ -149,7 +149,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
                 stdin=PIPE,
                 stdout=PIPE,
                 stderr=PIPE,
-            ).communicate(tra)[0]
+            ).communicate(tra.encode("utf8"))[0]
             return b64encode(out)
         except OSError as e:
             if e.errno == 2:
