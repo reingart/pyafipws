@@ -27,6 +27,7 @@ __license__ = "LGPL-3.0-or-later"
 __version__ = "3.11c"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
+import shutil
 import unicodedata
 from pysimplesoap.client import SimpleXMLElement
 from .utils import (
@@ -132,16 +133,9 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
-            if sys.platform == "linux2":
-                openssl = "openssl"
-            else:
-                if sys.maxsize <= 2 ** 32:
-                    openssl = r"c:\OpenSSL-Win32\bin\openssl.exe"
-                else:
-                    openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
             out = Popen(
                 [
-                    openssl,
+                    openssl_exe(),
                     "smime",
                     "-sign",
                     "-signer",
@@ -161,6 +155,22 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
             if e.errno == 2:
                 warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
             raise
+
+
+def openssl_exe():
+    try:
+        openssl = shutil.which("openssl")
+    except:
+        openssl = None
+    if not openssl:
+        if sys.platform.startswith("linux"):
+            openssl = "openssl"
+        else:
+            if sys.maxsize <= 2 ** 32:
+                openssl = r"c:\OpenSSL-Win32\bin\openssl.exe"
+            else:
+                openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
+    return openssl
 
 
 def call_wsaa(cms, location=WSAAURL, proxy=None, trace=False, cacert=None):
