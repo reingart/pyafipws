@@ -328,8 +328,10 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
+        if not isinstance(tra, str):
+            tra = tra.decode("utf8")
         return sign_tra(
-            str(tra),
+            tra,
             cert.encode("latin1"),
             privatekey.encode("latin1"),
             passphrase.encode("utf8"),
