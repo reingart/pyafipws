@@ -338,7 +338,9 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
-        results = self.client.loginCms(in0=str(cms))
+        if not isinstance(cms, str):
+            cms = cms.decode("utf8")
+        results = self.client.loginCms(in0=cms)
         ta_xml = results["loginCmsReturn"]
         self.xml = ta = SimpleXMLElement(ta_xml)
         self.Token = str(ta.credentials.token)
