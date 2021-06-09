@@ -1,5 +1,7 @@
 import base64, subprocess
 
+from past.builtins import basestring
+
 from pyafipws.wsaa import WSAA
 
 
@@ -9,7 +11,7 @@ def test_wsfev1_create_tra():
     # TODO: return string
     tra = tra.decode("utf8")
     # sanity checks:
-    assert isinstance(tra, str)
+    assert isinstance(tra, basestring)
     assert tra.startswith(
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<loginTicketRequest version="1.0">'
