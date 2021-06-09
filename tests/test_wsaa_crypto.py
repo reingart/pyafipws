@@ -25,7 +25,8 @@ def test_wsfev1_sign():
     # TODO: use certificate and private key as fixture / PEM text (not files)
     cms = wsaa.SignTRA(tra, "reingart.crt", "reingart.key")
     # TODO: return string
-    cms = cms.decode("utf8")
+    if not isinstance(cms, str):
+        cms = cms.decode("utf8")
     # sanity checks:
     assert isinstance(cms, str)
     out = base64.b64decode(cms)
