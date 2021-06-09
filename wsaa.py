@@ -1,36 +1,43 @@
+#!/usr/bin/python
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by the
+# it under the terms of the GNU Lesser General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
 # version.
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY
-# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
 # for more details.
 
 "Módulo para obtener un ticket de autorización del web service WSAA de AFIP"
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Basado en wsaa-client.php de Gerardo Fisanotti - DvSHyS/DiOPIN/AFIP - 13-apr-07
 # Definir WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL
 # Devuelve TA.xml (ticket de autorización de WSAA)
 
-__author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2008-2019 Mariano Reingart"
-__license__ = "GPL 3.0"
-__version__ = "2.11c"
+from builtins import input
+from builtins import str
 
-import hashlib
-import datetime
-import email
-import os
-import sys
-import time
-import traceback
-import warnings
+__author__ = "Mariano Reingart (reingart@gmail.com)"
+__copyright__ = "Copyright (C) 2008-2021 Mariano Reingart"
+__license__ = "LGPL-3.0-or-later"
+__version__ = "3.11c"
+
+import hashlib, datetime, email, os, sys, time, traceback, warnings
+import shutil
 import unicodedata
 from pysimplesoap.client import SimpleXMLElement
-from .utils import (inicializar_y_capturar_excepciones, BaseWS, get_install_dir,
-                    exception_info, safe_console, date)
+from .utils import (
+    inicializar_y_capturar_excepciones,
+    BaseWS,
+    get_install_dir,
+    exception_info,
+    safe_console,
+    date,
+)
 
 try:
     from cryptography import x509
@@ -49,27 +56,26 @@ except ImportError:
     # utilizar alternativa (ejecutar proceso por separado)
     from subprocess import Popen, PIPE
     from base64 import b64encode
-    from tempfile import NamedTemporaryFile
 
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"  # El WSDL correspondiente al WSAA
-CERT = "reingart.crt"        # El certificado X.509 obtenido de Seg. Inf.
+CERT = "reingart.crt"  # El certificado X.509 obtenido de Seg. Inf.
 PRIVATEKEY = "reingart.key"  # La clave privada del certificado CERT
 PASSPHRASE = "xxxxxxx"  # La contraseña para firmar (si hay)
-SERVICE = "wsfe"        # El nombre del web service al que se le pide el TA
+SERVICE = "wsfe"  # El nombre del web service al que se le pide el TA
 
 # WSAAURL: la URL para acceder al WSAA, verificar http/https y wsaa/wsaahomo
 # WSAAURL = "https://wsaa.afip.gov.ar/ws/services/LoginCms" # PRODUCCION!!!
 WSAAURL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms"  # homologacion (pruebas)
-SOAP_ACTION = 'http://ar.gov.afip.dif.facturaelectronica/'  # Revisar WSDL
-SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"     # Revisar WSDL
+SOAP_ACTION = "http://ar.gov.afip.dif.facturaelectronica/"  # Revisar WSDL
+SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"  # Revisar WSDL
 
 # Verificación del web server remoto, necesario para verificar canal seguro
 CACERT = "conf/afip_ca_info.crt"  # WSAA CA Cert (Autoridades de Confiaza)
 
 HOMO = False
 TYPELIB = False
-DEFAULT_TTL = 60 * 60 * 5       # five hours
+DEFAULT_TTL = 60 * 60 * 5  # five hours
 DEBUG = False
 
 # No debería ser necesario modificar nada despues de esta linea
@@ -80,8 +86,9 @@ def create_tra(service=SERVICE, ttl=2400):
     tra = SimpleXMLElement(
         '<?xml version="1.0" encoding="UTF-8"?>'
         '<loginTicketRequest version="1.0">'
-        '</loginTicketRequest>')
-    tra.add_child('header')
+        "</loginTicketRequest>"
+    )
+    tra.add_child("header")
     # El source es opcional. Si falta, toma la firma (recomendado).
     # tra.header.addChild('source','subject=...')
     # tra.header.addChild('destination','cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239')
@@ -145,47 +152,44 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
-            if sys.platform.startswith("linux"):
-                openssl = "openssl"
-            else:
-                if sys.maxsize <= 2**32:
-                    openssl = r"c:\OpenSSL-Win32\bin\openssl.exe"
-                else:
-                    openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
-            # NOTE: workaround if certificate is not already stored in a file
-            # SECURITY WARNING: the private key will be exposed a bit in /tmp
-            #                   (in theory only for the current user)
-            if cert.startswith("-----BEGIN CERTIFICATE-----"):
-                cert_f = NamedTemporaryFile()
-                cert_f.write(cert.encode('utf-8'))
-                cert_f.flush()
-                cert = cert_f.name
-            else:
-                cert_f = None
-            if privatekey.startswith("-----BEGIN RSA PRIVATE KEY-----"):
-                key_f = NamedTemporaryFile()
-                key_f.write(privatekey.encode('utf-8'))
-                key_f.flush()
-                privatekey = key_f.name
-            else:
-                key_f = None
-            try:
-                out = Popen([openssl, "smime", "-sign",
-                             "-signer", cert, "-inkey", privatekey,
-                             "-outform", "DER", "-nodetach"],
-                            stdin=PIPE, stdout=PIPE,
-                            stderr=PIPE).communicate(tra)[0]
-            finally:
-                # close temp files to delete them (just in case):
-                if cert_f:
-                    cert_f.close()
-                if key_f:
-                    key_f.close()
-            return b64encode(out).decode("utf8")
+            out = Popen(
+                [
+                    openssl_exe(),
+                    "smime",
+                    "-sign",
+                    "-signer",
+                    cert,
+                    "-inkey",
+                    privatekey,
+                    "-outform",
+                    "DER",
+                    "-nodetach",
+                ],
+                stdin=PIPE,
+                stdout=PIPE,
+                stderr=PIPE,
+            ).communicate(tra.encode("utf8"))[0]
+            return b64encode(out)
         except OSError as e:
             if e.errno == 2:
                 warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
             raise
+
+
+def openssl_exe():
+    try:
+        openssl = shutil.which("openssl")
+    except:
+        openssl = None
+    if not openssl:
+        if sys.platform.startswith("linux"):
+            openssl = "openssl"
+        else:
+            if sys.maxsize <= 2 ** 32:
+                openssl = r"c:\OpenSSL-Win32\bin\openssl.exe"
+            else:
+                openssl = r"c:\OpenSSL-Win64\bin\openssl.exe"
+    return openssl
 
 
 def call_wsaa(cms, location=WSAAURL, proxy=None, trace=False, cacert=None):
@@ -200,36 +204,57 @@ def call_wsaa(cms, location=WSAAURL, proxy=None, trace=False, cacert=None):
             raise RuntimeError(wsaa.Excepcion)
         else:
             return ta
-    except BaseException:
+    except:
         raise
 
 
 class WSAA(BaseWS):
     "Interfaz para el WebService de Autenticación y Autorización"
-    _public_methods_ = ['CreateTRA', 'SignTRA', 'CallWSAA', 'LoginCMS', 'Conectar',
-                        'AnalizarXml', 'ObtenerTagXml', 'Expirado', 'Autenticar',
-                        'DebugLog', 'AnalizarCertificado',
-                        'CrearClavePrivada', 'CrearPedidoCertificado',
-                        ]
-    _public_attrs_ = ['Token', 'Sign', 'ExpirationTime', 'Version',
-                      'XmlRequest', 'XmlResponse',
-                      'InstallDir', 'Traceback', 'Excepcion',
-                      'Identidad', 'Caducidad', 'Emisor', 'CertX509',
-                      'SoapFault', 'LanzarExcepciones',
-                      ]
+    _public_methods_ = [
+        "CreateTRA",
+        "SignTRA",
+        "CallWSAA",
+        "LoginCMS",
+        "Conectar",
+        "AnalizarXml",
+        "ObtenerTagXml",
+        "Expirado",
+        "Autenticar",
+        "DebugLog",
+        "AnalizarCertificado",
+        "CrearClavePrivada",
+        "CrearPedidoCertificado",
+    ]
+    _public_attrs_ = [
+        "Token",
+        "Sign",
+        "ExpirationTime",
+        "Version",
+        "XmlRequest",
+        "XmlResponse",
+        "InstallDir",
+        "Traceback",
+        "Excepcion",
+        "Identidad",
+        "Caducidad",
+        "Emisor",
+        "CertX509",
+        "SoapFault",
+        "LanzarExcepciones",
+    ]
     _readonly_attrs_ = _public_attrs_[:-1]
     _reg_progid_ = "WSAA"
     _reg_clsid_ = "{6268820C-8900-4AE9-8A2D-F0A1EBD4CAC5}"
 
     if TYPELIB:
-        _typelib_guid_ = '{30E9C94B-7385-4534-9A80-DF50FD169253}'
+        _typelib_guid_ = "{30E9C94B-7385-4534-9A80-DF50FD169253}"
         _typelib_version_ = 2, 11
-        _com_interfaces_ = ['IWSAA']
+        _com_interfaces_ = ["IWSAA"]
 
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and "Homologación" or "")
 
     @inicializar_y_capturar_excepciones
     def CreateTRA(self, service="wsfe", ttl=2400):
@@ -256,8 +281,13 @@ class WSAA(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def CrearClavePrivada(self, filename="privada.key", key_length=4096,
-                          pub_exponent=0x10001, passphrase=""):
+    def CrearClavePrivada(
+        self,
+        filename="privada.key",
+        key_length=4096,
+        pub_exponent=0x10001,
+        passphrase="",
+    ):
         "Crea una clave privada (private key)"
         # create the RSA key pair (and save the result to a file):
         rsa_key = rsa.generate_private_key(pub_exponent, key_length, backend=default_backend())
@@ -280,17 +310,18 @@ class WSAA(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def CrearPedidoCertificado(self, cuit="", empresa="", nombre="pyafipws",
-                               filename="empresa.csr"):
+    def CrearPedidoCertificado(
+        self, cuit="", empresa="", nombre="pyafipws", filename="empresa.csr"
+    ):
         "Crear un certificate signing request (X509 CSR)"
         # create the certificate signing request (CSR):
         self.x509_req = x509.CertificateSigningRequestBuilder()
 
         # normalizar encoding (reemplazar acentos, eñe, etc.)
         if isinstance(empresa, str):
-            empresa = unicodedata.normalize('NFKD', empresa).encode('ASCII', 'ignore')
+            empresa = unicodedata.normalize("NFKD", empresa).encode("ASCII", "ignore")
         if isinstance(nombre, str):
-            nombre = unicodedata.normalize('NFKD', nombre).encode('ASCII', 'ignore')
+            nombre = unicodedata.normalize("NFKD", nombre).encode("ASCII", "ignore")
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
         # sign the request with the previously created key (CrearClavePrivada)
@@ -310,13 +341,22 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def SignTRA(self, tra, cert, privatekey, passphrase=""):
         "Firmar el TRA y devolver CMS"
-        return sign_tra(tra, cert, privatekey, passphrase)
+        if not isinstance(tra, str):
+            tra = tra.decode("utf8")
+        return sign_tra(
+            tra,
+            cert.encode("latin1"),
+            privatekey.encode("latin1"),
+            passphrase.encode("utf8"),
+        )
 
     @inicializar_y_capturar_excepciones
     def LoginCMS(self, cms):
         "Obtener ticket de autorización (TA)"
-        results = self.client.loginCms(in0=str(cms))
-        ta_xml = results['loginCmsReturn']  # .encode("utf-8")
+        if not isinstance(cms, str):
+            cms = cms.decode("utf8")
+        results = self.client.loginCms(in0=cms)
+        ta_xml = results["loginCmsReturn"]
         self.xml = ta = SimpleXMLElement(ta_xml)
         self.Token = str(ta.credentials.token)
         self.Sign = str(ta.credentials.sign)
@@ -335,12 +375,23 @@ class WSAA(BaseWS):
     def Expirado(self, fecha=None):
         "Comprueba la fecha de expiración, devuelve si ha expirado"
         if not fecha:
-            fecha = self.ObtenerTagXml('expirationTime')
+            fecha = self.ObtenerTagXml("expirationTime")
         now = datetime.datetime.now()
-        d = datetime.datetime.strptime(fecha[:19], '%Y-%m-%dT%H:%M:%S')
+        d = datetime.datetime.strptime(fecha[:19], "%Y-%m-%dT%H:%M:%S")
         return now > d
 
-    def Autenticar(self, service, crt, key, wsdl=None, proxy=None, wrapper=None, cacert=None, cache=None, debug=False):
+    def Autenticar(
+        self,
+        service,
+        crt,
+        key,
+        wsdl=None,
+        proxy=None,
+        wrapper=None,
+        cacert=None,
+        cache=None,
+        debug=False,
+    ):
         "Método unificado para obtener el ticket de acceso (cacheado)"
 
         self.LanzarExcepciones = True
@@ -350,16 +401,21 @@ class WSAA(BaseWS):
                 if not os.access(filename, os.R_OK):
                     raise RuntimeError("Imposible abrir %s\n" % filename)
             # creo el nombre para el archivo del TA (según credenciales y ws)
-            ta_src = (service + crt + key).encode("utf8")
-            fn = "TA-%s.xml" % hashlib.md5(ta_src).hexdigest()
+            fn = (
+                "TA-%s.xml"
+                % hashlib.md5((service + crt + key).encode("utf8")).hexdigest()
+            )
             if cache:
                 fn = os.path.join(cache, fn)
             else:
                 fn = os.path.join(self.InstallDir, "cache", fn)
 
             # leer el ticket de acceso (si fue previamente solicitado)
-            if not os.path.exists(fn) or os.path.getsize(fn) == 0 or \
-               os.path.getmtime(fn) + (DEFAULT_TTL) < time.time():
+            if (
+                not os.path.exists(fn)
+                or os.path.getsize(fn) == 0
+                or os.path.getmtime(fn) + (DEFAULT_TTL) < time.time()
+            ):
                 # ticket de acceso (TA) vencido, crear un nuevo req. (TRA)
                 if DEBUG:
                     print("Creando TRA...")
@@ -373,7 +429,7 @@ class WSAA(BaseWS):
                     print("Conectando a WSAA...")
                 ok = self.Conectar(cache, wsdl, proxy, wrapper, cacert)
                 if not ok or self.Excepcion:
-                    raise RuntimeError("Fallo la conexión: %s" % self.Excepcion)
+                    raise RuntimeError(u"Fallo la conexión: %s" % self.Excepcion)
                 # llamar al método remoto para solicitar el TA
                 if DEBUG:
                     print("Llamando WSAA...")
@@ -386,7 +442,7 @@ class WSAA(BaseWS):
                 try:
                     open(fn, "w").write(ta)
                 except IOError as e:
-                    self.Excepcion = "Imposible grabar ticket de accesso: %s" % fn
+                    self.Excepcion = u"Imposible grabar ticket de accesso: %s" % fn
             else:
                 # leer el ticket de acceso del archivo en cache
                 if DEBUG:
@@ -396,12 +452,13 @@ class WSAA(BaseWS):
             self.AnalizarXml(xml=ta)
             self.Token = self.ObtenerTagXml("token")
             self.Sign = self.ObtenerTagXml("sign")
-        except BaseException:
+        except:
             ta = ""
             if not self.Excepcion:
                 # avoid encoding problem when reporting exceptions to the user:
-                self.Excepcion = traceback.format_exception_only(sys.exc_info()[0],
-                                                                 sys.exc_info()[1])[0]
+                self.Excepcion = traceback.format_exception_only(
+                    sys.exc_info()[0], sys.exc_info()[1]
+                )[0]
                 self.Traceback = ""
             if DEBUG or debug:
                 raise
@@ -416,27 +473,32 @@ if __name__ == "__main__":
 
     safe_console()
 
-    if '--register' in sys.argv or '--unregister' in sys.argv:
+    if "--register" in sys.argv or "--unregister" in sys.argv:
         import pythoncom
+
         if TYPELIB:
-            if '--register' in sys.argv:
+            if "--register" in sys.argv:
                 tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "wsaa.tlb"))
                 print("Registering %s" % (tlb,))
                 tli = pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)
-            elif '--unregister' in sys.argv:
+            elif "--unregister" in sys.argv:
                 k = WSAA
-                pythoncom.UnRegisterTypeLib(k._typelib_guid_,
-                                            k._typelib_version_[0],
-                                            k._typelib_version_[1],
-                                            0,
-                                            pythoncom.SYS_WIN32)
+                pythoncom.UnRegisterTypeLib(
+                    k._typelib_guid_,
+                    k._typelib_version_[0],
+                    k._typelib_version_[1],
+                    0,
+                    pythoncom.SYS_WIN32,
+                )
                 print("Unregistered typelib")
         import win32com.server.register
+
         win32com.server.register.UseCommandLine(WSAA)
     elif "/Automate" in sys.argv:
         # MS seems to like /automate to run the class factories.
         import win32com.server.localserver
+
         # win32com.server.localserver.main()
         # start the server.
         win32com.server.localserver.serve([WSAA._reg_clsid_])
@@ -446,19 +508,20 @@ if __name__ == "__main__":
         args = [arg for arg in sys.argv if not arg.startswith("--")]
         # obtengo el CUIT y lo normalizo:
         cuit = len(args) > 1 and args[1] or input("Ingrese un CUIT: ")
-        cuit = ''.join([c for c in cuit if c.isdigit()])
+        cuit = "".join([c for c in cuit if c.isdigit()])
         nombre = len(args) > 2 and args[2] or "PyAfipWs"
         # consultar el padrón online de AFIP si no se especificó razón social:
         empresa = len(args) > 3 and args[3] or ""
         if not empresa:
             from .padron import PadronAFIP
+
             padron = PadronAFIP()
             ok = padron.Consultar(cuit)
             if ok and padron.denominacion:
-                print("Denominación según AFIP:", padron.denominacion)
+                print(u"Denominación según AFIP:", padron.denominacion)
                 empresa = padron.denominacion
             else:
-                print("CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion))
+                print(u"CUIT %s no encontrado: %s..." % (cuit, padron.Excepcion))
                 empresa = input("Empresa: ")
         # longitud de la clave (2048 predeterminada a partir de 8/2016)
         key_length = len(args) > 4 and args[4] or ""
@@ -495,9 +558,13 @@ if __name__ == "__main__":
         url = len(argv) > 5 and argv[5] or WSAAURL
         wrapper = len(argv) > 6 and argv[6] or None
         cacert = len(argv) > 7 and argv[7] or CACERT
-        DEBUG = "--debug" in args or DEBUG
+        DEBUG = "--debug" in args
 
-        print("Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s" % (crt, key, url, service, ttl), file=sys.stderr)
+        print(
+            "Usando CRT=%s KEY=%s URL=%s SERVICE=%s TTL=%s"
+            % (crt, key, url, service, ttl),
+            file=sys.stderr,
+        )
 
         # creo el objeto para comunicarme con el ws
         wsaa = WSAA()
@@ -505,13 +572,13 @@ if __name__ == "__main__":
 
         print("WSAA Version %s %s" % (WSAA.Version, HOMO), file=sys.stderr)
 
-        if '--proxy' in args:
+        if "--proxy" in args:
             proxy = sys.argv[sys.argv.index("--proxy") + 1]
             print("Usando PROXY:", proxy, file=sys.stderr)
         else:
             proxy = None
 
-        if '--analizar' in sys.argv:
+        if "--analizar" in sys.argv:
             wsaa.AnalizarCertificado(crt)
             print(wsaa.Identidad)
             print(wsaa.Caducidad)
@@ -522,7 +589,7 @@ if __name__ == "__main__":
         if not ta:
             if DEBUG:
                 print(wsaa.Traceback, file=sys.stderr)
-            sys.exit("Excepcion: %s" % wsaa.Excepcion)
+            sys.exit(u"Excepcion: %s" % wsaa.Excepcion)
 
         else:
             print(ta)
@@ -531,8 +598,8 @@ if __name__ == "__main__":
             print(wsaa.Excepcion, file=sys.stderr)
 
         if DEBUG:
-            print("Source:", wsaa.ObtenerTagXml('source'))
-            print("UniqueID Time:", wsaa.ObtenerTagXml('uniqueId'))
-            print("Generation Time:", wsaa.ObtenerTagXml('generationTime'))
-            print("Expiration Time:", wsaa.ObtenerTagXml('expirationTime'))
+            print("Source:", wsaa.ObtenerTagXml("source"))
+            print("UniqueID Time:", wsaa.ObtenerTagXml("uniqueId"))
+            print("Generation Time:", wsaa.ObtenerTagXml("generationTime"))
+            print("Expiration Time:", wsaa.ObtenerTagXml("expirationTime"))
             print("Expiro?", wsaa.Expirado())

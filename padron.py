@@ -1,24 +1,37 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by the
+# it under the terms of the GNU Lesser General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
 # version.
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY
-# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
 # for more details.
 
 "Herramienta para procesar y consultar el Padrón Unico de Contribuyentes AFIP"
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 # Documentación e información adicional:
 #    http://www.sistemasagiles.com.ar/trac/wiki/PadronContribuyentesAFIP
 
+from future import standard_library
+
+standard_library.install_aliases()
+from builtins import next
+from builtins import str
+from builtins import range
+from past.builtins import basestring
+from builtins import object
+from past.utils import old_div
+
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2014-2016 Mariano Reingart"
-__license__ = "GPL 3.0"
-__version__ = "1.07e"
+__copyright__ = "Copyright (C) 2014-2021 Mariano Reingart"
+__license__ = "LGPL-3.0-or-later"
+__version__ = "3.08a"
 
 
 import csv
@@ -27,16 +40,24 @@ import os
 import shelve
 import socket
 import sqlite3
-import urllib.request
-import urllib.error
-import urllib.parse
+import urllib.request, urllib.error, urllib.parse
 import zipfile
 from email.utils import formatdate
 import sys
 import warnings
-from .utils import leer, escribir, N, A, I, get_install_dir, safe_console, \
-    inicializar_y_capturar_excepciones_simple, WebClient, norm, \
-    exception_info
+from .utils import (
+    leer,
+    escribir,
+    N,
+    A,
+    I,
+    get_install_dir,
+    safe_console,
+    inicializar_y_capturar_excepciones_simple,
+    WebClient,
+    norm,
+    exception_info,
+)
 
 
 # formato y ubicación archivo completo de la condición tributaria según RG 1817
@@ -57,14 +78,34 @@ FORMATO = [
 
 # Mapeos constantes:
 
-PROVINCIAS = {0: 'CIUDAD AUTONOMA BUENOS AIRES', 1: 'BUENOS AIRES',
-              2: 'CATAMARCA', 3: 'CORDOBA', 4: 'CORRIENTES', 5: 'ENTRE RIOS', 6: 'JUJUY',
-              7: 'MENDOZA', 8: 'LA RIOJA', 9: 'SALTA', 10: 'SAN JUAN', 11: 'SAN LUIS',
-              12: 'SANTA FE', 13: 'SANTIAGO DEL ESTERO', 14: 'TUCUMAN', 16: 'CHACO',
-              17: 'CHUBUT', 18: 'FORMOSA', 19: 'MISIONES', 20: 'NEUQUEN', 21: 'LA PAMPA',
-              22: 'RIO NEGRO', 23: 'SANTA CRUZ', 24: 'TIERRA DEL FUEGO'}
+PROVINCIAS = {
+    0: "CIUDAD AUTONOMA BUENOS AIRES",
+    1: "BUENOS AIRES",
+    2: "CATAMARCA",
+    3: "CORDOBA",
+    4: "CORRIENTES",
+    5: "ENTRE RIOS",
+    6: "JUJUY",
+    7: "MENDOZA",
+    8: "LA RIOJA",
+    9: "SALTA",
+    10: "SAN JUAN",
+    11: "SAN LUIS",
+    12: "SANTA FE",
+    13: "SANTIAGO DEL ESTERO",
+    14: "TUCUMAN",
+    16: "CHACO",
+    17: "CHUBUT",
+    18: "FORMOSA",
+    19: "MISIONES",
+    20: "NEUQUEN",
+    21: "LA PAMPA",
+    22: "RIO NEGRO",
+    23: "SANTA CRUZ",
+    24: "TIERRA DEL FUEGO",
+}
 
-TIPO_CLAVE = {'CUIT': 80, 'CUIL': 86, 'CDI': 86, 'DNI': 96, 'Otro': 99}
+TIPO_CLAVE = {"CUIT": 80, "CUIL": 86, "CDI": 86, "DNI": 96, "Otro": 99}
 
 DEBUG = True
 
@@ -72,23 +113,52 @@ URL = "http://www.afip.gob.ar/genericos/cInscripcion/archivos/apellidoNombreDeno
 URL_API = "https://soa.afip.gob.ar/"
 
 
-class PadronAFIP():
+class PadronAFIP(object):
     "Interfaz para consultar situación tributaria (Constancia de Inscripcion)"
 
-    _public_methods_ = ['Buscar', 'Descargar', 'Procesar', 'Guardar',
-                        'ConsultarDomicilios', 'Consultar', 'Conectar',
-                        'DescargarConstancia', 'MostrarPDF',
-                        "ObtenerTablaParametros",
-                        ]
-    _public_attrs_ = ['InstallDir', 'Traceback', 'Excepcion', 'Version',
-                      'cuit', 'dni', 'denominacion', 'imp_ganancias', 'imp_iva',
-                      'monotributo', 'integrante_soc', 'empleador',
-                      'actividad_monotributo', 'cat_iva', 'domicilios',
-                      'tipo_doc', 'nro_doc', 'LanzarExcepciones',
-                      'tipo_persona', 'estado', 'impuestos', 'actividades',
-                      'direccion', 'localidad', 'provincia', 'cod_postal',
-                      'data', 'response',
-                      ]
+    _public_methods_ = [
+        "Buscar",
+        "Descargar",
+        "Procesar",
+        "Guardar",
+        "ConsultarDomicilios",
+        "Consultar",
+        "Conectar",
+        "DescargarConstancia",
+        "MostrarPDF",
+        "BuscarCUIT",
+        "ObtenerTablaParametros",
+    ]
+    _public_attrs_ = [
+        "InstallDir",
+        "Traceback",
+        "Excepcion",
+        "Version",
+        "cuit",
+        "dni",
+        "denominacion",
+        "imp_ganancias",
+        "imp_iva",
+        "monotributo",
+        "integrante_soc",
+        "empleador",
+        "actividad_monotributo",
+        "cat_iva",
+        "domicilios",
+        "tipo_doc",
+        "nro_doc",
+        "LanzarExcepciones",
+        "tipo_persona",
+        "estado",
+        "impuestos",
+        "actividades",
+        "direccion",
+        "localidad",
+        "provincia",
+        "cod_postal",
+        "data",
+        "response",
+    ]
     _readonly_attrs_ = _public_attrs_[3:-1]
     _reg_progid_ = "PadronAFIP"
     _reg_clsid_ = "{6206DF5E-3EEF-47E9-A532-CD81EBBAF3AA}"
@@ -107,9 +177,9 @@ class PadronAFIP():
     def inicializar(self):
         self.Excepcion = self.Traceback = ""
         self.cuit = self.dni = 0
-        self.tipo_persona = ""                      # FISICA o JURIDICA
+        self.tipo_persona = ""  # FISICA o JURIDICA
         self.tipo_doc = 0
-        self.estado = ""                            # ACTIVO
+        self.estado = ""  # ACTIVO
         self.denominacion = ""
         self.direccion = self.localidad = self.provincia = self.cod_postal = ""
         self.domicilios = []
@@ -123,8 +193,8 @@ class PadronAFIP():
     @inicializar_y_capturar_excepciones_simple
     def Conectar(self, url=URL_API, proxy="", wrapper=None, cacert=None, trace=False):
         self.client = WebClient(location=url, trace=trace, cacert=cacert)
-        self.client.method = "GET"       # metodo RESTful predeterminado
-        self.client.enctype = None       # no enviar body
+        self.client.method = "GET"  # metodo RESTful predeterminado
+        self.client.enctype = None  # no enviar body
         return True
 
     @inicializar_y_capturar_excepciones_simple
@@ -132,15 +202,16 @@ class PadronAFIP():
         "Descarga el archivo de AFIP, devuelve 200 o 304 si no fue modificado"
         proxies = {}
         if proxy:
-            proxies['http'] = proxy
-            proxies['https'] = proxy
+            proxies["http"] = proxy
+            proxies["https"] = proxy
             proxy_handler = urllib.request.ProxyHandler(proxies)
         print("Abriendo URL %s ..." % url)
         req = urllib.request.Request(url)
         if os.path.exists(filename):
-            http_date = formatdate(timeval=os.path.getmtime(filename),
-                                   localtime=False, usegmt=True)
-            req.add_header('If-Modified-Since', http_date)
+            http_date = formatdate(
+                timeval=os.path.getmtime(filename), localtime=False, usegmt=True
+            )
+            req.add_header("If-Modified-Since", http_date)
         try:
             web = urllib.request.urlopen(req)
         except urllib.error.HTTPError as e:
@@ -151,14 +222,14 @@ class PadronAFIP():
                 raise
         # leer info del request:
         meta = web.info()
-        lenght = float(meta['Content-Length'])
-        date = meta['Last-Modified']
+        lenght = float(meta["Content-Length"])
+        date = meta["Last-Modified"]
         tmp = open(filename + ".zip", "wb")
         print("Guardando")
         size = 0
         p0 = None
         while True:
-            p = int(size / lenght * 100)
+            p = int(old_div(size, lenght) * 100)
             if p0 is None or p > p0:
                 print("Leyendo ... %0d %%" % p)
                 p0 = p
@@ -187,10 +258,12 @@ class PadronAFIP():
         keys = [k for k, l, t, d in FORMATO]
         # conversion a planilla csv (no usado)
         if False and not os.path.exists("padron.csv"):
-            csvfile = open('padron.csv', 'wb')
+            csvfile = open("padron.csv", "wb")
             import csv
-            wr = csv.writer(csvfile, delimiter=',',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+            wr = csv.writer(
+                csvfile, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+            )
             for i, l in enumerate(f):
                 if i % 100000 == 0:
                     print("Progreso: %d registros" % i)
@@ -204,27 +277,31 @@ class PadronAFIP():
         if True:
             db = db = sqlite3.connect(self.db_path)
             c = db.cursor()
-            c.execute("CREATE TABLE padron ("
-                      "nro_doc INTEGER, "
-                      "denominacion VARCHAR(30), "
-                      "imp_ganancias VARCHAR(2), "
-                      "imp_iva VARCHAR(2), "
-                      "monotributo VARCHAR(1), "
-                      "integrante_soc VARCHAR(1), "
-                      "empleador VARCHAR(1), "
-                      "actividad_monotributo VARCHAR(2), "
-                      "tipo_doc INTEGER, "
-                      "cat_iva INTEGER DEFAULT NULL, "
-                      "email VARCHAR(250), "
-                      "PRIMARY KEY (tipo_doc, nro_doc)"
-                      ");")
-            c.execute("CREATE TABLE domicilio ("
-                      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                      "tipo_doc INTEGER, "
-                      "nro_doc INTEGER, "
-                      "direccion TEXT, "
-                      "FOREIGN KEY (tipo_doc, nro_doc) REFERENCES padron "
-                      ");")
+            c.execute(
+                "CREATE TABLE padron ("
+                "nro_doc INTEGER, "
+                "denominacion VARCHAR(30), "
+                "imp_ganancias VARCHAR(2), "
+                "imp_iva VARCHAR(2), "
+                "monotributo VARCHAR(1), "
+                "integrante_soc VARCHAR(1), "
+                "empleador VARCHAR(1), "
+                "actividad_monotributo VARCHAR(2), "
+                "tipo_doc INTEGER, "
+                "cat_iva INTEGER DEFAULT NULL, "
+                "email VARCHAR(250), "
+                "PRIMARY KEY (tipo_doc, nro_doc)"
+                ");"
+            )
+            c.execute(
+                "CREATE TABLE domicilio ("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                "tipo_doc INTEGER, "
+                "nro_doc INTEGER, "
+                "direccion TEXT, "
+                "FOREIGN KEY (tipo_doc, nro_doc) REFERENCES padron "
+                ");"
+            )
             # importar los datos a la base sqlite
             for i, l in enumerate(f):
                 if i % 10000 == 0:
@@ -232,11 +309,10 @@ class PadronAFIP():
                 l = l.strip("\x00")
                 r = leer(l, FORMATO)
                 params = [r[k] for k in keys]
-                params[8] = 80          # agrego tipo_doc = CUIT
-                params[9] = None        # cat_iva no viene de AFIP
+                params[8] = 80  # agrego tipo_doc = CUIT
+                params[9] = None  # cat_iva no viene de AFIP
                 placeholders = ", ".join(["?"] * len(params))
-                c.execute("INSERT INTO padron VALUES (%s)" % placeholders,
-                          params)
+                c.execute("INSERT INTO padron VALUES (%s)" % placeholders, params)
             db.commit()
             c.close()
             db.close()
@@ -246,17 +322,19 @@ class PadronAFIP():
         "Devuelve True si fue encontrado y establece atributos con datos"
         # cuit: codigo único de identificación tributaria del contribuyente
         #       (sin guiones)
-        self.cursor.execute("SELECT * FROM padron WHERE "
-                            " tipo_doc=? AND nro_doc=?", [tipo_doc, nro_doc])
+        self.cursor.execute(
+            "SELECT * FROM padron WHERE " " tipo_doc=? AND nro_doc=?",
+            [tipo_doc, nro_doc],
+        )
         row = self.cursor.fetchone()
         for key in [k for k, l, t, d in FORMATO]:
             if row:
                 val = row[key]
-                if not isinstance(val, str):
+                if not isinstance(val, basestring):
                     val = str(row[key])
                 setattr(self, key, val)
             else:
-                setattr(self, key, '')
+                setattr(self, key, "")
         if self.tipo_doc == 80:
             self.cuit = self.nro_doc
         elif self.tipo_doc == 96:
@@ -268,9 +346,9 @@ class PadronAFIP():
             cat_iva = None
         if cat_iva:
             pass
-        elif self.imp_iva in ('AC', 'S'):
+        elif self.imp_iva in ("AC", "S"):
             self.cat_iva = 1  # RI
-        elif self.imp_iva == 'EX':
+        elif self.imp_iva == "EX":
             self.cat_iva = 4  # EX
         elif self.monotributo:
             self.cat_iva = 6  # MT
@@ -281,43 +359,56 @@ class PadronAFIP():
     @inicializar_y_capturar_excepciones_simple
     def ConsultarDomicilios(self, nro_doc, tipo_doc=80, cat_iva=None):
         "Busca los domicilios, devuelve la cantidad y establece la lista"
-        self.cursor.execute("SELECT direccion FROM domicilio WHERE "
-                            " tipo_doc=? AND nro_doc=? ORDER BY id ",
-                            [tipo_doc, nro_doc])
+        self.cursor.execute(
+            "SELECT direccion FROM domicilio WHERE "
+            " tipo_doc=? AND nro_doc=? ORDER BY id ",
+            [tipo_doc, nro_doc],
+        )
         filas = self.cursor.fetchall()
-        self.domicilios = [fila['direccion'] for fila in filas]
+        self.domicilios = [fila["direccion"] for fila in filas]
         return len(filas)
 
     @inicializar_y_capturar_excepciones_simple
-    def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion,
-                email, imp_ganancias='NI', imp_iva='NI', monotributo='NI',
-                integrante_soc='N', empleador='N'):
+    def BuscarCUIT(self, denominacion, limite=10):
+        "Busca por nombre, devuelve una lista con tipo y nro de documento"
+        sql = (
+            "SELECT tipo_doc, nro_doc, denominacion "
+            "FROM padron_fts WHERE denominacion MATCH ? "
+            "LIMIT ?"
+        )
+        denominacion = denominacion.replace(" ", "*")
+        self.cursor.execute(sql, ["*{}*".format(denominacion), limite])
+        filas = self.cursor.fetchall()
+        return [dict(fila) for fila in filas]
+
+    @inicializar_y_capturar_excepciones_simple
+    def Guardar(self, tipo_doc, nro_doc, denominacion, cat_iva, direccion, email):
         "Agregar o actualizar los datos del cliente"
         if self.Buscar(nro_doc, tipo_doc):
-            sql = ("UPDATE padron SET denominacion=?, cat_iva=?, email=?, "
-                   "imp_ganancias=?, imp_iva=?, monotributo=?, "
-                   "integrante_soc=?, empleador=? "
-                   "WHERE tipo_doc=? AND nro_doc=?")
-            params = [denominacion, cat_iva, email, imp_ganancias,
-                      imp_iva, monotributo, integrante_soc, empleador,
-                      tipo_doc, nro_doc]
+            sql = (
+                "UPDATE padron SET denominacion=?, cat_iva=?, email=? "
+                "WHERE tipo_doc=? AND nro_doc=?"
+            )
+            params = [denominacion, cat_iva, email, tipo_doc, nro_doc]
         else:
-            sql = ("INSERT INTO padron (tipo_doc, nro_doc, denominacion, "
-                   "cat_iva, email, imp_ganancias, imp_iva, monotributo, "
-                   "integrante_soc, empleador) "
-                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-            params = [tipo_doc, nro_doc, denominacion, cat_iva, email,
-                      imp_ganancias, imp_iva, monotributo,
-                      integrante_soc, empleador]
+            sql = (
+                "INSERT INTO padron (tipo_doc, nro_doc, denominacion, "
+                "cat_iva, email) VALUES (?, ?, ?, ?, ?)"
+            )
+            params = [tipo_doc, nro_doc, denominacion, cat_iva, email]
         self.cursor.execute(sql, params)
         # agregar el domicilio solo si no existe:
         if direccion:
-            self.cursor.execute("SELECT * FROM domicilio WHERE direccion=? "
-                                "AND tipo_doc=? AND nro_doc=?",
-                                [direccion, tipo_doc, nro_doc])
+            self.cursor.execute(
+                "SELECT * FROM domicilio WHERE direccion=? "
+                "AND tipo_doc=? AND nro_doc=?",
+                [direccion, tipo_doc, nro_doc],
+            )
             if self.cursor.rowcount < 0:
-                sql = ("INSERT INTO domicilio (nro_doc, tipo_doc, direccion)"
-                       "VALUES (?, ?, ?)")
+                sql = (
+                    "INSERT INTO domicilio (nro_doc, tipo_doc, direccion)"
+                    "VALUES (?, ?, ?)"
+                )
                 self.cursor.execute(sql, [nro_doc, tipo_doc, direccion])
         self.db.commit()
         return True
@@ -327,7 +418,7 @@ class PadronAFIP():
         "Llama a la API pública de AFIP para obtener los datos de una persona"
         n = 0
         while n <= 4:
-            n += 1                          # reintentar 3 veces
+            n += 1  # reintentar 3 veces
             try:
                 if not self.client:
                     if DEBUG:
@@ -340,7 +431,7 @@ class PadronAFIP():
                 self.Traceback = ex.get("tb", "")
                 try:
                     self.Excepcion = norm(ex.get("msg", "").replace("\n", ""))
-                except BaseException:
+                except:
                     self.Excepcion = "<no disponible>"
                 if DEBUG:
                     warnings.warn("Error %s [%d]" % (self.Excepcion, n))
@@ -349,8 +440,8 @@ class PadronAFIP():
         else:
             return False
         result = json.loads(self.response)
-        if result['success']:
-            data = result['data']
+        if result["success"]:
+            data = result["data"]
             # extraigo datos generales del contribuyente:
             self.cuit = data["idPersona"]
             self.tipo_persona = data["tipoPersona"]
@@ -369,9 +460,15 @@ class PadronAFIP():
                 self.direccion = self.localidad = self.provincia = ""
                 self.cod_postal = ""
             # retrocompatibilidad:
-            self.domicilios = ["%s - %s (%s) - %s" % (
-                self.direccion, self.localidad,
-                self.cod_postal, self.provincia,)]
+            self.domicilios = [
+                "%s - %s (%s) - %s"
+                % (
+                    self.direccion,
+                    self.localidad,
+                    self.cod_postal,
+                    self.provincia,
+                )
+            ]
             # analizo impuestos:
             self.impuestos = data.get("impuestos", [])
             self.actividades = data.get("actividades", [])
@@ -391,8 +488,8 @@ class PadronAFIP():
             self.cat_iva = ""
             self.data = data
         else:
-            error = result['error']
-            self.Excepcion = error['mensaje']
+            error = result["error"]
+            self.Excepcion = error["mensaje"]
         return True
 
     @inicializar_y_capturar_excepciones_simple
@@ -404,7 +501,7 @@ class PadronAFIP():
         if self.response.startswith("{"):
             result = json.loads(self.response)
             assert not result["success"]
-            self.Excepcion = result['error']['mensaje']
+            self.Excepcion = result["error"]["mensaje"]
             return False
         else:
             with open(filename, "wb") as f:
@@ -413,8 +510,8 @@ class PadronAFIP():
 
     @inicializar_y_capturar_excepciones_simple
     def MostrarPDF(self, archivo, imprimir=False):
-        if sys.platform.startswith(("linux2", 'java')):
-            os.system("evince ""%s""" % archivo)
+        if sys.platform.startswith(("linux2", "java")):
+            os.system("evince " "%s" "" % archivo)
         else:
             operation = imprimir and "print" or ""
             os.startfile(archivo, operation)
@@ -426,10 +523,10 @@ class PadronAFIP():
         if not self.client:
             self.Conectar()
         self.response = self.client("parametros", "v1", tipo_recurso)
-        result = json.loads(self.response.decode('utf8'))
+        result = json.loads(self.response)
         ret = {}
-        if result['success']:
-            data = result['data']
+        if result["success"]:
+            data = result["data"]
             # armo un diccionario con los datos devueltos:
             key = [k for k in list(data[0].keys()) if k.startswith("id")][0]
             val = [k for k in list(data[0].keys()) if k.startswith("desc")][0]
@@ -437,8 +534,8 @@ class PadronAFIP():
                 ret[it[key]] = it[val]
             self.data = data
         else:
-            error = result['error']
-            self.Excepcion = error['mensaje']
+            error = result["error"]
+            self.Excepcion = error["mensaje"]
         if sep:
             return ["%s%%s%s%%s%s" % (sep, sep, sep) % it for it in sorted(ret.items())]
         else:
@@ -454,63 +551,83 @@ if __name__ == "__main__":
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
+
         win32com.server.register.UseCommandLine(PadronAFIP)
     else:
         padron = PadronAFIP()
         padron.LanzarExcepciones = True
         import time
+
         t0 = time.time()
         if "--descargar" in sys.argv:
             padron.Descargar()
         if "--procesar" in sys.argv:
-            padron.Procesar(borrar='--borrar' in sys.argv)
+            padron.Procesar(borrar="--borrar" in sys.argv)
         if "--parametros" in sys.argv:
-            import codecs
-            import locale
-            import traceback
-            if sys.stdout.encoding is None:
-                sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout, "replace")
-                sys.stderr = codecs.getwriter(locale.getpreferredencoding())(sys.stderr, "replace")
-            print("=== Impuestos ===")
-            print('\n'.join(padron.ObtenerTablaParametros("impuestos")))
-            print("=== Conceptos ===")
-            print('\n'.join(padron.ObtenerTablaParametros("conceptos")))
-            print("=== Actividades ===")
-            print('\n'.join(padron.ObtenerTablaParametros("actividades")))
-            print("=== Caracterizaciones ===")
-            print('\n'.join(padron.ObtenerTablaParametros("caracterizaciones")))
-            print("=== Categorias Monotributo ===")
-            print('\n'.join(padron.ObtenerTablaParametros("categoriasMonotributo")))
-            print("=== Categorias Autonomos ===")
-            print('\n'.join(padron.ObtenerTablaParametros("categoriasAutonomo")))
+            import codecs, locale, traceback
 
-        if '--csv' in sys.argv:
-            csv_reader = csv.reader(open("entrada.csv", "rU"),
-                                    dialect='excel', delimiter=",")
-            csv_writer = csv.writer(open("salida.csv", "w"),
-                                    dialect='excel', delimiter=",")
+            if sys.stdout.encoding is None:
+                sys.stdout = codecs.getwriter(locale.getpreferredencoding())(
+                    sys.stdout, "replace"
+                )
+                sys.stderr = codecs.getwriter(locale.getpreferredencoding())(
+                    sys.stderr, "replace"
+                )
+            print("=== Impuestos ===")
+            print(u"\n".join(padron.ObtenerTablaParametros("impuestos")))
+            print("=== Conceptos ===")
+            print(u"\n".join(padron.ObtenerTablaParametros("conceptos")))
+            print("=== Actividades ===")
+            print(u"\n".join(padron.ObtenerTablaParametros("actividades")))
+            print("=== Caracterizaciones ===")
+            print(u"\n".join(padron.ObtenerTablaParametros("caracterizaciones")))
+            print("=== Categorias Monotributo ===")
+            print(u"\n".join(padron.ObtenerTablaParametros("categoriasMonotributo")))
+            print("=== Categorias Autonomos ===")
+            print(u"\n".join(padron.ObtenerTablaParametros("categoriasAutonomo")))
+
+        if "--csv" in sys.argv:
+            csv_reader = csv.reader(
+                open("entrada.csv", "rU"), dialect="excel", delimiter=","
+            )
+            csv_writer = csv.writer(
+                open("salida.csv", "w"), dialect="excel", delimiter=","
+            )
             encabezado = next(csv_reader)
-            columnas = ["cuit", "denominacion", "estado", "direccion",
-                        "localidad", "provincia", "cod_postal",
-                        "impuestos", "actividades", "imp_iva",
-                        "monotributo", "actividad_monotributo",
-                        "empleador", "imp_ganancias", "integrante_soc"]
+            columnas = [
+                "cuit",
+                "denominacion",
+                "estado",
+                "direccion",
+                "localidad",
+                "provincia",
+                "cod_postal",
+                "impuestos",
+                "actividades",
+                "imp_iva",
+                "monotributo",
+                "actividad_monotributo",
+                "empleador",
+                "imp_ganancias",
+                "integrante_soc",
+            ]
             csv_writer.writerow(columnas)
 
             for fila in csv_reader:
                 cuit = (fila[0] if fila else "").replace("-", "")
                 if cuit.isdigit():
-                    if '--online' in sys.argv:
+                    if "--online" in sys.argv:
                         padron.Conectar(trace="--trace" in sys.argv)
-                        print("Consultando AFIP online...", cuit, end=' ')
+                        print("Consultando AFIP online...", cuit, end=" ")
                         ok = padron.Consultar(cuit)
                     else:
-                        print("Consultando AFIP local...", cuit, end=' ')
+                        print("Consultando AFIP local...", cuit, end=" ")
                         ok = padron.Buscar(cuit)
-                    print('ok' if ok else "error", padron.Excepcion)
+                    print("ok" if ok else "error", padron.Excepcion)
                     # domicilio posiblemente esté en Latin1, normalizar
-                    csv_writer.writerow([norm(getattr(padron, campo, ""))
-                                         for campo in columnas])
+                    csv_writer.writerow(
+                        [norm(getattr(padron, campo, "")) for campo in columnas]
+                    )
         elif "--reconex" in sys.argv:
             padron.Conectar(trace="--trace" in sys.argv)
             cuit = 20267565393
@@ -518,15 +635,15 @@ if __name__ == "__main__":
                 t0 = time.time()
                 ok = padron.Consultar(cuit)
                 t1 = time.time()
-                print(("%2.4f" % (t1 - t0)))
+                print("%2.4f" % (t1 - t0))
         else:
             cuit = len(sys.argv) > 1 and sys.argv[1] or "20267565393"
             # consultar un cuit:
-            if '--online' in sys.argv:
+            if "--online" in sys.argv:
                 padron.Conectar(trace="--trace" in sys.argv)
-                print("Consultando AFIP online...", end=' ')
+                print("Consultando AFIP online...", end=" ")
                 ok = padron.Consultar(cuit)
-                print('ok' if ok else "error", padron.Excepcion)
+                print("ok" if ok else "error", padron.Excepcion)
                 print("Denominacion:", padron.denominacion)
                 print("CUIT:", padron.cuit)
                 print("Tipo:", padron.tipo_persona, padron.tipo_doc, padron.dni)
@@ -540,14 +657,15 @@ if __name__ == "__main__":
                 print("IVA", padron.imp_iva)
                 print("MT", padron.monotributo, padron.actividad_monotributo)
                 print("Empleador", padron.empleador)
-            elif '--constancia' in sys.argv:
+            elif "--constancia" in sys.argv:
                 filename = sys.argv[2]
                 print("Descargando constancia AFIP online...", cuit, filename)
                 ok = padron.DescargarConstancia(cuit, filename)
-                print('ok' if ok else "error", padron.Excepcion)
-                if '--mostrar' in sys.argv:
-                    padron.MostrarPDF(archivo=filename,
-                                      imprimir='--imprimir' in sys.argv)
+                print("ok" if ok else "error", padron.Excepcion)
+                if "--mostrar" in sys.argv:
+                    padron.MostrarPDF(
+                        archivo=filename, imprimir="--imprimir" in sys.argv
+                    )
             else:
                 ok = padron.Buscar(cuit)
                 if ok:
@@ -566,5 +684,5 @@ if __name__ == "__main__":
                     print(padron.Excepcion)
                     print(padron.Traceback)
         t1 = time.time()
-        if '--trace' in sys.argv:
+        if "--trace" in sys.argv:
             print("tiempo", t1 - t0)

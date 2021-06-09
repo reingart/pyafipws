@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,23 +10,25 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-from pyafipws.wsaa import WSAA
-from pyafipws.wsfev1 import WSFEv1
-"Pruebas para WSFEv1 de AFIP (Factura Electr髇ica Mercado Interno sin detalle)"
+"Pruebas para WSFEv1 de AFIP (Factura Electr贸nica Mercado Interno sin detalle)"
+from __future__ import print_function
+
+from builtins import str
+from past.builtins import basestring
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
 
 import unittest
-import os
-import time
-import sys
+import os, time, sys
 from decimal import Decimal
 import datetime
 
-sys.path.append("/home/reingart")        # TODO: proper packaging
+sys.path.append("/home/reingart")  # TODO: proper packaging
 
+from pyafipws.wsfev1 import WSFEv1
+from pyafipws.wsaa import WSAA
 
 WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 CUIT = 20267565393
@@ -35,7 +37,7 @@ PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
 CACERT = "/home/reingart/pyafipws/afip_root_desa_ca.crt"
 CACHE = "/home/reingart/pyafipws/cache"
 
-# Autenticaci髇:
+# Autenticaci贸n:
 wsaa = WSAA()
 tra = wsaa.CreateTRA(service="wsfe")
 cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
@@ -44,9 +46,8 @@ wsaa.LoginCMS(cms)
 
 
 class TestFE(unittest.TestCase):
-
     def setUp(self):
-        sys.argv.append("--trace")                  # TODO: use logging
+        sys.argv.append("--trace")  # TODO: use logging
         self.wsfev1 = wsfev1 = WSFEv1()
         wsfev1.Cuit = CUIT
         wsfev1.Token = wsaa.Token
@@ -61,18 +62,18 @@ class TestFE(unittest.TestCase):
         print("AuthServerStatus", wsfev1.AuthServerStatus)
 
     def test_autorizar_comprobante(self, tipo_cbte=1, cbte_nro=None, servicios=True):
-        "Prueba de autorizaci髇 de un comprobante (obtenci髇 de CAE)"
+        "Prueba de autorizaci贸n de un comprobante (obtenci贸n de CAE)"
         wsfev1 = self.wsfev1
 
         # datos generales del comprobante:
         punto_vta = 4000
         if not cbte_nro:
-            # si no me especif韈an nro de comprobante, busco el pr髕imo
+            # si no me especif铆can nro de comprobante, busco el pr贸ximo
             cbte_nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
             cbte_nro = int(cbte_nro) + 1
         fecha = datetime.datetime.now().strftime("%Y%m%d")
         tipo_doc = 80
-        nro_doc = "30000000007"  # "30500010912" # CUIT BNA
+        nro_doc = "30000000007"  ##"30500010912" # CUIT BNA
         cbt_desde = cbte_nro
         cbt_hasta = cbt_desde
         imp_total = "122.00"
@@ -82,7 +83,7 @@ class TestFE(unittest.TestCase):
         imp_op_ex = "0.00"
         imp_iva = "21.00"
         fecha_cbte = fecha
-        # Fechas del per韔do del servicio facturado (solo si concepto = 1?)
+        # Fechas del per铆odo del servicio facturado (solo si concepto = 1?)
         if servicios:
             concepto = 3
             fecha_venc_pago = fecha
@@ -91,17 +92,33 @@ class TestFE(unittest.TestCase):
         else:
             concepto = 1
             fecha_venc_pago = fecha_serv_desde = fecha_serv_hasta = None
-        moneda_id = 'PES'
-        moneda_ctz = '1.000'
+        moneda_id = "PES"
+        moneda_ctz = "1.000"
         obs = "Observaciones Comerciales, libre"
 
-        wsfev1.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                            cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-                            imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago,
-                            fecha_serv_desde, fecha_serv_hasta,  # --
-                            moneda_id, moneda_ctz)
+        wsfev1.CrearFactura(
+            concepto,
+            tipo_doc,
+            nro_doc,
+            tipo_cbte,
+            punto_vta,
+            cbt_desde,
+            cbt_hasta,
+            imp_total,
+            imp_tot_conc,
+            imp_neto,
+            imp_iva,
+            imp_trib,
+            imp_op_ex,
+            fecha_cbte,
+            fecha_venc_pago,
+            fecha_serv_desde,
+            fecha_serv_hasta,  # --
+            moneda_id,
+            moneda_ctz,
+        )
 
-        # agrego un comprobante asociado (solo notas de cr閐ito / d閎ito)
+        # agrego un comprobante asociado (solo notas de cr茅dito / d茅bito)
         if tipo_cbte in (2, 3):
             tipo = 1
             pv = 2
@@ -110,7 +127,7 @@ class TestFE(unittest.TestCase):
 
         # agrego otros tributos:
         tributo_id = 99
-        desc = 'Impuesto Municipal Matanza'
+        desc = "Impuesto Municipal Matanza"
         base_imp = "100.00"
         alic = "1.00"
         importe = "1.00"
@@ -125,13 +142,13 @@ class TestFE(unittest.TestCase):
         # llamo al websevice para obtener el CAE:
         wsfev1.CAESolicitar()
 
-        self.assertEqual(wsfev1.Resultado, "A")    # Aprobado!
-        self.assertIsInstance(wsfev1.CAE, str)
+        self.assertEqual(wsfev1.Resultado, "A")  # Aprobado!
+        self.assertIsInstance(wsfev1.CAE, basestring)
         self.assertEqual(len(wsfev1.CAE), len("63363178822329"))
         self.assertEqual(len(wsfev1.Vencimiento), len("20130907"))
         wsfev1.AnalizarXml("XmlResponse")
-        # observaci髇 "... no se encuentra registrado en los padrones de AFIP.":
-        self.assertEqual(wsfev1.ObtenerTagXml('Obs', 0, 'Code'), '10017')
+        # observaci贸n "... no se encuentra registrado en los padrones de AFIP.":
+        self.assertEqual(wsfev1.ObtenerTagXml("Obs", 0, "Code"), "10017")
 
     def test_consulta(self):
         "Prueba de obtener los datos de un comprobante autorizado"
@@ -142,8 +159,8 @@ class TestFE(unittest.TestCase):
         # obtengo datos para comprobar
         cae = wsfev1.CAE
         wsfev1.AnalizarXml("XmlRequest")
-        imp_total = float(wsfev1.ObtenerTagXml('ImpTotal'))
-        concepto = int(wsfev1.ObtenerTagXml('Concepto'))
+        imp_total = float(wsfev1.ObtenerTagXml("ImpTotal"))
+        concepto = int(wsfev1.ObtenerTagXml("Concepto"))
         punto_vta = wsfev1.PuntoVenta
         cbte_nro = wsfev1.CbteNro
 
@@ -155,13 +172,13 @@ class TestFE(unittest.TestCase):
         self.assertEqual(wsfev1.ImpTotal, imp_total)
 
         wsfev1.AnalizarXml("XmlResponse")
-        self.assertEqual(wsfev1.ObtenerTagXml('CodAutorizacion'), str(wsfev1.CAE))
-        self.assertEqual(wsfev1.ObtenerTagXml('Concepto'), str(concepto))
+        self.assertEqual(wsfev1.ObtenerTagXml("CodAutorizacion"), str(wsfev1.CAE))
+        self.assertEqual(wsfev1.ObtenerTagXml("Concepto"), str(concepto))
 
     def test_reproceso_servicios(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsfev1 = self.wsfev1
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
@@ -177,7 +194,7 @@ class TestFE(unittest.TestCase):
     def test_reproceso_productos(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsfev1 = self.wsfev1
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
@@ -194,7 +211,7 @@ class TestFE(unittest.TestCase):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         # N/D con comprobantes asociados
         wsfev1 = self.wsfev1
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 2
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
@@ -208,5 +225,5 @@ class TestFE(unittest.TestCase):
         self.assertEqual(wsfev1.Reproceso, "S")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

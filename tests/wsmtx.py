@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -10,23 +10,25 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-from pyafipws.wsaa import WSAA
-from pyafipws.wsmtx import WSMTXCA
-"Pruebas para WSMTX de AFIP (Factura Electr髇ica Mercado Interno con detalle)"
+"Pruebas para WSMTX de AFIP (Factura Electr贸nica Mercado Interno con detalle)"
+from __future__ import print_function
+
+from builtins import str
+from past.builtins import basestring
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010 Mariano Reingart"
 __license__ = "GPL 3.0"
 
 import unittest
-import os
-import time
-import sys
+import os, time, sys
 from decimal import Decimal
 import datetime
 
-sys.path.append("/home/reingart")        # TODO: proper packaging
+sys.path.append("/home/reingart")  # TODO: proper packaging
 
+from pyafipws.wsmtx import WSMTXCA
+from pyafipws.wsaa import WSAA
 
 WSDL = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 CUIT = 20267565393
@@ -35,7 +37,7 @@ PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
 CACERT = "/home/reingart/pyafipws/afip_root_desa_ca.crt"
 CACHE = "/home/reingart/pyafipws/cache"
 
-# Autenticaci髇:
+# Autenticaci贸n:
 wsaa = WSAA()
 tra = wsaa.CreateTRA(service="wsmtxca")
 cms = wsaa.SignTRA(tra, CERT, PRIVATEKEY)
@@ -44,9 +46,8 @@ wsaa.LoginCMS(cms)
 
 
 class TestMTX(unittest.TestCase):
-
     def setUp(self):
-        sys.argv.append("--trace")                  # TODO: use logging
+        sys.argv.append("--trace")  # TODO: use logging
         self.wsmtxca = wsmtxca = WSMTXCA()
         wsmtxca.Cuit = CUIT
         wsmtxca.Token = wsaa.Token
@@ -60,15 +61,19 @@ class TestMTX(unittest.TestCase):
         print("DbServerStatus", wsmtxca.DbServerStatus)
         print("AuthServerStatus", wsmtxca.AuthServerStatus)
 
-    def test_autorizar_comprobante(self, tipo_cbte=1, cbte_nro=None, servicios=True, tributos=True):
-        "Prueba de autorizaci髇 de un comprobante (obtenci髇 de CAE)"
+    def test_autorizar_comprobante(
+        self, tipo_cbte=1, cbte_nro=None, servicios=True, tributos=True
+    ):
+        "Prueba de autorizaci贸n de un comprobante (obtenci贸n de CAE)"
         wsmtxca = self.wsmtxca
 
         # datos generales del comprobante:
         punto_vta = 4000
         if not cbte_nro:
-            # si no me especif韈an nro de comprobante, busco el pr髕imo
-            cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
+            # si no me especif铆can nro de comprobante, busco el pr贸ximo
+            cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(
+                tipo_cbte, punto_vta
+            )
             cbte_nro = int(cbte_nro) + 1
         fecha = datetime.datetime.now().strftime("%Y-%m-%d")
         tipo_doc = 80
@@ -86,7 +91,7 @@ class TestMTX(unittest.TestCase):
         imp_op_ex = "0.00"
         imp_subtotal = "100.00"
         fecha_cbte = fecha
-        # Fechas del per韔do del servicio facturado (solo si concepto = 1?)
+        # Fechas del per铆odo del servicio facturado (solo si concepto = 1?)
         if servicios:
             concepto = 3
             fecha_venc_pago = fecha
@@ -95,17 +100,34 @@ class TestMTX(unittest.TestCase):
         else:
             concepto = 1
             fecha_venc_pago = fecha_serv_desde = fecha_serv_hasta = None
-        moneda_id = 'PES'
-        moneda_ctz = '1.000'
+        moneda_id = "PES"
+        moneda_ctz = "1.000"
         obs = "Observaciones Comerciales, libre"
 
-        wsmtxca.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                             cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-                             imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago,
-                             fecha_serv_desde, fecha_serv_hasta,  # --
-                             moneda_id, moneda_ctz, obs)
+        wsmtxca.CrearFactura(
+            concepto,
+            tipo_doc,
+            nro_doc,
+            tipo_cbte,
+            punto_vta,
+            cbt_desde,
+            cbt_hasta,
+            imp_total,
+            imp_tot_conc,
+            imp_neto,
+            imp_subtotal,
+            imp_trib,
+            imp_op_ex,
+            fecha_cbte,
+            fecha_venc_pago,
+            fecha_serv_desde,
+            fecha_serv_hasta,  # --
+            moneda_id,
+            moneda_ctz,
+            obs,
+        )
 
-        # agrego un comprobante asociado (solo notas de cr閐ito / d閎ito)
+        # agrego un comprobante asociado (solo notas de cr茅dito / d茅bito)
         if tipo_cbte in (2, 3):
             tipo = 1
             pv = 2
@@ -115,7 +137,7 @@ class TestMTX(unittest.TestCase):
         if tributos:
             # agrego otros tributos:
             tributo_id = 99
-            desc = 'Impuesto Municipal Matanza'
+            desc = "Impuesto Municipal Matanza"
             base_imp = "100.00"
             alic = "1.00"
             importe = "1.00"
@@ -123,7 +145,7 @@ class TestMTX(unittest.TestCase):
 
             # agrego otros tributos:
             tributo_id = 1
-            desc = 'Impuestos Internos'
+            desc = "Impuestos Internos"
             base_imp = "100.00"
             alic = "1.00"
             importe = "1.00"
@@ -135,7 +157,7 @@ class TestMTX(unittest.TestCase):
         importe = 21
         wsmtxca.AgregarIva(iva_id, base_imp, importe)
 
-        # agrego un art韈ulo:
+        # agrego un art铆culo:
         u_mtx = 123456
         cod_mtx = 1234567890123
         codigo = "P0001"
@@ -147,18 +169,30 @@ class TestMTX(unittest.TestCase):
         iva_id = 5
         imp_iva = 42.00
         imp_subtotal = 242.00
-        wsmtxca.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif,
-                            iva_id, imp_iva, imp_subtotal)
+        wsmtxca.AgregarItem(
+            u_mtx,
+            cod_mtx,
+            codigo,
+            ds,
+            qty,
+            umed,
+            precio,
+            bonif,
+            iva_id,
+            imp_iva,
+            imp_subtotal,
+        )
 
-        # agrego bonificaci髇 general
-        wsmtxca.AgregarItem(None, None, None, 'bonificacion', 0, 99, 1, None,
-                            5, -21, -121)
+        # agrego bonificaci贸n general
+        wsmtxca.AgregarItem(
+            None, None, None, "bonificacion", 0, 99, 1, None, 5, -21, -121
+        )
 
         # llamo al websevice para obtener el CAE:
         wsmtxca.AutorizarComprobante()
 
-        self.assertEqual(wsmtxca.Resultado, "A")    # Aprobado!
-        self.assertIsInstance(wsmtxca.CAE, str)
+        self.assertEqual(wsmtxca.Resultado, "A")  # Aprobado!
+        self.assertIsInstance(wsmtxca.CAE, basestring)
         self.assertEqual(len(wsmtxca.CAE), len("63363178822329"))
         self.assertEqual(len(wsmtxca.Vencimiento), len("2013-09-07"))
 
@@ -172,14 +206,16 @@ class TestMTX(unittest.TestCase):
         self.assertEqual(wsmtxca.ImpTotal, imp_total)
 
         wsmtxca.AnalizarXml("XmlResponse")
-        self.assertEqual(wsmtxca.ObtenerTagXml('codigoAutorizacion'), str(wsmtxca.CAE))
-        self.assertEqual(wsmtxca.ObtenerTagXml('codigoConcepto'), str(concepto))
-        self.assertEqual(wsmtxca.ObtenerTagXml('arrayItems', 0, 'item', 'unidadesMtx'), '123456')
+        self.assertEqual(wsmtxca.ObtenerTagXml("codigoAutorizacion"), str(wsmtxca.CAE))
+        self.assertEqual(wsmtxca.ObtenerTagXml("codigoConcepto"), str(concepto))
+        self.assertEqual(
+            wsmtxca.ObtenerTagXml("arrayItems", 0, "item", "unidadesMtx"), "123456"
+        )
 
     def test_reproceso_servicios(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsmtxca = self.wsmtxca
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -195,7 +231,7 @@ class TestMTX(unittest.TestCase):
     def test_reproceso_productos(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsmtxca = self.wsmtxca
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -212,7 +248,7 @@ class TestMTX(unittest.TestCase):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         # N/D con comprobantes asociados
         wsmtxca = self.wsmtxca
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 2
         punto_vta = 4000
         nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -228,7 +264,7 @@ class TestMTX(unittest.TestCase):
     def test_reproceso_sin_tributos(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsmtxca = self.wsmtxca
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -242,5 +278,5 @@ class TestMTX(unittest.TestCase):
         self.assertEqual(wsmtxca.Reproceso, "S")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -63,8 +63,8 @@
 'total_deduccion.L_copy_copy_copy';'T';22.40;197.70;50.80;201.80;'Arial';9;False;False;False;0;16777215;'L';'IVA 21%:';0
 'total_iva_10_5';'T';53.80;193.70;82.20;197.80;'Arial';9;False;False;False;0;16777215;'R';'total_iva_10_5';0
 'total_iva_21';'T';53.80;197.70;82.20;201.80;'Arial';9;False;False;False;0;16777215;'R';'total_iva_21';0
-'total_iva_rg_2300_07';'T';53.80;217.70;82.20;221.80;'Arial';9;False;False;False;0;16777215;'R';'total_iva_rg_2300_07';0
-'total_iva_rg_2300_07.L';'T';22.40;217.70;50.80;221.80;'Arial';9;False;False;False;0;16777215;'L';'Total IVA RG 2300/07:';0
+'total_iva_rg_4310_18';'T';53.80;217.70;82.20;221.80;'Arial';9;False;False;False;0;16777215;'R';'total_iva_rg_4310_18';0
+'total_iva_rg_4310_18.L';'T';22.40;217.70;50.80;221.80;'Arial';9;False;False;False;0;16777215;'L';'Total IVA RG 4310/18:';0
 'total_neto_a_pagar';'T';53.80;213.70;82.20;217.80;'Arial';9;False;False;False;0;16777215;'R';'total_neto_a_pagar';0
 'total_neto_a_pagar.L_copy';'T';22.30;213.80;50.70;217.90;'Arial';9;False;False;False;0;16777215;'L';'Importe Neto:';0
 'total_operacion.L';'T';22.40;177.80;50.80;181.90;'Arial';9;False;False;False;0;16777215;'L';'Subtotal general:';0
