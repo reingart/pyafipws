@@ -102,6 +102,9 @@ def create_tra(service=SERVICE, ttl=2400):
 def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
 
+    if isinstance(tra, str):
+        tra = tra.encode("utf8")
+
     if Binding:
         _lib = Binding.lib
         _ffi = Binding.ffi
@@ -168,7 +171,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
                 stdin=PIPE,
                 stdout=PIPE,
                 stderr=PIPE,
-            ).communicate(tra.encode("utf8"))[0]
+            ).communicate(tra)[0]
             return b64encode(out)
         except OSError as e:
             if e.errno == 2:
