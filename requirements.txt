@@ -1,7 +1,8 @@
 httplib2==0.9.2; python_version <= '2.7'
 httplib2==0.19.0; python_version > '3'
 pysimplesoap==1.08.14
-#m2crypto>=0.18
+cryptography==3.3.2; python_version <= '2.7'
+cryptography==3.4.7; python_version > '3'
 fpdf>=1.7.2
 dbf>=0.88.019
 Pillow>=2.0.0
