@@ -26,9 +26,17 @@ __copyright__ = "Copyright (C) 2008-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
 __version__ = "3.11c"
 
-import hashlib, datetime, email, os, sys, time, traceback, warnings
+import datetime
+import email
+import hashlib
+import os
 import shutil
+import sys
+import time
+import traceback
 import unicodedata
+import warnings
+
 from pysimplesoap.client import SimpleXMLElement
 from .utils import (
     inicializar_y_capturar_excepciones,
@@ -51,7 +59,7 @@ try:
 except ImportError:
     ex = exception_info()
     warnings.warn("No es posible importar cryptography (OpenSSL)")
-    warnings.warn(ex['msg'])            # revisar instalación y DLLs de OpenSSL
+    warnings.warn(ex["msg"])  # revisar instalación y DLLs de OpenSSL
     Binding = None
     # utilizar alternativa (ejecutar proceso por separado)
     from subprocess import Popen, PIPE
@@ -92,10 +100,10 @@ def create_tra(service=SERVICE, ttl=2400):
     # El source es opcional. Si falta, toma la firma (recomendado).
     # tra.header.addChild('source','subject=...')
     # tra.header.addChild('destination','cn=wsaahomo,o=afip,c=ar,serialNumber=CUIT 33693450239')
-    tra.header.add_child('uniqueId', str(date('U')))
-    tra.header.add_child('generationTime', str(date('c', date('U') - ttl)))
-    tra.header.add_child('expirationTime', str(date('c', date('U') + ttl)))
-    tra.add_child('service', service)
+    tra.header.add_child("uniqueId", str(date("U")))
+    tra.header.add_child("generationTime", str(date("c", date("U") - ttl)))
+    tra.header.add_child("expirationTime", str(date("c", date("U") + ttl)))
+    tra.add_child("service", service)
     return tra.as_xml()
 
 
@@ -112,17 +120,19 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
         bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
 
         # Leer privatekey y cert
-        with open(privatekey, 'rb') as key_file:
+        with open(privatekey, "rb") as key_file:
             private_key = serialization.load_pem_private_key(
-                key_file.read(), None, default_backend())
+                key_file.read(), None, default_backend()
+            )
 
-        with open(cert, 'rb') as cert_file:
-            cert = x509.load_pem_x509_certificate(
-                cert_file.read(), default_backend())
+        with open(cert, "rb") as cert_file:
+            cert = x509.load_pem_x509_certificate(cert_file.read(), default_backend())
 
         try:
             # Firmar el texto (tra) usando cryptography (openssl bindings para python)
-            p7 = _lib.PKCS7_sign(cert._x509, private_key._evp_pkey, _ffi.NULL, bio_in, 0)
+            p7 = _lib.PKCS7_sign(
+                cert._x509, private_key._evp_pkey, _ffi.NULL, bio_in, 0
+            )
         finally:
             # Liberar memoria asignada
             _lib.BIO_free(bio_in)
@@ -136,7 +146,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
                 _lib.SMIME_write_PKCS7(bio_out, p7, bio_in, 0)
 
                 # Tomar datos para la salida
-                result_buffer = _ffi.new('char**')
+                result_buffer = _ffi.new("char**")
                 buffer_length = _lib.BIO_get_mem_data(bio_out, result_buffer)
                 output = _ffi.buffer(result_buffer[0], buffer_length)[:]
             finally:
@@ -145,7 +155,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
             _lib.BIO_free(bio_in)
 
         # Generar p7 en formato mail y recortar headers
-        msg = email.message_from_string(output.decode('utf8'))
+        msg = email.message_from_string(output.decode("utf8"))
         for part in msg.walk():
             filename = part.get_filename()
             if filename == "smime.p7m":
@@ -182,7 +192,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
 def openssl_exe():
     try:
         openssl = shutil.which("openssl")
-    except:
+    except Exception:
         openssl = None
     if not openssl:
         if sys.platform.startswith("linux"):
@@ -207,7 +217,7 @@ def call_wsaa(cms, location=WSAAURL, proxy=None, trace=False, cacert=None):
             raise RuntimeError(wsaa.Excepcion)
         else:
             return ta
-    except:
+    except Exception:
         raise
 
 
@@ -274,7 +284,7 @@ class WSAA(BaseWS):
             if not crt.startswith("-----BEGIN CERTIFICATE-----"):
                 crt = open(crt).read()
                 if isinstance(crt, str):
-                    crt = crt.encode('utf-8')
+                    crt = crt.encode("utf-8")
             cert = x509.load_pem_x509_certificate(crt, default_backend())
         if cert:
             self.Identidad = cert.subject
@@ -293,21 +303,25 @@ class WSAA(BaseWS):
     ):
         "Crea una clave privada (private key)"
         # create the RSA key pair (and save the result to a file):
-        rsa_key = rsa.generate_private_key(pub_exponent, key_length, backend=default_backend())
+        rsa_key = rsa.generate_private_key(
+            pub_exponent, key_length, backend=default_backend()
+        )
 
         if passphrase:
-            passp = passphrase.encode('utf-8')
+            passp = passphrase.encode("utf-8")
             # encryption AES-256-CBC
             cypher = serialization.BestAvailableEncryption(passp)
         else:
             cypher = serialization.NoEncryption()
 
         with open(filename, "wb") as f:
-            f.write(rsa_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=cypher,
-            ))
+            f.write(
+                rsa_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.TraditionalOpenSSL,
+                    encryption_algorithm=cypher,
+                )
+            )
 
         self.rsa_key = rsa_key
         return True
@@ -328,12 +342,16 @@ class WSAA(BaseWS):
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
         # sign the request with the previously created key (CrearClavePrivada)
-        csrs = self.x509_req.subject_name(x509.Name([
-                x509.NameAttribute(NameOID.COUNTRY_NAME, 'AR'),
-                x509.NameAttribute(NameOID.ORGANIZATION_NAME, '{}'.format(empresa)),
-                x509.NameAttribute(NameOID.COMMON_NAME, '{}'.format(nombre)),
-                x509.NameAttribute(NameOID.SERIAL_NUMBER, 'CUIT {}'.format(cuit)),
-                ])).sign(self.rsa_key, hashes.SHA256(), default_backend())
+        csrs = self.x509_req.subject_name(
+            x509.Name(
+                [
+                    x509.NameAttribute(NameOID.COUNTRY_NAME, "AR"),
+                    x509.NameAttribute(NameOID.ORGANIZATION_NAME, "{}".format(empresa)),
+                    x509.NameAttribute(NameOID.COMMON_NAME, "{}".format(nombre)),
+                    x509.NameAttribute(NameOID.SERIAL_NUMBER, "CUIT {}".format(cuit)),
+                ]
+            )
+        ).sign(self.rsa_key, hashes.SHA256(), default_backend())
 
         # save the CSR result to a file:
         with open(filename, "wb") as f:
@@ -455,7 +473,7 @@ class WSAA(BaseWS):
             self.AnalizarXml(xml=ta)
             self.Token = self.ObtenerTagXml("token")
             self.Sign = self.ObtenerTagXml("sign")
-        except:
+        except Exception:
             ta = ""
             if not self.Excepcion:
                 # avoid encoding problem when reporting exceptions to the user:
