@@ -38,6 +38,10 @@ jobs:
     - name: Install package
       run: |
         python setup.py install
+    - name: Download certificate and private key
+      run: |
+        wget https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2019.zip
+        unzip reingart2019.zip
     - name: Test with pytest
       run: |
         pytest
