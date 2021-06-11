@@ -45,4 +45,10 @@ jobs:
         unzip reingart2019.zip
     - name: Test with pytest
       run: |
-        pytest
+        pytest --html=report.html --self-contained-html
+    - name: Upload test report
+      uses: actions/upload-artifact@v2
+      if: ${{ always() }}
+      with:
+        name: report.html
+        path: report.html
