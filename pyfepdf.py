@@ -767,7 +767,7 @@ class FEPDF(object):
                 import locale
 
                 locale.setlocale(locale.LC_ALL, loc)
-                return locale.format(
+                return locale.format_string(
                     fmt,
                     Decimal(str(i).replace(",", ".")),
                     grouping=True,
@@ -1541,7 +1541,7 @@ class FEPDF(object):
                     else:
                         barras = ""
 
-                    f.set("CodigoBarras", unicode(barras))
+                    f.set("CodigoBarras", str(barras))
                     f.set("CodigoBarrasLegible", barras)
 
                     if not HOMO and barras and fact.get("resultado") == "A":
