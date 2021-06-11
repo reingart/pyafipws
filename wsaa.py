@@ -120,13 +120,24 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
         bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
 
         # Leer privatekey y cert
-        with open(privatekey, "rb") as key_file:
-            private_key = serialization.load_pem_private_key(
-                key_file.read(), None, default_backend()
-            )
+        if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
+            privatekey = open(privatekey).read()
+            if isinstance(privatekey, str):
+                privatekey = privatekey.encode("utf-8")
 
-        with open(cert, "rb") as cert_file:
-            cert = x509.load_pem_x509_certificate(cert_file.read(), default_backend())
+        if not passphrase:
+            password = None
+        else:
+            password = passphrase
+        private_key = serialization.load_pem_private_key(
+            privatekey, password, default_backend()
+        )
+
+        if not cert.startswith(b"-----BEGIN CERTIFICATE-----"):
+            cert = open(cert).read()
+            if isinstance(cert, str):
+                cert = cert.encode("utf-8")
+        cert = x509.load_pem_x509_certificate(cert, default_backend())
 
         try:
             # Firmar el texto (tra) usando cryptography (openssl bindings para python)
