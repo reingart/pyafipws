@@ -40,7 +40,7 @@ desc = (
 kwargs["package_dir"] = {"pyafipws": "."}
 kwargs["packages"] = ["pyafipws"]
 opts = {}
-data_files = []
+data_files = [("pyafipws/plantillas", glob.glob("plantillas/*"))]
 
 
 long_desc = (
