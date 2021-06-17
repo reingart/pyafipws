@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
@@ -13,7 +13,7 @@
 from pyafipws.wsaa import WSAA
 from pyafipws.wsfev1 import WSFEv1
 
-"Pruebas para WSFEv1 de AFIP (Factura Electr髇ica Mercado Interno sin detalle)"
+"Pruebas para WSFEv1 de AFIP (Factura Electr贸nica Mercado Interno sin detalle)"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
@@ -33,7 +33,7 @@ PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
 CACERT = "/home/reingart/Git/pyafipws/afip_root_desa_ca.crt"
 CACHE = "/home/reingart/pyafipws/cache"
 
-# Autenticaci髇:
+# Autenticaci贸n:
 
 ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key")
 print(ta)
@@ -59,13 +59,13 @@ class TestFE(unittest.TestCase):
         self.assertEqual(wsfev1.AuthServerStatus, "OK")
 
     def test_autorizar_comprobante(self, tipo_cbte=1, cbte_nro=None, servicios=True):
-        "Prueba de autorizaci髇 de un comprobante (obtenci髇 de CAE)"
+        "Prueba de autorizaci贸n de un comprobante (obtenci贸n de CAE)"
         wsfev1 = self.wsfev1
 
         # datos generales del comprobante:
         punto_vta = 4000
         if not cbte_nro:
-            # si no me especif韈an nro de comprobante, busco el pr髕imo
+            # si no me especif铆can nro de comprobante, busco el pr贸ximo
             cbte_nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
             cbte_nro = int(cbte_nro) + 1
         fecha = datetime.datetime.now().strftime("%Y%m%d")
@@ -80,7 +80,7 @@ class TestFE(unittest.TestCase):
         imp_op_ex = "0.00"
         imp_iva = "21.00"
         fecha_cbte = fecha
-        # Fechas del per韔do del servicio facturado (solo si concepto = 1?)
+        # Fechas del per铆odo del servicio facturado (solo si concepto = 1?)
         if servicios:
             concepto = 3
             fecha_venc_pago = fecha
@@ -115,7 +115,7 @@ class TestFE(unittest.TestCase):
             moneda_ctz,
         )
 
-        # agrego un comprobante asociado (solo notas de cr閐ito / d閎ito)
+        # agrego un comprobante asociado (solo notas de cr茅dito / d茅bito)
         if tipo_cbte in (2, 3):
             tipo = 1
             pv = 2
@@ -144,7 +144,7 @@ class TestFE(unittest.TestCase):
         self.assertEqual(len(wsfev1.CAE), len("63363178822329"))
         self.assertEqual(len(wsfev1.Vencimiento), len("20130907"))
         wsfev1.AnalizarXml("XmlResponse")
-        # observaci髇 "... no se encuentra registrado en los padrones de AFIP.":
+        # observaci贸n "... no se encuentra registrado en los padrones de AFIP.":
         self.assertEqual(wsfev1.ObtenerTagXml("Obs", 0, "Code"), None)
 
     def test_consulta(self):
@@ -175,7 +175,7 @@ class TestFE(unittest.TestCase):
     def test_reproceso_servicios(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsfev1 = self.wsfev1
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
@@ -191,7 +191,7 @@ class TestFE(unittest.TestCase):
     def test_reproceso_productos(self):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         wsfev1 = self.wsfev1
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 1
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
@@ -208,7 +208,7 @@ class TestFE(unittest.TestCase):
         "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
         # N/D con comprobantes asociados
         wsfev1 = self.wsfev1
-        # obtengo el pr髕imo n鷐ero de comprobante
+        # obtengo el pr贸ximo n煤mero de comprobante
         tipo_cbte = 2
         punto_vta = 4000
         nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
