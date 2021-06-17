@@ -29,20 +29,9 @@ try:
 except ImportError:
     crypt = None
 
-# Para usar varibles de entorno en travis
-cert = os.environ["CERT"]
-pkey = os.environ["PKEY"]
-CERT = cert.replace(r"\n", "\n")
-PKEY = pkey.replace(r"\n", "\n")
 
-with open("rei.crt", "w", encoding="utf-8") as f:
-    f.write(CERT)
-
-with open("rei.key", "w", encoding="utf-8") as f:
-    f.write(PKEY)
-
-CERT = "rei.crt"
-PKEY = "rei.key"
+CERT = "reingart.crt"
+PKEY = "reingart.key"
 
 wsaa = WSAA()
 # Generar ticket de accseso

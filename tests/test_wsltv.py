@@ -24,8 +24,8 @@ from pyafipws.wsltv import WSLTV
 
 WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 CUIT = os.environ["CUIT"]
-CERT = "rei.crt"
-PKEY = "rei.key"
+CERT = "reingart.crt"
+PKEY = "reingart.key"
 CACHE = ""
 
 # Obteniendo el TA para pruebas

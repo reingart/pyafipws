@@ -26,8 +26,8 @@ from pyafipws.ws_sr_padron import WSSrPadronA4, WSSrPadronA5
 
 WSDL = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5?wsdl"
 CUIT = os.environ["CUIT"]
-CERT = "rei.crt"
-PKEY = "rei.key"
+CERT = "reingart.crt"
+PKEY = "reingart.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas

@@ -25,8 +25,8 @@ from pyafipws import wscdc
 
 WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL"
 CUIT = os.environ["CUIT"]
-CERT = "rei.crt"
-PKEY = "rei.key"
+CERT = "reingart.crt"
+PKEY = "reingart.key"
 CACHE = ""
 
 wsc = wscdc

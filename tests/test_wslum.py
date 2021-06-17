@@ -24,8 +24,8 @@ from pyafipws.wslum import WSLUM
 
 WSDL = "https://fwshomo.afip.gov.ar/wslum/LumService?wsdl"
 CUIT = os.environ["CUIT"]
-CERT = "rei.crt"
-PKEY = "rei.key"
+CERT = "reingart.crt"
+PKEY = "reingart.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas

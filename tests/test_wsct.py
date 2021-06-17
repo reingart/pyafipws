@@ -27,8 +27,8 @@ from pyafipws.wsct import WSCT
 
 WSDL = "https://fwshomo.afip.gov.ar/wsct/CTService?wsdl"
 CUIT = os.environ["CUIT"]
-CERT = "rei.crt"
-PKEY = "rei.key"
+CERT = "reingart.crt"
+PKEY = "reingart.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas

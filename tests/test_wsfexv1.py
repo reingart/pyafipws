@@ -23,10 +23,10 @@ __license__ = "GPL 3.0"
 
 WSDL = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 CUIT = 20267565393
-CERT = "/pyafipws/reingart.crt"
-PRIVATEKEY = "/pyafipws/reingart.key"
-CACERT = "/pyafipws/afip_root_desa_ca.crt"
-CACHE = "/pyafipws/cache"
+CERT = "reingart.crt"
+PRIVATEKEY = "reingart.key"
+CACERT = "conf/afip_ca_info.crt"
+CACHE = ""
 
 # Debido a que Python solicita una opción de diseño, hay una advertencia
 # sobre una conexión no cerrada al ejecutar las pruebas.

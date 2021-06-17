@@ -24,8 +24,8 @@ from pyafipws.wslsp import WSLSP
 
 WSDL = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
 CUIT = os.environ["CUIT"]
-CERT = "rei.crt"
-PKEY = "rei.key"
+CERT = "reingart.crt"
+PKEY = "reingart.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas

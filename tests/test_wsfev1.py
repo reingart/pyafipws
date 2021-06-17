@@ -23,15 +23,13 @@ import unittest
 import datetime
 import sys
 
-sys.path.append("/home/reingart")  # TODO: proper packaging
-
 
 WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 CUIT = 20267565393
-CERT = "/home/reingart/pyafipws/reingart.crt"
-PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
-CACERT = "/home/reingart/Git/pyafipws/afip_root_desa_ca.crt"
-CACHE = "/home/reingart/pyafipws/cache"
+CERT = "reingart.crt"
+PRIVATEKEY = "reingart.key"
+CACERT = "conf/afip_ca_info.crt"
+CACHE = ""
 
 # Autenticación:
 

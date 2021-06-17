@@ -24,8 +24,8 @@ from pyafipws.wsremcarne import WSRemCarne
 
 WSDL = "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"
 CUIT = os.environ["CUIT"]
-CERT = "rei.crt"
-PKEY = "rei.key"
+CERT = "reingart.crt"
+PKEY = "reingart.key"
 CACHE = ""
 
 
