@@ -1,34 +1,36 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
+# -*- coding: utf8 -*-
 # This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by the
+# it under the terms of the GNU Lesser General Public License as published by the
 # Free Software Foundation; either version 3, or (at your option) any later
 # version.
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTIBILITY
-# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
 # for more details.
 
-from .formato_txt import A, N, I, ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, PERMISO, DATO
-"M骴ulo para manejo de Facturas Electr髇icas en tablas DBF (dBase, FoxPro, Clipper et.al.)"
+"M贸dulo para manejo de Facturas Electr贸nicas en tablas DBF (dBase, FoxPro, Clipper et.al.)"
+from __future__ import print_function
+
+from builtins import str
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
-__license__ = "GPL 3.0"
+__license__ = "LGPL-3.0-or-later"
 
 from decimal import Decimal
 import os
 
-CODEPAGE = 'cp437'
+CODEPAGE = "cp437"
 
 try:
     import dbf
-except BaseException:
+except:
     dbf = None
 
-CHARSET = 'latin1'
-CODEPAGE = 'cp437'
+CHARSET = "latin1"
+CODEPAGE = "cp437"
 DEBUG = True
 
 if dbf and hasattr(dbf, "encoding"):
@@ -36,21 +38,33 @@ if dbf and hasattr(dbf, "encoding"):
 
 # Formato de entrada/salida similar a SIAP RECE, con agregados
 
-# definici髇 del formato del archivo de intercambio:
+# definici贸n del formato del archivo de intercambio:
 
+from formato_txt import (
+    A,
+    N,
+    I,
+    ENCABEZADO,
+    DETALLE,
+    TRIBUTO,
+    IVA,
+    CMP_ASOC,
+    PERMISO,
+    DATO,
+)
 
 # agrego identificadores unicos para relacionarlos con el encabezado
-DETALLE = [('id', 15, N)] + DETALLE
-TRIBUTO = [('id', 15, N)] + TRIBUTO
-IVA = [('id', 15, N)] + IVA
-CMP_ASOC = [('id', 15, N)] + CMP_ASOC
-PERMISO = [('id', 15, N)] + PERMISO
-DATO = [('id', 15, N)] + DATO
+DETALLE = [("id", 15, N)] + DETALLE
+TRIBUTO = [("id", 15, N)] + TRIBUTO
+IVA = [("id", 15, N)] + IVA
+CMP_ASOC = [("id", 15, N)] + CMP_ASOC
+PERMISO = [("id", 15, N)] + PERMISO
+DATO = [("id", 15, N)] + DATO
 
 
 def definir_campos(formato):
-    "Procesar la definici髇 de campos para DBF seg鷑 el formato txt"
-    claves, campos = [], []
+    "Procesar la definici贸n de campos para DBF seg煤n el formato txt"
+    claves, campos = [], {}
     for fmt in formato:
         clave, longitud, tipo = fmt[0:3]
         if isinstance(longitud, tuple):
@@ -58,27 +72,30 @@ def definir_campos(formato):
         else:
             decimales = 2
         if longitud > 250:
-            tipo = "M"                  # memo!
+            tipo = "M"  # memo!
         elif tipo == A:
-            tipo = "C(%s)" % longitud   # character
+            tipo = "C(%s)" % longitud  # character
         elif tipo == N:
             tipo = "N(%s,0)" % longitud  # numeric
         elif tipo == I:
             tipo = "N(%s,%s)" % (longitud, decimales)  # "currency"
         else:
-            raise RuntimeError("Tipo desconocido: %s %s %s %s" % (tipo, clave, longitud, decimales))
+            raise RuntimeError(
+                "Tipo desconocido: %s %s %s %s" % (tipo, clave, longitud, decimales)
+            )
         nombre = dar_nombre_campo(clave)
         campo = "%s %s" % (nombre, tipo)
-        campos.append(campo)
-        claves.append(nombre)
-    return claves, campos
+        campos[clave] = campo
+        if nombre not in claves:
+            claves.append(nombre)
+    return claves, list(campos.values())
 
 
 CLAVES_ESPECIALES = {
-    'Dato_adicional1': "datoadic01",
-    'Dato_adicional2': "datoadic02",
-    'Dato_adicional3': "datoadic03",
-    'Dato_adicional4': "datoadic04",
+    "Dato_adicional1": "datoadic01",
+    "Dato_adicional2": "datoadic02",
+    "Dato_adicional3": "datoadic03",
+    "Dato_adicional4": "datoadic04",
 }
 
 
@@ -97,14 +114,15 @@ def leer(archivos=None, carpeta=None):
     if archivos is None:
         archivos = {}
     regs = {}
-    formatos = [('Encabezado', ENCABEZADO, None),
-                ('Detalle', DETALLE, 'detalles'),
-                ('Iva', IVA, 'ivas'),
-                ('Tributo', TRIBUTO, 'tributos'),
-                ('Permiso', PERMISO, 'permisos'),
-                ('Comprobante Asociado', CMP_ASOC, 'cbtes_asoc'),
-                ('Dato', DATO, 'datos'),
-                ]
+    formatos = [
+        ("Encabezado", ENCABEZADO, None),
+        ("Detalle", DETALLE, "detalles"),
+        ("Iva", IVA, "ivas"),
+        ("Tributo", TRIBUTO, "tributos"),
+        ("Permiso", PERMISO, "permisos"),
+        ("Comprobante Asociado", CMP_ASOC, "cbtes_asoc"),
+        ("Dato", DATO, "datos"),
+    ]
     for nombre, formato, subclave in formatos:
         filename = archivos.get(nombre.lower(), "%s.dbf" % nombre[:8]).strip()
         if not filename:
@@ -125,17 +143,19 @@ def leer(archivos=None, carpeta=None):
                 r[clave] = v
             # agrego
             if formato == ENCABEZADO:
-                r.update({
-                    'detalles': [],
-                    'ivas': [],
-                    'tributos': [],
-                    'permisos': [],
-                    'cbtes_asoc': [],
-                    'datos': [],
-                })
-                regs[r['id']] = r
+                r.update(
+                    {
+                        "detalles": [],
+                        "ivas": [],
+                        "tributos": [],
+                        "permisos": [],
+                        "cbtes_asoc": [],
+                        "datos": [],
+                    }
+                )
+                regs[r["id"]] = r
             else:
-                regs[r['id']][subclave].append(r)
+                regs[r["id"]][subclave].append(r)
 
     return regs
 
@@ -148,14 +168,15 @@ def escribir(regs, archivos=None, carpeta=None):
         filenames = {}
 
     for reg in regs:
-        formatos = [('Encabezado', ENCABEZADO, [reg]),
-                    ('Detalle', DETALLE, reg.get('detalles', [])),
-                    ('Iva', IVA, reg.get('ivas', [])),
-                    ('Tributo', TRIBUTO, reg.get('tributos', [])),
-                    ('Permiso', PERMISO, reg.get('permisos', [])),
-                    ('Comprobante Asociado', CMP_ASOC, reg.get('cbtes_asoc', [])),
-                    ('Dato', DATO, reg.get('datos', [])),
-                    ]
+        formatos = [
+            ("Encabezado", ENCABEZADO, [reg]),
+            ("Detalle", DETALLE, reg.get("detalles", [])),
+            ("Iva", IVA, reg.get("ivas", [])),
+            ("Tributo", TRIBUTO, reg.get("tributos", [])),
+            ("Permiso", PERMISO, reg.get("permisos", [])),
+            ("Comprobante Asociado", CMP_ASOC, reg.get("cbtes_asoc", [])),
+            ("Dato", DATO, reg.get("datos", [])),
+        ]
         for nombre, formato, l in formatos:
             claves, campos = definir_campos(formato)
             filename = archivos.get(nombre.lower(), "%s.dbf" % nombre[:8])
@@ -170,21 +191,21 @@ def escribir(regs, archivos=None, carpeta=None):
                 r = {}
                 for fmt in formato:
                     clave, longitud, tipo = fmt[0:3]
-                    if clave == 'id':
-                        v = reg['id']
+                    if clave == "id":
+                        v = reg["id"]
                     else:
                         v = d.get(clave, None)
                     if DEBUG:
                         print(clave, v, tipo)
                     if v is None and tipo == A:
-                        v = ''
-                    if (v is None or v == '') and tipo in (I, N):
+                        v = ""
+                    if (v is None or v == "") and tipo in (I, N):
                         v = 0
                     if tipo == A:
                         if isinstance(v, str):
-                            v = v.encode('utf8', 'ignore')
+                            v = v.encode("utf8", "ignore")
                         elif isinstance(v, str):
-                            v = v.decode('latin1', 'ignore').encode('utf8', 'ignore')
+                            v = v.decode("latin1", "ignore").encode("utf8", "ignore")
                         else:
                             v = str(v)
                     r[dar_nombre_campo(clave)] = v
@@ -193,16 +214,16 @@ def escribir(regs, archivos=None, carpeta=None):
 
 
 def ayuda():
-    "Imprimir ayuda con las tablas DBF y definici髇 de campos"
+    "Imprimir ayuda con las tablas DBF y definici贸n de campos"
     print("=== Formato DBF: ===")
     tipos_registro = [
-        ('Encabezado', ENCABEZADO),
-        ('Detalle Item', DETALLE),
-        ('Iva', IVA),
-        ('Tributo', TRIBUTO),
-        ('Comprobante Asociado', CMP_ASOC),
-        ('Permisos', PERMISO),
-        ('Datos', DATO),
+        ("Encabezado", ENCABEZADO),
+        ("Detalle Item", DETALLE),
+        ("Iva", IVA),
+        ("Tributo", TRIBUTO),
+        ("Comprobante Asociado", CMP_ASOC),
+        ("Permisos", PERMISO),
+        ("Datos", DATO),
     ]
     for msg, formato in tipos_registro:
         filename = "%s.dbf" % msg.lower()[:8]
