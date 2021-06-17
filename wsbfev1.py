@@ -232,22 +232,6 @@ class WSBFEv1(BaseWS):
         self.factura["opcionales"].append(op)
         return True
 
-    def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, fecha=None, **kwarg):
-        "Agrego un comprobante asociado a una factura (interna)"
-        cmp_asoc = {'tipo': tipo, 'pto_vta': pto_vta, 'nro': nro}
-        if cuit is not None:
-            cmp_asoc['cuit'] = cuit
-        if fecha is not None:
-            cmp_asoc['fecha'] = fecha
-        self.factura['cbtes_asoc'].append(cmp_asoc)
-        return True
-
-    def AgregarOpcional(self, opcional_id=0, valor="", **kwarg):
-        "Agrego un dato opcional a una factura (interna)"
-        op = {'opcional_id': opcional_id, 'valor': valor}
-        self.factura['opcionales'].append(op)
-        return True
-
     @inicializar_y_capturar_excepciones
     def Authorize(self, id):
         "Autoriza la factura cargada en memoria"

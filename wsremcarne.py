@@ -694,7 +694,7 @@ if __name__ == "__main__":
         win32com.server.register.UseCommandLine(WSRemCarne)
         sys.exit(0)
 
-    from configparser import ConfigParser
+    from configparser import SafeConfigParser
 
     try:
 
@@ -707,7 +707,7 @@ if __name__ == "__main__":
             print("Usando configuración:", arg)
             CONFIG_FILE = arg
 
-        config = ConfigParser()
+        config = SafeConfigParser()
         config.read(CONFIG_FILE)
         CERT = config.get("WSAA", "CERT")
         PRIVATEKEY = config.get("WSAA", "PRIVATEKEY")

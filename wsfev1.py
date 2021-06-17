@@ -1305,7 +1305,7 @@ def main():
     wsfev1.Cuit = "20267565393"
 
     if "--prueba" in sys.argv:
-        print(wsfev1.client.help("FECAESolicitar").encode('latin1'))
+        print(wsfev1.client.help("FECAESolicitar").encode("latin1"))
 
         if "--usados" in sys.argv:
             tipo_cbte = 49

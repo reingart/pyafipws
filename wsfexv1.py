@@ -651,7 +651,6 @@ class WSFEXv1(BaseWS):
         else:
             return ret
 
-    @inicializar_y_capturar_excepciones
     def GetParamIncoterms(self, sep="|"):
         "Recuperar lista de valores referenciales de Incoterms"
         ret = self.client.FEXGetPARAM_Incoterms(
@@ -997,14 +996,20 @@ if __name__ == "__main__":
 
             sys.stdout = codecs.getwriter("latin1")(sys.stdout)
 
-            print("\n=== Incoterms ===")
-            print('\n'.join(wsfexv1.GetParamIncoterms(sep='||')))
+            print("=== Incoterms ===")
+            idiomas = wsfexv1.GetParamIncoterms(sep="||")
+            for idioma in idiomas:
+                print(idioma)
 
             print("=== Idiomas ===")
-            print('\n'.join(wsfexv1.GetParamIdiomas(sep='||')))
+            idiomas = wsfexv1.GetParamIdiomas(sep="||")
+            for idioma in idiomas:
+                print(idioma)
 
             print("=== Tipos Comprobantes ===")
-            print('\n'.join(wsfexv1.GetParamTipoCbte(sep='||')))
+            tipos = wsfexv1.GetParamTipoCbte(sep=False)
+            for t in tipos:
+                print("||%(codigo)s||%(ds)s||" % t)
 
             print("=== Tipos Expo ===")
             tipos = wsfexv1.GetParamTipoExpo(sep=False)

@@ -42,6 +42,7 @@ import socket
 import sqlite3
 import urllib.request, urllib.error, urllib.parse
 import zipfile
+from email.utils import formatdate
 import sys
 import warnings
 from .utils import (

@@ -12,13 +12,12 @@ from __future__ import absolute_import
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2021 Mariano Reingart"
 
+from distutils.core import setup
 import glob
 import os
 import subprocess
-import sys
 import warnings
-
-from setuptools import setup
+import sys
 
 try:
     rev = subprocess.check_output(
@@ -60,17 +59,6 @@ if "sdist" in sys.argv and os.path.exists("README.md") and sys.platform == "linu
         open("README.rst", "w").write(long_desc.encode("utf8"))
     except Exception as e:
         warnings.warn("Exception when converting the README format: %s" % e)
-
-# dependencias
-
-requires_path = 'requirements.txt'
-requires = []
-
-if os.path.isfile(requires_path):
-    with open(requires_path) as f:
-        requires = f.read().splitlines()
-
-dependency_links = ['https://github.com/pysimplesoap/pysimplesoap/tarball/stable_py3k#egg=pysimplesoap', ]
 
 
 setup(

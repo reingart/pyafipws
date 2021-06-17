@@ -28,7 +28,7 @@ import sys
 import time
 import traceback
 
-# revisar la instalación de pyafipws:
+# revisar la instalación de pyafip.ws:
 from . import wsfexv1
 from .utils import SimpleXMLElement, SoapClient, SoapFault, date
 from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf

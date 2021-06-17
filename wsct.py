@@ -780,7 +780,6 @@ class WSCT(BaseWS):
             },
             codigoMoneda=moneda_id,
         )
-        ret = res['consultarCotizacionReturn']
         self.__analizar_errores(ret)
         if "cotizacionMoneda" in ret:
             return str(ret["cotizacionMoneda"])
@@ -797,8 +796,6 @@ class WSCT(BaseWS):
                 "cuitRepresentada": self.Cuit,
             },
         )
-        result = res['consultarPuntosVentaReturn']
-        self.__analizar_errores(result)
         ret = []
         self.__analizar_errores(ret)
         for p in res["consultarPuntosVentaReturn"].get("arrayPuntosVenta", {}):
@@ -806,10 +803,7 @@ class WSCT(BaseWS):
             if "fechaBaja" not in p:
                 p["fechaBaja"] = ""
             ret.append(fmt % p if fmt else p)
-        if ret:
-            return ret
-        else:
-            return self.ErrMsg
+        return ret
 
     @inicializar_y_capturar_excepciones
     def ConsultarPaises(self, sep="|"):
@@ -1011,8 +1005,7 @@ def main():
         try:
             tipo_cbte = 195
             punto_vta = 4000
-            cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(
-                tipo_cbte, punto_vta)
+            cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
             tipo_doc = 80
             nro_doc = "50000000059"
@@ -1112,8 +1105,7 @@ def main():
                 wsct.ConsultarComprobante(tipo_cbte, punto_vta, cbte_nro)
                 print("CAE consulta", wsct.CAE, wsct.CAE == cae)
                 print("NRO consulta", wsct.CbteNro, wsct.CbteNro == cbte_nro)
-                print("TOTAL consulta", wsct.ImpTotal,
-                      wsct.ImpTotal == imp_total)
+                print("TOTAL consulta", wsct.ImpTotal, wsct.ImpTotal == imp_total)
 
                 wsct.AnalizarXml("XmlResponse")
                 assert wsct.ObtenerTagXml("codigoAutorizacion") == str(wsct.CAE)
