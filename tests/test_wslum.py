@@ -23,9 +23,9 @@ from pyafipws.wslum import WSLUM
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wslum/LumService?wsdl"
-CUIT = os.environ['CUIT']
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CUIT = os.environ["CUIT"]
+CERT = "rei.crt"
+PKEY = "rei.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas
@@ -45,24 +45,24 @@ def test_conectar():
 def test_server_status():
     """Test de estado de servidores."""
     wslum.Dummy()
-    assert wslum.AppServerStatus == 'OK'
-    assert wslum.DbServerStatus == 'OK'
-    assert wslum.AuthServerStatus == 'OK'
+    assert wslum.AppServerStatus == "OK"
+    assert wslum.DbServerStatus == "OK"
+    assert wslum.AuthServerStatus == "OK"
 
 
 def test_inicializar():
     """Test inicializar variables de BaseWS."""
     wslum.inicializar()
     assert wslum.Total is None
-    assert wslum.FechaComprobante == ''
+    assert wslum.FechaComprobante == ""
 
 
 def test___analizar_errores():
     """Test Analizar si se encuentran errores en clientes."""
-    ret = {'numeroComprobante': 286}
+    ret = {"numeroComprobante": 286}
     wslum._WSLUM__analizar_errores(ret)
     # devuelve '' si no encuentra errores
-    assert wslum.ErrMsg == ''
+    assert wslum.ErrMsg == ""
 
 
 def test_crear_liquidacion():
@@ -77,13 +77,18 @@ def test_crear_liquidacion():
     inscripcion_registro_publico = "Nro IGJ"
     datos_adicionales = "Datos Adicionales Varios"
     alicuota_iva = 21.00
-    liquidacion = wslum.CrearLiquidacion(tipo_cbte, pto_vta, nro_cbte,
-                                         fecha, periodo,
-                                         iibb_adquirente,
-                                         domicilio_sede,
-                                         inscripcion_registro_publico,
-                                         datos_adicionales,
-                                         alicuota_iva)
+    liquidacion = wslum.CrearLiquidacion(
+        tipo_cbte,
+        pto_vta,
+        nro_cbte,
+        fecha,
+        periodo,
+        iibb_adquirente,
+        domicilio_sede,
+        inscripcion_registro_publico,
+        datos_adicionales,
+        alicuota_iva,
+    )
     assert liquidacion
 
 
@@ -110,11 +115,13 @@ def test_agregar_tambo():
     fecha_venc_cert_tuberculosis = "2015-01-01"
     fecha_venc_cert_brucelosis = "2015-01-01"
     nro_tambo_provincial = 100000000
-    agregado = wslum.AgregarTambo(nro_tambo_interno,
-                                  nro_renspa,
-                                  fecha_venc_cert_tuberculosis,
-                                  fecha_venc_cert_brucelosis,
-                                  nro_tambo_provincial)
+    agregado = wslum.AgregarTambo(
+        nro_tambo_interno,
+        nro_renspa,
+        fecha_venc_cert_tuberculosis,
+        fecha_venc_cert_brucelosis,
+        nro_tambo_provincial,
+    )
     assert agregado
 
 
@@ -126,12 +133,16 @@ def test_agregar_ubicacion_tambo():
     cod_localidad = 10109
     cod_provincia = 1
     codigo_postal = 1234
-    nombre_partido_depto = 'Partido Tambo'
-    agregado = wslum.AgregarUbicacionTambo(latitud, longitud,
-                                           domicilio,
-                                           cod_localidad, cod_provincia,
-                                           codigo_postal,
-                                           nombre_partido_depto)
+    nombre_partido_depto = "Partido Tambo"
+    agregado = wslum.AgregarUbicacionTambo(
+        latitud,
+        longitud,
+        domicilio,
+        cod_localidad,
+        cod_provincia,
+        codigo_postal,
+        nombre_partido_depto,
+    )
     assert agregado
 
 
@@ -141,9 +152,9 @@ def test_agregar_balance_litros_porcentajes_solidos():
     litros_decomisados = 1000
     kg_grasa = 100.00
     kg_proteina = 100.00
-    agregado = wslum.AgregarBalanceLitrosPorcentajesSolidos(litros_remitidos,
-                                                            litros_decomisados,
-                                                            kg_grasa, kg_proteina)
+    agregado = wslum.AgregarBalanceLitrosPorcentajesSolidos(
+        litros_remitidos, litros_decomisados, kg_grasa, kg_proteina
+    )
     # No return
     assert agregado is None
     assert isinstance(wslum.solicitud, dict)
@@ -160,10 +171,15 @@ def test_agregar_conceptos_basicos_mercado_interno():
     kg_crecimiento_pr = 0
     precio_por_kg_crecimiento_pr = 0.00
     agregado = wslum.AgregarConceptosBasicosMercadoInterno(
-                    kg_produccion_gb, precio_por_kg_produccion_gb,
-                    kg_produccion_pr, precio_por_kg_produccion_pr,
-                    kg_crecimiento_gb, precio_por_kg_crecimiento_gb,
-                    kg_crecimiento_pr, precio_por_kg_crecimiento_pr)
+        kg_produccion_gb,
+        precio_por_kg_produccion_gb,
+        kg_produccion_pr,
+        precio_por_kg_produccion_pr,
+        kg_crecimiento_gb,
+        precio_por_kg_crecimiento_gb,
+        kg_crecimiento_pr,
+        precio_por_kg_crecimiento_pr,
+    )
     assert agregado
 
 
@@ -178,10 +194,15 @@ def test_agregar_conceptos_basicos_mercado_externo():
     kg_crecimiento_pr = 0
     precio_por_kg_crecimiento_pr = 0.00
     agregado = wslum.AgregarConceptosBasicosMercadoInterno(
-                    kg_produccion_gb, precio_por_kg_produccion_gb,
-                    kg_produccion_pr, precio_por_kg_produccion_pr,
-                    kg_crecimiento_gb, precio_por_kg_crecimiento_gb,
-                    kg_crecimiento_pr, precio_por_kg_crecimiento_pr)
+        kg_produccion_gb,
+        precio_por_kg_produccion_gb,
+        kg_produccion_pr,
+        precio_por_kg_produccion_pr,
+        kg_crecimiento_gb,
+        precio_por_kg_crecimiento_gb,
+        kg_crecimiento_pr,
+        precio_por_kg_crecimiento_pr,
+    )
     assert agregado
 
 
@@ -191,8 +212,9 @@ def test_agregar_bonificacion_penalizacion():
     detalle = "opcional"
     resultado = "400"
     porcentaje = 10.00
-    agregado = wslum.AgregarBonificacionPenalizacion(codigo, detalle,
-                                                     resultado, porcentaje)
+    agregado = wslum.AgregarBonificacionPenalizacion(
+        codigo, detalle, resultado, porcentaje
+    )
     assert agregado
 
 
@@ -202,8 +224,7 @@ def test_agregar_otro_impuesto():
     base_imponible = 100.00
     alicuota = 10.00
     detalle = ""
-    agregado = wslum.AgregarOtroImpuesto(tipo, base_imponible,
-                                         alicuota, detalle)
+    agregado = wslum.AgregarOtroImpuesto(tipo, base_imponible, alicuota, detalle)
     assert agregado
 
 
@@ -228,13 +249,12 @@ def test_analizar_liquidacion():
 
 def test_agregar_ajuste():
     """Test agregar ajuste."""
-    cai = "10000000000000",
+    cai = ("10000000000000",)
     tipo_cbte = 0
     pto_vta = 0
     nro_cbte = 0
     cae_a_ajustar = "75521002437246"
-    agregado = wslum.AgregarAjuste(cai, tipo_cbte, pto_vta,
-                                   nro_cbte, cae_a_ajustar)
+    agregado = wslum.AgregarAjuste(cai, tipo_cbte, pto_vta, nro_cbte, cae_a_ajustar)
     assert agregado
 
 
@@ -244,8 +264,9 @@ def test_consultar_liquidacion():
     pto_vta = 1
     nro_cbte = 0
     cuit = None
-    consulta = wslum.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte,
-                                          cuit_comprador=cuit)
+    consulta = wslum.ConsultarLiquidacion(
+        tipo_cbte, pto_vta, nro_cbte, cuit_comprador=cuit
+    )
     assert consulta
 
 
@@ -268,6 +289,7 @@ def test_consultar_localidades():
     cod_provincia = 1
     consulta = wslum.ConsultarLocalidades(cod_provincia)
     assert consulta
+
 
 # No funciona-no existe el metodo en el web service
 # def test_consultar_condiciones_venta():
@@ -296,7 +318,7 @@ def test_consultar_puntos_ventas():
 
 def test_mostrar_pdf():
     """Test mostrar pdf."""
-    archivo = 'nota'
+    archivo = "nota"
     imprimir = False
     pdf_ok = wslum.MostrarPDF(archivo, imprimir)
     assert pdf_ok is False

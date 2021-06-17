@@ -30,23 +30,23 @@ except ImportError:
     crypt = None
 
 # Para usar varibles de entorno en travis
-cert = os.environ['CERT']
-pkey = os.environ['PKEY']
-CERT = cert.replace(r'\n', '\n')
-PKEY = pkey.replace(r'\n', '\n')
+cert = os.environ["CERT"]
+pkey = os.environ["PKEY"]
+CERT = cert.replace(r"\n", "\n")
+PKEY = pkey.replace(r"\n", "\n")
 
-with open('rei.crt', 'w', encoding='utf-8') as f:
+with open("rei.crt", "w", encoding="utf-8") as f:
     f.write(CERT)
 
-with open('rei.key', 'w', encoding='utf-8') as f:
+with open("rei.key", "w", encoding="utf-8") as f:
     f.write(PKEY)
 
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CERT = "rei.crt"
+PKEY = "rei.key"
 
 wsaa = WSAA()
 # Generar ticket de accseso
-ta = wsaa.Autenticar('wsfe', CERT, PKEY)
+ta = wsaa.Autenticar("wsfe", CERT, PKEY)
 tra = at.create_tra()
 sign = at.sign_tra(tra, CERT, PKEY)
 
@@ -60,9 +60,10 @@ def test_create_tra():
 
 # Si esta instalado m2crypto o cryptography.
 if m2 or crypt:
+
     def test_sign_tra_cript():
         """Firmar tra con las credenciales."""
-        assert sign.startswith('MIIG+')
+        assert sign.startswith("MIIG+")
 
     def test_analizar_certificado():
         """Test analizar datos en certificado."""
@@ -80,11 +81,13 @@ if m2 or crypt:
         """Crea CSM para solicitar certificado."""
         csm = wsaa.CrearPedidoCertificado()
         assert csm
+
+
 else:
     # con OpenSSL directo
     def test_sign_tra_openssl():
         """Firmar tra con las credenciales."""
-        assert sign.startswith('MIIG+')
+        assert sign.startswith("MIIG+")
 
 
 def test_expirado():

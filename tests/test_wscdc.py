@@ -24,9 +24,9 @@ from pyafipws import wscdc
 
 
 WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL"
-CUIT = os.environ['CUIT']
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CUIT = os.environ["CUIT"]
+CERT = "rei.crt"
+PKEY = "rei.key"
 CACHE = ""
 
 wsc = wscdc
@@ -43,25 +43,31 @@ wscdc.Conectar(CACHE, WSDL)
 def test_server_status():
     """Test de estado de servidores."""
     wscdc.Dummy()
-    assert wscdc.AppServerStatus == 'OK'
-    assert wscdc.DbServerStatus == 'OK'
-    assert wscdc.AuthServerStatus == 'OK'
+    assert wscdc.AppServerStatus == "OK"
+    assert wscdc.DbServerStatus == "OK"
+    assert wscdc.AuthServerStatus == "OK"
 
 
 def test_inicializar():
     """Test inicializar variables de BaseWS."""
     wscdc.inicializar()
     assert wscdc.ImpTotal is None
-    assert wscdc.Resultado == ''
+    assert wscdc.Resultado == ""
 
 
 def test_analizar_errores():
     """Test analizar si se encuentran errores."""
-    ret = {'Errors': [{'Err': {
-        'Code': 100,
-        'Msg': 'El N° de CAI/CAE/CAEA consultado no existe'
-               'en las bases del organismo.'
-    }}]}
+    ret = {
+        "Errors": [
+            {
+                "Err": {
+                    "Code": 100,
+                    "Msg": "El N° de CAI/CAE/CAEA consultado no existe"
+                    "en las bases del organismo.",
+                }
+            }
+        ]
+    }
     wscdc._WSCDC__analizar_errores(ret)
     # devuelve '' si no encuentra errores
     assert wscdc.ErrMsg
@@ -79,14 +85,15 @@ def test_constatar_comprobante():
         imp_total=1754.5,
         cod_autorizacion="69333775104382",
         doc_tipo_receptor=80,
-        doc_nro_receptor=20888888883,)
+        doc_nro_receptor=20888888883,
+    )
 
     constatar = wscdc.ConstatarComprobante(**datos_consulta)
 
     assert constatar
-    assert wscdc.Resultado == 'A'
+    assert wscdc.Resultado == "A"
 
-    nombre_archivo = 'datos_consulta.json'
+    nombre_archivo = "datos_consulta.json"
     # Indico comando interno para lectura y escritura
     sys.argv.append("--json")
 

@@ -46,24 +46,24 @@ class TestBFE(unittest.TestCase):
     """Test para WSBFEv1 de AFIP(Bonos Fiscales electronicos v1.1)"""
 
     def setUp(self):
-        sys.argv.append('--trace')
+        sys.argv.append("--trace")
         self.wsbfev1 = wsbfev1 = WSBFEv1()
         wsbfev1.Cuit = CUIT
         wsbfev1.SetTicketAcceso(ta)
         wsbfev1.Conectar(CACHE, WSDL)
-        print(';)')
+        print(";)")
 
     def test_dummy(self):
         """Test de estado del servidor."""
         wsbfev1 = self.wsbfev1
-        print(wsbfev1.client.help('BFEDummy'))
+        print(wsbfev1.client.help("BFEDummy"))
         wsbfev1.Dummy()
         print("AppServerStatus", wsbfev1.AppServerStatus)
         print("DbServerStatus", wsbfev1.DbServerStatus)
         print("AuthServerStatus", wsbfev1.AuthServerStatus)
-        self.assertEqual(wsbfev1.AppServerStatus, 'OK')
-        self.assertEqual(wsbfev1.DbServerStatus, 'OK')
-        self.assertEqual(wsbfev1.AuthServerStatus, 'OK')
+        self.assertEqual(wsbfev1.AppServerStatus, "OK")
+        self.assertEqual(wsbfev1.DbServerStatus, "OK")
+        self.assertEqual(wsbfev1.AuthServerStatus, "OK")
 
     def test_crear_factura(self):
         """Test de creación de una factura (Interna)."""
@@ -79,19 +79,35 @@ class TestBFE(unittest.TestCase):
         imp_moneda_id = "PES"  # (ver tabla de parámetros)
         imp_moneda_ctz = 1
         imp_neto = "1450.00"
-        impto_liq = "304.50"      # 21% IVA
+        impto_liq = "304.50"  # 21% IVA
         impto_liq_rni = imp_tot_conc = imp_op_ex = "0.00"
         imp_perc = imp_iibb = imp_perc_mun = imp_internos = "0.00"
         imp_total = "1754.50"
         fecha_venc_pago = None
 
         # Creo una factura (internamente, no se llama al WebService)
-        fact = wsbfev1.CrearFactura(tipo_doc, nro_doc,
-                                    zona, tipo_cbte, punto_vta, cbte_nro, fecha_cbte,
-                                    imp_total, imp_neto, impto_liq,
-                                    imp_tot_conc, impto_liq_rni, imp_op_ex,
-                                    imp_perc, imp_iibb, imp_perc_mun, imp_internos,
-                                    imp_moneda_id, imp_moneda_ctz, fecha_venc_pago)
+        fact = wsbfev1.CrearFactura(
+            tipo_doc,
+            nro_doc,
+            zona,
+            tipo_cbte,
+            punto_vta,
+            cbte_nro,
+            fecha_cbte,
+            imp_total,
+            imp_neto,
+            impto_liq,
+            imp_tot_conc,
+            impto_liq_rni,
+            imp_op_ex,
+            imp_perc,
+            imp_iibb,
+            imp_perc_mun,
+            imp_internos,
+            imp_moneda_id,
+            imp_moneda_ctz,
+            fecha_venc_pago,
+        )
         self.assertTrue(fact)
 
     def test_agregar_item(self):
@@ -99,17 +115,18 @@ class TestBFE(unittest.TestCase):
         wsbfev1 = self.wsbfev1
         self.test_crear_factura()
         # Agrego un item:
-        ncm = '2101.11.10'
-        sec = ''
+        ncm = "2101.11.10"
+        sec = ""
         umed = 5  # unidades
-        ds = 'Cafe'
+        ds = "Cafe"
         qty = "10.00"
         precio = "150.00"
         bonif = "50.00"
         iva_id = 5
         imp_total = "1754.50"
         item = wsbfev1.AgregarItem(
-            ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total)
+            ncm, sec, ds, qty, umed, precio, bonif, iva_id, imp_total
+        )
         self.assertTrue(item)
 
     def test_agregar_cbte_asoc(self):
@@ -122,7 +139,8 @@ class TestBFE(unittest.TestCase):
         cbteasoc_cuit = 20111111111
         cbteasoc_fecha = None
         cbteasoc = wsbfev1.AgregarCmpAsoc(
-            cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit, cbteasoc_fecha)
+            cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit, cbteasoc_fecha
+        )
         self.assertTrue(cbteasoc)
 
     def test_agregar_opcional(self):
@@ -130,7 +148,7 @@ class TestBFE(unittest.TestCase):
         wsbfev1 = self.wsbfev1
         self.test_agregar_item()
         idz = "1010"
-        ds = 'pyafipws'
+        ds = "pyafipws"
         opcional = wsbfev1.AgregarOpcional(idz, ds)
         self.assertTrue(opcional)
 
@@ -148,8 +166,7 @@ class TestBFE(unittest.TestCase):
         self.assertIsInstance(wsbfev1.CAE, str)
         self.assertIsNotNone(wsbfev1.CAE)
         ten = datetime.now() + timedelta(days=10)
-        self.assertEqual(wsbfev1.Vencimiento,
-                         ten.strftime("%d/%m/%Y"))
+        self.assertEqual(wsbfev1.Vencimiento, ten.strftime("%d/%m/%Y"))
 
     def test_consulta(self):
         """Test para obtener los datos de un comprobante autorizado."""
@@ -176,7 +193,7 @@ class TestBFE(unittest.TestCase):
         wsbfev1 = self.wsbfev1
         tipo_cbte = 1
         punto_vta = 5
-        cbte_ejemp = '1234'
+        cbte_ejemp = "1234"
 
         cbte_nro = wsbfev1.GetLastCMP(tipo_cbte, punto_vta)
         self.assertEqual(len(str(cbte_nro)), len(cbte_ejemp))
@@ -205,5 +222,5 @@ class TestBFE(unittest.TestCase):
         # self.assertIsNotNone(wsbfev1.GetParamCtz('DOL'))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

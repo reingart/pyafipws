@@ -26,9 +26,9 @@ from pyafipws.wsct import WSCT
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsct/CTService?wsdl"
-CUIT = os.environ['CUIT']
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CUIT = os.environ["CUIT"]
+CERT = "rei.crt"
+PKEY = "rei.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas
@@ -43,24 +43,30 @@ wsct.Conectar(CACHE, WSDL)
 def test_server_status():
     """Test de estado de servidores."""
     wsct.Dummy()
-    assert wsct.AppServerStatus == 'OK'
-    assert wsct.DbServerStatus == 'OK'
-    assert wsct.AuthServerStatus == 'OK'
+    assert wsct.AppServerStatus == "OK"
+    assert wsct.DbServerStatus == "OK"
+    assert wsct.AuthServerStatus == "OK"
 
 
 def test_inicializar():
     """Test inicializar variables de BaseWS."""
     wsct.inicializar()
     assert wsct.ImpTotal is None
-    assert wsct.Evento == ''
+    assert wsct.Evento == ""
 
 
 def test_analizar_errores():
     """Test Analizar si se encuentran errores en clientes."""
-    ret = {'arrayErrores': [{'codigoDescripcion': {
-        'codigo': 1106,
-        'descripcion': 'No existen puntos de venta habilitados para utilizar en el presente ws.'
-    }}]}
+    ret = {
+        "arrayErrores": [
+            {
+                "codigoDescripcion": {
+                    "codigo": 1106,
+                    "descripcion": "No existen puntos de venta habilitados para utilizar en el presente ws.",
+                }
+            }
+        ]
+    }
     wsct._WSCT__analizar_errores(ret)
     # devuelve '' si no encuentra errores
     assert wsct.ErrMsg
@@ -68,41 +74,58 @@ def test_analizar_errores():
 
 def test_crear_factura():
     """Test crear factura."""
-    tipo_doc = 'CI'
+    tipo_doc = "CI"
     tipo_cbte = 195
     punto_vta = 4000
     cbte_nro = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
     fecha = datetime.now().strftime("%Y-%m-%d")
     nro_doc = "50000000059"
     cbte_nro = int(cbte_nro) + 1
-    id_impositivo = 9     # "Cliente del Exterior"
-    cod_relacion = 3      # Alojamiento Directo a Turista No Residente
+    id_impositivo = 9  # "Cliente del Exterior"
+    cod_relacion = 3  # Alojamiento Directo a Turista No Residente
     imp_total = "101.00"
     imp_tot_conc = "0.00"
     imp_neto = "100.00"
     imp_trib = "1.00"
     imp_op_ex = "0.00"
     imp_subtotal = "100.00"
-    imp_reintegro = -21.00      # validación AFIP 346
+    imp_reintegro = -21.00  # validación AFIP 346
     cod_pais = 203
     domicilio = "Rua N.76 km 34.5 Alagoas"
     fecha_cbte = fecha
-    moneda_id = 'PES'
-    moneda_ctz = '1.000'
+    moneda_id = "PES"
+    moneda_ctz = "1.000"
     obs = "Observaciones Comerciales, libre"
 
-    factura = wsct.CrearFactura(tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                                cbte_nro, imp_total, imp_tot_conc, imp_neto,
-                                imp_subtotal, imp_trib, imp_op_ex, imp_reintegro,
-                                fecha_cbte, id_impositivo, cod_pais, domicilio,
-                                cod_relacion, moneda_id, moneda_ctz, obs)
+    factura = wsct.CrearFactura(
+        tipo_doc,
+        nro_doc,
+        tipo_cbte,
+        punto_vta,
+        cbte_nro,
+        imp_total,
+        imp_tot_conc,
+        imp_neto,
+        imp_subtotal,
+        imp_trib,
+        imp_op_ex,
+        imp_reintegro,
+        fecha_cbte,
+        id_impositivo,
+        cod_pais,
+        domicilio,
+        cod_relacion,
+        moneda_id,
+        moneda_ctz,
+        obs,
+    )
     assert factura
 
 
 def test_agregar_tributo():
     """Test agregar tributo."""
     tributo_id = 99
-    desc = 'Impuesto Municipal Matanza'
+    desc = "Impuesto Municipal Matanza"
     base_imp = "100.00"
     alic = "1.00"
     importe = "1.00"
@@ -121,34 +144,36 @@ def test_agregar_iva():
 
 def test_agregar_item():
     """Test agregar item."""
-    tipo = 0    # Item General
+    tipo = 0  # Item General
     cod_tur = 1  # Servicio de hotelería - alojamiento sin desayuno
     codigo = "T0001"
     ds = "Descripcion del producto P0001"
     iva_id = 5
     imp_iva = 21.00
     imp_subtotal = 121.00
-    agregado = wsct.AgregarItem(tipo, cod_tur, codigo, ds,
-                                iva_id, imp_iva, imp_subtotal)
+    agregado = wsct.AgregarItem(
+        tipo, cod_tur, codigo, ds, iva_id, imp_iva, imp_subtotal
+    )
     assert agregado
 
 
 def test_agregar_forma_pago():
     """Test agregar forma pago."""
-    codigo = 68             # tarjeta de crédito
-    tipo_tarjeta = 99       # otra (ver tabla de parámetros)
+    codigo = 68  # tarjeta de crédito
+    tipo_tarjeta = 99  # otra (ver tabla de parámetros)
     numero_tarjeta = "999999"
     swift_code = None
     tipo_cuenta = None
     numero_cuenta = None
-    agregado = wsct.AgregarFormaPago(codigo, tipo_tarjeta, numero_tarjeta,
-                                     swift_code, tipo_cuenta, numero_cuenta)
+    agregado = wsct.AgregarFormaPago(
+        codigo, tipo_tarjeta, numero_tarjeta, swift_code, tipo_cuenta, numero_cuenta
+    )
     assert agregado
 
 
 def test_establecer_campo_item():
     """Test establecer campo item."""
-    campo = 'tipo'
+    campo = "tipo"
     valor = 0
     campo = wsct.EstablecerCampoItem(campo, valor)
     assert campo
@@ -156,7 +181,7 @@ def test_establecer_campo_item():
 
 def test_establecer_campo_factura():
     """Test establecer campo factura."""
-    campo = 'tipo_doc'
+    campo = "tipo_doc"
     valor = 80
     campo_fact = wsct.EstablecerCampoFactura(campo, valor)
     assert campo_fact
@@ -172,7 +197,7 @@ def test_cae_solicitar():
 def test_autorizar_comprobante():
     """Test autorizar comprobante."""
     print(wsct.factura)
-    campo = 'cbte_nro'
+    campo = "cbte_nro"
     tipo_cbte = 195
     punto_vta = 4000
     valor = wsct.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
@@ -272,7 +297,7 @@ def test_consultar_tipos_tributo():
 @pytest.mark.skip
 def test_consultar_cotizacion():
     """Test consultar cotizacion."""
-    consulta = wsct.ConsultarCotizacion('DOL')
+    consulta = wsct.ConsultarCotizacion("DOL")
     assert consulta
 
 
@@ -310,7 +335,7 @@ def test_consultar_fomas_pago():
 def test_consultar_tipos_tarjeta():
     """Test consultar tipos tarjeta."""
     forma = wsct.ConsultarFomasPago(sep=None)[0]
-    consulta = wsct.ConsultarTiposTarjeta(forma['codigo'])
+    consulta = wsct.ConsultarTiposTarjeta(forma["codigo"])
     assert consulta
 
 

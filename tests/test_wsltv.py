@@ -23,9 +23,9 @@ from pyafipws.wsltv import WSLTV
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
-CUIT = os.environ['CUIT']
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CUIT = os.environ["CUIT"]
+CERT = "rei.crt"
+PKEY = "rei.key"
 CACHE = ""
 
 # Obteniendo el TA para pruebas
@@ -45,25 +45,25 @@ def test_conectar():
 def test_server_status():
     """Test de estado de servidores."""
     wsltv.Dummy()
-    assert wsltv.AppServerStatus == 'OK'
-    assert wsltv.DbServerStatus == 'OK'
-    assert wsltv.AuthServerStatus == 'OK'
+    assert wsltv.AppServerStatus == "OK"
+    assert wsltv.DbServerStatus == "OK"
+    assert wsltv.AuthServerStatus == "OK"
 
 
 def test_inicializar():
     """Test inicializar variables de BaseWS."""
     wsltv.inicializar()
-    assert wsltv.Total == ''
-    assert wsltv.FechaLiquidacion == ''
+    assert wsltv.Total == ""
+    assert wsltv.FechaLiquidacion == ""
     assert wsltv.datos == {}
 
 
 def test_analizar_errores():
     """Test Analizar si se encuentran errores en clientes."""
-    ret = {'numeroComprobante': 286}
+    ret = {"numeroComprobante": 286}
     wsltv._WSLTV__analizar_errores(ret)
     # devuelve '' si no encuentra errores
-    assert wsltv.ErrMsg == ''
+    assert wsltv.ErrMsg == ""
 
 
 def test_crear_liquidacion():
@@ -71,10 +71,10 @@ def test_crear_liquidacion():
     tipo_cbte = 150
     pto_vta = 6
     nro_cbte = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta) + 1
-    fecha = '2019-04-18'
+    fecha = "2019-04-18"
     cod_deposito_acopio = 1000
-    tipo_compra = 'CPS'
-    variedad_tabaco = 'BR'
+    tipo_compra = "CPS"
+    variedad_tabaco = "BR"
     cod_provincia_origen_tabaco = 1
     puerta = 22
     nro_tarjeta = 6569866
@@ -84,12 +84,23 @@ def test_crear_liquidacion():
     fecha_inicio_actividad = "2016-04-01"
 
     # cargo la liquidación:
-    liquidacion = wsltv.CrearLiquidacion(tipo_cbte, pto_vta, nro_cbte, fecha,
-                                         cod_deposito_acopio, tipo_compra,
-                                         variedad_tabaco, cod_provincia_origen_tabaco,
-                                         puerta, nro_tarjeta, horas, control,
-                                         nro_interno, iibb_emisor=None,
-                                         fecha_inicio_actividad=fecha_inicio_actividad)
+    liquidacion = wsltv.CrearLiquidacion(
+        tipo_cbte,
+        pto_vta,
+        nro_cbte,
+        fecha,
+        cod_deposito_acopio,
+        tipo_compra,
+        variedad_tabaco,
+        cod_provincia_origen_tabaco,
+        puerta,
+        nro_tarjeta,
+        horas,
+        control,
+        nro_interno,
+        iibb_emisor=None,
+        fecha_inicio_actividad=fecha_inicio_actividad,
+    )
     assert liquidacion
 
 
@@ -152,8 +163,9 @@ def test_agregar_tributo():
     base_imponible = 15000
     alicuota = 8
     importe = 1200
-    agregado = wsltv.AgregarTributo(codigo_tributo, descripcion,
-                                    base_imponible, alicuota, importe)
+    agregado = wsltv.AgregarTributo(
+        codigo_tributo, descripcion, base_imponible, alicuota, importe
+    )
     assert agregado
 
 
@@ -190,11 +202,11 @@ def test_crear_ajuste():
     tipo_cbte = 151
     pto_vta = 2
     nro_cbte = 1
-    fecha = '2016-09-09'
+    fecha = "2016-09-09"
     fecha_inicio_actividad = "1900-01-01"
-    ajuste = wsltv.CrearAjuste(tipo_cbte, pto_vta,
-                               nro_cbte, fecha,
-                               fecha_inicio_actividad)
+    ajuste = wsltv.CrearAjuste(
+        tipo_cbte, pto_vta, nro_cbte, fecha, fecha_inicio_actividad
+    )
     assert ajuste
 
 
@@ -218,18 +230,23 @@ def test_ajustar_liquidacion():
     tipo_cbte = 151
     pto_vta = 2958
     nro_cbte = 13
-    fecha = '2015-12-31'
+    fecha = "2015-12-31"
     cod_deposito_acopio = 201
     tipo_ajuste = "C"
     cuit_receptor = 222222222
     iibb_receptor = 2
     fecha_inicio_actividad = "2010-01-01"
-    wsltv.CrearAjuste(tipo_cbte, pto_vta, nro_cbte,
-                      fecha,
-                      cod_deposito_acopio, tipo_ajuste,
-                      cuit_receptor,
-                      iibb_receptor,
-                      fecha_inicio_actividad)
+    wsltv.CrearAjuste(
+        tipo_cbte,
+        pto_vta,
+        nro_cbte,
+        fecha,
+        cod_deposito_acopio,
+        tipo_ajuste,
+        cuit_receptor,
+        iibb_receptor,
+        fecha_inicio_actividad,
+    )
 
     tipo_cbte = 151
     pto_vta = 4521
@@ -252,8 +269,7 @@ def test_ajustar_liquidacion():
     base_imponible = 2
     alicuota = 2
     importe = 10
-    wsltv.AgregarTributo(codigo_tributo, descripcion,
-                         base_imponible, alicuota, importe)
+    wsltv.AgregarTributo(codigo_tributo, descripcion, base_imponible, alicuota, importe)
 
     ajuste = wsltv.AjustarLiquidacion()
     assert ajuste
@@ -322,8 +338,7 @@ def test_mostrar_pdf():
     """Test mostrar PDF."""
     pdf = wsltv.GetParametro("pdf")
     if pdf:
-        with open('liq.pdf', "wb") as f:
+        with open("liq.pdf", "wb") as f:
             f.write(pdf)
-    show = wsltv.MostrarPDF(archivo='liq.pdf',
-                            imprimir=True)
+    show = wsltv.MostrarPDF(archivo="liq.pdf", imprimir=True)
     assert show is False

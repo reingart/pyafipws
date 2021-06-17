@@ -23,9 +23,9 @@ from pyafipws.wslsp import WSLSP
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
-CUIT = os.environ['CUIT']
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CUIT = os.environ["CUIT"]
+CERT = "rei.crt"
+PKEY = "rei.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas
@@ -45,52 +45,55 @@ def test_conectar():
 def test_server_status():
     """Test de estado de servidores."""
     wslsp.Dummy()
-    assert wslsp.AppServerStatus == 'OK'
-    assert wslsp.DbServerStatus == 'OK'
-    assert wslsp.AuthServerStatus == 'OK'
+    assert wslsp.AppServerStatus == "OK"
+    assert wslsp.DbServerStatus == "OK"
+    assert wslsp.AuthServerStatus == "OK"
 
 
 def test_inicializar():
     """Test inicializar variables de BaseWS."""
     wslsp.inicializar()
     assert wslsp.ImporteTotalNeto is None
-    assert wslsp.FechaProcesoAFIP == ''
+    assert wslsp.FechaProcesoAFIP == ""
     assert wslsp.datos == {}
 
 
 def test_analizar_errores():
     """Test Analizar si se encuentran errores."""
-    ret = {'numeroComprobante': 286}
+    ret = {"numeroComprobante": 286}
     wslsp._WSLSP__analizar_errores(ret)
     # devuelve '' si no encuentra errores
-    assert wslsp.ErrMsg == ''
+    assert wslsp.ErrMsg == ""
 
 
 def test_crear_liquidacion():
     """Test crear liquidacion."""
     cod_operacion = 1
-    fecha_cbte = '2019-04-23'
-    fecha_op = '2019-04-23'
+    fecha_cbte = "2019-04-23"
+    fecha_op = "2019-04-23"
     cod_motivo = 6
     cod_localidad_procedencia = 8274
     cod_provincia_procedencia = 1
     cod_localidad_destino = 8274
     cod_provincia_destino = 1
-    lugar_realizacion = 'CORONEL SUAREZ'
+    lugar_realizacion = "CORONEL SUAREZ"
     fecha_recepcion = None
     fecha_faena = None
     datos_adicionales = None
-    liquidacion = wslsp.CrearLiquidacion(cod_operacion,
-                                         fecha_cbte,
-                                         fecha_op,
-                                         cod_motivo,
-                                         cod_localidad_procedencia,
-                                         cod_provincia_procedencia,
-                                         cod_localidad_destino,
-                                         cod_provincia_destino,
-                                         lugar_realizacion,
-                                         fecha_recepcion, fecha_faena,
-                                         datos_adicionales)
+    liquidacion = wslsp.CrearLiquidacion(
+        cod_operacion,
+        fecha_cbte,
+        fecha_op,
+        cod_motivo,
+        cod_localidad_procedencia,
+        cod_provincia_procedencia,
+        cod_localidad_destino,
+        cod_provincia_destino,
+        lugar_realizacion,
+        fecha_recepcion,
+        fecha_faena,
+        datos_adicionales,
+    )
     assert liquidacion
 
 
@@ -108,14 +111,20 @@ def test_agregar_emisor():
     pto_vta = 3000
     nro_cbte = 64
     cod_caracter = 5
-    fecha_inicio_act = '2016-01-01',
-    iibb = '123456789'
+    fecha_inicio_act = ("2016-01-01",)
+    iibb = "123456789"
     nro_ruca = 305
     nro_renspa = None
     agregado = wslsp.AgregarEmisor(
-        tipo_cbte, pto_vta, nro_cbte,
-        cod_caracter, fecha_inicio_act,
-        iibb, nro_ruca, nro_renspa)
+        tipo_cbte,
+        pto_vta,
+        nro_cbte,
+        cod_caracter,
+        fecha_inicio_act,
+        iibb,
+        nro_ruca,
+        nro_renspa,
+    )
     assert agregado
 
 
@@ -129,7 +138,7 @@ def test_agregar_operador():
     """Test agregar operador."""
     cuit = 30160000011
     iibb = 3456
-    nro_renspa = '22.123.1.12345/A4'
+    nro_renspa = "22.123.1.12345/A4"
     agregado = wslsp.AgregarOperador(cuit, iibb, nro_renspa)
     assert agregado
 
@@ -150,20 +159,22 @@ def test_agregar_item_detalle():
     precio_recupero = None
     detalle_raza = None
     nro_item = 1
-    agregado = wslsp.AgregarItemDetalle(cuit_cliente,
-                                        cod_categoria,
-                                        tipo_liquidacion,
-                                        cantidad,
-                                        precio_unitario,
-                                        alicuota_iva,
-                                        cod_raza,
-                                        cantidad_cabezas,
-                                        nro_tropa,
-                                        cod_corte,
-                                        cantidad_kg_vivo,
-                                        precio_recupero,
-                                        detalle_raza,
-                                        nro_item)
+    agregado = wslsp.AgregarItemDetalle(
+        cuit_cliente,
+        cod_categoria,
+        tipo_liquidacion,
+        cantidad,
+        precio_unitario,
+        alicuota_iva,
+        cod_raza,
+        cantidad_cabezas,
+        nro_tropa,
+        cod_corte,
+        cantidad_kg_vivo,
+        precio_recupero,
+        detalle_raza,
+        nro_item,
+    )
 
     assert agregado
 
@@ -175,9 +186,9 @@ def test_agregar_compra_asociada():
     nro_cbte = 33
     cant_asoc = 2
     nro_item = 1
-    agregado = wslsp.AgregarCompraAsociada(tipo_cbte, pto_vta,
-                                           nro_cbte, cant_asoc,
-                                           nro_item)
+    agregado = wslsp.AgregarCompraAsociada(
+        tipo_cbte, pto_vta, nro_cbte, cant_asoc, nro_item
+    )
     assert agregado
 
 
@@ -186,13 +197,12 @@ def test_agregar_gasto():
     cod_gasto = 99
     base_imponible = None
     alicuota = 1
-    alicuota_iva = 0,
+    alicuota_iva = (0,)
     descripcion = "Exento WSLSPv1.4.1"
     tipo_iva_nulo = "EX"
-    agregado = wslsp.AgregarGasto(cod_gasto, base_imponible,
-                                  alicuota, alicuota_iva,
-                                  descripcion,
-                                  tipo_iva_nulo)
+    agregado = wslsp.AgregarGasto(
+        cod_gasto, base_imponible, alicuota, alicuota_iva, descripcion, tipo_iva_nulo
+    )
     assert agregado
 
 
@@ -201,8 +211,7 @@ def test_agregar_tributo():
     cod_tributo = 5
     base_imponible = 230520.60
     alicuota = 2.5
-    agregado = wslsp.AgregarTributo(cod_tributo, base_imponible,
-                                    alicuota)
+    agregado = wslsp.AgregarTributo(cod_tributo, base_imponible, alicuota)
     assert agregado
 
 
@@ -241,8 +250,9 @@ def test_consultar_liquidacion():
     pto_vta = 3000
     nro_cbte = 1
     cuit = None
-    consulta = wslsp.ConsultarLiquidacion(tipo_cbte, pto_vta, nro_cbte,
-                                          cuit_comprador=cuit)
+    consulta = wslsp.ConsultarLiquidacion(
+        tipo_cbte, pto_vta, nro_cbte, cuit_comprador=cuit
+    )
     assert consulta
 
 
@@ -256,11 +266,10 @@ def test_consultar_ultimo_comprobante():
 
 def test_crear_ajuste():
     """Test crear ajuste."""
-    tipo_ajuste = 'C'
-    fecha_cbte = '2019-01-06'
-    datos_adicionales = 'Ajuste sobre liquidacion de compra directa'
-    ajuste = wslsp.CrearAjuste(tipo_ajuste, fecha_cbte,
-                               datos_adicionales)
+    tipo_ajuste = "C"
+    fecha_cbte = "2019-01-06"
+    datos_adicionales = "Ajuste sobre liquidacion de compra directa"
+    ajuste = wslsp.CrearAjuste(tipo_ajuste, fecha_cbte, datos_adicionales)
     assert ajuste
 
 
@@ -284,9 +293,7 @@ def test_agregar_ajuste_fisico():
     cantidad = 1
     cantidad_cabezas = None
     cantidad_kg_vivo = None
-    agregado = wslsp.AgregarAjusteFisico(cantidad,
-                                         cantidad_cabezas,
-                                         cantidad_kg_vivo)
+    agregado = wslsp.AgregarAjusteFisico(cantidad, cantidad_cabezas, cantidad_kg_vivo)
     assert agregado
 
 
@@ -294,8 +301,7 @@ def test_agregar_ajuste_monetario():
     """Test agregar ajuste monetario."""
     precio_unitario = 15.995
     precio_recupero = None
-    agregado = wslsp.AgregarAjusteMonetario(precio_unitario,
-                                            precio_recupero)
+    agregado = wslsp.AgregarAjusteMonetario(precio_unitario, precio_recupero)
     assert agregado
 
 
@@ -391,6 +397,5 @@ def test_consultar_puntos_ventas():
 
 def test_mostrar_pdf():
     """Test mostrar pdf."""
-    show = wslsp.MostrarPDF(archivo='liq.pdf',
-                            imprimir=True)
+    show = wslsp.MostrarPDF(archivo="liq.pdf", imprimir=True)
     assert show is False

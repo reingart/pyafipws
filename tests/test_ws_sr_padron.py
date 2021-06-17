@@ -25,9 +25,9 @@ from pyafipws.ws_sr_padron import WSSrPadronA4, WSSrPadronA5
 
 
 WSDL = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5?wsdl"
-CUIT = os.environ['CUIT']
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CUIT = os.environ["CUIT"]
+CERT = "rei.crt"
+PKEY = "rei.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas
@@ -46,16 +46,16 @@ def test_server_status():
     """Test de estado de servidores."""
     # Estados de servidores respuesta no funciona afip
     wspa5.Dummy()
-    assert wspa5.AppServerStatus == 'OK'
-    assert wspa5.DbServerStatus == 'OK'
-    assert wspa5.AuthServerStatus == 'OK'
+    assert wspa5.AppServerStatus == "OK"
+    assert wspa5.DbServerStatus == "OK"
+    assert wspa5.AuthServerStatus == "OK"
 
 
 def test_inicializar():
     """Test inicializar variables de BaseWS."""
     wspa5.inicializar()
     assert wspa5.tipo_doc == 0
-    assert wspa5.denominacion == ''
+    assert wspa5.denominacion == ""
     assert wspa5.actividades == []
 
 
@@ -73,10 +73,10 @@ def test_consultar_a5():
     id_persona = "20201797064"
     consulta = wspa5.Consultar(id_persona)
     assert consulta
-    assert wspa5.direccion == 'LARREA 1'
-    assert wspa5.provincia == 'CIUDAD AUTONOMA BUENOS AIRES'
-    assert wspa5.cod_postal == '1030'
+    assert wspa5.direccion == "LARREA 1"
+    assert wspa5.provincia == "CIUDAD AUTONOMA BUENOS AIRES"
+    assert wspa5.cod_postal == "1030"
 
     # metodo analizar datos
-    assert wspa5.imp_iva == 'N'
+    assert wspa5.imp_iva == "N"
     assert wspa5.cat_iva == 5

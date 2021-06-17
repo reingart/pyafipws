@@ -23,9 +23,9 @@ from pyafipws.wsremcarne import WSRemCarne
 
 
 WSDL = "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"
-CUIT = os.environ['CUIT']
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CUIT = os.environ["CUIT"]
+CERT = "rei.crt"
+PKEY = "rei.key"
 CACHE = ""
 
 
@@ -47,41 +47,41 @@ def test_conectar():
 def test_server_status():
     """Test de estado de servidores."""
     wsremcarne.Dummy()
-    assert wsremcarne.AppServerStatus == 'OK'
-    assert wsremcarne.DbServerStatus == 'OK'
-    assert wsremcarne.AuthServerStatus == 'OK'
+    assert wsremcarne.AppServerStatus == "OK"
+    assert wsremcarne.DbServerStatus == "OK"
+    assert wsremcarne.AuthServerStatus == "OK"
 
 
 def test_inicializar():
     """Test inicializar variables de BaseWS."""
     wsremcarne.inicializar()
     assert wsremcarne.TipoComprobante is None
-    assert wsremcarne.Obs == ''
+    assert wsremcarne.Obs == ""
     assert wsremcarne.Errores == []
 
 
 def test_analizar_errores():
     """Test analizar si se encuentran errores."""
-    ret = {'numeroComprobante': 286}
+    ret = {"numeroComprobante": 286}
     wsremcarne._WSRemCarne__analizar_errores(ret)
     # devuelve '' si no encuentra errores
-    assert wsremcarne.ErrMsg == ''
+    assert wsremcarne.ErrMsg == ""
 
 
 def test_analizar_observaciones():
     """Test analizar si se encuentran errores."""
-    ret = {'numeroComprobante': 286}
+    ret = {"numeroComprobante": 286}
     wsremcarne._WSRemCarne__analizar_errores(ret)
     # devuelve '' si no encuentra errores
-    assert wsremcarne.Obs == ''
+    assert wsremcarne.Obs == ""
 
 
 def test_analizar_evento():
     """Test analizar si se encuentran eventos."""
-    ret = {'numeroComprobante': 286}
+    ret = {"numeroComprobante": 286}
     wsremcarne._WSRemCarne__analizar_errores(ret)
     # devuelve '' si no encuentra errores
-    assert wsremcarne.Evento == ''
+    assert wsremcarne.Evento == ""
 
 
 def test_crear_remito():
@@ -89,46 +89,55 @@ def test_crear_remito():
     tipo_comprobante = 995
     punto_emision = 1
     # ENV: Envio Normal, PLA: Retiro en planta, REP: Reparto, RED: Redestino
-    tipo_movimiento = 'ENV'
+    tipo_movimiento = "ENV"
     categoria_emisor = 1
-    cuit_titular_mercaderia = '20222222223'
+    cuit_titular_mercaderia = "20222222223"
     cod_dom_origen = 1
     # 'EM': DEPOSITO EMISOR, 'MI': MERCADO INTERNO, 'RP': REPARTO
-    tipo_receptor = 'EM'
+    tipo_receptor = "EM"
     categoria_receptor = 1
-    cuit_receptor = '20111111112'
+    cuit_receptor = "20111111112"
     cuit_depositario = None
     cod_dom_destino = 1
     cod_rem_redestinar = None
     cod_remito = 30
-    estado = 'A'
-    remito = wsremcarne.CrearRemito(tipo_comprobante, punto_emision, tipo_movimiento,
-                                    categoria_emisor,
-                                    cuit_titular_mercaderia, cod_dom_origen,
-                                    tipo_receptor,
-                                    categoria_receptor,
-                                    cuit_receptor, cuit_depositario,
-                                    cod_dom_destino, cod_rem_redestinar,
-                                    cod_remito, estado)
+    estado = "A"
+    remito = wsremcarne.CrearRemito(
+        tipo_comprobante,
+        punto_emision,
+        tipo_movimiento,
+        categoria_emisor,
+        cuit_titular_mercaderia,
+        cod_dom_origen,
+        tipo_receptor,
+        categoria_receptor,
+        cuit_receptor,
+        cuit_depositario,
+        cod_dom_destino,
+        cod_rem_redestinar,
+        cod_remito,
+        estado,
+    )
     assert remito
 
 
 def test_agregar_viaje():
     """Test agregar viaje."""
-    cuit_transportista = '20333333334'
-    cuit_conductor = '20333333334'
-    fecha_inicio_viaje = '2019-05-24'
+    cuit_transportista = "20333333334"
+    cuit_conductor = "20333333334"
+    fecha_inicio_viaje = "2019-05-24"
     distancia_km = 8888
 
-    agregado = wsremcarne.AgregarViaje(cuit_transportista, cuit_conductor,
-                                       fecha_inicio_viaje, distancia_km)
+    agregado = wsremcarne.AgregarViaje(
+        cuit_transportista, cuit_conductor, fecha_inicio_viaje, distancia_km
+    )
     assert agregado
 
 
 def test_agregar_vehiculo():
     """Test agregar vehiculo."""
-    dominio_vehiculo = 'AAA000'
-    dominio_acoplado = 'ZZZ000'
+    dominio_vehiculo = "AAA000"
+    dominio_acoplado = "ZZZ000"
     agregado = wsremcarne.AgregarVehiculo(dominio_vehiculo, dominio_acoplado)
     assert agregado
 
@@ -137,11 +146,12 @@ def test_agregar_mercaderia():
     """Test agregar mercaderia."""
     orden = 1
     tropa = 1
-    cod_tipo_prod = '2.13'
+    cod_tipo_prod = "2.13"
     kilos = 10
     unidades = 1
     agregado = wsremcarne.AgregarMercaderia(
-        orden, tropa, cod_tipo_prod, kilos, unidades)
+        orden, tropa, cod_tipo_prod, kilos, unidades
+    )
     assert agregado
 
 
@@ -167,7 +177,7 @@ def test_generar_remito():
 
 def test_analizar_remito():
     """Test analizar remito."""
-    ret = {'Codigo': 'Descripcion X'}
+    ret = {"Codigo": "Descripcion X"}
     archivo = None
     analisis = wsremcarne.AnalizarRemito(ret, archivo)
     assert analisis is None
@@ -197,8 +207,7 @@ def test_consultar_ultimo_remito_emitido():
     """Test consultar ultimo remito ."""
     tipo_comprobante = 995
     pto_emision = 1
-    consulta = wsremcarne.ConsultarUltimoRemitoEmitido(
-        tipo_comprobante, pto_emision)
+    consulta = wsremcarne.ConsultarUltimoRemitoEmitido(tipo_comprobante, pto_emision)
     assert consulta == 0
 
 

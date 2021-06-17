@@ -23,9 +23,9 @@ from pyafipws.wsaa import WSAA
 from pyafipws.wsmtx import WSMTXCA
 
 WSDL = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
-CUIT = os.environ['CUIT']
-CERT = 'rei.crt'
-PKEY = 'rei.key'
+CUIT = os.environ["CUIT"]
+CERT = "rei.crt"
+PKEY = "rei.key"
 CACHE = ""
 
 # obteniendo el TA para pruebas
@@ -40,9 +40,9 @@ wsmtx.Conectar(CACHE, WSDL)
 def test_server_status():
     """Test de estado de servidores."""
     wsmtx.Dummy()
-    assert wsmtx.AppServerStatus == 'OK'
-    assert wsmtx.DbServerStatus == 'OK'
-    assert wsmtx.AuthServerStatus == 'OK'
+    assert wsmtx.AppServerStatus == "OK"
+    assert wsmtx.DbServerStatus == "OK"
+    assert wsmtx.AuthServerStatus == "OK"
 
 
 def test_inicializar():
@@ -53,18 +53,17 @@ def test_inicializar():
 
 def test_analizar_errores():
     """Test Analizar si se encuentran errores en clientes."""
-    ret = {'numeroComprobante': 286}
+    ret = {"numeroComprobante": 286}
     wsmtx._WSMTXCA__analizar_errores(ret)
     # devuelve '' si no encuentra errores
-    assert wsmtx.ErrMsg == ''
+    assert wsmtx.ErrMsg == ""
 
 
 def test_crear_factura():
     """Test generacion de factura."""
     tipo_cbte = 2
     punto_vta = 4000
-    cbte_nro = wsmtx.ConsultarUltimoComprobanteAutorizado(
-        tipo_cbte, punto_vta)
+    cbte_nro = wsmtx.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
     fecha = datetime.datetime.now().strftime("%Y-%m-%d")
     concepto = 3
     tipo_doc = 80
@@ -82,25 +81,43 @@ def test_crear_factura():
     fecha_venc_pago = fecha
     fecha_serv_desde = fecha
     fecha_serv_hasta = fecha
-    moneda_id = 'PES'
-    moneda_ctz = '1.000'
+    moneda_id = "PES"
+    moneda_ctz = "1.000"
     obs = "Observaciones Comerciales, libre"
     caea = "24163778394093"
     fch_venc_cae = None
 
-    ok = wsmtx.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                            cbt_desde, cbt_hasta, imp_total, imp_tot_conc,
-                            imp_neto, imp_subtotal, imp_trib, imp_op_ex,
-                            fecha_cbte, fecha_venc_pago, fecha_serv_desde,
-                            fecha_serv_hasta, moneda_id, moneda_ctz, obs,
-                            caea, fch_venc_cae)
+    ok = wsmtx.CrearFactura(
+        concepto,
+        tipo_doc,
+        nro_doc,
+        tipo_cbte,
+        punto_vta,
+        cbt_desde,
+        cbt_hasta,
+        imp_total,
+        imp_tot_conc,
+        imp_neto,
+        imp_subtotal,
+        imp_trib,
+        imp_op_ex,
+        fecha_cbte,
+        fecha_venc_pago,
+        fecha_serv_desde,
+        fecha_serv_hasta,
+        moneda_id,
+        moneda_ctz,
+        obs,
+        caea,
+        fch_venc_cae,
+    )
     assert ok
 
 
 def test_establecer_campo_factura():
     """Test verificar campos en factura."""
-    no_ok = wsmtx.EstablecerCampoFactura('bonif', 'bonif')
-    ok = wsmtx.EstablecerCampoFactura('tipo_doc', 'tipo_doc')
+    no_ok = wsmtx.EstablecerCampoFactura("bonif", "bonif")
+    ok = wsmtx.EstablecerCampoFactura("tipo_doc", "tipo_doc")
     assert ok
     assert no_ok is False
 
@@ -144,14 +161,25 @@ def test_agregar_item():
     iva_id = 5
     imp_iva = 21.00
     imp_subtotal = 21.00
-    ok = wsmtx.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio,
-                           bonif, iva_id, imp_iva, imp_subtotal)
+    ok = wsmtx.AgregarItem(
+        u_mtx,
+        cod_mtx,
+        codigo,
+        ds,
+        qty,
+        umed,
+        precio,
+        bonif,
+        iva_id,
+        imp_iva,
+        imp_subtotal,
+    )
     assert ok
 
 
 def test_establecer_campo_item():
     """Test verificar ultimo elemento del campo detalles."""
-    ok = wsmtx.EstablecerCampoItem('cafe', '1010')
+    ok = wsmtx.EstablecerCampoItem("cafe", "1010")
     assert ok is False
 
 
@@ -177,17 +205,35 @@ def test_autorizar_comprobante():
     fecha_venc_pago = fecha
     fecha_serv_desde = fecha
     fecha_serv_hasta = fecha
-    moneda_id = 'PES'
-    moneda_ctz = '1.000'
+    moneda_id = "PES"
+    moneda_ctz = "1.000"
     obs = "Observaciones Comerciales, libre"
     caea = None
-    wsmtx.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                       cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-                       imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago,
-                       fecha_serv_desde, fecha_serv_hasta,  # --
-                       moneda_id, moneda_ctz, obs, caea)
+    wsmtx.CrearFactura(
+        concepto,
+        tipo_doc,
+        nro_doc,
+        tipo_cbte,
+        punto_vta,
+        cbt_desde,
+        cbt_hasta,
+        imp_total,
+        imp_tot_conc,
+        imp_neto,
+        imp_subtotal,
+        imp_trib,
+        imp_op_ex,
+        fecha_cbte,
+        fecha_venc_pago,
+        fecha_serv_desde,
+        fecha_serv_hasta,  # --
+        moneda_id,
+        moneda_ctz,
+        obs,
+        caea,
+    )
     tributo_id = 99
-    desc = 'Impuesto Municipal Matanza'
+    desc = "Impuesto Municipal Matanza"
     base_imp = "100.00"
     alic = "1.00"
     importe = "1.00"
@@ -209,10 +255,22 @@ def test_autorizar_comprobante():
     iva_id = 5
     imp_iva = 42.00
     imp_subtotal = 242.00
-    wsmtx.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif,
-                      iva_id, imp_iva, imp_subtotal)
-    wsmtx.AgregarItem(None, None, None, 'bonificacion',
-                      None, 99, None, None, 5, -21, -121)
+    wsmtx.AgregarItem(
+        u_mtx,
+        cod_mtx,
+        codigo,
+        ds,
+        qty,
+        umed,
+        precio,
+        bonif,
+        iva_id,
+        imp_iva,
+        imp_subtotal,
+    )
+    wsmtx.AgregarItem(
+        None, None, None, "bonificacion", None, 99, None, None, 5, -21, -121
+    )
 
     autorizado = wsmtx.AutorizarComprobante()
     assert autorizado
@@ -222,33 +280,33 @@ def test_cae_solicitar():
     """Test de metodo opcional a AutorizarComprobante """
     cae = wsmtx.CAESolicitar()
     # devuelve ERR cuando ya se utilizo AutorizarComprobante
-    assert cae == 'ERR'
+    assert cae == "ERR"
 
 
 def test_autorizar_ajuste_iva():
     cae = wsmtx.AutorizarAjusteIVA()
-    assert cae == ''
+    assert cae == ""
 
 
 def test_solicitar_caea():
     periodo = 201907
     orden = 1
     caea = wsmtx.SolicitarCAEA(periodo, orden)
-    assert caea == ''
+    assert caea == ""
 
 
 def test_consultar_caea():
     """Test consultar caea."""
-    periodo = '201907'
-    orden = '1'
-    caea = '24163778394093'
+    periodo = "201907"
+    orden = "1"
+    caea = "24163778394093"
     caea = wsmtx.ConsultarCAEA(periodo, orden, caea)
     assert caea
 
 
 def test_consultar_caea_entre_fechas():
-    fecha_desde = '2019-07-01'
-    fecha_hasta = '2019-07-15'
+    fecha_desde = "2019-07-01"
+    fecha_hasta = "2019-07-15"
     caea = wsmtx.ConsultarCAEAEntreFechas(fecha_desde, fecha_hasta)
     assert caea == []
 
@@ -280,17 +338,36 @@ def test_informar_ajuste_iva_caea():
     fecha_venc_pago = fecha
     fecha_serv_desde = fecha
     fecha_serv_hasta = fecha
-    moneda_id = 'PES'
-    moneda_ctz = '1.000'
+    moneda_id = "PES"
+    moneda_ctz = "1.000"
     obs = "Observaciones Comerciales, libre"
     caea = "24163778394093"
     fch_venc_cae = None
 
-    wsmtx.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
-                       cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
-                       imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago,
-                       fecha_serv_desde, fecha_serv_hasta,  # --
-                       moneda_id, moneda_ctz, obs, caea, fch_venc_cae)
+    wsmtx.CrearFactura(
+        concepto,
+        tipo_doc,
+        nro_doc,
+        tipo_cbte,
+        punto_vta,
+        cbt_desde,
+        cbt_hasta,
+        imp_total,
+        imp_tot_conc,
+        imp_neto,
+        imp_subtotal,
+        imp_trib,
+        imp_op_ex,
+        fecha_cbte,
+        fecha_venc_pago,
+        fecha_serv_desde,
+        fecha_serv_hasta,  # --
+        moneda_id,
+        moneda_ctz,
+        obs,
+        caea,
+        fch_venc_cae,
+    )
 
     iva_id = 5  # 21%
     base_imp = 100
@@ -308,28 +385,38 @@ def test_informar_ajuste_iva_caea():
     iva_id = 5
     imp_iva = 21.00
     imp_subtotal = 21.00
-    wsmtx.AgregarItem(u_mtx, cod_mtx, codigo, ds, qty, umed, precio, bonif,
-                      iva_id, imp_iva, imp_subtotal)
+    wsmtx.AgregarItem(
+        u_mtx,
+        cod_mtx,
+        codigo,
+        ds,
+        qty,
+        umed,
+        precio,
+        bonif,
+        iva_id,
+        imp_iva,
+        imp_subtotal,
+    )
     caea = wsmtx.InformarAjusteIVACAEA()
-    assert caea == ''
+    assert caea == ""
 
 
 def test_informar_caea_no_utilizado():
-    caea = '24163778394090'
+    caea = "24163778394090"
     caea = wsmtx.InformarCAEANoUtilizado(caea)
     assert caea
 
 
 def test_informar_caea_no_utilizado_ptovta():
-    caea = '24163778394090'
+    caea = "24163778394090"
     pto_vta = 4000
     caea = wsmtx.InformarCAEANoUtilizadoPtoVta(caea, pto_vta)
     assert caea
 
 
 def test_consultar_ultimo_comprobante_autorizado():
-    comp = wsmtx.ConsultarUltimoComprobanteAutorizado(
-        2, 4000)
+    comp = wsmtx.ConsultarUltimoComprobanteAutorizado(2, 4000)
     assert comp
 
 
@@ -377,31 +464,33 @@ def test_consultar_tipos_tributo():
 
 
 def test_consultar_cotizacion_moneda():
-    consulta = wsmtx.ConsultarCotizacionMoneda('DOL')
+    consulta = wsmtx.ConsultarCotizacionMoneda("DOL")
     assert consulta
 
 
 def test_consultar_puntos_venta_cae():
     ret = {}
-    ret['elemento'] = {'numeroPuntoVenta': 4000,
-                       'bloqueado': 'N', 'fechaBaja': ''}
-    fmt = "%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % ret[
-        'elemento']
+    ret["elemento"] = {"numeroPuntoVenta": 4000, "bloqueado": "N", "fechaBaja": ""}
+    fmt = (
+        "%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s"
+        % ret["elemento"]
+    )
     consulta = wsmtx.ConsultarPuntosVentaCAEA(fmt)
     assert consulta == []
 
 
 def test_consultar_puntos_venta_caea():
     ret = {}
-    ret['elemento'] = {'numeroPuntoVenta': 4000,
-                       'bloqueado': 'N', 'fechaBaja': ''}
-    fmt = "%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s" % ret[
-        'elemento']
+    ret["elemento"] = {"numeroPuntoVenta": 4000, "bloqueado": "N", "fechaBaja": ""}
+    fmt = (
+        "%(numeroPuntoVenta)s: bloqueado=%(bloqueado)s baja=%(fechaBaja)s"
+        % ret["elemento"]
+    )
     consulta = wsmtx.ConsultarPuntosVentaCAEA(fmt)
     assert consulta == []
 
 
 def test_consultar_puntos_venta_caea_no_informados():
-    caea = '24163778394093'
+    caea = "24163778394093"
     consulta = wsmtx.ConsultarPtosVtaCAEANoInformados(caea)
     assert consulta == []

@@ -42,39 +42,37 @@ print(ta)
 
 
 class TestFEX(unittest.TestCase):
-
     def setUp(self):
-        sys.argv.append('--trace')
+        sys.argv.append("--trace")
         self.wsfexv1 = wsfexv1 = WSFEXv1()
         wsfexv1.Cuit = 20267565393
         wsfexv1.SetTicketAcceso(ta)
         wsfexv1.Conectar(CACHE, WSDL)
-        print(';)')
+        print(";)")
 
     def test_dummy(self):
         """Test de estado del servidor."""
         wsfexv1 = self.wsfexv1
-        print(wsfexv1.client.help('FEXDummy'))
+        print(wsfexv1.client.help("FEXDummy"))
         wsfexv1.Dummy()
         print("AppServerStatus", wsfexv1.AppServerStatus)
         print("DbServerStatus", wsfexv1.DbServerStatus)
         print("AuthServerStatus", wsfexv1.AuthServerStatus)
-        self.assertEqual(wsfexv1.AppServerStatus, 'OK')
-        self.assertEqual(wsfexv1.DbServerStatus, 'OK')
-        self.assertEqual(wsfexv1.AuthServerStatus, 'OK')
+        self.assertEqual(wsfexv1.AppServerStatus, "OK")
+        self.assertEqual(wsfexv1.DbServerStatus, "OK")
+        self.assertEqual(wsfexv1.AuthServerStatus, "OK")
 
     def test_crear_factura(self, tipo_cbte=19):
         """Test de creación de una factura (Interna)."""
         wsfexv1 = self.wsfexv1
         # FC/NC Expo (ver tabla de parámetros)
-        tipo_cbte = 21 if '--nc' in sys.argv else 19
+        tipo_cbte = 21 if "--nc" in sys.argv else 19
         punto_vta = 7
         # Obtengo el último número de comprobante y le agrego 1
         cbte_nro = int(wsfexv1.GetLastCMP(tipo_cbte, punto_vta)) + 1
         fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
         tipo_expo = 1  # exportacion definitiva de bienes
-        permiso_existente = (tipo_cbte not in (
-            20, 21) or tipo_expo != 1) and "S" or ""
+        permiso_existente = (tipo_cbte not in (20, 21) or tipo_expo != 1) and "S" or ""
         print("permiso_existente", permiso_existente)
         dst_cmp = 203  # país destino
         cliente = "Joao Da Silva"
@@ -93,12 +91,28 @@ class TestFEX(unittest.TestCase):
         imp_total = "250.00"
 
         # Creo una factura (internamente, no se llama al WebService)
-        fact = wsfexv1.CrearFactura(tipo_cbte, punto_vta, cbte_nro, fecha_cbte,
-                             imp_total, tipo_expo, permiso_existente, dst_cmp,
-                             cliente, cuit_pais_cliente, domicilio_cliente,
-                             id_impositivo, moneda_id, moneda_ctz,
-                             obs_comerciales, obs, forma_pago, incoterms,
-                             idioma_cbte, incoterms_ds)
+        fact = wsfexv1.CrearFactura(
+            tipo_cbte,
+            punto_vta,
+            cbte_nro,
+            fecha_cbte,
+            imp_total,
+            tipo_expo,
+            permiso_existente,
+            dst_cmp,
+            cliente,
+            cuit_pais_cliente,
+            domicilio_cliente,
+            id_impositivo,
+            moneda_id,
+            moneda_ctz,
+            obs_comerciales,
+            obs,
+            forma_pago,
+            incoterms,
+            idioma_cbte,
+            incoterms_ds,
+        )
         self.assertTrue(fact)
 
     def test_agregar_item(self):
@@ -112,8 +126,7 @@ class TestFEX(unittest.TestCase):
         umed = 9  # docenas
         bonif = "50.00"
         imp_total = "250.00"  # importe total final del artículo
-        item = wsfexv1.AgregarItem(
-            codigo, ds, qty, umed, precio, imp_total, bonif)
+        item = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
         self.assertTrue(item)
 
     def test_agregar_permiso(self):
@@ -134,7 +147,8 @@ class TestFEX(unittest.TestCase):
         cbteasoc_nro = 1234
         cbteasoc_cuit = 20111111111
         cbteasoc = wsfexv1.AgregarCmpAsoc(
-                cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit)
+            cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit
+        )
         self.assertTrue(cbteasoc)
 
     def test_autorizar(self):
@@ -150,8 +164,9 @@ class TestFEX(unittest.TestCase):
         self.assertEqual(wsfexv1.Resultado, "A")
         self.assertIsInstance(wsfexv1.CAE, str)
         self.assertIsNotNone(wsfexv1.CAE)
-        self.assertEqual(wsfexv1.Vencimiento,
-                         datetime.datetime.now().strftime("%d/%m/%Y"))
+        self.assertEqual(
+            wsfexv1.Vencimiento, datetime.datetime.now().strftime("%d/%m/%Y")
+        )
 
     def test_consulta(self):
         """Test para obtener los datos de un comprobante autorizado."""
@@ -177,7 +192,7 @@ class TestFEX(unittest.TestCase):
         wsfexv1 = self.wsfexv1
         tipo_cbte = 19
         punto_vta = 7
-        cbte_ejemp = '123'
+        cbte_ejemp = "123"
         cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
         self.assertEqual(len(str(cbte_nro)), len(cbte_ejemp))
 
@@ -203,8 +218,8 @@ class TestFEX(unittest.TestCase):
         self.assertIsNotNone(wsfexv1.GetParamIncoterms())
         self.assertIsNotNone(wsfexv1.GetParamMonConCotizacion())
         self.assertIsNotNone(wsfexv1.GetParamPtosVenta())
-        self.assertIsInstance(wsfexv1.GetParamCtz('DOL'), str)
+        self.assertIsInstance(wsfexv1.GetParamCtz("DOL"), str)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
