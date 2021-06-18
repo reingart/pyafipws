@@ -21,16 +21,7 @@ import os
 from pyafipws.wsaa import WSAA
 from pyafipws import wsaa as at
 
-try:
-    import M2Crypto as m2
-except ImportError:
-    m2 = None
-
-try:
-    import cryptography as crypt
-except ImportError:
-    crypt = None
-
+import cryptography as crypt
 
 CERT = "reingart.crt"
 PKEY = "reingart.key"
@@ -50,7 +41,7 @@ def test_create_tra():
 
 
 # Si esta instalado m2crypto o cryptography.
-if m2 or crypt:
+if crypt:
 
     def test_sign_tra_cript():
         """Firmar tra con las credenciales."""
