@@ -43,6 +43,9 @@ jobs:
       run: |
         wget https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2019.zip
         unzip reingart2019.zip
+    - name: Fix OpenSSL "dh key too small"
+      run: |
+        sed -ire 's/@SECLEVEL=[2-9]//' /etc/ssl/openssl.cnf
     - name: Test with pytest
       run: |
         pytest --html=report.html --self-contained-html
