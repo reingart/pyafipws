@@ -84,7 +84,7 @@ CACERT = "conf/afip_ca_info.crt"  # WSAA CA Cert (Autoridades de Confiaza)
 HOMO = False
 TYPELIB = False
 DEFAULT_TTL = 60 * 60 * 5  # five hours
-DEBUG = False
+DEBUG = True
 
 # No debería ser necesario modificar nada despues de esta linea
 
