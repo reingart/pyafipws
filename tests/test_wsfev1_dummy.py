@@ -1,6 +1,7 @@
 from pyafipws.wsfev1 import WSFEv1
 import pytest
 
+
 @pytest.mark.vcr()
 def test_wsfev1_dummy():
     wsfev1 = WSFEv1()
