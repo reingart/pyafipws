@@ -45,7 +45,7 @@ jobs:
         unzip reingart2019.zip
     - name: Fix OpenSSL "dh key too small"
       run: |
-        sed -ire 's/@SECLEVEL=[2-9]//' /etc/ssl/openssl.cnf
+        sudo sed -ire 's/@SECLEVEL=[2-9]//' /etc/ssl/openssl.cnf
     - name: Test with pytest
       run: |
         pytest --html=report.html --self-contained-html
