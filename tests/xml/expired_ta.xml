@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<loginTicketResponse version="1.0">
+    <header>
+        <source>CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239</source>
+        <destination>SERIALNUMBER=CUIT 20267565393, CN=reingart2019pub</destination>
+        <uniqueId>683388141</uniqueId>
+        <generationTime>2021-01-01T02:53:35.282-03:00</generationTime>
+        <expirationTime>2021-01-01T14:53:35.282-03:00</expirationTime>
+    </header>
+    <credentials>
+        <token>...token_here...</token>
+        <sign>...sign_here...</sign>
+    </credentials>
+</loginTicketResponse>
