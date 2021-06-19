@@ -16,68 +16,92 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
-import os
-
+import pytest
 from pyafipws.wsaa import WSAA
-from pyafipws import wsaa as at
+from pyafipws.utils import *
+from pysimplesoap import *
+DEFAULT_TTL = 60 * 60 * 5  # five hours
 
-import cryptography as crypt
+WSAAURL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms"
+CACERT = "conf/afip_ca_info.crt"
 
-CERT = "reingart.crt"
-PKEY = "reingart.key"
-
-wsaa = WSAA()
-# Generar ticket de accseso
-ta = wsaa.Autenticar("wsfe", CERT, PKEY)
-tra = at.create_tra()
-sign = at.sign_tra(tra, CERT, PKEY)
-
-# Se remueven test por tema de 10 minutos Afip
-
-
-def test_create_tra():
-    """ xml para autorizacion inicial"""
-    assert isinstance(tra, bytes)
+#fixture for key and certificate
+@pytest.fixture
+def key_and_cert():
+    KEY='reingart.key'
+    CERT='reingart.crt'
+    return [KEY,CERT]
 
 
-# Si esta instalado m2crypto o cryptography.
-if crypt:
+def test_analizar_certificado(key_and_cert):
+    """Test analizar datos en certificado."""
+    wsaa=WSAA()
+    wsaa.AnalizarCertificado(key_and_cert[1])
+    assert wsaa.Identidad
+    assert wsaa.Caducidad
+    assert wsaa.Emisor
 
-    def test_sign_tra_cript():
-        """Firmar tra con las credenciales."""
-        assert sign.startswith("MIIG+")
+def test_crear_clave_privada():
+    """Test crear clave RSA."""
+    wsaa=WSAA()
+    chk = wsaa.CrearClavePrivada()
+    assert chk==True
 
-    def test_analizar_certificado():
-        """Test analizar datos en certificado."""
-        wsaa.AnalizarCertificado(CERT)
-        assert wsaa.Identidad
-        assert wsaa.Caducidad
-        assert wsaa.Emisor
-
-    def test_crear_clave_privada():
-        """Test crear clave RSA."""
-        pkey = wsaa.CrearClavePrivada()
-        assert pkey
-
-    def test_crear_pedido_certificado():
-        """Crea CSM para solicitar certificado."""
-        csm = wsaa.CrearPedidoCertificado()
-        assert csm
-
-
-else:
-    # con OpenSSL directo
-    def test_sign_tra_openssl():
-        """Firmar tra con las credenciales."""
-        assert sign.startswith("MIIG+")
-
+def test_crear_pedido_certificado():
+    """Crea CSM para solicitar certificado."""
+    wsaa=WSAA()
+    chk1 = wsaa.CrearClavePrivada()
+    chk2 = wsaa.CrearPedidoCertificado()
+    assert chk1==True
+    assert chk2==True
 
 def test_expirado():
     """Revisar si el TA se encuentra vencido."""
-    exp = wsaa.Expirado()
-    assert exp or True
+    wsaa=WSAA()
+    #checking for expired certificate
+    chk=wsaa.AnalizarXml(xml=open(r"tests\xml\expired_ta.xml", "r").read())
+    chk2=wsaa.Expirado()
+
+    #checking for a valid certificate,i.e. which will 
+    #have expiration time 12 hrs(43200 secs) from generation
+    fec=str(date("c", date("U") + 43200))
+    chk3=wsaa.Expirado(fecha=fec)
+
+    assert chk==True
+    assert chk2==True
+    assert chk3==False
 
 
-def test_autenticar():
-    """Genera TA o devuelve el ya autorizado"""
-    assert ta
+@pytest.mark.vcr()
+def test_login_cms(key_and_cert):
+    """comprobando si LoginCMS está funcionando correctamente"""
+    wsaa = WSAA()
+
+    tra=wsaa.CreateTRA(service="wsfe",ttl=DEFAULT_TTL)
+    cms=wsaa.SignTRA(tra,key_and_cert[1],key_and_cert[0])
+    chk=wsaa.Conectar(cache=None, wsdl=WSAAURL,cacert=CACERT,proxy=None)
+    ta_xml = wsaa.LoginCMS(cms)
+
+    ta = SimpleXMLElement(ta_xml)
+
+    assert isinstance(cms,str)
+    assert cms.startswith('MIIG+')
+
+    assert chk==True
+    assert ta_xml.startswith('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
+    assert ta.credentials.token
+    assert ta.credentials.sign
+
+    assert "<source>" in ta_xml
+    assert "<destination>" in ta_xml
+    assert "<uniqueId>" in ta_xml
+    assert "<expirationTime>" in ta_xml
+    assert "<generationTime>" in ta_xml
+    assert "<credentials>" in ta_xml
+    assert "<token>" in ta_xml
+    assert "<sign>" in ta_xml
+    assert ta_xml.endswith("</loginTicketResponse>\n")
+
+
+
+

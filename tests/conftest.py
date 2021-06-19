@@ -19,9 +19,9 @@ __license__ = "GPL 3.0"
 
 WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 CUIT = 20267565393
-CERT = "/home/reingart/pyafipws/reingart.crt"
-PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
-CACERT = "/home/reingart/pyafipws/afip_root_desa_ca.crt"
-CACHE = "/home/reingart/pyafipws/cache"
+# CERT = "/home/reingart/pyafipws/reingart.crt"
+# PRIVATEKEY = "/home/reingart/pyafipws/reingart.key"
+# CACERT = "/home/reingart/pyafipws/afip_root_desa_ca.crt"
+# CACHE = "/home/reingart/pyafipws/cache"
 
 os.environ["CUIT"] = str(CUIT)

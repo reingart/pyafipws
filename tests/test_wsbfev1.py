@@ -22,9 +22,9 @@ from datetime import datetime, timedelta
 
 from pyafipws.wsaa import WSAA
 from pyafipws.wsbfev1 import WSBFEv1
+from pysimplesoap.simplexml import SimpleXMLElement
 
-
-WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
+WSDL = "http://wswhomo.afip.gov.ar/WSBFEv1/service.asmx"
 CUIT = 20267565393
 CERT = "reingart.crt"
 PRIVATEKEY = "reingart.key"
@@ -204,8 +204,9 @@ class TestBFE(unittest.TestCase):
         """Test ultimo Id."""
         self.test_consulta()
         wsbfev1 = self.wsbfev1
-        idy = wsbfev1.Id
-        idx = wsbfev1.GetLastID()
+        t = wsbfev1.XmlResponse.decode('utf-8')
+        idy = str(t[t.find("<Id>")+4:t.find("</Id>")])
+        idx = str(wsbfev1.GetLastID())
         print(idy)
         self.assertEqual(idy, idx)
 

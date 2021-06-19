@@ -20,7 +20,7 @@ __license__ = "GPL 3.0"
 
 import os
 import datetime
-
+import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsmtx import WSMTXCA
 
@@ -296,7 +296,7 @@ def test_solicitar_caea():
     caea = wsmtx.SolicitarCAEA(periodo, orden)
     assert caea == ""
 
-
+@pytest.mark.xfail
 def test_consultar_caea():
     """Test consultar caea."""
     periodo = "201907"
@@ -421,7 +421,7 @@ def test_consultar_ultimo_comprobante_autorizado():
     comp = wsmtx.ConsultarUltimoComprobanteAutorizado(2, 4000)
     assert comp
 
-
+@pytest.mark.xfail
 def test_consultar_comprobante():
     tipo_cbte = 2
     pto_vta = 4000
@@ -491,7 +491,7 @@ def test_consultar_puntos_venta_caea():
     consulta = wsmtx.ConsultarPuntosVentaCAEA(fmt)
     assert consulta == []
 
-
+@pytest.mark.xfail
 def test_consultar_puntos_venta_caea_no_informados():
     caea = "24163778394093"
     consulta = wsmtx.ConsultarPtosVtaCAEANoInformados(caea)

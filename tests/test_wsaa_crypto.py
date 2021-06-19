@@ -17,8 +17,7 @@ def key_and_cert():
 def test_wsaa_create_tra():
     wsaa = WSAA()
     tra = wsaa.CreateTRA(service="wsfe")
-    # TODO: return string
-    tra = tra.decode("utf8")
+
     # sanity checks:
     assert isinstance(tra, basestring)
     assert tra.startswith(

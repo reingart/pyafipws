@@ -19,7 +19,7 @@ __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
 import os
-
+import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsltv import WSLTV
 
@@ -329,7 +329,7 @@ def test_consultar_depositos_acopio():
     consulta = wsltv.ConsultarDepositosAcopio()
     assert consulta
 
-
+@pytest.mark.xfail
 def test_consultar_puntos_ventas():
     """Test consultar puntos de venta."""
     consulta = wsltv.ConsultarPuntosVentas()
