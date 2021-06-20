@@ -1,0 +1,44 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposComprobanteRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxNjUyNDc5NzQ4IiBnZW5fdGltZT0iMTYyNDIwODM3OCIgZXhwX3RpbWU9IjE2MjQyNTE2MzgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>V+B4wNLsQQBEJ12yT6RewUfjy6W4k3qX/osRBNc+S84Zl7Xq1XSzjH6F6iYNLfm/JQTOR6r9vJFtiHbj6VtKy8y3SrFlIa1dTnUEOCFKjdULHNqKjcxB3LT4/65C+TFILO4QiMazssl1ypn8Li2N9nFFQq2m/3aRn+SM6Mj80Cc=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest></ser:consultarTiposComprobanteRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1344'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposComprobante"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-06-20
+        14:01:01</fecha></info></S:Header><S:Body><ns2:consultarTiposComprobanteResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposComprobanteReturn><arrayTiposComprobante><codigoDescripcion><codigo>995</codigo><descripcion>Remito
+        Electr\xF3nico C\xE1rnico</descripcion></codigoDescripcion></arrayTiposComprobante></consultarTiposComprobanteReturn></ns2:consultarTiposComprobanteResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 17:01:00 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfa73fd57e175f72fa7ef7a282734081a2b095f5792cdf05524f4bcf03a7d11ee5;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -14,8 +14,9 @@
 
 import unittest
 import sys
+import os
 import datetime
-
+import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsfexv1 import WSFEXv1
 
@@ -39,15 +40,20 @@ CACHE = ""
 
 # obteniendo el TA para pruebas
 
-ta = WSAA().Autenticar("wsfex", "reingart.crt", "reingart.key")
-print(ta)
 
+pytestmark =pytest.mark.vcr
+
+@pytest.fixture(scope='module')
+def vcr_cassette_dir(request):
+    # Put all cassettes in vhs/{module}/{test}.yaml
+    return os.path.join('tests/cassettes', request.module.__name__)
 
 class TestFEX(unittest.TestCase):
     def setUp(self):
         sys.argv.append("--trace")
         self.wsfexv1 = wsfexv1 = WSFEXv1()
         wsfexv1.Cuit = 20267565393
+        ta = WSAA().Autenticar("wsfex", "reingart.crt", "reingart.key")
         wsfexv1.SetTicketAcceso(ta)
         wsfexv1.Conectar(CACHE, WSDL)
         print(";)")
@@ -161,7 +167,7 @@ class TestFEX(unittest.TestCase):
 
         idx = int(wsfexv1.GetLastID()) + 1
         # Llamo al WebService de Autorización para obtener el CAE
-        wsfexv1.Authorize(idx)
+        #wsfexv1.Authorize(idx)
 
         tipo_cbte = 19
         punto_vta = 7

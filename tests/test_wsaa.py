@@ -17,6 +17,7 @@ __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
 import pytest
+import os
 from pyafipws.wsaa import WSAA
 from pyafipws.utils import *
 from pysimplesoap import *
@@ -24,6 +25,13 @@ DEFAULT_TTL = 60 * 60 * 5  # five hours
 
 WSAAURL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms"
 CACERT = "conf/afip_ca_info.crt"
+
+
+@pytest.fixture(scope='module')
+def vcr_cassette_dir(request):
+    # Put all cassettes in vhs/{module}/{test}.yaml
+    return os.path.join('tests/cassettes', request.module.__name__)
+
 
 #fixture for key and certificate
 @pytest.fixture
@@ -72,7 +80,7 @@ def test_expirado():
     assert chk3==False
 
 
-@pytest.mark.vcr()
+@pytest.mark.vcr
 def test_login_cms(key_and_cert):
     """comprobando si LoginCMS está funcionando correctamente"""
     wsaa = WSAA()

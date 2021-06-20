@@ -30,45 +30,64 @@ CERT = "reingart.crt"
 PKEY = "reingart.key"
 CACHE = ""
 
-# obteniendo el TA para pruebas
-wsaa = WSAA()
+
+pytestmark =pytest.mark.vcr
+
+
+@pytest.fixture(scope='module')
+def vcr_cassette_dir(request):
+    # Put all cassettes in vhs/{module}/{test}.yaml
+    return os.path.join('tests/cassettes', request.module.__name__)
+
+
 wslum = WSLUM()
-ta = wsaa.Autenticar("wslum", CERT, PKEY)
-wslum.Cuit = CUIT
-wslum.SetTicketAcceso(ta)
+@pytest.fixture(autouse=True)
+def auth():
+    wsaa = WSAA()
+    ta = wsaa.Autenticar("wslum", CERT, PKEY)
+    wslum.Cuit = CUIT
+    wslum.SetTicketAcceso(ta)
+    wslum.Conectar(CACHE, WSDL)
+    return wslum
 
 
-def test_conectar():
+
+def test_conectar(auth):
     """Conectar con servidor."""
+    wslum=auth
     conexion = wslum.Conectar(CACHE, WSDL)
     assert conexion
 
 
-def test_server_status():
+def test_server_status(auth):
     """Test de estado de servidores."""
+    wslum=auth
     wslum.Dummy()
     assert wslum.AppServerStatus == "OK"
     assert wslum.DbServerStatus == "OK"
     assert wslum.AuthServerStatus == "OK"
 
 
-def test_inicializar():
+def test_inicializar(auth):
     """Test inicializar variables de BaseWS."""
+    wslum=auth
     wslum.inicializar()
     assert wslum.Total is None
     assert wslum.FechaComprobante == ""
 
 
-def test___analizar_errores():
+def test___analizar_errores(auth):
     """Test Analizar si se encuentran errores en clientes."""
+    wslum=auth
     ret = {"numeroComprobante": 286}
     wslum._WSLUM__analizar_errores(ret)
     # devuelve '' si no encuentra errores
     assert wslum.ErrMsg == ""
 
 
-def test_crear_liquidacion():
+def test_crear_liquidacion(auth):
     """Test solicitud de liquidacion."""
+    wslum=auth
     tipo_cbte = 27
     pto_vta = 1
     nro_cbte = 1
@@ -94,24 +113,27 @@ def test_crear_liquidacion():
     assert liquidacion
 
 
-def test_agregar_condicion_venta():
+def test_agregar_condicion_venta(auth):
     """Test condiciones de venta."""
+    wslum=auth
     codigo = 1
     descripcion = None
     agregado = wslum.AgregarCondicionVenta(codigo, descripcion)
     assert agregado
 
 
-def test_agregar_tambero():
+def test_agregar_tambero(auth):
     """Test agrega tambero."""
+    wslum=auth
     cuit = 11111111111
     iibb = "123456789012345"
     agregado = wslum.AgregarTambero(cuit, iibb)
     assert agregado
 
 
-def test_agregar_tambo():
+def test_agregar_tambo(auth):
     """Test agregar tambo."""
+    wslum=auth
     nro_tambo_interno = 123456789
     nro_renspa = "12.345.6.78901/12"
     fecha_venc_cert_tuberculosis = "2015-01-01"
@@ -127,8 +149,9 @@ def test_agregar_tambo():
     assert agregado
 
 
-def test_agregar_ubicacion_tambo():
+def test_agregar_ubicacion_tambo(auth):
     """Test agregar ubicacion del tambo."""
+    wslum=auth
     latitud = -34.62987
     longitud = -58.65155
     domicilio = "Domicilio Tambo"
@@ -148,8 +171,9 @@ def test_agregar_ubicacion_tambo():
     assert agregado
 
 
-def test_agregar_balance_litros_porcentajes_solidos():
+def test_agregar_balance_litros_porcentajes_solidos(auth):
     """Test agregar balance de litros y porcentage de solidos."""
+    wslum=auth
     litros_remitidos = 11000
     litros_decomisados = 1000
     kg_grasa = 100.00
@@ -162,8 +186,9 @@ def test_agregar_balance_litros_porcentajes_solidos():
     assert isinstance(wslum.solicitud, dict)
 
 
-def test_agregar_conceptos_basicos_mercado_interno():
+def test_agregar_conceptos_basicos_mercado_interno(auth):
     """Test agregar conceptos basicos mercado interno."""
+    wslum=auth
     kg_produccion_gb = 100
     precio_por_kg_produccion_gb = 5.00
     kg_produccion_pr = 100
@@ -185,8 +210,9 @@ def test_agregar_conceptos_basicos_mercado_interno():
     assert agregado
 
 
-def test_agregar_conceptos_basicos_mercado_externo():
+def test_agregar_conceptos_basicos_mercado_externo(auth):
     """Test agregar conceptos basicos de mercado externo."""
+    wslum=auth
     kg_produccion_gb = 0
     precio_por_kg_produccion_gb = 0
     kg_produccion_pr = 0
@@ -208,8 +234,9 @@ def test_agregar_conceptos_basicos_mercado_externo():
     assert agregado
 
 
-def test_agregar_bonificacion_penalizacion():
+def test_agregar_bonificacion_penalizacion(auth):
     """test agregar bonificacion o penalizacion."""
+    wslum=auth
     codigo = 1
     detalle = "opcional"
     resultado = "400"
@@ -220,8 +247,9 @@ def test_agregar_bonificacion_penalizacion():
     assert agregado
 
 
-def test_agregar_otro_impuesto():
+def test_agregar_otro_impuesto(auth):
     """Test agregar otro impuesto."""
+    wslum=auth
     tipo = 1
     base_imponible = 100.00
     alicuota = 10.00
@@ -230,27 +258,31 @@ def test_agregar_otro_impuesto():
     assert agregado
 
 
-def test_agregar_remito():
+def test_agregar_remito(auth):
     """Test agregar remito."""
+    wslum=auth
     nro_remito = "123456789012"
     agregado = wslum.AgregarRemito(nro_remito)
     assert agregado
 
 
-def test_autorizar_liquidacion():
+def test_autorizar_liquidacion(auth):
     """Test autorizar liquidacion."""
+    wslum=auth
     autorizado = wslum.AutorizarLiquidacion()
     assert autorizado
 
 
-def test_analizar_liquidacion():
+def test_analizar_liquidacion(auth):
     """Test analizar liquidacion."""
+    wslum=auth
     # Funciona en conjunto con AutorizarLiquidacion
     pass
 
 
-def test_agregar_ajuste():
+def test_agregar_ajuste(auth):
     """Test agregar ajuste."""
+    wslum=auth
     cai = ("10000000000000",)
     tipo_cbte = 0
     pto_vta = 0
@@ -260,8 +292,9 @@ def test_agregar_ajuste():
     assert agregado
 
 
-def test_consultar_liquidacion():
+def test_consultar_liquidacion(auth):
     """Test consultar Liquidacion."""
+    wslum=auth
     tipo_cbte = 27
     pto_vta = 1
     nro_cbte = 0
@@ -272,22 +305,25 @@ def test_consultar_liquidacion():
     assert consulta
 
 
-def test_consultar_ultimo_comprobante():
+def test_consultar_ultimo_comprobante(auth):
     """Test consultar ultimo comprobante."""
+    wslum=auth
     tipo_cbte = 1
     pto_vta = 4000
     consulta = wslum.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
     assert consulta
 
 
-def test_consultar_provincias():
+def test_consultar_provincias(auth):
     """Test consultar provincias."""
+    wslum=auth
     consulta = wslum.ConsultarProvincias()
     assert consulta
 
 
-def test_consultar_localidades():
+def test_consultar_localidades(auth):
     """Test consultar localidades."""
+    wslum=auth
     cod_provincia = 1
     consulta = wslum.ConsultarLocalidades(cod_provincia)
     assert consulta
@@ -300,26 +336,30 @@ def test_consultar_localidades():
 #    assert consulta
 
 
-def test_consultar_otros_impuestos():
+def test_consultar_otros_impuestos(auth):
     """Test consultar otros impuestos."""
+    wslum=auth
     consulta = wslum.ConsultarOtrosImpuestos()
     assert consulta
 
 
-def test_consultar_bonificaciones_penalizaciones():
+def test_consultar_bonificaciones_penalizaciones(auth):
     """Test consultar bonificaciones y penalizaciones."""
+    wslum=auth
     consulta = wslum.ConsultarBonificacionesPenalizaciones()
     assert consulta
 
 @pytest.mark.xfail
-def test_consultar_puntos_ventas():
+def test_consultar_puntos_ventas(auth):
     """Test consultar punto de venta."""
+    wslum=auth
     consulta = wslum.ConsultarPuntosVentas()
     assert consulta
 
 
-def test_mostrar_pdf():
+def test_mostrar_pdf(auth):
     """Test mostrar pdf."""
+    wslum=auth
     archivo = "nota"
     imprimir = False
     pdf_ok = wslum.MostrarPDF(archivo, imprimir)

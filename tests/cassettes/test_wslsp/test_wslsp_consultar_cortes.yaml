@@ -1,0 +1,184 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarCortesReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMTY1NjczNjk2IiBnZW5fdGltZT0iMTYyNDIwODE0MyIgZXhwX3RpbWU9IjE2MjQyNTE0MDMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>sRzxCdzVSfX1OvEEUauHz5PKTvjStpOaSYafcrIXmTwg3uCOA6MkkaBWYSie1bqxEe/QIn2t1mI2Gp+xZI66VxLrhWQTqpO1xSTLlwTg0Q+9IHOnzjQ/Vcgt5VW1wqaNuQ20Kj6KneZSAFnCSnW9BWL2P9Oe3JAnE91aiEHeheU=</sign><cuit>20267565393</cuit></auth></ser:ConsultarCortesReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1267'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarCortes"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarCortesResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslsp/\"><respuesta><corte><codigo>101</codigo><descripcion>Cuarto
+        Trasero Con Hueso</descripcion></corte><corte><codigo>102</codigo><descripcion>Corte
+        Pistola A 3 Costillas Sin Hueso</descripcion></corte><corte><codigo>103</codigo><descripcion>Corte
+        Pistola A 3 Costillas Con Hueso</descripcion></corte><corte><codigo>104</codigo><descripcion>Corte
+        Pistola A 7 Costillas Sin Hueso</descripcion></corte><corte><codigo>105</codigo><descripcion>Corte
+        Pistola A 7 Costillas Con Hueso</descripcion></corte><corte><codigo>106</codigo><descripcion>Cuarto
+        Delantero Sin Asado Sin Hueso</descripcion></corte><corte><codigo>107</codigo><descripcion>Cuarto
+        Delantero Sin Asado Con Hueso</descripcion></corte><corte><codigo>108</codigo><descripcion>Pecho
+        A 3 Costillas (S/Hueso) O En Manta</descripcion></corte><corte><codigo>109</codigo><descripcion>Pecho
+        A 3 Costillas (Con Hueso) </descripcion></corte><corte><codigo>110</codigo><descripcion>Rueda
+        (Sin Hueso)</descripcion></corte><corte><codigo>111</codigo><descripcion>Rueda
+        (Con Hueso)</descripcion></corte><corte><codigo>112</codigo><descripcion>Rueda
+        Sin Garron (Sin Hueso)</descripcion></corte><corte><codigo>113</codigo><descripcion>Rueda
+        Sin Garron (Con Hueso)</descripcion></corte><corte><codigo>114</codigo><descripcion>Pierna
+        Sin Hueso</descripcion></corte><corte><codigo>115</codigo><descripcion>Pierna
+        Con Hueso</descripcion></corte><corte><codigo>116</codigo><descripcion>Pierna
+        Mocha Sin Hueso</descripcion></corte><corte><codigo>117</codigo><descripcion>Pierna
+        Mocha Con Hueso</descripcion></corte><corte><codigo>118</codigo><descripcion>Cuarto
+        Delantero En Manta</descripcion></corte><corte><codigo>119</codigo><descripcion>Cuarto
+        Trasero En Manta</descripcion></corte><corte><codigo>120</codigo><descripcion>Asado
+        Con Vacio Sin Hueso</descripcion></corte><corte><codigo>121</codigo><descripcion>Asado
+        Con Vacio Con Hueso</descripcion></corte><corte><codigo>122</codigo><descripcion>Tapa
+        De Cuadril</descripcion></corte><corte><codigo>123</codigo><descripcion>Corcho
+        De Cuadril</descripcion></corte><corte><codigo>124</codigo><descripcion>Pecho
+        Con Falda Sin Hueso</descripcion></corte><corte><codigo>125</codigo><descripcion>Pecho
+        Con Falda Con Hueso</descripcion></corte><corte><codigo>126</codigo><descripcion>Lengua
+        Sin Epitelio</descripcion></corte><corte><codigo>127</codigo><descripcion>Juegos
+        (Bife Angosto-Cor. De Cuadril-Lomo)</descripcion></corte><corte><codigo>128</codigo><descripcion>Centro
+        De Nalga De Adentro</descripcion></corte><corte><codigo>129</codigo><descripcion>Recortes
+        (Carne Chica)</descripcion></corte><corte><codigo>130</codigo><descripcion>Huesos
+        De Los Cortes</descripcion></corte><corte><codigo>131</codigo><descripcion>Cuadril
+        Con Tapa Y Con Colita</descripcion></corte><corte><codigo>132</codigo><descripcion>Vacio
+        Sin Bife</descripcion></corte><corte><codigo>133</codigo><descripcion>Cuadril
+        Sin Tapa, Sin Colita Y Sin Corcho</descripcion></corte><corte><codigo>134</codigo><descripcion>Cuadril
+        Sin Tapa Y Sin Colita</descripcion></corte><corte><codigo>135</codigo><descripcion>Cuadril
+        Sin Tapa Y Con Colita</descripcion></corte><corte><codigo>136</codigo><descripcion>Centro
+        De Entra\xF1a</descripcion></corte><corte><codigo>137</codigo><descripcion>Asado
+        A 3 Costillas Con Hueso</descripcion></corte><corte><codigo>138</codigo><descripcion>Asado
+        A 10 Costillas Con Hueso</descripcion></corte><corte><codigo>139</codigo><descripcion>Entra\xF1a
+        50%</descripcion></corte><corte><codigo>140</codigo><descripcion>Menudencias</descripcion></corte><corte><codigo>141</codigo><descripcion>Asado
+        A 10 Costillas Con Vacio Y Matambre</descripcion></corte><corte><codigo>142</codigo><descripcion>Cuarto
+        Delantero A 3 Costillas Con Falda Con Hueso</descripcion></corte><corte><codigo>143</codigo><descripcion>Tapa
+        De Pecho</descripcion></corte><corte><codigo>144</codigo><descripcion>Pecho
+        Sin Tapa</descripcion></corte><corte><codigo>145</codigo><descripcion>Tapa
+        De Falda</descripcion></corte><corte><codigo>146</codigo><descripcion>Falda
+        Sin Tapa</descripcion></corte><corte><codigo>147</codigo><descripcion>Ral
+        A 10 Costillas Con Hueso</descripcion></corte><corte><codigo>148</codigo><descripcion>Ral
+        A 4 Costillas Con Hueso</descripcion></corte><corte><codigo>149</codigo><descripcion>Centro
+        De Asado</descripcion></corte><corte><codigo>150</codigo><descripcion>Tapa
+        De Asado</descripcion></corte><corte><codigo>151</codigo><descripcion>Tapa
+        De Paleta</descripcion></corte><corte><codigo>152</codigo><descripcion>Bife
+        A 4 Costillas Con Lomo Con Hueso</descripcion></corte><corte><codigo>153</codigo><descripcion>Bife
+        A 10 Costillas Con Lomo Con Hueso</descripcion></corte><corte><codigo>154</codigo><descripcion>Bife
+        A 10 Costillas Con Hueso</descripcion></corte><corte><codigo>901</codigo><descripcion>Extracto</descripcion></corte><corte><codigo>902</codigo><descripcion>Caldo
+        De Carne</descripcion></corte><corte><codigo>903</codigo><descripcion>Jugos</descripcion></corte><corte><codigo>904</codigo><descripcion>Gelatina</descripcion></corte><corte><codigo>905</codigo><descripcion>Caldo
+        De Hueso Y/O Concentrados</descripcion></corte><corte><codigo>906</codigo><descripcion>Enlatados
+        (Corned Beef)</descripcion></corte><corte><codigo>907</codigo><descripcion>Carne
+        Cocida Y Congelada En Tubos</descripcion></corte><corte><codigo>908</codigo><descripcion>Caldo
+        De Pata</descripcion></corte><corte><codigo>909</codigo><descripcion>Hamburguesas</descripcion></corte><corte><codigo>910</codigo><descripcion>Chorizos
+        - Embutidos Frescos (Chorizo)</descripcion></corte><corte><codigo>911</codigo><descripcion>Chorizos
+        - Embutidos Secos (Salame)</descripcion></corte><corte><codigo>912</codigo><descripcion>Chorizos
+        - Embutidos Cocidos (Salchichon)</descripcion></corte><corte><codigo>913</codigo><descripcion>Enlatado
+        - Pate De Foie Y De Higado</descripcion></corte><corte><codigo>914</codigo><descripcion>Enlatados
+        - Picadillo De Carnes</descripcion></corte><corte><codigo>915</codigo><descripcion>Mondongo
+        Semicocido Y Congelado</descripcion></corte><corte><codigo>1</codigo><descripcion>Bife
+        Angosto Con/Sin Cordon (Sin Hueso)</descripcion></corte><corte><codigo>2</codigo><descripcion>Cuadril
+        C/Tapa (S/Hueso Y S/Colita)</descripcion></corte><corte><codigo>3</codigo><descripcion>Corazon
+        De Cuadril</descripcion></corte><corte><codigo>4</codigo><descripcion>Lomito
+        De Corazon De Cuadril</descripcion></corte><corte><codigo>5</codigo><descripcion>Colita
+        De Cuadril</descripcion></corte><corte><codigo>6</codigo><descripcion>Lomo
+        Con O Sin Cordon</descripcion></corte><corte><codigo>7</codigo><descripcion>Nalga
+        De Afuera</descripcion></corte><corte><codigo>8</codigo><descripcion>Peceto</descripcion></corte><corte><codigo>9</codigo><descripcion>Cuadrada
+        (Carnaza De Cola)</descripcion></corte><corte><codigo>10</codigo><descripcion>Nalga
+        De Adentro-Nalga Con Tapa</descripcion></corte><corte><codigo>11</codigo><descripcion>Nalga
+        De Adentro Sin Tapa</descripcion></corte><corte><codigo>12</codigo><descripcion>Tapa
+        De Nalga De Adentro</descripcion></corte><corte><codigo>13</codigo><descripcion>Bola
+        De Lomo</descripcion></corte><corte><codigo>14</codigo><descripcion>Tortuguita
+        (Palomita)</descripcion></corte><corte><codigo>15</codigo><descripcion>Garron
+        (Sin Hueso)</descripcion></corte><corte><codigo>16</codigo><descripcion>Bife
+        Ancho Con Tapa (Sin Hueso)</descripcion></corte><corte><codigo>17</codigo><descripcion>Bife
+        Ancho Sin Tapa</descripcion></corte><corte><codigo>18</codigo><descripcion>Ojo
+        De Bife Ancho</descripcion></corte><corte><codigo>19</codigo><descripcion>Tapa
+        De Bife Ancho</descripcion></corte><corte><codigo>20</codigo><descripcion>Paleta
+        (Carnaza De Paleta)</descripcion></corte><corte><codigo>21</codigo><descripcion>Centro
+        De Carnaza De Paleta</descripcion></corte><corte><codigo>22</codigo><descripcion>Aguja
+        Sin Hueso</descripcion></corte><corte><codigo>23</codigo><descripcion>Aguja
+        Sin Tapa</descripcion></corte><corte><codigo>24</codigo><descripcion>Tapa
+        De Aguja</descripcion></corte><corte><codigo>25</codigo><descripcion>Cogote</descripcion></corte><corte><codigo>26</codigo><descripcion>Marucha</descripcion></corte><corte><codigo>27</codigo><descripcion>Chingolo</descripcion></corte><corte><codigo>28</codigo><descripcion>Brazuelo
+        Sin Hueso</descripcion></corte><corte><codigo>29</codigo><descripcion>Pecho</descripcion></corte><corte><codigo>30</codigo><descripcion>Falda
+        Sin Hueso</descripcion></corte><corte><codigo>31</codigo><descripcion>Asado
+        Sin Hueso</descripcion></corte><corte><codigo>32</codigo><descripcion>Vacio</descripcion></corte><corte><codigo>33</codigo><descripcion>Bife
+        De Vacio</descripcion></corte><corte><codigo>34</codigo><descripcion>Entra\xF1a
+        Fina</descripcion></corte><corte><codigo>35</codigo><descripcion>Matambre</descripcion></corte><corte><codigo>36</codigo><descripcion>Azotillo</descripcion></corte><corte><codigo>37</codigo><descripcion>Bife
+        Angosto Con/Sin Cordon (Con Hueso)</descripcion></corte><corte><codigo>38</codigo><descripcion>Garron
+        (Con Hueso)</descripcion></corte><corte><codigo>39</codigo><descripcion>Bife
+        Ancho Con Tapa (Con Hueso)</descripcion></corte><corte><codigo>40</codigo><descripcion>Aguja
+        Con Hueso</descripcion></corte><corte><codigo>41</codigo><descripcion>Brazuelo
+        (Con Hueso)</descripcion></corte><corte><codigo>42</codigo><descripcion>Falda
+        Con Hueso</descripcion></corte><corte><codigo>43</codigo><descripcion>Asado
+        Con Hueso</descripcion></corte><corte><codigo>44</codigo><descripcion>Tendones
+        O Nervios</descripcion></corte><corte><codigo>45</codigo><descripcion>Cuero</descripcion></corte><corte><codigo>46</codigo><descripcion>Cerda
+        De Cola</descripcion></corte><corte><codigo>47</codigo><descripcion>Cerda
+        De Oreja</descripcion></corte><corte><codigo>48</codigo><descripcion>Hueso
+        De Patas</descripcion></corte><corte><codigo>49</codigo><descripcion>Hueso
+        De Manos</descripcion></corte><corte><codigo>50</codigo><descripcion>Astas</descripcion></corte><corte><codigo>51</codigo><descripcion>Machos
+        De Astas</descripcion></corte><corte><codigo>52</codigo><descripcion>Pezu\xF1as</descripcion></corte><corte><codigo>53</codigo><descripcion>Sangre</descripcion></corte><corte><codigo>54</codigo><descripcion>Hiel</descripcion></corte><corte><codigo>55</codigo><descripcion>Sarro</descripcion></corte><corte><codigo>56</codigo><descripcion>Hueso
+        De Cabeza</descripcion></corte><corte><codigo>57</codigo><descripcion>Hueso
+        De Maxilar</descripcion></corte><corte><codigo>58</codigo><descripcion>Tapa
+        De Asado</descripcion></corte><corte><codigo>59</codigo><descripcion>Hipofisis</descripcion></corte><corte><codigo>60</codigo><descripcion>Pineal</descripcion></corte><corte><codigo>61</codigo><descripcion>Hipotalamo</descripcion></corte><corte><codigo>62</codigo><descripcion>Paratiroides</descripcion></corte><corte><codigo>63</codigo><descripcion>Tiroides</descripcion></corte><corte><codigo>64</codigo><descripcion>Suprarrenales</descripcion></corte><corte><codigo>65</codigo><descripcion>Epitelio</descripcion></corte><corte><codigo>66</codigo><descripcion>Pancreas</descripcion></corte><corte><codigo>67</codigo><descripcion>Prostata</descripcion></corte><corte><codigo>68</codigo><descripcion>Lengua
+        Con Epitelio</descripcion></corte><corte><codigo>69</codigo><descripcion>Sesos</descripcion></corte><corte><codigo>70</codigo><descripcion>Quijadas</descripcion></corte><corte><codigo>71</codigo><descripcion>Pulmon</descripcion></corte><corte><codigo>72</codigo><descripcion>Corazon</descripcion></corte><corte><codigo>73</codigo><descripcion>Molleja
+        De Corazon</descripcion></corte><corte><codigo>74</codigo><descripcion>Molleja
+        De Cogote</descripcion></corte><corte><codigo>75</codigo><descripcion>Higado</descripcion></corte><corte><codigo>76</codigo><descripcion>Ri\xF1ones</descripcion></corte><corte><codigo>77</codigo><descripcion>Rabo-Cola</descripcion></corte><corte><codigo>78</codigo><descripcion>Medula</descripcion></corte><corte><codigo>79</codigo><descripcion>Carne
+        Chica - Nuez De Quijada</descripcion></corte><corte><codigo>80</codigo><descripcion>Carne
+        Chica - Carne De Tragapasto</descripcion></corte><corte><codigo>81</codigo><descripcion>Carne
+        Chica - Carne De Cabeza - Labio</descripcion></corte><corte><codigo>82</codigo><descripcion>Carne
+        Chica - Carne De Traquea</descripcion></corte><corte><codigo>83</codigo><descripcion>Pajarilla
+        - Bonete</descripcion></corte><corte><codigo>84</codigo><descripcion>Mondongo</descripcion></corte><corte><codigo>85</codigo><descripcion>Librillo</descripcion></corte><corte><codigo>86</codigo><descripcion>Cuajo</descripcion></corte><corte><codigo>87</codigo><descripcion>Chinchulines</descripcion></corte><corte><codigo>88</codigo><descripcion>Tripa
+        Gorda</descripcion></corte><corte><codigo>89</codigo><descripcion>Tripa Orilla
+        Primera</descripcion></corte><corte><codigo>90</codigo><descripcion>Tripa
+        Orilla Segunda</descripcion></corte><corte><codigo>91</codigo><descripcion>Tripon</descripcion></corte><corte><codigo>92</codigo><descripcion>Tripa
+        Salame</descripcion></corte><corte><codigo>93</codigo><descripcion>Vejiga</descripcion></corte><corte><codigo>94</codigo><descripcion>Grasa
+        Comestible</descripcion></corte><corte><codigo>95</codigo><descripcion>Grasa
+        Industrial</descripcion></corte><corte><codigo>96</codigo><descripcion>Media
+        Res Sin Hueso</descripcion></corte><corte><codigo>97</codigo><descripcion>Media
+        Res Con Hueso</descripcion></corte><corte><codigo>98</codigo><descripcion>Cuarto
+        Delantero Sin Hueso</descripcion></corte><corte><codigo>99</codigo><descripcion>Cuarto
+        Delantero Con Hueso</descripcion></corte><corte><codigo>100</codigo><descripcion>Cuarto
+        Trasero Sin Hueso</descripcion></corte><cortePorcino><codigo>201</codigo><descripcion>Media
+        res porcina</descripcion></cortePorcino><cortePorcino><codigo>202</codigo><descripcion>Corte
+        carr\xE9 con hueso</descripcion></cortePorcino><cortePorcino><codigo>203</codigo><descripcion>Jam\xF3n
+        con hueso, corte largo</descripcion></cortePorcino><cortePorcino><codigo>204</codigo><descripcion>Jam\xF3n
+        con hueso, corte corto</descripcion></cortePorcino><cortePorcino><codigo>205</codigo><descripcion>Jam\xF3n
+        con hueso, corte parma</descripcion></cortePorcino><cortePorcino><codigo>206</codigo><descripcion>Jam\xF3n
+        sin hueso, desgrasado</descripcion></cortePorcino><cortePorcino><codigo>207</codigo><descripcion>Paleta
+        con hueso, con cuero</descripcion></cortePorcino><cortePorcino><codigo>208</codigo><descripcion>Paleta
+        sin hueso, con cuero desgrasado</descripcion></cortePorcino><cortePorcino><codigo>209</codigo><descripcion>Costillar
+        con hueso, lomo y bondiola</descripcion></cortePorcino><cortePorcino><codigo>210</codigo><descripcion>Costillar
+        con hueso, lomo</descripcion></cortePorcino><cortePorcino><codigo>211</codigo><descripcion>Costillar
+        sin hueso</descripcion></cortePorcino><cortePorcino><codigo>212</codigo><descripcion>Bondiola
+        sin hueso</descripcion></cortePorcino><cortePorcino><codigo>213</codigo><descripcion>Pechito
+        con hueso</descripcion></cortePorcino><cortePorcino><codigo>214</codigo><descripcion>Lomo</descripcion></cortePorcino><cortePorcino><codigo>215</codigo><descripcion>Tocino
+        con y sin cuero</descripcion></cortePorcino><cortePorcino><codigo>216</codigo><descripcion>Panceta
+        con hueso, con cuero</descripcion></cortePorcino><cortePorcino><codigo>217</codigo><descripcion>Panceta
+        sin hueso, con y sin cuero</descripcion></cortePorcino><cortePorcino><codigo>218</codigo><descripcion>Lengua</descripcion></cortePorcino><cortePorcino><codigo>219</codigo><descripcion>H\xEDgado</descripcion></cortePorcino><cortePorcino><codigo>220</codigo><descripcion>Pata</descripcion></cortePorcino><cortePorcino><codigo>221</codigo><descripcion>Coraz\xF3n</descripcion></cortePorcino><cortePorcino><codigo>222</codigo><descripcion>Est\xF3mago</descripcion></cortePorcino><cortePorcino><codigo>223</codigo><descripcion>Ri\xF1\xF3n</descripcion></cortePorcino><cortePorcino><codigo>224</codigo><descripcion>Rabo</descripcion></cortePorcino><cortePorcino><codigo>225</codigo><descripcion>Corteza</descripcion></cortePorcino><cortePorcino><codigo>226</codigo><descripcion>Carne
+        chica porcina</descripcion></cortePorcino><cortePorcino><codigo>227</codigo><descripcion>Otro</descripcion></cortePorcino><metadata><servidor>vivaldi</servidor><fechaHora>2021-06-20T13:57:29</fechaHora></metadata></respuesta></ns2:ConsultarCortesResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:57:29 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfc23569aae5cd23fd55609673f457454988cccb1f510dda7ada5c3e19b0e1e7cc;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -19,7 +19,7 @@ __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
 import os
-
+import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsremcarne import WSRemCarne
 
@@ -31,63 +31,81 @@ PKEY = "reingart.key"
 CACHE = ""
 
 
-# obteniendo el TA para pruebas
-wsaa = WSAA()
+pytestmark =pytest.mark.vcr
+
+
+@pytest.fixture(scope='module')
+def vcr_cassette_dir(request):
+    # Put all cassettes in vhs/{module}/{test}.yaml
+    return os.path.join('tests/cassettes', request.module.__name__)
+
+
 wsremcarne = WSRemCarne()
-ta = wsaa.Autenticar("wsremcarne", CERT, PKEY)
-print(ta)
-wsremcarne.Cuit = CUIT
-wsremcarne.SetTicketAcceso(ta)
+@pytest.fixture(autouse=True)
+def auth():
+    wsaa = WSAA()
+    ta = wsaa.Autenticar("wsremcarne", CERT, PKEY)
+    wsremcarne.Cuit = CUIT
+    wsremcarne.SetTicketAcceso(ta)
+    wsremcarne.Conectar(CACHE, WSDL)
+    return wsremcarne
 
 
-def test_conectar():
+def test_conectar(auth):
     """Conectar con BaseWS."""
+    wsremcarne = auth
     conexion = wsremcarne.Conectar(CACHE, WSDL)
     assert conexion
 
 
-def test_server_status():
+def test_server_status(auth):
     """Test de estado de servidores."""
+    wsremcarne = auth
     wsremcarne.Dummy()
     assert wsremcarne.AppServerStatus == "OK"
     assert wsremcarne.DbServerStatus == "OK"
     assert wsremcarne.AuthServerStatus == "OK"
 
 
-def test_inicializar():
+def test_inicializar(auth):
     """Test inicializar variables de BaseWS."""
+    wsremcarne = auth
     wsremcarne.inicializar()
     assert wsremcarne.TipoComprobante is None
     assert wsremcarne.Obs == ""
     assert wsremcarne.Errores == []
 
 
-def test_analizar_errores():
+def test_analizar_errores(auth):
     """Test analizar si se encuentran errores."""
+    wsremcarne = auth
     ret = {"numeroComprobante": 286}
     wsremcarne._WSRemCarne__analizar_errores(ret)
     # devuelve '' si no encuentra errores
     assert wsremcarne.ErrMsg == ""
 
 
-def test_analizar_observaciones():
+def test_analizar_observaciones(auth):
     """Test analizar si se encuentran errores."""
+    wsremcarne = auth
     ret = {"numeroComprobante": 286}
     wsremcarne._WSRemCarne__analizar_errores(ret)
     # devuelve '' si no encuentra errores
     assert wsremcarne.Obs == ""
 
 
-def test_analizar_evento():
+def test_analizar_evento(auth):
     """Test analizar si se encuentran eventos."""
+    wsremcarne = auth
     ret = {"numeroComprobante": 286}
     wsremcarne._WSRemCarne__analizar_errores(ret)
     # devuelve '' si no encuentra errores
     assert wsremcarne.Evento == ""
 
 
-def test_crear_remito():
+def test_crear_remito(auth):
     """Test generacion de remito(interno)."""
+    wsremcarne = auth
     tipo_comprobante = 995
     punto_emision = 1
     # ENV: Envio Normal, PLA: Retiro en planta, REP: Reparto, RED: Redestino
@@ -123,8 +141,9 @@ def test_crear_remito():
     assert remito
 
 
-def test_agregar_viaje():
+def test_agregar_viaje(auth):
     """Test agregar viaje."""
+    wsremcarne = auth
     cuit_transportista = "20333333334"
     cuit_conductor = "20333333334"
     fecha_inicio_viaje = "2019-05-24"
@@ -136,16 +155,18 @@ def test_agregar_viaje():
     assert agregado
 
 
-def test_agregar_vehiculo():
+def test_agregar_vehiculo(auth):
     """Test agregar vehiculo."""
+    wsremcarne = auth
     dominio_vehiculo = "AAA000"
     dominio_acoplado = "ZZZ000"
     agregado = wsremcarne.AgregarVehiculo(dominio_vehiculo, dominio_acoplado)
     assert agregado
 
 
-def test_agregar_mercaderia():
+def test_agregar_mercaderia(auth):
     """Test agregar mercaderia."""
+    wsremcarne = auth
     orden = 1
     tropa = 1
     cod_tipo_prod = "2.13"
@@ -157,113 +178,130 @@ def test_agregar_mercaderia():
     assert agregado
 
 
-def test_agregar_datos_autorizacion():
+def test_agregar_datos_autorizacion(auth):
     """Test agregar datos autorizacion."""
+    wsremcarne = auth
     agregado = wsremcarne.AgregarDatosAutorizacion(None)
     assert agregado
 
 
-def test_agregar_contingencias():
+def test_agregar_contingencias(auth):
     """Test agregar contingencias."""
+    wsremcarne = auth
     tipo = 1
     observacion = "anulacion"
     agregado = wsremcarne.AgregarContingencias(tipo, observacion)
     assert agregado
 
 
-def test_generar_remito():
+def test_generar_remito(auth):
     """Test generar remito."""
+    wsremcarne = auth
     ok = wsremcarne.GenerarRemito(id_req=1565890584, archivo=None)
     assert ok is False
 
 
-def test_analizar_remito():
+def test_analizar_remito(auth):
     """Test analizar remito."""
+    wsremcarne = auth
     ret = {"Codigo": "Descripcion X"}
     archivo = None
     analisis = wsremcarne.AnalizarRemito(ret, archivo)
     assert analisis is None
 
 
-def test_emitir_remito():
+def test_emitir_remito(auth):
     """Test emitir remito."""
+    wsremcarne = auth
     archivo = None
     remito = wsremcarne.EmitirRemito(archivo)
     assert remito is False
 
 
-def test_autorizar_remito():
+def test_autorizar_remito(auth):
     """Test autorizar remito."""
+    wsremcarne = auth
     archivo = None
     remito = wsremcarne.AutorizarRemito(archivo)
     assert remito
 
 
-def test_anular_remito():
+def test_anular_remito(auth):
     """Test anular remito."""
+    wsremcarne = auth
     remito = wsremcarne.AnularRemito()
     assert remito
 
 
-def test_consultar_ultimo_remito_emitido():
+def test_consultar_ultimo_remito_emitido(auth):
     """Test consultar ultimo remito ."""
+    wsremcarne = auth
     tipo_comprobante = 995
     pto_emision = 1
     consulta = wsremcarne.ConsultarUltimoRemitoEmitido(tipo_comprobante, pto_emision)
     assert consulta == 0
 
 
-def test_consultar_remito():
+def test_consultar_remito(auth):
     """Test consultar remito."""
+    wsremcarne = auth
     cod_remito = 100
     ok = wsremcarne.ConsultarRemito(cod_remito)
     assert ok == 0
 
 
-def test_consultar_tipos_comprobante():
+def test_consultar_tipos_comprobante(auth):
     """Test consultar tipos de comprobante."""
+    wsremcarne = auth
     consulta = wsremcarne.ConsultarTiposComprobante()
     assert consulta
 
 
-def test_consultar_tipos_contingencia():
+def test_consultar_tipos_contingencia(auth):
     """Tes consulatr tipos de contingencia."""
+    wsremcarne = auth
     consulta = wsremcarne.ConsultarTiposContingencia()
     assert consulta
 
 
-def test_consultar_tipos_categoria_emisor():
+def test_consultar_tipos_categoria_emisor(auth):
     """Test consultar tipos de categoria emisor."""
+    wsremcarne = auth
     consulta = wsremcarne.ConsultarTiposCategoriaEmisor()
     assert consulta
 
 
-def test_consultar_tipos_categoria_receptor():
+def test_consultar_tipos_categoria_receptor(auth):
     """Test consultar tipos de categoria receptor."""
+    wsremcarne = auth
     consulta = wsremcarne.ConsultarTiposCategoriaReceptor()
     assert consulta
 
 
-def test_consultar_tipos_estado():
+def test_consultar_tipos_estado(auth):
     """Test consultar tipos de estado."""
+    wsremcarne = auth
     consulta = wsremcarne.ConsultarTiposEstado()
     assert consulta
 
 
-def test_consultar_grupos_carne():
+def test_consultar_grupos_carne(auth):
     """Test consultar grupos de carne."""
+    wsremcarne = auth
     consulta = wsremcarne.ConsultarGruposCarne()
     assert consulta
 
 
-def test_consultar_tipos_carne():
+def test_consultar_tipos_carne(auth):
     """Test consultar tipos de carne."""
+    wsremcarne = auth
     consulta = wsremcarne.ConsultarTiposCarne()
     assert consulta
 
 
-def test_consultar_codigos_domicilio():
+def test_consultar_codigos_domicilio(auth):
     """Test consultar codigos de domicilio con cuit."""
+    wsremcarne = auth
     cuit = 20333333331
     consulta = wsremcarne.ConsultarCodigosDomicilio(cuit)
     assert consulta == []

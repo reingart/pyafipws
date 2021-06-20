@@ -1,0 +1,45 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:autorizarAjusteIVARequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI1MDM4MTE0NyIgZ2VuX3RpbWU9IjE2MjQyMDgzMDMiIGV4cF90aW1lPSIxNjI0MjUxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzbXR4Y2EiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>oe2g4L1Ra3AAsWZcfZrP6rF4BzPa3oYk++zEyRfeq1r/aixKI/WXnczVjPs9/vbl9qlXE3KCK9CvLi6v7UtiMXpGuNdDyntqQnZKyS+bPn/Z9JBvqq7uucYB9R0HBy5AFOC5TVA0rePYkTcPRSCWDMBPtsKaNOO8v8xDCl542tQ=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><comprobanteCAERequest><codigoTipoComprobante>1</codigoTipoComprobante><numeroPuntoVenta>4000</numeroPuntoVenta><numeroComprobante>1758</numeroComprobante><fechaEmision>2021-06-20</fechaEmision><codigoTipoDocumento>80</codigoTipoDocumento><numeroDocumento>30000000007</numeroDocumento><importeGravado>100.00</importeGravado><importeNoGravado>0.00</importeNoGravado><importeExento>0.00</importeExento><importeSubtotal>100.00</importeSubtotal><importeOtrosTributos>1.00</importeOtrosTributos><importeTotal>122.00</importeTotal><codigoMoneda>PES</codigoMoneda><cotizacionMoneda>1.000</cotizacionMoneda><observaciones>Observaciones
+      Comerciales, libre</observaciones><codigoConcepto>3</codigoConcepto><fechaServicioDesde>2021-06-20</fechaServicioDesde><fechaServicioHasta>2021-06-20</fechaServicioHasta><fechaVencimientoPago>2021-06-20</fechaVencimientoPago><arrayOtrosTributos><otroTributo><codigo>99</codigo><descripcion>Impuesto
+      Municipal Matanza</descripcion><baseImponible>100.00</baseImponible><importe>1.00</importe></otroTributo></arrayOtrosTributos><arrayItems><item><unidadesMtx>123456</unidadesMtx><codigoMtx>1234567890123</codigoMtx><codigo>P0001</codigo><descripcion>Descripcion
+      del producto P0001</descripcion><cantidad>2.0</cantidad><codigoUnidadMedida>7</codigoUnidadMedida><precioUnitario>100.0</precioUnitario><importeBonificacion>0.0</importeBonificacion><codigoCondicionIVA>5</codigoCondicionIVA><importeIVA>42.0</importeIVA><importeItem>242.0</importeItem></item><item><descripcion>bonificacion</descripcion><codigoUnidadMedida>99</codigoUnidadMedida><codigoCondicionIVA>5</codigoCondicionIVA><importeIVA>-21.0</importeIVA><importeItem>-121.0</importeItem></item></arrayItems><arraySubtotalesIVA><subtotalIVA><codigo>5</codigo><importe>21</importe></subtotalIVA></arraySubtotalesIVA></comprobanteCAERequest></ser:autorizarAjusteIVARequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '3151'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/autorizarAjusteIVA"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns1:autorizarAjusteIVAResponse
+        xmlns:ns1=\"http://impl.service.wsmtxca.afip.gov.ar/service/\"><resultado>R</resultado><arrayErrores><codigoDescripcion><codigo>136</codigo><descripcion>C\xF3digo
+        de Tipo de Comprobante inv\xE1lido. Para un ajuste de IVA s\xF3lo se pueden
+        utilizar Notas de Cr\xE9dito o D\xE9bito, no Facturas.</descripcion></codigoDescripcion></arrayErrores></ns1:autorizarAjusteIVAResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sun, 20 Jun 2021 16:59:42 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfc6c7a8cfb40da7e92c7680b4e10ddbf9a70c8e15d72219db07818d08630f8711;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

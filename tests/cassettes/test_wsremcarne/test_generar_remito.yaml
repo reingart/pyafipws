@@ -1,0 +1,47 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:generarRemitoRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxNjUyNDc5NzQ4IiBnZW5fdGltZT0iMTYyNDIwODM3OCIgZXhwX3RpbWU9IjE2MjQyNTE2MzgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>V+B4wNLsQQBEJ12yT6RewUfjy6W4k3qX/osRBNc+S84Zl7Xq1XSzjH6F6iYNLfm/JQTOR6r9vJFtiHbj6VtKy8y3SrFlIa1dTnUEOCFKjdULHNqKjcxB3LT4/65C+TFILO4QiMazssl1ypn8Li2N9nFFQq2m/3aRn+SM6Mj80Cc=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><idReq>1565890584</idReq><remito><codRemito>30</codRemito><tipoComprobante>995</tipoComprobante><tipoMovimiento>ENV</tipoMovimiento><categoriaEmisor>1</categoriaEmisor><puntoEmision>1</puntoEmision><cuitTitularMercaderia>20222222223</cuitTitularMercaderia><tipoReceptor>EM</tipoReceptor><categoriaReceptor>1</categoriaReceptor><cuitReceptor>20111111112</cuitReceptor><codDomOrigen>1</codDomOrigen><codDomDestino>1</codDomDestino><viaje><cuitTransportista>20333333334</cuitTransportista><cuitConductor>20333333334</cuitConductor><fechaInicioViaje>2019-05-24</fechaInicioViaje><distanciaKm>8888</distanciaKm><vehiculo><dominioVehiculo>AAA000</dominioVehiculo><dominioAcoplado>ZZZ000</dominioAcoplado></vehiculo></viaje><arrayMercaderias><mercaderia><orden>1</orden><codTipoProd>1</codTipoProd><tropa>1</tropa><kilos>2.13</kilos><unidades>10</unidades></mercaderia></arrayMercaderias><estado>A</estado><datosEmision/><arrayContingencias><contingencia><tipoContingencia>1</tipoContingencia><observacion>anulacion</observacion></contingencia></arrayContingencias></remito></ser:generarRemitoRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2387'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/generarRemito"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-06-20
+        14:00:48</fecha></info></S:Header><S:Body><ns2:generarRemitoResponse xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><generarRemitoReturn><resultado>R</resultado><arrayErroresFormato><codigoDescripcionString><codigo>cvc-length-valid</codigo><descripcion>
+        Value 'A' with length = '1' is not facet-valid with respect to length '3'
+        for type 'EstadoRemitoSimpleType'.</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>cvc-type.3.1.3</codigo><descripcion>
+        The value 'A' of element 'estado' is not valid.</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>cvc-complex-type.2.4.b</codigo><descripcion>
+        The content of element 'datosEmision' is not complete. One of '{nroRemito}'
+        is expected.</descripcion></codigoDescripcionString></arrayErroresFormato></generarRemitoReturn></ns2:generarRemitoResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 17:00:48 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfc34cb8a4d7e695c92f58c72646b68552a4541d1d547d8c83311d517a78ab840f;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,77 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <DocumentosTipoConsultar xmlns=\"http://servicios1.afip.gob.ar/wscdc/\">\n
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2NkYywgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjI1Njg4MzUxNCIgZ2VuX3RpbWU9IjE2MjQyMDczOTEiIGV4cF90aW1lPSIxNjI0MjUwNjUxIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzY2RjIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMTlwdWIiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</Token><Sign>PGh3IA42OtGc60b6rlMkX+DHXD0dUBasOn6hmbKkbi7l2hA9s1mjhOGQwjY68wzrshrAZxRoioaEUdIwxHVMQbbEOWPnKvFcMuNMPU76QR6bqEm1Q61lKzSbTuboYJDMu712twh31o6QC0Y7IgOaj0fiBLXnQIxM8kVLjTTF1aA=</Sign><Cuit>20267565393</Cuit></Auth></DocumentosTipoConsultar>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1379'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://servicios1.afip.gob.ar/wscdc/DocumentosTipoConsultar"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><ambiente>HomologacionExterno
+        - efa</ambiente><fecha>2021-06-20T13:44:23.695104-03:00</fecha><id>2.0.2.0</id></FEHeaderInfo></soap:Header><soap:Body><DocumentosTipoConsultarResponse
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><DocumentosTipoConsultarResult><ResultGet><DocTipo><Id>80</Id><Desc>CUIT</Desc></DocTipo><DocTipo><Id>86</Id><Desc>CUIL</Desc></DocTipo><DocTipo><Id>87</Id><Desc>CDI</Desc></DocTipo><DocTipo><Id>89</Id><Desc>LE</Desc></DocTipo><DocTipo><Id>90</Id><Desc>LC</Desc></DocTipo><DocTipo><Id>91</Id><Desc>CI
+        Extranjera</Desc></DocTipo><DocTipo><Id>92</Id><Desc>en tr\xE1mite</Desc></DocTipo><DocTipo><Id>93</Id><Desc>Acta
+        Nacimiento</Desc></DocTipo><DocTipo><Id>95</Id><Desc>CI Bs. As. RNP</Desc></DocTipo><DocTipo><Id>96</Id><Desc>DNI</Desc></DocTipo><DocTipo><Id>94</Id><Desc>Pasaporte</Desc></DocTipo><DocTipo><Id>00</Id><Desc>CI
+        Polic\xEDa Federal</Desc></DocTipo><DocTipo><Id>01</Id><Desc>CI Buenos Aires</Desc></DocTipo><DocTipo><Id>02</Id><Desc>CI
+        Catamarca</Desc></DocTipo><DocTipo><Id>03</Id><Desc>CI C\xF3rdoba</Desc></DocTipo><DocTipo><Id>04</Id><Desc>CI
+        Corrientes</Desc></DocTipo><DocTipo><Id>05</Id><Desc>CI Entre R\xEDos</Desc></DocTipo><DocTipo><Id>06</Id><Desc>CI
+        Jujuy</Desc></DocTipo><DocTipo><Id>07</Id><Desc>CI Mendoza</Desc></DocTipo><DocTipo><Id>08</Id><Desc>CI
+        La Rioja</Desc></DocTipo><DocTipo><Id>09</Id><Desc>CI Salta</Desc></DocTipo><DocTipo><Id>10</Id><Desc>CI
+        San Juan</Desc></DocTipo><DocTipo><Id>11</Id><Desc>CI San Luis</Desc></DocTipo><DocTipo><Id>12</Id><Desc>CI
+        Santa Fe</Desc></DocTipo><DocTipo><Id>13</Id><Desc>CI Santiago del Estero</Desc></DocTipo><DocTipo><Id>14</Id><Desc>CI
+        Tucum\xE1n</Desc></DocTipo><DocTipo><Id>16</Id><Desc>CI Chaco</Desc></DocTipo><DocTipo><Id>17</Id><Desc>CI
+        Chubut</Desc></DocTipo><DocTipo><Id>18</Id><Desc>CI Formosa</Desc></DocTipo><DocTipo><Id>19</Id><Desc>CI
+        Misiones</Desc></DocTipo><DocTipo><Id>20</Id><Desc>CI Neuqu\xE9n</Desc></DocTipo><DocTipo><Id>21</Id><Desc>CI
+        La Pampa</Desc></DocTipo><DocTipo><Id>22</Id><Desc>CI R\xEDo Negro</Desc></DocTipo><DocTipo><Id>23</Id><Desc>CI
+        Santa Cruz</Desc></DocTipo><DocTipo><Id>24</Id><Desc>CI Tierra del Fuego</Desc></DocTipo><DocTipo><Id>99</Id><Desc>Doc.
+        (Otro)</Desc></DocTipo></ResultGet><Events><Evt><Code>0</Code></Evt></Events></DocumentosTipoConsultarResult></DocumentosTipoConsultarResponse></soap:Body></soap:Envelope>"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '2627'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:29:01 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddfadc52bbf338c51a94cdbd3f926cf7cca30cb5827c1215a154e2a8f0078e4a345;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

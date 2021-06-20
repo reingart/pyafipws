@@ -1,0 +1,166 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <BFEGetLast_CMP xmlns=\"http://ar.gov.afip.dif.bfev1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2JmZSwgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9Ijc5MTY5NDIzMyIgZ2VuX3RpbWU9IjE2MjQyMTQ3NDMiIGV4cF90aW1lPSIxNjI0MjU4MDAzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzYmZlIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMTlwdWIiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</Token><Sign>CMUWhXacEJADGG0vFeQ9oeMQ1gG8grmJyFdlznqHzJpcffUooGNvKZHE/3e9GiYiptLFLnfG8yRCoTv8IlCwlTpEWkZdFWK1dlbFHM+g4JpyT7Cqm/J7TI6fO+8fXkcNYmLlGlVpeTI/W23lPVCBzZgfE16EpvPe82J7Z+Gfu1w=</Sign><Cuit>20267565393</Cuit><Pto_venta>5</Pto_venta><Tipo_cbte>1</Tipo_cbte></Auth></BFEGetLast_CMP>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1402'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.bfev1/BFEGetLast_CMP"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSBFEv1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T15:47:04.0214188-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEGetLast_CMPResponse
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><BFEGetLast_CMPResult><BFEResult_LastCMP><Cbte_nro>2580</Cbte_nro><Cbte_fecha>20210620</Cbte_fecha></BFEResult_LastCMP><BFEErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></BFEErr><BFEEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></BFEEvents></BFEGetLast_CMPResult></BFEGetLast_CMPResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '800'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:47:04 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddfc12ab10b479397774d13af35f681f7203a1a3a67b929813c407414416f28f3e4;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <BFEGetLast_ID xmlns=\"http://ar.gov.afip.dif.bfev1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2JmZSwgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9Ijc5MTY5NDIzMyIgZ2VuX3RpbWU9IjE2MjQyMTQ3NDMiIGV4cF90aW1lPSIxNjI0MjU4MDAzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzYmZlIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMTlwdWIiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</Token><Sign>CMUWhXacEJADGG0vFeQ9oeMQ1gG8grmJyFdlznqHzJpcffUooGNvKZHE/3e9GiYiptLFLnfG8yRCoTv8IlCwlTpEWkZdFWK1dlbFHM+g4JpyT7Cqm/J7TI6fO+8fXkcNYmLlGlVpeTI/W23lPVCBzZgfE16EpvPe82J7Z+Gfu1w=</Sign><Cuit>20267565393</Cuit></Auth></BFEGetLast_ID>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1352'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.bfev1/BFEGetLast_ID"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSBFEv1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T15:47:04.4432965-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEGetLast_IDResponse
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><BFEGetLast_IDResult><BFEResultGet><Id>993456789012386</Id></BFEResultGet><BFEErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></BFEErr><BFEEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></BFEEvents></BFEGetLast_IDResult></BFEGetLast_IDResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '752'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:47:04 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddfcead4c3e6ded7c4dfaf48b96b8dbdc530ee3aaa530df3243d17f6755324b0c7f;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <BFEAuthorize xmlns=\"http://ar.gov.afip.dif.bfev1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2JmZSwgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9Ijc5MTY5NDIzMyIgZ2VuX3RpbWU9IjE2MjQyMTQ3NDMiIGV4cF90aW1lPSIxNjI0MjU4MDAzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzYmZlIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMTlwdWIiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</Token><Sign>CMUWhXacEJADGG0vFeQ9oeMQ1gG8grmJyFdlznqHzJpcffUooGNvKZHE/3e9GiYiptLFLnfG8yRCoTv8IlCwlTpEWkZdFWK1dlbFHM+g4JpyT7Cqm/J7TI6fO+8fXkcNYmLlGlVpeTI/W23lPVCBzZgfE16EpvPe82J7Z+Gfu1w=</Sign><Cuit>20267565393</Cuit></Auth><Cmp><Id>993456789012387</Id><Tipo_doc>80</Tipo_doc><Nro_doc>20888888883</Nro_doc><Zona>1</Zona><Tipo_cbte>1</Tipo_cbte><Punto_vta>5</Punto_vta><Cbte_nro>2581</Cbte_nro><Imp_total>1754.50</Imp_total><Imp_tot_conc>0.00</Imp_tot_conc><Imp_neto>1450.00</Imp_neto><Impto_liq>304.50</Impto_liq><Impto_liq_rni>0.00</Impto_liq_rni><Imp_op_ex>0.00</Imp_op_ex><Imp_perc>0.00</Imp_perc><Imp_iibb>0.00</Imp_iibb><Imp_perc_mun>0.00</Imp_perc_mun><Imp_internos>0.00</Imp_internos><Imp_moneda_Id>PES</Imp_moneda_Id><Imp_moneda_ctz>1</Imp_moneda_ctz><Fecha_cbte>20210621</Fecha_cbte><Items><Item><Pro_codigo_ncm>2101.11.10</Pro_codigo_ncm><Pro_codigo_sec></Pro_codigo_sec><Pro_ds>Cafe</Pro_ds><Pro_qty>10.00</Pro_qty><Pro_umed>5</Pro_umed><Pro_precio_uni>150.00</Pro_precio_uni><Imp_bonif>50.00</Imp_bonif><Imp_total>1754.50</Imp_total><Iva_id>5</Iva_id></Item></Items></Cmp></BFEAuthorize>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2210'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.bfev1/BFEAuthorize"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSBFEv1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T15:47:08.115195-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEAuthorizeResponse
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><BFEAuthorizeResult><BFEResultAuth><Id>993456789012387</Id><Cuit>20267565393</Cuit><Cae>71253948358918</Cae><Fch_venc_Cae>20210701</Fch_venc_Cae><Fch_cbte>20210621</Fch_cbte><Resultado>A</Resultado><Reproceso>N</Reproceso><Obs>
+        </Obs></BFEResultAuth><BFEErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></BFEErr><BFEEvents><EventCode>0</EventCode><EventMsg
+        /></BFEEvents></BFEAuthorizeResult></BFEAuthorizeResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '913'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:47:08 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddf5734b5b8194ac768b03617d4393e146aaa8ebdc998bc64627a373ac6db5995bc;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
