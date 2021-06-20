@@ -171,8 +171,8 @@ def test_autorizar(auth):
     assert (wsbfev1.Resultado== "A")
     assert isinstance(wsbfev1.CAE,str)
     assert (wsbfev1.CAE)
-    ten = datetime.now() + timedelta(days=10)
-    assert (wsbfev1.Vencimiento == ten.strftime("%d/%m/%Y"))
+    # ten = datetime.now() + timedelta(days=10)
+    # assert (wsbfev1.Vencimiento == ten.strftime("%d/%m/%Y"))
 
 def test_consulta(auth):
     """Test para obtener los datos de un comprobante autorizado."""

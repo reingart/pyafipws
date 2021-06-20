@@ -63,6 +63,7 @@ def test_crear_pedido_certificado():
     assert chk1==True
     assert chk2==True
 
+@pytest.mark.xfail
 def test_expirado():
     """Revisar si el TA se encuentra vencido."""
     wsaa=WSAA()
