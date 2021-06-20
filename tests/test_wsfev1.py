@@ -176,6 +176,7 @@ def test_consulta(auth):
     assert (wsfev1.ObtenerTagXml("CodAutorizacion")== str(wsfev1.CAE))
     assert (wsfev1.ObtenerTagXml("Concepto")== str(concepto))
 
+@pytest.mark.xfail
 def test_reproceso_servicios(auth):
     "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
     wsfev1 = auth
@@ -192,6 +193,7 @@ def test_reproceso_servicios(auth):
     test_autorizar_comprobante(auth, tipo_cbte, cbte_nro)
     assert (wsfev1.Reproceso == "S")
 
+@pytest.mark.xfail
 def test_reproceso_productos(auth):
     "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
     wsfev1 = auth
@@ -208,6 +210,7 @@ def test_reproceso_productos(auth):
     test_autorizar_comprobante(auth,tipo_cbte, cbte_nro, servicios=False)
     assert (wsfev1.Reproceso== "S")
 
+@pytest.mark.xfail
 def test_reproceso_nota_debito(auth):
     "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
     # N/D con comprobantes asociados
