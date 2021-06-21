@@ -23,6 +23,7 @@ import datetime
 import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsmtx import WSMTXCA
+import sys
 
 WSDL = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 CUIT = os.environ["CUIT"]
@@ -299,7 +300,7 @@ def test_autorizar_comprobante(auth):
     autorizado = wsmtx.AutorizarComprobante()
     assert autorizado
 
-
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
 def test_cae_solicitar(auth):
     """Test de metodo opcional a AutorizarComprobante """
     wsmtx = auth

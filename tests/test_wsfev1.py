@@ -62,6 +62,7 @@ def test_dummy(auth):
     assert (wsfev1.DbServerStatus== "OK")
     assert (wsfev1.AuthServerStatus== "OK")
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
 def test_autorizar_comprobante(auth, tipo_cbte=1, cbte_nro=None, servicios=True):
     "Prueba de autorización de un comprobante (obtención de CAE)"
     wsfev1 = auth
@@ -151,6 +152,7 @@ def test_autorizar_comprobante(auth, tipo_cbte=1, cbte_nro=None, servicios=True)
     # observación "... no se encuentra registrado en los padrones de AFIP.":
     #assertEqual(wsfev1.ObtenerTagXml("Obs", 0, "Code"), None)
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
 def test_consulta(auth):
     "Prueba de obtener los datos de un comprobante autorizado"
     wsfev1 = auth

@@ -137,6 +137,7 @@ class TestFEX(unittest.TestCase):
         item = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
         self.assertTrue(item)
 
+
     def test_agregar_permiso(self):
         """Test agregar permiso."""
         wsfexv1 = self.wsfexv1
@@ -159,6 +160,7 @@ class TestFEX(unittest.TestCase):
         )
         self.assertTrue(cbteasoc)
 
+    @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
     def test_autorizar(self):
         """Test Autorizar Comprobante."""
         wsfexv1 = self.wsfexv1
@@ -219,6 +221,7 @@ class TestFEX(unittest.TestCase):
         idx = wsfexv1.GetLastID()
         # TODO: self.assertEqual(idy, idx)
 
+    @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
     def test_parametros(self):
         """Test de Parametros."""
         wsfexv1 = self.wsfexv1

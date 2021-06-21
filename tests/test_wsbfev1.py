@@ -158,6 +158,7 @@ def test_agregar_opcional(auth):
     opcional = wsbfev1.AgregarOpcional(idz, ds)
     assert opcional==True
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
 def test_autorizar(auth):
     """Test Autorizar Comprobante."""
     wsbfev1 =auth

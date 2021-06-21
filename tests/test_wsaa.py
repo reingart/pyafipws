@@ -18,6 +18,7 @@ __license__ = "GPL 3.0"
 
 import pytest
 import os
+import sys
 from pyafipws.wsaa import WSAA
 from pyafipws.utils import *
 from pysimplesoap import *
@@ -55,6 +56,7 @@ def test_crear_clave_privada():
     chk = wsaa.CrearClavePrivada()
     assert chk==True
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
 def test_crear_pedido_certificado():
     """Crea CSM para solicitar certificado."""
     wsaa=WSAA()
@@ -80,7 +82,7 @@ def test_expirado():
     assert chk2==True
     assert chk3==False
 
-
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
 @pytest.mark.vcr
 def test_login_cms(key_and_cert):
     """comprobando si LoginCMS está funcionando correctamente"""
