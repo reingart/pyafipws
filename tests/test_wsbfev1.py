@@ -25,7 +25,10 @@ from pyafipws.wsaa import WSAA
 from pyafipws.wsbfev1 import WSBFEv1
 from pysimplesoap.simplexml import SimpleXMLElement
 
-WSDL = "http://wswhomo.afip.gov.ar/WSBFEv1/service.asmx"
+__WSDL__ = "http://wswhomo.afip.gov.ar/WSBFEv1/service.asmx"
+__obj__ = WSBFEv1()
+__service__ = "wsbfe"
+
 CUIT = 20267565393
 CERT = "reingart.crt"
 PKEY = "reingart.key"
@@ -42,22 +45,7 @@ CACHE = ""
 # obteniendo el TA para pruebas
 pytestmark =pytest.mark.vcr
 
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
 
-
-
-wsbfev1 = WSBFEv1()
-@pytest.fixture(autouse=True)
-def auth():
-    wsaa=WSAA()
-    ta = wsaa.Autenticar("wsbfe", CERT, PKEY)
-    wsbfev1.Cuit = CUIT
-    wsbfev1.SetTicketAcceso(ta)
-    wsbfev1.Conectar(CACHE, WSDL)
-    return wsbfev1
 
 def test_dummy(auth):
     """Test de estado del servidor."""

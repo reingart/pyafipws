@@ -26,31 +26,20 @@ import vcr
 import sys
 
 
-WSDL = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
+__WSDL__ = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
+__obj__ = WSLSP()
+__service__ = "wslsp"
+
 CUIT = os.environ["CUIT"]
 CERT = "reingart.crt"
 PKEY = "reingart.key"
 CACHE = ""
+WSDL = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
 
 pytestmark =pytest.mark.vcr
 
 
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
 
-
-
-wslsp = WSLSP()
-@pytest.fixture(autouse=True)
-def auth():
-    wsaa=WSAA()
-    ta = wsaa.Autenticar("wslsp", CERT, PKEY)
-    wslsp.Cuit = CUIT
-    wslsp.SetTicketAcceso(ta)
-    wslsp.Conectar(CACHE, WSDL)
-    return wslsp
  
 
 

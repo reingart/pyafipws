@@ -24,6 +24,9 @@ from pyafipws.wsaa import WSAA
 from pyafipws.wslum import WSLUM
 import sys
 
+__WSDL__ = "https://fwshomo.afip.gov.ar/wslum/LumService?wsdl"
+__obj__ = WSLUM()
+__service__ = "wslum"
 
 WSDL = "https://fwshomo.afip.gov.ar/wslum/LumService?wsdl"
 CUIT = os.environ["CUIT"]
@@ -34,22 +37,6 @@ CACHE = ""
 
 pytestmark =pytest.mark.vcr
 
-
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
-
-
-wslum = WSLUM()
-@pytest.fixture(autouse=True)
-def auth():
-    wsaa = WSAA()
-    ta = wsaa.Autenticar("wslum", CERT, PKEY)
-    wslum.Cuit = CUIT
-    wslum.SetTicketAcceso(ta)
-    wslum.Conectar(CACHE, WSDL)
-    return wslum
 
 
 

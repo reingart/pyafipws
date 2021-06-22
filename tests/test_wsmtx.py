@@ -25,6 +25,10 @@ from pyafipws.wsaa import WSAA
 from pyafipws.wsmtx import WSMTXCA
 import sys
 
+__WSDL__ = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
+__obj__ = WSMTXCA()
+__service__ = "wsmtxca"
+
 WSDL = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
 CUIT = os.environ["CUIT"]
 CERT = "reingart.crt"
@@ -34,21 +38,6 @@ CACHE = ""
 pytestmark =pytest.mark.vcr
 
 
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
-
-
-wsmtx = WSMTXCA()
-@pytest.fixture(autouse=True)
-def auth():
-    wsaa = WSAA()
-    ta = wsaa.Autenticar("wsmtxca", CERT, PKEY)
-    wsmtx.Cuit = CUIT
-    wsmtx.SetTicketAcceso(ta)
-    wsmtx.Conectar(CACHE, WSDL)
-    return wsmtx
 
 
 def test_server_status(auth):

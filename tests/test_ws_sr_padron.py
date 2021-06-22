@@ -26,7 +26,10 @@ from pyafipws.wsaa import WSAA
 from pyafipws.ws_sr_padron import WSSrPadronA4, WSSrPadronA5
 
 
-WSDL = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5?wsdl"
+__WSDL__ = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5?wsdl"
+__obj__ = WSSrPadronA5()
+__service__ = "ws_sr_padron_a5"
+
 CUIT = os.environ["CUIT"]
 CERT = "reingart.crt"
 PKEY = "reingart.key"
@@ -34,21 +37,7 @@ CACHE = ""
 
 pytestmark =pytest.mark.vcr
 
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
 
-
-wspa5 = WSSrPadronA5()
-@pytest.fixture(autouse=True)
-def auth():
-    wsaa = WSAA()
-    ta = wsaa.Autenticar("ws_sr_padron_a5", CERT, PKEY)
-    wspa5.Cuit = CUIT
-    wspa5.SetTicketAcceso(ta)
-    wspa5.Conectar(CACHE, WSDL)
-    return wspa5
 
 
 @pytest.mark.skip

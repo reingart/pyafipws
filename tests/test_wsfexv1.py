@@ -12,7 +12,7 @@
 
 """Test para WSFEXv1 de AFIP(Factura Electrónica Exportación Versión 1)"""
 
-import unittest
+
 import sys
 import os
 import datetime
@@ -24,10 +24,13 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
-WSDL = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
+__WSDL__ = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
+__obj__ = WSFEXv1()
+__service__= "wsfex"
+
 CUIT = 20267565393
 CERT = "reingart.crt"
-PRIVATEKEY = "reingart.key"
+PKEY = "reingart.key"
 CACERT = "conf/afip_ca_info.crt"
 CACHE = ""
 
@@ -43,201 +46,187 @@ CACHE = ""
 
 pytestmark =pytest.mark.vcr
 
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
-
-class TestFEX(unittest.TestCase):
-    def setUp(self):
-        sys.argv.append("--trace")
-        self.wsfexv1 = wsfexv1 = WSFEXv1()
-        wsfexv1.Cuit = 20267565393
-        ta = WSAA().Autenticar("wsfex", "reingart.crt", "reingart.key")
-        wsfexv1.SetTicketAcceso(ta)
-        wsfexv1.Conectar(CACHE, WSDL)
-        print(";)")
-
-    def test_dummy(self):
-        """Test de estado del servidor."""
-        wsfexv1 = self.wsfexv1
-        print(wsfexv1.client.help("FEXDummy"))
-        wsfexv1.Dummy()
-        print("AppServerStatus", wsfexv1.AppServerStatus)
-        print("DbServerStatus", wsfexv1.DbServerStatus)
-        print("AuthServerStatus", wsfexv1.AuthServerStatus)
-        self.assertEqual(wsfexv1.AppServerStatus, "OK")
-        self.assertEqual(wsfexv1.DbServerStatus, "OK")
-        self.assertEqual(wsfexv1.AuthServerStatus, "OK")
-
-    def test_crear_factura(self, tipo_cbte=19):
-        """Test de creación de una factura (Interna)."""
-        wsfexv1 = self.wsfexv1
-        # FC/NC Expo (ver tabla de parámetros)
-        tipo_cbte = 21 if "--nc" in sys.argv else 19
-        punto_vta = 7
-        # Obtengo el último número de comprobante y le agrego 1
-        cbte_nro = int(wsfexv1.GetLastCMP(tipo_cbte, punto_vta)) + 1
-        fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
-        tipo_expo = 1  # exportacion definitiva de bienes
-        permiso_existente = (tipo_cbte not in (20, 21) or tipo_expo != 1) and "S" or ""
-        print("permiso_existente", permiso_existente)
-        dst_cmp = 203  # país destino
-        cliente = "Joao Da Silva"
-        cuit_pais_cliente = "50000000016"
-        domicilio_cliente = "Rúa Ñ°76 km 34.5 Alagoas"
-        id_impositivo = "PJ54482221-l"
-        # para reales, "DOL" o "PES" (ver tabla de parámetros)
-        moneda_id = "DOL"
-        moneda_ctz = "39.00"
-        obs_comerciales = "Observaciones comerciales"
-        obs = "Sin observaciones"
-        forma_pago = "30 dias"
-        incoterms = "FOB"  # (ver tabla de parámetros)
-        incoterms_ds = "Flete a Bordo"
-        idioma_cbte = 1  # (ver tabla de parámetros)
-        imp_total = "250.00"
-
-        # Creo una factura (internamente, no se llama al WebService)
-        fact = wsfexv1.CrearFactura(
-            tipo_cbte,
-            punto_vta,
-            cbte_nro,
-            fecha_cbte,
-            imp_total,
-            tipo_expo,
-            permiso_existente,
-            dst_cmp,
-            cliente,
-            cuit_pais_cliente,
-            domicilio_cliente,
-            id_impositivo,
-            moneda_id,
-            moneda_ctz,
-            obs_comerciales,
-            obs,
-            forma_pago,
-            incoterms,
-            idioma_cbte,
-            incoterms_ds,
-        )
-        self.assertTrue(fact)
-
-    def test_agregar_item(self):
-        """Test Agregar Item"""
-        wsfexv1 = self.wsfexv1
-        self.test_crear_factura()
-        codigo = "PRO1"
-        ds = "Producto Tipo 1 Exportacion MERCOSUR ISO 9001"
-        qty = 2
-        precio = "150.00"
-        umed = 9  # docenas
-        bonif = "50.00"
-        imp_total = "250.00"  # importe total final del artículo
-        item = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
-        self.assertTrue(item)
 
 
-    def test_agregar_permiso(self):
-        """Test agregar permiso."""
-        wsfexv1 = self.wsfexv1
-        self.test_agregar_item()
-        idz = "99999AAXX999999A"
-        dst = 203  # país destino de la mercaderia
-        permiso = wsfexv1.AgregarPermiso(idz, dst)
-        self.assertTrue(permiso)
 
-    def test_agregar_cbte_asoc(self):
-        """Test agregar comprobante asociado."""
-        wsfexv1 = self.wsfexv1
-        self.test_crear_factura()  # 20-21 solo para nc y nd
-        cbteasoc_tipo = 19
-        cbteasoc_pto_vta = 2
-        cbteasoc_nro = 1234
-        cbteasoc_cuit = 20111111111
-        cbteasoc = wsfexv1.AgregarCmpAsoc(
-            cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit
-        )
-        self.assertTrue(cbteasoc)
+def test_dummy(auth):
+    """Test de estado del servidor."""
+    wsfexv1 = auth
+    print(wsfexv1.client.help("FEXDummy"))
+    wsfexv1.Dummy()
+    print("AppServerStatus", wsfexv1.AppServerStatus)
+    print("DbServerStatus", wsfexv1.DbServerStatus)
+    print("AuthServerStatus", wsfexv1.AuthServerStatus)
+    assert (wsfexv1.AppServerStatus == "OK")
+    assert (wsfexv1.DbServerStatus == "OK")
+    assert (wsfexv1.AuthServerStatus == "OK")
 
-    @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
-    def test_autorizar(self):
-        """Test Autorizar Comprobante."""
-        wsfexv1 = self.wsfexv1
-        # contiene las partes necesarias para autorizar
-        self.test_agregar_permiso()
+def test_crear_factura(auth, tipo_cbte=19):
+    """Test de creación de una factura (Interna)."""
+    wsfexv1 = auth
+    # FC/NC Expo (ver tabla de parámetros)
+    tipo_cbte = 21 if "--nc" in sys.argv else 19
+    punto_vta = 7
+    # Obtengo el último número de comprobante y le agrego 1
+    cbte_nro = int(wsfexv1.GetLastCMP(tipo_cbte, punto_vta)) + 1
+    fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
+    tipo_expo = 1  # exportacion definitiva de bienes
+    permiso_existente = (tipo_cbte not in (20, 21) or tipo_expo != 1) and "S" or ""
+    print("permiso_existente", permiso_existente)
+    dst_cmp = 203  # país destino
+    cliente = "Joao Da Silva"
+    cuit_pais_cliente = "50000000016"
+    domicilio_cliente = "Rúa Ñ°76 km 34.5 Alagoas"
+    id_impositivo = "PJ54482221-l"
+    # para reales, "DOL" o "PES" (ver tabla de parámetros)
+    moneda_id = "DOL"
+    moneda_ctz = "39.00"
+    obs_comerciales = "Observaciones comerciales"
+    obs = "Sin observaciones"
+    forma_pago = "30 dias"
+    incoterms = "FOB"  # (ver tabla de parámetros)
+    incoterms_ds = "Flete a Bordo"
+    idioma_cbte = 1  # (ver tabla de parámetros)
+    imp_total = "250.00"
 
-        idx = int(wsfexv1.GetLastID()) + 1
-        # Llamo al WebService de Autorización para obtener el CAE
-        #wsfexv1.Authorize(idx)
+    # Creo una factura (internamente, no se llama al WebService)
+    fact = wsfexv1.CrearFactura(
+        tipo_cbte,
+        punto_vta,
+        cbte_nro,
+        fecha_cbte,
+        imp_total,
+        tipo_expo,
+        permiso_existente,
+        dst_cmp,
+        cliente,
+        cuit_pais_cliente,
+        domicilio_cliente,
+        id_impositivo,
+        moneda_id,
+        moneda_ctz,
+        obs_comerciales,
+        obs,
+        forma_pago,
+        incoterms,
+        idioma_cbte,
+        incoterms_ds,
+    )
+    assert fact==True
 
-        tipo_cbte = 19
-        punto_vta = 7
-        cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
-        wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
-
-        self.assertEqual(wsfexv1.Resultado, "A")
-        self.assertIsInstance(wsfexv1.CAE, str)
-        self.assertIsNotNone(wsfexv1.CAE)
-        
-        #commented because wsfexv1.Vencimiento giving wrong expiration date
-        # self.assertEqual(
-        #     wsfexv1.Vencimiento, datetime.datetime.now().strftime("%d/%m/%Y")
-        # )
-
-    def test_consulta(self):
-        """Test para obtener los datos de un comprobante autorizado."""
-        wsfexv1 = self.wsfexv1
-        # obtengo el ultimo comprobante:
-        tipo_cbte = 19
-        punto_vta = 7
-        cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
-        wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
-
-        # obtengo datos para comprobar
-        cae = wsfexv1.CAE
-        punto_vta = wsfexv1.PuntoVenta
-        cbte_nro = wsfexv1.CbteNro
-        imp_total = wsfexv1.ImpTotal
-
-        self.assertEqual(wsfexv1.CAE, cae)
-        self.assertEqual(wsfexv1.CbteNro, cbte_nro)
-        self.assertEqual(wsfexv1.ImpTotal, imp_total)
-
-    def test_recuperar_numero_comprobante(self):
-        """Test devuelve numero de comprobante."""
-        wsfexv1 = self.wsfexv1
-        tipo_cbte = 19
-        punto_vta = 7
-        cbte_ejemp = "123"
-        cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
-        self.assertEqual(len(str(cbte_nro)), len(cbte_ejemp))
-
-    def test_recuperar_numero_transaccion(self):
-        """Test ultimo Id."""
-        wsfexv1 = self.wsfexv1
-        self.test_consulta()
-        # TODO: idy = wsfexv1.Id  # agrego en GetCMP Id
-        idx = wsfexv1.GetLastID()
-        # TODO: self.assertEqual(idy, idx)
-
-    @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
-    def test_parametros(self):
-        """Test de Parametros."""
-        wsfexv1 = self.wsfexv1
-        # verifico si devuelven datos
-        self.assertIsNotNone(wsfexv1.GetParamTipoCbte())
-        self.assertIsNotNone(wsfexv1.GetParamDstPais())
-        self.assertIsNotNone(wsfexv1.GetParamMon())
-        self.assertIsNotNone(wsfexv1.GetParamDstCUIT())
-        self.assertIsNotNone(wsfexv1.GetParamUMed())
-        self.assertIsNotNone(wsfexv1.GetParamTipoExpo())
-        self.assertIsNotNone(wsfexv1.GetParamIdiomas())
-        self.assertIsNotNone(wsfexv1.GetParamIncoterms())
-        self.assertIsNotNone(wsfexv1.GetParamMonConCotizacion())
-        self.assertIsNotNone(wsfexv1.GetParamPtosVenta())
-        self.assertIsInstance(wsfexv1.GetParamCtz("DOL"), str)
+def test_agregar_item(auth):
+    """Test Agregar Item"""
+    wsfexv1 = auth
+    test_crear_factura(auth)
+    codigo = "PRO1"
+    ds = "Producto Tipo 1 Exportacion MERCOSUR ISO 9001"
+    qty = 2
+    precio = "150.00"
+    umed = 9  # docenas
+    bonif = "50.00"
+    imp_total = "250.00"  # importe total final del artículo
+    item = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
+    assert item==True
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_agregar_permiso(auth):
+    """Test agregar permiso."""
+    wsfexv1 = auth
+    test_agregar_item(auth)
+    idz = "99999AAXX999999A"
+    dst = 203  # país destino de la mercaderia
+    permiso = wsfexv1.AgregarPermiso(idz, dst)
+    assert (permiso == True)
+
+def test_agregar_cbte_asoc(auth):
+    """Test agregar comprobante asociado."""
+    wsfexv1 = auth
+    test_crear_factura(auth)  # 20-21 solo para nc y nd
+    cbteasoc_tipo = 19
+    cbteasoc_pto_vta = 2
+    cbteasoc_nro = 1234
+    cbteasoc_cuit = 20111111111
+    cbteasoc = wsfexv1.AgregarCmpAsoc(
+        cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit
+    )
+    assert cbteasoc==True
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+def test_autorizar(auth):
+    """Test Autorizar Comprobante."""
+    wsfexv1 = auth
+    # contiene las partes necesarias para autorizar
+    test_agregar_permiso(auth)
+
+    idx = int(wsfexv1.GetLastID()) + 1
+    # Llamo al WebService de Autorización para obtener el CAE
+    #wsfexv1.Authorize(idx)
+
+    tipo_cbte = 19
+    punto_vta = 7
+    cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
+    wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
+
+    assert (wsfexv1.Resultado == "A")
+    assert isinstance(wsfexv1.CAE, str)
+    assert (wsfexv1.CAE)
+    
+    #commented because wsfexv1.Vencimiento giving wrong expiration date
+    # assertEqual(
+    #     wsfexv1.Vencimiento, datetime.datetime.now().strftime("%d/%m/%Y")
+    # )
+
+def test_consulta(auth):
+    """Test para obtener los datos de un comprobante autorizado."""
+    wsfexv1 = auth
+    # obtengo el ultimo comprobante:
+    tipo_cbte = 19
+    punto_vta = 7
+    cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
+    wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
+
+    # obtengo datos para comprobar
+    cae = wsfexv1.CAE
+    punto_vta = wsfexv1.PuntoVenta
+    cbte_nro = wsfexv1.CbteNro
+    imp_total = wsfexv1.ImpTotal
+
+    assert (wsfexv1.CAE == cae)
+    assert (wsfexv1.CbteNro == cbte_nro)
+    assert (wsfexv1.ImpTotal == imp_total)
+
+def test_recuperar_numero_comprobante(auth):
+    """Test devuelve numero de comprobante."""
+    wsfexv1 = auth
+    tipo_cbte = 19
+    punto_vta = 7
+    cbte_ejemp = "123"
+    cbte_nro = wsfexv1.GetLastCMP(tipo_cbte, punto_vta)
+    assert (len(str(cbte_nro)) == len(cbte_ejemp))
+
+def test_recuperar_numero_transaccion(auth):
+    """Test ultimo Id."""
+    wsfexv1 = auth
+    test_consulta(auth)
+    # TODO: idy = wsfexv1.Id  # agrego en GetCMP Id
+    idx = wsfexv1.GetLastID()
+    # TODO: assertEqual(idy, idx)
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+def test_parametros(auth):
+    """Test de Parametros."""
+    wsfexv1 = auth
+    # verifico si devuelven datos
+    assert (wsfexv1.GetParamTipoCbte())
+    assert (wsfexv1.GetParamDstPais())
+    assert (wsfexv1.GetParamMon())
+    assert (wsfexv1.GetParamDstCUIT())
+    assert (wsfexv1.GetParamUMed())
+    assert (wsfexv1.GetParamTipoExpo())
+    assert (wsfexv1.GetParamIdiomas())
+    assert (wsfexv1.GetParamIncoterms())
+    assert (wsfexv1.GetParamMonConCotizacion())
+    #assert (wsfexv1.GetParamPtosVenta())
+    assert isinstance(wsfexv1.GetParamCtz("DOL"), str)
+
+

@@ -6,12 +6,9 @@ from pyafipws.wsaa import WSAA
 
 import pytest
 
-pytestmark =pytest.mark.vcr
 
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
+pytestmark = [pytest.mark.vcr ,pytest.mark.dontusefix]
+
 
 
 @pytest.fixture

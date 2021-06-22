@@ -24,14 +24,10 @@ from pyafipws.utils import *
 from pysimplesoap import *
 DEFAULT_TTL = 60 * 60 * 5  # five hours
 
-WSAAURL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms"
+WSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms"
 CACERT = "conf/afip_ca_info.crt"
 
-
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
+pytestmark = [pytest.mark.dontusefix]
 
 
 #fixture for key and certificate
@@ -90,7 +86,7 @@ def test_login_cms(key_and_cert):
 
     tra=wsaa.CreateTRA(service="wsfe",ttl=DEFAULT_TTL)
     cms=wsaa.SignTRA(tra,key_and_cert[1],key_and_cert[0])
-    chk=wsaa.Conectar(cache=None, wsdl=WSAAURL,cacert=CACERT,proxy=None)
+    chk=wsaa.Conectar(cache=None, wsdl=WSDL,cacert=CACERT,proxy=None)
     ta_xml = wsaa.LoginCMS(cms)
 
     ta = SimpleXMLElement(ta_xml)

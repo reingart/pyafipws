@@ -19,13 +19,15 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
-import unittest
 import datetime
 import sys
 import pytest
 import os
 
-WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx"
+__WSDL__ = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx"
+__obj__ = WSFEv1()
+__service__ = "wsfe"
+
 CUIT = 20267565393
 CERT = "reingart.crt"
 PKEY = "reingart.key"
@@ -35,22 +37,6 @@ CACHE = ""
 
 pytestmark =pytest.mark.vcr
 
-
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
-
-
-wsfev1 = WSFEv1()
-@pytest.fixture(autouse=True)
-def auth():
-    wsaa=WSAA()
-    wsfev1.Cuit = CUIT
-    ta = wsaa.Autenticar("wsfe", CERT, PKEY)
-    wsfev1.SetTicketAcceso(ta)
-    wsfev1.Conectar(CACHE, WSDL)
-    return wsfev1
 
 def test_dummy(auth):
     wsfev1 = auth

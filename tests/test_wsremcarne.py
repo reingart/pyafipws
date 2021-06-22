@@ -23,6 +23,9 @@ import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsremcarne import WSRemCarne
 
+__WSDL__ = "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"
+__obj__ = WSRemCarne()
+__service__ = "wsremcarne"
 
 WSDL = "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"
 CUIT = os.environ["CUIT"]
@@ -33,22 +36,6 @@ CACHE = ""
 
 pytestmark =pytest.mark.vcr
 
-
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
-
-
-wsremcarne = WSRemCarne()
-@pytest.fixture(autouse=True)
-def auth():
-    wsaa = WSAA()
-    ta = wsaa.Autenticar("wsremcarne", CERT, PKEY)
-    wsremcarne.Cuit = CUIT
-    wsremcarne.SetTicketAcceso(ta)
-    wsremcarne.Conectar(CACHE, WSDL)
-    return wsremcarne
 
 
 def test_conectar(auth):

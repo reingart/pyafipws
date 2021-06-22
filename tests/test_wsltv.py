@@ -25,30 +25,19 @@ from pyafipws.wsltv import WSLTV
 import sys
 
 
-WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
+__WSDL__ = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
+__obj__ = WSLTV()
+__service__ = "wsltv"
+
 CUIT = os.environ["CUIT"]
 CERT = "reingart.crt"
 PKEY = "reingart.key"
 CACHE = ""
+WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 
 pytestmark =pytest.mark.vcr
 
 
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
-
-
-wsltv = WSLTV()
-@pytest.fixture(autouse=True)
-def auth():
-    wsaa=WSAA()
-    ta = wsaa.Autenticar("wsltv", CERT, PKEY)
-    wsltv.Cuit = CUIT
-    wsltv.SetTicketAcceso(ta)
-    wsltv.Conectar(CACHE, WSDL)
-    return wsltv
 
 
 def test_conectar(auth):

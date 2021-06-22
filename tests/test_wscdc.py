@@ -19,7 +19,6 @@ __license__ = "GPL 3.0"
 import os
 import sys
 import pytest
-import unittest
 from pyafipws.wsaa import WSAA
 from pyafipws.wscdc import WSCDC
 from pyafipws import wscdc as ws
@@ -31,19 +30,12 @@ CERT = "reingart.crt"
 PKEY = "reingart.key"
 CACHE = ""
 
-pytestmark =pytest.mark.vcr
-
-
-@pytest.fixture(scope='module')
-def vcr_cassette_dir(request):
-    # Put all cassettes in vhs/{module}/{test}.yaml
-    return os.path.join('tests/cassettes', request.module.__name__)
-
+pytestmark = [pytest.mark.vcr ,pytest.mark.dontusefix]
 
 
 wscdc = WSCDC()
 @pytest.fixture(autouse=True)
-def auth():
+def wscdc_():
     wsc = ws
     ta = WSAA().Autenticar("wscdc", CERT, PKEY)
     wscdc.Cuit = CUIT
@@ -53,26 +45,26 @@ def auth():
 
 
 @pytest.mark.skip
-def test_server_status(auth):
+def test_server_status(wscdc_):
     """Test de estado de servidores."""
-    wscdc=auth[0]
+    wscdc=wscdc_[0]
     wscdc.Dummy()
     assert wscdc.AppServerStatus == "OK"
     assert wscdc.DbServerStatus == "OK"
     assert wscdc.AuthServerStatus == "OK"
 
 
-def test_inicializar(auth):
+def test_inicializar(wscdc_):
     """Test inicializar variables de BaseWS."""
-    wscdc=auth[0]
+    wscdc=wscdc_[0]
     wscdc.inicializar()
     assert wscdc.ImpTotal is None
     assert wscdc.Resultado == ""
 
 
-def test_analizar_errores(auth):
+def test_analizar_errores(wscdc_):
     """Test analizar si se encuentran errores."""
-    wscdc=auth[0]
+    wscdc=wscdc_[0]
     ret = {
         "Errors": [
             {
@@ -89,10 +81,10 @@ def test_analizar_errores(auth):
     assert wscdc.ErrMsg
 
 
-def test_constatar_comprobante(auth):
+def test_constatar_comprobante(wscdc_):
     """Test constatar comprobante."""
-    wscdc=auth[0]
-    wsc=auth[1]
+    wscdc=wscdc_[0]
+    wsc=wscdc_[1]
     datos_consulta = dict(
         cbte_modo="CAE",
         cuit_emisor="20267565393",
@@ -124,32 +116,32 @@ def test_constatar_comprobante(auth):
     assert isinstance(archivo, dict)
 
 
-def test_consultar_modalidad_comprobantes(auth):
+def test_consultar_modalidad_comprobantes(wscdc_):
     """Test consultar modalidad comprobantes."""
-    wscdc=auth[0]
+    wscdc=wscdc_[0]
     consulta = wscdc.ConsultarModalidadComprobantes()
     assert consulta
 
 
-def test_consultar_tipo_comprobantes(auth):
+def test_consultar_tipo_comprobantes(wscdc_):
     """Test consultar tipo comprobantes."""
-    wscdc=auth[0]
+    wscdc=wscdc_[0]
     consulta = wscdc.ConsultarTipoComprobantes()
     assert consulta
 
 
-def test_consultar_tipo_documentos(auth):
+def test_consultar_tipo_documentos(wscdc_):
     """Test consultar tipo documentos."""
-    wscdc=auth[0]
+    wscdc=wscdc_[0]
     consulta = wscdc.ConsultarTipoDocumentos()
     assert consulta
 
 
-def test_consultar_tipo_opcionales(auth):
+def test_consultar_tipo_opcionales(wscdc_):
     """Test consultar tipo opcionales."""
     # Error 503: No existen datos en nuestros registros.
     # Error afip: No esta funcionado esta consulta en el WS
-    wscdc=auth[0]
+    wscdc=wscdc_[0]
     consulta = wscdc.ConsultarTipoOpcionales()
     assert consulta == []
 
