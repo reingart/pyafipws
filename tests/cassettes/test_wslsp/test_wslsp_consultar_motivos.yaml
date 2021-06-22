@@ -1,0 +1,47 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarMotivosReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMTY1NjczNjk2IiBnZW5fdGltZT0iMTYyNDIwODE0MyIgZXhwX3RpbWU9IjE2MjQyNTE0MDMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>sRzxCdzVSfX1OvEEUauHz5PKTvjStpOaSYafcrIXmTwg3uCOA6MkkaBWYSie1bqxEe/QIn2t1mI2Gp+xZI66VxLrhWQTqpO1xSTLlwTg0Q+9IHOnzjQ/Vcgt5VW1wqaNuQ20Kj6KneZSAFnCSnW9BWL2P9Oe3JAnE91aiEHeheU=</sign><cuit>20267565393</cuit></auth></ser:ConsultarMotivosReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1269'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarMotivos"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:ConsultarMotivosResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wslsp/"><respuesta><motivo><codigo>1</codigo><descripcion>FAENA</descripcion></motivo><motivo><codigo>2</codigo><descripcion>INVERNADA</descripcion></motivo><motivo><codigo>3</codigo><descripcion>REPRODUCCION</descripcion></motivo><motivo><codigo>4</codigo><descripcion>CRIA</descripcion></motivo><motivo><codigo>5</codigo><descripcion>REMATE
+        DE CARNE</descripcion></motivo><motivo><codigo>6</codigo><descripcion>FAENA
+        Y VENTA DE CARNE POR CUENTA Y ORDEN</descripcion></motivo><motivoPorcino><codigo>1</codigo><descripcion>FAENA</descripcion></motivoPorcino><motivoPorcino><codigo>2</codigo><descripcion>INVERNADA</descripcion></motivoPorcino><motivoPorcino><codigo>3</codigo><descripcion>REPRODUCCION</descripcion></motivoPorcino><motivoPorcino><codigo>4</codigo><descripcion>CRIA</descripcion></motivoPorcino><motivoPorcino><codigo>5</codigo><descripcion>REMATE
+        DE CARNE</descripcion></motivoPorcino><motivoPorcino><codigo>6</codigo><descripcion>FAENA
+        Y VENTA DE CARNE POR CUENTA Y ORDEN</descripcion></motivoPorcino><motivoAvicola><codigo>201</codigo><descripcion>FAENA</descripcion></motivoAvicola><motivoAvicola><codigo>202</codigo><descripcion>CRIANZA</descripcion></motivoAvicola><motivoAvicola><codigo>203</codigo><descripcion>REMATE
+        DE CARNE</descripcion></motivoAvicola><motivoAvicola><codigo>204</codigo><descripcion>FAENA
+        Y VENTA DE CARNE POR CUENTA Y ORDEN</descripcion></motivoAvicola><motivoAvicola><codigo>205</codigo><descripcion>VENTA
+        ANIMALES VIVOS</descripcion></motivoAvicola><metadata><servidor>vivaldi</servidor><fechaHora>2021-06-20T13:57:25</fechaHora></metadata></respuesta></ns2:ConsultarMotivosResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:57:25 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfc3f89c4af991852e889cd26c5a4a54e9a7102c0ea36af630c6348603175fecd3;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

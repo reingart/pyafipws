@@ -1,0 +1,1542 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarLocalidadesPorProvinciaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMTY1NjczNjk2IiBnZW5fdGltZT0iMTYyNDIwODE0MyIgZXhwX3RpbWU9IjE2MjQyNTE0MDMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>sRzxCdzVSfX1OvEEUauHz5PKTvjStpOaSYafcrIXmTwg3uCOA6MkkaBWYSie1bqxEe/QIn2t1mI2Gp+xZI66VxLrhWQTqpO1xSTLlwTg0Q+9IHOnzjQ/Vcgt5VW1wqaNuQ20Kj6KneZSAFnCSnW9BWL2P9Oe3JAnE91aiEHeheU=</sign><cuit>20267565393</cuit></auth><solicitud><codProvincia>1</codProvincia></solicitud></ser:ConsultarLocalidadesPorProvinciaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1354'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarLocalidadesPorProvincia"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:ConsultarLocalidadesPorProvinciaResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wslsp/"><respuesta><localidad><codigo>3</codigo><descripcion>12
+        DE AGOSTO</descripcion></localidad><localidad><codigo>4</codigo><descripcion>12
+        DE OCTUBRE</descripcion></localidad><localidad><codigo>5</codigo><descripcion>16
+        DE JULIO</descripcion></localidad><localidad><codigo>6</codigo><descripcion>17
+        DE AGOSTO</descripcion></localidad><localidad><codigo>11</codigo><descripcion>20
+        DE JUNIO</descripcion></localidad><localidad><codigo>16</codigo><descripcion>25
+        DE MAYO</descripcion></localidad><localidad><codigo>24</codigo><descripcion>30
+        DE AGOSTO</descripcion></localidad><localidad><codigo>29</codigo><descripcion>9
+        DE ABRIL</descripcion></localidad><localidad><codigo>30</codigo><descripcion>9
+        DE JULIO</descripcion></localidad><localidad><codigo>32</codigo><descripcion>ABASTO</descripcion></localidad><localidad><codigo>33</codigo><descripcion>ABBOTT</descripcion></localidad><localidad><codigo>36</codigo><descripcion>ABEL</descripcion></localidad><localidad><codigo>68</codigo><descripcion>ACAMBUCO</descripcion></localidad><localidad><codigo>71</codigo><descripcion>ACASSUSO</descripcion></localidad><localidad><codigo>74</codigo><descripcion>ACEILAN</descripcion></localidad><localidad><codigo>77</codigo><descripcion>ACEVEDO</descripcion></localidad><localidad><codigo>85</codigo><descripcion>ACHUPALLAS</descripcion></localidad><localidad><codigo>95</codigo><descripcion>ADELA</descripcion></localidad><localidad><codigo>98</codigo><descripcion>ADELA
+        SAENZ</descripcion></localidad><localidad><codigo>99</codigo><descripcion>ADOLFO
+        ALSINA</descripcion></localidad><localidad><codigo>101</codigo><descripcion>ADOLFO
+        GONZALES CHAVES</descripcion></localidad><localidad><codigo>108</codigo><descripcion>AEROPUERTO
+        EZEIZA</descripcion></localidad><localidad><codigo>112</codigo><descripcion>AGOTE</descripcion></localidad><localidad><codigo>207</codigo><descripcion>AGUAS
+        CORRIENTES</descripcion></localidad><localidad><codigo>214</codigo><descripcion>AGUAS
+        VERDES</descripcion></localidad><localidad><codigo>221</codigo><descripcion>AGUIRREZABALA</descripcion></localidad><localidad><codigo>223</codigo><descripcion>AGUSTIN
+        MOSCONI</descripcion></localidad><localidad><codigo>225</codigo><descripcion>AGUSTINA</descripcion></localidad><localidad><codigo>235</codigo><descripcion>ALAGON</descripcion></localidad><localidad><codigo>238</codigo><descripcion>ALAMOS</descripcion></localidad><localidad><codigo>242</codigo><descripcion>ALASTUEY</descripcion></localidad><localidad><codigo>251</codigo><descripcion>ALBERDI</descripcion></localidad><localidad><codigo>252</codigo><descripcion>ALBERTI</descripcion></localidad><localidad><codigo>279</codigo><descripcion>ALDEA
+        ROMANA</descripcion></localidad><localidad><codigo>281</codigo><descripcion>ALDEA
+        SAN ANDRES</descripcion></localidad><localidad><codigo>298</codigo><descripcion>ALDO
+        BONZI</descripcion></localidad><localidad><codigo>299</codigo><descripcion>ALEGRE</descripcion></localidad><localidad><codigo>304</codigo><descripcion>ALEJANDRO
+        KORN</descripcion></localidad><localidad><codigo>306</codigo><descripcion>ALEJANDRO
+        PETION</descripcion></localidad><localidad><codigo>315</codigo><descripcion>ALFALAD</descripcion></localidad><localidad><codigo>321</codigo><descripcion>ALFREDO
+        DEMARCHI</descripcion></localidad><localidad><codigo>355</codigo><descripcion>ALMACEN
+        EL CRUCE</descripcion></localidad><localidad><codigo>356</codigo><descripcion>ALMACEN
+        EL DESCANSO</descripcion></localidad><localidad><codigo>357</codigo><descripcion>ALMACEN
+        LA COLINA</descripcion></localidad><localidad><codigo>358</codigo><descripcion>ALMACEN
+        PIATTI</descripcion></localidad><localidad><codigo>361</codigo><descripcion>ALMIRANTE
+        BROWN</descripcion></localidad><localidad><codigo>363</codigo><descripcion>ALMIRANTE
+        IRIZAR</descripcion></localidad><localidad><codigo>380</codigo><descripcion>ALTA
+        VISTA</descripcion></localidad><localidad><codigo>381</codigo><descripcion>ALTAMIRA</descripcion></localidad><localidad><codigo>382</codigo><descripcion>ALTAMIRANO</descripcion></localidad><localidad><codigo>465</codigo><descripcion>ALTO
+        VERDE</descripcion></localidad><localidad><codigo>475</codigo><descripcion>ALVAREZ
+        JONTE</descripcion></localidad><localidad><codigo>476</codigo><descripcion>ALVARO
+        BARROS</descripcion></localidad><localidad><codigo>479</codigo><descripcion>ALZAGA</descripcion></localidad><localidad><codigo>484</codigo><descripcion>AMALIA</descripcion></localidad><localidad><codigo>502</codigo><descripcion>AMBROSIO
+        P LEZICA</descripcion></localidad><localidad><codigo>505</codigo><descripcion>AMERICA</descripcion></localidad><localidad><codigo>529</codigo><descripcion>ANASAGASTI</descripcion></localidad><localidad><codigo>547</codigo><descripcion>ANCON</descripcion></localidad><localidad><codigo>552</codigo><descripcion>ANDANT</descripcion></localidad><localidad><codigo>553</codigo><descripcion>ANDERSON</descripcion></localidad><localidad><codigo>561</codigo><descripcion>ANDRES
+        VACCOREZZA</descripcion></localidad><localidad><codigo>610</codigo><descripcion>ANTONIO
+        CARBONI</descripcion></localidad><localidad><codigo>612</codigo><descripcion>ANTONIO
+        DE LOS HEROS</descripcion></localidad><localidad><codigo>624</codigo><descripcion>APARICIO</descripcion></localidad><localidad><codigo>649</codigo><descripcion>ARAUJO</descripcion></localidad><localidad><codigo>657</codigo><descripcion>ARBOLEDA</descripcion></localidad><localidad><codigo>663</codigo><descripcion>ARBUCO</descripcion></localidad><localidad><codigo>671</codigo><descripcion>ARENALES</descripcion></localidad><localidad><codigo>672</codigo><descripcion>ARENAZA</descripcion></localidad><localidad><codigo>677</codigo><descripcion>AREVALO</descripcion></localidad><localidad><codigo>680</codigo><descripcion>ARGERICH</descripcion></localidad><localidad><codigo>699</codigo><descripcion>ARQUEDAS</descripcion></localidad><localidad><codigo>706</codigo><descripcion>ARRIBENOS</descripcion></localidad><localidad><codigo>711</codigo><descripcion>ARROYO
+        AGUAS BLANCAS</descripcion></localidad><localidad><codigo>713</codigo><descripcion>ARROYO
+        AGUILA NEGRA</descripcion></localidad><localidad><codigo>714</codigo><descripcion>ARROYO
+        ALELI</descripcion></localidad><localidad><codigo>726</codigo><descripcion>ARROYO
+        BOTIJA FALSA</descripcion></localidad><localidad><codigo>732</codigo><descripcion>ARROYO
+        BURGOS</descripcion></localidad><localidad><codigo>736</codigo><descripcion>ARROYO
+        CANELON</descripcion></localidad><localidad><codigo>738</codigo><descripcion>ARROYO
+        CARABELITAS</descripcion></localidad><localidad><codigo>750</codigo><descripcion>ARROYO
+        CHICO</descripcion></localidad><localidad><codigo>760</codigo><descripcion>ARROYO
+        DE LA CRUZ</descripcion></localidad><localidad><codigo>762</codigo><descripcion>ARROYO
+        DE LUNA</descripcion></localidad><localidad><codigo>766</codigo><descripcion>ARROYO
+        DEL PESCADO</descripcion></localidad><localidad><codigo>771</codigo><descripcion>ARROYO
+        DULCE</descripcion></localidad><localidad><codigo>772</codigo><descripcion>ARROYO
+        EL AHOGADO</descripcion></localidad><localidad><codigo>790</codigo><descripcion>ARROYO
+        LA MAZA</descripcion></localidad><localidad><codigo>797</codigo><descripcion>ARROYO
+        LAS CRUCES</descripcion></localidad><localidad><codigo>799</codigo><descripcion>ARROYO
+        LAS ROSAS</descripcion></localidad><localidad><codigo>804</codigo><descripcion>ARROYO
+        LOS HUESOS</descripcion></localidad><localidad><codigo>808</codigo><descripcion>ARROYO
+        LOS TIGRES</descripcion></localidad><localidad><codigo>821</codigo><descripcion>ARROYO
+        NEGRO</descripcion></localidad><localidad><codigo>828</codigo><descripcion>ARROYO
+        PAREJA</descripcion></localidad><localidad><codigo>838</codigo><descripcion>ARROYO
+        PESQUERIA</descripcion></localidad><localidad><codigo>865</codigo><descripcion>ARROYO
+        TAJIBER</descripcion></localidad><localidad><codigo>876</codigo><descripcion>ARROYO
+        VENADO</descripcion></localidad><localidad><codigo>880</codigo><descripcion>ARROYO
+        ZANJON</descripcion></localidad><localidad><codigo>882</codigo><descripcion>ARROYO
+        NACURUTU</descripcion></localidad><localidad><codigo>883</codigo><descripcion>ARROYO
+        NACURUTU CHICO</descripcion></localidad><localidad><codigo>890</codigo><descripcion>ARTURO
+        SEGUI</descripcion></localidad><localidad><codigo>891</codigo><descripcion>ARTURO
+        VATTEONE</descripcion></localidad><localidad><codigo>892</codigo><descripcion>ASAMBLEA</descripcion></localidad><localidad><codigo>908</codigo><descripcion>ASTURIAS</descripcion></localidad><localidad><codigo>912</codigo><descripcion>ATAHUALPA</descripcion></localidad><localidad><codigo>913</codigo><descripcion>ATALAYA</descripcion></localidad><localidad><codigo>923</codigo><descripcion>ATUCHA</descripcion></localidad><localidad><codigo>937</codigo><descripcion>AVELLANEDA</descripcion></localidad><localidad><codigo>942</codigo><descripcion>AVESTRUZ</descripcion></localidad><localidad><codigo>953</codigo><descripcion>AZCUENAGA</descripcion></localidad><localidad><codigo>956</codigo><descripcion>AZOPARDO</descripcion></localidad><localidad><codigo>960</codigo><descripcion>AZUL</descripcion></localidad><localidad><codigo>969</codigo><descripcion>B
+        LOS AROMOS SAN PATRICIO</descripcion></localidad><localidad><codigo>970</codigo><descripcion>B
+        NUESTRA SENORA DE LA PAZ</descripcion></localidad><localidad><codigo>971</codigo><descripcion>B
+        SARMIENTO DON ROLANDO</descripcion></localidad><localidad><codigo>974</codigo><descripcion>BACACAY</descripcion></localidad><localidad><codigo>976</codigo><descripcion>BADANO</descripcion></localidad><localidad><codigo>980</codigo><descripcion>BAGUES</descripcion></localidad><localidad><codigo>988</codigo><descripcion>BAHIA
+        SAN BLAS</descripcion></localidad><localidad><codigo>993</codigo><descripcion>BAIGORRITA</descripcion></localidad><localidad><codigo>1043</codigo><descripcion>BAJO
+        HONDO</descripcion></localidad><localidad><codigo>1056</codigo><descripcion>BALCARCE</descripcion></localidad><localidad><codigo>1125</codigo><descripcion>BALNEARIO
+        ATLANTIDA</descripcion></localidad><localidad><codigo>1127</codigo><descripcion>BALNEARIO
+        CHAPALCO</descripcion></localidad><localidad><codigo>1128</codigo><descripcion>BALNEARIO
+        CLAROMECO</descripcion></localidad><localidad><codigo>1131</codigo><descripcion>BALNEARIO
+        FRENTE MAR</descripcion></localidad><localidad><codigo>1133</codigo><descripcion>BALNEARIO
+        LA BALIZA</descripcion></localidad><localidad><codigo>1136</codigo><descripcion>BALNEARIO
+        LOS ANGELES</descripcion></localidad><localidad><codigo>1137</codigo><descripcion>BALNEARIO
+        MAR CHIQUITA</descripcion></localidad><localidad><codigo>1138</codigo><descripcion>BALNEARIO
+        MAR DE COBO</descripcion></localidad><localidad><codigo>1139</codigo><descripcion>BALNEARIO
+        OCEANO</descripcion></localidad><localidad><codigo>1140</codigo><descripcion>BALNEARIO
+        ORENSE</descripcion></localidad><localidad><codigo>1142</codigo><descripcion>BALNEARIO
+        PARADA</descripcion></localidad><localidad><codigo>1144</codigo><descripcion>BALNEARIO
+        PLAYA DORADA</descripcion></localidad><localidad><codigo>1145</codigo><descripcion>BALNEARIO
+        RETA</descripcion></localidad><localidad><codigo>1146</codigo><descripcion>BALNEARIO
+        SAN ANTONIO</descripcion></localidad><localidad><codigo>1148</codigo><descripcion>BALNEARIO
+        SAUCE GRANDE</descripcion></localidad><localidad><codigo>1150</codigo><descripcion>BALSA</descripcion></localidad><localidad><codigo>1165</codigo><descripcion>BANDERALO</descripcion></localidad><localidad><codigo>1169</codigo><descripcion>BANFIELD</descripcion></localidad><localidad><codigo>1183</codigo><descripcion>BARKER</descripcion></localidad><localidad><codigo>1216</codigo><descripcion>BARRIO
+        1 DE MAYO</descripcion></localidad><localidad><codigo>1221</codigo><descripcion>BARRIO
+        ALMAFUERTE</descripcion></localidad><localidad><codigo>1226</codigo><descripcion>BARRIO
+        AVELLANEDA</descripcion></localidad><localidad><codigo>1228</codigo><descripcion>BARRIO
+        BATAN</descripcion></localidad><localidad><codigo>1233</codigo><descripcion>BARRIO
+        CAISAMAR</descripcion></localidad><localidad><codigo>1234</codigo><descripcion>BARRIO
+        CAROSIO</descripcion></localidad><localidad><codigo>1236</codigo><descripcion>BARRIO
+        CHAPADMALAL</descripcion></localidad><localidad><codigo>1245</codigo><descripcion>BARRIO
+        EL CAZADOR</descripcion></localidad><localidad><codigo>1246</codigo><descripcion>BARRIO
+        EL HUECO</descripcion></localidad><localidad><codigo>1248</codigo><descripcion>BARRIO
+        EL PORTENO</descripcion></localidad><localidad><codigo>1252</codigo><descripcion>BARRIO
+        GARIN NORTE</descripcion></localidad><localidad><codigo>1253</codigo><descripcion>BARRIO
+        GASTRONOMICO</descripcion></localidad><localidad><codigo>1254</codigo><descripcion>BARRIO
+        GENERAL ROCA</descripcion></localidad><localidad><codigo>1255</codigo><descripcion>BARRIO
+        GENERAL SAN MARTIN</descripcion></localidad><localidad><codigo>1258</codigo><descripcion>BARRIO
+        INDIO TROMPA</descripcion></localidad><localidad><codigo>1261</codigo><descripcion>BARRIO
+        JOSE M ESTRADA</descripcion></localidad><localidad><codigo>1262</codigo><descripcion>BARRIO
+        JUAN B JUSTO</descripcion></localidad><localidad><codigo>1263</codigo><descripcion>BARRIO
+        JUAREZ</descripcion></localidad><localidad><codigo>1264</codigo><descripcion>BARRIO
+        JULIO DE VEDIA</descripcion></localidad><localidad><codigo>1265</codigo><descripcion>BARRIO
+        JURAMENTO</descripcion></localidad><localidad><codigo>1266</codigo><descripcion>BARRIO
+        LA DOLLY</descripcion></localidad><localidad><codigo>1272</codigo><descripcion>BARRIO
+        LA LUISA</descripcion></localidad><localidad><codigo>1277</codigo><descripcion>BARRIO
+        LAS MANDARINAS</descripcion></localidad><localidad><codigo>1279</codigo><descripcion>BARRIO
+        LOMA PARAGUAYA</descripcion></localidad><localidad><codigo>1280</codigo><descripcion>BARRIO
+        LOS ANDES</descripcion></localidad><localidad><codigo>1284</codigo><descripcion>BARRIO
+        NOROESTE</descripcion></localidad><localidad><codigo>1286</codigo><descripcion>BARRIO
+        OBRERO</descripcion></localidad><localidad><codigo>1290</codigo><descripcion>BARRIO
+        PARQUE BRISTOL</descripcion></localidad><localidad><codigo>1291</codigo><descripcion>BARRIO
+        PARQUE LAMBARE</descripcion></localidad><localidad><codigo>1292</codigo><descripcion>BARRIO
+        PARQUE LELOIR</descripcion></localidad><localidad><codigo>1294</codigo><descripcion>BARRIO
+        PEDRO RICO</descripcion></localidad><localidad><codigo>1295</codigo><descripcion>BARRIO
+        PEDRO ROCCO</descripcion></localidad><localidad><codigo>1297</codigo><descripcion>BARRIO
+        PINARES</descripcion></localidad><localidad><codigo>1298</codigo><descripcion>BARRIO
+        PRIMERA JUNTA</descripcion></localidad><localidad><codigo>1299</codigo><descripcion>BARRIO
+        PUEBLO NUEVO</descripcion></localidad><localidad><codigo>1302</codigo><descripcion>BARRIO
+        ROSARIO SUD</descripcion></localidad><localidad><codigo>1303</codigo><descripcion>BARRIO
+        SAN ALEJO</descripcion></localidad><localidad><codigo>1305</codigo><descripcion>BARRIO
+        SAN BLAS</descripcion></localidad><localidad><codigo>1306</codigo><descripcion>BARRIO
+        SAN CARLOS</descripcion></localidad><localidad><codigo>1309</codigo><descripcion>BARRIO
+        SAN JACINTO</descripcion></localidad><localidad><codigo>1310</codigo><descripcion>BARRIO
+        SAN JOSE</descripcion></localidad><localidad><codigo>1313</codigo><descripcion>BARRIO
+        SAN MARTIN</descripcion></localidad><localidad><codigo>1315</codigo><descripcion>BARRIO
+        SAN ROQUE</descripcion></localidad><localidad><codigo>1317</codigo><descripcion>BARRIO
+        SANTA MAGDALENA</descripcion></localidad><localidad><codigo>1322</codigo><descripcion>BARRIO
+        TIERRA DE ORO</descripcion></localidad><localidad><codigo>1323</codigo><descripcion>BARRIO
+        TIRO FEDERAL</descripcion></localidad><localidad><codigo>1324</codigo><descripcion>BARRIO
+        TROCHA</descripcion></localidad><localidad><codigo>1326</codigo><descripcion>BARRIO
+        U O C R A</descripcion></localidad><localidad><codigo>1331</codigo><descripcion>BARRIO
+        VILLA MUNIZ</descripcion></localidad><localidad><codigo>1332</codigo><descripcion>BARRIO
+        VILLA ORTEGA</descripcion></localidad><localidad><codigo>1333</codigo><descripcion>BARRIO
+        VILLA SALADILLO</descripcion></localidad><localidad><codigo>1335</codigo><descripcion>BARRIO
+        VISTA ALEGRE</descripcion></localidad><localidad><codigo>1348</codigo><descripcion>BASE
+        AERONAVAL CMTE ESPORA</descripcion></localidad><localidad><codigo>1349</codigo><descripcion>BASE
+        AERONAVAL PUNTA INDIO</descripcion></localidad><localidad><codigo>1357</codigo><descripcion>BASE
+        NAVAL RIO SANTIAGO</descripcion></localidad><localidad><codigo>1369</codigo><descripcion>BATERIAS</descripcion></localidad><localidad><codigo>1373</codigo><descripcion>BAUDRIX</descripcion></localidad><localidad><codigo>1425</codigo><descripcion>BELEN
+        DE ESCOBAR</descripcion></localidad><localidad><codigo>1435</codigo><descripcion>BELLA
+        VISTA</descripcion></localidad><localidad><codigo>1438</codigo><descripcion>BELLOCQ</descripcion></localidad><localidad><codigo>1442</codigo><descripcion>BENAVIDEZ</descripcion></localidad><localidad><codigo>1444</codigo><descripcion>BENITEZ</descripcion></localidad><localidad><codigo>1445</codigo><descripcion>BENITO
+        JUAREZ</descripcion></localidad><localidad><codigo>1453</codigo><descripcion>BERDIER</descripcion></localidad><localidad><codigo>1455</codigo><descripcion>BERISSO</descripcion></localidad><localidad><codigo>1459</codigo><descripcion>BERMUDEZ</descripcion></localidad><localidad><codigo>1462</codigo><descripcion>BERNAL
+        ESTE</descripcion></localidad><localidad><codigo>1463</codigo><descripcion>BERNAL
+        OESTE</descripcion></localidad><localidad><codigo>1468</codigo><descripcion>BERNARDO
+        VERA Y PINTADO</descripcion></localidad><localidad><codigo>1471</codigo><descripcion>BERRAONDO</descripcion></localidad><localidad><codigo>1474</codigo><descripcion>BERUTTI</descripcion></localidad><localidad><codigo>1487</codigo><descripcion>BLANCA
+        GRANDE</descripcion></localidad><localidad><codigo>1492</codigo><descripcion>BLANDENGUES</descripcion></localidad><localidad><codigo>1493</codigo><descripcion>BLAQUIER</descripcion></localidad><localidad><codigo>1495</codigo><descripcion>BLAS
+        DURANONA</descripcion></localidad><localidad><codigo>1497</codigo><descripcion>BLONDEAU</descripcion></localidad><localidad><codigo>1498</codigo><descripcion>BME
+        BAVIO GRAL MANSILLA</descripcion></localidad><localidad><codigo>1516</codigo><descripcion>BOCAYUBA</descripcion></localidad><localidad><codigo>1526</codigo><descripcion>BOLIVAR</descripcion></localidad><localidad><codigo>1534</codigo><descripcion>BONNEMENT</descripcion></localidad><localidad><codigo>1540</codigo><descripcion>BORDENAVE</descripcion></localidad><localidad><codigo>1550</codigo><descripcion>BOSCH</descripcion></localidad><localidad><codigo>1552</codigo><descripcion>BOSQUES</descripcion></localidad><localidad><codigo>1555</codigo><descripcion>BOULOGNE</descripcion></localidad><localidad><codigo>1563</codigo><descripcion>BRAGADO</descripcion></localidad><localidad><codigo>1565</codigo><descripcion>BRAVO
+        DEL DOS</descripcion></localidad><localidad><codigo>1585</codigo><descripcion>BUCHANAN</descripcion></localidad><localidad><codigo>1610</codigo><descripcion>BURZACO</descripcion></localidad><localidad><codigo>1642</codigo><descripcion>CABEZA
+        DE BUEY</descripcion></localidad><localidad><codigo>1696</codigo><descripcion>CADRET</descripcion></localidad><localidad><codigo>1703</codigo><descripcion>CAILOMUTA</descripcion></localidad><localidad><codigo>1738</codigo><descripcion>CALDERON</descripcion></localidad><localidad><codigo>1776</codigo><descripcion>CALVO</descripcion></localidad><localidad><codigo>1778</codigo><descripcion>CAMAOTI</descripcion></localidad><localidad><codigo>1780</codigo><descripcion>CAMARON
+        CHICO</descripcion></localidad><localidad><codigo>1785</codigo><descripcion>CAMBACERES</descripcion></localidad><localidad><codigo>1794</codigo><descripcion>CAMINERA
+        GENERAL LOPEZ</descripcion></localidad><localidad><codigo>1795</codigo><descripcion>CAMINERA
+        JUAREZ</descripcion></localidad><localidad><codigo>1796</codigo><descripcion>CAMINERA
+        LUJAN</descripcion></localidad><localidad><codigo>1797</codigo><descripcion>CAMINERA
+        NAPALEOFU</descripcion></localidad><localidad><codigo>1798</codigo><descripcion>CAMINERA
+        SAMBOROMBON</descripcion></localidad><localidad><codigo>1804</codigo><descripcion>CAMINO
+        CENTENARIO KM 11500</descripcion></localidad><localidad><codigo>1810</codigo><descripcion>CAMPAMENTO</descripcion></localidad><localidad><codigo>1823</codigo><descripcion>CAMPANA</descripcion></localidad><localidad><codigo>1841</codigo><descripcion>CAMPO
+        ARISTIMUNO</descripcion></localidad><localidad><codigo>1856</codigo><descripcion>CAMPO
+        BUENA VISTA</descripcion></localidad><localidad><codigo>1867</codigo><descripcion>CAMPO
+        COLIQUEO</descripcion></localidad><localidad><codigo>1873</codigo><descripcion>CAMPO
+        CRISOL</descripcion></localidad><localidad><codigo>1887</codigo><descripcion>CAMPO
+        DE MAYO</descripcion></localidad><localidad><codigo>1898</codigo><descripcion>CAMPO
+        DEL NORTE AMERICANO</descripcion></localidad><localidad><codigo>1946</codigo><descripcion>CAMPO
+        LA LIMA</descripcion></localidad><localidad><codigo>1951</codigo><descripcion>CAMPO
+        LA PLATA</descripcion></localidad><localidad><codigo>1955</codigo><descripcion>CAMPO
+        LA ZULEMA</descripcion></localidad><localidad><codigo>1960</codigo><descripcion>CAMPO
+        LEITE</descripcion></localidad><localidad><codigo>1963</codigo><descripcion>CAMPO
+        LOPE SECO</descripcion></localidad><localidad><codigo>1983</codigo><descripcion>CAMPO
+        PENA LOPEZ</descripcion></localidad><localidad><codigo>2000</codigo><descripcion>CAMPO
+        ROJAS</descripcion></localidad><localidad><codigo>2004</codigo><descripcion>CAMPO
+        SABATE</descripcion></localidad><localidad><codigo>2009</codigo><descripcion>CAMPO
+        SAN JUAN</descripcion></localidad><localidad><codigo>2031</codigo><descripcion>CAMPODONICO</descripcion></localidad><localidad><codigo>2036</codigo><descripcion>CANAL
+        15 CERRO DE LA GLORIA</descripcion></localidad><localidad><codigo>2037</codigo><descripcion>CANAL
+        MARTIN IRIGOYEN</descripcion></localidad><localidad><codigo>2039</codigo><descripcion>CANAL
+        N ALEM 2A SEC</descripcion></localidad><localidad><codigo>2063</codigo><descripcion>CANGALLO</descripcion></localidad><localidad><codigo>2067</codigo><descripcion>CANNING</descripcion></localidad><localidad><codigo>2068</codigo><descripcion>CANONIGO
+        GORRITI</descripcion></localidad><localidad><codigo>2071</codigo><descripcion>CANTERA
+        AGUIRRE</descripcion></localidad><localidad><codigo>2072</codigo><descripcion>CANTERA
+        ALBION</descripcion></localidad><localidad><codigo>2076</codigo><descripcion>CANTERA
+        LA FEDERACION</descripcion></localidad><localidad><codigo>2077</codigo><descripcion>CANTERA
+        LA MOVEDIZA</descripcion></localidad><localidad><codigo>2079</codigo><descripcion>CANTERA
+        MONTE CRISTO</descripcion></localidad><localidad><codigo>2082</codigo><descripcion>CANTERA
+        VILLALONGA</descripcion></localidad><localidad><codigo>2084</codigo><descripcion>CANTERAS
+        DE GREGORINI</descripcion></localidad><localidad><codigo>2097</codigo><descripcion>CAPDEPONT</descripcion></localidad><localidad><codigo>2117</codigo><descripcion>CAPILLA
+        DEL SENOR</descripcion></localidad><localidad><codigo>2134</codigo><descripcion>CAPITAN
+        CASTRO</descripcion></localidad><localidad><codigo>2140</codigo><descripcion>CAPITAN
+        SARMIENTO</descripcion></localidad><localidad><codigo>2150</codigo><descripcion>CARABELAS</descripcion></localidad><localidad><codigo>2163</codigo><descripcion>CARAPACHAY</descripcion></localidad><localidad><codigo>2178</codigo><descripcion>CARHUE</descripcion></localidad><localidad><codigo>2180</codigo><descripcion>CARI
+        LARQUEA</descripcion></localidad><localidad><codigo>2182</codigo><descripcion>CARILO</descripcion></localidad><localidad><codigo>2184</codigo><descripcion>CARLOS
+        BEGUERIE</descripcion></localidad><localidad><codigo>2186</codigo><descripcion>CARLOS
+        CASARES</descripcion></localidad><localidad><codigo>2188</codigo><descripcion>CARLOS
+        KEEN</descripcion></localidad><localidad><codigo>2189</codigo><descripcion>CARLOS
+        LEMEE</descripcion></localidad><localidad><codigo>2194</codigo><descripcion>CARLOS
+        SALAS</descripcion></localidad><localidad><codigo>2195</codigo><descripcion>CARLOS
+        SPEGAZZINI</descripcion></localidad><localidad><codigo>2197</codigo><descripcion>CARLOS
+        TEJEDOR</descripcion></localidad><localidad><codigo>2201</codigo><descripcion>CARMEN
+        DE ARECO</descripcion></localidad><localidad><codigo>2202</codigo><descripcion>CARMEN
+        DE PATAGONES</descripcion></localidad><localidad><codigo>2277</codigo><descripcion>CASALINS</descripcion></localidad><localidad><codigo>2285</codigo><descripcion>CASCADA</descripcion></localidad><localidad><codigo>2289</codigo><descripcion>CASEROS</descripcion></localidad><localidad><codigo>2291</codigo><descripcion>CASEY</descripcion></localidad><localidad><codigo>2311</codigo><descripcion>CASTELAR</descripcion></localidad><localidad><codigo>2313</codigo><descripcion>CASTELLI</descripcion></localidad><localidad><codigo>2316</codigo><descripcion>CASTILLA</descripcion></localidad><localidad><codigo>2357</codigo><descripcion>CAZON</descripcion></localidad><localidad><codigo>2372</codigo><descripcion>CANADA
+        DE ARIAS</descripcion></localidad><localidad><codigo>2424</codigo><descripcion>CANADA
+        MARIANO</descripcion></localidad><localidad><codigo>2425</codigo><descripcion>CANADA
+        MARTA</descripcion></localidad><localidad><codigo>2429</codigo><descripcion>CANADA
+        RICA</descripcion></localidad><localidad><codigo>2434</codigo><descripcion>CANADA
+        SECA</descripcion></localidad><localidad><codigo>2477</codigo><descripcion>CANUELAS</descripcion></localidad><localidad><codigo>2493</codigo><descripcion>CENTENARIO</descripcion></localidad><localidad><codigo>2506</codigo><descripcion>CENTRO
+        GUERRERO</descripcion></localidad><localidad><codigo>2514</codigo><descripcion>CERRI</descripcion></localidad><localidad><codigo>2522</codigo><descripcion>CERRITO</descripcion></localidad><localidad><codigo>2534</codigo><descripcion>CERRO
+        AGUILA</descripcion></localidad><localidad><codigo>2584</codigo><descripcion>CERRO
+        DE LA GLORIA CANAL 15</descripcion></localidad><localidad><codigo>2595</codigo><descripcion>CERRO
+        DE LOS LEONES</descripcion></localidad><localidad><codigo>2736</codigo><descripcion>CERRO
+        SOTUYO</descripcion></localidad><localidad><codigo>2767</codigo><descripcion>CHACABUCO</descripcion></localidad><localidad><codigo>2789</codigo><descripcion>CHACRA
+        EXPERIMENTAL INTA</descripcion></localidad><localidad><codigo>2832</codigo><descripcion>CHANCAY</descripcion></localidad><localidad><codigo>2840</codigo><descripcion>CHAPAR</descripcion></localidad><localidad><codigo>2863</codigo><descripcion>CHAS</descripcion></localidad><localidad><codigo>2864</codigo><descripcion>CHASCOMUS</descripcion></localidad><localidad><codigo>2865</codigo><descripcion>CHASICO</descripcion></localidad><localidad><codigo>2916</codigo><descripcion>CHENAUT</descripcion></localidad><localidad><codigo>2929</codigo><descripcion>CHICLANA</descripcion></localidad><localidad><codigo>2949</codigo><descripcion>CHILLAR</descripcion></localidad><localidad><codigo>2981</codigo><descripcion>CHIVILCOY</descripcion></localidad><localidad><codigo>2988</codigo><descripcion>CHOIQUE</descripcion></localidad><localidad><codigo>3027</codigo><descripcion>CHURRUCA</descripcion></localidad><localidad><codigo>3056</codigo><descripcion>CITY
+        BELL</descripcion></localidad><localidad><codigo>3059</codigo><descripcion>CIUDAD
+        DE EDUARDO MADERO</descripcion></localidad><localidad><codigo>3061</codigo><descripcion>CIUDAD
+        EVITA</descripcion></localidad><localidad><codigo>3063</codigo><descripcion>CIUDAD
+        JARDIN DEL PALOMAR</descripcion></localidad><localidad><codigo>3065</codigo><descripcion>CIUDADELA</descripcion></localidad><localidad><codigo>3074</codigo><descripcion>CLAYPOLE</descripcion></localidad><localidad><codigo>3083</codigo><descripcion>CNA
+        NACIONAL DE ALIENADOS</descripcion></localidad><localidad><codigo>3085</codigo><descripcion>CNEL
+        RODOLFO BUNGE</descripcion></localidad><localidad><codigo>3094</codigo><descripcion>COBO</descripcion></localidad><localidad><codigo>3103</codigo><descripcion>COCHRANE</descripcion></localidad><localidad><codigo>3127</codigo><descripcion>COLEGIO
+        SAN PABLO</descripcion></localidad><localidad><codigo>3134</codigo><descripcion>COLIQUEO</descripcion></localidad><localidad><codigo>3143</codigo><descripcion>COLMAN</descripcion></localidad><localidad><codigo>3151</codigo><descripcion>COLON</descripcion></localidad><localidad><codigo>3156</codigo><descripcion>COLONIA  MIGUEL
+        ESTEVERENA</descripcion></localidad><localidad><codigo>3182</codigo><descripcion>COLONIA
+        ALBERDI</descripcion></localidad><localidad><codigo>3233</codigo><descripcion>COLONIA
+        BARON HIRSCH</descripcion></localidad><localidad><codigo>3247</codigo><descripcion>COLONIA
+        BELLA VISTA</descripcion></localidad><localidad><codigo>3323</codigo><descripcion>COLONIA
+        CUARENTA Y TRES</descripcion></localidad><localidad><codigo>3336</codigo><descripcion>COLONIA
+        DE VAC CHAPADMALAL</descripcion></localidad><localidad><codigo>3358</codigo><descripcion>COLONIA
+        DR GDOR UDAONDO</descripcion></localidad><localidad><codigo>3370</codigo><descripcion>COLONIA
+        EL BALDE</descripcion></localidad><localidad><codigo>3384</codigo><descripcion>COLONIA
+        EL GUANACO</descripcion></localidad><localidad><codigo>3436</codigo><descripcion>COLONIA
+        FERRARI</descripcion></localidad><localidad><codigo>3489</codigo><descripcion>COLONIA
+        HINOJO</descripcion></localidad><localidad><codigo>3491</codigo><descripcion>COLONIA
+        HIPOLITO YRIGOYEN</descripcion></localidad><localidad><codigo>3493</codigo><descripcion>COLONIA
+        HOGAR R GUTIERREZ</descripcion></localidad><localidad><codigo>3499</codigo><descripcion>COLONIA
+        INCHAUSTI</descripcion></localidad><localidad><codigo>3536</codigo><descripcion>COLONIA
+        LA BEBA</descripcion></localidad><localidad><codigo>3545</codigo><descripcion>COLONIA
+        LA CATALINA</descripcion></localidad><localidad><codigo>3547</codigo><descripcion>COLONIA
+        LA CELINA</descripcion></localidad><localidad><codigo>3554</codigo><descripcion>COLONIA
+        LA ESPERANZA</descripcion></localidad><localidad><codigo>3555</codigo><descripcion>COLONIA
+        LA ESTRELLA</descripcion></localidad><localidad><codigo>3566</codigo><descripcion>COLONIA
+        LA INVERNADA</descripcion></localidad><localidad><codigo>3577</codigo><descripcion>COLONIA
+        LA MERCED</descripcion></localidad><localidad><codigo>3584</codigo><descripcion>COLONIA
+        LA NENA</descripcion></localidad><localidad><codigo>3586</codigo><descripcion>COLONIA
+        LA NORIA</descripcion></localidad><localidad><codigo>3601</codigo><descripcion>COLONIA
+        LA REINA</descripcion></localidad><localidad><codigo>3611</codigo><descripcion>COLONIA
+        LA VANGUARDIA</descripcion></localidad><localidad><codigo>3612</codigo><descripcion>COLONIA
+        LA VASCONGADA</descripcion></localidad><localidad><codigo>3615</codigo><descripcion>COLONIA
+        LABORDEROY</descripcion></localidad><localidad><codigo>3620</codigo><descripcion>COLONIA
+        LAPIN</descripcion></localidad><localidad><codigo>3630</codigo><descripcion>COLONIA
+        LAS YESCAS</descripcion></localidad><localidad><codigo>3635</codigo><descripcion>COLONIA
+        LEVEN</descripcion></localidad><localidad><codigo>3644</codigo><descripcion>COLONIA
+        LOS ALAMOS</descripcion></localidad><localidad><codigo>3646</codigo><descripcion>COLONIA
+        LOS BOSQUES</descripcion></localidad><localidad><codigo>3650</codigo><descripcion>COLONIA
+        LOS HORNOS</descripcion></localidad><localidad><codigo>3651</codigo><descripcion>COLONIA
+        LOS HUESOS</descripcion></localidad><localidad><codigo>3658</codigo><descripcion>COLONIA
+        LOS TOLDOS</descripcion></localidad><localidad><codigo>3661</codigo><descripcion>COLONIA
+        LOS TRES USARIS</descripcion></localidad><localidad><codigo>3696</codigo><descripcion>COLONIA
+        MAURICIO</descripcion></localidad><localidad><codigo>3713</codigo><descripcion>COLONIA
+        MONTE LA PLATA</descripcion></localidad><localidad><codigo>3730</codigo><descripcion>COLONIA
+        NAVIERA</descripcion></localidad><localidad><codigo>3733</codigo><descripcion>COLONIA
+        NIEVES</descripcion></localidad><localidad><codigo>3745</codigo><descripcion>COLONIA
+        OCAMPO</descripcion></localidad><localidad><codigo>3764</codigo><descripcion>COLONIA
+        PALANTELEN</descripcion></localidad><localidad><codigo>3784</codigo><descripcion>COLONIA
+        PHILLIPSON N 1</descripcion></localidad><localidad><codigo>3799</codigo><descripcion>COLONIA
+        PUEBLO RUSO</descripcion></localidad><localidad><codigo>3824</codigo><descripcion>COLONIA
+        RUSA</descripcion></localidad><localidad><codigo>3837</codigo><descripcion>COLONIA
+        SAN EDUARDO</descripcion></localidad><localidad><codigo>3838</codigo><descripcion>COLONIA
+        SAN ENRIQUE</descripcion></localidad><localidad><codigo>3842</codigo><descripcion>COLONIA
+        SAN FRANCISCO</descripcion></localidad><localidad><codigo>3854</codigo><descripcion>COLONIA
+        SAN MARTIN</descripcion></localidad><localidad><codigo>3858</codigo><descripcion>COLONIA
+        SAN PEDRO</descripcion></localidad><localidad><codigo>3860</codigo><descripcion>COLONIA
+        SAN RAMON</descripcion></localidad><localidad><codigo>3878</codigo><descripcion>COLONIA
+        SANTA MARIANA</descripcion></localidad><localidad><codigo>3883</codigo><descripcion>COLONIA
+        SANTA ROSA</descripcion></localidad><localidad><codigo>3895</codigo><descripcion>COLONIA
+        SERE</descripcion></localidad><localidad><codigo>3908</codigo><descripcion>COLONIA
+        STEGMAN</descripcion></localidad><localidad><codigo>3914</codigo><descripcion>COLONIA
+        TAPATTA</descripcion></localidad><localidad><codigo>3967</codigo><descripcion>COLONIA
+        ZAMBUNGO</descripcion></localidad><localidad><codigo>3981</codigo><descripcion>COMAHUE
+        OESTE</descripcion></localidad><localidad><codigo>3987</codigo><descripcion>COMANDANTE
+        GIRIBONE</descripcion></localidad><localidad><codigo>3991</codigo><descripcion>COMANDANTE
+        NICANOR OTAMENDI</descripcion></localidad><localidad><codigo>3999</codigo><descripcion>COMODORO
+        PY</descripcion></localidad><localidad><codigo>4016</codigo><descripcion>CONDARCO</descripcion></localidad><localidad><codigo>4040</codigo><descripcion>COOPER</descripcion></localidad><localidad><codigo>4046</codigo><descripcion>COPETONAS</descripcion></localidad><localidad><codigo>4053</codigo><descripcion>CORACEROS</descripcion></localidad><localidad><codigo>4057</codigo><descripcion>CORAZZI</descripcion></localidad><localidad><codigo>4058</codigo><descripcion>CORBETT</descripcion></localidad><localidad><codigo>4080</codigo><descripcion>CORONEL
+        BOERR</descripcion></localidad><localidad><codigo>4082</codigo><descripcion>CORONEL
+        BRANDSEN</descripcion></localidad><localidad><codigo>4083</codigo><descripcion>CORONEL
+        CHARLONE</descripcion></localidad><localidad><codigo>4087</codigo><descripcion>CORONEL
+        DORREGO</descripcion></localidad><localidad><codigo>4091</codigo><descripcion>CORONEL
+        FALCON</descripcion></localidad><localidad><codigo>4096</codigo><descripcion>CORONEL
+        GRANADA</descripcion></localidad><localidad><codigo>4099</codigo><descripcion>CORONEL
+        ISLENOS</descripcion></localidad><localidad><codigo>4105</codigo><descripcion>CORONEL
+        MARCELINO FREYRE</descripcion></localidad><localidad><codigo>4107</codigo><descripcion>CORONEL
+        MARTINEZ DE HOZ</descripcion></localidad><localidad><codigo>4113</codigo><descripcion>CORONEL
+        PRINGLES</descripcion></localidad><localidad><codigo>4114</codigo><descripcion>CORONEL
+        RODOLFO BUNGE</descripcion></localidad><localidad><codigo>4118</codigo><descripcion>CORONEL
+        SEGUI</descripcion></localidad><localidad><codigo>4119</codigo><descripcion>CORONEL
+        SUAREZ</descripcion></localidad><localidad><codigo>4120</codigo><descripcion>CORONEL
+        VIDAL</descripcion></localidad><localidad><codigo>4162</codigo><descripcion>CORTI</descripcion></localidad><localidad><codigo>4176</codigo><descripcion>COSTA
+        BONITA BALNEARIO</descripcion></localidad><localidad><codigo>4177</codigo><descripcion>COSTA
+        BRAVA</descripcion></localidad><localidad><codigo>4225</codigo><descripcion>COVELLO</descripcion></localidad><localidad><codigo>4239</codigo><descripcion>CRISTIANO
+        MUERTO</descripcion></localidad><localidad><codigo>4245</codigo><descripcion>CROTTO</descripcion></localidad><localidad><codigo>4254</codigo><descripcion>CRUCESITA</descripcion></localidad><localidad><codigo>4284</codigo><descripcion>CUARTEL
+        2</descripcion></localidad><localidad><codigo>4286</codigo><descripcion>CUARTEL
+        8</descripcion></localidad><localidad><codigo>4287</codigo><descripcion>CUARTEL
+        CUATRO</descripcion></localidad><localidad><codigo>4288</codigo><descripcion>CUARTEL
+        V</descripcion></localidad><localidad><codigo>4297</codigo><descripcion>CUATRO
+        DE NOVIEMBRE</descripcion></localidad><localidad><codigo>4316</codigo><descripcion>CUCULLU</descripcion></localidad><localidad><codigo>4317</codigo><descripcion>CUENCA</descripcion></localidad><localidad><codigo>4347</codigo><descripcion>CURAMALAN</descripcion></localidad><localidad><codigo>4350</codigo><descripcion>CURARU</descripcion></localidad><localidad><codigo>4375</codigo><descripcion>D
+        ORBIGNY</descripcion></localidad><localidad><codigo>4384</codigo><descripcion>DARREGUEIRA</descripcion></localidad><localidad><codigo>4386</codigo><descripcion>DE
+        BARY</descripcion></localidad><localidad><codigo>4387</codigo><descripcion>DE
+        BRUYN</descripcion></localidad><localidad><codigo>4388</codigo><descripcion>DE
+        FERRARI</descripcion></localidad><localidad><codigo>4390</codigo><descripcion>DE
+        LA GARMA</descripcion></localidad><localidad><codigo>4395</codigo><descripcion>DEL
+        VALLE</descripcion></localidad><localidad><codigo>4396</codigo><descripcion>DEL
+        VISO</descripcion></localidad><localidad><codigo>4398</codigo><descripcion>DELFIN
+        HUERGO</descripcion></localidad><localidad><codigo>4400</codigo><descripcion>DELGADO</descripcion></localidad><localidad><codigo>4402</codigo><descripcion>DENNEHY</descripcion></localidad><localidad><codigo>4411</codigo><descripcion>DESPENADEROS</descripcion></localidad><localidad><codigo>4418</codigo><descripcion>DESVIO
+        AGUIRRE</descripcion></localidad><localidad><codigo>4425</codigo><descripcion>DESVIO
+        GARBARINI</descripcion></localidad><localidad><codigo>4428</codigo><descripcion>DESVIO
+        SAN ALEJO</descripcion></localidad><localidad><codigo>4429</codigo><descripcion>DESVIO
+        SANDRINI</descripcion></localidad><localidad><codigo>4439</codigo><descripcion>DIEGO
+        GAYNOR</descripcion></localidad><localidad><codigo>4445</codigo><descripcion>DIONISIA</descripcion></localidad><localidad><codigo>4464</codigo><descripcion>DIQUE
+        LUJAN</descripcion></localidad><localidad><codigo>4484</codigo><descripcion>DOCK
+        CENTRAL</descripcion></localidad><localidad><codigo>4485</codigo><descripcion>DOCK
+        SUD</descripcion></localidad><localidad><codigo>4488</codigo><descripcion>DOCTOR
+        DOMINGO CABRED</descripcion></localidad><localidad><codigo>4497</codigo><descripcion>DOCTOR
+        RICARDO LEVENE</descripcion></localidad><localidad><codigo>4501</codigo><descripcion>DOLORES</descripcion></localidad><localidad><codigo>4508</codigo><descripcion>DOMINGO
+        FAUSTINO SARMIENTO</descripcion></localidad><localidad><codigo>4518</codigo><descripcion>DON
+        BOSCO</descripcion></localidad><localidad><codigo>4519</codigo><descripcion>DON
+        CIPRIANO</descripcion></localidad><localidad><codigo>4530</codigo><descripcion>DON
+        TORCUATO</descripcion></localidad><localidad><codigo>4531</codigo><descripcion>DON
+        VICENTE</descripcion></localidad><localidad><codigo>4549</codigo><descripcion>DOS
+        HERMANOS</descripcion></localidad><localidad><codigo>4552</codigo><descripcion>DOS
+        NACIONES</descripcion></localidad><localidad><codigo>4565</codigo><descripcion>DOYLE</descripcion></localidad><localidad><codigo>4571</codigo><descripcion>DRABBLE</descripcion></localidad><localidad><codigo>4575</codigo><descripcion>DUCOS</descripcion></localidad><localidad><codigo>4576</codigo><descripcion>DUDIGNAC</descripcion></localidad><localidad><codigo>4578</codigo><descripcion>DUGGAN</descripcion></localidad><localidad><codigo>4579</codigo><descripcion>DUHAU</descripcion></localidad><localidad><codigo>4587</codigo><descripcion>DURANONA</descripcion></localidad><localidad><codigo>4596</codigo><descripcion>EDMUNDO
+        PERKINS</descripcion></localidad><localidad><codigo>4599</codigo><descripcion>EGANA</descripcion></localidad><localidad><codigo>4613</codigo><descripcion>EL
+        60</descripcion></localidad><localidad><codigo>4630</codigo><descripcion>EL
+        ALBA</descripcion></localidad><localidad><codigo>4659</codigo><descripcion>EL
+        ARBOLITO PERGAMINO</descripcion></localidad><localidad><codigo>4678</codigo><descripcion>EL
+        BAGUAL</descripcion></localidad><localidad><codigo>4705</codigo><descripcion>EL
+        BOMBERO</descripcion></localidad><localidad><codigo>4708</codigo><descripcion>EL
+        BOQUERON</descripcion></localidad><localidad><codigo>4762</codigo><descripcion>EL
+        CARBON</descripcion></localidad><localidad><codigo>4768</codigo><descripcion>EL
+        CARMEN DE LANGUEYU</descripcion></localidad><localidad><codigo>4772</codigo><descripcion>EL
+        CARPINCHO</descripcion></localidad><localidad><codigo>4773</codigo><descripcion>EL
+        CARRETERO</descripcion></localidad><localidad><codigo>4799</codigo><descripcion>EL
+        CENTINELA</descripcion></localidad><localidad><codigo>4817</codigo><descripcion>EL
+        CHALAR</descripcion></localidad><localidad><codigo>4831</codigo><descripcion>EL
+        CHEIQUE</descripcion></localidad><localidad><codigo>4849</codigo><descripcion>EL
+        CHUMBIAO</descripcion></localidad><localidad><codigo>4887</codigo><descripcion>EL
+        CORTAPIE</descripcion></localidad><localidad><codigo>4913</codigo><descripcion>EL
+        DESCANSO</descripcion></localidad><localidad><codigo>4923</codigo><descripcion>EL
+        DIA</descripcion></localidad><localidad><codigo>4933</codigo><descripcion>EL
+        DIVISORIO</descripcion></localidad><localidad><codigo>4950</codigo><descripcion>EL
+        ESPINILLO</descripcion></localidad><localidad><codigo>4957</codigo><descripcion>EL
+        EUCALIPTUS</descripcion></localidad><localidad><codigo>4959</codigo><descripcion>EL
+        FENIX</descripcion></localidad><localidad><codigo>4978</codigo><descripcion>EL
+        GALLO</descripcion></localidad><localidad><codigo>4998</codigo><descripcion>EL
+        GUALICHO</descripcion></localidad><localidad><codigo>5006</codigo><descripcion>EL
+        HERVIDERO</descripcion></localidad><localidad><codigo>5022</codigo><descripcion>EL
+        JABALI</descripcion></localidad><localidad><codigo>5024</codigo><descripcion>EL
+        JAGUEL</descripcion></localidad><localidad><codigo>5036</codigo><descripcion>EL
+        JUNCO</descripcion></localidad><localidad><codigo>5038</codigo><descripcion>EL
+        JUPITER</descripcion></localidad><localidad><codigo>5047</codigo><descripcion>EL
+        LENGUARAZ</descripcion></localidad><localidad><codigo>5054</codigo><descripcion>EL
+        LUCERO</descripcion></localidad><localidad><codigo>5073</codigo><descripcion>EL
+        MARQUESADO</descripcion></localidad><localidad><codigo>5086</codigo><descripcion>EL
+        MIRADOR</descripcion></localidad><localidad><codigo>5107</codigo><descripcion>EL
+        MORO</descripcion></localidad><localidad><codigo>5113</codigo><descripcion>EL
+        NACIONAL</descripcion></localidad><localidad><codigo>5124</codigo><descripcion>EL
+        NILO</descripcion></localidad><localidad><codigo>5170</codigo><descripcion>EL
+        PALOMAR</descripcion></localidad><localidad><codigo>5171</codigo><descripcion>EL
+        PAMPERO</descripcion></localidad><localidad><codigo>5183</codigo><descripcion>EL
+        PARCHE</descripcion></localidad><localidad><codigo>5202</codigo><descripcion>EL
+        PELADO</descripcion></localidad><localidad><codigo>5206</codigo><descripcion>EL
+        PENSAMIENTO</descripcion></localidad><localidad><codigo>5211</codigo><descripcion>EL
+        PEREGRINO</descripcion></localidad><localidad><codigo>5234</codigo><descripcion>EL
+        PINO</descripcion></localidad><localidad><codigo>5263</codigo><descripcion>EL
+        PORVENIR</descripcion></localidad><localidad><codigo>5295</codigo><descripcion>EL
+        QUEMADO</descripcion></localidad><localidad><codigo>5318</codigo><descripcion>EL
+        REFUGIO</descripcion></localidad><localidad><codigo>5327</codigo><descripcion>EL
+        RETIRO PDO GRAL VIAMONTE</descripcion></localidad><localidad><codigo>5332</codigo><descripcion>EL
+        RINCON</descripcion></localidad><localidad><codigo>5341</codigo><descripcion>EL
+        ROSARIO</descripcion></localidad><localidad><codigo>5358</codigo><descripcion>EL
+        SAUCE</descripcion></localidad><localidad><codigo>5371</codigo><descripcion>EL
+        SIASGO</descripcion></localidad><localidad><codigo>5372</codigo><descripcion>EL
+        SILENCIO</descripcion></localidad><localidad><codigo>5378</codigo><descripcion>EL
+        SOCORRO</descripcion></localidad><localidad><codigo>5381</codigo><descripcion>EL
+        SOLDADO</descripcion></localidad><localidad><codigo>5399</codigo><descripcion>EL
+        TALAR</descripcion></localidad><localidad><codigo>5415</codigo><descripcion>EL
+        TATU</descripcion></localidad><localidad><codigo>5416</codigo><descripcion>EL
+        TEJAR</descripcion></localidad><localidad><codigo>5444</codigo><descripcion>EL
+        TREBANON</descripcion></localidad><localidad><codigo>5452</codigo><descripcion>EL
+        TRIGO</descripcion></localidad><localidad><codigo>5453</codigo><descripcion>EL
+        TRIO</descripcion></localidad><localidad><codigo>5454</codigo><descripcion>EL
+        TRIUNFO</descripcion></localidad><localidad><codigo>5488</codigo><descripcion>EL
+        VERANO</descripcion></localidad><localidad><codigo>5491</codigo><descripcion>EL
+        VIGILANTE</descripcion></localidad><localidad><codigo>5499</codigo><descripcion>EL
+        VOLANTE</descripcion></localidad><localidad><codigo>5518</codigo><descripcion>EL
+        ZORRO</descripcion></localidad><localidad><codigo>5528</codigo><descripcion>ELIAS
+        ROMERO</descripcion></localidad><localidad><codigo>5530</codigo><descripcion>ELORDI</descripcion></localidad><localidad><codigo>5534</codigo><descripcion>ELVIRA</descripcion></localidad><localidad><codigo>5546</codigo><descripcion>EMILIANO
+        REYNOSO</descripcion></localidad><localidad><codigo>5547</codigo><descripcion>EMILIO
+        AYARZA</descripcion></localidad><localidad><codigo>5549</codigo><descripcion>EMILIO
+        LAMARCA</descripcion></localidad><localidad><codigo>5554</codigo><descripcion>EMMA</descripcion></localidad><localidad><codigo>5555</codigo><descripcion>EMPALME</descripcion></localidad><localidad><codigo>5562</codigo><descripcion>EMPALME
+        LOBOS</descripcion></localidad><localidad><codigo>5563</codigo><descripcion>EMPALME
+        MAGDALENA</descripcion></localidad><localidad><codigo>5565</codigo><descripcion>EMPALME
+        PIEDRA ECHADA</descripcion></localidad><localidad><codigo>5574</codigo><descripcion>ENCINA</descripcion></localidad><localidad><codigo>5578</codigo><descripcion>ENERGIA</descripcion></localidad><localidad><codigo>5582</codigo><descripcion>ENRIQUE
+        FYNN</descripcion></localidad><localidad><codigo>5584</codigo><descripcion>ENRIQUE
+        LAVALLE</descripcion></localidad><localidad><codigo>5588</codigo><descripcion>ENSENADA</descripcion></localidad><localidad><codigo>5595</codigo><descripcion>EPUMER</descripcion></localidad><localidad><codigo>5597</codigo><descripcion>EREZCANO</descripcion></localidad><localidad><codigo>5598</codigo><descripcion>ERIZE</descripcion></localidad><localidad><codigo>5599</codigo><descripcion>ERNESTINA</descripcion></localidad><localidad><codigo>5602</codigo><descripcion>ESC
+        NAV MILITAR RIO SANT</descripcion></localidad><localidad><codigo>5612</codigo><descripcion>ESCRIBANO
+        P NICOLAS</descripcion></localidad><localidad><codigo>5619</codigo><descripcion>ESPARTILLAR</descripcion></localidad><localidad><codigo>5625</codigo><descripcion>ESPIGAS</descripcion></localidad><localidad><codigo>5633</codigo><descripcion>ESPORA</descripcion></localidad><localidad><codigo>5636</codigo><descripcion>ESQUINA
+        DE CROTTO</descripcion></localidad><localidad><codigo>5655</codigo><descripcion>EST
+        SAN FRANCISCO BELLOQ</descripcion></localidad><localidad><codigo>5675</codigo><descripcion>ESTABLECIMIENTO
+        SAN MIGUEL</descripcion></localidad><localidad><codigo>5684</codigo><descripcion>ESTACION
+        ASCENSION</descripcion></localidad><localidad><codigo>5686</codigo><descripcion>ESTACION
+        BARADERO</descripcion></localidad><localidad><codigo>5687</codigo><descripcion>ESTACION
+        BARROW</descripcion></localidad><localidad><codigo>5690</codigo><descripcion>ESTACION
+        CAIOMUTA</descripcion></localidad><localidad><codigo>5697</codigo><descripcion>ESTACION
+        CORONEL PRINGLES</descripcion></localidad><localidad><codigo>5705</codigo><descripcion>ESTACION
+        GOMEZ</descripcion></localidad><localidad><codigo>5709</codigo><descripcion>ESTACION
+        LAGO EPECUEN</descripcion></localidad><localidad><codigo>5710</codigo><descripcion>ESTACION
+        LAZZARINO</descripcion></localidad><localidad><codigo>5712</codigo><descripcion>ESTACION
+        LINCOLN</descripcion></localidad><localidad><codigo>5716</codigo><descripcion>ESTACION
+        MITIKILI</descripcion></localidad><localidad><codigo>5722</codigo><descripcion>ESTACION
+        PROVINCIAL</descripcion></localidad><localidad><codigo>5763</codigo><descripcion>ESTANCIA
+        CHAPAR</descripcion></localidad><localidad><codigo>5886</codigo><descripcion>ESTANCIA
+        LAS GAMAS</descripcion></localidad><localidad><codigo>5949</codigo><descripcion>ESTANCIA
+        SAN ANTONIO</descripcion></localidad><localidad><codigo>5950</codigo><descripcion>ESTANCIA
+        SAN CLAUDIO</descripcion></localidad><localidad><codigo>5961</codigo><descripcion>ESTANCIA
+        SAN RAFAEL</descripcion></localidad><localidad><codigo>5982</codigo><descripcion>ESTANCIA
+        VIEJA</descripcion></localidad><localidad><codigo>5994</codigo><descripcion>ESTEBAN
+        A GASCON</descripcion></localidad><localidad><codigo>5995</codigo><descripcion>ESTEBAN
+        DE LUCA</descripcion></localidad><localidad><codigo>5997</codigo><descripcion>ESTEBAN
+        DIAZ</descripcion></localidad><localidad><codigo>6001</codigo><descripcion>ESTELA</descripcion></localidad><localidad><codigo>6010</codigo><descripcion>ESTHER</descripcion></localidad><localidad><codigo>6012</codigo><descripcion>ESTOMBA</descripcion></localidad><localidad><codigo>6015</codigo><descripcion>ESTRELLA
+        NACIENTE</descripcion></localidad><localidad><codigo>6016</codigo><descripcion>ESTRUGAMOU</descripcion></localidad><localidad><codigo>6038</codigo><descripcion>EXALTACION
+        DE LA CRUZ</descripcion></localidad><localidad><codigo>6040</codigo><descripcion>EZEIZA</descripcion></localidad><localidad><codigo>6041</codigo><descripcion>EZPELETA
+        ESTE</descripcion></localidad><localidad><codigo>6042</codigo><descripcion>EZPELETA
+        OESTE</descripcion></localidad><localidad><codigo>6051</codigo><descripcion>FAIR</descripcion></localidad><localidad><codigo>6068</codigo><descripcion>FARO</descripcion></localidad><localidad><codigo>6072</codigo><descripcion>FARO
+        SAN ANTONIO</descripcion></localidad><localidad><codigo>6073</codigo><descripcion>FARO
+        SEGUNDA BARRANCOSA</descripcion></localidad><localidad><codigo>6076</codigo><descripcion>FATIMA
+        ESTACION EMPALME</descripcion></localidad><localidad><codigo>6079</codigo><descripcion>FAUZON</descripcion></localidad><localidad><codigo>6095</codigo><descripcion>FERRE</descripcion></localidad><localidad><codigo>6162</codigo><descripcion>FLAMENCO</descripcion></localidad><localidad><codigo>6171</codigo><descripcion>FLORENCIO
+        VARELA</descripcion></localidad><localidad><codigo>6172</codigo><descripcion>FLORENTINO
+        AMEGHINO</descripcion></localidad><localidad><codigo>6176</codigo><descripcion>FLORIDA
+        OESTE</descripcion></localidad><localidad><codigo>6180</codigo><descripcion>FONTEZUELA</descripcion></localidad><localidad><codigo>6182</codigo><descripcion>FORTABAT</descripcion></localidad><localidad><codigo>6185</codigo><descripcion>FORTIN
+        ACHA</descripcion></localidad><localidad><codigo>6197</codigo><descripcion>FORTIN
+        CHACO</descripcion></localidad><localidad><codigo>6208</codigo><descripcion>FORTIN
+        IRENE</descripcion></localidad><localidad><codigo>6214</codigo><descripcion>FORTIN
+        MERCEDES</descripcion></localidad><localidad><codigo>6215</codigo><descripcion>FORTIN
+        NECOCHEA</descripcion></localidad><localidad><codigo>6216</codigo><descripcion>FORTIN
+        OLAVARRIA</descripcion></localidad><localidad><codigo>6225</codigo><descripcion>FORTIN
+        TIBURCIO</descripcion></localidad><localidad><codigo>6229</codigo><descripcion>FORTIN
+        VIEJO</descripcion></localidad><localidad><codigo>6230</codigo><descripcion>FORTIN
+        VIGILANCIA</descripcion></localidad><localidad><codigo>6240</codigo><descripcion>FRANCISCO
+        ALVAREZ</descripcion></localidad><localidad><codigo>6241</codigo><descripcion>FRANCISCO
+        AYERZA</descripcion></localidad><localidad><codigo>6242</codigo><descripcion>FRANCISCO
+        BERRA</descripcion></localidad><localidad><codigo>6244</codigo><descripcion>FRANCISCO
+        DE VITORIA</descripcion></localidad><localidad><codigo>6246</codigo><descripcion>FRANCISCO
+        J MEEKS</descripcion></localidad><localidad><codigo>6247</codigo><descripcion>FRANCISCO
+        MADERO</descripcion></localidad><localidad><codigo>6248</codigo><descripcion>FRANCISCO
+        MAGNANO</descripcion></localidad><localidad><codigo>6250</codigo><descripcion>FRANCISCO
+        MURATURE</descripcion></localidad><localidad><codigo>6257</codigo><descripcion>FRANKLIN</descripcion></localidad><localidad><codigo>6261</codigo><descripcion>FRENCH</descripcion></localidad><localidad><codigo>6264</codigo><descripcion>FRIGORIFICO
+        ARMOUR</descripcion></localidad><localidad><codigo>6266</codigo><descripcion>FRIGORIFICO
+        LAS PALMAS</descripcion></localidad><localidad><codigo>6280</codigo><descripcion>FUERTE
+        ARGENTINO</descripcion></localidad><localidad><codigo>6281</codigo><descripcion>FUERTE
+        BARRAGAN</descripcion></localidad><localidad><codigo>6285</codigo><descripcion>FULTON</descripcion></localidad><localidad><codigo>6294</codigo><descripcion>GAHAN</descripcion></localidad><localidad><codigo>6298</codigo><descripcion>GALERA
+        DE TORRES</descripcion></localidad><localidad><codigo>6304</codigo><descripcion>GALO
+        LLORENTE</descripcion></localidad><localidad><codigo>6307</codigo><descripcion>GALVAN</descripcion></localidad><localidad><codigo>6311</codigo><descripcion>GANDARA</descripcion></localidad><localidad><codigo>6321</codigo><descripcion>GARCIA
+        DEL RIO</descripcion></localidad><localidad><codigo>6326</codigo><descripcion>GARIN</descripcion></localidad><localidad><codigo>6329</codigo><descripcion>GARRE</descripcion></localidad><localidad><codigo>6355</codigo><descripcion>GENERAL
+        ALVARADO</descripcion></localidad><localidad><codigo>6356</codigo><descripcion>GENERAL
+        ALVEAR</descripcion></localidad><localidad><codigo>6357</codigo><descripcion>GENERAL
+        ARENALES</descripcion></localidad><localidad><codigo>6364</codigo><descripcion>GENERAL
+        CONESA</descripcion></localidad><localidad><codigo>6365</codigo><descripcion>GENERAL
+        DANIEL CERRI</descripcion></localidad><localidad><codigo>6374</codigo><descripcion>GENERAL
+        GELLY</descripcion></localidad><localidad><codigo>6376</codigo><descripcion>GENERAL
+        GUIDO</descripcion></localidad><localidad><codigo>6378</codigo><descripcion>GENERAL
+        HORNOS</descripcion></localidad><localidad><codigo>6382</codigo><descripcion>GENERAL
+        LAMADRID</descripcion></localidad><localidad><codigo>6383</codigo><descripcion>GENERAL
+        LAS HERAS</descripcion></localidad><localidad><codigo>6384</codigo><descripcion>GENERAL
+        LAVALLE</descripcion></localidad><localidad><codigo>6387</codigo><descripcion>GENERAL
+        MADARIAGA</descripcion></localidad><localidad><codigo>6393</codigo><descripcion>GENERAL
+        O BRIEN</descripcion></localidad><localidad><codigo>6398</codigo><descripcion>GENERAL
+        PACHECO</descripcion></localidad><localidad><codigo>6403</codigo><descripcion>GENERAL
+        PINTO</descripcion></localidad><localidad><codigo>6404</codigo><descripcion>GENERAL
+        PIRAN</descripcion></localidad><localidad><codigo>6409</codigo><descripcion>GENERAL
+        RIVAS</descripcion></localidad><localidad><codigo>6411</codigo><descripcion>GENERAL
+        RODRIGUEZ</descripcion></localidad><localidad><codigo>6412</codigo><descripcion>GENERAL
+        RONDEAU</descripcion></localidad><localidad><codigo>6416</codigo><descripcion>GENERAL
+        VALDEZ</descripcion></localidad><localidad><codigo>6418</codigo><descripcion>GENERAL
+        VIAMONTE</descripcion></localidad><localidad><codigo>6419</codigo><descripcion>GENERAL
+        VILLEGAS</descripcion></localidad><localidad><codigo>6423</codigo><descripcion>GERENTE
+        CILLEY</descripcion></localidad><localidad><codigo>6425</codigo><descripcion>GERLI</descripcion></localidad><localidad><codigo>6427</codigo><descripcion>GERMANIA</descripcion></localidad><localidad><codigo>6434</codigo><descripcion>GIL</descripcion></localidad><localidad><codigo>6445</codigo><descripcion>GLORIALDO</descripcion></localidad><localidad><codigo>6448</codigo><descripcion>GOBERNADOR
+        ANDONAEGHI</descripcion></localidad><localidad><codigo>6449</codigo><descripcion>GOBERNADOR
+        ARIAS</descripcion></localidad><localidad><codigo>6452</codigo><descripcion>GOBERNADOR
+        CASTRO</descripcion></localidad><localidad><codigo>6454</codigo><descripcion>GOBERNADOR
+        COSTA</descripcion></localidad><localidad><codigo>6470</codigo><descripcion>GOBERNADOR
+        OBLIGADO</descripcion></localidad><localidad><codigo>6479</codigo><descripcion>GOBERNADOR
+        UDAONDO</descripcion></localidad><localidad><codigo>6483</codigo><descripcion>GOBOS</descripcion></localidad><localidad><codigo>6488</codigo><descripcion>GOLDNEY</descripcion></localidad><localidad><codigo>6492</codigo><descripcion>GOMEZ  DE
+        LA VEGA</descripcion></localidad><localidad><codigo>6495</codigo><descripcion>GONDRA</descripcion></localidad><localidad><codigo>6498</codigo><descripcion>GONZALEZ
+        CATAN</descripcion></localidad><localidad><codigo>6500</codigo><descripcion>GONZALEZ
+        RISOS</descripcion></localidad><localidad><codigo>6502</codigo><descripcion>GORCHS</descripcion></localidad><localidad><codigo>6504</codigo><descripcion>GORNATTI</descripcion></localidad><localidad><codigo>6506</codigo><descripcion>GOROSTIAGA</descripcion></localidad><localidad><codigo>6508</codigo><descripcion>GOUIN</descripcion></localidad><localidad><codigo>6511</codigo><descripcion>GOYENA</descripcion></localidad><localidad><codigo>6512</codigo><descripcion>GOYENECHE</descripcion></localidad><localidad><codigo>6515</codigo><descripcion>GRACIARENA</descripcion></localidad><localidad><codigo>6532</codigo><descripcion>GRAND
+        BOURG</descripcion></localidad><localidad><codigo>6533</codigo><descripcion>GRAND
+        DOCK</descripcion></localidad><localidad><codigo>6540</codigo><descripcion>GREGORIO
+        DE LA FERRERE</descripcion></localidad><localidad><codigo>6541</codigo><descripcion>GREGORIO
+        VILLAFANE</descripcion></localidad><localidad><codigo>6543</codigo><descripcion>GRISOLIA</descripcion></localidad><localidad><codigo>6544</codigo><descripcion>GRUNBEIN</descripcion></localidad><localidad><codigo>6575</codigo><descripcion>GUAMINI</descripcion></localidad><localidad><codigo>6578</codigo><descripcion>GUANACO</descripcion></localidad><localidad><codigo>6596</codigo><descripcion>GUARDIA
+        DEL MONTE</descripcion></localidad><localidad><codigo>6630</codigo><descripcion>GUERNICA</descripcion></localidad><localidad><codigo>6634</codigo><descripcion>GUERRICO</descripcion></localidad><localidad><codigo>6636</codigo><descripcion>GUIDO
+        SPANO</descripcion></localidad><localidad><codigo>6638</codigo><descripcion>GUILLERMO
+        E HUDSON</descripcion></localidad><localidad><codigo>6641</codigo><descripcion>GUIRONDO</descripcion></localidad><localidad><codigo>6651</codigo><descripcion>HAEDO</descripcion></localidad><localidad><codigo>6655</codigo><descripcion>HALE</descripcion></localidad><localidad><codigo>6656</codigo><descripcion>HAM</descripcion></localidad><localidad><codigo>6659</codigo><descripcion>HARAS
+        CHACABUCO</descripcion></localidad><localidad><codigo>6660</codigo><descripcion>HARAS
+        CHAPADMALAL</descripcion></localidad><localidad><codigo>6661</codigo><descripcion>HARAS
+        EL CARMEN</descripcion></localidad><localidad><codigo>6662</codigo><descripcion>HARAS
+        EL CATORCE</descripcion></localidad><localidad><codigo>6663</codigo><descripcion>HARAS
+        EL CENTINELA</descripcion></localidad><localidad><codigo>6665</codigo><descripcion>HARAS
+        EL MORO</descripcion></localidad><localidad><codigo>6666</codigo><descripcion>HARAS
+        EL OMBU</descripcion></localidad><localidad><codigo>6667</codigo><descripcion>HARAS
+        EL SALASO</descripcion></localidad><localidad><codigo>6668</codigo><descripcion>HARAS
+        LA ELVIRA</descripcion></localidad><localidad><codigo>6669</codigo><descripcion>HARAS
+        LA LULA</descripcion></localidad><localidad><codigo>6671</codigo><descripcion>HARAS
+        NACIONAL</descripcion></localidad><localidad><codigo>6672</codigo><descripcion>HARAS
+        OJO DEL AGUA</descripcion></localidad><localidad><codigo>6674</codigo><descripcion>HARAS
+        R DE LA PARVA</descripcion></localidad><localidad><codigo>6676</codigo><descripcion>HARAS
+        SAN IGNACIO</descripcion></localidad><localidad><codigo>6679</codigo><descripcion>HARAS
+        TRUJUI</descripcion></localidad><localidad><codigo>6684</codigo><descripcion>HEAVY</descripcion></localidad><localidad><codigo>6687</codigo><descripcion>HENDERSON</descripcion></localidad><localidad><codigo>6689</codigo><descripcion>HEREFORD</descripcion></localidad><localidad><codigo>6700</codigo><descripcion>HERRERA
+        VEGAS</descripcion></localidad><localidad><codigo>6712</codigo><descripcion>HILARIO
+        ASCASUBI</descripcion></localidad><localidad><codigo>6717</codigo><descripcion>HINOJO</descripcion></localidad><localidad><codigo>6731</codigo><descripcion>HOGAR
+        MARIANO ORTIZ BASUALDO</descripcion></localidad><localidad><codigo>6745</codigo><descripcion>HORNOS</descripcion></localidad><localidad><codigo>6748</codigo><descripcion>HORTENSIA</descripcion></localidad><localidad><codigo>6750</codigo><descripcion>HOSPITAL
+        INTERZONAL DR DOMINGO</descripcion></localidad><localidad><codigo>6751</codigo><descripcion>HOSPITAL
+        NECOCHEA</descripcion></localidad><localidad><codigo>6753</codigo><descripcion>HOSPITAL
+        SAN ANTONIO DE LA LLA</descripcion></localidad><localidad><codigo>6825</codigo><descripcion>HUESO
+        CLAVADO</descripcion></localidad><localidad><codigo>6827</codigo><descripcion>HUETEL</descripcion></localidad><localidad><codigo>6851</codigo><descripcion>HUNTER</descripcion></localidad><localidad><codigo>6853</codigo><descripcion>HURLINGHAM</descripcion></localidad><localidad><codigo>6854</codigo><descripcion>HUSARES</descripcion></localidad><localidad><codigo>6865</codigo><descripcion>IBANEZ</descripcion></localidad><localidad><codigo>6876</codigo><descripcion>IGARZABAL</descripcion></localidad><localidad><codigo>6880</codigo><descripcion>IGNACIO
+        CORREAS ARANA</descripcion></localidad><localidad><codigo>6898</codigo><descripcion>INDACOCHEA</descripcion></localidad><localidad><codigo>6900</codigo><descripcion>INDIA
+        MUERTA</descripcion></localidad><localidad><codigo>6904</codigo><descripcion>INES
+        INDART</descripcion></localidad><localidad><codigo>6914</codigo><descripcion>INGENIERO
+        ADOLFO SOURDEAUX</descripcion></localidad><localidad><codigo>6920</codigo><descripcion>INGENIERO
+        BEAUGEY</descripcion></localidad><localidad><codigo>6925</codigo><descripcion>INGENIERO
+        DE MADRID</descripcion></localidad><localidad><codigo>6937</codigo><descripcion>INGENIERO
+        MASCHWITZ</descripcion></localidad><localidad><codigo>6940</codigo><descripcion>INGENIERO
+        MONETA</descripcion></localidad><localidad><codigo>6943</codigo><descripcion>INGENIERO
+        SILVEYRA</descripcion></localidad><localidad><codigo>6944</codigo><descripcion>INGENIERO
+        THOMPSON</descripcion></localidad><localidad><codigo>6945</codigo><descripcion>INGENIERO
+        WHITE</descripcion></localidad><localidad><codigo>6946</codigo><descripcion>INGENIERO
+        WILLIAMS</descripcion></localidad><localidad><codigo>6986</codigo><descripcion>INVERNADAS</descripcion></localidad><localidad><codigo>6991</codigo><descripcion>IRALA</descripcion></localidad><localidad><codigo>6992</codigo><descripcion>IRAOLA</descripcion></localidad><localidad><codigo>6994</codigo><descripcion>IRENE</descripcion></localidad><localidad><codigo>6996</codigo><descripcion>IRIARTE</descripcion></localidad><localidad><codigo>7009</codigo><descripcion>ISIDRO
+        CASANOVA</descripcion></localidad><localidad><codigo>7019</codigo><descripcion>ISLA
+        CATARELLI</descripcion></localidad><localidad><codigo>7045</codigo><descripcion>ISLA
+        LOS LAURELES</descripcion></localidad><localidad><codigo>7047</codigo><descripcion>ISLA
+        MARTIN GARCIA</descripcion></localidad><localidad><codigo>7050</codigo><descripcion>ISLA
+        PAULINO</descripcion></localidad><localidad><codigo>7057</codigo><descripcion>ISLA
+        SANTIAGO</descripcion></localidad><localidad><codigo>7064</codigo><descripcion>ISLA
+        VERDE</descripcion></localidad><localidad><codigo>7066</codigo><descripcion>ISLAS</descripcion></localidad><localidad><codigo>7075</codigo><descripcion>ISONDU</descripcion></localidad><localidad><codigo>7094</codigo><descripcion>ITURREGUI</descripcion></localidad><localidad><codigo>7096</codigo><descripcion>ITUZAINGO</descripcion></localidad><localidad><codigo>7100</codigo><descripcion>J
+        M MICHEO</descripcion></localidad><localidad><codigo>7137</codigo><descripcion>JAUREGUI
+        JOSE MARIA</descripcion></localidad><localidad><codigo>7150</codigo><descripcion>JOAQUIN
+        GORINA</descripcion></localidad><localidad><codigo>7157</codigo><descripcion>JOSE
+        A GUISASOLA</descripcion></localidad><localidad><codigo>7161</codigo><descripcion>JOSE
+        CLEMENTE PAZ</descripcion></localidad><localidad><codigo>7166</codigo><descripcion>JOSE
+        FERRARI</descripcion></localidad><localidad><codigo>7168</codigo><descripcion>JOSE
+        INGENIEROS</descripcion></localidad><localidad><codigo>7169</codigo><descripcion>JOSE
+        LEON SUAREZ</descripcion></localidad><localidad><codigo>7173</codigo><descripcion>JOSE
+        MARIA BLANCO</descripcion></localidad><localidad><codigo>7174</codigo><descripcion>JOSE
+        MARIA GUTIERREZ</descripcion></localidad><localidad><codigo>7178</codigo><descripcion>JOSE
+        SOJO</descripcion></localidad><localidad><codigo>7184</codigo><descripcion>JUAN
+        A PRADERE</descripcion></localidad><localidad><codigo>7187</codigo><descripcion>JUAN
+        B JUSTO ING WHITE</descripcion></localidad><localidad><codigo>7193</codigo><descripcion>JUAN
+        COUSTE</descripcion></localidad><localidad><codigo>7195</codigo><descripcion>JUAN
+        E BARRA</descripcion></localidad><localidad><codigo>7196</codigo><descripcion>JUAN
+        F IBARRA</descripcion></localidad><localidad><codigo>7198</codigo><descripcion>JUAN
+        G PUJOL</descripcion></localidad><localidad><codigo>7204</codigo><descripcion>JUAN
+        JOSE ALMEYRA</descripcion></localidad><localidad><codigo>7206</codigo><descripcion>JUAN
+        JOSE PASO</descripcion></localidad><localidad><codigo>7210</codigo><descripcion>JUAN
+        N FERNANDEZ</descripcion></localidad><localidad><codigo>7215</codigo><descripcion>JUAN
+        TRONCONI</descripcion></localidad><localidad><codigo>7216</codigo><descripcion>JUAN
+        V CILLEY</descripcion></localidad><localidad><codigo>7218</codigo><descripcion>JUAN
+        VUCETICH EX DR R LEVENE</descripcion></localidad><localidad><codigo>7221</codigo><descripcion>JUANA
+        A DE LA PENA</descripcion></localidad><localidad><codigo>7223</codigo><descripcion>JUANCHO</descripcion></localidad><localidad><codigo>7268</codigo><descripcion>KENNY</descripcion></localidad><localidad><codigo>7280</codigo><descripcion>KRABBE</descripcion></localidad><localidad><codigo>7285</codigo><descripcion>LA  AURORA</descripcion></localidad><localidad><codigo>7289</codigo><descripcion>LA
+        ADELAIDA</descripcion></localidad><localidad><codigo>7301</codigo><descripcion>LA
+        ALAMEDA</descripcion></localidad><localidad><codigo>7302</codigo><descripcion>LA
+        ALCIRA</descripcion></localidad><localidad><codigo>7311</codigo><descripcion>LA
+        AMALIA</descripcion></localidad><localidad><codigo>7316</codigo><descripcion>LA
+        AMISTAD</descripcion></localidad><localidad><codigo>7320</codigo><descripcion>LA
+        ANGELITA</descripcion></localidad><localidad><codigo>7331</codigo><descripcion>LA
+        ARMONIA</descripcion></localidad><localidad><codigo>7337</codigo><descripcion>LA
+        AURORA</descripcion></localidad><localidad><codigo>7339</codigo><descripcion>LA
+        AZOTEA</descripcion></localidad><localidad><codigo>7341</codigo><descripcion>LA
+        AZUCENA</descripcion></localidad><localidad><codigo>7343</codigo><descripcion>LA
+        BALANDRA</descripcion></localidad><localidad><codigo>7345</codigo><descripcion>LA
+        BALLENA</descripcion></localidad><localidad><codigo>7367</codigo><descripcion>LA
+        BEBA</descripcion></localidad><localidad><codigo>7375</codigo><descripcion>LA
+        BLANCA</descripcion></localidad><localidad><codigo>7376</codigo><descripcion>LA
+        BLANQUEADA</descripcion></localidad><localidad><codigo>7380</codigo><descripcion>LA
+        BOLSA</descripcion></localidad><localidad><codigo>7388</codigo><descripcion>LA
+        BRAVA</descripcion></localidad><localidad><codigo>7391</codigo><descripcion>LA
+        BUANA MOZA</descripcion></localidad><localidad><codigo>7404</codigo><descripcion>LA
+        CALERA</descripcion></localidad><localidad><codigo>7406</codigo><descripcion>LA
+        CALETA</descripcion></localidad><localidad><codigo>7408</codigo><descripcion>LA
+        CALIFORNIA ARGENTINA</descripcion></localidad><localidad><codigo>7413</codigo><descripcion>LA
+        CAMPANA</descripcion></localidad><localidad><codigo>7423</codigo><descripcion>LA
+        CARLOTA</descripcion></localidad><localidad><codigo>7430</codigo><descripcion>LA
+        CARRETA</descripcion></localidad><localidad><codigo>7444</codigo><descripcion>LA
+        CAUTIVA</descripcion></localidad><localidad><codigo>7453</codigo><descripcion>LA
+        CELIA</descripcion></localidad><localidad><codigo>7454</codigo><descripcion>LA
+        CELINA</descripcion></localidad><localidad><codigo>7457</codigo><descripcion>LA
+        CENTRAL</descripcion></localidad><localidad><codigo>7489</codigo><descripcion>LA
+        CHOZA</descripcion></localidad><localidad><codigo>7507</codigo><descripcion>LA
+        COLINA</descripcion></localidad><localidad><codigo>7511</codigo><descripcion>LA
+        COLORADA</descripcion></localidad><localidad><codigo>7512</codigo><descripcion>LA
+        COLORADA CHICA</descripcion></localidad><localidad><codigo>7517</codigo><descripcion>LA
+        CONSTANCIA</descripcion></localidad><localidad><codigo>7521</codigo><descripcion>LA
+        COPETA</descripcion></localidad><localidad><codigo>7522</codigo><descripcion>LA
+        CORA</descripcion></localidad><localidad><codigo>7523</codigo><descripcion>LA
+        CORINA</descripcion></localidad><localidad><codigo>7531</codigo><descripcion>LA
+        COSTA</descripcion></localidad><localidad><codigo>7535</codigo><descripcion>LA
+        COTORRA</descripcion></localidad><localidad><codigo>7554</codigo><descripcion>LA
+        DELFINA</descripcion></localidad><localidad><codigo>7555</codigo><descripcion>LA
+        DELIA</descripcion></localidad><localidad><codigo>7557</codigo><descripcion>LA
+        DESPIERTA</descripcion></localidad><localidad><codigo>7570</codigo><descripcion>LA
+        DORMILONA</descripcion></localidad><localidad><codigo>7582</codigo><descripcion>LA
+        ELMA</descripcion></localidad><localidad><codigo>7605</codigo><descripcion>LA
+        ESPERANZA</descripcion></localidad><localidad><codigo>7609</codigo><descripcion>LA
+        ESPERANZA GRAL MADARIAGA</descripcion></localidad><localidad><codigo>7610</codigo><descripcion>LA
+        ESPERANZA PDO LAS FLORES</descripcion></localidad><localidad><codigo>7626</codigo><descripcion>LA
+        ESTRELLA</descripcion></localidad><localidad><codigo>7631</codigo><descripcion>LA
+        EVA</descripcion></localidad><localidad><codigo>7643</codigo><descripcion>LA
+        FELICIANA</descripcion></localidad><localidad><codigo>7654</codigo><descripcion>LA
+        FLORIDA</descripcion></localidad><localidad><codigo>7659</codigo><descripcion>LA
+        FRATERNIDAD</descripcion></localidad><localidad><codigo>7670</codigo><descripcion>LA
+        GARITA</descripcion></localidad><localidad><codigo>7674</codigo><descripcion>LA
+        GAVIOTA</descripcion></localidad><localidad><codigo>7679</codigo><descripcion>LA
+        GLEVA</descripcion></localidad><localidad><codigo>7680</codigo><descripcion>LA
+        GLORIA</descripcion></localidad><localidad><codigo>7683</codigo><descripcion>LA
+        GRACIELITA</descripcion></localidad><localidad><codigo>7690</codigo><descripcion>LA
+        GREGORIA</descripcion></localidad><localidad><codigo>7701</codigo><descripcion>LA
+        HERMINIA</descripcion></localidad><localidad><codigo>7706</codigo><descripcion>LA
+        HIGUERA</descripcion></localidad><localidad><codigo>7710</codigo><descripcion>LA
+        HORQUETA</descripcion></localidad><localidad><codigo>7714</codigo><descripcion>LA
+        HUAYQUERIA</descripcion></localidad><localidad><codigo>7728</codigo><descripcion>LA
+        INVENCIBLE</descripcion></localidad><localidad><codigo>7759</codigo><descripcion>LA
+        LARGA</descripcion></localidad><localidad><codigo>7760</codigo><descripcion>LA
+        LARGA NUEVA</descripcion></localidad><localidad><codigo>7761</codigo><descripcion>LA
+        LATA</descripcion></localidad><localidad><codigo>7786</codigo><descripcion>LA
+        LOMA</descripcion></localidad><localidad><codigo>7793</codigo><descripcion>LA
+        LUCIA</descripcion></localidad><localidad><codigo>7794</codigo><descripcion>LA
+        LUCILA</descripcion></localidad><localidad><codigo>7798</codigo><descripcion>LA
+        LUISA</descripcion></localidad><localidad><codigo>7799</codigo><descripcion>LA
+        LUNA</descripcion></localidad><localidad><codigo>7801</codigo><descripcion>LA
+        LUZ</descripcion></localidad><localidad><codigo>7812</codigo><descripcion>LA
+        MANTEQUERIA</descripcion></localidad><localidad><codigo>7813</codigo><descripcion>LA
+        MANUELA</descripcion></localidad><localidad><codigo>7818</codigo><descripcion>LA
+        MARGARITA</descripcion></localidad><localidad><codigo>7832</codigo><descripcion>LA
+        MARTINA</descripcion></localidad><localidad><codigo>7836</codigo><descripcion>LA
+        MASCOTA</descripcion></localidad><localidad><codigo>7838</codigo><descripcion>LA
+        MATILDE</descripcion></localidad><localidad><codigo>7867</codigo><descripcion>LA
+        NACION</descripcion></localidad><localidad><codigo>7869</codigo><descripcion>LA
+        NARCISA</descripcion></localidad><localidad><codigo>7870</codigo><descripcion>LA
+        NAVARRA</descripcion></localidad><localidad><codigo>7873</codigo><descripcion>LA
+        NELIDA</descripcion></localidad><localidad><codigo>7878</codigo><descripcion>LA
+        NINA</descripcion></localidad><localidad><codigo>7880</codigo><descripcion>LA
+        NORIA</descripcion></localidad><localidad><codigo>7883</codigo><descripcion>LA
+        NUMANCIA</descripcion></localidad><localidad><codigo>7892</codigo><descripcion>LA
+        ORIENTAL</descripcion></localidad><localidad><codigo>7904</codigo><descripcion>LA
+        PALA</descripcion></localidad><localidad><codigo>7909</codigo><descripcion>LA
+        PALMA</descripcion></localidad><localidad><codigo>7923</codigo><descripcion>LA
+        PARA</descripcion></localidad><localidad><codigo>7927</codigo><descripcion>LA
+        PASTORA</descripcion></localidad><localidad><codigo>7934</codigo><descripcion>LA
+        PAZ</descripcion></localidad><localidad><codigo>7943</codigo><descripcion>LA
+        PEREGRINA</descripcion></localidad><localidad><codigo>7944</codigo><descripcion>LA
+        PERLA</descripcion></localidad><localidad><codigo>7958</codigo><descripcion>LA
+        PIEDRA</descripcion></localidad><localidad><codigo>7963</codigo><descripcion>LA
+        PINTA</descripcion></localidad><localidad><codigo>7971</codigo><descripcion>LA
+        PLAYA</descripcion></localidad><localidad><codigo>7976</codigo><descripcion>LA
+        POCHOLA</descripcion></localidad><localidad><codigo>7985</codigo><descripcion>LA
+        POSADA</descripcion></localidad><localidad><codigo>7986</codigo><descripcion>LA
+        POSTA</descripcion></localidad><localidad><codigo>7990</codigo><descripcion>LA
+        PRADERA</descripcion></localidad><localidad><codigo>7991</codigo><descripcion>LA
+        PRIMAVERA</descripcion></localidad><localidad><codigo>7996</codigo><descripcion>LA
+        PRIMITIVA</descripcion></localidad><localidad><codigo>7998</codigo><descripcion>LA
+        PROTECCION</descripcion></localidad><localidad><codigo>7999</codigo><descripcion>LA
+        PROTEGIDA</descripcion></localidad><localidad><codigo>8000</codigo><descripcion>LA
+        PROVIDENCIA</descripcion></localidad><localidad><codigo>8018</codigo><descripcion>LA
+        QUERENCIA</descripcion></localidad><localidad><codigo>8024</codigo><descripcion>LA
+        RABIA</descripcion></localidad><localidad><codigo>8038</codigo><descripcion>LA
+        REFORMA</descripcion></localidad><localidad><codigo>8041</codigo><descripcion>LA
+        REJA</descripcion></localidad><localidad><codigo>8051</codigo><descripcion>LA
+        RICA</descripcion></localidad><localidad><codigo>8052</codigo><descripcion>LA
+        RINCONADA</descripcion></localidad><localidad><codigo>8062</codigo><descripcion>LA
+        ROSADA</descripcion></localidad><localidad><codigo>8063</codigo><descripcion>LA
+        ROSALIA</descripcion></localidad><localidad><codigo>8075</codigo><descripcion>LA
+        SALADA</descripcion></localidad><localidad><codigo>8085</codigo><descripcion>LA
+        SARA</descripcion></localidad><localidad><codigo>8086</codigo><descripcion>LA
+        SARITA</descripcion></localidad><localidad><codigo>8105</codigo><descripcion>LA
+        SIRENA</descripcion></localidad><localidad><codigo>8106</codigo><descripcion>LA
+        SOBERANIA</descripcion></localidad><localidad><codigo>8109</codigo><descripcion>LA
+        SOMBRA</descripcion></localidad><localidad><codigo>8112</codigo><descripcion>LA
+        SORTIJA</descripcion></localidad><localidad><codigo>8114</codigo><descripcion>LA
+        SUIZA</descripcion></localidad><localidad><codigo>8116</codigo><descripcion>LA
+        TABLADA</descripcion></localidad><localidad><codigo>8118</codigo><descripcion>LA
+        TALINA</descripcion></localidad><localidad><codigo>8127</codigo><descripcion>LA
+        TIGRA</descripcion></localidad><localidad><codigo>8133</codigo><descripcion>LA
+        TOMASA</descripcion></localidad><localidad><codigo>8138</codigo><descripcion>LA
+        TORRECITA</descripcion></localidad><localidad><codigo>8148</codigo><descripcion>LA
+        TRINIDAD</descripcion></localidad><localidad><codigo>8157</codigo><descripcion>LA
+        UNION</descripcion></localidad><localidad><codigo>8165</codigo><descripcion>LA
+        VANGUARDIA</descripcion></localidad><localidad><codigo>8167</codigo><descripcion>LA
+        VASCONGADA</descripcion></localidad><localidad><codigo>8181</codigo><descripcion>LA
+        VICTORIA</descripcion></localidad><localidad><codigo>8182</codigo><descripcion>LA
+        VICTORIA DESVIO</descripcion></localidad><localidad><codigo>8184</codigo><descripcion>LA
+        VIOLETA</descripcion></localidad><localidad><codigo>8185</codigo><descripcion>LA
+        VIRGINIA</descripcion></localidad><localidad><codigo>8188</codigo><descripcion>LA
+        VITICOLA</descripcion></localidad><localidad><codigo>8198</codigo><descripcion>LA
+        YESCA</descripcion></localidad><localidad><codigo>8200</codigo><descripcion>LA
+        ZANJA</descripcion></localidad><localidad><codigo>8202</codigo><descripcion>LA
+        ZARATENA</descripcion></localidad><localidad><codigo>8209</codigo><descripcion>LABARDEN</descripcion></localidad><localidad><codigo>8250</codigo><descripcion>LAGUNA
+        ALSINA</descripcion></localidad><localidad><codigo>8255</codigo><descripcion>LAGUNA
+        BRAVA</descripcion></localidad><localidad><codigo>8261</codigo><descripcion>LAGUNA
+        DE GOMEZ</descripcion></localidad><localidad><codigo>8265</codigo><descripcion>LAGUNA
+        DE LOBOS</descripcion></localidad><localidad><codigo>8266</codigo><descripcion>LAGUNA
+        DE LOS PADRES</descripcion></localidad><localidad><codigo>8272</codigo><descripcion>LAGUNA
+        DEL CURA</descripcion></localidad><localidad><codigo>8274</codigo><descripcion>LAGUNA
+        DEL MONTE</descripcion></localidad><localidad><codigo>8277</codigo><descripcion>LAGUNA
+        DEL SOLDADO</descripcion></localidad><localidad><codigo>8287</codigo><descripcion>LAGUNA
+        LAS MULITAS</descripcion></localidad><localidad><codigo>8290</codigo><descripcion>LAGUNA
+        MEDINA</descripcion></localidad><localidad><codigo>8331</codigo><descripcion>LANGUEYU</descripcion></localidad><localidad><codigo>8335</codigo><descripcion>LANUS</descripcion></localidad><localidad><codigo>8343</codigo><descripcion>LAPLACETTE</descripcion></localidad><localidad><codigo>8344</codigo><descripcion>LAPRIDA</descripcion></localidad><localidad><codigo>8348</codigo><descripcion>LARRAMENDY</descripcion></localidad><localidad><codigo>8354</codigo><descripcion>LARTIGAU</descripcion></localidad><localidad><codigo>8375</codigo><descripcion>LAS
+        ARMAS</descripcion></localidad><localidad><codigo>8385</codigo><descripcion>LAS
+        BANDURRIAS</descripcion></localidad><localidad><codigo>8402</codigo><descripcion>LAS
+        BRUSCAS</descripcion></localidad><localidad><codigo>8432</codigo><descripcion>LAS
+        CHACRAS</descripcion></localidad><localidad><codigo>8437</codigo><descripcion>LAS
+        CHILCAS</descripcion></localidad><localidad><codigo>8453</codigo><descripcion>LAS
+        CORTADERAS</descripcion></localidad><localidad><codigo>8463</codigo><descripcion>LAS
+        CUATRO PUERTAS</descripcion></localidad><localidad><codigo>8488</codigo><descripcion>LAS
+        FLORES</descripcion></localidad><localidad><codigo>8504</codigo><descripcion>LAS
+        GUASQUITAS</descripcion></localidad><localidad><codigo>8510</codigo><descripcion>LAS
+        HERMANAS</descripcion></localidad><localidad><codigo>8520</codigo><descripcion>LAS
+        ISLETAS</descripcion></localidad><localidad><codigo>8524</codigo><descripcion>LAS
+        JUANITAS</descripcion></localidad><localidad><codigo>8543</codigo><descripcion>LAS
+        LOMAS</descripcion></localidad><localidad><codigo>8546</codigo><descripcion>LAS
+        MALVINAS</descripcion></localidad><localidad><codigo>8552</codigo><descripcion>LAS
+        MARIANAS</descripcion></localidad><localidad><codigo>8553</codigo><descripcion>LAS
+        MARTINETAS</descripcion></localidad><localidad><codigo>8558</codigo><descripcion>LAS
+        MERCEDES</descripcion></localidad><localidad><codigo>8572</codigo><descripcion>LAS
+        MOSTAZAS</descripcion></localidad><localidad><codigo>8573</codigo><descripcion>LAS
+        MULAS</descripcion></localidad><localidad><codigo>8576</codigo><descripcion>LAS
+        NIEVES</descripcion></localidad><localidad><codigo>8577</codigo><descripcion>LAS
+        NUTRIAS</descripcion></localidad><localidad><codigo>8579</codigo><descripcion>LAS
+        OSCURAS</descripcion></localidad><localidad><codigo>8585</codigo><descripcion>LAS
+        PALMAS</descripcion></localidad><localidad><codigo>8598</codigo><descripcion>LAS
+        PARVAS</descripcion></localidad><localidad><codigo>8616</codigo><descripcion>LAS
+        PIEDRTAS</descripcion></localidad><localidad><codigo>8642</codigo><descripcion>LAS
+        ROSAS</descripcion></localidad><localidad><codigo>8643</codigo><descripcion>LAS
+        SALADAS</descripcion></localidad><localidad><codigo>8650</codigo><descripcion>LAS
+        SUIZAS</descripcion></localidad><localidad><codigo>8651</codigo><descripcion>LAS
+        SULTANAS</descripcion></localidad><localidad><codigo>8673</codigo><descripcion>LAS
+        TORTUGAS</descripcion></localidad><localidad><codigo>8674</codigo><descripcion>LAS
+        TOSCAS</descripcion></localidad><localidad><codigo>8680</codigo><descripcion>LAS
+        TRES FLORES</descripcion></localidad><localidad><codigo>8705</codigo><descripcion>LAS
+        VIBORAS</descripcion></localidad><localidad><codigo>8720</codigo><descripcion>LASTRA</descripcion></localidad><localidad><codigo>8738</codigo><descripcion>LAZZARINO</descripcion></localidad><localidad><codigo>8741</codigo><descripcion>LEANDRO
+        N ALEM</descripcion></localidad><localidad><codigo>8748</codigo><descripcion>LEGARISTI</descripcion></localidad><localidad><codigo>8765</codigo><descripcion>LERTORA</descripcion></localidad><localidad><codigo>8769</codigo><descripcion>LEUBUCO</descripcion></localidad><localidad><codigo>8774</codigo><descripcion>LEZICA
+        Y TORREZURI</descripcion></localidad><localidad><codigo>8777</codigo><descripcion>LIBANO</descripcion></localidad><localidad><codigo>8779</codigo><descripcion>LIBERTAD</descripcion></localidad><localidad><codigo>8784</codigo><descripcion>LIBRES
+        DEL SUD</descripcion></localidad><localidad><codigo>8785</codigo><descripcion>LICENCIADO
+        MATIENZO</descripcion></localidad><localidad><codigo>8793</codigo><descripcion>LIMA</descripcion></localidad><localidad><codigo>8803</codigo><descripcion>LINCOLN</descripcion></localidad><localidad><codigo>8833</codigo><descripcion>LLAVALLOL</descripcion></localidad><localidad><codigo>8840</codigo><descripcion>LOBERIA</descripcion></localidad><localidad><codigo>8863</codigo><descripcion>LOMA
+        DE SALOMON</descripcion></localidad><localidad><codigo>8867</codigo><descripcion>LOMA
+        DEL INDIO</descripcion></localidad><localidad><codigo>8876</codigo><descripcion>LOMA
+        NEGRA</descripcion></localidad><localidad><codigo>8878</codigo><descripcion>LOMA
+        PARTIDA</descripcion></localidad><localidad><codigo>8902</codigo><descripcion>LOMAS
+        DE ZAMORA</descripcion></localidad><localidad><codigo>8904</codigo><descripcion>LOMAS
+        DEL MIRADOR</descripcion></localidad><localidad><codigo>8929</codigo><descripcion>LONGCHAMPS</descripcion></localidad><localidad><codigo>8934</codigo><descripcion>LOPEZ
+        LECUBE</descripcion></localidad><localidad><codigo>8942</codigo><descripcion>LOS
+        ACANTILADOS</descripcion></localidad><localidad><codigo>8963</codigo><descripcion>LOS
+        ALTOS</descripcion></localidad><localidad><codigo>8969</codigo><descripcion>LOS
+        ANGELES</descripcion></localidad><localidad><codigo>8977</codigo><descripcion>LOS
+        ARCOS</descripcion></localidad><localidad><codigo>8980</codigo><descripcion>LOS
+        AROMOS</descripcion></localidad><localidad><codigo>9005</codigo><descripcion>LOS
+        BOSQUES</descripcion></localidad><localidad><codigo>9015</codigo><descripcion>LOS
+        CALDENES</descripcion></localidad><localidad><codigo>9016</codigo><descripcion>LOS
+        CALLEJONES</descripcion></localidad><localidad><codigo>9020</codigo><descripcion>LOS
+        CARDALES</descripcion></localidad><localidad><codigo>9022</codigo><descripcion>LOS
+        CARDOS</descripcion></localidad><localidad><codigo>9036</codigo><descripcion>LOS
+        CERRILLOS</descripcion></localidad><localidad><codigo>9038</codigo><descripcion>LOS
+        CERROS</descripcion></localidad><localidad><codigo>9069</codigo><descripcion>LOS
+        COLONIALES</descripcion></localidad><localidad><codigo>9094</codigo><descripcion>LOS
+        CUATRO CAMINOS</descripcion></localidad><localidad><codigo>9117</codigo><descripcion>LOS
+        EUCALIPTOS</descripcion></localidad><localidad><codigo>9118</codigo><descripcion>LOS
+        EUCALIPTUS CASCO URBANO</descripcion></localidad><localidad><codigo>9129</codigo><descripcion>LOS
+        GAUCHOS</descripcion></localidad><localidad><codigo>9161</codigo><descripcion>LOS
+        HUESOS</descripcion></localidad><localidad><codigo>9174</codigo><descripcion>LOS
+        LEONES</descripcion></localidad><localidad><codigo>9198</codigo><descripcion>LOS
+        MERINOS</descripcion></localidad><localidad><codigo>9209</codigo><descripcion>LOS
+        MOLLES</descripcion></localidad><localidad><codigo>9251</codigo><descripcion>LOS
+        PATOS</descripcion></localidad><localidad><codigo>9325</codigo><descripcion>LOS
+        SANTOS VIEJOS</descripcion></localidad><localidad><codigo>9346</codigo><descripcion>LOS
+        TALAS</descripcion></localidad><localidad><codigo>9429</codigo><descripcion>LUIS
+        CHICO</descripcion></localidad><localidad><codigo>9431</codigo><descripcion>LUIS
+        GUILLON</descripcion></localidad><localidad><codigo>9442</codigo><descripcion>LUMB</descripcion></localidad><localidad><codigo>9451</codigo><descripcion>LURO</descripcion></localidad><localidad><codigo>9466</codigo><descripcion>MACEDO</descripcion></localidad><localidad><codigo>9494</codigo><descripcion>MAGDALA</descripcion></localidad><localidad><codigo>9495</codigo><descripcion>MAGDALENA</descripcion></localidad><localidad><codigo>9497</codigo><descripcion>MAGUIRRE</descripcion></localidad><localidad><codigo>9505</codigo><descripcion>MAIPU</descripcion></localidad><localidad><codigo>9518</codigo><descripcion>MALABIA</descripcion></localidad><localidad><codigo>9559</codigo><descripcion>MAMAGUITA</descripcion></localidad><localidad><codigo>9570</codigo><descripcion>MANANTIALES</descripcion></localidad><localidad><codigo>9571</codigo><descripcion>MANANTIALES
+        GRANDES</descripcion></localidad><localidad><codigo>9596</codigo><descripcion>MANUEL
+        ALBERTI</descripcion></localidad><localidad><codigo>9597</codigo><descripcion>MANUEL
+        B GONNET</descripcion></localidad><localidad><codigo>9602</codigo><descripcion>MANUEL
+        JOSE GARCIA</descripcion></localidad><localidad><codigo>9603</codigo><descripcion>MANUEL
+        OCAMPO</descripcion></localidad><localidad><codigo>9605</codigo><descripcion>MANZANARES</descripcion></localidad><localidad><codigo>9607</codigo><descripcion>MANZO
+        Y NINO</descripcion></localidad><localidad><codigo>9608</codigo><descripcion>MANZONE</descripcion></localidad><localidad><codigo>9609</codigo><descripcion>MAORI</descripcion></localidad><localidad><codigo>9621</codigo><descripcion>MAR
+        CHIQUITA</descripcion></localidad><localidad><codigo>9622</codigo><descripcion>MAR
+        DE AJO</descripcion></localidad><localidad><codigo>9623</codigo><descripcion>MAR
+        DE COBO</descripcion></localidad><localidad><codigo>9625</codigo><descripcion>MAR
+        DEL PLATA</descripcion></localidad><localidad><codigo>9626</codigo><descripcion>MAR
+        DEL SUD</descripcion></localidad><localidad><codigo>9627</codigo><descripcion>MAR
+        DEL TUYU</descripcion></localidad><localidad><codigo>9636</codigo><descripcion>MARCELINO
+        UGARTE</descripcion></localidad><localidad><codigo>9638</codigo><descripcion>MARCOS
+        PAZ</descripcion></localidad><localidad><codigo>9639</codigo><descripcion>MARCOS
+        PAZ B BERNASCONI</descripcion></localidad><localidad><codigo>9640</codigo><descripcion>MARCOS
+        PAZ B EL MARTILLO</descripcion></localidad><localidad><codigo>9641</codigo><descripcion>MARCOS
+        PAZ B EL MORO</descripcion></localidad><localidad><codigo>9643</codigo><descripcion>MARCOS
+        PAZ B LA LONJA</descripcion></localidad><localidad><codigo>9644</codigo><descripcion>MARCOS
+        PAZ B LA MILAGROSA</descripcion></localidad><localidad><codigo>9645</codigo><descripcion>MARCOS
+        PAZ B MARTIN FIERRO</descripcion></localidad><localidad><codigo>9646</codigo><descripcion>MARCOS
+        PAZ B URIOSTE</descripcion></localidad><localidad><codigo>9649</codigo><descripcion>MARI
+        LAUQUEN</descripcion></localidad><localidad><codigo>9666</codigo><descripcion>MARIA
+        IGNACIA</descripcion></localidad><localidad><codigo>9670</codigo><descripcion>MARIA
+        LUCILA</descripcion></localidad><localidad><codigo>9674</codigo><descripcion>MARIA
+        P MORENO</descripcion></localidad><localidad><codigo>9679</codigo><descripcion>MARIANO
+        ACOSTA</descripcion></localidad><localidad><codigo>9680</codigo><descripcion>MARIANO
+        BENITEZ PERGAMINO</descripcion></localidad><localidad><codigo>9682</codigo><descripcion>MARIANO
+        H ALFONZO</descripcion></localidad><localidad><codigo>9688</codigo><descripcion>MARIANO
+        UNZUE</descripcion></localidad><localidad><codigo>9690</codigo><descripcion>MARISCAL
+        SUCRE</descripcion></localidad><localidad><codigo>9697</codigo><descripcion>MARTIN
+        BERRAONDO</descripcion></localidad><localidad><codigo>9698</codigo><descripcion>MARTIN
+        CORONADO</descripcion></localidad><localidad><codigo>9704</codigo><descripcion>MARTINEZ</descripcion></localidad><localidad><codigo>9719</codigo><descripcion>MASUREL</descripcion></localidad><localidad><codigo>9732</codigo><descripcion>MATHEU</descripcion></localidad><localidad><codigo>9746</codigo><descripcion>MAURAS</descripcion></localidad><localidad><codigo>9751</codigo><descripcion>MAXIMO
+        FERNANDEZ</descripcion></localidad><localidad><codigo>9752</codigo><descripcion>MAXIMO
+        PAZ</descripcion></localidad><localidad><codigo>9762</codigo><descripcion>MAYOR
+        JOSE ORELLANO</descripcion></localidad><localidad><codigo>9777</codigo><descripcion>MECHITA</descripcion></localidad><localidad><codigo>9781</codigo><descripcion>MEDALAND</descripcion></localidad><localidad><codigo>9791</codigo><descripcion>MEDANOS</descripcion></localidad><localidad><codigo>9804</codigo><descripcion>MELCHOR
+        ROMERO</descripcion></localidad><localidad><codigo>9812</codigo><descripcion>MEMBRILLAR</descripcion></localidad><localidad><codigo>9818</codigo><descripcion>MERCADO
+        CENTRAL</descripcion></localidad><localidad><codigo>9819</codigo><descripcion>MERCADO
+        DE VICTORIA</descripcion></localidad><localidad><codigo>9821</codigo><descripcion>MERCEDES</descripcion></localidad><localidad><codigo>9825</codigo><descripcion>MERIDIANO
+        VO</descripcion></localidad><localidad><codigo>9847</codigo><descripcion>MICAELA
+        CASCALLARES</descripcion></localidad><localidad><codigo>9930</codigo><descripcion>MINISTRO
+        RIVADAVIA</descripcion></localidad><localidad><codigo>9935</codigo><descripcion>MIRA
+        PAMPA</descripcion></localidad><localidad><codigo>9941</codigo><descripcion>MIRAMONTE</descripcion></localidad><localidad><codigo>9942</codigo><descripcion>MIRANDA</descripcion></localidad><localidad><codigo>9978</codigo><descripcion>MOCTEZUMA</descripcion></localidad><localidad><codigo>10000</codigo><descripcion>MOLINO
+        GALILEO</descripcion></localidad><localidad><codigo>10002</codigo><descripcion>MOLL</descripcion></localidad><localidad><codigo>10024</codigo><descripcion>MONES
+        CAZON</descripcion></localidad><localidad><codigo>10027</codigo><descripcion>MONROE</descripcion></localidad><localidad><codigo>10028</codigo><descripcion>MONSALVO</descripcion></localidad><localidad><codigo>10043</codigo><descripcion>MONTE
+        CHINGOLO</descripcion></localidad><localidad><codigo>10055</codigo><descripcion>MONTE
+        FIORE</descripcion></localidad><localidad><codigo>10058</codigo><descripcion>MONTE
+        GRANDE</descripcion></localidad><localidad><codigo>10060</codigo><descripcion>MONTE
+        HERMOSO</descripcion></localidad><localidad><codigo>10092</codigo><descripcion>MOORES</descripcion></localidad><localidad><codigo>10102</codigo><descripcion>MOREA</descripcion></localidad><localidad><codigo>10109</codigo><descripcion>MORON</descripcion></localidad><localidad><codigo>10117</codigo><descripcion>MORSE</descripcion></localidad><localidad><codigo>10125</codigo><descripcion>MOURAS</descripcion></localidad><localidad><codigo>10136</codigo><descripcion>MULCAHY</descripcion></localidad><localidad><codigo>10141</codigo><descripcion>MUNRO</descripcion></localidad><localidad><codigo>10147</codigo><descripcion>MUTTI</descripcion></localidad><localidad><codigo>10151</codigo><descripcion>MUNOZ</descripcion></localidad><localidad><codigo>10168</codigo><descripcion>NAHUEL
+        RUCA</descripcion></localidad><localidad><codigo>10175</codigo><descripcion>NAPALEOFU</descripcion></localidad><localidad><codigo>10178</codigo><descripcion>NAPOSTA</descripcion></localidad><localidad><codigo>10196</codigo><descripcion>NAVARRO</descripcion></localidad><localidad><codigo>10201</codigo><descripcion>NECOCHEA</descripcion></localidad><localidad><codigo>10202</codigo><descripcion>NECOL
+        ESTACION FCGM</descripcion></localidad><localidad><codigo>10218</codigo><descripcion>NICANOR
+        OLIVERA</descripcion></localidad><localidad><codigo>10221</codigo><descripcion>NICOLAS
+        DESCALZI</descripcion></localidad><localidad><codigo>10223</codigo><descripcion>NICOLAS
+        LEVALLE</descripcion></localidad><localidad><codigo>10228</codigo><descripcion>NIEVES</descripcion></localidad><localidad><codigo>10259</codigo><descripcion>NORBERTO
+        DE LA RIESTRA</descripcion></localidad><localidad><codigo>10262</codigo><descripcion>NORUMBEGA</descripcion></localidad><localidad><codigo>10272</codigo><descripcion>NUEVA
+        ATLANTIS</descripcion></localidad><localidad><codigo>10283</codigo><descripcion>NUEVA
+        ESPANA</descripcion></localidad><localidad><codigo>10297</codigo><descripcion>NUEVA
+        ROMA</descripcion></localidad><localidad><codigo>10319</codigo><descripcion>O
+        HIGGINS</descripcion></localidad><localidad><codigo>10337</codigo><descripcion>OCHANDIO</descripcion></localidad><localidad><codigo>10344</codigo><descripcion>ODORQUI</descripcion></localidad><localidad><codigo>10360</codigo><descripcion>OLASCOAGA</descripcion></localidad><localidad><codigo>10361</codigo><descripcion>OLAVARRIA</descripcion></localidad><localidad><codigo>10363</codigo><descripcion>OLIDEN</descripcion></localidad><localidad><codigo>10366</codigo><descripcion>OLIVERA</descripcion></localidad><localidad><codigo>10368</codigo><descripcion>OLIVIERA
+        CESAR</descripcion></localidad><localidad><codigo>10374</codigo><descripcion>OMBU</descripcion></localidad><localidad><codigo>10379</codigo><descripcion>OMBUCTA</descripcion></localidad><localidad><codigo>10385</codigo><descripcion>ONCE
+        DE SETIEMBRE</descripcion></localidad><localidad><codigo>10389</codigo><descripcion>OPEN
+        DOOR</descripcion></localidad><localidad><codigo>10397</codigo><descripcion>ORENSE</descripcion></localidad><localidad><codigo>10399</codigo><descripcion>ORLANDO</descripcion></localidad><localidad><codigo>10407</codigo><descripcion>ORTIZ
+        BASUALDO</descripcion></localidad><localidad><codigo>10408</codigo><descripcion>ORTIZ
+        DE ROSAS</descripcion></localidad><localidad><codigo>10411</codigo><descripcion>OSTENDE</descripcion></localidad><localidad><codigo>10437</codigo><descripcion>PABLO
+        ACOSTA</descripcion></localidad><localidad><codigo>10438</codigo><descripcion>PABLO
+        NOGUES</descripcion></localidad><localidad><codigo>10445</codigo><descripcion>PACHAN</descripcion></localidad><localidad><codigo>10517</codigo><descripcion>PALMITAS</descripcion></localidad><localidad><codigo>10519</codigo><descripcion>PALO
+        BLANCO</descripcion></localidad><localidad><codigo>10655</codigo><descripcion>PANAME</descripcion></localidad><localidad><codigo>10657</codigo><descripcion>PANCHO
+        DIAZ</descripcion></localidad><localidad><codigo>10667</codigo><descripcion>PAPIN</descripcion></localidad><localidad><codigo>10674</codigo><descripcion>PARADA
+        LOS ROBLES</descripcion></localidad><localidad><codigo>10676</codigo><descripcion>PARADA
+        TATAY</descripcion></localidad><localidad><codigo>10679</codigo><descripcion>PARAGUIL</descripcion></localidad><localidad><codigo>10705</codigo><descripcion>PARAJE
+        LA VASCA</descripcion></localidad><localidad><codigo>10727</codigo><descripcion>PARAJE
+        SANTA ROSA</descripcion></localidad><localidad><codigo>10728</codigo><descripcion>PARAJE
+        STARACHE</descripcion></localidad><localidad><codigo>10749</codigo><descripcion>PARISH</descripcion></localidad><localidad><codigo>10751</codigo><descripcion>PARQUE
+        CARILO</descripcion></localidad><localidad><codigo>10753</codigo><descripcion>PARQUE
+        MUNOZ</descripcion></localidad><localidad><codigo>10757</codigo><descripcion>PARQUE
+        SAN MARTIN</descripcion></localidad><localidad><codigo>10759</codigo><descripcion>PARQUE
+        TAILLADE</descripcion></localidad><localidad><codigo>10760</codigo><descripcion>PARRAVICHINI</descripcion></localidad><localidad><codigo>10772</codigo><descripcion>PASMAN</descripcion></localidad><localidad><codigo>10776</codigo><descripcion>PASO
+        ALSINA</descripcion></localidad><localidad><codigo>10792</codigo><descripcion>PASO
+        CRAMER</descripcion></localidad><localidad><codigo>10843</codigo><descripcion>PASO
+        DEL MEDANO</descripcion></localidad><localidad><codigo>10847</codigo><descripcion>PASO
+        DEL REY</descripcion></localidad><localidad><codigo>10879</codigo><descripcion>PASO
+        MAYOR</descripcion></localidad><localidad><codigo>10912</codigo><descripcion>PASOS</descripcion></localidad><localidad><codigo>10915</codigo><descripcion>PASTEUR</descripcion></localidad><localidad><codigo>10935</codigo><descripcion>PATRICIOS</descripcion></localidad><localidad><codigo>10937</codigo><descripcion>PAULA</descripcion></localidad><localidad><codigo>10954</codigo><descripcion>PAZOS
+        KANKI</descripcion></localidad><localidad><codigo>10959</codigo><descripcion>PEDERNALES</descripcion></localidad><localidad><codigo>10967</codigo><descripcion>PEDRO
+        GAMEN</descripcion></localidad><localidad><codigo>10969</codigo><descripcion>PEDRO
+        LASALLE</descripcion></localidad><localidad><codigo>10971</codigo><descripcion>PEDRO
+        LURO</descripcion></localidad><localidad><codigo>10972</codigo><descripcion>PEDRO
+        NICOLAS ESCRIBANO</descripcion></localidad><localidad><codigo>10978</codigo><descripcion>PEHUAJO</descripcion></localidad><localidad><codigo>10981</codigo><descripcion>PEHUELCHES</descripcion></localidad><localidad><codigo>10982</codigo><descripcion>PEHUEN
+        CO</descripcion></localidad><localidad><codigo>10983</codigo><descripcion>PELICURA</descripcion></localidad><localidad><codigo>10996</codigo><descripcion>PEREYRA</descripcion></localidad><localidad><codigo>11003</codigo><descripcion>PEREZ
+        MILLAN</descripcion></localidad><localidad><codigo>11019</codigo><descripcion>PESSAGNO</descripcion></localidad><localidad><codigo>11027</codigo><descripcion>PENAFLOR</descripcion></localidad><localidad><codigo>11071</codigo><descripcion>PICHINCHA</descripcion></localidad><localidad><codigo>11084</codigo><descripcion>PIEDRA
+        ANCHA</descripcion></localidad><localidad><codigo>11118</codigo><descripcion>PIEDRITAS</descripcion></localidad><localidad><codigo>11120</codigo><descripcion>PIERES</descripcion></localidad><localidad><codigo>11121</codigo><descripcion>PIERINI</descripcion></localidad><localidad><codigo>11124</codigo><descripcion>PILA</descripcion></localidad><localidad><codigo>11128</codigo><descripcion>PILAR</descripcion></localidad><localidad><codigo>11136</codigo><descripcion>PILLAHUINCO</descripcion></localidad><localidad><codigo>11143</codigo><descripcion>PINAMAR</descripcion></localidad><localidad><codigo>11160</codigo><descripcion>PINZON</descripcion></localidad><localidad><codigo>11161</codigo><descripcion>PIPINAS</descripcion></localidad><localidad><codigo>11177</codigo><descripcion>PIROVANO</descripcion></localidad><localidad><codigo>11181</codigo><descripcion>PIRUCO</descripcion></localidad><localidad><codigo>11195</codigo><descripcion>PINEIRO</descripcion></localidad><localidad><codigo>11197</codigo><descripcion>PLA</descripcion></localidad><localidad><codigo>11198</codigo><descripcion>PLA
+        Y RAGNONI</descripcion></localidad><localidad><codigo>11208</codigo><descripcion>PLATANOS</descripcion></localidad><localidad><codigo>11211</codigo><descripcion>PLAYA
+        CHAPADMALAL</descripcion></localidad><localidad><codigo>11214</codigo><descripcion>PLAYA
+        LAS MARGARITAS</descripcion></localidad><localidad><codigo>11215</codigo><descripcion>PLAYA
+        SERENA</descripcion></localidad><localidad><codigo>11224</codigo><descripcion>PLAZA
+        MONTERO</descripcion></localidad><localidad><codigo>11229</codigo><descripcion>PLOMER</descripcion></localidad><localidad><codigo>11265</codigo><descripcion>POBLET</descripcion></localidad><localidad><codigo>11281</codigo><descripcion>POLVAREDAS</descripcion></localidad><localidad><codigo>11339</codigo><descripcion>PORVENIR</descripcion></localidad><localidad><codigo>11388</codigo><descripcion>POURTALE</descripcion></localidad><localidad><codigo>11528</codigo><descripcion>PRESIDENTE
+        DERQUI</descripcion></localidad><localidad><codigo>11529</codigo><descripcion>PRESIDENTE
+        QUINTANA</descripcion></localidad><localidad><codigo>11539</codigo><descripcion>PRIMERA
+        JUNTA</descripcion></localidad><localidad><codigo>11599</codigo><descripcion>PUAN</descripcion></localidad><localidad><codigo>11606</codigo><descripcion>PUEBLITOS</descripcion></localidad><localidad><codigo>11640</codigo><descripcion>PUEBLO
+        MARTINEZ DE HOZ</descripcion></localidad><localidad><codigo>11644</codigo><descripcion>PUEBLO
+        NUEVO</descripcion></localidad><localidad><codigo>11645</codigo><descripcion>PUEBLO
+        NUEVO DTO JUNIN</descripcion></localidad><localidad><codigo>11647</codigo><descripcion>PUEBLO
+        OTERO</descripcion></localidad><localidad><codigo>11657</codigo><descripcion>PUEBLO
+        SAN ESTEBAN</descripcion></localidad><localidad><codigo>11658</codigo><descripcion>PUEBLO
+        SAN JOSE</descripcion></localidad><localidad><codigo>11659</codigo><descripcion>PUEBLO
+        SANTA MARIA</descripcion></localidad><localidad><codigo>11669</codigo><descripcion>PUENTE
+        BATALLA</descripcion></localidad><localidad><codigo>11673</codigo><descripcion>PUENTE
+        CASTEX</descripcion></localidad><localidad><codigo>11674</codigo><descripcion>PUENTE
+        CANETE</descripcion></localidad><localidad><codigo>11687</codigo><descripcion>PUENTE
+        EL OCHENTA</descripcion></localidad><localidad><codigo>11756</codigo><descripcion>PUERTO
+        BAHIA BLANCA</descripcion></localidad><localidad><codigo>11760</codigo><descripcion>PUERTO
+        BELGRANO</descripcion></localidad><localidad><codigo>11774</codigo><descripcion>PUERTO
+        COLOMA</descripcion></localidad><localidad><codigo>11780</codigo><descripcion>PUERTO
+        DE ESCOBAR</descripcion></localidad><localidad><codigo>11793</codigo><descripcion>PUERTO
+        GALVAN</descripcion></localidad><localidad><codigo>11810</codigo><descripcion>PUERTO
+        LA PLATA</descripcion></localidad><localidad><codigo>11831</codigo><descripcion>PUERTO
+        NECOCHEA</descripcion></localidad><localidad><codigo>11854</codigo><descripcion>PUERTO
+        ROSALES</descripcion></localidad><localidad><codigo>11875</codigo><descripcion>PUERTO
+        TRES BONETES</descripcion></localidad><localidad><codigo>11889</codigo><descripcion>PUERTO
+        WASSERMANN</descripcion></localidad><localidad><codigo>12099</codigo><descripcion>PUJOL</descripcion></localidad><localidad><codigo>12125</codigo><descripcion>PUNTA
+        DE CANAL</descripcion></localidad><localidad><codigo>12148</codigo><descripcion>PUNTA
+        INDIO</descripcion></localidad><localidad><codigo>12149</codigo><descripcion>PUNTA
+        LARA</descripcion></localidad><localidad><codigo>12152</codigo><descripcion>PUNTA
+        MEDANOS</descripcion></localidad><localidad><codigo>12216</codigo><descripcion>QUENUMA</descripcion></localidad><localidad><codigo>12232</codigo><descripcion>QUILCO</descripcion></localidad><localidad><codigo>12237</codigo><descripcion>QUILMES</descripcion></localidad><localidad><codigo>12238</codigo><descripcion>QUILMES
+        OESTE</descripcion></localidad><localidad><codigo>12263</codigo><descripcion>QUIRNO
+        COSTA</descripcion></localidad><localidad><codigo>12264</codigo><descripcion>QUIROGA</descripcion></localidad><localidad><codigo>12279</codigo><descripcion>QUINIHUAL
+        ESTACION</descripcion></localidad><localidad><codigo>12292</codigo><descripcion>RAFAEL
+        CASTILLO</descripcion></localidad><localidad><codigo>12294</codigo><descripcion>RAFAEL
+        OBLIGADO</descripcion></localidad><localidad><codigo>12309</codigo><descripcion>RAMALLO</descripcion></localidad><localidad><codigo>12321</codigo><descripcion>RAMON
+        BIAUS</descripcion></localidad><localidad><codigo>12325</codigo><descripcion>RAMON
+        J NEILD</descripcion></localidad><localidad><codigo>12327</codigo><descripcion>RAMON
+        SANTAMARINA</descripcion></localidad><localidad><codigo>12332</codigo><descripcion>RAMOS
+        OTERO</descripcion></localidad><localidad><codigo>12333</codigo><descripcion>RANCAGUA</descripcion></localidad><localidad><codigo>12338</codigo><descripcion>RANCHOS</descripcion></localidad><localidad><codigo>12343</codigo><descripcion>RANELAGH</descripcion></localidad><localidad><codigo>12359</codigo><descripcion>RAUCH</descripcion></localidad><localidad><codigo>12360</codigo><descripcion>RAULET</descripcion></localidad><localidad><codigo>12361</codigo><descripcion>RAWSON</descripcion></localidad><localidad><codigo>12365</codigo><descripcion>REAL
+        AUDIENCIA</descripcion></localidad><localidad><codigo>12406</codigo><descripcion>REGINALDO
+        J NEILD</descripcion></localidad><localidad><codigo>12415</codigo><descripcion>REMEDIOS
+        DE ESCALADA</descripcion></localidad><localidad><codigo>12429</codigo><descripcion>REQUENA</descripcion></localidad><localidad><codigo>12435</codigo><descripcion>RETA</descripcion></localidad><localidad><codigo>12443</codigo><descripcion>RETIRO
+        SAN PABLO</descripcion></localidad><localidad><codigo>12458</codigo><descripcion>RICARDO
+        CANO</descripcion></localidad><localidad><codigo>12459</codigo><descripcion>RICARDO
+        GAVINA</descripcion></localidad><localidad><codigo>12462</codigo><descripcion>RICARDO
+        ROJAS</descripcion></localidad><localidad><codigo>12477</codigo><descripcion>RINCON
+        DE BAUDRIX</descripcion></localidad><localidad><codigo>12500</codigo><descripcion>RINCON
+        DE MILBERG</descripcion></localidad><localidad><codigo>12502</codigo><descripcion>RINCON
+        DE NOARIO</descripcion></localidad><localidad><codigo>12513</codigo><descripcion>RINCON
+        DE VIVOT</descripcion></localidad><localidad><codigo>12538</codigo><descripcion>RINCON
+        NORTE</descripcion></localidad><localidad><codigo>12601</codigo><descripcion>RIO
+        LUJAN</descripcion></localidad><localidad><codigo>12638</codigo><descripcion>RIVADAVIA</descripcion></localidad><localidad><codigo>12639</codigo><descripcion>RIVADEO</descripcion></localidad><localidad><codigo>12641</codigo><descripcion>RIVERA</descripcion></localidad><localidad><codigo>12643</codigo><descripcion>ROBERTO
+        PAYRO</descripcion></localidad><localidad><codigo>12644</codigo><descripcion>ROBERTS</descripcion></localidad><localidad><codigo>12677</codigo><descripcion>ROJAS</descripcion></localidad><localidad><codigo>12683</codigo><descripcion>ROMAN
+        BAEZ</descripcion></localidad><localidad><codigo>12693</codigo><descripcion>ROOSEVELT
+        PARTIDO RIVADAVIA</descripcion></localidad><localidad><codigo>12694</codigo><descripcion>ROQUE
+        PEREZ</descripcion></localidad><localidad><codigo>12709</codigo><descripcion>ROSAS</descripcion></localidad><localidad><codigo>12733</codigo><descripcion>RUIZ
+        SOLIS</descripcion></localidad><localidad><codigo>12752</codigo><descripcion>RUTA
+        26 MAQUINISTA F SAVIO</descripcion></localidad><localidad><codigo>12796</codigo><descripcion>SAFORCADA</descripcion></localidad><localidad><codigo>12806</codigo><descripcion>SALADA
+        CHICA</descripcion></localidad><localidad><codigo>12814</codigo><descripcion>SALADILLO</descripcion></localidad><localidad><codigo>12818</codigo><descripcion>SALADILLO
+        NORTE</descripcion></localidad><localidad><codigo>12829</codigo><descripcion>SALAZAR</descripcion></localidad><localidad><codigo>12835</codigo><descripcion>SALDUNGARAY</descripcion></localidad><localidad><codigo>12838</codigo><descripcion>SALINA
+        DE PIEDRA</descripcion></localidad><localidad><codigo>12840</codigo><descripcion>SALINAS
+        CHICAS</descripcion></localidad><localidad><codigo>12853</codigo><descripcion>SALLIQUELO</descripcion></localidad><localidad><codigo>12858</codigo><descripcion>SALTO</descripcion></localidad><localidad><codigo>12866</codigo><descripcion>SALVADOR
+        MARIA</descripcion></localidad><localidad><codigo>12870</codigo><descripcion>SAMBOROMBON</descripcion></localidad><localidad><codigo>12873</codigo><descripcion>SAN
+        ADOLFO</descripcion></localidad><localidad><codigo>12874</codigo><descripcion>SAN
+        AGUSTIN</descripcion></localidad><localidad><codigo>12875</codigo><descripcion>SAN
+        ALBERTO</descripcion></localidad><localidad><codigo>12880</codigo><descripcion>SAN
+        ANDRES</descripcion></localidad><localidad><codigo>12881</codigo><descripcion>SAN
+        ANDRES DE GILES</descripcion></localidad><localidad><codigo>12884</codigo><descripcion>SAN
+        ANTONIO</descripcion></localidad><localidad><codigo>12886</codigo><descripcion>SAN
+        ANTONIO DE ARECO</descripcion></localidad><localidad><codigo>12898</codigo><descripcion>SAN
+        ANTONIO DE PADUA</descripcion></localidad><localidad><codigo>12916</codigo><descripcion>SAN
+        BERNARDO</descripcion></localidad><localidad><codigo>12918</codigo><descripcion>SAN
+        BERNARDO DEL TUYU</descripcion></localidad><localidad><codigo>12921</codigo><descripcion>SAN
+        CALA</descripcion></localidad><localidad><codigo>12924</codigo><descripcion>SAN
+        CARLOS</descripcion></localidad><localidad><codigo>12929</codigo><descripcion>SAN
+        CAYETANO</descripcion></localidad><localidad><codigo>12934</codigo><descripcion>SAN
+        CORNELIO</descripcion></localidad><localidad><codigo>12937</codigo><descripcion>SAN
+        DANIEL</descripcion></localidad><localidad><codigo>12943</codigo><descripcion>SAN
+        EDUARDO DEL MAR</descripcion></localidad><localidad><codigo>12945</codigo><descripcion>SAN
+        EMILIO</descripcion></localidad><localidad><codigo>12946</codigo><descripcion>SAN
+        ENRIQUE</descripcion></localidad><localidad><codigo>12947</codigo><descripcion>SAN
+        ERNESTO</descripcion></localidad><localidad><codigo>12955</codigo><descripcion>SAN
+        FEDERICO</descripcion></localidad><localidad><codigo>12956</codigo><descripcion>SAN
+        FELIPE</descripcion></localidad><localidad><codigo>12958</codigo><descripcion>SAN
+        FERMIN</descripcion></localidad><localidad><codigo>12959</codigo><descripcion>SAN
+        FERNANDO</descripcion></localidad><localidad><codigo>12965</codigo><descripcion>SAN
+        FRANCISCO DE BELLOCQ</descripcion></localidad><localidad><codigo>12973</codigo><descripcion>SAN
+        FRANCISCO SOLANO</descripcion></localidad><localidad><codigo>12980</codigo><descripcion>SAN
+        GERVACIO</descripcion></localidad><localidad><codigo>12988</codigo><descripcion>SAN
+        IGNACIO</descripcion></localidad><localidad><codigo>12993</codigo><descripcion>SAN
+        JACINTO</descripcion></localidad><localidad><codigo>13004</codigo><descripcion>SAN
+        JORGE</descripcion></localidad><localidad><codigo>13015</codigo><descripcion>SAN
+        JOSE DE GALI</descripcion></localidad><localidad><codigo>13025</codigo><descripcion>SAN
+        JOSE DE LOS QUINTEROS</descripcion></localidad><localidad><codigo>13030</codigo><descripcion>SAN
+        JOSE DE OTAMENDI</descripcion></localidad><localidad><codigo>13044</codigo><descripcion>SAN
+        JUAN</descripcion></localidad><localidad><codigo>13058</codigo><descripcion>SAN
+        JULIAN</descripcion></localidad><localidad><codigo>13061</codigo><descripcion>SAN
+        LAUREANO</descripcion></localidad><localidad><codigo>13084</codigo><descripcion>SAN
+        MARTIN DE TOURS</descripcion></localidad><localidad><codigo>13089</codigo><descripcion>SAN
+        MAURICIO</descripcion></localidad><localidad><codigo>13092</codigo><descripcion>SAN
+        MIGUEL</descripcion></localidad><localidad><codigo>13093</codigo><descripcion>SAN
+        MIGUEL ARCANGEL</descripcion></localidad><localidad><codigo>13097</codigo><descripcion>SAN
+        MIGUEL DEL MONTE</descripcion></localidad><localidad><codigo>13098</codigo><descripcion>SAN
+        MIGUEL DEL MORO</descripcion></localidad><localidad><codigo>13105</codigo><descripcion>SAN
+        NICOLAS DE LOS ARROYOS</descripcion></localidad><localidad><codigo>13110</codigo><descripcion>SAN
+        PASCUAL</descripcion></localidad><localidad><codigo>13112</codigo><descripcion>SAN
+        PATRICIO</descripcion></localidad><localidad><codigo>13131</codigo><descripcion>SAN
+        RAFAEL</descripcion></localidad><localidad><codigo>13136</codigo><descripcion>SAN
+        RAMON DE ANCHORENA</descripcion></localidad><localidad><codigo>13142</codigo><descripcion>SAN
+        ROMAN</descripcion></localidad><localidad><codigo>13144</codigo><descripcion>SAN
+        ROQUE</descripcion></localidad><localidad><codigo>13150</codigo><descripcion>SAN
+        SEBASTIAN</descripcion></localidad><localidad><codigo>13152</codigo><descripcion>SAN
+        SIMON</descripcion></localidad><localidad><codigo>13156</codigo><descripcion>SAN
+        VALENTIN</descripcion></localidad><localidad><codigo>13157</codigo><descripcion>SAN
+        VICENTE</descripcion></localidad><localidad><codigo>13189</codigo><descripcion>SANTA
+        CECILIA CENTRO</descripcion></localidad><localidad><codigo>13190</codigo><descripcion>SANTA
+        CECILIA NORTE</descripcion></localidad><localidad><codigo>13191</codigo><descripcion>SANTA
+        CECILIA SUD</descripcion></localidad><localidad><codigo>13195</codigo><descripcion>SANTA
+        CLARA DEL MAR</descripcion></localidad><localidad><codigo>13197</codigo><descripcion>SANTA
+        CLEMENTINA</descripcion></localidad><localidad><codigo>13198</codigo><descripcion>SANTA
+        COLOMA</descripcion></localidad><localidad><codigo>13203</codigo><descripcion>SANTA
+        ELEODORA</descripcion></localidad><localidad><codigo>13209</codigo><descripcion>SANTA
+        FELICIA</descripcion></localidad><localidad><codigo>13217</codigo><descripcion>SANTA
+        INES</descripcion></localidad><localidad><codigo>13218</codigo><descripcion>SANTA
+        IRENE</descripcion></localidad><localidad><codigo>13219</codigo><descripcion>SANTA
+        ISABEL</descripcion></localidad><localidad><codigo>13227</codigo><descripcion>SANTA
+        LUISA</descripcion></localidad><localidad><codigo>13230</codigo><descripcion>SANTA
+        MARIA</descripcion></localidad><localidad><codigo>13231</codigo><descripcion>SANTA
+        MARIA BELLOQ</descripcion></localidad><localidad><codigo>13247</codigo><descripcion>SANTA
+        REGINA</descripcion></localidad><localidad><codigo>13248</codigo><descripcion>SANTA
+        RITA</descripcion></localidad><localidad><codigo>13251</codigo><descripcion>SANTA
+        ROSA</descripcion></localidad><localidad><codigo>13261</codigo><descripcion>SANTA
+        ROSA DE MINELLONO</descripcion></localidad><localidad><codigo>13277</codigo><descripcion>SANTA
+        TERESA</descripcion></localidad><localidad><codigo>13279</codigo><descripcion>SANTA
+        TERESITA</descripcion></localidad><localidad><codigo>13280</codigo><descripcion>SANTA
+        TERESITA PERGAMINO</descripcion></localidad><localidad><codigo>13281</codigo><descripcion>SANTA
+        TRINIDAD</descripcion></localidad><localidad><codigo>13289</codigo><descripcion>SANTIAGO
+        GARBARINI</descripcion></localidad><localidad><codigo>13296</codigo><descripcion>SANTO
+        DOMINGO</descripcion></localidad><localidad><codigo>13304</codigo><descripcion>SANTO
+        TOMAS</descripcion></localidad><localidad><codigo>13307</codigo><descripcion>SANTOS
+        LUGARES</descripcion></localidad><localidad><codigo>13308</codigo><descripcion>SANTOS
+        UNZUE</descripcion></localidad><localidad><codigo>13316</codigo><descripcion>SARANDI</descripcion></localidad><localidad><codigo>13318</codigo><descripcion>SARASA</descripcion></localidad><localidad><codigo>13331</codigo><descripcion>SATURNO</descripcion></localidad><localidad><codigo>13337</codigo><descripcion>SAUCE
+        CHICO</descripcion></localidad><localidad><codigo>13339</codigo><descripcion>SAUCE
+        CORTO</descripcion></localidad><localidad><codigo>13345</codigo><descripcion>SAUCE
+        GRANDE</descripcion></localidad><localidad><codigo>13371</codigo><descripcion>SAUZALES</descripcion></localidad><localidad><codigo>13398</codigo><descripcion>SEGUROLA</descripcion></localidad><localidad><codigo>13404</codigo><descripcion>SEMINARIO
+        PIO XII</descripcion></localidad><localidad><codigo>13423</codigo><descripcion>SEVIGNE</descripcion></localidad><localidad><codigo>13430</codigo><descripcion>SHAW</descripcion></localidad><localidad><codigo>13435</codigo><descripcion>SIEMPRE
+        VERDE</descripcion></localidad><localidad><codigo>13449</codigo><descripcion>SIERRA
+        DE LA VENTANA</descripcion></localidad><localidad><codigo>13466</codigo><descripcion>SIERRAS
+        BAYAS</descripcion></localidad><localidad><codigo>13498</codigo><descripcion>SMITH</descripcion></localidad><localidad><codigo>13508</codigo><descripcion>SOL
+        DE MAYO</descripcion></localidad><localidad><codigo>13510</codigo><descripcion>SOLALE</descripcion></localidad><localidad><codigo>13513</codigo><descripcion>SOLANO</descripcion></localidad><localidad><codigo>13548</codigo><descripcion>SOURIGUES</descripcion></localidad><localidad><codigo>13552</codigo><descripcion>SPERATTI</descripcion></localidad><localidad><codigo>13553</codigo><descripcion>SPERONI</descripcion></localidad><localidad><codigo>13555</codigo><descripcion>SPURR</descripcion></localidad><localidad><codigo>13557</codigo><descripcion>STEGMANN</descripcion></localidad><localidad><codigo>13568</codigo><descripcion>SUCRE</descripcion></localidad><localidad><codigo>13575</codigo><descripcion>SUIPACHA</descripcion></localidad><localidad><codigo>13591</codigo><descripcion>SUNDBLAD</descripcion></localidad><localidad><codigo>13618</codigo><descripcion>TABLADA</descripcion></localidad><localidad><codigo>13730</codigo><descripcion>TAMANGUEYU</descripcion></localidad><localidad><codigo>13737</codigo><descripcion>TAMBO
+        NUEVO</descripcion></localidad><localidad><codigo>13749</codigo><descripcion>TAPALQUE</descripcion></localidad><localidad><codigo>13757</codigo><descripcion>TAPIALES</descripcion></localidad><localidad><codigo>13795</codigo><descripcion>TEDIN
+        URIBURU</descripcion></localidad><localidad><codigo>13800</codigo><descripcion>TEJO
+        GALETA</descripcion></localidad><localidad><codigo>13812</codigo><descripcion>TENIENTE
+        ORIGONE</descripcion></localidad><localidad><codigo>13834</codigo><descripcion>TERMAS
+        LOS GAUCHOS</descripcion></localidad><localidad><codigo>13841</codigo><descripcion>THAMES</descripcion></localidad><localidad><codigo>13851</codigo><descripcion>TIGRE</descripcion></localidad><localidad><codigo>13873</codigo><descripcion>TIMOTE</descripcion></localidad><localidad><codigo>13889</codigo><descripcion>TIO
+        DOMINGO</descripcion></localidad><localidad><codigo>13926</codigo><descripcion>TOLDOS
+        VIEJOS</descripcion></localidad><localidad><codigo>13936</codigo><descripcion>TOMAS
+        JOFRE</descripcion></localidad><localidad><codigo>13954</codigo><descripcion>TORNQUIST</descripcion></localidad><localidad><codigo>13955</codigo><descripcion>TORO</descripcion></localidad><localidad><codigo>14029</codigo><descripcion>TRENQUE
+        LAUQUEN</descripcion></localidad><localidad><codigo>14031</codigo><descripcion>TRES  LAGUNAS</descripcion></localidad><localidad><codigo>14037</codigo><descripcion>TRES
+        ARROYOS</descripcion></localidad><localidad><codigo>14051</codigo><descripcion>TRES
+        CUERVOS</descripcion></localidad><localidad><codigo>14067</codigo><descripcion>TRES
+        LEGUAS</descripcion></localidad><localidad><codigo>14068</codigo><descripcion>TRES
+        LOMAS</descripcion></localidad><localidad><codigo>14076</codigo><descripcion>TRES
+        PICOS</descripcion></localidad><localidad><codigo>14086</codigo><descripcion>TRES
+        SARGENTOS</descripcion></localidad><localidad><codigo>14104</codigo><descripcion>TRISTAN
+        SUAREZ</descripcion></localidad><localidad><codigo>14105</codigo><descripcion>TRIUNVIRATO</descripcion></localidad><localidad><codigo>14114</codigo><descripcion>TRONCOS
+        DEL TALAR</descripcion></localidad><localidad><codigo>14118</codigo><descripcion>TROPEZON</descripcion></localidad><localidad><codigo>14122</codigo><descripcion>TRUJUI</descripcion></localidad><localidad><codigo>14161</codigo><descripcion>TURDERA</descripcion></localidad><localidad><codigo>14177</codigo><descripcion>TUYUTI</descripcion></localidad><localidad><codigo>14179</codigo><descripcion>UBALLES</descripcion></localidad><localidad><codigo>14186</codigo><descripcion>UDAQUIOLA</descripcion></localidad><localidad><codigo>14194</codigo><descripcion>UNIDAD
+        TURISTICA CHAPADMALAL</descripcion></localidad><localidad><codigo>14205</codigo><descripcion>URIBELARREA</descripcion></localidad><localidad><codigo>14210</codigo><descripcion>URQUIZA</descripcion></localidad><localidad><codigo>14242</codigo><descripcion>VALDEZ</descripcion></localidad><localidad><codigo>14248</codigo><descripcion>VALENZUELA
+        ANTON</descripcion></localidad><localidad><codigo>14249</codigo><descripcion>VALERIA
+        DEL MAR</descripcion></localidad><localidad><codigo>14278</codigo><descripcion>VALLIMANCA</descripcion></localidad><localidad><codigo>14287</codigo><descripcion>VASQUEZ</descripcion></localidad><localidad><codigo>14288</codigo><descripcion>VANA</descripcion></localidad><localidad><codigo>14290</codigo><descripcion>VECINO</descripcion></localidad><localidad><codigo>14291</codigo><descripcion>VEDIA</descripcion></localidad><localidad><codigo>14304</codigo><descripcion>VELA</descripcion></localidad><localidad><codigo>14312</codigo><descripcion>VENANCIO</descripcion></localidad><localidad><codigo>14325</codigo><descripcion>VERGARA</descripcion></localidad><localidad><codigo>14330</codigo><descripcion>VERONICA</descripcion></localidad><localidad><codigo>14339</codigo><descripcion>VIBORAS</descripcion></localidad><localidad><codigo>14342</codigo><descripcion>VICENTE
+        LOPEZ</descripcion></localidad><localidad><codigo>14352</codigo><descripcion>VICTORINO
+        DE LA PLAZA</descripcion></localidad><localidad><codigo>14361</codigo><descripcion>VIEYTES</descripcion></localidad><localidad><codigo>14362</codigo><descripcion>VIGELENCIA</descripcion></localidad><localidad><codigo>14376</codigo><descripcion>VILLA
+        ADELINA</descripcion></localidad><localidad><codigo>14379</codigo><descripcion>VILLA
+        AGUEDA</descripcion></localidad><localidad><codigo>14399</codigo><descripcion>VILLA
+        ANGUS</descripcion></localidad><localidad><codigo>14404</codigo><descripcion>VILLA
+        ARCADIA</descripcion></localidad><localidad><codigo>14408</codigo><descripcion>VILLA
+        ASTOLFI</descripcion></localidad><localidad><codigo>14413</codigo><descripcion>VILLA
+        BALLESTER</descripcion></localidad><localidad><codigo>14429</codigo><descripcion>VILLA
+        BOSCH</descripcion></localidad><localidad><codigo>14431</codigo><descripcion>VILLA
+        BRANDA</descripcion></localidad><localidad><codigo>14433</codigo><descripcion>VILLA
+        BROWN</descripcion></localidad><localidad><codigo>14434</codigo><descripcion>VILLA
+        BUENOS AIRES</descripcion></localidad><localidad><codigo>14435</codigo><descripcion>VILLA
+        BUIDE</descripcion></localidad><localidad><codigo>14439</codigo><descripcion>VILLA
+        CACIQUE</descripcion></localidad><localidad><codigo>14448</codigo><descripcion>VILLA
+        CARUCHA</descripcion></localidad><localidad><codigo>14451</codigo><descripcion>VILLA
+        CASTELAR EST ERIZE</descripcion></localidad><localidad><codigo>14456</codigo><descripcion>VILLA
+        CERRITO</descripcion></localidad><localidad><codigo>14463</codigo><descripcion>VILLA
+        CLELIA</descripcion></localidad><localidad><codigo>14475</codigo><descripcion>VILLA
+        COPACABANA</descripcion></localidad><localidad><codigo>14487</codigo><descripcion>VILLA
+        DA FONTE</descripcion></localidad><localidad><codigo>14494</codigo><descripcion>VILLA
+        DE MAYO</descripcion></localidad><localidad><codigo>14501</codigo><descripcion>VILLA
+        DEL MAR</descripcion></localidad><localidad><codigo>14510</codigo><descripcion>VILLA
+        DEPIETRI</descripcion></localidad><localidad><codigo>14513</codigo><descripcion>VILLA
+        DIAMANTINA</descripcion></localidad><localidad><codigo>14515</codigo><descripcion>VILLA
+        DIAZ VELEZ</descripcion></localidad><localidad><codigo>14521</codigo><descripcion>VILLA
+        DOMINICO</descripcion></localidad><localidad><codigo>14525</codigo><descripcion>VILLA
+        DUFAU</descripcion></localidad><localidad><codigo>14535</codigo><descripcion>VILLA
+        ELENA</descripcion></localidad><localidad><codigo>14543</codigo><descripcion>VILLA
+        ESPANA</descripcion></localidad><localidad><codigo>14544</codigo><descripcion>VILLA
+        ESPIL</descripcion></localidad><localidad><codigo>14553</codigo><descripcion>VILLA
+        FLANDRIA</descripcion></localidad><localidad><codigo>14557</codigo><descripcion>VILLA
+        FLORESTA</descripcion></localidad><localidad><codigo>14558</codigo><descripcion>VILLA
+        FLORIDA</descripcion></localidad><localidad><codigo>14561</codigo><descripcion>VILLA
+        FORTABAT</descripcion></localidad><localidad><codigo>14562</codigo><descripcion>VILLA
+        FOX</descripcion></localidad><localidad><codigo>14567</codigo><descripcion>VILLA
+        GALICIA</descripcion></localidad><localidad><codigo>14571</codigo><descripcion>VILLA
+        GENERAL ARIAS</descripcion></localidad><localidad><codigo>14580</codigo><descripcion>VILLA
+        GESELL</descripcion></localidad><localidad><codigo>14587</codigo><descripcion>VILLA
+        GODOY</descripcion></localidad><localidad><codigo>14591</codigo><descripcion>VILLA
+        GRAL SAVIO EX SANCHEZ</descripcion></localidad><localidad><codigo>14599</codigo><descripcion>VILLA
+        HERMINIA</descripcion></localidad><localidad><codigo>14606</codigo><descripcion>VILLA
+        IGOLLO</descripcion></localidad><localidad><codigo>14610</codigo><descripcion>VILLA
+        IRIS</descripcion></localidad><localidad><codigo>14612</codigo><descripcion>VILLA
+        ITALIA</descripcion></localidad><localidad><codigo>14622</codigo><descripcion>VILLA
+        LA CHECHELA</descripcion></localidad><localidad><codigo>14625</codigo><descripcion>VILLA
+        LA FLORIDA</descripcion></localidad><localidad><codigo>14640</codigo><descripcion>VILLA
+        LAURA</descripcion></localidad><localidad><codigo>14641</codigo><descripcion>VILLA
+        LAZA</descripcion></localidad><localidad><codigo>14643</codigo><descripcion>VILLA
+        LEANDRA</descripcion></localidad><localidad><codigo>14646</codigo><descripcion>VILLA
+        LEZA</descripcion></localidad><localidad><codigo>14647</codigo><descripcion>VILLA
+        LIA</descripcion></localidad><localidad><codigo>14650</codigo><descripcion>VILLA
+        LIBRE</descripcion></localidad><localidad><codigo>14654</codigo><descripcion>VILLA
+        LORETO</descripcion></localidad><localidad><codigo>14665</codigo><descripcion>VILLA
+        LUZURIAGA</descripcion></localidad><localidad><codigo>14667</codigo><descripcion>VILLA
+        LYNCH</descripcion></localidad><localidad><codigo>14668</codigo><descripcion>VILLA
+        LYNCH PUEYRREDON</descripcion></localidad><localidad><codigo>14676</codigo><descripcion>VILLA
+        MARGARITA</descripcion></localidad><localidad><codigo>14677</codigo><descripcion>VILLA
+        MARIA</descripcion></localidad><localidad><codigo>14682</codigo><descripcion>VILLA
+        MASSONI</descripcion></localidad><localidad><codigo>14686</codigo><descripcion>VILLA
+        MAYOR</descripcion></localidad><localidad><codigo>14688</codigo><descripcion>VILLA
+        MAZA</descripcion></localidad><localidad><codigo>14696</codigo><descripcion>VILLA
+        MITRE</descripcion></localidad><localidad><codigo>14701</codigo><descripcion>VILLA
+        MOQUEHUA</descripcion></localidad><localidad><codigo>14711</codigo><descripcion>VILLA
+        NOCITO</descripcion></localidad><localidad><codigo>14716</codigo><descripcion>VILLA
+        NUMANCIA</descripcion></localidad><localidad><codigo>14721</codigo><descripcion>VILLA
+        OLGA GRUMBEIN</descripcion></localidad><localidad><codigo>14723</codigo><descripcion>VILLA
+        ORTEGA</descripcion></localidad><localidad><codigo>14724</codigo><descripcion>VILLA
+        ORTIZ</descripcion></localidad><localidad><codigo>14735</codigo><descripcion>VILLA
+        PENOTTI</descripcion></localidad><localidad><codigo>14741</codigo><descripcion>VILLA
+        PRECEPTOR M ROBLES</descripcion></localidad><localidad><codigo>14742</codigo><descripcion>VILLA
+        PRECEPTOR MANUEL CRUZ</descripcion></localidad><localidad><codigo>14744</codigo><descripcion>VILLA
+        PROGRESO</descripcion></localidad><localidad><codigo>14745</codigo><descripcion>VILLA
+        PUEBLO NUEVO</descripcion></localidad><localidad><codigo>14746</codigo><descripcion>VILLA
+        PUERTO QUEQUEN</descripcion></localidad><localidad><codigo>14756</codigo><descripcion>VILLA
+        RAFFO</descripcion></localidad><localidad><codigo>14757</codigo><descripcion>VILLA
+        RAMALLO</descripcion></localidad><localidad><codigo>14758</codigo><descripcion>VILLA
+        RAMALLO ESTACION FFCC</descripcion></localidad><localidad><codigo>14765</codigo><descripcion>VILLA
+        RIO CHICO</descripcion></localidad><localidad><codigo>14776</codigo><descripcion>VILLA
+        ROSA</descripcion></localidad><localidad><codigo>14778</codigo><descripcion>VILLA
+        ROSAS</descripcion></localidad><localidad><codigo>14783</codigo><descripcion>VILLA
+        RUIZ</descripcion></localidad><localidad><codigo>14786</codigo><descripcion>VILLA
+        SABOYA</descripcion></localidad><localidad><codigo>14787</codigo><descripcion>VILLA
+        SAENZ PENA</descripcion></localidad><localidad><codigo>14788</codigo><descripcion>VILLA
+        SAN ALBERTO</descripcion></localidad><localidad><codigo>14801</codigo><descripcion>VILLA
+        SAN PEDRO</descripcion></localidad><localidad><codigo>14806</codigo><descripcion>VILLA
+        SANGUINETTI</descripcion></localidad><localidad><codigo>14810</codigo><descripcion>VILLA
+        SANTA MARIA</descripcion></localidad><localidad><codigo>14816</codigo><descripcion>VILLA
+        SANTOS TESEI</descripcion></localidad><localidad><codigo>14820</codigo><descripcion>VILLA
+        SARITA</descripcion></localidad><localidad><codigo>14824</codigo><descripcion>VILLA
+        SAUCE</descripcion></localidad><localidad><codigo>14825</codigo><descripcion>VILLA
+        SAURI</descripcion></localidad><localidad><codigo>14829</codigo><descripcion>VILLA
+        SENA</descripcion></localidad><localidad><codigo>14834</codigo><descripcion>VILLA
+        SOLDATI</descripcion></localidad><localidad><codigo>14840</codigo><descripcion>VILLA
+        TALLERES</descripcion></localidad><localidad><codigo>14850</codigo><descripcion>VILLA
+        TRIANGULO</descripcion></localidad><localidad><codigo>14858</codigo><descripcion>VILLA
+        VALLIER</descripcion></localidad><localidad><codigo>14859</codigo><descripcion>VILLA
+        VATTEONE</descripcion></localidad><localidad><codigo>14865</codigo><descripcion>VILLA
+        VIGNOLO</descripcion></localidad><localidad><codigo>14870</codigo><descripcion>VILLA
+        YORK</descripcion></localidad><localidad><codigo>14880</codigo><descripcion>VILLAIGRILLO</descripcion></localidad><localidad><codigo>14881</codigo><descripcion>VILLALONGA</descripcion></localidad><localidad><codigo>14886</codigo><descripcion>VILLARS</descripcion></localidad><localidad><codigo>14907</codigo><descripcion>VIRREY
+        DEL PINO</descripcion></localidad><localidad><codigo>14909</codigo><descripcion>VIRREYES</descripcion></localidad><localidad><codigo>14921</codigo><descripcion>VITEL</descripcion></localidad><localidad><codigo>14927</codigo><descripcion>VIVORATA</descripcion></localidad><localidad><codigo>14934</codigo><descripcion>VINA</descripcion></localidad><localidad><codigo>14944</codigo><descripcion>VOLTA</descripcion></localidad><localidad><codigo>14945</codigo><descripcion>VOLUNTAD</descripcion></localidad><localidad><codigo>14949</codigo><descripcion>VUELTA
+        DE OBLIGADO</descripcion></localidad><localidad><codigo>14950</codigo><descripcion>VUELTA
+        DE ZAPATA</descripcion></localidad><localidad><codigo>14966</codigo><descripcion>WILDE</descripcion></localidad><localidad><codigo>15076</codigo><descripcion>YUTUYACO</descripcion></localidad><localidad><codigo>15081</codigo><descripcion>ZAMUDIO</descripcion></localidad><localidad><codigo>15097</codigo><descripcion>ZAPIOLA</descripcion></localidad><localidad><codigo>15100</codigo><descripcion>ZARATE</descripcion></localidad><localidad><codigo>15103</codigo><descripcion>ZAVALIA</descripcion></localidad><localidad><codigo>15106</codigo><descripcion>ZELAYA</descripcion></localidad><localidad><codigo>15110</codigo><descripcion>ZENTENA</descripcion></localidad><localidad><codigo>15112</codigo><descripcion>ZOILO
+        PERALTA</descripcion></localidad><localidad><codigo>15113</codigo><descripcion>ZONA
+        DELTA SAN FERNANDO</descripcion></localidad><localidad><codigo>19372</codigo><descripcion>ADROGUE</descripcion></localidad><localidad><codigo>19378</codigo><descripcion>VILLA
+        MADERO</descripcion></localidad><localidad><codigo>19380</codigo><descripcion>ANDERSON</descripcion></localidad><localidad><codigo>19382</codigo><descripcion>SAN
+        ENRIQUE</descripcion></localidad><localidad><codigo>19383</codigo><descripcion>SAN
+        JOSE</descripcion></localidad><localidad><codigo>19384</codigo><descripcion>ALTAMIRA</descripcion></localidad><localidad><codigo>19385</codigo><descripcion>LA
+        AURORA</descripcion></localidad><localidad><codigo>19387</codigo><descripcion>PALANTELEN</descripcion></localidad><localidad><codigo>21571</codigo><descripcion>VILLA
+        ITALIA</descripcion></localidad><localidad><codigo>21572</codigo><descripcion>LA
+        PROTEGIDA</descripcion></localidad><localidad><codigo>21573</codigo><descripcion>SAN
+        BERNARDO</descripcion></localidad><localidad><codigo>21574</codigo><descripcion>SANTA
+        ROSA</descripcion></localidad><localidad><codigo>21578</codigo><descripcion>LA
+        PORTENA</descripcion></localidad><localidad><codigo>21579</codigo><descripcion>MARTIN
+        FIERRO</descripcion></localidad><localidad><codigo>21580</codigo><descripcion>SAN
+        RAMON</descripcion></localidad><localidad><codigo>21582</codigo><descripcion>LA
+        HORQUETA</descripcion></localidad><localidad><codigo>21583</codigo><descripcion>LA
+        PASTORA</descripcion></localidad><localidad><codigo>21585</codigo><descripcion>ALGARROBO</descripcion></localidad><localidad><codigo>21586</codigo><descripcion>EL
+        PARAISO</descripcion></localidad><localidad><codigo>21588</codigo><descripcion>GRACIARENA</descripcion></localidad><localidad><codigo>21589</codigo><descripcion>LA
+        MASCOTA</descripcion></localidad><localidad><codigo>21608</codigo><descripcion>SAN
+        JACINTO</descripcion></localidad><localidad><codigo>21609</codigo><descripcion>SAN
+        JUAN</descripcion></localidad><localidad><codigo>21610</codigo><descripcion>COLONIA
+        SAN FRANCISCO</descripcion></localidad><localidad><codigo>21611</codigo><descripcion>LAS
+        CORTADERAS</descripcion></localidad><localidad><codigo>21612</codigo><descripcion>SAN
+        JUAN</descripcion></localidad><localidad><codigo>21613</codigo><descripcion>SAN
+        RAMON</descripcion></localidad><localidad><codigo>21614</codigo><descripcion>LA
+        FLORIDA</descripcion></localidad><localidad><codigo>21615</codigo><descripcion>LA
+        MASCOTA</descripcion></localidad><localidad><codigo>21616</codigo><descripcion>LA
+        REFORMA</descripcion></localidad><localidad><codigo>21617</codigo><descripcion>LA
+        VICTORIA</descripcion></localidad><localidad><codigo>21618</codigo><descripcion>LAS
+        CHILCAS</descripcion></localidad><localidad><codigo>21619</codigo><descripcion>SAN
+        ANTONIO</descripcion></localidad><localidad><codigo>21620</codigo><descripcion>COLONIA
+        SANTA ROSA</descripcion></localidad><localidad><codigo>21621</codigo><descripcion>SAN
+        ANDRES</descripcion></localidad><localidad><codigo>21622</codigo><descripcion>SAN
+        EMILIO</descripcion></localidad><localidad><codigo>21623</codigo><descripcion>SAN
+        JOSE</descripcion></localidad><localidad><codigo>21624</codigo><descripcion>LA
+        ESPERANZA</descripcion></localidad><localidad><codigo>21625</codigo><descripcion>SANTA
+        TERESA</descripcion></localidad><localidad><codigo>21626</codigo><descripcion>LOMA
+        NEGRA</descripcion></localidad><localidad><codigo>21627</codigo><descripcion>SAN
+        JOSE</descripcion></localidad><localidad><codigo>21628</codigo><descripcion>EL
+        JAGUEL</descripcion></localidad><localidad><codigo>21629</codigo><descripcion>LOS
+        INDIOS</descripcion></localidad><localidad><codigo>21630</codigo><descripcion>SOL
+        DE MAYO</descripcion></localidad><localidad><codigo>21631</codigo><descripcion>VILLA
+        PROGRESO</descripcion></localidad><localidad><codigo>21632</codigo><descripcion>LA
+        REFORMA</descripcion></localidad><localidad><codigo>21633</codigo><descripcion>ALTA
+        VISTA</descripcion></localidad><localidad><codigo>21634</codigo><descripcion>ESPARTILLAR</descripcion></localidad><localidad><codigo>21635</codigo><descripcion>LA
+        MARGARITA</descripcion></localidad><localidad><codigo>21636</codigo><descripcion>ESPORA</descripcion></localidad><localidad><codigo>21637</codigo><descripcion>LA
+        FLORIDA</descripcion></localidad><localidad><codigo>21638</codigo><descripcion>BELLA
+        VISTA</descripcion></localidad><localidad><codigo>21639</codigo><descripcion>ALGARROBO</descripcion></localidad><localidad><codigo>21640</codigo><descripcion>LAS
+        FLORES</descripcion></localidad><localidad><codigo>21641</codigo><descripcion>LA
+        SARA</descripcion></localidad><localidad><codigo>21642</codigo><descripcion>FRANCISCO
+        CASAL</descripcion></localidad><localidad><codigo>21643</codigo><descripcion>SAN
+        JUSTO</descripcion></localidad><localidad><codigo>21644</codigo><descripcion>LA
+        PERLA</descripcion></localidad><localidad><codigo>21645</codigo><descripcion>GERLI</descripcion></localidad><localidad><codigo>21646</codigo><descripcion>LOS
+        PINOS</descripcion></localidad><localidad><codigo>21647</codigo><descripcion>LA
+        PORTENA</descripcion></localidad><localidad><codigo>21648</codigo><descripcion>SANTA
+        ELENA</descripcion></localidad><localidad><codigo>21649</codigo><descripcion>VILLA
+        FRANCIA</descripcion></localidad><localidad><codigo>21650</codigo><descripcion>LA
+        PRIMAVERA</descripcion></localidad><localidad><codigo>21651</codigo><descripcion>LA
+        COLORADA</descripcion></localidad><localidad><codigo>21652</codigo><descripcion>SANTA
+        ELENA</descripcion></localidad><localidad><codigo>21653</codigo><descripcion>LA
+        VERDE</descripcion></localidad><localidad><codigo>21654</codigo><descripcion>SAUCE
+        GRANDE</descripcion></localidad><localidad><codigo>21655</codigo><descripcion>GRISOLIA</descripcion></localidad><localidad><codigo>21656</codigo><descripcion>EL
+        PITO</descripcion></localidad><localidad><codigo>21657</codigo><descripcion>SAN
+        JOSE</descripcion></localidad><localidad><codigo>21658</codigo><descripcion>COLONIA
+        SERE</descripcion></localidad><localidad><codigo>21659</codigo><descripcion>LA
+        ESTRELLA</descripcion></localidad><localidad><codigo>21660</codigo><descripcion>LA
+        PROTEGIDA</descripcion></localidad><localidad><codigo>21661</codigo><descripcion>PUEBLO
+        NUEVO</descripcion></localidad><localidad><codigo>21662</codigo><descripcion>LA
+        COSTA</descripcion></localidad><localidad><codigo>21663</codigo><descripcion>LA
+        HORQUETA</descripcion></localidad><localidad><codigo>21664</codigo><descripcion>LA
+        LIMPIA</descripcion></localidad><localidad><codigo>21665</codigo><descripcion>PINEYRO</descripcion></localidad><localidad><codigo>21666</codigo><descripcion>ARROYO
+        LAS ROSAS</descripcion></localidad><localidad><codigo>21667</codigo><descripcion>CANNING</descripcion></localidad><localidad><codigo>21668</codigo><descripcion>SANTA
+        ROSA</descripcion></localidad><localidad><codigo>21669</codigo><descripcion>LA
+        REFORMA</descripcion></localidad><localidad><codigo>21670</codigo><descripcion>MIRAMAR</descripcion></localidad><localidad><codigo>21671</codigo><descripcion>LA
+        CHUMBEADA</descripcion></localidad><localidad><codigo>21672</codigo><descripcion>LA
+        ESPERANZA</descripcion></localidad><localidad><codigo>21673</codigo><descripcion>ESPARTILLAR</descripcion></localidad><localidad><codigo>21674</codigo><descripcion>LOMA
+        VERDE</descripcion></localidad><localidad><codigo>21675</codigo><descripcion>BARRIO
+        TIRO FEDERAL</descripcion></localidad><localidad><codigo>21676</codigo><descripcion>LA
+        FLORIDA</descripcion></localidad><localidad><codigo>21685</codigo><descripcion>YRAIZOS</descripcion></localidad><localidad><codigo>3073</codigo><descripcion>CLAVERIE</descripcion></localidad><localidad><codigo>4652</codigo><descripcion>EL
+        ARAZA</descripcion></localidad><localidad><codigo>4934</codigo><descripcion>EL
+        DORADO</descripcion></localidad><localidad><codigo>4939</codigo><descripcion>EL
+        DURAZNO</descripcion></localidad><localidad><codigo>5548</codigo><descripcion>EMILIO
+        BUNGE</descripcion></localidad><localidad><codigo>5553</codigo><descripcion>EMITA</descripcion></localidad><localidad><codigo>6332</codigo><descripcion>GARRO</descripcion></localidad><localidad><codigo>6915</codigo><descripcion>INGENIERO
+        ALLAN</descripcion></localidad><localidad><codigo>7191</codigo><descripcion>JUAN
+        BLAQUIER</descripcion></localidad><localidad><codigo>7490</codigo><descripcion>LA
+        CHUMBEADA</descripcion></localidad><localidad><codigo>8088</codigo><descripcion>LA
+        SAUDADE</descripcion></localidad><localidad><codigo>8107</codigo><descripcion>LA
+        SOFIA</descripcion></localidad><localidad><codigo>8694</codigo><descripcion>LAS
+        VAQUERIAS</descripcion></localidad><localidad><codigo>9275</codigo><descripcion>LOS
+        POLVORINES</descripcion></localidad><localidad><codigo>9281</codigo><descripcion>LOS
+        POZOS</descripcion></localidad><localidad><codigo>11288</codigo><descripcion>PONTAUT</descripcion></localidad><localidad><codigo>14246</codigo><descripcion>VALENTIN
+        GOMEZ</descripcion></localidad><localidad><codigo>21575</codigo><descripcion>GENERAL
+        CONESA</descripcion></localidad><localidad><codigo>21581</codigo><descripcion>SANTA
+        INES</descripcion></localidad><localidad><codigo>21587</codigo><descripcion>EL
+        RINCON</descripcion></localidad><localidad><codigo>21576</codigo><descripcion>CHOIQUE</descripcion></localidad><localidad><codigo>21577</codigo><descripcion>LA
+        MARGARITA</descripcion></localidad><localidad><codigo>19381</codigo><descripcion>LA
+        TRIBU</descripcion></localidad><localidad><codigo>21584</codigo><descripcion>REMEDIOS
+        DE ESCALADA</descripcion></localidad><localidad><codigo>19386</codigo><descripcion>SAN
+        JOSE</descripcion></localidad><localidad><codigo>43</codigo><descripcion>ABRA
+        DE HINOJO</descripcion></localidad><localidad><codigo>57</codigo><descripcion>ABRA
+        MAYO</descripcion></localidad><localidad><codigo>96</codigo><descripcion>ADELA
+        CORTI</descripcion></localidad><localidad><codigo>199</codigo><descripcion>AGUARA</descripcion></localidad><localidad><codigo>224</codigo><descripcion>AGUSTIN
+        ROCA</descripcion></localidad><localidad><codigo>249</codigo><descripcion>ALBARINO</descripcion></localidad><localidad><codigo>296</codigo><descripcion>ALDECON</descripcion></localidad><localidad><codigo>314</codigo><descripcion>ALFA</descripcion></localidad><localidad><codigo>318</codigo><descripcion>ALFEREZ
+        SAN MARTIN</descripcion></localidad><localidad><codigo>353</codigo><descripcion>ALMACEN
+        CASTRO</descripcion></localidad><localidad><codigo>364</codigo><descripcion>ALMIRANTE
+        SOLIER</descripcion></localidad><localidad><codigo>374</codigo><descripcion>ALSINA</descripcion></localidad><localidad><codigo>466</codigo><descripcion>ALTONA</descripcion></localidad><localidad><codigo>474</codigo><descripcion>ALVAREZ
+        DE TOLEDO</descripcion></localidad><localidad><codigo>506</codigo><descripcion>AMERICA
+        UNIDA</descripcion></localidad><localidad><codigo>565</codigo><descripcion>ANEQUE
+        GRANDE</descripcion></localidad><localidad><codigo>640</codigo><descripcion>ARANA</descripcion></localidad><localidad><codigo>644</codigo><descripcion>ARANO</descripcion></localidad><localidad><codigo>682</codigo><descripcion>ARIEL</descripcion></localidad><localidad><codigo>704</codigo><descripcion>ARRECIFES</descripcion></localidad><localidad><codigo>756</codigo><descripcion>ARROYO
+        CORTO</descripcion></localidad><localidad><codigo>773</codigo><descripcion>ARROYO
+        EL CHINGOLO</descripcion></localidad><localidad><codigo>780</codigo><descripcion>ARROYO
+        GRANDE</descripcion></localidad><localidad><codigo>894</codigo><descripcion>ASCENCION</descripcion></localidad><localidad><codigo>946</codigo><descripcion>AYACUCHO</descripcion></localidad><localidad><codigo>981</codigo><descripcion>BAHIA
+        BLANCA</descripcion></localidad><localidad><codigo>1126</codigo><descripcion>BALNEARIO
+        CAMET NORTE</descripcion></localidad><localidad><codigo>1134</codigo><descripcion>BALNEARIO
+        LA CALETA</descripcion></localidad><localidad><codigo>1141</codigo><descripcion>BALNEARIO
+        ORIENTE</descripcion></localidad><localidad><codigo>1147</codigo><descripcion>BALNEARIO
+        SANTA ELENA</descripcion></localidad><localidad><codigo>1170</codigo><descripcion>BARADERO</descripcion></localidad><localidad><codigo>1214</codigo><descripcion>BARRIENTOS</descripcion></localidad><localidad><codigo>1249</codigo><descripcion>BARRIO
+        EMIR RAMON JUAREZ</descripcion></localidad><localidad><codigo>1267</codigo><descripcion>BARRIO
+        LA FALDA</descripcion></localidad><localidad><codigo>1273</codigo><descripcion>BARRIO
+        LA PERLA CASCO URBANO</descripcion></localidad><localidad><codigo>1287</codigo><descripcion>BARRIO
+        OESTE</descripcion></localidad><localidad><codigo>1293</codigo><descripcion>BARRIO
+        PARQUE PATAGONIA</descripcion></localidad><localidad><codigo>1307</codigo><descripcion>BARRIO
+        SAN CAYETANO</descripcion></localidad><localidad><codigo>1314</codigo><descripcion>BARRIO
+        SAN PABLO</descripcion></localidad><localidad><codigo>1356</codigo><descripcion>BASE
+        NAVAL AZOPARDO</descripcion></localidad><localidad><codigo>1370</codigo><descripcion>BATHURST
+        ESTACION</descripcion></localidad><localidad><codigo>1377</codigo><descripcion>BAYAUCA</descripcion></localidad><localidad><codigo>1420</codigo><descripcion>BECCAR</descripcion></localidad><localidad><codigo>1452</codigo><descripcion>BERAZATEGUI</descripcion></localidad><localidad><codigo>1501</codigo><descripcion>BO
+        STA CATALINA HORNERO LA L</descripcion></localidad><localidad><codigo>1533</codigo><descripcion>BONIFACIO</descripcion></localidad><localidad><codigo>1541</codigo><descripcion>BORDEU</descripcion></localidad><localidad><codigo>1649</codigo><descripcion>CABILDO</descripcion></localidad><localidad><codigo>1658</codigo><descripcion>CABO
+        SAN FERMIN</descripcion></localidad><localidad><codigo>1669</codigo><descripcion>CACHARI</descripcion></localidad><localidad><codigo>1743</codigo><descripcion>CALERA
+        AVELLANEDA</descripcion></localidad><localidad><codigo>1755</codigo><descripcion>CALFUCURA</descripcion></localidad><localidad><codigo>1790</codigo><descripcion>CAMET</descripcion></localidad><localidad><codigo>1793</codigo><descripcion>CAMINERA
+        AZUL</descripcion></localidad><localidad><codigo>1920</codigo><descripcion>CAMPO
+        FUNKE</descripcion></localidad><localidad><codigo>1942</codigo><descripcion>CAMPO
+        LA ELISA</descripcion></localidad><localidad><codigo>1948</codigo><descripcion>CAMPO
+        LA NENA</descripcion></localidad><localidad><codigo>1953</codigo><descripcion>CAMPO
+        LA TRIBU</descripcion></localidad><localidad><codigo>1964</codigo><descripcion>CAMPO
+        LOS AROMOS</descripcion></localidad><localidad><codigo>1981</codigo><descripcion>CAMPO
+        PELAEZ</descripcion></localidad><localidad><codigo>2032</codigo><descripcion>CAMPOMAR
+        VINEDO</descripcion></localidad><localidad><codigo>2038</codigo><descripcion>CANAL
+        N ALEM 1A SEC</descripcion></localidad><localidad><codigo>2049</codigo><descripcion>CANCHA
+        DEL POLLO</descripcion></localidad><localidad><codigo>2074</codigo><descripcion>CANTERA
+        LA AURORA</descripcion></localidad><localidad><codigo>2081</codigo><descripcion>CANTERA
+        SAN LUIS</descripcion></localidad><localidad><codigo>2174</codigo><descripcion>CARDENAL
+        CAGLIERO</descripcion></localidad><localidad><codigo>2190</codigo><descripcion>CARLOS
+        MARIA NAON</descripcion></localidad><localidad><codigo>2284</codigo><descripcion>CASBAS</descripcion></localidad><localidad><codigo>2501</codigo><descripcion>CENTRO
+        AGRICOLA EL PATO</descripcion></localidad><localidad><codigo>2688</codigo><descripcion>CERRO
+        NEGRO</descripcion></localidad><localidad><codigo>2819</codigo><descripcion>CHALA
+        QUILCA</descripcion></localidad><localidad><codigo>2838</codigo><descripcion>CHAPALEOUFU</descripcion></localidad><localidad><codigo>2843</codigo><descripcion>CHAPI
+        TALO</descripcion></localidad><localidad><codigo>3067</codigo><descripcion>CLARAZ</descripcion></localidad><localidad><codigo>3071</codigo><descripcion>CLAUDIO
+        C MOLINA</descripcion></localidad><localidad><codigo>3230</codigo><descripcion>COLONIA
+        BARGA</descripcion></localidad><localidad><codigo>3241</codigo><descripcion>COLONIA
+        BEETHOVEN</descripcion></localidad><localidad><codigo>3394</codigo><descripcion>COLONIA
+        EL PINCEN</descripcion></localidad><localidad><codigo>3563</codigo><descripcion>COLONIA
+        LA GRACIELA</descripcion></localidad><localidad><codigo>3645</codigo><descripcion>COLONIA
+        LOS ALFALFARES</descripcion></localidad><localidad><codigo>3721</codigo><descripcion>COLONIA
+        MURATURE</descripcion></localidad><localidad><codigo>3727</codigo><descripcion>COLONIA
+        NACIONAL DE MENORES</descripcion></localidad><localidad><codigo>3856</codigo><descripcion>COLONIA
+        SAN MIGUEL</descripcion></localidad><localidad><codigo>3877</codigo><descripcion>COLONIA
+        SANTA MARIA</descripcion></localidad><localidad><codigo>3947</codigo><descripcion>COLONIA
+        VELEZ</descripcion></localidad><localidad><codigo>4103</codigo><descripcion>CORONEL
+        MALDONADO</descripcion></localidad><localidad><codigo>4110</codigo><descripcion>CORONEL
+        MON</descripcion></localidad><localidad><codigo>4163</codigo><descripcion>CORTINES</descripcion></localidad><localidad><codigo>4174</codigo><descripcion>COSTA
+        AZUL</descripcion></localidad><localidad><codigo>4241</codigo><descripcion>CRISTINO
+        BENAVIDEZ</descripcion></localidad><localidad><codigo>4285</codigo><descripcion>CUARTEL
+        6</descripcion></localidad><localidad><codigo>4290</codigo><descripcion>CUATREROS</descripcion></localidad><localidad><codigo>4305</codigo><descripcion>CUCHA
+        CUCHA</descripcion></localidad><localidad><codigo>4376</codigo><descripcion>DAIREAUX</descripcion></localidad><localidad><codigo>4389</codigo><descripcion>DE
+        LA CANAL</descripcion></localidad><localidad><codigo>4394</codigo><descripcion>DEL
+        CARRIL</descripcion></localidad><localidad><codigo>4417</codigo><descripcion>DESTILERIA
+        FISCAL</descripcion></localidad><localidad><codigo>4424</codigo><descripcion>DESVIO
+        EL CHINGOLO</descripcion></localidad><localidad><codigo>4483</codigo><descripcion>DOCE
+        DE AGOSTO</descripcion></localidad><localidad><codigo>4489</codigo><descripcion>DOCTOR
+        DOMINGO HAROSTEGUY</descripcion></localidad><localidad><codigo>4516</codigo><descripcion>DOMSELAAR</descripcion></localidad><localidad><codigo>4564</codigo><descripcion>DOYHENARD</descripcion></localidad><localidad><codigo>4573</codigo><descripcion>DRYSDALE</descripcion></localidad><localidad><codigo>4577</codigo><descripcion>DUFAUR</descripcion></localidad><localidad><codigo>4589</codigo><descripcion>DUSSAUD</descripcion></localidad><localidad><codigo>4598</codigo><descripcion>EDUARDO
+        COSTA</descripcion></localidad><localidad><codigo>4766</codigo><descripcion>EL
+        CARMEN</descripcion></localidad><localidad><codigo>4816</codigo><descripcion>EL
+        CHAJA</descripcion></localidad><localidad><codigo>4894</codigo><descripcion>EL
+        CRISTIANO</descripcion></localidad><localidad><codigo>4920</codigo><descripcion>EL
+        DESTINO</descripcion></localidad><localidad><codigo>5050</codigo><descripcion>EL
+        LIBERTADOR</descripcion></localidad><localidad><codigo>5055</codigo><descripcion>EL
+        LUCHADOR</descripcion></localidad><localidad><codigo>5065</codigo><descripcion>EL
+        MANGRULLO</descripcion></localidad><localidad><codigo>5180</codigo><descripcion>EL
+        PARAISO</descripcion></localidad><localidad><codigo>5184</codigo><descripcion>EL
+        PARQUE</descripcion></localidad><localidad><codigo>5241</codigo><descripcion>EL
+        PITO</descripcion></localidad><localidad><codigo>5312</codigo><descripcion>EL
+        RECADO</descripcion></localidad><localidad><codigo>5326</codigo><descripcion>EL
+        RETIRO</descripcion></localidad><localidad><codigo>5354</codigo><descripcion>EL
+        SANTIAGO</descripcion></localidad><localidad><codigo>5450</codigo><descripcion>EL
+        TRIANGULO</descripcion></localidad><localidad><codigo>5483</codigo><descripcion>EL
+        VENCE</descripcion></localidad><localidad><codigo>5559</codigo><descripcion>EMPALME
+        CERRO CHATO</descripcion></localidad><localidad><codigo>5567</codigo><descripcion>EMPALME
+        QUERANDIES</descripcion></localidad><localidad><codigo>5606</codigo><descripcion>ESCALADA</descripcion></localidad><localidad><codigo>5618</codigo><descripcion>ESPADANA</descripcion></localidad><localidad><codigo>5702</codigo><descripcion>ESTACION
+        GENERAL ARENALES</descripcion></localidad><localidad><codigo>5717</codigo><descripcion>ESTACION
+        MORENO</descripcion></localidad><localidad><codigo>5890</codigo><descripcion>ESTANCIA
+        LAS ISLETAS</descripcion></localidad><localidad><codigo>5966</codigo><descripcion>ESTANCIA
+        SANTA CATALINA</descripcion></localidad><localidad><codigo>5987</codigo><descripcion>ESTANCIAS</descripcion></localidad><localidad><codigo>6017</codigo><descripcion>ETCHEGOYEN</descripcion></localidad><localidad><codigo>6071</codigo><descripcion>FARO
+        QUERANDI</descripcion></localidad><localidad><codigo>6077</codigo><descripcion>FATRALO</descripcion></localidad><localidad><codigo>6089</codigo><descripcion>FELIPE
+        SOLA</descripcion></localidad><localidad><codigo>6094</codigo><descripcion>FERNANDO
+        MARTI</descripcion></localidad><localidad><codigo>6175</codigo><descripcion>FLORIDA</descripcion></localidad><localidad><codigo>6212</codigo><descripcion>FORTIN
+        LAVALLE</descripcion></localidad><localidad><codigo>6218</codigo><descripcion>FORTIN
+        PAUNERO</descripcion></localidad><localidad><codigo>6243</codigo><descripcion>FRANCISCO
+        CASAL</descripcion></localidad><localidad><codigo>6288</codigo><descripcion>FUNKE</descripcion></localidad><localidad><codigo>6323</codigo><descripcion>GARDEY</descripcion></localidad><localidad><codigo>6360</codigo><descripcion>GENERAL
+        BELGRANO</descripcion></localidad><localidad><codigo>6388</codigo><descripcion>GENERAL
+        MANSILLA</descripcion></localidad><localidad><codigo>6413</codigo><descripcion>GENERAL
+        SAN MARTIN</descripcion></localidad><localidad><codigo>6439</codigo><descripcion>GIRODIAS</descripcion></localidad><localidad><codigo>6443</codigo><descripcion>GLEW</descripcion></localidad><localidad><codigo>6447</codigo><descripcion>GNECCO</descripcion></localidad><localidad><codigo>6471</codigo><descripcion>GOBERNADOR
+        ORTIZ DE ROSAS</descripcion></localidad><localidad><codigo>6480</codigo><descripcion>GOBERNADOR
+        UGARTE</descripcion></localidad><localidad><codigo>6491</codigo><descripcion>GOMEZ</descripcion></localidad><localidad><codigo>6499</codigo><descripcion>GONZALEZ
+        MORENO</descripcion></localidad><localidad><codigo>6505</codigo><descripcion>GOROSO</descripcion></localidad><localidad><codigo>6509</codigo><descripcion>GOWLAND</descripcion></localidad><localidad><codigo>6513</codigo><descripcion>GONI</descripcion></localidad><localidad><codigo>6632</codigo><descripcion>GUERRERO</descripcion></localidad><localidad><codigo>6643</codigo><descripcion>GUNTHER</descripcion></localidad><localidad><codigo>6654</codigo><descripcion>HALCEY</descripcion></localidad><localidad><codigo>6658</codigo><descripcion>HARAS
+        1 DE MAYO</descripcion></localidad><localidad><codigo>6664</codigo><descripcion>HARAS
+        EL CISNE</descripcion></localidad><localidad><codigo>6670</codigo><descripcion>HARAS
+        LOS CARDALES</descripcion></localidad><localidad><codigo>6677</codigo><descripcion>HARAS
+        SAN JACINTO</descripcion></localidad><localidad><codigo>6688</codigo><descripcion>HENRY
+        BELL</descripcion></localidad><localidad><codigo>6715</codigo><descripcion>HINOJALES</descripcion></localidad><localidad><codigo>6791</codigo><descripcion>HUANGUELEN</descripcion></localidad><localidad><codigo>6902</codigo><descripcion>INDIO
+        RICO</descripcion></localidad><localidad><codigo>6917</codigo><descripcion>INGENIERO
+        BALBIN</descripcion></localidad><localidad><codigo>6972</codigo><descripcion>INOCENCIO
+        SOSA</descripcion></localidad><localidad><codigo>6995</codigo><descripcion>IRENEO
+        PORTELA</descripcion></localidad><localidad><codigo>7135</codigo><descripcion>JARRILLA</descripcion></localidad><localidad><codigo>7143</codigo><descripcion>JEPPENER</descripcion></localidad><localidad><codigo>7158</codigo><descripcion>JOSE
+        B CASAS</descripcion></localidad><localidad><codigo>7175</codigo><descripcion>JOSE
+        MARMOL</descripcion></localidad><localidad><codigo>7185</codigo><descripcion>JUAN
+        ATUCHA</descripcion></localidad><localidad><codigo>7190</codigo><descripcion>JUAN
+        BAUTISTA ALBERDI</descripcion></localidad><localidad><codigo>7217</codigo><descripcion>JUAN
+        VELA</descripcion></localidad><localidad><codigo>7233</codigo><descripcion>JULIO
+        ARDITI</descripcion></localidad><localidad><codigo>7251</codigo><descripcion>JUNIN</descripcion></localidad><localidad><codigo>7288</codigo><descripcion>LA
+        ADELA</descripcion></localidad><localidad><codigo>7317</codigo><descripcion>LA
+        AMORILLA</descripcion></localidad><localidad><codigo>7330</codigo><descripcion>LA
+        ARGENTINA</descripcion></localidad><localidad><codigo>7340</codigo><descripcion>LA
+        AZOTEA GRANDE</descripcion></localidad><localidad><codigo>7346</codigo><descripcion>LA
+        BALLENERA</descripcion></localidad><localidad><codigo>7356</codigo><descripcion>LA
+        BARRANCOSA</descripcion></localidad><localidad><codigo>7508</codigo><descripcion>LA
+        COLMENA</descripcion></localidad><localidad><codigo>7524</codigo><descripcion>LA
+        CORINCO</descripcion></localidad><localidad><codigo>7568</codigo><descripcion>LA
+        DORITA</descripcion></localidad><localidad><codigo>7572</codigo><descripcion>LA
+        DULCE</descripcion></localidad><localidad><codigo>7731</codigo><descripcion>LA
+        ISABEL</descripcion></localidad><localidad><codigo>7776</codigo><descripcion>LA
+        LIMPIA</descripcion></localidad><localidad><codigo>7795</codigo><descripcion>LA
+        LUCILA DEL MAR</descripcion></localidad><localidad><codigo>7802</codigo><descripcion>LA
+        MADRECITA</descripcion></localidad><localidad><codigo>7820</codigo><descripcion>LA
+        MARIA</descripcion></localidad><localidad><codigo>7871</codigo><descripcion>LA
+        NEGRA</descripcion></localidad><localidad><codigo>7875</codigo><descripcion>LA
+        NEVADA</descripcion></localidad><localidad><codigo>7884</codigo><descripcion>LA
+        NUTRIA</descripcion></localidad><localidad><codigo>7913</codigo><descripcion>LA
+        PALMIRA</descripcion></localidad><localidad><codigo>7917</codigo><descripcion>LA
+        PAMPA</descripcion></localidad><localidad><codigo>7935</codigo><descripcion>LA
+        PAZ CHICA</descripcion></localidad><localidad><codigo>7946</codigo><descripcion>LA
+        PESQUERIA</descripcion></localidad><localidad><codigo>7970</codigo><descripcion>LA
+        PLATA</descripcion></localidad><localidad><codigo>7984</codigo><descripcion>LA
+        PORTENA</descripcion></localidad><localidad><codigo>8030</codigo><descripcion>LA
+        RAZON</descripcion></localidad><localidad><codigo>8046</codigo><descripcion>LA
+        RESERVA</descripcion></localidad><localidad><codigo>8069</codigo><descripcion>LA
+        RUBIA</descripcion></localidad><localidad><codigo>8131</codigo><descripcion>LA
+        TOBIANA</descripcion></localidad><localidad><codigo>8146</codigo><descripcion>LA
+        TRIBU</descripcion></localidad><localidad><codigo>8164</codigo><descripcion>LA
+        VALEROSA</descripcion></localidad><localidad><codigo>8175</codigo><descripcion>LA
+        VERDE</descripcion></localidad><localidad><codigo>8227</codigo><descripcion>LAGO
+        EPECUEN</descripcion></localidad><localidad><codigo>8257</codigo><descripcion>LAGUNA
+        CHASICO</descripcion></localidad><localidad><codigo>8300</codigo><descripcion>LAGUNA
+        REDONDA</descripcion></localidad><localidad><codigo>8350</codigo><descripcion>LARREA</descripcion></localidad><localidad><codigo>8362</codigo><descripcion>LAS
+        ACHIRAS</descripcion></localidad><localidad><codigo>8381</codigo><descripcion>LAS
+        BAHAMAS</descripcion></localidad><localidad><codigo>8462</codigo><descripcion>LAS
+        CUATRO HERMANAS</descripcion></localidad><localidad><codigo>8480</codigo><descripcion>LAS
+        ESCOBAS</descripcion></localidad><localidad><codigo>8575</codigo><descripcion>LAS
+        NEGRAS</descripcion></localidad><localidad><codigo>8615</codigo><descripcion>LAS
+        PIEDRITAS</descripcion></localidad><localidad><codigo>8656</codigo><descripcion>LAS
+        TAHONAS</descripcion></localidad><localidad><codigo>8671</codigo><descripcion>LAS
+        TONINAS</descripcion></localidad><localidad><codigo>8771</codigo><descripcion>LEZAMA</descripcion></localidad><localidad><codigo>8789</codigo><descripcion>LIERRA
+        ADJEMIRO</descripcion></localidad><localidad><codigo>8800</codigo><descripcion>LIN
+        CALEL</descripcion></localidad><localidad><codigo>8822</codigo><descripcion>LISANDRO
+        OLMOS ETCHEVERRY</descripcion></localidad><localidad><codigo>8842</codigo><descripcion>LOBOS</descripcion></localidad><localidad><codigo>8872</codigo><descripcion>LOMA
+        HERMOSA</descripcion></localidad><localidad><codigo>8884</codigo><descripcion>LOMA
+        VERDE</descripcion></localidad><localidad><codigo>8932</codigo><descripcion>LOPEZ</descripcion></localidad><localidad><codigo>8935</codigo><descripcion>LOPEZ
+        MOLINARI</descripcion></localidad><localidad><codigo>9050</codigo><descripcion>LOS
+        CHANARES</descripcion></localidad><localidad><codigo>9162</codigo><descripcion>LOS
+        INDIOS</descripcion></localidad><localidad><codigo>9172</codigo><descripcion>LOS
+        LAURELES</descripcion></localidad><localidad><codigo>9235</codigo><descripcion>LOS
+        ORTIZ</descripcion></localidad><localidad><codigo>9265</codigo><descripcion>LOS
+        PINOS</descripcion></localidad><localidad><codigo>9365</codigo><descripcion>LOS
+        TOLDOS</descripcion></localidad><localidad><codigo>9401</codigo><descripcion>LOUGE</descripcion></localidad><localidad><codigo>9405</codigo><descripcion>LOZANO</descripcion></localidad><localidad><codigo>9412</codigo><descripcion>LUCAS
+        MONTEVERDE</descripcion></localidad><localidad><codigo>9438</codigo><descripcion>LUJAN</descripcion></localidad><localidad><codigo>9493</codigo><descripcion>MAGALLANES</descripcion></localidad><localidad><codigo>9529</codigo><descripcion>MALECON
+        GARDELIA</descripcion></localidad><localidad><codigo>9555</codigo><descripcion>MALVINAS
+        ARGENTINAS</descripcion></localidad><localidad><codigo>9610</codigo><descripcion>MAPIS</descripcion></localidad><localidad><codigo>9613</codigo><descripcion>MAQUINISTA
+        F SAVIO</descripcion></localidad><localidad><codigo>9620</codigo><descripcion>MAR
+        AZUL</descripcion></localidad><localidad><codigo>9624</codigo><descripcion>MAR
+        DE LAS PAMPAS</descripcion></localidad><localidad><codigo>9642</codigo><descripcion>MARCOS
+        PAZ B EL ZORZAL</descripcion></localidad><localidad><codigo>9686</codigo><descripcion>MARIANO
+        ROLDAN</descripcion></localidad><localidad><codigo>9700</codigo><descripcion>MARTIN
+        FIERRO</descripcion></localidad><localidad><codigo>9710</codigo><descripcion>MARUCHA</descripcion></localidad><localidad><codigo>9748</codigo><descripcion>MAURICIO
+        HIRSCH</descripcion></localidad><localidad><codigo>9760</codigo><descripcion>MAYOR
+        BURATOVICH</descripcion></localidad><localidad><codigo>9766</codigo><descripcion>MAZA</descripcion></localidad><localidad><codigo>9774</codigo><descripcion>MECHA</descripcion></localidad><localidad><codigo>9778</codigo><descripcion>MECHONGUE</descripcion></localidad><localidad><codigo>9786</codigo><descripcion>MEDANO
+        BLANCO</descripcion></localidad><localidad><codigo>9826</codigo><descripcion>MERLO</descripcion></localidad><localidad><codigo>9940</codigo><descripcion>MIRAMAR</descripcion></localidad><localidad><codigo>10021</codigo><descripcion>MONASTERIO</descripcion></localidad><localidad><codigo>10049</codigo><descripcion>MONTE
+        CRESPO</descripcion></localidad><localidad><codigo>10075</codigo><descripcion>MONTE
+        VELOZ</descripcion></localidad><localidad><codigo>10080</codigo><descripcion>MONTECARLO</descripcion></localidad><localidad><codigo>10084</codigo><descripcion>MONTES
+        DE OCA</descripcion></localidad><localidad><codigo>10105</codigo><descripcion>MORENO</descripcion></localidad><localidad><codigo>10150</codigo><descripcion>MUNIZ</descripcion></localidad><localidad><codigo>10216</codigo><descripcion>NEWTON</descripcion></localidad><localidad><codigo>10289</codigo><descripcion>NUEVA
+        HERMOSURA</descripcion></localidad><localidad><codigo>10294</codigo><descripcion>NUEVA
+        PLATA</descripcion></localidad><localidad><codigo>10299</codigo><descripcion>NUEVA
+        SUIZA</descripcion></localidad><localidad><codigo>10369</codigo><descripcion>OLIVOS</descripcion></localidad><localidad><codigo>10398</codigo><descripcion>ORIENTE</descripcion></localidad><localidad><codigo>10413</codigo><descripcion>OTAMENDI</descripcion></localidad><localidad><codigo>10416</codigo><descripcion>OTONO</descripcion></localidad><localidad><codigo>10439</codigo><descripcion>PABLO
+        PODESTA</descripcion></localidad><localidad><codigo>10483</codigo><descripcion>PALANTELEN</descripcion></localidad><localidad><codigo>10487</codigo><descripcion>PALEMON
+        HUERGO</descripcion></localidad><localidad><codigo>10703</codigo><descripcion>PARAJE
+        LA AURORA</descripcion></localidad><localidad><codigo>10744</codigo><descripcion>PARDO</descripcion></localidad><localidad><codigo>10945</codigo><descripcion>PAVON</descripcion></localidad><localidad><codigo>10952</codigo><descripcion>PAYRO
+        R</descripcion></localidad><localidad><codigo>10956</codigo><descripcion>PEARSON</descripcion></localidad><localidad><codigo>10984</codigo><descripcion>PELLEGRINI</descripcion></localidad><localidad><codigo>10997</codigo><descripcion>PEREYRA
+        IRAOLA PARQUE</descripcion></localidad><localidad><codigo>11004</codigo><descripcion>PERGAMINO</descripcion></localidad><localidad><codigo>11123</codigo><descripcion>PIGUE</descripcion></localidad><localidad><codigo>11196</codigo><descripcion>PINEYRO</descripcion></localidad><localidad><codigo>11233</codigo><descripcion>PLUMACHO</descripcion></localidad><localidad><codigo>11267</codigo><descripcion>POCITO</descripcion></localidad><localidad><codigo>11289</codigo><descripcion>PONTEVEDRA</descripcion></localidad><localidad><codigo>11520</codigo><descripcion>PRADERE
+        JUAN A</descripcion></localidad><localidad><codigo>11614</codigo><descripcion>PUEBLO
+        BALNEARIO RETA</descripcion></localidad><localidad><codigo>11972</codigo><descripcion>PUESTO
+        DEL MEDIO</descripcion></localidad><localidad><codigo>12117</codigo><descripcion>PUNTA
+        ALTA</descripcion></localidad><localidad><codigo>12217</codigo><descripcion>QUEQUEN</descripcion></localidad><localidad><codigo>12291</codigo><descripcion>RAFAEL
+        CALZADA</descripcion></localidad><localidad><codigo>12331</codigo><descripcion>RAMOS
+        MEJIA</descripcion></localidad><localidad><codigo>12383</codigo><descripcion>RECALDE</descripcion></localidad><localidad><codigo>12624</codigo><descripcion>RIO
+        TALA</descripcion></localidad><localidad><codigo>12649</codigo><descripcion>ROCHA</descripcion></localidad><localidad><codigo>12679</codigo><descripcion>ROLITO
+        ESTACION FCGB</descripcion></localidad><localidad><codigo>12715</codigo><descripcion>ROVIRA</descripcion></localidad><localidad><codigo>12787</codigo><descripcion>SAAVEDRA</descripcion></localidad><localidad><codigo>12807</codigo><descripcion>SALADA
+        GRANDE</descripcion></localidad><localidad><codigo>12882</codigo><descripcion>SAN
+        ANDRES DE TAPALQUE</descripcion></localidad><localidad><codigo>12915</codigo><descripcion>SAN
+        BENITO</descripcion></localidad><localidad><codigo>12933</codigo><descripcion>SAN
+        CLEMENTE DEL TUYU</descripcion></localidad><localidad><codigo>12944</codigo><descripcion>SAN
+        ELADIO</descripcion></localidad><localidad><codigo>12978</codigo><descripcion>SAN
+        GERMAN</descripcion></localidad><localidad><codigo>12991</codigo><descripcion>SAN
+        ISIDRO</descripcion></localidad><localidad><codigo>13005</codigo><descripcion>SAN
+        JOSE</descripcion></localidad><localidad><codigo>13048</codigo><descripcion>SAN
+        JUAN DE NELSON</descripcion></localidad><localidad><codigo>13060</codigo><descripcion>SAN
+        JUSTO</descripcion></localidad><localidad><codigo>13073</codigo><descripcion>SAN
+        MANUEL</descripcion></localidad><localidad><codigo>13090</codigo><descripcion>SAN
+        MAYOL</descripcion></localidad><localidad><codigo>13115</codigo><descripcion>SAN
+        PEDRO</descripcion></localidad><localidad><codigo>13130</codigo><descripcion>SAN
+        QUILCO</descripcion></localidad><localidad><codigo>13134</codigo><descripcion>SAN
+        RAMON</descripcion></localidad><localidad><codigo>13151</codigo><descripcion>SAN
+        SEVERO</descripcion></localidad><localidad><codigo>13174</codigo><descripcion>SANSINENA</descripcion></localidad><localidad><codigo>13178</codigo><descripcion>SANTA
+        ALICIA</descripcion></localidad><localidad><codigo>13187</codigo><descripcion>SANTA
+        CATALINA</descripcion></localidad><localidad><codigo>13202</codigo><descripcion>SANTA
+        ELENA</descripcion></localidad><localidad><codigo>13224</codigo><descripcion>SANTA
+        LUCIA</descripcion></localidad><localidad><codigo>13250</codigo><descripcion>SANTA
+        RITA PDO GUAMINI</descripcion></localidad><localidad><codigo>13290</codigo><descripcion>SANTIAGO
+        LARRE</descripcion></localidad><localidad><codigo>13305</codigo><descripcion>SANTO
+        TOMAS CHICO</descripcion></localidad><localidad><codigo>13442</codigo><descripcion>SIERRA
+        CHICA</descripcion></localidad><localidad><codigo>13452</codigo><descripcion>SIERRA
+        DE LOS PADRES</descripcion></localidad><localidad><codigo>13512</codigo><descripcion>SOLANET</descripcion></localidad><localidad><codigo>13532</codigo><descripcion>SOLIS</descripcion></localidad><localidad><codigo>13562</codigo><descripcion>STROEDER</descripcion></localidad><localidad><codigo>13668</codigo><descripcion>TACUARI</descripcion></localidad><localidad><codigo>13743</codigo><descripcion>TANDIL</descripcion></localidad><localidad><codigo>13786</codigo><descripcion>TATAY</descripcion></localidad><localidad><codigo>13806</codigo><descripcion>TEMPERLEY</descripcion></localidad><localidad><codigo>13810</codigo><descripcion>TENIENTE
+        CORONEL MINANA</descripcion></localidad><localidad><codigo>13918</codigo><descripcion>TODD</descripcion></localidad><localidad><codigo>13953</codigo><descripcion>TORDILLO</descripcion></localidad><localidad><codigo>13978</codigo><descripcion>TORRES</descripcion></localidad><localidad><codigo>13981</codigo><descripcion>TORTUGUITAS</descripcion></localidad><localidad><codigo>14034</codigo><descripcion>TRES
+        ALGARROBOS</descripcion></localidad><localidad><codigo>14095</codigo><descripcion>TRIGALES</descripcion></localidad><localidad><codigo>14116</codigo><descripcion>TRONGE</descripcion></localidad><localidad><codigo>14203</codigo><descripcion>URDAMPILLETA</descripcion></localidad><localidad><codigo>14240</codigo><descripcion>VAGUES</descripcion></localidad><localidad><codigo>14245</codigo><descripcion>VALENTIN
+        ALSINA</descripcion></localidad><localidad><codigo>14308</codigo><descripcion>VELLOSO</descripcion></localidad><localidad><codigo>14340</codigo><descripcion>VICENTE
+        CASARES</descripcion></localidad><localidad><codigo>14345</codigo><descripcion>VICENTE
+        PEREDA</descripcion></localidad><localidad><codigo>14350</codigo><descripcion>VICTORIA</descripcion></localidad><localidad><codigo>14366</codigo><descripcion>VILELA</descripcion></localidad><localidad><codigo>14377</codigo><descripcion>VILLA
+        ADRIANA</descripcion></localidad><localidad><codigo>14386</codigo><descripcion>VILLA
+        ALDEANITA</descripcion></localidad><localidad><codigo>14420</codigo><descripcion>VILLA
+        BELGRANO DTO JUNIN</descripcion></localidad><localidad><codigo>14436</codigo><descripcion>VILLA
+        BURGOS</descripcion></localidad><localidad><codigo>14441</codigo><descripcion>VILLA
+        CAPDEPONT</descripcion></localidad><localidad><codigo>14446</codigo><descripcion>VILLA
+        CAROLA</descripcion></localidad><localidad><codigo>14455</codigo><descripcion>VILLA
+        CENTENARIO</descripcion></localidad><localidad><codigo>14488</codigo><descripcion>VILLA
+        DAZA</descripcion></localidad><localidad><codigo>14509</codigo><descripcion>VILLA
+        DELFINA</descripcion></localidad><localidad><codigo>14518</codigo><descripcion>VILLA
+        DOMINGO PRONSATO</descripcion></localidad><localidad><codigo>14537</codigo><descripcion>VILLA
+        ELISA</descripcion></localidad><localidad><codigo>14564</codigo><descripcion>VILLA
+        FRANCIA</descripcion></localidad><localidad><codigo>14586</codigo><descripcion>VILLA
+        GOBERNADOR UDAONDO</descripcion></localidad><localidad><codigo>14598</codigo><descripcion>VILLA
+        HARDING GREEN</descripcion></localidad><localidad><codigo>14609</codigo><descripcion>VILLA
+        INSUPERABLE</descripcion></localidad><localidad><codigo>14653</codigo><descripcion>VILLA
+        LOMA</descripcion></localidad><localidad><codigo>14670</codigo><descripcion>VILLA
+        MAIO</descripcion></localidad><localidad><codigo>14680</codigo><descripcion>VILLA
+        MARTELLI</descripcion></localidad><localidad><codigo>14699</codigo><descripcion>VILLA
+        MONICA</descripcion></localidad><localidad><codigo>14703</codigo><descripcion>VILLA
+        MOSCONI</descripcion></localidad><localidad><codigo>14717</codigo><descripcion>VILLA
+        OBRERA</descripcion></localidad><localidad><codigo>14772</codigo><descripcion>VILLA
+        ROCH</descripcion></localidad><localidad><codigo>14794</codigo><descripcion>VILLA
+        SAN JOSE</descripcion></localidad><localidad><codigo>14805</codigo><descripcion>VILLA
+        SANCHEZ ELIA</descripcion></localidad><localidad><codigo>14817</codigo><descripcion>VILLA
+        SANZ</descripcion></localidad><localidad><codigo>14830</codigo><descripcion>VILLA
+        SERRA</descripcion></localidad><localidad><codigo>14843</codigo><descripcion>VILLA
+        TERESA</descripcion></localidad><localidad><codigo>14862</codigo><descripcion>VILLA
+        VERDE</descripcion></localidad><localidad><codigo>14875</codigo><descripcion>VILLAFANE</descripcion></localidad><localidad><codigo>14884</codigo><descripcion>VILLANUEVA</descripcion></localidad><localidad><codigo>14914</codigo><descripcion>VISTA
+        ALEGRE</descripcion></localidad><localidad><codigo>14957</codigo><descripcion>WARNES</descripcion></localidad><localidad><codigo>15044</codigo><descripcion>YERBAS</descripcion></localidad><localidad><codigo>15057</codigo><descripcion>YRAZOZ</descripcion></localidad><localidad><codigo>15105</codigo><descripcion>ZEBALLOS</descripcion></localidad><localidad><codigo>15109</codigo><descripcion>ZENON
+        VIDELA DORNA</descripcion></localidad><localidad><codigo>15124</codigo><descripcion>ZUBIAURRE</descripcion></localidad><metadata><servidor>vivaldi</servidor><fechaHora>2021-06-20T13:57:06</fechaHora></metadata></respuesta></ns2:ConsultarLocalidadesPorProvinciaResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:57:06 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf802cda01601437d4c0ade354b1efeaa9f4cef56e6c134f284131a5efead3c108;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,47 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarGastosReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMTY1NjczNjk2IiBnZW5fdGltZT0iMTYyNDIwODE0MyIgZXhwX3RpbWU9IjE2MjQyNTE0MDMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>sRzxCdzVSfX1OvEEUauHz5PKTvjStpOaSYafcrIXmTwg3uCOA6MkkaBWYSie1bqxEe/QIn2t1mI2Gp+xZI66VxLrhWQTqpO1xSTLlwTg0Q+9IHOnzjQ/Vcgt5VW1wqaNuQ20Kj6KneZSAFnCSnW9BWL2P9Oe3JAnE91aiEHeheU=</sign><cuit>20267565393</cuit></auth></ser:ConsultarGastosReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1267'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarGastos"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:ConsultarGastosResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wslsp/"><respuesta><gasto><codigo>9</codigo><descripcion>Arancel
+        Feria</descripcion></gasto><gasto><codigo>10</codigo><descripcion>Arancel
+        Remate</descripcion></gasto><gasto><codigo>14</codigo><descripcion>Caravana</descripcion></gasto><gasto><codigo>16</codigo><descripcion>Comision</descripcion></gasto><gasto><codigo>15</codigo><descripcion>Control
+        Y Entrega</descripcion></gasto><gasto><codigo>5</codigo><descripcion>Derecho
+        De Registro</descripcion></gasto><gasto><codigo>13</codigo><descripcion>Dte</descripcion></gasto><gasto><codigo>8</codigo><descripcion>Etiquetado</descripcion></gasto><gasto><codigo>4</codigo><descripcion>Flete</descripcion></gasto><gasto><codigo>1</codigo><descripcion>Fondo
+        De Garantia</descripcion></gasto><gasto><codigo>2</codigo><descripcion>Gastos
+        De Frigorifico</descripcion></gasto><gasto><codigo>3</codigo><descripcion>Guia</descripcion></gasto><gasto><codigo>6</codigo><descripcion>Ipcva</descripcion></gasto><gasto><codigo>99</codigo><descripcion>Otros</descripcion></gasto><gasto><codigo>12</codigo><descripcion>Psta/Dta</descripcion></gasto><gasto><codigo>11</codigo><descripcion>Sellos</descripcion></gasto><gasto><codigo>7</codigo><descripcion>Servicio
+        De Faena</descripcion></gasto><metadata><servidor>vivaldi</servidor><fechaHora>2021-06-20T13:57:14</fechaHora></metadata></respuesta></ns2:ConsultarGastosResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:57:14 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf97ef3664a313726d1d6b56b9c6756fbb7f97bcb28e13a3e74975785600a84174;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

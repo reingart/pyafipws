@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   \n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '247'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/dummy"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-06-20
+        14:00:45</fecha></info></S:Header><S:Body><ns2:dummyResponse xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><dummyReturn><appserver>OK</appserver><authserver>OK</authserver><dbserver>OK</dbserver></dummyReturn></ns2:dummyResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 17:00:44 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf709af26056c5e3dc67fbc606e64431f647ae03f79ca6f9a54f4ee54f5ae58cbe;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,10 +1,14 @@
 import base64, subprocess
-
+import os
 from past.builtins import basestring
 
 from pyafipws.wsaa import WSAA
 
 import pytest
+
+
+pytestmark = [pytest.mark.vcr ,pytest.mark.dontusefix]
+
 
 
 @pytest.fixture
@@ -17,8 +21,7 @@ def key_and_cert():
 def test_wsaa_create_tra():
     wsaa = WSAA()
     tra = wsaa.CreateTRA(service="wsfe")
-    # TODO: return string
-    tra = tra.decode("utf8")
+
     # sanity checks:
     assert isinstance(tra, basestring)
     assert tra.startswith(

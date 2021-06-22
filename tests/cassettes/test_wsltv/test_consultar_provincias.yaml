@@ -1,0 +1,50 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wsltv/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarProvinciasReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxNjUzNjI2ODY1IiBnZW5fdGltZT0iMTYyNDIwODIwNiIgZXhwX3RpbWU9IjE2MjQyNTE0NjYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NsdHYiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>PQp9vqI/1DTcG3/hRH+eOqj7jYWll2Y18PoJt0gkG1ooEUZb6Zpu7LgkfxkObuU7mWKCQ8LucKmbj+v9YqCyQk4tgGN4NkjJffBox4/oQAfgNa/DxzHBCvzXYaWLKzbAh1Gw5NiPnogGdirkM1009JstvvXhHiHpsvKbeCDtWxU=</sign><cuit>20267565393</cuit></auth></ser:ConsultarProvinciasReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1275'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wsltv/consultarProvincias"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsltv/LtvService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:ConsultarProvinciasResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wsltv/"><respuesta><provincia><codigo>1</codigo><descripcion>BUENOS
+        AIRES</descripcion></provincia><provincia><codigo>0</codigo><descripcion>CAP.FEDERAL</descripcion></provincia><provincia><codigo>2</codigo><descripcion>CATAMARCA</descripcion></provincia><provincia><codigo>16</codigo><descripcion>CHACO</descripcion></provincia><provincia><codigo>17</codigo><descripcion>CHUBUT</descripcion></provincia><provincia><codigo>3</codigo><descripcion>CORDOBA</descripcion></provincia><provincia><codigo>4</codigo><descripcion>CORRIENTES</descripcion></provincia><provincia><codigo>5</codigo><descripcion>ENTRERIOS</descripcion></provincia><provincia><codigo>18</codigo><descripcion>FORMOSA</descripcion></provincia><provincia><codigo>6</codigo><descripcion>JUJUY</descripcion></provincia><provincia><codigo>21</codigo><descripcion>LA
+        PAMPA</descripcion></provincia><provincia><codigo>8</codigo><descripcion>LA
+        RIOJA</descripcion></provincia><provincia><codigo>7</codigo><descripcion>MENDOZA</descripcion></provincia><provincia><codigo>19</codigo><descripcion>MISIONES</descripcion></provincia><provincia><codigo>20</codigo><descripcion>NEUQUEN</descripcion></provincia><provincia><codigo>22</codigo><descripcion>RIO
+        NEGRO</descripcion></provincia><provincia><codigo>9</codigo><descripcion>SALTA</descripcion></provincia><provincia><codigo>10</codigo><descripcion>SAN
+        JUAN</descripcion></provincia><provincia><codigo>11</codigo><descripcion>SAN
+        LUIS</descripcion></provincia><provincia><codigo>23</codigo><descripcion>SANTA
+        CRUZ</descripcion></provincia><provincia><codigo>12</codigo><descripcion>SANTA
+        FE</descripcion></provincia><provincia><codigo>13</codigo><descripcion>SGO.DEL
+        ESTERO</descripcion></provincia><provincia><codigo>24</codigo><descripcion>TIER.DEL
+        FUEGO</descripcion></provincia><provincia><codigo>14</codigo><descripcion>TUCUMAN</descripcion></provincia></respuesta></ns2:ConsultarProvinciasResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:58:13 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf1dea78057d6ea2b4ef5442ce48c51a57d6d98ca6eaf8019d6cc92d431101c647;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

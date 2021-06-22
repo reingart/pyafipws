@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:informarCAEANoUtilizadoRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI1MDM4MTE0NyIgZ2VuX3RpbWU9IjE2MjQyMDgzMDMiIGV4cF90aW1lPSIxNjI0MjUxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzbXR4Y2EiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>oe2g4L1Ra3AAsWZcfZrP6rF4BzPa3oYk++zEyRfeq1r/aixKI/WXnczVjPs9/vbl9qlXE3KCK9CvLi6v7UtiMXpGuNdDyntqQnZKyS+bPn/Z9JBvqq7uucYB9R0HBy5AFOC5TVA0rePYkTcPRSCWDMBPtsKaNOO8v8xDCl542tQ=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><CAEA>24163778394090</CAEA></ser:informarCAEANoUtilizadoRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1365'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/informarCAEANoUtilizado"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns1:informarCAEANoUtilizadoResponse
+        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><resultado>R</resultado><fechaProceso>2021-06-20</fechaProceso><CAEA>0</CAEA><arrayErrores><codigoDescripcion><codigo>1200</codigo><descripcion>El
+        CAEA no corresponde a un CAEA previamente otorgado</descripcion></codigoDescripcion></arrayErrores></ns1:informarCAEANoUtilizadoResponse></soapenv:Body></soapenv:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sun, 20 Jun 2021 16:59:57 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfcc3e89c4361e609ba070c39c915af76912347733040eec9ad6e91d3b3c0ad388;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1
