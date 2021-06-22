@@ -1,0 +1,86 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarMonedasRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI1MDM4MTE0NyIgZ2VuX3RpbWU9IjE2MjQyMDgzMDMiIGV4cF90aW1lPSIxNjI0MjUxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzbXR4Y2EiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>oe2g4L1Ra3AAsWZcfZrP6rF4BzPa3oYk++zEyRfeq1r/aixKI/WXnczVjPs9/vbl9qlXE3KCK9CvLi6v7UtiMXpGuNdDyntqQnZKyS+bPn/Z9JBvqq7uucYB9R0HBy5AFOC5TVA0rePYkTcPRSCWDMBPtsKaNOO8v8xDCl542tQ=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest></ser:consultarMonedasRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1324'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/consultarMonedas"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns1:consultarMonedasResponse
+        xmlns:ns1=\"http://impl.service.wsmtxca.afip.gov.ar/service/\"><arrayMonedas><codigoDescripcion><codigo>040</codigo><descripcion>Lei
+        Rumano</descripcion></codigoDescripcion><codigoDescripcion><codigo>042</codigo><descripcion>Peso
+        Dominicano</descripcion></codigoDescripcion><codigoDescripcion><codigo>043</codigo><descripcion>Balboas
+        Paname\xF1as</descripcion></codigoDescripcion><codigoDescripcion><codigo>044</codigo><descripcion>C\xF3rdoba
+        Nicarag\xFCense</descripcion></codigoDescripcion><codigoDescripcion><codigo>045</codigo><descripcion>Dirham
+        Marroqu\xED</descripcion></codigoDescripcion><codigoDescripcion><codigo>046</codigo><descripcion>Libra
+        Egipcia</descripcion></codigoDescripcion><codigoDescripcion><codigo>047</codigo><descripcion>Riyal
+        Saudita</descripcion></codigoDescripcion><codigoDescripcion><codigo>061</codigo><descripcion>Zloty
+        Polaco</descripcion></codigoDescripcion><codigoDescripcion><codigo>062</codigo><descripcion>Rupia
+        Hind\xFA</descripcion></codigoDescripcion><codigoDescripcion><codigo>063</codigo><descripcion>Lempira
+        Hondure\xF1a</descripcion></codigoDescripcion><codigoDescripcion><codigo>064</codigo><descripcion>Yuan
+        (Rep. Pop. China)</descripcion></codigoDescripcion><codigoDescripcion><codigo>PES</codigo><descripcion>Pesos
+        Argentinos</descripcion></codigoDescripcion><codigoDescripcion><codigo>DOL</codigo><descripcion>D\xF3lar
+        Estadounidense</descripcion></codigoDescripcion><codigoDescripcion><codigo>002</codigo><descripcion>D\xF3lar
+        Libre EEUU</descripcion></codigoDescripcion><codigoDescripcion><codigo>007</codigo><descripcion>Florines
+        Holandeses</descripcion></codigoDescripcion><codigoDescripcion><codigo>010</codigo><descripcion>Pesos
+        Mejicanos</descripcion></codigoDescripcion><codigoDescripcion><codigo>011</codigo><descripcion>Pesos
+        Uruguayos</descripcion></codigoDescripcion><codigoDescripcion><codigo>014</codigo><descripcion>Coronas
+        Danesas</descripcion></codigoDescripcion><codigoDescripcion><codigo>015</codigo><descripcion>Coronas
+        Noruegas</descripcion></codigoDescripcion><codigoDescripcion><codigo>016</codigo><descripcion>Coronas
+        Suecas</descripcion></codigoDescripcion><codigoDescripcion><codigo>018</codigo><descripcion>D\xF3lar
+        Canadiense</descripcion></codigoDescripcion><codigoDescripcion><codigo>019</codigo><descripcion>Yens</descripcion></codigoDescripcion><codigoDescripcion><codigo>021</codigo><descripcion>Libra
+        Esterlina</descripcion></codigoDescripcion><codigoDescripcion><codigo>023</codigo><descripcion>Bol\xEDvar
+        Venezolano</descripcion></codigoDescripcion><codigoDescripcion><codigo>024</codigo><descripcion>Corona
+        Checa</descripcion></codigoDescripcion><codigoDescripcion><codigo>025</codigo><descripcion>Dinar
+        Yugoslavo</descripcion></codigoDescripcion><codigoDescripcion><codigo>026</codigo><descripcion>D\xF3lar
+        Australiano</descripcion></codigoDescripcion><codigoDescripcion><codigo>027</codigo><descripcion>Dracma
+        Griego</descripcion></codigoDescripcion><codigoDescripcion><codigo>028</codigo><descripcion>Flor\xEDn
+        (Antillas Holandesas)</descripcion></codigoDescripcion><codigoDescripcion><codigo>029</codigo><descripcion>G\xFCaran\xED</descripcion></codigoDescripcion><codigoDescripcion><codigo>031</codigo><descripcion>Peso
+        Boliviano</descripcion></codigoDescripcion><codigoDescripcion><codigo>032</codigo><descripcion>Peso
+        Colombiano</descripcion></codigoDescripcion><codigoDescripcion><codigo>033</codigo><descripcion>Peso
+        Chileno</descripcion></codigoDescripcion><codigoDescripcion><codigo>034</codigo><descripcion>Rand
+        Sudafricano</descripcion></codigoDescripcion><codigoDescripcion><codigo>036</codigo><descripcion>Sucre
+        Ecuatoriano</descripcion></codigoDescripcion><codigoDescripcion><codigo>051</codigo><descripcion>D\xF3lar
+        de Hong Kong</descripcion></codigoDescripcion><codigoDescripcion><codigo>052</codigo><descripcion>D\xF3lar
+        de Singapur</descripcion></codigoDescripcion><codigoDescripcion><codigo>053</codigo><descripcion>D\xF3lar
+        de Jamaica</descripcion></codigoDescripcion><codigoDescripcion><codigo>054</codigo><descripcion>D\xF3lar
+        de Taiwan</descripcion></codigoDescripcion><codigoDescripcion><codigo>055</codigo><descripcion>Quetzal
+        Guatemalteco</descripcion></codigoDescripcion><codigoDescripcion><codigo>056</codigo><descripcion>Forint
+        (Hungr\xEDa)</descripcion></codigoDescripcion><codigoDescripcion><codigo>057</codigo><descripcion>Baht
+        (Tailandia)</descripcion></codigoDescripcion><codigoDescripcion><codigo>059</codigo><descripcion>Dinar
+        Kuwaiti</descripcion></codigoDescripcion><codigoDescripcion><codigo>012</codigo><descripcion>Real</descripcion></codigoDescripcion><codigoDescripcion><codigo>030</codigo><descripcion>Shekel
+        (Israel)</descripcion></codigoDescripcion><codigoDescripcion><codigo>035</codigo><descripcion>Nuevo
+        Sol Peruano</descripcion></codigoDescripcion><codigoDescripcion><codigo>060</codigo><descripcion>Euro</descripcion></codigoDescripcion><codigoDescripcion><codigo>041</codigo><descripcion>Derechos
+        Especiales de Giro</descripcion></codigoDescripcion><codigoDescripcion><codigo>049</codigo><descripcion>Gramos
+        de Oro Fino</descripcion></codigoDescripcion><codigoDescripcion><codigo>009</codigo><descripcion>Franco
+        Suizo</descripcion></codigoDescripcion></arrayMonedas></ns1:consultarMonedasResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sun, 20 Jun 2021 17:00:14 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf80c38ff70128296cff999f932ee9e4387c6e19cfe5964718d54d48cd09732850;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

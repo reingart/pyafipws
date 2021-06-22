@@ -1,0 +1,58 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <ComprobanteConstatar xmlns=\"http://servicios1.afip.gob.ar/wscdc/\">\n
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2NkYywgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjI1Njg4MzUxNCIgZ2VuX3RpbWU9IjE2MjQyMDczOTEiIGV4cF90aW1lPSIxNjI0MjUwNjUxIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzY2RjIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMTlwdWIiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</Token><Sign>PGh3IA42OtGc60b6rlMkX+DHXD0dUBasOn6hmbKkbi7l2hA9s1mjhOGQwjY68wzrshrAZxRoioaEUdIwxHVMQbbEOWPnKvFcMuNMPU76QR6bqEm1Q61lKzSbTuboYJDMu712twh31o6QC0Y7IgOaj0fiBLXnQIxM8kVLjTTF1aA=</Sign><Cuit>20267565393</Cuit></Auth><CmpReq><CbteModo>CAE</CbteModo><CuitEmisor>20267565393</CuitEmisor><PtoVta>5</PtoVta><CbteTipo>1</CbteTipo><CbteNro>2424</CbteNro><CbteFch>20190813</CbteFch><ImpTotal>1754.5</ImpTotal><CodAutorizacion>69333775104382</CodAutorizacion><DocTipoReceptor>80</DocTipoReceptor><DocNroReceptor>20888888883</DocNroReceptor></CmpReq></ComprobanteConstatar>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1697'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://servicios1.afip.gob.ar/wscdc/ComprobanteConstatar"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><ambiente>HomologacionExterno
+        - efa</ambiente><fecha>2021-06-20T15:28:55.4702652-03:00</fecha><id>2.0.2.0</id></FEHeaderInfo></soap:Header><soap:Body><ComprobanteConstatarResponse
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><ComprobanteConstatarResult><CmpResp><CbteModo>CAE</CbteModo><CuitEmisor>20267565393</CuitEmisor><PtoVta>5</PtoVta><CbteTipo>1</CbteTipo><CbteNro>2424</CbteNro><CbteFch>20190813</CbteFch><ImpTotal>1754.5</ImpTotal><CodAutorizacion>69333775104382</CodAutorizacion><DocTipoReceptor>80</DocTipoReceptor><DocNroReceptor>20888888883</DocNroReceptor></CmpResp><Resultado>A</Resultado><FchProceso>20210620152855</FchProceso><Events><Evt><Code>0</Code></Evt></Events></ComprobanteConstatarResult></ComprobanteConstatarResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '1053'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:28:55 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddf98e52f10fb234494d17c0c22730d4d5d103aabcfd479b335141b091600971f78;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

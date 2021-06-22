@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarUnidadesMedidaRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI1MDM4MTE0NyIgZ2VuX3RpbWU9IjE2MjQyMDgzMDMiIGV4cF90aW1lPSIxNjI0MjUxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzbXR4Y2EiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>oe2g4L1Ra3AAsWZcfZrP6rF4BzPa3oYk++zEyRfeq1r/aixKI/WXnczVjPs9/vbl9qlXE3KCK9CvLi6v7UtiMXpGuNdDyntqQnZKyS+bPn/Z9JBvqq7uucYB9R0HBy5AFOC5TVA0rePYkTcPRSCWDMBPtsKaNOO8v8xDCl542tQ=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest></ser:consultarUnidadesMedidaRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1338'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/consultarUnidadesMedida"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns1:consultarUnidadesMedidaResponse
+        xmlns:ns1=\"http://impl.service.wsmtxca.afip.gov.ar/service/\"><arrayUnidadesMedida><codigoDescripcion><codigo>41</codigo><descripcion>miligramos</descripcion></codigoDescripcion><codigoDescripcion><codigo>14</codigo><descripcion>gramos</descripcion></codigoDescripcion><codigoDescripcion><codigo>1</codigo><descripcion>kilogramos</descripcion></codigoDescripcion><codigoDescripcion><codigo>29</codigo><descripcion>toneladas</descripcion></codigoDescripcion><codigoDescripcion><codigo>10</codigo><descripcion>quilates</descripcion></codigoDescripcion><codigoDescripcion><codigo>47</codigo><descripcion>mililitros</descripcion></codigoDescripcion><codigoDescripcion><codigo>5</codigo><descripcion>litros</descripcion></codigoDescripcion><codigoDescripcion><codigo>27</codigo><descripcion>cm
+        c\xFAbicos</descripcion></codigoDescripcion><codigoDescripcion><codigo>15</codigo><descripcion>milimetros</descripcion></codigoDescripcion><codigoDescripcion><codigo>20</codigo><descripcion>cent\xEDmetros</descripcion></codigoDescripcion><codigoDescripcion><codigo>17</codigo><descripcion>kil\xF3metros</descripcion></codigoDescripcion><codigoDescripcion><codigo>7</codigo><descripcion>unidades</descripcion></codigoDescripcion><codigoDescripcion><codigo>8</codigo><descripcion>pares</descripcion></codigoDescripcion><codigoDescripcion><codigo>9</codigo><descripcion>docenas</descripcion></codigoDescripcion><codigoDescripcion><codigo>11</codigo><descripcion>millares</descripcion></codigoDescripcion><codigoDescripcion><codigo>96</codigo><descripcion>packs</descripcion></codigoDescripcion><codigoDescripcion><codigo>97</codigo><descripcion>hormas</descripcion></codigoDescripcion><codigoDescripcion><codigo>2</codigo><descripcion>metros</descripcion></codigoDescripcion><codigoDescripcion><codigo>3</codigo><descripcion>metros
+        cuadrados</descripcion></codigoDescripcion><codigoDescripcion><codigo>4</codigo><descripcion>metros
+        c\xFAbicos</descripcion></codigoDescripcion><codigoDescripcion><codigo>6</codigo><descripcion>1000
+        kWh</descripcion></codigoDescripcion><codigoDescripcion><codigo>99</codigo><descripcion>otras
+        unidades</descripcion></codigoDescripcion><codigoDescripcion><codigo>16</codigo><descripcion>mm
+        c\xFAbicos</descripcion></codigoDescripcion><codigoDescripcion><codigo>18</codigo><descripcion>hectolitros</descripcion></codigoDescripcion><codigoDescripcion><codigo>25</codigo><descripcion>jgo.
+        pqt. mazo naipes</descripcion></codigoDescripcion><codigoDescripcion><codigo>30</codigo><descripcion>dam
+        c\xFAbicos</descripcion></codigoDescripcion><codigoDescripcion><codigo>31</codigo><descripcion>hm
+        c\xFAbicos</descripcion></codigoDescripcion><codigoDescripcion><codigo>32</codigo><descripcion>km
+        c\xFAbicos</descripcion></codigoDescripcion><codigoDescripcion><codigo>33</codigo><descripcion>microgramos</descripcion></codigoDescripcion><codigoDescripcion><codigo>34</codigo><descripcion>nanogramos</descripcion></codigoDescripcion><codigoDescripcion><codigo>35</codigo><descripcion>picogramos</descripcion></codigoDescripcion><codigoDescripcion><codigo>48</codigo><descripcion>curie</descripcion></codigoDescripcion><codigoDescripcion><codigo>49</codigo><descripcion>milicurie</descripcion></codigoDescripcion><codigoDescripcion><codigo>50</codigo><descripcion>microcurie</descripcion></codigoDescripcion><codigoDescripcion><codigo>51</codigo><descripcion>uiacthor</descripcion></codigoDescripcion><codigoDescripcion><codigo>52</codigo><descripcion>muiacthor</descripcion></codigoDescripcion><codigoDescripcion><codigo>53</codigo><descripcion>kg
+        base</descripcion></codigoDescripcion><codigoDescripcion><codigo>54</codigo><descripcion>gruesa</descripcion></codigoDescripcion><codigoDescripcion><codigo>61</codigo><descripcion>kg
+        bruto</descripcion></codigoDescripcion><codigoDescripcion><codigo>62</codigo><descripcion>uiactant</descripcion></codigoDescripcion><codigoDescripcion><codigo>63</codigo><descripcion>muiactant</descripcion></codigoDescripcion><codigoDescripcion><codigo>64</codigo><descripcion>uiactig</descripcion></codigoDescripcion><codigoDescripcion><codigo>65</codigo><descripcion>muiactig</descripcion></codigoDescripcion><codigoDescripcion><codigo>66</codigo><descripcion>kg
+        activo</descripcion></codigoDescripcion><codigoDescripcion><codigo>67</codigo><descripcion>gramo
+        activo</descripcion></codigoDescripcion><codigoDescripcion><codigo>68</codigo><descripcion>gramo
+        base</descripcion></codigoDescripcion><codigoDescripcion><codigo>98</codigo><descripcion>otras
+        unidades</descripcion></codigoDescripcion><codigoDescripcion><codigo>0</codigo><descripcion>
+        </descripcion></codigoDescripcion></arrayUnidadesMedida></ns1:consultarUnidadesMedidaResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sun, 20 Jun 2021 17:00:16 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfb216609d971a57da38e688c3b1a7edad9742a4d4d986a84566066ac48804527c;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

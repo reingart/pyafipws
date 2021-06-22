@@ -1,0 +1,359 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:loginCms>\n    <in0>MIIG/AYJKoZIhvcNAQcCoIIG7TCCBukCAQExDzANBglghkgBZQMEAgEFADCCASAG\nCSqGSIb3DQEHAaCCAREEggENPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0i\nVVRGLTgiPz48bG9naW5UaWNrZXRSZXF1ZXN0IHZlcnNpb249IjEuMCI+PGhlYWRl\ncj48dW5pcXVlSWQ+MTYyNDE5NDIzNjwvdW5pcXVlSWQ+PGdlbmVyYXRpb25UaW1l\nPjIwMjEtMDYtMjBUMTM6MzM6NTY8L2dlbmVyYXRpb25UaW1lPjxleHBpcmF0aW9u\nVGltZT4yMDIxLTA2LTIwVDIzOjMzOjU2PC9leHBpcmF0aW9uVGltZT48L2hlYWRl\ncj48c2VydmljZT53c2NkYzwvc2VydmljZT48L2xvZ2luVGlja2V0UmVxdWVzdD6g\nggNTMIIDTzCCAjegAwIBAgIIHJrQuzZhH+gwDQYJKoZIhvcNAQENBQAwODEaMBgG\nA1UEAwwRQ29tcHV0YWRvcmVzIFRlc3QxDTALBgNVBAoMBEFGSVAxCzAJBgNVBAYT\nAkFSMB4XDTE5MDcxMzE2NDEwM1oXDTIxMDcxMjE2NDEwM1owNTEYMBYGA1UEAwwP\ncmVpbmdhcnQyMDE5cHViMRkwFwYDVQQFExBDVUlUIDIwMjY3NTY1MzkzMIIBIjAN\nBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Mc/IZ8X3x8YhIa0SQ89VjSOhEdY\ncJnffa5QqAtqISQ3Di382B4XOHDRg3CDzt/jck3fKEV7K/wfgS33KDAv2EWW2mTJ\naJZHlLSY05CtaesHpxlBCYlzTc7z0aABOx+e9S1R80R5LZ1a+kzEcgODeHi4PKu0\nZ1qHvkotrZ9FEx2kl3bwdX4LjyxCKdeqL4tY1OOkpNq6sT5geGBsHn8yQNVz7iP2\nOUYO7Acs3so7GLLrZtb/zWx1xyWB5PVs8DGY2iK22H5k2jnvas9gzntshvRG6c+/\nskWOG7vtFp2qL7TvAathE5YQEp/2T1iLcgxrqtUV2K7LHifvJghKxgN15QIDAQAB\no2AwXjAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFLOy0//96bre3o2vESGc1iB9\n8k9vMB0GA1UdDgQWBBSNWsHTyranSfK1GGDUOLjPYe3Z6TAOBgNVHQ8BAf8EBAMC\nBeAwDQYJKoZIhvcNAQENBQADggEBAFWW1a5sDm4e+JrZgCM4CwHhy2JeU9a8Glqp\nc/VWkf9vXYaacHtARRdNgZNXbEB4tZVYIUcLEKvMgvEs2owllXiSxlIhWiCWPdRW\n8aocNASqBD7K3U1zppZybC8ZXOwvD2Wh8U9s6crX7QX9Ctx2aS19a7ipHHfAOG8Z\n90TzbluIIFPggiLKX76LVuW8c4zB5dgQJsCanML4jMwMUj9UEIulqYY3u835zhPw\nKFtTMhnea332cwLdApMDU5uMYVa6dpd58Rb36UTDvJc8OHV7eShgGSajEZFkvuwj\nssnFka1A5LbyE1CNAJnn/nWH84uo6dDj59Em1TgXDQ+g/RsbiZQxggJWMIICUgIB\nATBEMDgxGjAYBgNVBAMMEUNvbXB1dGFkb3JlcyBUZXN0MQ0wCwYDVQQKDARBRklQ\nMQswCQYDVQQGEwJBUgIIHJrQuzZhH+gwDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI\nhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEwNjIwMTgzMzU2\nWjAvBgkqhkiG9w0BCQQxIgQgc+y2idHgAm3HsbLP9iDguoEL5JD6WMb3JmQFioWL\nxOUweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG\nCWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN\nAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA\nM4u89d5n7Knyz6az0gU+xci+2u/jaJKPAUaO3taoN9uqTOncNeFOAWDV/IXAMybu\nY0sMonJmbNFccn7zaXHF5au1ECpmMMSOvMzKidVSZpNbhuxCpItMmBZZSel6Fx6F\npddOxiQfYdDrCZo5a2/ioLjfx98o6sxvGCxyw4x3ACHaLArbSBiJnyjloZN852h5\nze1DpHhWVI0eaEc6JvikPVcgGi992lIO4LNT6VJWxp6cjUlnml3Qig253FNvUwk6\nMIAX6unO1pFXH/xCS5/sJ3c8paUKEi96H9q1LguLXUC+XR4kccFJc4pyxehQoQ6g\nGv649XONG2L9ngn7F8Sp7w==\n\n</in0></ser:loginCms>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2726'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wsaahomo.afip.gov.ar/ws/services/LoginCms
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginCmsResponse
+        xmlns=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"><loginCmsReturn>&lt;?xml
+        version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;\n&lt;loginTicketResponse
+        version=&quot;1.0&quot;&gt;\n    &lt;header&gt;\n        &lt;source&gt;CN=wsaahomo,
+        O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239&lt;/source&gt;\n        &lt;destination&gt;SERIALNUMBER=CUIT
+        20267565393, CN=reingart2019pub&lt;/destination&gt;\n        &lt;uniqueId&gt;3226739509&lt;/uniqueId&gt;\n
+        \       &lt;generationTime&gt;2021-06-20T15:33:58.185-03:00&lt;/generationTime&gt;\n
+        \       &lt;expirationTime&gt;2021-06-21T03:33:58.185-03:00&lt;/expirationTime&gt;\n
+        \   &lt;/header&gt;\n    &lt;credentials&gt;\n        &lt;token&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2NkYywgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjIyMTQxNjc2MTAiIGdlbl90aW1lPSIxNjI0MjEzOTc4IiBleHBfdGltZT0iMTYyNDI1NzIzOCIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2NkYyIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K&lt;/token&gt;\n
+        \       &lt;sign&gt;nhfLjDQoBGYulsW7JhT+xDHcIEHtNB2qm/lv34aSTm1OqyZIXjHfLJTz0/X5xbHLrYAkdGQe0FYBoCMhL1NKVe4izP7hkPyDDeU2VgVVFktAc0xlnu4MXp6O9ioc9fGyT6iTb4TFbPNI9wwd+mjoCI8Yj+QASRS+opqL5zjApaQ=&lt;/sign&gt;\n
+        \   &lt;/credentials&gt;\n&lt;/loginTicketResponse&gt;\n</loginCmsReturn></loginCmsResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:33:58 GMT
+      Set-Cookie:
+      - TS01b14f84=0145b27a97e7a9959fc25e2048b59b8235083272123a488d61510d949aac06bf02cc8786fe;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: GET
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<wsdl:definitions xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\"
+        xmlns:tm=\"http://microsoft.com/wsdl/mime/textMatching/\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\"
+        xmlns:mime=\"http://schemas.xmlsoap.org/wsdl/mime/\" xmlns:tns=\"http://servicios1.afip.gob.ar/wscdc/\"
+        xmlns:s=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap12=\"http://schemas.xmlsoap.org/wsdl/soap12/\"
+        xmlns:http=\"http://schemas.xmlsoap.org/wsdl/http/\" targetNamespace=\"http://servicios1.afip.gob.ar/wscdc/\"
+        xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">\r\n  <wsdl:documentation
+        xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">Web Service Orientado a la
+        Constatacion de Comprobantes. </wsdl:documentation>\r\n  <wsdl:types>\r\n
+        \   <s:schema elementFormDefault=\"qualified\" targetNamespace=\"http://servicios1.afip.gob.ar/wscdc/\">\r\n
+        \     <s:element name=\"ComprobantesModalidadConsultar\">\r\n        <s:complexType>\r\n
+        \         <s:sequence>\r\n            <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Auth\" type=\"tns:CmpAuthRequest\" />\r\n          </s:sequence>\r\n
+        \       </s:complexType>\r\n      </s:element>\r\n      <s:complexType name=\"CmpAuthRequest\">\r\n
+        \       <s:sequence>\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Token\" type=\"s:string\" />\r\n          <s:element minOccurs=\"0\"
+        maxOccurs=\"1\" name=\"Sign\" type=\"s:string\" />\r\n          <s:element
+        minOccurs=\"1\" maxOccurs=\"1\" name=\"Cuit\" type=\"s:long\" />\r\n        </s:sequence>\r\n
+        \     </s:complexType>\r\n      <s:element name=\"ComprobantesModalidadConsultarResponse\">\r\n
+        \       <s:complexType>\r\n          <s:sequence>\r\n            <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"ComprobantesModalidadConsultarResult\"
+        type=\"tns:FacModTipoResponse\" />\r\n          </s:sequence>\r\n        </s:complexType>\r\n
+        \     </s:element>\r\n      <s:complexType name=\"FacModTipoResponse\">\r\n
+        \       <s:sequence>\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"ResultGet\" type=\"tns:ArrayOfFacModTipo\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Errors\" type=\"tns:ArrayOfErr\" />\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"Events\" type=\"tns:ArrayOfEvt\"
+        />\r\n        </s:sequence>\r\n      </s:complexType>\r\n      <s:complexType
+        name=\"ArrayOfFacModTipo\">\r\n        <s:sequence>\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"unbounded\" name=\"FacModTipo\" nillable=\"true\"
+        type=\"tns:FacModTipo\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:complexType name=\"FacModTipo\">\r\n        <s:sequence>\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Cod\" type=\"s:string\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Desc\" type=\"s:string\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"FchDesde\" type=\"s:string\" />\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"FchHasta\" type=\"s:string\"
+        />\r\n        </s:sequence>\r\n      </s:complexType>\r\n      <s:complexType
+        name=\"ArrayOfErr\">\r\n        <s:sequence>\r\n          <s:element minOccurs=\"0\"
+        maxOccurs=\"unbounded\" name=\"Err\" nillable=\"true\" type=\"tns:Err\" />\r\n
+        \       </s:sequence>\r\n      </s:complexType>\r\n      <s:complexType name=\"Err\">\r\n
+        \       <s:sequence>\r\n          <s:element minOccurs=\"1\" maxOccurs=\"1\"
+        name=\"Code\" type=\"s:int\" />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Msg\" type=\"s:string\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:complexType name=\"ArrayOfEvt\">\r\n        <s:sequence>\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"unbounded\" name=\"Evt\" nillable=\"true\" type=\"tns:Evt\"
+        />\r\n        </s:sequence>\r\n      </s:complexType>\r\n      <s:complexType
+        name=\"Evt\">\r\n        <s:sequence>\r\n          <s:element minOccurs=\"1\"
+        maxOccurs=\"1\" name=\"Code\" type=\"s:int\" />\r\n          <s:element minOccurs=\"0\"
+        maxOccurs=\"1\" name=\"Msg\" type=\"s:string\" />\r\n        </s:sequence>\r\n
+        \     </s:complexType>\r\n      <s:element name=\"ComprobantesTipoConsultar\">\r\n
+        \       <s:complexType>\r\n          <s:sequence>\r\n            <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Auth\" type=\"tns:CmpAuthRequest\"
+        />\r\n          </s:sequence>\r\n        </s:complexType>\r\n      </s:element>\r\n
+        \     <s:element name=\"ComprobantesTipoConsultarResponse\">\r\n        <s:complexType>\r\n
+        \         <s:sequence>\r\n            <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"ComprobantesTipoConsultarResult\" type=\"tns:CbteTipoResponse\" />\r\n
+        \         </s:sequence>\r\n        </s:complexType>\r\n      </s:element>\r\n
+        \     <s:complexType name=\"CbteTipoResponse\">\r\n        <s:sequence>\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"ResultGet\" type=\"tns:ArrayOfCbteTipo\"
+        />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"Errors\"
+        type=\"tns:ArrayOfErr\" />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Events\" type=\"tns:ArrayOfEvt\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:complexType name=\"ArrayOfCbteTipo\">\r\n        <s:sequence>\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"unbounded\" name=\"CbteTipo\"
+        nillable=\"true\" type=\"tns:CbteTipo\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:complexType name=\"CbteTipo\">\r\n        <s:sequence>\r\n          <s:element
+        minOccurs=\"1\" maxOccurs=\"1\" name=\"Id\" type=\"s:int\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Desc\" type=\"s:string\" />\r\n        </s:sequence>\r\n
+        \     </s:complexType>\r\n      <s:element name=\"DocumentosTipoConsultar\">\r\n
+        \       <s:complexType>\r\n          <s:sequence>\r\n            <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Auth\" type=\"tns:CmpAuthRequest\"
+        />\r\n          </s:sequence>\r\n        </s:complexType>\r\n      </s:element>\r\n
+        \     <s:element name=\"DocumentosTipoConsultarResponse\">\r\n        <s:complexType>\r\n
+        \         <s:sequence>\r\n            <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"DocumentosTipoConsultarResult\" type=\"tns:DocTipoResponse\" />\r\n
+        \         </s:sequence>\r\n        </s:complexType>\r\n      </s:element>\r\n
+        \     <s:complexType name=\"DocTipoResponse\">\r\n        <s:sequence>\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"ResultGet\" type=\"tns:ArrayOfDocTipo\"
+        />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"Errors\"
+        type=\"tns:ArrayOfErr\" />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Events\" type=\"tns:ArrayOfEvt\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:complexType name=\"ArrayOfDocTipo\">\r\n        <s:sequence>\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"unbounded\" name=\"DocTipo\"
+        nillable=\"true\" type=\"tns:DocTipo\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:complexType name=\"DocTipo\">\r\n        <s:sequence>\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Id\" type=\"s:string\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Desc\" type=\"s:string\" />\r\n        </s:sequence>\r\n
+        \     </s:complexType>\r\n      <s:element name=\"OpcionalesTipoConsultar\">\r\n
+        \       <s:complexType>\r\n          <s:sequence>\r\n            <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Auth\" type=\"tns:CmpAuthRequest\"
+        />\r\n          </s:sequence>\r\n        </s:complexType>\r\n      </s:element>\r\n
+        \     <s:element name=\"OpcionalesTipoConsultarResponse\">\r\n        <s:complexType>\r\n
+        \         <s:sequence>\r\n            <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"OpcionalesTipoConsultarResult\" type=\"tns:OpcionalTipoResponse\" />\r\n
+        \         </s:sequence>\r\n        </s:complexType>\r\n      </s:element>\r\n
+        \     <s:complexType name=\"OpcionalTipoResponse\">\r\n        <s:sequence>\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"ResultGet\" type=\"tns:ArrayOfOpcionalTipo\"
+        />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"Errors\"
+        type=\"tns:ArrayOfErr\" />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Events\" type=\"tns:ArrayOfEvt\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:complexType name=\"ArrayOfOpcionalTipo\">\r\n        <s:sequence>\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"unbounded\" name=\"OpcionalTipo\"
+        nillable=\"true\" type=\"tns:OpcionalTipo\" />\r\n        </s:sequence>\r\n
+        \     </s:complexType>\r\n      <s:complexType name=\"OpcionalTipo\">\r\n
+        \       <s:sequence>\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Id\" type=\"s:string\" />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Desc\" type=\"s:string\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:element name=\"ComprobanteConstatar\">\r\n        <s:complexType>\r\n
+        \         <s:sequence>\r\n            <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"Auth\" type=\"tns:CmpAuthRequest\" />\r\n            <s:element minOccurs=\"0\"
+        maxOccurs=\"1\" name=\"CmpReq\" type=\"tns:CmpDatos\" />\r\n          </s:sequence>\r\n
+        \       </s:complexType>\r\n      </s:element>\r\n      <s:complexType name=\"CmpDatos\">\r\n
+        \       <s:sequence>\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"CbteModo\" type=\"s:string\" />\r\n          <s:element minOccurs=\"1\"
+        maxOccurs=\"1\" name=\"CuitEmisor\" type=\"s:long\" />\r\n          <s:element
+        minOccurs=\"1\" maxOccurs=\"1\" name=\"PtoVta\" type=\"s:int\" />\r\n          <s:element
+        minOccurs=\"1\" maxOccurs=\"1\" name=\"CbteTipo\" type=\"s:int\" />\r\n          <s:element
+        minOccurs=\"1\" maxOccurs=\"1\" name=\"CbteNro\" type=\"s:long\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"CbteFch\" type=\"s:string\" />\r\n
+        \         <s:element minOccurs=\"1\" maxOccurs=\"1\" name=\"ImpTotal\" type=\"s:double\"
+        />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"CodAutorizacion\"
+        type=\"s:string\" />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"DocTipoReceptor\" type=\"s:string\" />\r\n          <s:element minOccurs=\"0\"
+        maxOccurs=\"1\" name=\"DocNroReceptor\" type=\"s:string\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Opcionales\" type=\"tns:ArrayOfOpcional\"
+        />\r\n        </s:sequence>\r\n      </s:complexType>\r\n      <s:complexType
+        name=\"ArrayOfOpcional\">\r\n        <s:sequence>\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"unbounded\" name=\"Opcional\" nillable=\"true\"
+        type=\"tns:Opcional\" />\r\n        </s:sequence>\r\n      </s:complexType>\r\n
+        \     <s:complexType name=\"Opcional\">\r\n        <s:sequence>\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Id\" type=\"s:string\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Valor\" type=\"s:string\" />\r\n        </s:sequence>\r\n
+        \     </s:complexType>\r\n      <s:element name=\"ComprobanteConstatarResponse\">\r\n
+        \       <s:complexType>\r\n          <s:sequence>\r\n            <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"ComprobanteConstatarResult\" type=\"tns:CmpResponse\"
+        />\r\n          </s:sequence>\r\n        </s:complexType>\r\n      </s:element>\r\n
+        \     <s:complexType name=\"CmpResponse\">\r\n        <s:sequence>\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"CmpResp\" type=\"tns:CmpDatos\" />\r\n
+        \         <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"Resultado\" type=\"s:string\"
+        />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"Observaciones\"
+        type=\"tns:ArrayOfObs\" />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"FchProceso\" type=\"s:string\" />\r\n          <s:element minOccurs=\"0\"
+        maxOccurs=\"1\" name=\"Events\" type=\"tns:ArrayOfEvt\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"Errors\" type=\"tns:ArrayOfErr\" />\r\n
+        \       </s:sequence>\r\n      </s:complexType>\r\n      <s:complexType name=\"ArrayOfObs\">\r\n
+        \       <s:sequence>\r\n          <s:element minOccurs=\"0\" maxOccurs=\"unbounded\"
+        name=\"Obs\" nillable=\"true\" type=\"tns:Obs\" />\r\n        </s:sequence>\r\n
+        \     </s:complexType>\r\n      <s:complexType name=\"Obs\">\r\n        <s:sequence>\r\n
+        \         <s:element minOccurs=\"1\" maxOccurs=\"1\" name=\"Code\" type=\"s:int\"
+        />\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\" name=\"Msg\" type=\"s:string\"
+        />\r\n        </s:sequence>\r\n      </s:complexType>\r\n      <s:element
+        name=\"ComprobanteDummy\">\r\n        <s:complexType />\r\n      </s:element>\r\n
+        \     <s:element name=\"ComprobanteDummyResponse\">\r\n        <s:complexType>\r\n
+        \         <s:sequence>\r\n            <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"ComprobanteDummyResult\" type=\"tns:DummyResponse\" />\r\n          </s:sequence>\r\n
+        \       </s:complexType>\r\n      </s:element>\r\n      <s:complexType name=\"DummyResponse\">\r\n
+        \       <s:sequence>\r\n          <s:element minOccurs=\"0\" maxOccurs=\"1\"
+        name=\"AppServer\" type=\"s:string\" />\r\n          <s:element minOccurs=\"0\"
+        maxOccurs=\"1\" name=\"DbServer\" type=\"s:string\" />\r\n          <s:element
+        minOccurs=\"0\" maxOccurs=\"1\" name=\"AuthServer\" type=\"s:string\" />\r\n
+        \       </s:sequence>\r\n      </s:complexType>\r\n    </s:schema>\r\n  </wsdl:types>\r\n
+        \ <wsdl:message name=\"ComprobantesModalidadConsultarSoapIn\">\r\n    <wsdl:part
+        name=\"parameters\" element=\"tns:ComprobantesModalidadConsultar\" />\r\n
+        \ </wsdl:message>\r\n  <wsdl:message name=\"ComprobantesModalidadConsultarSoapOut\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:ComprobantesModalidadConsultarResponse\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:message name=\"ComprobantesTipoConsultarSoapIn\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:ComprobantesTipoConsultar\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:message name=\"ComprobantesTipoConsultarSoapOut\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:ComprobantesTipoConsultarResponse\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:message name=\"DocumentosTipoConsultarSoapIn\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:DocumentosTipoConsultar\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:message name=\"DocumentosTipoConsultarSoapOut\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:DocumentosTipoConsultarResponse\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:message name=\"OpcionalesTipoConsultarSoapIn\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:OpcionalesTipoConsultar\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:message name=\"OpcionalesTipoConsultarSoapOut\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:OpcionalesTipoConsultarResponse\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:message name=\"ComprobanteConstatarSoapIn\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:ComprobanteConstatar\" />\r\n
+        \ </wsdl:message>\r\n  <wsdl:message name=\"ComprobanteConstatarSoapOut\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:ComprobanteConstatarResponse\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:message name=\"ComprobanteDummySoapIn\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:ComprobanteDummy\" />\r\n
+        \ </wsdl:message>\r\n  <wsdl:message name=\"ComprobanteDummySoapOut\">\r\n
+        \   <wsdl:part name=\"parameters\" element=\"tns:ComprobanteDummyResponse\"
+        />\r\n  </wsdl:message>\r\n  <wsdl:portType name=\"ServiceSoap\">\r\n    <wsdl:operation
+        name=\"ComprobantesModalidadConsultar\">\r\n      <wsdl:documentation xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">Determina
+        los modos de facturaci\xF3n habilitados a consultar por este medio.</wsdl:documentation>\r\n
+        \     <wsdl:input message=\"tns:ComprobantesModalidadConsultarSoapIn\" />\r\n
+        \     <wsdl:output message=\"tns:ComprobantesModalidadConsultarSoapOut\" />\r\n
+        \   </wsdl:operation>\r\n    <wsdl:operation name=\"ComprobantesTipoConsultar\">\r\n
+        \     <wsdl:documentation xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">Recupera
+        los Tipos de Comprobantes habilitados a consultar por este medio.</wsdl:documentation>\r\n
+        \     <wsdl:input message=\"tns:ComprobantesTipoConsultarSoapIn\" />\r\n      <wsdl:output
+        message=\"tns:ComprobantesTipoConsultarSoapOut\" />\r\n    </wsdl:operation>\r\n
+        \   <wsdl:operation name=\"DocumentosTipoConsultar\">\r\n      <wsdl:documentation
+        xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">Recupera los Tipos de Documentos
+        habilitados a consultar por este medio.</wsdl:documentation>\r\n      <wsdl:input
+        message=\"tns:DocumentosTipoConsultarSoapIn\" />\r\n      <wsdl:output message=\"tns:DocumentosTipoConsultarSoapOut\"
+        />\r\n    </wsdl:operation>\r\n    <wsdl:operation name=\"OpcionalesTipoConsultar\">\r\n
+        \     <wsdl:documentation xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">Recupera
+        el listado de identificadores para los campos Opcionales</wsdl:documentation>\r\n
+        \     <wsdl:input message=\"tns:OpcionalesTipoConsultarSoapIn\" />\r\n      <wsdl:output
+        message=\"tns:OpcionalesTipoConsultarSoapOut\" />\r\n    </wsdl:operation>\r\n
+        \   <wsdl:operation name=\"ComprobanteConstatar\">\r\n      <wsdl:documentation
+        xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">Constataci\xF3n de comprobantes
+        de forma electronica</wsdl:documentation>\r\n      <wsdl:input message=\"tns:ComprobanteConstatarSoapIn\"
+        />\r\n      <wsdl:output message=\"tns:ComprobanteConstatarSoapOut\" />\r\n
+        \   </wsdl:operation>\r\n    <wsdl:operation name=\"ComprobanteDummy\">\r\n
+        \     <wsdl:documentation xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">Metodo
+        dummy para verificacion de funcionamiento</wsdl:documentation>\r\n      <wsdl:input
+        message=\"tns:ComprobanteDummySoapIn\" />\r\n      <wsdl:output message=\"tns:ComprobanteDummySoapOut\"
+        />\r\n    </wsdl:operation>\r\n  </wsdl:portType>\r\n  <wsdl:binding name=\"ServiceSoap\"
+        type=\"tns:ServiceSoap\">\r\n    <soap:binding transport=\"http://schemas.xmlsoap.org/soap/http\"
+        />\r\n    <wsdl:operation name=\"ComprobantesModalidadConsultar\">\r\n      <soap:operation
+        soapAction=\"http://servicios1.afip.gob.ar/wscdc/ComprobantesModalidadConsultar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"ComprobantesTipoConsultar\">\r\n      <soap:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/ComprobantesTipoConsultar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"DocumentosTipoConsultar\">\r\n      <soap:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/DocumentosTipoConsultar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"OpcionalesTipoConsultar\">\r\n      <soap:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/OpcionalesTipoConsultar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"ComprobanteConstatar\">\r\n      <soap:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/ComprobanteConstatar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"ComprobanteDummy\">\r\n      <soap:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/ComprobanteDummy\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n  </wsdl:binding>\r\n
+        \ <wsdl:binding name=\"ServiceSoap12\" type=\"tns:ServiceSoap\">\r\n    <soap12:binding
+        transport=\"http://schemas.xmlsoap.org/soap/http\" />\r\n    <wsdl:operation
+        name=\"ComprobantesModalidadConsultar\">\r\n      <soap12:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/ComprobantesModalidadConsultar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"ComprobantesTipoConsultar\">\r\n      <soap12:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/ComprobantesTipoConsultar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"DocumentosTipoConsultar\">\r\n      <soap12:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/DocumentosTipoConsultar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"OpcionalesTipoConsultar\">\r\n      <soap12:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/OpcionalesTipoConsultar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"ComprobanteConstatar\">\r\n      <soap12:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/ComprobanteConstatar\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n    <wsdl:operation
+        name=\"ComprobanteDummy\">\r\n      <soap12:operation soapAction=\"http://servicios1.afip.gob.ar/wscdc/ComprobanteDummy\"
+        style=\"document\" />\r\n      <wsdl:input>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:input>\r\n      <wsdl:output>\r\n        <soap12:body use=\"literal\"
+        />\r\n      </wsdl:output>\r\n    </wsdl:operation>\r\n  </wsdl:binding>\r\n
+        \ <wsdl:service name=\"Service\">\r\n    <wsdl:documentation xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\">Web
+        Service Orientado a la Constatacion de Comprobantes. </wsdl:documentation>\r\n
+        \   <wsdl:port name=\"ServiceSoap\" binding=\"tns:ServiceSoap\">\r\n      <soap:address
+        location=\"https://wswhomo.afip.gov.ar/WSCDC/service.asmx\" />\r\n    </wsdl:port>\r\n
+        \   <wsdl:port name=\"ServiceSoap12\" binding=\"tns:ServiceSoap12\">\r\n      <soap12:address
+        location=\"https://wswhomo.afip.gov.ar/WSCDC/service.asmx\" />\r\n    </wsdl:port>\r\n
+        \ </wsdl:service>\r\n</wsdl:definitions>"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '21454'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:34:00 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddfd35dbcbbf825352b6b1061ff8edd7704ce23cfcbcb2fa696634bb6a67b071da9;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

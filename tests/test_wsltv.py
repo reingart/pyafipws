@@ -19,57 +19,64 @@ __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
 import os
-
+import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsltv import WSLTV
+import sys
 
 
-WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
+__WSDL__ = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
+__obj__ = WSLTV()
+__service__ = "wsltv"
+
 CUIT = os.environ["CUIT"]
 CERT = "reingart.crt"
 PKEY = "reingart.key"
 CACHE = ""
+WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 
-# Obteniendo el TA para pruebas
-wsaa = WSAA()
-wsltv = WSLTV()
-ta = wsaa.Autenticar("wsltv", CERT, PKEY)
-wsltv.Cuit = CUIT
-wsltv.SetTicketAcceso(ta)
+pytestmark =pytest.mark.vcr
 
 
-def test_conectar():
+
+
+def test_conectar(auth):
     """Conectar con servidor."""
+    wsltv=auth
     conexion = wsltv.Conectar(CACHE, WSDL)
     assert conexion
 
 
-def test_server_status():
+def test_server_status(auth):
     """Test de estado de servidores."""
+    wsltv=auth
     wsltv.Dummy()
     assert wsltv.AppServerStatus == "OK"
     assert wsltv.DbServerStatus == "OK"
     assert wsltv.AuthServerStatus == "OK"
 
 
-def test_inicializar():
+def test_inicializar(auth):
     """Test inicializar variables de BaseWS."""
+    wsltv=auth
     wsltv.inicializar()
     assert wsltv.Total == ""
     assert wsltv.FechaLiquidacion == ""
     assert wsltv.datos == {}
 
 
-def test_analizar_errores():
+def test_analizar_errores(auth):
     """Test Analizar si se encuentran errores en clientes."""
+    wsltv=auth
     ret = {"numeroComprobante": 286}
     wsltv._WSLTV__analizar_errores(ret)
     # devuelve '' si no encuentra errores
     assert wsltv.ErrMsg == ""
 
 
-def test_crear_liquidacion():
+def test_crear_liquidacion(auth):
     """Test crear liquidacion."""
+    wsltv=auth
     tipo_cbte = 150
     pto_vta = 6
     nro_cbte = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta) + 1
@@ -106,16 +113,18 @@ def test_crear_liquidacion():
     assert liquidacion
 
 
-def test_agregar_condicion_venta():
+def test_agregar_condicion_venta(auth):
     """Test agregar condicion de venta."""
+    wsltv=auth
     codigo = 99
     descripcion = "otra"
     agregado = wsltv.AgregarCondicionVenta(codigo=99, descripcion="otra")
     assert agregado
 
 
-def test_agregar_receptor():
+def test_agregar_receptor(auth):
     """Test agregar receptor."""
+    wsltv=auth
     cuit = 20111111112
     iibb = 123456
     nro_socio = 11223
@@ -124,16 +133,18 @@ def test_agregar_receptor():
     assert agregado
 
 
-def test_agregar_romaneo():
+def test_agregar_romaneo(auth):
     """Test agregar romaneo."""
+    wsltv=auth
     nro_romaneo = 321
     fecha_romaneo = "2018-12-10"
     agregado = wsltv.AgregarRomaneo(nro_romaneo, fecha_romaneo)
     assert agregado
 
 
-def test_agregar_fardo():
+def test_agregar_fardo(auth):
     """Test agregar fardo."""
+    wsltv=auth
     cod_trazabilidad = 356
     clase_tabaco = 4
     peso = 900
@@ -141,16 +152,18 @@ def test_agregar_fardo():
     assert agregado
 
 
-def test_agregar_precio_clase():
+def test_agregar_precio_clase(auth):
     """Test agregar precio clase."""
+    wsltv=auth
     clase_tabaco = 10
     precio = 190
     agregado = wsltv.AgregarPrecioClase(clase_tabaco, precio)
     assert agregado
 
 
-def test_agregar_retencion():
+def test_agregar_retencion(auth):
     """Test agregar retencion."""
+    wsltv=auth
     descripcion = "otra retencion"
     cod_retencion = 15
     importe = 12
@@ -158,8 +171,9 @@ def test_agregar_retencion():
     assert agregado
 
 
-def test_agregar_tributo():
+def test_agregar_tributo(auth):
     """Test agregar tributo."""
+    wsltv=auth
     codigo_tributo = 99
     descripcion = "Ganancias"
     base_imponible = 15000
@@ -171,36 +185,41 @@ def test_agregar_tributo():
     assert agregado
 
 
-def test_agregar_flete():
+def test_agregar_flete(auth):
     """Test agregar flete."""
+    wsltv=auth
     descripcion = "transporte"
     importe = 1000.00
     agregado = wsltv.AgregarFlete(descripcion, importe)
     assert agregado
 
 
-def test_agregar_bonificacion():
+def test_agregar_bonificacion(auth):
     """Test agregar bonificacion."""
+    wsltv=auth
     porcentaje = 10.0
     importe = 100.00
     agregado = wsltv.AgregarBonificacion(porcentaje, importe)
     assert agregado
 
 
-def test_autorizar_liquidacion():
+def test_autorizar_liquidacion(auth):
     """Test autorizar liquidacion."""
+    wsltv=auth
     autorizado = wsltv.AutorizarLiquidacion()
     assert autorizado
 
 
-def test_analizar_liquidacion():
+def test_analizar_liquidacion(auth):
     """Test analizar liquidacion."""
+    wsltv=auth
     # Metodo utilizado con AutorizarLiquidacion
     pass
 
 
-def test_crear_ajuste():
+def test_crear_ajuste(auth):
     """Test crear ajuste."""
+    wsltv=auth
     tipo_cbte = 151
     pto_vta = 2
     nro_cbte = 1
@@ -212,8 +231,9 @@ def test_crear_ajuste():
     assert ajuste
 
 
-def test_agregar_comprobante_ajustar():
+def test_agregar_comprobante_ajustar(auth):
     """Test agregar comprobante ajustar."""
+    wsltv=auth
     tipo_cbte = 151
     pto_vta = 3697
     nro_cbte = 2
@@ -221,14 +241,16 @@ def test_agregar_comprobante_ajustar():
     assert agregado
 
 
-def test_generar_ajuste_fisico():
+def test_generar_ajuste_fisico(auth):
     """Test generar ajuste fisico."""
+    wsltv=auth
     ajuste = wsltv.GenerarAjusteFisico()
     assert ajuste
 
 
-def test_ajustar_liquidacion():
+def test_ajustar_liquidacion(auth):
     """Test ajustar liquidacion."""
+    wsltv=auth
     tipo_cbte = 151
     pto_vta = 2958
     nro_cbte = 13
@@ -277,8 +299,9 @@ def test_ajustar_liquidacion():
     assert ajuste
 
 
-def test_consultar_liquidacion():
+def test_consultar_liquidacion(auth):
     """Test ocnsultar liquidacion."""
+    wsltv=auth
     tipo_cbte = 151
     pto_vta = 1
     nro_cbte = 0
@@ -286,58 +309,67 @@ def test_consultar_liquidacion():
     assert consulta
 
 
-def test_consultar_ultimo_comprobante():
+def test_consultar_ultimo_comprobante(auth):
     """Test consultar ultimo comprobante."""
+    wsltv=auth
     tipo_cbte = 151
     pto_vta = 1
     consulta = wsltv.ConsultarUltimoComprobante(tipo_cbte, pto_vta)
     assert consulta
 
 
-def test_consultar_provincias():
+def test_consultar_provincias(auth):
     """Test consultar provincias."""
+    wsltv=auth
     consulta = wsltv.ConsultarProvincias()
     assert consulta
 
 
-def test_consultar_condiciones_venta():
+def test_consultar_condiciones_venta(auth):
     """Tets consultar condiciones venta."""
+    wsltv=auth
     consulta = wsltv.ConsultarCondicionesVenta()
     assert consulta
 
 
-def test_consultar_tributos():
+def test_consultar_tributos(auth):
     """Test consultar tributos."""
+    wsltv=auth
     consulta = wsltv.ConsultarTributos()
     assert consulta
 
 
-def test_consultar_variedades_clases_tabaco():
+def test_consultar_variedades_clases_tabaco(auth):
     """Test consultar variedades de tabaco."""
+    wsltv=auth
     consulta = wsltv.ConsultarRetencionesTabacaleras()
     assert consulta
 
 
-def test_consultar_retenciones_tabacaleras():
+def test_consultar_retenciones_tabacaleras(auth):
     """Test consultar retenciones tabacaleras."""
+    wsltv=auth
     consulta = wsltv.ConsultarRetencionesTabacaleras()
     assert consulta
 
 
-def test_consultar_depositos_acopio():
+def test_consultar_depositos_acopio(auth):
     """Test consultar depositos de acopio."""
+    wsltv=auth
     consulta = wsltv.ConsultarDepositosAcopio()
     assert consulta
 
-
-def test_consultar_puntos_ventas():
+@pytest.mark.xfail
+def test_consultar_puntos_ventas(auth):
     """Test consultar puntos de venta."""
+    wsltv=auth
     consulta = wsltv.ConsultarPuntosVentas()
     assert consulta
 
-
-def test_mostrar_pdf():
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+def test_mostrar_pdf(auth):
     """Test mostrar PDF."""
+    wsltv=auth
     pdf = wsltv.GetParametro("pdf")
     if pdf:
         with open("liq.pdf", "wb") as f:

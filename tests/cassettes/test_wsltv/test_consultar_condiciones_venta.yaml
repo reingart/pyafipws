@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wsltv/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarCondicionesVentaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxNjUzNjI2ODY1IiBnZW5fdGltZT0iMTYyNDIwODIwNiIgZXhwX3RpbWU9IjE2MjQyNTE0NjYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NsdHYiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>PQp9vqI/1DTcG3/hRH+eOqj7jYWll2Y18PoJt0gkG1ooEUZb6Zpu7LgkfxkObuU7mWKCQ8LucKmbj+v9YqCyQk4tgGN4NkjJffBox4/oQAfgNa/DxzHBCvzXYaWLKzbAh1Gw5NiPnogGdirkM1009JstvvXhHiHpsvKbeCDtWxU=</sign><cuit>20267565393</cuit></auth></ser:ConsultarCondicionesVentaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1287'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wsltv/consultarCondicionesVenta"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsltv/LtvService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:ConsultarCondicionesVentaResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wsltv/"><respuesta><condicionVenta><codigo>1</codigo><descripcion>Contado</descripcion></condicionVenta><condicionVenta><codigo>96</codigo><descripcion>Cuenta
+        Corriente</descripcion></condicionVenta><condicionVenta><codigo>97</codigo><descripcion>Cheque</descripcion></condicionVenta><condicionVenta><codigo>99</codigo><descripcion>Otra</descripcion></condicionVenta></respuesta></ns2:ConsultarCondicionesVentaResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:58:16 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfceabd168b8212d9ccb89f6a32508c2be582f5afdb1f9ac317cd7a4ecf898c770;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

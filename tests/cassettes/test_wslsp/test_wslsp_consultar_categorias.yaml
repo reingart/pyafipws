@@ -1,0 +1,110 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarCategoriasReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMTY1NjczNjk2IiBnZW5fdGltZT0iMTYyNDIwODE0MyIgZXhwX3RpbWU9IjE2MjQyNTE0MDMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>sRzxCdzVSfX1OvEEUauHz5PKTvjStpOaSYafcrIXmTwg3uCOA6MkkaBWYSie1bqxEe/QIn2t1mI2Gp+xZI66VxLrhWQTqpO1xSTLlwTg0Q+9IHOnzjQ/Vcgt5VW1wqaNuQ20Kj6KneZSAFnCSnW9BWL2P9Oe3JAnE91aiEHeheU=</sign><cuit>20267565393</cuit></auth></ser:ConsultarCategoriasReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1275'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarCategorias"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarCategoriasResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslsp/\"><respuesta><categoria><codigo>510105</codigo><descripcion>Bovino
+        Vaca pre\xF1ada</descripcion></categoria><categoria><codigo>510203</codigo><descripcion>Bovino
+        Vaquillona pre\xF1ada</descripcion></categoria><categoria><codigo>51020103</codigo><descripcion>Bovino
+        Vaquillona Especial Liviana hasta 390 kilos (hasta 4 dientes)</descripcion></categoria><categoria><codigo>51020104</codigo><descripcion>Bovino
+        Vaquillona Especial Pesada m\xE1s de 390 kilos (hasta 4 dientes)</descripcion></categoria><categoria><codigo>51020201</codigo><descripcion>Bovino
+        Vaquillona Regular (hasta 4 dientes)</descripcion></categoria><categoria><codigo>51020202</codigo><descripcion>Bovino
+        Vaquillona de Invernada</descripcion></categoria><categoria><codigo>51030103</codigo><descripcion>Bovino
+        Novillito Especial Liviano hasta 390 kilos (hasta 4 dientes)</descripcion></categoria><categoria><codigo>51030104</codigo><descripcion>Bovino
+        Novillito Especial Pesado m\xE1s de 390 kilos (hasta 4 dientes)</descripcion></categoria><categoria><codigo>51030105</codigo><descripcion>Bovino
+        Novillito Regular  (hasta 4 dientes)</descripcion></categoria><categoria><codigo>510303</codigo><descripcion>Bovino
+        Novillito de Invernada</descripcion></categoria><categoria><codigo>510107</codigo><descripcion>Bovino
+        Vaca con cr\xEDa al pie</descripcion></categoria><categoria><codigo>510204</codigo><descripcion>Bovino
+        Vaca Especial Joven Liviana hasta 430 kilos (6 dientes)</descripcion></categoria><categoria><codigo>510205</codigo><descripcion>Bovino
+        Vaca Especial Joven Pesada m\xE1s de 430 kilos (6 dientes)</descripcion></categoria><categoria><codigo>510206</codigo><descripcion>Bovino
+        Vaca Especial Adulta Liviana hasta 430 kilos (8 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>510207</codigo><descripcion>Bovino
+        Vaca Especial Adulta Pesada m\xE1s de 430 kilos (8 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>510208</codigo><descripcion>Bovino
+        Vaca Regular (6 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>510209</codigo><descripcion>Bovino
+        Vaca Conserva Buena (6 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>510210</codigo><descripcion>Bovino
+        Vaca Conserva Inferior (6 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>51040203</codigo><descripcion>Bovino
+        Novillo Especial Joven Liviano hasta 430 kilos (6 dientes)</descripcion></categoria><categoria><codigo>51040204</codigo><descripcion>Bovino
+        Novillo Especial Joven Pesado m\xE1s de 430 kilos (6 dientes)</descripcion></categoria><categoria><codigo>51040205</codigo><descripcion>Bovino
+        Novillo Especial Adulto Liviano hasta 430 kilos (8 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>51040206</codigo><descripcion>Bovino
+        Novillo Especial Adulto Pesado m\xE1s de 430 kilos (8 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>51040207</codigo><descripcion>Bovino
+        Novillo Regular Liviano hasta 430 kilos (6 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>51040208</codigo><descripcion>Bovino
+        Novillo Regular Pesado m\xE1s de 430 kilos (6 o m\xE1s dientes)</descripcion></categoria><categoria><codigo>510501</codigo><descripcion>Bovino
+        Ternero de Invernada</descripcion></categoria><categoria><codigo>510601</codigo><descripcion>Bovino
+        Ternera de Invernada</descripcion></categoria><categoria><codigo>510703</codigo><descripcion>Bovino
+        Toro Especial (m\xE1s de 2 dientes)</descripcion></categoria><categoria><codigo>5105</codigo><descripcion>Bovino
+        Terneros hasta 350 kilos</descripcion></categoria><categoria><codigo>1201</codigo><descripcion>Bubalino
+        Vaca</descripcion></categoria><categoria><codigo>1202</codigo><descripcion>Bubalino
+        Vaquillona</descripcion></categoria><categoria><codigo>1203</codigo><descripcion>Bubalino
+        Novillo</descripcion></categoria><categoria><codigo>1204</codigo><descripcion>Bubalino
+        Novillito</descripcion></categoria><categoria><codigo>1205</codigo><descripcion>Bubalino
+        Ternero</descripcion></categoria><categoria><codigo>1206</codigo><descripcion>Bubalino
+        Ternera</descripcion></categoria><categoria><codigo>1207</codigo><descripcion>Bubalino
+        Toro</descripcion></categoria><categoria><codigo>1208</codigo><descripcion>Bubalino
+        Bueyes</descripcion></categoria><categoria><codigo>1209</codigo><descripcion>Bubalino
+        Torito</descripcion></categoria><categoria><codigo>510704</codigo><descripcion>Bovino
+        Toro Regular (m\xE1s de 2 dientes)</descripcion></categoria><categoria><codigo>510705</codigo><descripcion>Bovino
+        Toro Reproductor</descripcion></categoria><categoria><codigo>510706</codigo><descripcion>Bovino
+        Torito de Invernada</descripcion></categoria><categoria><codigo>510903</codigo><descripcion>Bovino
+        MEJ Especial Liviano hasta 430 kilos (hasta 2 dientes)</descripcion></categoria><categoria><codigo>510904</codigo><descripcion>Bovino
+        MEJ Especial Pesado m\xE1s de 430 kilos (hasta 2 dientes)</descripcion></categoria><categoria><codigo>510905</codigo><descripcion>Bovino
+        MEJ Regular (hasta 2 dientes)</descripcion></categoria><categoria><codigo>5101</codigo><descripcion>Vaca
+        Buena</descripcion></categoria><categoria><codigo>5102</codigo><descripcion>Vaca
+        Regular</descripcion></categoria><categoria><codigo>5103</codigo><descripcion>Vaca
+        Conserva Buena</descripcion></categoria><categoria><codigo>5104</codigo><descripcion>Vaca
+        Conserva Inferior</descripcion></categoria><categoria><codigo>51020301</codigo><descripcion>Bovino
+        Vaquillona Vac\xEDa</descripcion></categoria><categoria><codigo>510211</codigo><descripcion>Bovino
+        Vaca de Invernada</descripcion></categoria><categoria><codigo>510212</codigo><descripcion>Bovino
+        Vaca Vac\xEDa</descripcion></categoria><categoria><codigo>51040209</codigo><descripcion>Bovino
+        Novillo de Invernada</descripcion></categoria><categoria><codigo>5107</codigo><descripcion>Bovino
+        Ternera</descripcion></categoria><categoria><codigo>510707</codigo><descripcion>Bovino
+        Toro de Invernada</descripcion></categoria><categoria><codigo>510708</codigo><descripcion>Bovino
+        Toruno de Invernada</descripcion></categoria><categoria><codigo>510709</codigo><descripcion>Bovino
+        Torito Reproductor</descripcion></categoria><categoriaPorcina><codigo>520301</codigo><descripcion>Porcina
+        Padrillo</descripcion></categoriaPorcina><categoriaPorcina><codigo>520302</codigo><descripcion>Porcina
+        Cerda / Chancha</descripcion></categoriaPorcina><categoriaPorcina><codigo>52030301</codigo><descripcion>Porcina
+        Lechones Livianos</descripcion></categoriaPorcina><categoriaPorcina><codigo>52030302</codigo><descripcion>Porcina
+        Lechones Pesados Y Cachorros Parrilleros</descripcion></categoriaPorcina><categoriaPorcina><codigo>520304</codigo><descripcion>Porcina
+        Cap\xF3n</descripcion></categoriaPorcina><categoriaPorcina><codigo>520305</codigo><descripcion>Porcina
+        Cachorro</descripcion></categoriaPorcina><categoriaPorcina><codigo>520306</codigo><descripcion>Porcina
+        Machos Enteros Inmunocastrados</descripcion></categoriaPorcina><categoriaPorcina><codigo>520307</codigo><descripcion>Porcina
+        Cachorra</descripcion></categoriaPorcina><categoriaAvicola><codigo>1</codigo><descripcion>Pollos
+        Parrilleros</descripcion></categoriaAvicola><categoriaAvicola><codigo>2</codigo><descripcion>Gallinas
+        Ponedoras</descripcion></categoriaAvicola><categoriaAvicola><codigo>3</codigo><descripcion>Otras
+        Aves</descripcion></categoriaAvicola><categoriaAvicola><codigo>4</codigo><descripcion>Pollos
+        Parrilleros - Sin Lote</descripcion></categoriaAvicola><categoriaAvicola><codigo>5</codigo><descripcion>Reproductores
+        Abuelos</descripcion></categoriaAvicola><categoriaAvicola><codigo>6</codigo><descripcion>Reproductores
+        Padres Livianos</descripcion></categoriaAvicola><categoriaAvicola><codigo>7</codigo><descripcion>Reproductores
+        Padres Pesados</descripcion></categoriaAvicola><metadata><servidor>vivaldi</servidor><fechaHora>2021-06-20T13:57:23</fechaHora></metadata></respuesta></ns2:ConsultarCategoriasResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:57:23 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf6af10042ee49af0fe2a2aadba27336172b85fde0a41e9c2e7181435aa7207fbd;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

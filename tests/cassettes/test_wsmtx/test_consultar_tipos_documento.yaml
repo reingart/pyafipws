@@ -1,0 +1,68 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposDocumentoRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI1MDM4MTE0NyIgZ2VuX3RpbWU9IjE2MjQyMDgzMDMiIGV4cF90aW1lPSIxNjI0MjUxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzbXR4Y2EiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>oe2g4L1Ra3AAsWZcfZrP6rF4BzPa3oYk++zEyRfeq1r/aixKI/WXnczVjPs9/vbl9qlXE3KCK9CvLi6v7UtiMXpGuNdDyntqQnZKyS+bPn/Z9JBvqq7uucYB9R0HBy5AFOC5TVA0rePYkTcPRSCWDMBPtsKaNOO8v8xDCl542tQ=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest></ser:consultarTiposDocumentoRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1338'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/consultarTiposDocumento"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns1:consultarTiposDocumentoResponse
+        xmlns:ns1=\"http://impl.service.wsmtxca.afip.gov.ar/service/\"><arrayTiposDocumento><codigoDescripcion><codigo>90</codigo><descripcion>LC</descripcion></codigoDescripcion><codigoDescripcion><codigo>91</codigo><descripcion>CI
+        Extranjera</descripcion></codigoDescripcion><codigoDescripcion><codigo>92</codigo><descripcion>en
+        tr\xE1mite</descripcion></codigoDescripcion><codigoDescripcion><codigo>93</codigo><descripcion>Acta
+        Nacimiento</descripcion></codigoDescripcion><codigoDescripcion><codigo>95</codigo><descripcion>CI
+        Bs. As. RNP</descripcion></codigoDescripcion><codigoDescripcion><codigo>96</codigo><descripcion>DNI</descripcion></codigoDescripcion><codigoDescripcion><codigo>94</codigo><descripcion>Pasaporte</descripcion></codigoDescripcion><codigoDescripcion><codigo>0</codigo><descripcion>CI
+        Polic\xEDa Federal</descripcion></codigoDescripcion><codigoDescripcion><codigo>1</codigo><descripcion>CI
+        Buenos Aires</descripcion></codigoDescripcion><codigoDescripcion><codigo>2</codigo><descripcion>CI
+        Catamarca</descripcion></codigoDescripcion><codigoDescripcion><codigo>3</codigo><descripcion>CI
+        C\xF3rdoba</descripcion></codigoDescripcion><codigoDescripcion><codigo>4</codigo><descripcion>CI
+        Corrientes</descripcion></codigoDescripcion><codigoDescripcion><codigo>5</codigo><descripcion>CI
+        Entre R\xEDos</descripcion></codigoDescripcion><codigoDescripcion><codigo>6</codigo><descripcion>CI
+        Jujuy</descripcion></codigoDescripcion><codigoDescripcion><codigo>7</codigo><descripcion>CI
+        Mendoza</descripcion></codigoDescripcion><codigoDescripcion><codigo>8</codigo><descripcion>CI
+        La Rioja</descripcion></codigoDescripcion><codigoDescripcion><codigo>9</codigo><descripcion>CI
+        Salta</descripcion></codigoDescripcion><codigoDescripcion><codigo>10</codigo><descripcion>CI
+        San Juan</descripcion></codigoDescripcion><codigoDescripcion><codigo>11</codigo><descripcion>CI
+        San Luis</descripcion></codigoDescripcion><codigoDescripcion><codigo>12</codigo><descripcion>CI
+        Santa Fe</descripcion></codigoDescripcion><codigoDescripcion><codigo>13</codigo><descripcion>CI
+        Santiago del Estero</descripcion></codigoDescripcion><codigoDescripcion><codigo>14</codigo><descripcion>CI
+        Tucum\xE1n</descripcion></codigoDescripcion><codigoDescripcion><codigo>16</codigo><descripcion>CI
+        Chaco</descripcion></codigoDescripcion><codigoDescripcion><codigo>17</codigo><descripcion>CI
+        Chubut</descripcion></codigoDescripcion><codigoDescripcion><codigo>18</codigo><descripcion>CI
+        Formosa</descripcion></codigoDescripcion><codigoDescripcion><codigo>19</codigo><descripcion>CI
+        Misiones</descripcion></codigoDescripcion><codigoDescripcion><codigo>20</codigo><descripcion>CI
+        Neuqu\xE9n</descripcion></codigoDescripcion><codigoDescripcion><codigo>21</codigo><descripcion>CI
+        La Pampa</descripcion></codigoDescripcion><codigoDescripcion><codigo>22</codigo><descripcion>CI
+        R\xEDo Negro</descripcion></codigoDescripcion><codigoDescripcion><codigo>23</codigo><descripcion>CI
+        Santa Cruz</descripcion></codigoDescripcion><codigoDescripcion><codigo>24</codigo><descripcion>CI
+        Tierra del Fuego</descripcion></codigoDescripcion><codigoDescripcion><codigo>80</codigo><descripcion>CUIT</descripcion></codigoDescripcion><codigoDescripcion><codigo>86</codigo><descripcion>CUIL</descripcion></codigoDescripcion><codigoDescripcion><codigo>87</codigo><descripcion>CDI</descripcion></codigoDescripcion><codigoDescripcion><codigo>89</codigo><descripcion>LE</descripcion></codigoDescripcion></arrayTiposDocumento></ns1:consultarTiposDocumentoResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sun, 20 Jun 2021 17:00:08 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfe853ff013f3126d48465fd0c8b5cd7e071f758a56ba5907ebaec7cbe5286cdf0;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

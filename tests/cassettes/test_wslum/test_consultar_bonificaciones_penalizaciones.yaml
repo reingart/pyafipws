@@ -1,0 +1,74 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslum/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarBonificacionesPenalizacionesReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyNzI4NTYzNjQ0IiBnZW5fdGltZT0iMTYyNDIwODI1NyIgZXhwX3RpbWU9IjE2MjQyNTE1MTciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NsdW0iIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>DahqGiu2TkyX04UgMRD02uLzsf6mhszv5QBfe/MzNH+YQXUtfX+8KjjZzdZmJ1doR+XEPrHcFR4U+wN0eQGVu/H0DnVAsHoNFSGwHrjf4JtkjhiusiZgk+7HzZCyMd1c9l8VQvmBF/21A3t7K+SuWUp3pbF4bEqkek0Ulp2zrF4=</sign><cuit>20267565393</cuit></auth></ser:ConsultarBonificacionesPenalizacionesReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1311'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslum/consultarBonificacionesPenalizaciones"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslum/LumService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarBonificacionesPenalizacionesResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslum/\"><respuesta><tipo><codigo>BC</codigo><descripcion>Bonificaci\xF3n
+        Calidad</descripcion><subtipo><codigo>1</codigo><descripcion>Resultado Recuento
+        C\xE9lulas Som\xE1ticas (RCS/ml/miles)</descripcion><valor>N3</valor><signo>+</signo></subtipo><subtipo><codigo>2</codigo><descripcion>Resultado
+        Recuento Unidades Formadoras de Colonias (UFC/ml/miles)</descripcion><valor>N3</valor><signo>+</signo></subtipo><subtipo><codigo>3</codigo><descripcion>Resultado
+        BRUCELOSIS</descripcion><valor>LIBRE</valor><signo>+</signo></subtipo><subtipo><codigo>4</codigo><descripcion>Resultado
+        TUBERCULOSIS</descripcion><valor>LIBRE</valor><signo>+</signo></subtipo><subtipo><codigo>5</codigo><descripcion>Resultado
+        TEMPERATURA (\xBAC)</descripcion><valor>TEMP</valor><signo>+</signo></subtipo><subtipo><codigo>6</codigo><descripcion>Resultado
+        Crioscop\xEDa (\xB0C)</descripcion><valor>CRIO</valor><signo>-</signo></subtipo></tipo><tipo><codigo>BM</codigo><descripcion>Bonificaci\xF3n
+        Comercial</descripcion><subtipo><codigo>21</codigo><descripcion>Buenas pr\xE1cticas
+        de manejo de tambos</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>22</codigo><descripcion>Certificado
+        UE (Uni\xF3n Europea)</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>23</codigo><descripcion>Confecci\xF3n
+        de silaje y siembra de pasturas</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>24</codigo><descripcion>Ayuda
+        Forraje</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>25</codigo><descripcion>Tambo
+        en saneamiento</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>26</codigo><descripcion>Libre
+        Otras enfermedades</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>20</codigo><descripcion>Volumen</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>27</codigo><descripcion>Crecimiento</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>28</codigo><descripcion>Crecimiento
+        Interanual</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>29</codigo><descripcion>Crecimiento
+        con mes anterior</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>30</codigo><descripcion>Adicional
+        leche plus</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>31</codigo><descripcion>Volumen
+        unificado</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>32</codigo><descripcion>Bonificaci\xF3n
+        especial</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>33</codigo><descripcion>Bonificaci\xF3n
+        compensatoria</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>34</codigo><descripcion>Permanencia</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>35</codigo><descripcion>Antig\xFCedad
+        (tiempo de relaci\xF3n comercial)</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>36</codigo><descripcion>Regi\xF3n</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>37</codigo><descripcion>Cercan\xEDa
+        (distancia a planta)</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>38</codigo><descripcion>Sistema
+        de Aseguramiento de la Calidad</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>39</codigo><descripcion>Premio
+        por tecnolog\xEDa aplicada a la calidad</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>40</codigo><descripcion>Certificaci\xF3n
+        de Buenas Pr\xE1cticas de Manejo agr\xEDcola (Aseguramiento de Calidad)</descripcion><valor>NC</valor><signo>+</signo></subtipo><subtipo><codigo>41</codigo><descripcion>Otros</descripcion><valor>TXT</valor><signo>+</signo></subtipo></tipo><tipo><codigo>DC</codigo><descripcion>D\xE9bito
+        Comercial</descripcion><subtipo><codigo>50</codigo><descripcion>D\xE9bito
+        Comercial</descripcion><valor>TXT</valor><signo>-</signo></subtipo><subtipo><codigo>51</codigo><descripcion>Otros</descripcion><valor>TXT</valor><signo>-</signo></subtipo></tipo><tipo><codigo>PC</codigo><descripcion>Penalizaci\xF3n
+        Calidad</descripcion><subtipo><codigo>10</codigo><descripcion>Resultado Recuento
+        C\xE9lulas Som\xE1ticas (RCS/ml/miles)</descripcion><valor>N3</valor><signo>-</signo></subtipo><subtipo><codigo>11</codigo><descripcion>Resultado
+        Recuento Unidades Formadoras de Colonias (UFC/ml/miles)</descripcion><valor>N3</valor><signo>-</signo></subtipo><subtipo><codigo>12</codigo><descripcion>Resultado
+        Crioscop\xEDa (\xB0C)</descripcion><valor>CRIO</valor><signo>-</signo></subtipo><subtipo><codigo>13</codigo><descripcion>Resultado
+        BRUCELOSIS</descripcion><valor>NOLIB</valor><signo>-</signo></subtipo><subtipo><codigo>14</codigo><descripcion>Resultado
+        TUBERCULOSIS</descripcion><valor>NOLIB</valor><signo>-</signo></subtipo><subtipo><codigo>15</codigo><descripcion>Resultado
+        TEMPERATURA (\xBAC)</descripcion><valor>TEMP</valor><signo>-</signo></subtipo><subtipo><codigo>52</codigo><descripcion>Inhibidores</descripcion><valor>TXT</valor><signo>-</signo></subtipo></tipo></respuesta></ns2:ConsultarBonificacionesPenalizacionesResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:59:02 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf53f6a50a358cb8db21371721efb42d8f37a6bfab13b2d51eedd672e66bef7aba;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1
