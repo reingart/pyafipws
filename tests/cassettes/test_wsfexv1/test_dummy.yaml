@@ -2,7 +2,7 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
       xmlns:ser=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\">\n<soapenv:Header/>\n<soapenv:Body>\n
-      \   <ser:loginCms>\n    <in0>MIIG/AYJKoZIhvcNAQcCoIIG7TCCBukCAQExDzANBglghkgBZQMEAgEFADCCASAG\nCSqGSIb3DQEHAaCCAREEggENPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0i\nVVRGLTgiPz48bG9naW5UaWNrZXRSZXF1ZXN0IHZlcnNpb249IjEuMCI+PGhlYWRl\ncj48dW5pcXVlSWQ+MTYyNDE4ODM0NDwvdW5pcXVlSWQ+PGdlbmVyYXRpb25UaW1l\nPjIwMjEtMDYtMjBUMTE6NTU6NDQ8L2dlbmVyYXRpb25UaW1lPjxleHBpcmF0aW9u\nVGltZT4yMDIxLTA2LTIwVDIxOjU1OjQ0PC9leHBpcmF0aW9uVGltZT48L2hlYWRl\ncj48c2VydmljZT53c2ZleDwvc2VydmljZT48L2xvZ2luVGlja2V0UmVxdWVzdD6g\nggNTMIIDTzCCAjegAwIBAgIIHJrQuzZhH+gwDQYJKoZIhvcNAQENBQAwODEaMBgG\nA1UEAwwRQ29tcHV0YWRvcmVzIFRlc3QxDTALBgNVBAoMBEFGSVAxCzAJBgNVBAYT\nAkFSMB4XDTE5MDcxMzE2NDEwM1oXDTIxMDcxMjE2NDEwM1owNTEYMBYGA1UEAwwP\ncmVpbmdhcnQyMDE5cHViMRkwFwYDVQQFExBDVUlUIDIwMjY3NTY1MzkzMIIBIjAN\nBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Mc/IZ8X3x8YhIa0SQ89VjSOhEdY\ncJnffa5QqAtqISQ3Di382B4XOHDRg3CDzt/jck3fKEV7K/wfgS33KDAv2EWW2mTJ\naJZHlLSY05CtaesHpxlBCYlzTc7z0aABOx+e9S1R80R5LZ1a+kzEcgODeHi4PKu0\nZ1qHvkotrZ9FEx2kl3bwdX4LjyxCKdeqL4tY1OOkpNq6sT5geGBsHn8yQNVz7iP2\nOUYO7Acs3so7GLLrZtb/zWx1xyWB5PVs8DGY2iK22H5k2jnvas9gzntshvRG6c+/\nskWOG7vtFp2qL7TvAathE5YQEp/2T1iLcgxrqtUV2K7LHifvJghKxgN15QIDAQAB\no2AwXjAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFLOy0//96bre3o2vESGc1iB9\n8k9vMB0GA1UdDgQWBBSNWsHTyranSfK1GGDUOLjPYe3Z6TAOBgNVHQ8BAf8EBAMC\nBeAwDQYJKoZIhvcNAQENBQADggEBAFWW1a5sDm4e+JrZgCM4CwHhy2JeU9a8Glqp\nc/VWkf9vXYaacHtARRdNgZNXbEB4tZVYIUcLEKvMgvEs2owllXiSxlIhWiCWPdRW\n8aocNASqBD7K3U1zppZybC8ZXOwvD2Wh8U9s6crX7QX9Ctx2aS19a7ipHHfAOG8Z\n90TzbluIIFPggiLKX76LVuW8c4zB5dgQJsCanML4jMwMUj9UEIulqYY3u835zhPw\nKFtTMhnea332cwLdApMDU5uMYVa6dpd58Rb36UTDvJc8OHV7eShgGSajEZFkvuwj\nssnFka1A5LbyE1CNAJnn/nWH84uo6dDj59Em1TgXDQ+g/RsbiZQxggJWMIICUgIB\nATBEMDgxGjAYBgNVBAMMEUNvbXB1dGFkb3JlcyBUZXN0MQ0wCwYDVQQKDARBRklQ\nMQswCQYDVQQGEwJBUgIIHJrQuzZhH+gwDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI\nhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEwNjIwMTY1NTQ0\nWjAvBgkqhkiG9w0BCQQxIgQgzLb/1Ot5y5+YDVcbKX9CJiilMsEGnG8KNbw2VxnO\n4WgweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG\nCWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN\nAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA\nc0h5tszX8q6xupl6aNzkcimmV5/moTQZjb7TVZ/pOdlxzRLN+zAD2m0yRnlrWEIs\n7sXH3LR1T3OuqjSCPLJ/E9G+8ZJsC5lbK3H5O9acaoDPs1PgpQa9yPPLdJux/kpv\njP8FnDvdj1EnF76wx9/N/nmSLdejt9zuVf3UA2IYtNl8CPq9Tz/dNDvnekjiLsWW\noNAVdIrq4ORI2cX0joWix68tuzHYs/wtD5ovDbOELXF2MSHL6R7l6mhXxh0LB1gi\nylF8QjrrZ2fiwkbgXrVuGL5s8A8lx32poBxTmDZ6UrAkZLFd3ehiEygTWi0hAwRU\nH3ZuG4Z8o/ynrqXDNjz1Ug==\n\n</in0></ser:loginCms>\n</soapenv:Body>\n</soapenv:Envelope>"
+      \   <ser:loginCms>\n    <in0>MIIG/AYJKoZIhvcNAQcCoIIG7TCCBukCAQExDzANBglghkgBZQMEAgEFADCCASAG\nCSqGSIb3DQEHAaCCAREEggENPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0i\nVVRGLTgiPz48bG9naW5UaWNrZXRSZXF1ZXN0IHZlcnNpb249IjEuMCI+PGhlYWRl\ncj48dW5pcXVlSWQ+MTYyNDMwMzAyMTwvdW5pcXVlSWQ+PGdlbmVyYXRpb25UaW1l\nPjIwMjEtMDYtMjFUMTk6NDc6MDE8L2dlbmVyYXRpb25UaW1lPjxleHBpcmF0aW9u\nVGltZT4yMDIxLTA2LTIyVDA1OjQ3OjAxPC9leHBpcmF0aW9uVGltZT48L2hlYWRl\ncj48c2VydmljZT53c2ZleDwvc2VydmljZT48L2xvZ2luVGlja2V0UmVxdWVzdD6g\nggNTMIIDTzCCAjegAwIBAgIIHJrQuzZhH+gwDQYJKoZIhvcNAQENBQAwODEaMBgG\nA1UEAwwRQ29tcHV0YWRvcmVzIFRlc3QxDTALBgNVBAoMBEFGSVAxCzAJBgNVBAYT\nAkFSMB4XDTE5MDcxMzE2NDEwM1oXDTIxMDcxMjE2NDEwM1owNTEYMBYGA1UEAwwP\ncmVpbmdhcnQyMDE5cHViMRkwFwYDVQQFExBDVUlUIDIwMjY3NTY1MzkzMIIBIjAN\nBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Mc/IZ8X3x8YhIa0SQ89VjSOhEdY\ncJnffa5QqAtqISQ3Di382B4XOHDRg3CDzt/jck3fKEV7K/wfgS33KDAv2EWW2mTJ\naJZHlLSY05CtaesHpxlBCYlzTc7z0aABOx+e9S1R80R5LZ1a+kzEcgODeHi4PKu0\nZ1qHvkotrZ9FEx2kl3bwdX4LjyxCKdeqL4tY1OOkpNq6sT5geGBsHn8yQNVz7iP2\nOUYO7Acs3so7GLLrZtb/zWx1xyWB5PVs8DGY2iK22H5k2jnvas9gzntshvRG6c+/\nskWOG7vtFp2qL7TvAathE5YQEp/2T1iLcgxrqtUV2K7LHifvJghKxgN15QIDAQAB\no2AwXjAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFLOy0//96bre3o2vESGc1iB9\n8k9vMB0GA1UdDgQWBBSNWsHTyranSfK1GGDUOLjPYe3Z6TAOBgNVHQ8BAf8EBAMC\nBeAwDQYJKoZIhvcNAQENBQADggEBAFWW1a5sDm4e+JrZgCM4CwHhy2JeU9a8Glqp\nc/VWkf9vXYaacHtARRdNgZNXbEB4tZVYIUcLEKvMgvEs2owllXiSxlIhWiCWPdRW\n8aocNASqBD7K3U1zppZybC8ZXOwvD2Wh8U9s6crX7QX9Ctx2aS19a7ipHHfAOG8Z\n90TzbluIIFPggiLKX76LVuW8c4zB5dgQJsCanML4jMwMUj9UEIulqYY3u835zhPw\nKFtTMhnea332cwLdApMDU5uMYVa6dpd58Rb36UTDvJc8OHV7eShgGSajEZFkvuwj\nssnFka1A5LbyE1CNAJnn/nWH84uo6dDj59Em1TgXDQ+g/RsbiZQxggJWMIICUgIB\nATBEMDgxGjAYBgNVBAMMEUNvbXB1dGFkb3JlcyBUZXN0MQ0wCwYDVQQKDARBRklQ\nMQswCQYDVQQGEwJBUgIIHJrQuzZhH+gwDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZI\nhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjEwNjIyMDA0NzAx\nWjAvBgkqhkiG9w0BCQQxIgQgiT0y8kspvXf6WehzHIyM8gJbXVnTb48BI+Jq2L3p\nwasweQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG\nCWCGSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcN\nAwICAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEA\nnXw+9rItaPFp0mS2hojvij1c5iDe5LgatU0T4UmHv8oNgvugySbbfWkT7vytZFL3\nU3aroAsB394RfLXJ6F2DCBUFaVgCvN/oYpS25BuGfgaJ+Rnmgr+E2nOYz0k7xS7r\n9iy+iX20Y995Th91pKhXwwr4RjB8JoOL/50HtIMXX33/mie6YyHXLt0F6TtKXaXv\nX8NFo9LBUH0OlGhJs6EPnEeKQPNS9vA7WVbO/V4OopXatGLobjbT32NNzO7PCle7\nxZsDqR0FeW98xIegFSbFF2HmhVGwT9DbVNvtDB1K62SG+1dTRCc7BfMosp5gFpCj\nkd2HOQQEmUuWpD22CWabkQ==\n\n</in0></ser:loginCms>\n</soapenv:Body>\n</soapenv:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
@@ -24,19 +24,19 @@ interactions:
         version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;\n&lt;loginTicketResponse
         version=&quot;1.0&quot;&gt;\n    &lt;header&gt;\n        &lt;source&gt;CN=wsaahomo,
         O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239&lt;/source&gt;\n        &lt;destination&gt;SERIALNUMBER=CUIT
-        20267565393, CN=reingart2019pub&lt;/destination&gt;\n        &lt;uniqueId&gt;1925434334&lt;/uniqueId&gt;\n
-        \       &lt;generationTime&gt;2021-06-20T13:55:48.164-03:00&lt;/generationTime&gt;\n
-        \       &lt;expirationTime&gt;2021-06-21T01:55:48.164-03:00&lt;/expirationTime&gt;\n
-        \   &lt;/header&gt;\n    &lt;credentials&gt;\n        &lt;token&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==&lt;/token&gt;\n
-        \       &lt;sign&gt;Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=&lt;/sign&gt;\n
+        20267565393, CN=reingart2019pub&lt;/destination&gt;\n        &lt;uniqueId&gt;3163917211&lt;/uniqueId&gt;\n
+        \       &lt;generationTime&gt;2021-06-21T21:47:09.033-03:00&lt;/generationTime&gt;\n
+        \       &lt;expirationTime&gt;2021-06-22T09:47:09.033-03:00&lt;/expirationTime&gt;\n
+        \   &lt;/header&gt;\n    &lt;credentials&gt;\n        &lt;token&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K&lt;/token&gt;\n
+        \       &lt;sign&gt;eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=&lt;/sign&gt;\n
         \   &lt;/credentials&gt;\n&lt;/loginTicketResponse&gt;\n</loginCmsReturn></loginCmsResponse></soapenv:Body></soapenv:Envelope>"
     headers:
       Content-Type:
       - text/xml;charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:55:48 GMT
+      - Tue, 22 Jun 2021 00:47:09 GMT
       Set-Cookie:
-      - TS01b14f84=0145b27a976818547d3c1e5d6af841193b37b9f720c8464afc895a285a4fba07e4656e3f71;
+      - TS01b14f84=0145b27a974fcbfc86c8c2168c997ea8ad4a1ce0a45abb47ccfd60f2679a167414617fc192;
         Path=/
       Transfer-Encoding:
       - chunked
@@ -867,13 +867,13 @@ interactions:
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:55:50 GMT
+      - Tue, 22 Jun 2021 00:47:15 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf0a2377e8e906bf4f7d60d26dfdb4acc05fd69f8d12323d79500c89b02ee7f8eb;
+      - TS01983a04=01439f1ddfaaffa21286db926e9eb8f05fc15a872dfe3d27f70eabb978c8d19c404b895e20;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -893,41 +893,41 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetLast_CMP xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit><Pto_venta>7</Pto_venta><Cbte_Tipo>19</Cbte_Tipo></Auth></FEXGetLast_CMP>\n</soap:Body>\n</soap:Envelope>"
+      \   \n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1403'
+      - '269'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
-      - '"http://ar.gov.afip.dif.fexv1/FEXGetLast_CMP"'
+      - '"http://ar.gov.afip.dif.fexv1/FEXDummy"'
       user-agent:
       - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
     method: POST
     uri: https://wswhomo.afip.gov.ar/wsfexv1/service.asmx
   response:
     body:
-      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
-        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:55:52.385292-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetLast_CMPResponse
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetLast_CMPResult><FEXResult_LastCMP><Cbte_nro>411</Cbte_nro><Cbte_fecha>20210618</Cbte_fecha></FEXResult_LastCMP><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetLast_CMPResult></FEXGetLast_CMPResponse></soap:Body></soap:Envelope>\r\n"
+      string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
+        xmlns="http://ar.gov.afip.dif.fexv1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:18.0143924-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXDummyResponse
+        xmlns="http://ar.gov.afip.dif.fexv1/"><FEXDummyResult><AppServer>OK</AppServer><DbServer>OK</DbServer><AuthServer>OK</AuthServer></FEXDummyResult></FEXDummyResponse></soap:Body></soap:Envelope>
     headers:
       Cache-Control:
       - private, max-age=0
       Content-Length:
-      - '798'
+      - '626'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:55:52 GMT
+      - Tue, 22 Jun 2021 00:47:18 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf1f73596d46538e4e7002ce703430104a1e525a567e5f571d09202fa2c01db3ed;
+      - TS01983a04=01439f1ddfa44194bbc8863c92ab6dbebe27a644ce4bcee559e54f749138c9a78e536e626a;
         Path=/
       Strict-Transport-Security:
       - nosniff

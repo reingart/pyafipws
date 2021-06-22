@@ -2,12 +2,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetLast_CMP xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit><Pto_venta>7</Pto_venta><Cbte_Tipo>19</Cbte_Tipo></Auth></FEXGetLast_CMP>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetLast_CMP xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit><Pto_venta>7</Pto_venta><Cbte_Tipo>19</Cbte_Tipo></Auth></FEXGetLast_CMP>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1403'
+      - '1399'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -20,23 +20,23 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:55:56.604042-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetLast_CMPResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:20.5612674-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetLast_CMPResponse
         xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetLast_CMPResult><FEXResult_LastCMP><Cbte_nro>411</Cbte_nro><Cbte_fecha>20210618</Cbte_fecha></FEXResult_LastCMP><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetLast_CMPResult></FEXGetLast_CMPResponse></soap:Body></soap:Envelope>\r\n"
     headers:
       Cache-Control:
       - private, max-age=0
       Content-Length:
-      - '798'
+      - '799'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:55:56 GMT
+      - Tue, 22 Jun 2021 00:47:20 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf17a3c967d6c8971c6a58cc0fced5d1ca3a3412506ee93fa5a7054f6a72945550;
+      - TS01983a04=01439f1ddf20205e8b575b596259c29782c5035cda2919cba1845ab2cf5a69a07b37c7d44d;
         Path=/
       Strict-Transport-Security:
       - nosniff

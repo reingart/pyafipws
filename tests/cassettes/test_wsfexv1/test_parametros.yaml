@@ -2,12 +2,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_Cbte_Tipo xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_Cbte_Tipo>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_Cbte_Tipo xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_Cbte_Tipo>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1368'
+      - '1364'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -20,7 +20,7 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:08.916542-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_Cbte_TipoResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:40.2332427-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_Cbte_TipoResponse
         xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetPARAM_Cbte_TipoResult><FEXResultGet><ClsFEXResponse_Cbte_Tipo><Cbte_Id>19</Cbte_Id><Cbte_Ds>Facturas
         de Exportaci\xF3n \r\n</Cbte_Ds><Cbte_vig_desde>20100101</Cbte_vig_desde><Cbte_vig_hasta>NULL</Cbte_vig_hasta></ClsFEXResponse_Cbte_Tipo><ClsFEXResponse_Cbte_Tipo><Cbte_Id>20</Cbte_Id><Cbte_Ds>Nota
         de D\xE9bito por Operaciones con el Exterior\r\n</Cbte_Ds><Cbte_vig_desde>20100101</Cbte_vig_desde><Cbte_vig_hasta>NULL</Cbte_vig_hasta></ClsFEXResponse_Cbte_Tipo><ClsFEXResponse_Cbte_Tipo><Cbte_Id>21</Cbte_Id><Cbte_Ds>Nota
@@ -31,11 +31,11 @@ interactions:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '1773'
+      - '1774'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:08 GMT
+      - Tue, 22 Jun 2021 00:47:40 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -45,7 +45,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddf21e8c533be5439f8f49ef6f4fad5d4ca8fdd76ef181fd9f337e254f20830cd96;
+      - TS01983a04=01439f1ddf9471f5283f05155f60dbfbbb8ee43988cba3c0f39725e3e1fd8b4d5ed4a668b9;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -65,12 +65,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_DST_pais xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_DST_pais>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_DST_pais xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_DST_pais>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1366'
+      - '1362'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -83,7 +83,7 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:09.322792-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_DST_paisResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:40.6394953-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_DST_paisResponse
         xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetPARAM_DST_paisResult><FEXResultGet><ClsFEXResponse_DST_pais><DST_Codigo>101</DST_Codigo><DST_Ds>BURKINA
         FASO</DST_Ds></ClsFEXResponse_DST_pais><ClsFEXResponse_DST_pais><DST_Codigo>102</DST_Codigo><DST_Ds>ARGELIA</DST_Ds></ClsFEXResponse_DST_pais><ClsFEXResponse_DST_pais><DST_Codigo>103</DST_Codigo><DST_Ds>BOTSWANA</DST_Ds></ClsFEXResponse_DST_pais><ClsFEXResponse_DST_pais><DST_Codigo>104</DST_Codigo><DST_Ds>BURUNDI</DST_Ds></ClsFEXResponse_DST_pais><ClsFEXResponse_DST_pais><DST_Codigo>105</DST_Codigo><DST_Ds>CAMERUN</DST_Ds></ClsFEXResponse_DST_pais><ClsFEXResponse_DST_pais><DST_Codigo>107</DST_Codigo><DST_Ds>REP.
         CENTROAFRICANA.</DST_Ds></ClsFEXResponse_DST_pais><ClsFEXResponse_DST_pais><DST_Codigo>108</DST_Codigo><DST_Ds>CONGO</DST_Ds></ClsFEXResponse_DST_pais><ClsFEXResponse_DST_pais><DST_Codigo>109</DST_Codigo><DST_Ds>REP.DEMOCRAT.DEL
@@ -215,11 +215,11 @@ interactions:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '33628'
+      - '33629'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:09 GMT
+      - Tue, 22 Jun 2021 00:47:40 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -229,7 +229,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddf49be82066ce242777fbd7696295ab7335faeffcf66f054bf131381ba6d59ae3b;
+      - TS01983a04=01439f1ddf7fa3869cc7947df38acbd7771055dc53afba409b87ff4916f0b85296a7f9f2f7;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -249,12 +249,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_MON xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_MON>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_MON xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_MON>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1356'
+      - '1352'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -267,7 +267,7 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:10.572792-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_MONResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:41.8738782-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_MONResponse
         xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetPARAM_MONResult><FEXResultGet><ClsFEXResponse_Mon><Mon_Id>PES</Mon_Id><Mon_Ds>Pesos
         Argentinos</Mon_Ds><Mon_vig_desde>20090403</Mon_vig_desde><Mon_vig_hasta>NULL</Mon_vig_hasta></ClsFEXResponse_Mon><ClsFEXResponse_Mon><Mon_Id>DOL</Mon_Id><Mon_Ds>D\xF3lar
         Estadounidense</Mon_Ds><Mon_vig_desde>20090403</Mon_vig_desde><Mon_vig_hasta>NULL</Mon_vig_hasta></ClsFEXResponse_Mon><ClsFEXResponse_Mon><Mon_Id>002</Mon_Id><Mon_Ds>D\xF3lar
@@ -319,11 +319,11 @@ interactions:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '9110'
+      - '9111'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:10 GMT
+      - Tue, 22 Jun 2021 00:47:41 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -333,7 +333,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddf904b50c2c2329b71b726e44358657faf9ad0a266c6f792050742c87b474d17f2;
+      - TS01983a04=01439f1ddfb550c978f88794e68586c5f3a8b27979adcb160fe40c7f6cdd8d0024a2e8a78e;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -353,12 +353,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_DST_CUIT xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_DST_CUIT>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_DST_CUIT xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_DST_CUIT>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1366'
+      - '1362'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -371,7 +371,7 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:11.010292-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_DST_CUITResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:42.2957559-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_DST_CUITResponse
         xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetPARAM_DST_CUITResult><FEXResultGet><ClsFEXResponse_DST_cuit><DST_CUIT>50000000016</DST_CUIT><DST_Ds>URUGUAY
         - Persona F\xC3\xBF-sica</DST_Ds></ClsFEXResponse_DST_cuit><ClsFEXResponse_DST_cuit><DST_CUIT>50000000024</DST_CUIT><DST_Ds>PARAGUAY
         - Persona F\xC3\xBF-sica</DST_Ds></ClsFEXResponse_DST_cuit><ClsFEXResponse_DST_cuit><DST_CUIT>50000000032</DST_CUIT><DST_Ds>CHILE
@@ -1154,11 +1154,11 @@ interactions:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '110289'
+      - '110290'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:11 GMT
+      - Tue, 22 Jun 2021 00:47:42 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -1168,7 +1168,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddf2d1035a41522830c487ea9d5d3074b8a0cf3b80fee3ce43e8492b75cf264457a;
+      - TS01983a04=01439f1ddf372454828acc857ec10e5ce08aad7bbab3103c10154fca7b7599dacab0aca11b;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -1188,12 +1188,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_UMed xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_UMed>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_UMed xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_UMed>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1358'
+      - '1354'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -1206,7 +1206,7 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:12.697792-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_UMedResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:43.9051412-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_UMedResponse
         xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetPARAM_UMedResult><FEXResultGet><ClsFEXResponse_UMed><Umed_Id>41</Umed_Id><Umed_Ds>miligramos</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>14</Umed_Id><Umed_Ds>gramos</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>1</Umed_Id><Umed_Ds>kilogramos</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>29</Umed_Id><Umed_Ds>toneladas</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>10</Umed_Id><Umed_Ds>quilates</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>47</Umed_Id><Umed_Ds>mililitros</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>5</Umed_Id><Umed_Ds>litros</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>27</Umed_Id><Umed_Ds>cm
         c\xFAbicos</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>15</Umed_Id><Umed_Ds>milimetros</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>20</Umed_Id><Umed_Ds>cent\xEDmetros</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>17</Umed_Id><Umed_Ds>kil\xF3metros</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>7</Umed_Id><Umed_Ds>unidades</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>8</Umed_Id><Umed_Ds>pares</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>9</Umed_Id><Umed_Ds>docenas</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>11</Umed_Id><Umed_Ds>millares</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>96</Umed_Id><Umed_Ds>packs</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>2</Umed_Id><Umed_Ds>metros</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>3</Umed_Id><Umed_Ds>metros
         cuadrados</Umed_Ds><Umed_vig_desde>20080704</Umed_vig_desde><Umed_vig_hasta>NULL</Umed_vig_hasta></ClsFEXResponse_UMed><ClsFEXResponse_UMed><Umed_Id>4</Umed_Id><Umed_Ds>metros
@@ -1229,11 +1229,11 @@ interactions:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '8987'
+      - '8988'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:12 GMT
+      - Tue, 22 Jun 2021 00:47:43 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -1243,7 +1243,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddfdf708116864da3432158304d4a347772a5a75a885e1f63cb5fb7e7ce4fcaff9d;
+      - TS01983a04=01439f1ddfbc48cbd65a7d64aec29ffd863e5f3b970335d858b838b7a7164225226725816f;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -1263,12 +1263,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_Tipo_Expo xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_Tipo_Expo>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_Tipo_Expo xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_Tipo_Expo>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1368'
+      - '1364'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -1281,18 +1281,18 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:13.119667-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_Tipo_ExpoResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:44.3270189-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_Tipo_ExpoResponse
         xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetPARAM_Tipo_ExpoResult><FEXResultGet><ClsFEXResponse_Tex><Tex_Id>1</Tex_Id><Tex_Ds>Exportaci\xF3n
         definitiva de Bienes</Tex_Ds><Tex_vig_desde>20100101</Tex_vig_desde><Tex_vig_hasta>NULL</Tex_vig_hasta></ClsFEXResponse_Tex><ClsFEXResponse_Tex><Tex_Id>2</Tex_Id><Tex_Ds>Servicios</Tex_Ds><Tex_vig_desde>20100101</Tex_vig_desde><Tex_vig_hasta>NULL</Tex_vig_hasta></ClsFEXResponse_Tex><ClsFEXResponse_Tex><Tex_Id>4</Tex_Id><Tex_Ds>Otros</Tex_Ds><Tex_vig_desde>20100101</Tex_vig_desde><Tex_vig_hasta>NULL</Tex_vig_hasta></ClsFEXResponse_Tex></FEXResultGet><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetPARAM_Tipo_ExpoResult></FEXGetPARAM_Tipo_ExpoResponse></soap:Body></soap:Envelope>"
     headers:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '1254'
+      - '1255'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:13 GMT
+      - Tue, 22 Jun 2021 00:47:44 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -1302,7 +1302,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddff5b2fb4e3ebfe6a740daf06fd89a5c294d96028589f84e745076f7185f1203bd;
+      - TS01983a04=01439f1ddf25a25e51d787b1030976d417cb71057efd6e58d58eede5f1aa17d2dbe385f1c9;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -1322,12 +1322,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_Idiomas xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_Idiomas>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_Idiomas xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_Idiomas>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1364'
+      - '1360'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -1340,17 +1340,17 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:13.525917-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_IdiomasResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:44.7332715-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_IdiomasResponse
         xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetPARAM_IdiomasResult><FEXResultGet><ClsFEXResponse_Idi><Idi_Id>1</Idi_Id><Idi_Ds>Espa\xF1ol</Idi_Ds><Idi_vig_desde>20091228</Idi_vig_desde><Idi_vig_hasta>NULL</Idi_vig_hasta></ClsFEXResponse_Idi><ClsFEXResponse_Idi><Idi_Id>2</Idi_Id><Idi_Ds>Ingl\xE9s</Idi_Ds><Idi_vig_desde>20091228</Idi_vig_desde><Idi_vig_hasta>NULL</Idi_vig_hasta></ClsFEXResponse_Idi><ClsFEXResponse_Idi><Idi_Id>3</Idi_Id><Idi_Ds>Portugu\xE9s</Idi_Ds><Idi_vig_desde>20091228</Idi_vig_desde><Idi_vig_hasta>NULL</Idi_vig_hasta></ClsFEXResponse_Idi></FEXResultGet><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetPARAM_IdiomasResult></FEXGetPARAM_IdiomasResponse></soap:Body></soap:Envelope>"
     headers:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '1224'
+      - '1225'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:13 GMT
+      - Tue, 22 Jun 2021 00:47:44 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -1360,7 +1360,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddfda6174d1a3edccfd8589d7a21ac4a08179c88e0f4455ea1c73cae1d7feebfad5;
+      - TS01983a04=01439f1ddf18a8f66b88a6f6ec947ad543dd4311b93a4520be08b0717ef900fa1268c1b217;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -1380,12 +1380,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_Incoterms xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_Incoterms>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_Incoterms xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_Incoterms>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1368'
+      - '1364'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -1398,7 +1398,7 @@ interactions:
     body:
       string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
-        xmlns="http://ar.gov.afip.dif.fexv1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:13.932167-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_IncotermsResponse
+        xmlns="http://ar.gov.afip.dif.fexv1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:45.123899-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_IncotermsResponse
         xmlns="http://ar.gov.afip.dif.fexv1/"><FEXGetPARAM_IncotermsResult><FEXResultGet><ClsFEXResponse_Inc><Inc_Id>EXW</Inc_Id><Inc_Ds>EXW</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>FCA</Inc_Id><Inc_Ds>FCA</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>FAS</Inc_Id><Inc_Ds>FAS</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>FOB</Inc_Id><Inc_Ds>FOB</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>CFR</Inc_Id><Inc_Ds>CFR</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>CIF</Inc_Id><Inc_Ds>CIF</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>CPT</Inc_Id><Inc_Ds>CPT</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>CIP</Inc_Id><Inc_Ds>CIP</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>DDP</Inc_Id><Inc_Ds>DDP</Inc_Ds><Inc_vig_desde>20100101</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>DAP</Inc_Id><Inc_Ds>DAP</Inc_Ds><Inc_vig_desde>20110111</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc><Inc_Id>DPU</Inc_Id><Inc_Ds>DPU</Inc_Ds><Inc_vig_desde>20200311</Inc_vig_desde><Inc_vig_hasta>NULL</Inc_vig_hasta></ClsFEXResponse_Inc><ClsFEXResponse_Inc
         xsi:nil="true" /><ClsFEXResponse_Inc xsi:nil="true" /><ClsFEXResponse_Inc
         xsi:nil="true" /><ClsFEXResponse_Inc xsi:nil="true" /><ClsFEXResponse_Inc
@@ -1411,7 +1411,7 @@ interactions:
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:13 GMT
+      - Tue, 22 Jun 2021 00:47:45 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -1421,7 +1421,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddf38653e1cffe3ca6810d2ed37af26c4e89191eaf97257ec3432fee1ebc4e98d37;
+      - TS01983a04=01439f1ddf0699b689f0c3ddbc649e6629b748c76f13b40c9d595f356eeab5479411ccf5f9;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -1442,12 +1442,12 @@ interactions:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
       \   <FEXGetPARAM_MON_CON_COTIZACION xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n
-      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth><Fecha_CTZ>20210620</Fecha_CTZ></FEXGetPARAM_MON_CON_COTIZACION>\n</soap:Body>\n</soap:Envelope>"
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth><Fecha_CTZ>20210622</Fecha_CTZ></FEXGetPARAM_MON_CON_COTIZACION>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1417'
+      - '1413'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -1460,17 +1460,17 @@ interactions:
     body:
       string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
-        xmlns="http://ar.gov.afip.dif.fexv1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:14.369667-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_MON_CON_COTIZACIONResponse
-        xmlns="http://ar.gov.afip.dif.fexv1/"><FEXGetPARAM_MON_CON_COTIZACIONResult><FEXResultGet><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>002</Mon_Id><Mon_ctz>2.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>007</Mon_Id><Mon_ctz>7.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>009</Mon_Id><Mon_ctz>9.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>010</Mon_Id><Mon_ctz>10.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>011</Mon_Id><Mon_ctz>11.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>012</Mon_Id><Mon_ctz>12.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>014</Mon_Id><Mon_ctz>14.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>015</Mon_Id><Mon_ctz>15.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>016</Mon_Id><Mon_ctz>16.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>018</Mon_Id><Mon_ctz>18.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>019</Mon_Id><Mon_ctz>19.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>021</Mon_Id><Mon_ctz>21.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>023</Mon_Id><Mon_ctz>23.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>024</Mon_Id><Mon_ctz>24.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>025</Mon_Id><Mon_ctz>25.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>026</Mon_Id><Mon_ctz>26.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>027</Mon_Id><Mon_ctz>27.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>028</Mon_Id><Mon_ctz>28.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>029</Mon_Id><Mon_ctz>29.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>030</Mon_Id><Mon_ctz>30.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>031</Mon_Id><Mon_ctz>31.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>032</Mon_Id><Mon_ctz>32.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>033</Mon_Id><Mon_ctz>33.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>034</Mon_Id><Mon_ctz>34.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>035</Mon_Id><Mon_ctz>35.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>036</Mon_Id><Mon_ctz>36.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>040</Mon_Id><Mon_ctz>40.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>041</Mon_Id><Mon_ctz>41.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>042</Mon_Id><Mon_ctz>42.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>043</Mon_Id><Mon_ctz>43.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>044</Mon_Id><Mon_ctz>44.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>045</Mon_Id><Mon_ctz>45.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>046</Mon_Id><Mon_ctz>46.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>047</Mon_Id><Mon_ctz>47.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>049</Mon_Id><Mon_ctz>49.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>051</Mon_Id><Mon_ctz>51.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>052</Mon_Id><Mon_ctz>52.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>053</Mon_Id><Mon_ctz>53.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>054</Mon_Id><Mon_ctz>54.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>055</Mon_Id><Mon_ctz>55.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>056</Mon_Id><Mon_ctz>56.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>057</Mon_Id><Mon_ctz>57.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>059</Mon_Id><Mon_ctz>59.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>060</Mon_Id><Mon_ctz>60.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>061</Mon_Id><Mon_ctz>61.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>062</Mon_Id><Mon_ctz>62.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>063</Mon_Id><Mon_ctz>63.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>064</Mon_Id><Mon_ctz>64.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>DOL</Mon_Id><Mon_ctz>99.1690</Mon_ctz><Fecha_ctz>6/18/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion></FEXResultGet><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetPARAM_MON_CON_COTIZACIONResult></FEXGetPARAM_MON_CON_COTIZACIONResponse></soap:Body></soap:Envelope>
+        xmlns="http://ar.gov.afip.dif.fexv1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:45.5457767-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_MON_CON_COTIZACIONResponse
+        xmlns="http://ar.gov.afip.dif.fexv1/"><FEXGetPARAM_MON_CON_COTIZACIONResult><FEXResultGet><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>002</Mon_Id><Mon_ctz>2.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>007</Mon_Id><Mon_ctz>7.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>009</Mon_Id><Mon_ctz>9.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>010</Mon_Id><Mon_ctz>10.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>011</Mon_Id><Mon_ctz>11.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>012</Mon_Id><Mon_ctz>12.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>014</Mon_Id><Mon_ctz>14.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>015</Mon_Id><Mon_ctz>15.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>016</Mon_Id><Mon_ctz>16.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>018</Mon_Id><Mon_ctz>18.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>019</Mon_Id><Mon_ctz>19.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>021</Mon_Id><Mon_ctz>21.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>023</Mon_Id><Mon_ctz>23.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>024</Mon_Id><Mon_ctz>24.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>025</Mon_Id><Mon_ctz>25.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>026</Mon_Id><Mon_ctz>26.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>027</Mon_Id><Mon_ctz>27.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>028</Mon_Id><Mon_ctz>28.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>029</Mon_Id><Mon_ctz>29.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>030</Mon_Id><Mon_ctz>30.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>031</Mon_Id><Mon_ctz>31.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>032</Mon_Id><Mon_ctz>32.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>033</Mon_Id><Mon_ctz>33.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>034</Mon_Id><Mon_ctz>34.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>035</Mon_Id><Mon_ctz>35.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>036</Mon_Id><Mon_ctz>36.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>040</Mon_Id><Mon_ctz>40.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>041</Mon_Id><Mon_ctz>41.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>042</Mon_Id><Mon_ctz>42.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>043</Mon_Id><Mon_ctz>43.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>044</Mon_Id><Mon_ctz>44.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>045</Mon_Id><Mon_ctz>45.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>046</Mon_Id><Mon_ctz>46.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>047</Mon_Id><Mon_ctz>47.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>049</Mon_Id><Mon_ctz>49.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>051</Mon_Id><Mon_ctz>51.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>052</Mon_Id><Mon_ctz>52.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>053</Mon_Id><Mon_ctz>53.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>054</Mon_Id><Mon_ctz>54.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>055</Mon_Id><Mon_ctz>55.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>056</Mon_Id><Mon_ctz>56.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>057</Mon_Id><Mon_ctz>57.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>059</Mon_Id><Mon_ctz>59.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>060</Mon_Id><Mon_ctz>60.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>061</Mon_Id><Mon_ctz>61.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>062</Mon_Id><Mon_ctz>62.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>063</Mon_Id><Mon_ctz>63.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>064</Mon_Id><Mon_ctz>64.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>DOL</Mon_Id><Mon_ctz>99.1720</Mon_ctz><Fecha_ctz>6/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion></FEXResultGet><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetPARAM_MON_CON_COTIZACIONResult></FEXGetPARAM_MON_CON_COTIZACIONResponse></soap:Body></soap:Envelope>
     headers:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '8091'
+      - '8092'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:14 GMT
+      - Tue, 22 Jun 2021 00:47:45 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -1480,7 +1480,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddf180539e20d205b6be12e5ecd59188fa14a1a4f1a3c1d0c616d7ba81c719283e6;
+      - TS01983a04=01439f1ddf6abb26e6801cbd1f18726a4127f48ea0933fcb93e444f89836562b976807d925;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -1500,67 +1500,12 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_PtoVenta xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth></FEXGetPARAM_PtoVenta>\n</soap:Body>\n</soap:Envelope>"
+      \   <FEXGetPARAM_Ctz xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIyMTQxMTU2MDQiIGdlbl90aW1lPSIxNjI0MzIyNzY5IiBleHBfdGltZT0iMTYyNDM2NjAyOSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2ZleCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>eUvSFAaZuBLaMdtAhCs5ooLrkDqKsoL64GZpdAvHmxv1Q/zPAP6Et3py/yc8JR1Xo7JsrSFUBsxlaKzUelWSSC24R0kCp+wG5QHiF7kw0SLCnRu3CraK7+LkNuHIyPc5uZmLpXO3EiCE1ZxSraKDMYc3lNdmpDpGlh0mMv1d0gw=</Sign><Cuit>20267565393</Cuit></Auth><Mon_id>DOL</Mon_id></FEXGetPARAM_Ctz>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
       content-length:
-      - '1366'
-      content-type:
-      - text/xml; charset="UTF-8"
-      soapaction:
-      - '"http://ar.gov.afip.dif.fexv1/FEXGetPARAM_PtoVenta"'
-      user-agent:
-      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
-    method: POST
-    uri: https://wswhomo.afip.gov.ar/wsfexv1/service.asmx
-  response:
-    body:
-      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
-        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:14.775917-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_PtoVentaResponse
-        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetPARAM_PtoVentaResult><FEXResultGet
-        /><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetPARAM_PtoVentaResult></FEXGetPARAM_PtoVentaResponse></soap:Body></soap:Envelope>\r\n"
-    headers:
-      Cache-Control:
-      - private, max-age=0
-      Content-Length:
-      - '742'
-      Content-Type:
-      - text/xml; charset=utf-8
-      Date:
-      - Sun, 20 Jun 2021 16:56:14 GMT
-      Expect-CT:
-      - enforce
-      MicrosoftOfficeWebServer:
-      - 5.0_Pub
-      Set-Cookie:
-      - TS01983a04=01439f1ddffdc810df3bc5b68be2073e9516f836dd0c4322ffb384d5f7fbf57b26425ecb8f;
-        Path=/
-      Strict-Transport-Security:
-      - nosniff
-      X-AspNet-Version:
-      - 2.0.50727
-      X-Content-Type-Options:
-      - nosniff
-      X-Frame-Options:
-      - SAMEORIGIN
-      X-Powered-By:
-      - ASP.NET
-      X-Xss-Protection:
-      - 1; mode=block
-    status:
-      code: 200
-      message: OK
-- request:
-    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
-      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FEXGetPARAM_Ctz xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxNjAwMTg4MDIxIiBnZW5fdGltZT0iMTYyNDIwODA4OCIgZXhwX3RpbWU9IjE2MjQyNTEzNDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>Qqt1RzJEJdMkCZpjX/WSF1fsDxI37VbUoG+/21HmPraK93eFnYkXNWQzKQnT5CLcnB0vQDSr8tqxE7zdVZrKzXKGqCxN2x871ybpMbGNj+FJR4c3Px6O2Okxsro6AzgZQgirL3uMTNlgGi4/2oQheJuJs6J+i+fAHu1cQPW2bqg=</Sign><Cuit>20267565393</Cuit></Auth><Mon_id>DOL</Mon_id></FEXGetPARAM_Ctz>\n</soap:Body>\n</soap:Envelope>"
-    headers:
-      accept-encoding:
-      - gzip, deflate
-      content-length:
-      - '1376'
+      - '1372'
       content-type:
       - text/xml; charset="UTF-8"
       soapaction:
@@ -1573,17 +1518,17 @@ interactions:
     body:
       string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
-        xmlns="http://ar.gov.afip.dif.fexv1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-20T13:56:15.197792-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_CtzResponse
-        xmlns="http://ar.gov.afip.dif.fexv1/"><FEXGetPARAM_CtzResult><FEXResultGet><Mon_ctz>99.1690</Mon_ctz><Mon_fecha>20210618</Mon_fecha></FEXResultGet><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetPARAM_CtzResult></FEXGetPARAM_CtzResponse></soap:Body></soap:Envelope>
+        xmlns="http://ar.gov.afip.dif.fexv1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-06-21T21:47:45.9676544-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_CtzResponse
+        xmlns="http://ar.gov.afip.dif.fexv1/"><FEXGetPARAM_CtzResult><FEXResultGet><Mon_ctz>99.1720</Mon_ctz><Mon_fecha>20210621</Mon_fecha></FEXResultGet><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetPARAM_CtzResult></FEXGetPARAM_CtzResponse></soap:Body></soap:Envelope>
     headers:
       Cache-Control:
       - no-cache
       Content-Length:
-      - '790'
+      - '791'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 16:56:15 GMT
+      - Tue, 22 Jun 2021 00:47:45 GMT
       Expect-CT:
       - enforce
       Expires:
@@ -1593,7 +1538,7 @@ interactions:
       Pragma:
       - no-cache
       Set-Cookie:
-      - TS01983a04=01439f1ddf20541e60cb12bb1f24ea78c6c29d3bee8383da48f9942057720be54effe38549;
+      - TS01983a04=01439f1ddfc114368b80ebd5aeaf42d931f3b7e4885a1ce2b1889e8147951547589d023bc2;
         Path=/
       Strict-Transport-Security:
       - nosniff
