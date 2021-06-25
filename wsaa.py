@@ -13,6 +13,7 @@
 "Módulo para obtener un ticket de autorización del web service WSAA de AFIP"
 from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 # Basado en wsaa-client.php de Gerardo Fisanotti - DvSHyS/DiOPIN/AFIP - 13-apr-07
 # Definir WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL
