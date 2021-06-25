@@ -19,6 +19,7 @@ import datetime
 import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsfexv1 import WSFEXv1
+import future
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
@@ -151,7 +152,7 @@ def test_agregar_cbte_asoc(auth):
     )
     assert cbteasoc==True
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+
 def test_autorizar(auth):
     """Test Autorizar Comprobante."""
     wsfexv1 = auth
@@ -168,7 +169,12 @@ def test_autorizar(auth):
     wsfexv1.GetCMP(tipo_cbte, punto_vta, cbte_nro)
 
     assert (wsfexv1.Resultado == "A")
-    assert isinstance(wsfexv1.CAE, str)
+
+    if sys.version_info[0] == 3:
+        assert isinstance(wsfexv1.CAE,str)
+    elif sys.version_info[0] == 2:
+        assert isinstance((wsfexv1.CAE),future.types.newstr)
+
     assert (wsfexv1.CAE)
     
     #commented because wsfexv1.Vencimiento giving wrong expiration date
@@ -212,7 +218,7 @@ def test_recuperar_numero_transaccion(auth):
     idx = wsfexv1.GetLastID()
     # TODO: assertEqual(idy, idx)
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+
 def test_parametros(auth):
     """Test de Parametros."""
     wsfexv1 = auth
@@ -227,6 +233,9 @@ def test_parametros(auth):
     assert (wsfexv1.GetParamIncoterms())
     assert (wsfexv1.GetParamMonConCotizacion())
     #assert (wsfexv1.GetParamPtosVenta())
-    assert isinstance(wsfexv1.GetParamCtz("DOL"), str)
+    if sys.version_info[0] == 3:
+        assert isinstance(wsfexv1.GetParamCtz("DOL"),str)
+    elif sys.version_info[0] == 2:
+        assert isinstance((wsfexv1.GetParamCtz("DOL")),future.types.newstr)
 
 

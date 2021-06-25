@@ -52,7 +52,7 @@ def test_crear_clave_privada():
     chk = wsaa.CrearClavePrivada()
     assert chk==True
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+
 def test_crear_pedido_certificado():
     """Crea CSM para solicitar certificado."""
     wsaa=WSAA()
@@ -78,7 +78,7 @@ def test_expirado():
     assert chk2==True
     assert chk3==False
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+
 @pytest.mark.vcr
 def test_login_cms(key_and_cert):
     """comprobando si LoginCMS está funcionando correctamente"""
@@ -91,7 +91,11 @@ def test_login_cms(key_and_cert):
 
     ta = SimpleXMLElement(ta_xml)
 
-    assert isinstance(cms,str)
+    if sys.version_info[0] == 3:
+        assert isinstance(cms,str)
+    elif sys.version_info[0] == 2:
+        assert isinstance(cms.decode('utf-8'),str)
+    
     assert cms.startswith('MIIG+')
 
     assert chk==True

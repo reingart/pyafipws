@@ -16,14 +16,14 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
-import unittest
 import os
 import sys
 from datetime import datetime, timedelta
 import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsbfev1 import WSBFEv1
-from pysimplesoap.simplexml import SimpleXMLElement
+from pysimplesoap.simplexml import SimpleXMLElement 
+import future
 
 __WSDL__ = "http://wswhomo.afip.gov.ar/WSBFEv1/service.asmx"
 __obj__ = WSBFEv1()
@@ -146,7 +146,7 @@ def test_agregar_opcional(auth):
     opcional = wsbfev1.AgregarOpcional(idz, ds)
     assert opcional==True
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+
 def test_autorizar(auth):
     """Test Autorizar Comprobante."""
     wsbfev1 =auth
@@ -158,7 +158,12 @@ def test_autorizar(auth):
     wsbfev1.Authorize(idx)
 
     assert (wsbfev1.Resultado== "A")
-    assert isinstance(wsbfev1.CAE,str)
+    
+    if sys.version_info[0] == 3:
+        assert isinstance(wsbfev1.CAE,str)
+    elif sys.version_info[0] == 2:
+        assert isinstance((wsbfev1.CAE),future.types.newstr)
+
     assert (wsbfev1.CAE)
     # ten = datetime.now() + timedelta(days=10)
     # assert (wsbfev1.Vencimiento == ten.strftime("%d/%m/%Y"))
