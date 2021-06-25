@@ -69,7 +69,7 @@ Opciones:
 Ver wslsp.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, shelve
+import os, sys, shelve, subprocess
 import decimal, datetime
 import traceback
 import pprint
@@ -1033,7 +1033,7 @@ class WSLSP(BaseWS):
     def MostrarPDF(self, archivo, imprimir=False):
         try:
             if sys.platform == "linux2":
-                os.system("evince " "%s" "" % archivo)
+                subprocess.call(["evince", archivo])
             else:
                 operation = imprimir and "print" or ""
                 os.startfile(archivo, operation)
