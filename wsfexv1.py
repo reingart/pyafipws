@@ -834,7 +834,7 @@ if __name__ == "__main__":
         else:
             wsdl = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
         cache = proxy = ""
-        wrapper = ""
+        wrapper = "httplib2"
         cacert = "conf/afip_ca_info.crt"
         ok = wsfexv1.Conectar(cache, wsdl, proxy, wrapper, cacert)
 
