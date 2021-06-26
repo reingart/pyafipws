@@ -17,7 +17,7 @@ del servicio web RemAzucarService versión 2.0.3 de AFIP (RG4519/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03d"
+__version__ = "1.04a"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Azúcar AFIP v2.0.3
@@ -152,7 +152,7 @@ class WSRemAzucar(BaseWS):
                     tipo_titular_mercaderia,
                     cuit_titular_mercaderia=None, cuit_autorizado_retirar=None,
                     cuit_productor_contrato=None, numero_maquila=None,
-                    cod_remito=None, estado=None,
+                    cod_remito=None, estado=None, es_entrega_mostrador=None,
                     **kwargs):
         "Inicializa internamente los datos de un remito para autorizar"
         self.remito = {'puntoEmision': punto_emision, 'tipoTitularMercaderia': tipo_titular_mercaderia,
@@ -161,6 +161,7 @@ class WSRemAzucar(BaseWS):
                        'cuitProductorContrato': cuit_productor_contrato,
                        'numeroMaquila': numero_maquila,
                        'codRemito': cod_remito,
+                       'esEntregaMostrador': es_entrega_mostrador,
                        'arrayMercaderias': [], 'arrayContingencias': [],
                       }
         return True
