@@ -23,7 +23,7 @@ import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsbfev1 import WSBFEv1
 from pysimplesoap.simplexml import SimpleXMLElement 
-import future
+from builtins import str
 
 __WSDL__ = "http://wswhomo.afip.gov.ar/WSBFEv1/service.asmx"
 __obj__ = WSBFEv1()
@@ -159,10 +159,8 @@ def test_autorizar(auth):
 
     assert (wsbfev1.Resultado== "A")
     
-    if sys.version_info[0] == 3:
-        assert isinstance(wsbfev1.CAE,str)
-    elif sys.version_info[0] == 2:
-        assert isinstance((wsbfev1.CAE),future.types.newstr)
+    assert isinstance(wsbfev1.CAE,str)
+
 
     assert (wsbfev1.CAE)
     # ten = datetime.now() + timedelta(days=10)

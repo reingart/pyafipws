@@ -91,10 +91,11 @@ def test_login_cms(key_and_cert):
 
     ta = SimpleXMLElement(ta_xml)
 
-    if sys.version_info[0] == 3:
-        assert isinstance(cms,str)
-    elif sys.version_info[0] == 2:
-        assert isinstance(cms.decode('utf-8'),str)
+    if not isinstance(cms,str):
+        cms = cms.decode('utf-8')
+
+    assert isinstance(cms,str)
+
     
     assert cms.startswith('MIIG+')
 

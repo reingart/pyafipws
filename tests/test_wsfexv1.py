@@ -20,6 +20,7 @@ import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsfexv1 import WSFEXv1
 import future
+from builtins import str
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
@@ -170,10 +171,8 @@ def test_autorizar(auth):
 
     assert (wsfexv1.Resultado == "A")
 
-    if sys.version_info[0] == 3:
-        assert isinstance(wsfexv1.CAE,str)
-    elif sys.version_info[0] == 2:
-        assert isinstance((wsfexv1.CAE),future.types.newstr)
+    assert isinstance(wsfexv1.CAE,str)
+
 
     assert (wsfexv1.CAE)
     
@@ -233,9 +232,7 @@ def test_parametros(auth):
     assert (wsfexv1.GetParamIncoterms())
     assert (wsfexv1.GetParamMonConCotizacion())
     #assert (wsfexv1.GetParamPtosVenta())
-    if sys.version_info[0] == 3:
-        assert isinstance(wsfexv1.GetParamCtz("DOL"),str)
-    elif sys.version_info[0] == 2:
-        assert isinstance((wsfexv1.GetParamCtz("DOL")),future.types.newstr)
+    assert isinstance(wsfexv1.GetParamCtz("DOL"),str)
+
 
 

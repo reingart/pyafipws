@@ -12,6 +12,7 @@
 
 from pyafipws.wsaa import WSAA
 from pyafipws.wsfev1 import WSFEv1
+from builtins import str
 
 "Pruebas para WSFEv1 de AFIP (Factura Electrónica Mercado Interno sin detalle)"
 
@@ -133,10 +134,9 @@ def test_autorizar_comprobante(auth, tipo_cbte=1, cbte_nro=None, servicios=True)
 
     assert (wsfev1.Resultado== "A")  # Aprobado!
 
-    if sys.version_info[0] == 3:
-        assert isinstance(wsfev1.CAE,str)
-    elif sys.version_info[0] == 2:
-        assert isinstance((wsfev1.CAE),future.types.newstr)
+
+    assert isinstance(wsfev1.CAE,str)
+
 
     assert (len(wsfev1.CAE)==len("63363178822329"))
     assert (len(wsfev1.Vencimiento)==len("20130907"))
