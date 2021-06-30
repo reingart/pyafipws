@@ -12,6 +12,7 @@
 
 from pyafipws.wsaa import WSAA
 from pyafipws.wsfev1 import WSFEv1
+from builtins import str
 
 "Pruebas para WSFEv1 de AFIP (Factura Electrónica Mercado Interno sin detalle)"
 
@@ -23,6 +24,7 @@ import datetime
 import sys
 import pytest
 import os
+import future
 
 __WSDL__ = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx"
 __obj__ = WSFEv1()
@@ -48,7 +50,7 @@ def test_dummy(auth):
     assert (wsfev1.DbServerStatus== "OK")
     assert (wsfev1.AuthServerStatus== "OK")
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+
 def test_autorizar_comprobante(auth, tipo_cbte=1, cbte_nro=None, servicios=True):
     "Prueba de autorización de un comprobante (obtención de CAE)"
     wsfev1 = auth
@@ -131,14 +133,18 @@ def test_autorizar_comprobante(auth, tipo_cbte=1, cbte_nro=None, servicios=True)
     wsfev1.CAESolicitar()
 
     assert (wsfev1.Resultado== "A")  # Aprobado!
-    assert isinstance(wsfev1.CAE, str)
+
+
+    assert isinstance(wsfev1.CAE,str)
+
+
     assert (len(wsfev1.CAE)==len("63363178822329"))
     assert (len(wsfev1.Vencimiento)==len("20130907"))
     wsfev1.AnalizarXml("XmlResponse")
     # observación "... no se encuentra registrado en los padrones de AFIP.":
     #assertEqual(wsfev1.ObtenerTagXml("Obs", 0, "Code"), None)
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+
 def test_consulta(auth):
     "Prueba de obtener los datos de un comprobante autorizado"
     wsfev1 = auth

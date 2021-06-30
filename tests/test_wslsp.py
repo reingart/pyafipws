@@ -440,7 +440,7 @@ def test_consultar_puntos_ventas(auth):
     consulta = wslsp.ConsultarPuntosVentas()
     assert consulta
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7 or higher")
+
 def test_mostrar_pdf(auth):
     """Test mostrar pdf."""
     wslsp=auth
