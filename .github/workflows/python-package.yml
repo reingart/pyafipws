@@ -58,7 +58,7 @@ jobs:
 
     - name: Coverage Report
       run: |
-        pytest --cov-report=html --cov=pyafipws tests/
+        pytest --cov-config=.coveragerc --cov-report=html --cov=pyafipws tests/
     - name: Upload coverage report
       uses: actions/upload-artifact@v2
       if: ${{ always() }}
