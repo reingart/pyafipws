@@ -55,3 +55,13 @@ jobs:
       with:
         name: report.html
         path: report.html
+
+    - name: Coverage Report
+      run: |
+        pytest --cov-report=html --cov=pyafipws tests/
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      if: ${{ always() }}
+      with:
+        name: Coverage_Report
+        path: htmlcov
