@@ -2,7 +2,7 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
       xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
-      \   <ser:consultarPtosVtaCAEANoInformadosRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI1MDM4MTE0NyIgZ2VuX3RpbWU9IjE2MjQyMDgzMDMiIGV4cF90aW1lPSIxNjI0MjUxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzbXR4Y2EiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>oe2g4L1Ra3AAsWZcfZrP6rF4BzPa3oYk++zEyRfeq1r/aixKI/WXnczVjPs9/vbl9qlXE3KCK9CvLi6v7UtiMXpGuNdDyntqQnZKyS+bPn/Z9JBvqq7uucYB9R0HBy5AFOC5TVA0rePYkTcPRSCWDMBPtsKaNOO8v8xDCl542tQ=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><CAEA>24163778394093</CAEA></ser:consultarPtosVtaCAEANoInformadosRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+      \   <ser:consultarPtosVtaCAEANoInformadosRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxNTU2MTM0MTk4IiBnZW5fdGltZT0iMTYyNTE3MDA0OCIgZXhwX3RpbWU9IjE2MjUyMTMzMDgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NtdHhjYSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDE5cHViIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>Kthm9lNaWyvFqIyKhmN2Hgi29Jyqnx0ZTYe2VD2NHfYmw+Go3A1M9C66VvI2m6DnHYcLoqodfbZwYWY9HxCXtm2sFHrOzARAqkZMCgBcKXFOjRUlK8xGTuO6L2zDN4woF7uQ7XabVEwYXDWZGlTnChLDg5hI96ruzcGLwPjU/QE=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><CAEA>31263355536606</CAEA></ser:consultarPtosVtaCAEANoInformadosRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
@@ -19,17 +19,17 @@ interactions:
   response:
     body:
       string: <?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns1:consultarPtosVtaCAEANoInformadosResponse
-        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><arrayErrores><codigoDescripcion><codigo>1300</codigo><descripcion>El
-        CAEA enviado no corresponde a un CAEA previamente otorgado</descripcion></codigoDescripcion></arrayErrores></ns1:consultarPtosVtaCAEANoInformadosResponse></soapenv:Body></soapenv:Envelope>
+        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><arrayPuntosVenta
+        /></ns1:consultarPtosVtaCAEANoInformadosResponse></soapenv:Body></soapenv:Envelope>
     headers:
       Connection:
       - close
       Content-Type:
       - text/xml;charset=UTF-8
       Date:
-      - Sun, 20 Jun 2021 17:00:27 GMT
+      - Thu, 01 Jul 2021 20:11:05 GMT
       Set-Cookie:
-      - TS01761d9e=01439f1ddf90729f620f6169784bcda4a558f32b13f188de51dfc4eb839c20136e8d1d3de7;
+      - TS01761d9e=01439f1ddfb7962702c09b9f3c18d6cc479e06ab1f9cf13034dc8eb255c1c79628d012dca6;
         Path=/
       Transfer-Encoding:
       - chunked
