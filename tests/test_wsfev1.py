@@ -26,7 +26,7 @@ import pytest
 import os
 import future
 
-__WSDL__ = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx"
+__WSDL__ = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 __obj__ = WSFEv1()
 __service__ = "wsfe"
 
@@ -37,7 +37,7 @@ CACERT = "conf/afip_ca_info.crt"
 CACHE = ""
 
 
-pytestmark =pytest.mark.vcr
+pytestmark =[pytest.mark.vcr, pytest.mark.freeze_time('2021-07-01')]
 
 
 def test_dummy(auth):
@@ -61,7 +61,7 @@ def test_autorizar_comprobante(auth, tipo_cbte=1, cbte_nro=None, servicios=True)
         # si no me especifícan nro de comprobante, busco el próximo
         cbte_nro = wsfev1.CompUltimoAutorizado(tipo_cbte, punto_vta)
         cbte_nro = int(cbte_nro) + 1
-    fecha = datetime.datetime.now().strftime("%Y%m%d")
+    fecha = datetime.datetime.utcnow().strftime("%Y%m%d")
     tipo_doc = 80
     nro_doc = "30000000007"  # "30500010912" # CUIT BNA
     cbt_desde = cbte_nro
@@ -170,7 +170,7 @@ def test_consulta(auth):
     assert (wsfev1.ObtenerTagXml("CodAutorizacion")== str(wsfev1.CAE))
     assert (wsfev1.ObtenerTagXml("Concepto")== str(concepto))
 
-@pytest.mark.xfail
+
 def test_reproceso_servicios(auth):
     "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
     wsfev1 = auth
@@ -187,7 +187,7 @@ def test_reproceso_servicios(auth):
     test_autorizar_comprobante(auth, tipo_cbte, cbte_nro)
     assert (wsfev1.Reproceso == "S")
 
-@pytest.mark.xfail
+
 def test_reproceso_productos(auth):
     "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
     wsfev1 = auth
@@ -204,7 +204,7 @@ def test_reproceso_productos(auth):
     test_autorizar_comprobante(auth,tipo_cbte, cbte_nro, servicios=False)
     assert (wsfev1.Reproceso== "S")
 
-@pytest.mark.xfail
+
 def test_reproceso_nota_debito(auth):
     "Prueba de reproceso de un comprobante (recupero de CAE por consulta)"
     # N/D con comprobantes asociados
