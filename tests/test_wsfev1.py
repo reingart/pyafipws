@@ -37,7 +37,7 @@ CACERT = "conf/afip_ca_info.crt"
 CACHE = ""
 
 
-pytestmark =pytest.mark.vcr
+pytestmark =[pytest.mark.vcr, pytest.mark.freeze_time('2021-07-01')]
 
 
 def test_dummy(auth):
