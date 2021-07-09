@@ -546,7 +546,7 @@ class PadronAFIP(object):
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
 def main():
-    global FORMATO, PROVINCIAS, TIPO_CLAVE, URL, URL_API, DEBUG
+    global FORMATO, PROVINCIAS, TIPO_CLAVE, URL, URL_API, DEBUG, N, I, A
     safe_console()
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
