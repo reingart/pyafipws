@@ -252,7 +252,8 @@ def depurar_xml(client):
     f.close()
 
 
-if __name__ == "__main__":
+def main():
+    global HOMO, DEBUG, XML, CONFIG_FILE, LICENCIA, N, I, A, ENCABEZADO, DETALLE
     if "/ayuda" in sys.argv:
         print(LICENCIA)
         print()
@@ -451,3 +452,6 @@ if __name__ == "__main__":
         if DEBUG:
             raise
         sys.exit(5)
+
+if __name__ == "__main__":
+    main()

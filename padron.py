@@ -545,8 +545,8 @@ class PadronAFIP(object):
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = PadronAFIP.InstallDir = get_install_dir()
 
-if __name__ == "__main__":
-
+def main():
+    global FORMATO, PROVINCIAS, TIPO_CLAVE, URL, URL_API, DEBUG
     safe_console()
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -686,3 +686,6 @@ if __name__ == "__main__":
         t1 = time.time()
         if "--trace" in sys.argv:
             print("tiempo", t1 - t0)
+
+if __name__ == "__main__":
+    main()

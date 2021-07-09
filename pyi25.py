@@ -142,7 +142,7 @@ class PyI25(object):
         return str(digito)
 
 
-if __name__ == "__main__":
+def main():
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -260,3 +260,6 @@ if __name__ == "__main__":
             os.system("eog " "%s" "" % archivo)
         else:
             os.startfile(archivo)
+
+if __name__ == "__main__":
+    main()

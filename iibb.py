@@ -246,8 +246,8 @@ else:
 INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
-if __name__ == "__main__":
-
+def main():
+    global CACERT, URL, XML_ENTRADA_BASE, HOMO
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 
@@ -325,3 +325,6 @@ if __name__ == "__main__":
                 "contribuyentes", "contribuyente", 0, "alicuotapercepcion"
             ),
         )
+
+if __name__ == "__main__":
+    main()

@@ -308,7 +308,8 @@ def depurar_xml(client):
     f.close()
 
 
-if __name__ == "__main__":
+def main():
+    global HOMO, DEBUG, XML, CONFIG_FILE, LICENCIA, PDB, TIPOS_REG, ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, FORMA_PAGO
     if "/ayuda" in sys.argv:
         print(LICENCIA)
         print()
@@ -628,3 +629,6 @@ if __name__ == "__main__":
         if DEBUG:
             raise
         sys.exit(5)
+
+if __name__ == "__main__":
+    main()

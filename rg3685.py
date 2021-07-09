@@ -62,8 +62,8 @@ REGINFO_CV_VENTAS_CBTE_ALICUOTA = [
 ]
 
 
-if __name__ == "__main__":
-
+def main():
+    global REGINFO_CV_VENTAS_CBTE, REGINFO_CV_VENTAS_CBTE_ALICUOTA
     print("Usando formato registro RG3685 (regimen informativo compras/ventas)")
 
     if "--caea" in sys.argv:
@@ -110,3 +110,6 @@ if __name__ == "__main__":
     rece1.escribir_facturas(facts, open("entrada.txt", "w"))
 
     print("Hecho.")
+
+if __name__ == "__main__":
+    main()

@@ -427,7 +427,8 @@ def depurar_xml(client, ruta="."):
         f.close()
 
 
-if __name__ == "__main__":
+def main():
+    global HOMO, DEBUG, CONFIG_FILE, TIMEOUT, XML, LICENCIA, ENCABEZADO, TRIBUTO, IVA, CMP_ASOC, OPCIONAL, COMPRADOR, TIPO_CBTE, TIPO_DOC, PERIODO_ASOC
     if "/ayuda" in sys.argv:
         print(LICENCIA)
         print()
@@ -955,3 +956,7 @@ if __name__ == "__main__":
     finally:
         if DEBUG:
             print(ws.DebugLog())
+
+
+if __name__ == "__main__":
+    main()

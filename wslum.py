@@ -793,7 +793,8 @@ class WSLUM(BaseWS):
 INSTALL_DIR = WSLUM.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global LICENCIA, AYUDA, N, I, A, WSDL, DEBUG, XML, CONFIG_FILE, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -1192,3 +1193,6 @@ if __name__ == "__main__":
         if XML:
             open("wslum_request.xml", "w").write(wslum.client.xml_request)
             open("wslum_response.xml", "w").write(wslum.client.xml_response)
+
+if __name__ == "__main__":
+    main()

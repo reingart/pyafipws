@@ -1707,8 +1707,9 @@ else:
 INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
-if __name__ == "__main__":
-
+def main():
+    global CONFIG_FILE, DEBUG, HOMO, AYUDA, LICENCIA
+    
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 
@@ -2094,3 +2095,6 @@ if __name__ == "__main__":
         fepdf.GenerarPDF(archivo=salida)
         if "--mostrar" in sys.argv:
             fepdf.MostrarPDF(archivo=salida, imprimir="--imprimir" in sys.argv)
+
+if __name__ == "__main__":
+    main()

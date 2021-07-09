@@ -132,7 +132,8 @@ def aviso_digit(
     return str(result.codError), str(result.descError)
 
 
-if __name__ == "__main__":
+def main():
+    global LICENCIA, WSDDFURL, SOAP_ACTION, SOAP_NS, DEBUG, XML, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -252,3 +253,6 @@ if __name__ == "__main__":
         if DEBUG:
             raise
         sys.exit(5)
+
+if __name__ == "__main__":
+    main()

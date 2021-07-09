@@ -1019,7 +1019,8 @@ else:
 INSTALL_DIR = WSCTG.InstallDir = WSCTGv2.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global HOMO, ENCABEZADO, LICENCIA, AYUDA, WSDL, DEBUG, XML, CONFIG_FILE
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -1463,3 +1464,6 @@ if __name__ == "__main__":
         if DEBUG:
             raise
         sys.exit(5)
+
+if __name__ == "__main__":
+    main()

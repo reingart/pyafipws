@@ -1047,7 +1047,8 @@ class WSLSP(BaseWS):
 INSTALL_DIR = WSLSP.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global N, I, A, WSDL, DEBUG, XML, CONFIG_FILE, HOMO, LICENCIA, AYUDA
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -1527,3 +1528,6 @@ if __name__ == "__main__":
         if XML:
             open("wslsp_request.xml", "w").write(wslsp.client.xml_request)
             open("wslsp_response.xml", "w").write(wslsp.client.xml_response)
+
+if __name__ == "__main__":
+    main()
