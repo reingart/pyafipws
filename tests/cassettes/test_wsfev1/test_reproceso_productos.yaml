@@ -2,7 +2,7 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FECompUltimoAutorizado xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjkwMDYyNTM1MSIgZ2VuX3RpbWU9IjE2MjQyMTY2NDMiIGV4cF90aW1lPSIxNjI0MjU5OTAzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>OUN3K2LTCwPsMV8K2EGHg/CsLfHYgk/l1PM4c+rIcPfnxSSIaAGnKoSQ2JRDxOIXN/1h2v965leyQdI9WEovBGkFWGovgKBVazMbPDV3/68G2FfkMbWD2dZZBAUOkCBEJZ7A8lxKP1S+qiBia+1FLjcnR4KtgxazKh4dpbk6PcI=</Sign><Cuit>20267565393</Cuit></Auth><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo></FECompUltimoAutorizado>\n</soap:Body>\n</soap:Envelope>"
+      \   <FECompUltimoAutorizado xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjk3MzA0OTU5OSIgZ2VuX3RpbWU9IjE2MjUxNzA3ODkiIGV4cF90aW1lPSIxNjI1MjE0MDQ5Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>BilPbujwA5bRI+pIxcQxTKXAjIQPB/EIEaddI94S7IELTKQLAu6HZPInUudaTE2fcMIZMcuvnd/n7VDuJph7mIf8bQwlZT0un99wq6QZN0iJSdnGEiLG25DjsHQLr/KjxB4JfInyrnlVPU/c1gU1Dcqx+Xpn7QCc1wgnE6pNOf4=</Sign><Cuit>20267565393</Cuit></Auth><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo></FECompUltimoAutorizado>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
@@ -20,8 +20,8 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-06-20T16:18:39.0922072-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECompUltimoAutorizadoResponse
-        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECompUltimoAutorizadoResult><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo><CbteNro>1781</CbteNro></FECompUltimoAutorizadoResult></FECompUltimoAutorizadoResponse></soap:Body></soap:Envelope>\r\n"
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-01T17:21:13.9319356-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECompUltimoAutorizadoResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECompUltimoAutorizadoResult><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo><CbteNro>1838</CbteNro></FECompUltimoAutorizadoResult></FECompUltimoAutorizadoResponse></soap:Body></soap:Envelope>\r\n"
     headers:
       Cache-Control:
       - private, max-age=0
@@ -30,13 +30,13 @@ interactions:
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 19:18:39 GMT
+      - Thu, 01 Jul 2021 20:21:13 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf43c01a8e67f0c3ab716d15c77445e1b78bbf1907b5f82912faf99d76aeb8c7e7;
+      - TS01983a04=01439f1ddf3d53c915fa3036919e571357aa40e4df7e7f69f7799d2a16c61eda64a619b6ce;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -56,7 +56,7 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FECAESolicitar xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjkwMDYyNTM1MSIgZ2VuX3RpbWU9IjE2MjQyMTY2NDMiIGV4cF90aW1lPSIxNjI0MjU5OTAzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>OUN3K2LTCwPsMV8K2EGHg/CsLfHYgk/l1PM4c+rIcPfnxSSIaAGnKoSQ2JRDxOIXN/1h2v965leyQdI9WEovBGkFWGovgKBVazMbPDV3/68G2FfkMbWD2dZZBAUOkCBEJZ7A8lxKP1S+qiBia+1FLjcnR4KtgxazKh4dpbk6PcI=</Sign><Cuit>20267565393</Cuit></Auth><FeCAEReq><FeCabReq><CantReg>1</CantReg><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo></FeCabReq><FeDetReq><FECAEDetRequest><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1782</CbteDesde><CbteHasta>1782</CbteHasta><CbteFch>20210621</CbteFch><ImpTotal>122.00</ImpTotal><ImpTotConc>0.00</ImpTotConc><ImpNeto>100.00</ImpNeto><ImpOpEx>0.00</ImpOpEx><ImpTrib>1.00</ImpTrib><ImpIVA>21.00</ImpIVA><MonId>PES</MonId><MonCotiz>1.000</MonCotiz><Tributos><Tributo><Id>99</Id><Desc>Impuesto
+      \   <FECAESolicitar xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjk3MzA0OTU5OSIgZ2VuX3RpbWU9IjE2MjUxNzA3ODkiIGV4cF90aW1lPSIxNjI1MjE0MDQ5Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>BilPbujwA5bRI+pIxcQxTKXAjIQPB/EIEaddI94S7IELTKQLAu6HZPInUudaTE2fcMIZMcuvnd/n7VDuJph7mIf8bQwlZT0un99wq6QZN0iJSdnGEiLG25DjsHQLr/KjxB4JfInyrnlVPU/c1gU1Dcqx+Xpn7QCc1wgnE6pNOf4=</Sign><Cuit>20267565393</Cuit></Auth><FeCAEReq><FeCabReq><CantReg>1</CantReg><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo></FeCabReq><FeDetReq><FECAEDetRequest><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1839</CbteDesde><CbteHasta>1839</CbteHasta><CbteFch>20210701</CbteFch><ImpTotal>122.00</ImpTotal><ImpTotConc>0.00</ImpTotConc><ImpNeto>100.00</ImpNeto><ImpOpEx>0.00</ImpOpEx><ImpTrib>1.00</ImpTrib><ImpIVA>21.00</ImpIVA><MonId>PES</MonId><MonCotiz>1.000</MonCotiz><Tributos><Tributo><Id>99</Id><Desc>Impuesto
       Municipal Matanza</Desc><BaseImp>100.00</BaseImp><Alic>1.00</Alic><Importe>1.00</Importe></Tributo></Tributos><Iva><AlicIva><Id>5</Id><BaseImp>100</BaseImp><Importe>21</Importe></AlicIva></Iva></FECAEDetRequest></FeDetReq></FeCAEReq></FECAESolicitar>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
@@ -75,25 +75,25 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-06-20T16:18:39.52971-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECAESolicitarResponse
-        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECAESolicitarResult><FeCabResp><Cuit>20267565393</Cuit><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo><FchProceso>20210620161839</FchProceso><CantReg>1</CantReg><Resultado>A</Resultado><Reproceso>N</Reproceso></FeCabResp><FeDetResp><FECAEDetResponse><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1782</CbteDesde><CbteHasta>1782</CbteHasta><CbteFch>20210621</CbteFch><Resultado>A</Resultado><Observaciones><Obs><Code>10217</Code><Msg>El
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-01T17:21:14.4475639-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECAESolicitarResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECAESolicitarResult><FeCabResp><Cuit>20267565393</Cuit><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo><FchProceso>20210701172114</FchProceso><CantReg>1</CantReg><Resultado>A</Resultado><Reproceso>N</Reproceso></FeCabResp><FeDetResp><FECAEDetResponse><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1839</CbteDesde><CbteHasta>1839</CbteHasta><CbteFch>20210701</CbteFch><Resultado>A</Resultado><Observaciones><Obs><Code>10217</Code><Msg>El
         credito fiscal discriminado en el presente comprobante solo podra ser computado
-        a efectos del Procedimiento permanente de transicion al Regimen General.</Msg></Obs></Observaciones><CAE>71253948373359</CAE><CAEFchVto>20210701</CAEFchVto></FECAEDetResponse></FeDetResp></FECAESolicitarResult></FECAESolicitarResponse></soap:Body></soap:Envelope>\r\n"
+        a efectos del Procedimiento permanente de transicion al Regimen General.</Msg></Obs></Observaciones><CAE>71263951828318</CAE><CAEFchVto>20210711</CAEFchVto></FECAEDetResponse></FeDetResp></FECAESolicitarResult></FECAESolicitarResponse></soap:Body></soap:Envelope>\r\n"
     headers:
       Cache-Control:
       - private, max-age=0
       Content-Length:
-      - '1295'
+      - '1297'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 19:18:39 GMT
+      - Thu, 01 Jul 2021 20:21:14 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf56e335f06349adbf754f7b7b5aef7ccd6e0f612f67a312e119b8750b5ff27be8;
+      - TS01983a04=01439f1ddf4f924665ac6bd952c4928533cbcb93e3669ad8f65a9fa77bb0f8d6b4b89eb167;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -113,7 +113,7 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FECAESolicitar xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjkwMDYyNTM1MSIgZ2VuX3RpbWU9IjE2MjQyMTY2NDMiIGV4cF90aW1lPSIxNjI0MjU5OTAzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>OUN3K2LTCwPsMV8K2EGHg/CsLfHYgk/l1PM4c+rIcPfnxSSIaAGnKoSQ2JRDxOIXN/1h2v965leyQdI9WEovBGkFWGovgKBVazMbPDV3/68G2FfkMbWD2dZZBAUOkCBEJZ7A8lxKP1S+qiBia+1FLjcnR4KtgxazKh4dpbk6PcI=</Sign><Cuit>20267565393</Cuit></Auth><FeCAEReq><FeCabReq><CantReg>1</CantReg><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo></FeCabReq><FeDetReq><FECAEDetRequest><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1782</CbteDesde><CbteHasta>1782</CbteHasta><CbteFch>20210621</CbteFch><ImpTotal>122.00</ImpTotal><ImpTotConc>0.00</ImpTotConc><ImpNeto>100.00</ImpNeto><ImpOpEx>0.00</ImpOpEx><ImpTrib>1.00</ImpTrib><ImpIVA>21.00</ImpIVA><MonId>PES</MonId><MonCotiz>1.000</MonCotiz><Tributos><Tributo><Id>99</Id><Desc>Impuesto
+      \   <FECAESolicitar xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjk3MzA0OTU5OSIgZ2VuX3RpbWU9IjE2MjUxNzA3ODkiIGV4cF90aW1lPSIxNjI1MjE0MDQ5Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>BilPbujwA5bRI+pIxcQxTKXAjIQPB/EIEaddI94S7IELTKQLAu6HZPInUudaTE2fcMIZMcuvnd/n7VDuJph7mIf8bQwlZT0un99wq6QZN0iJSdnGEiLG25DjsHQLr/KjxB4JfInyrnlVPU/c1gU1Dcqx+Xpn7QCc1wgnE6pNOf4=</Sign><Cuit>20267565393</Cuit></Auth><FeCAEReq><FeCabReq><CantReg>1</CantReg><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo></FeCabReq><FeDetReq><FECAEDetRequest><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1839</CbteDesde><CbteHasta>1839</CbteHasta><CbteFch>20210701</CbteFch><ImpTotal>122.00</ImpTotal><ImpTotConc>0.00</ImpTotConc><ImpNeto>100.00</ImpNeto><ImpOpEx>0.00</ImpOpEx><ImpTrib>1.00</ImpTrib><ImpIVA>21.00</ImpIVA><MonId>PES</MonId><MonCotiz>1.000</MonCotiz><Tributos><Tributo><Id>99</Id><Desc>Impuesto
       Municipal Matanza</Desc><BaseImp>100.00</BaseImp><Alic>1.00</Alic><Importe>1.00</Importe></Tributo></Tributos><Iva><AlicIva><Id>5</Id><BaseImp>100</BaseImp><Importe>21</Importe></AlicIva></Iva></FECAEDetRequest></FeDetReq></FeCAEReq></FECAESolicitar>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
@@ -132,8 +132,8 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-06-20T16:18:39.9515877-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECAESolicitarResponse
-        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECAESolicitarResult><FeCabResp><Cuit>20267565393</Cuit><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo><FchProceso>20210620161839</FchProceso><CantReg>1</CantReg><Resultado>R</Resultado><Reproceso>N</Reproceso></FeCabResp><FeDetResp><FECAEDetResponse><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1782</CbteDesde><CbteHasta>1782</CbteHasta><CbteFch>20210621</CbteFch><Resultado>R</Resultado><CAE
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-01T17:21:15.0100675-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECAESolicitarResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECAESolicitarResult><FeCabResp><Cuit>20267565393</Cuit><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo><FchProceso>20210701172115</FchProceso><CantReg>1</CantReg><Resultado>R</Resultado><Reproceso>N</Reproceso></FeCabResp><FeDetResp><FECAEDetResponse><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1839</CbteDesde><CbteHasta>1839</CbteHasta><CbteFch>20210701</CbteFch><Resultado>R</Resultado><CAE
         /><CAEFchVto /></FECAEDetResponse></FeDetResp><Errors><Err><Code>10016</Code><Msg>El
         numero o fecha del comprobante no se corresponde con el proximo a autorizar.
         Consultar metodo FECompUltimoAutorizado.</Msg></Err></Errors></FECAESolicitarResult></FECAESolicitarResponse></soap:Body></soap:Envelope>\r\n"
@@ -145,13 +145,13 @@ interactions:
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 19:18:39 GMT
+      - Thu, 01 Jul 2021 20:21:15 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf31d016eec4a8674129f92754777d13b7d602f9a7129737c89ecb80ee80442c55;
+      - TS01983a04=01439f1ddfaac0d07d059e5598896cdfc1affa364a69db91ceb3f04d2c266a6a9722103536;
         Path=/
       Strict-Transport-Security:
       - nosniff
@@ -171,7 +171,7 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <FECompConsultar xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjkwMDYyNTM1MSIgZ2VuX3RpbWU9IjE2MjQyMTY2NDMiIGV4cF90aW1lPSIxNjI0MjU5OTAzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>OUN3K2LTCwPsMV8K2EGHg/CsLfHYgk/l1PM4c+rIcPfnxSSIaAGnKoSQ2JRDxOIXN/1h2v965leyQdI9WEovBGkFWGovgKBVazMbPDV3/68G2FfkMbWD2dZZBAUOkCBEJZ7A8lxKP1S+qiBia+1FLjcnR4KtgxazKh4dpbk6PcI=</Sign><Cuit>20267565393</Cuit></Auth><FeCompConsReq><CbteTipo>1</CbteTipo><CbteNro>1782</CbteNro><PtoVta>4000</PtoVta></FeCompConsReq></FECompConsultar>\n</soap:Body>\n</soap:Envelope>"
+      \   <FECompConsultar xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMjk3MzA0OTU5OSIgZ2VuX3RpbWU9IjE2MjUxNzA3ODkiIGV4cF90aW1lPSIxNjI1MjE0MDQ5Ii8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>BilPbujwA5bRI+pIxcQxTKXAjIQPB/EIEaddI94S7IELTKQLAu6HZPInUudaTE2fcMIZMcuvnd/n7VDuJph7mIf8bQwlZT0un99wq6QZN0iJSdnGEiLG25DjsHQLr/KjxB4JfInyrnlVPU/c1gU1Dcqx+Xpn7QCc1wgnE6pNOf4=</Sign><Cuit>20267565393</Cuit></Auth><FeCompConsReq><CbteTipo>1</CbteTipo><CbteNro>1839</CbteNro><PtoVta>4000</PtoVta></FeCompConsReq></FECompConsultar>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
@@ -189,10 +189,10 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-06-20T16:18:40.3890905-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECompConsultarResponse
-        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECompConsultarResult><ResultGet><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1782</CbteDesde><CbteHasta>1782</CbteHasta><CbteFch>20210621</CbteFch><ImpTotal>122</ImpTotal><ImpTotConc>0</ImpTotConc><ImpNeto>100</ImpNeto><ImpOpEx>0</ImpOpEx><ImpTrib>1</ImpTrib><ImpIVA>21</ImpIVA><FchServDesde
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-01T17:21:15.4788205-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECompConsultarResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECompConsultarResult><ResultGet><Concepto>1</Concepto><DocTipo>80</DocTipo><DocNro>30000000007</DocNro><CbteDesde>1839</CbteDesde><CbteHasta>1839</CbteHasta><CbteFch>20210701</CbteFch><ImpTotal>122</ImpTotal><ImpTotConc>0</ImpTotConc><ImpNeto>100</ImpNeto><ImpOpEx>0</ImpOpEx><ImpTrib>1</ImpTrib><ImpIVA>21</ImpIVA><FchServDesde
         /><FchServHasta /><FchVtoPago /><MonId>PES</MonId><MonCotiz>1</MonCotiz><Tributos><Tributo><Id>99</Id><Desc>Impuesto
-        Municipal Matanza</Desc><BaseImp>100</BaseImp><Alic>1</Alic><Importe>1</Importe></Tributo></Tributos><Iva><AlicIva><Id>5</Id><BaseImp>100</BaseImp><Importe>21</Importe></AlicIva></Iva><Resultado>A</Resultado><CodAutorizacion>71253948373359</CodAutorizacion><EmisionTipo>CAE</EmisionTipo><FchVto>20210701</FchVto><FchProceso>20210620161839</FchProceso><Observaciones><Obs><Code>10217</Code><Msg>El
+        Municipal Matanza</Desc><BaseImp>100</BaseImp><Alic>1</Alic><Importe>1</Importe></Tributo></Tributos><Iva><AlicIva><Id>5</Id><BaseImp>100</BaseImp><Importe>21</Importe></AlicIva></Iva><Resultado>A</Resultado><CodAutorizacion>71263951828318</CodAutorizacion><EmisionTipo>CAE</EmisionTipo><FchVto>20210711</FchVto><FchProceso>20210701172114</FchProceso><Observaciones><Obs><Code>10217</Code><Msg>El
         credito fiscal discriminado en el presente comprobante solo podra ser computado
         a efectos del Procedimiento permanente de transicion al Regimen General.</Msg></Obs></Observaciones><PtoVta>4000</PtoVta><CbteTipo>1</CbteTipo></ResultGet></FECompConsultarResult></FECompConsultarResponse></soap:Body></soap:Envelope>\r\n"
     headers:
@@ -203,13 +203,13 @@ interactions:
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 20 Jun 2021 19:18:40 GMT
+      - Thu, 01 Jul 2021 20:21:15 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf2b66bb9f313eaada03e1b4672798662d091e6a954e2a59d04388925075200618;
+      - TS01983a04=01439f1ddfddd4a378fe2b7f2b1de02775647b74bc34d872dd297bcbf2ae47069039437450;
         Path=/
       Strict-Transport-Security:
       - nosniff

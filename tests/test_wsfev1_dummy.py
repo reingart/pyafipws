@@ -3,7 +3,7 @@ from pyafipws.wsaa import WSAA
 import pytest
 import os
 
-__WSDL__ = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx"
+__WSDL__ = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 __obj__ = WSFEv1()
 __service__ = "wsfe"
 
