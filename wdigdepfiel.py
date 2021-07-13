@@ -133,7 +133,7 @@ def aviso_digit(
 
 
 def main():
-    global LICENCIA, WSDDFURL, SOAP_ACTION, SOAP_NS, DEBUG, XML, HOMO
+    global DEBUG, XML, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
