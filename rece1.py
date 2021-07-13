@@ -428,7 +428,7 @@ def depurar_xml(client, ruta="."):
 
 
 def main():
-    global HOMO, DEBUG, CONFIG_FILE, TIMEOUT, XML, LICENCIA, ENCABEZADO, TRIBUTO, IVA, CMP_ASOC, OPCIONAL, COMPRADOR, TIPO_CBTE, TIPO_DOC, PERIODO_ASOC
+    global HOMO, DEBUG, CONFIG_FILE, TIMEOUT, XML
     if "/ayuda" in sys.argv:
         print(LICENCIA)
         print()

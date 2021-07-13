@@ -705,7 +705,7 @@ class SIRED(object):
 INSTALL_DIR = SIRED.InstallDir = get_install_dir()
 
 def main():
-    global CUIT, categorias, codigos_operacion, CAB_FAC_TIPO1, CAB_FAC_TIPO2, IMPORTES, DETALLE, VENTAS_TIPO1, VENTAS_TIPO2, REGINFO_CV_VENTAS_CBTE_ALICUOTA, REGINFO_CV_VENTAS_CBTE
+    
     try:
         if hasattr(sys, "frozen") or False:
             p = os.path.dirname(os.path.abspath(sys.executable))

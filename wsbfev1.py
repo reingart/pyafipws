@@ -651,7 +651,7 @@ def p_assert_eq(a, b):
 
 
 def main():
-    global HOMO, LANZAR_EXCEPCIONES, WSDL
+    global HOMO
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 

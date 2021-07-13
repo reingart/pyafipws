@@ -317,7 +317,7 @@ def depurar_xml(client):
 
 
 def main():
-    global HOMO, DEBUG, XML, CONFIG_FILE, LICENCIA, PDB, TIPOS_REG, ENCABEZADO, DETALLE, TRIBUTO, IVA, CMP_ASOC, OPCIONAL
+    global HOMO, DEBUG, XML, CONFIG_FILE
     if "/ayuda" in sys.argv:
         print(LICENCIA)
         print()

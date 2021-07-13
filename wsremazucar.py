@@ -718,7 +718,7 @@ INSTALL_DIR = WSRemAzucar.InstallDir = get_install_dir()
 
 
 def main():
-    global LICENCIA, AYUDA, WSDL, DEBUG, XML, CONFIG_FILE, HOMO, ENCABEZADO
+    global DEBUG, XML, CONFIG_FILE, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)

@@ -247,7 +247,7 @@ INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
 def main():
-    global CACERT, URL, XML_ENTRADA_BASE, HOMO
+    global CACERT, URL, HOMO
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 

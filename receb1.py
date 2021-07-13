@@ -253,7 +253,7 @@ def depurar_xml(client):
 
 
 def main():
-    global HOMO, DEBUG, XML, CONFIG_FILE, LICENCIA, N, I, A, ENCABEZADO, DETALLE
+    global HOMO, DEBUG, XML, CONFIG_FILE
     if "/ayuda" in sys.argv:
         print(LICENCIA)
         print()

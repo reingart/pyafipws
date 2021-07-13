@@ -63,7 +63,7 @@ REGINFO_CV_VENTAS_CBTE_ALICUOTA = [
 
 
 def main():
-    global REGINFO_CV_VENTAS_CBTE, REGINFO_CV_VENTAS_CBTE_ALICUOTA
+    
     print("Usando formato registro RG3685 (regimen informativo compras/ventas)")
 
     if "--caea" in sys.argv:

@@ -1137,7 +1137,7 @@ REGISTROS = {
 
 
 def main():
-    global HOMO, LICENCIA, AYUDA, WSDL, DEBUG, XML, CONFIG_FILE, N, I, A
+    global HOMO, DEBUG, XML, CONFIG_FILE
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)

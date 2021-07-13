@@ -503,7 +503,7 @@ INSTALL_DIR = WSAA.InstallDir = get_install_dir()
 
 
 def main():
-    global WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL, SOAP_NS, SOAP_ACTION, CACERT, HOMO, TYPELIB, DEFAULT_TTL, DEBUG
+    global HOMO, TYPELIB, DEBUG
     safe_console()
 
     if "--register" in sys.argv or "--unregister" in sys.argv:

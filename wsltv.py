@@ -859,7 +859,7 @@ INSTALL_DIR = WSLTV.InstallDir = get_install_dir()
 
 
 def main():
-    global LICENCIA, AYUDA, N, I, A, WSDL, DEBUG, XML, CONFIG_FILE, TIMEOUT, HOMO
+    global DEBUG, XML, CONFIG_FILE, TIMEOUT, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)

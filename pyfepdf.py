@@ -1708,7 +1708,7 @@ INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
 def main():
-    global CONFIG_FILE, DEBUG, HOMO, AYUDA, LICENCIA
+    global CONFIG_FILE, DEBUG, HOMO
     
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register

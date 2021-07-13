@@ -1020,7 +1020,7 @@ INSTALL_DIR = WSCTG.InstallDir = WSCTGv2.InstallDir = get_install_dir()
 
 
 def main():
-    global HOMO, ENCABEZADO, LICENCIA, AYUDA, WSDL, DEBUG, XML, CONFIG_FILE
+    global HOMO, DEBUG, XML, CONFIG_FILE
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
