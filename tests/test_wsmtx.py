@@ -202,7 +202,7 @@ def test_autorizar_comprobante(auth):
     tipo_cbte = 1
     punto_vta = 4000
     cbte_nro = wsmtx.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
-    fecha = datetime.datetime.now().strftime("%Y-%m-%d")
+    fecha = datetime.datetime.utcnow().strftime("%Y-%m-%d")
     concepto = 3
     tipo_doc = 80
     nro_doc = "30000000007"
@@ -311,13 +311,14 @@ def test_solicitar_caea(auth):
     caea = wsmtx.SolicitarCAEA(periodo, orden)
     assert caea == ""
 
-@pytest.mark.xfail
+
 def test_consultar_caea(auth):
     """Test consultar caea."""
     wsmtx = auth
-    periodo = "201907"
-    orden = "1"
-    caea = "24163778394093"
+    fecha = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+    periodo = fecha.replace("-", "")[:6]
+    orden = 1 if int(fecha[-2:]) < 16 else 2
+    caea = "31263355536606"
     caea = wsmtx.ConsultarCAEA(periodo, orden, caea)
     assert caea
 
@@ -342,7 +343,7 @@ def test_informar_ajuste_iva_caea(auth):
     tipo_cbte = 2
     punto_vta = 4000
     cbte_nro = wsmtx.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
-    fecha = datetime.datetime.now().strftime("%Y-%m-%d")
+    fecha = datetime.datetime.utcnow().strftime("%Y-%m-%d")
     concepto = 3
     tipo_doc = 80
     nro_doc = "30000000007"
@@ -443,12 +444,12 @@ def test_consultar_ultimo_comprobante_autorizado(auth):
     comp = wsmtx.ConsultarUltimoComprobanteAutorizado(2, 4000)
     assert comp
 
-@pytest.mark.xfail
+
 def test_consultar_comprobante(auth):
     wsmtx = auth
-    tipo_cbte = 2
+    tipo_cbte = 1
     pto_vta = 4000
-    cbte_nro = 286
+    cbte_nro = 1835
     consulta = wsmtx.ConsultarComprobante(tipo_cbte, pto_vta, cbte_nro)
     assert consulta
 
@@ -524,9 +525,9 @@ def test_consultar_puntos_venta_caea(auth):
     consulta = wsmtx.ConsultarPuntosVentaCAEA(fmt)
     assert consulta == []
 
-@pytest.mark.xfail
+
 def test_consultar_puntos_venta_caea_no_informados(auth):
     wsmtx = auth
-    caea = "24163778394093"
+    caea = "31263355536606"
     consulta = wsmtx.ConsultarPtosVtaCAEANoInformados(caea)
     assert consulta == []
