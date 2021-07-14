@@ -502,8 +502,8 @@ class WSAA(BaseWS):
 INSTALL_DIR = WSAA.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
-
+def main():
+    global HOMO, TYPELIB, DEBUG
     safe_console()
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -636,3 +636,6 @@ if __name__ == "__main__":
             print("Generation Time:", wsaa.ObtenerTagXml("generationTime"))
             print("Expiration Time:", wsaa.ObtenerTagXml("expirationTime"))
             print("Expiro?", wsaa.Expirado())
+
+if __name__=="__main__":
+    main()

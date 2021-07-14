@@ -704,7 +704,8 @@ class SIRED(object):
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 INSTALL_DIR = SIRED.InstallDir = get_install_dir()
 
-if __name__ == "__main__":
+def main():
+    
     try:
         if hasattr(sys, "frozen") or False:
             p = os.path.dirname(os.path.abspath(sys.executable))
@@ -1085,3 +1086,6 @@ if __name__ == "__main__":
     if "--debug" in sys.argv:
         input("presione enter para continuar...")
     ##sys.stdout.close()
+
+if __name__ == "__main__":
+    main()
