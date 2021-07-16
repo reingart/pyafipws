@@ -799,8 +799,8 @@ def p_assert_eq(a, b):
     print(a, a == b and "==" or "!=", b)
 
 
-if __name__ == "__main__":
-
+def main():
+    global HOMO, WSDL
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 
@@ -1047,3 +1047,6 @@ if __name__ == "__main__":
 
         if "--ptosventa" in sys.argv:
             print(wsfexv1.GetParamPtosVenta())
+
+if __name__ == "__main__":
+    main()

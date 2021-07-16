@@ -217,8 +217,8 @@ class PyEmail(object):
             return False
 
 
-if __name__ == "__main__":
-
+def main():
+    global DEBUG
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 
@@ -321,3 +321,6 @@ if __name__ == "__main__":
             )
         else:
             print(pyemail.Traceback)
+
+if __name__ == "__main__":
+    main()

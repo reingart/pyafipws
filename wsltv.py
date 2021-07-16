@@ -858,7 +858,8 @@ class WSLTV(BaseWS):
 INSTALL_DIR = WSLTV.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global DEBUG, XML, CONFIG_FILE, TIMEOUT, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -1343,3 +1344,6 @@ if __name__ == "__main__":
         if XML:
             open("wsltv_request.xml", "w").write(wsltv.client.xml_request)
             open("wsltv_response.xml", "w").write(wsltv.client.xml_response)
+
+if __name__ == "__main__":
+    main()

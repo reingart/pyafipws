@@ -3901,7 +3901,8 @@ def leer_archivo(nombre_archivo):
 INSTALL_DIR = WSLPG.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global DEBUG, XML, CONFIG_FILE, TIMEOUT, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -5516,3 +5517,7 @@ if __name__ == "__main__":
         if XML:
             open("wslpg_request.xml", "w").write(wslpg.client.xml_request)
             open("wslpg_response.xml", "w").write(wslpg.client.xml_response)
+
+
+if __name__ == "__main__":
+    main()
