@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarOperacionesReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzOTQ2MzYzNDUiIGdlbl90aW1lPSIxNjI2OTcwODAyIiBleHBfdGltZT0iMTYyNzAxNDA2MiIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2xzcCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>tAXfme2n4K109OzQs51Jm+m27lj+9bqkQrrMgevewlyGH3iLYRKvqSt2cFlrAyXFBeWfzZcN5CgBsRoLSXa15EeE6G/38MQlAHkmhvCFFhOfGFV92XaQ0LANOJdKz10wsMSQYHbI3I83zymiqlmTmRqdFFapvhPhtoWDcguKsjI=</sign><cuit>20267565393</cuit></auth></ser:ConsultarOperacionesReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1269'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarOperaciones"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarOperacionesResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslsp/\"><respuesta><operacion><codigo>1</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Hacienda</descripcion></operacion><operacion><codigo>2</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Directo</descripcion></operacion><operacion><codigo>3</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Carne</descripcion></operacion><operacion><codigo>4</codigo><descripcion>Liquidaci\xF3n
+        de compra</descripcion></operacion><operacion><codigo>5</codigo><descripcion>Liquidaci\xF3n
+        Compra Directa</descripcion></operacion><operacion><codigo>6</codigo><descripcion>Liquidaci\xF3n
+        de venta directa</descripcion></operacion><operacionPorcina><codigo>101</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Hacienda - Porcinos</descripcion></operacionPorcina><operacionPorcina><codigo>102</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Directo - Porcinos</descripcion></operacionPorcina><operacionPorcina><codigo>103</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Carne - Porcinos</descripcion></operacionPorcina><operacionPorcina><codigo>104</codigo><descripcion>Liquidaci\xF3n
+        de compra - Porcinos</descripcion></operacionPorcina><operacionPorcina><codigo>105</codigo><descripcion>Liquidaci\xF3n
+        Compra Directa - Porcinos</descripcion></operacionPorcina><operacionPorcina><codigo>106</codigo><descripcion>Liquidaci\xF3n
+        de venta directa - Porcinos</descripcion></operacionPorcina><operacionAvicola><codigo>201</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Hacienda - Av\xEDcola</descripcion></operacionAvicola><operacionAvicola><codigo>202</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Directo - Av\xEDcola</descripcion></operacionAvicola><operacionAvicola><codigo>203</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto - Carne - Av\xEDcola</descripcion></operacionAvicola><operacionAvicola><codigo>204</codigo><descripcion>Liquidaci\xF3n
+        de Compra - Av\xEDcola</descripcion></operacionAvicola><operacionAvicola><codigo>205</codigo><descripcion>Liquidaci\xF3n
+        de Compra Directa - Av\xEDcola</descripcion></operacionAvicola><operacionAvicola><codigo>206</codigo><descripcion>Liquidaci\xF3n
+        de Venta Directa - Av\xEDcola</descripcion></operacionAvicola><operacionAvicola><codigo>207</codigo><descripcion>Liquidaci\xF3n
+        de Contrataci\xF3n de Crianza Pollos Parrilleros</descripcion></operacionAvicola><operacionAvicola><codigo>208</codigo><descripcion>Liquidaci\xF3n
+        de Crianza Pollos Parrilleros</descripcion></operacionAvicola><metadata><servidor>vivaldi</servidor><fechaHora>2021-07-22T13:21:30</fechaHora></metadata></respuesta></ns2:ConsultarOperacionesResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 16:21:30 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf18a1cfff278ef89286d4ff8901c149ea00fee54c6908ebca390b2c49acfb238e;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

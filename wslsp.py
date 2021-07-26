@@ -98,7 +98,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
 
 DEBUG = False
 XML = False
-CONFIG_FILE = "wslsp.ini"
+CONFIG_FILE = "conf/wslsp.ini"
 HOMO = False
 
 
@@ -1360,7 +1360,7 @@ def main():
                         f,
                         sort_keys=True,
                         indent=4,
-                        encoding="utf-8",
+                        # encoding="utf-8",
                     )
             else:
                 # cargar un archivo de texto:
@@ -1431,7 +1431,7 @@ def main():
                     print(wslsp.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wslsp.NroComprobante)
             print("Errores:", wslsp.Errores)
-            sys.exit(0)
+            # sys.exit(0)
 
         if "--guardar" in sys.argv:
             # grabar un archivo de texto (intercambio) con el resultado:
