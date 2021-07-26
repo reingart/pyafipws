@@ -1,0 +1,56 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   \n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '269'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.bfev1/BFEDummy"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSBFEv1/service.asmx
+  response:
+    body:
+      string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
+        xmlns="http://ar.gov.afip.dif.bfev1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-07-22T18:54:35.2558799-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEDummyResponse
+        xmlns="http://ar.gov.afip.dif.bfev1/"><BFEDummyResult><AppServer>OK</AppServer><DbServer>OK</DbServer><AuthServer>OK</AuthServer></BFEDummyResult></BFEDummyResponse></soap:Body></soap:Envelope>
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '626'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 21:54:35 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddf27dd7328c0e78d73e0c8603c4b50448cd2bf6ad3999f64b03f51cd51bbc09099;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
