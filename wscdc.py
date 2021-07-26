@@ -370,7 +370,7 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1][0] not in "-/":
         CONFIG_FILE = sys.argv.pop(1)
     config = SafeConfigParser()
-    config.read(CONFIG_FILE)
+    config.read("conf/rece.ini")
     crt = config.get("WSAA", "CERT")
     key = config.get("WSAA", "PRIVATEKEY")
     cuit = config.get("WSCDC", "CUIT")
