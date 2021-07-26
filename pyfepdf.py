@@ -1651,7 +1651,7 @@ class FEPDF(object):
 
     @utils.inicializar_y_capturar_excepciones_simple
     def MostrarPDF(self, archivo, imprimir=False):
-        if sys.platform.startswith(("linux2", "java")):
+        if sys.platform.startswith(("linux2", "java", "linux")):
             os.system("evince " "%s" "" % archivo)
         else:
             operation = imprimir and "print" or ""
@@ -2037,7 +2037,7 @@ def main():
             elif "--json" in sys.argv:
                 from .formatos import formato_json
 
-                archivo = conf_fact.get("entrada", "entrada.txt")
+                archivo = "salida.json"
                 if DEBUG:
                     print("Escribiendo", archivo)
                 regs = formato_json.escribir([reg], archivo)
