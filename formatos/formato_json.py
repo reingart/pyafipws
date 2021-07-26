@@ -46,6 +46,6 @@ def escribir(filas, fn="salida.json"):
         jsonfile,
         sort_keys=True,
         indent=4,
-        encoding="utf-8",
+        # encoding="utf-8",
     )
     jsonfile.close()

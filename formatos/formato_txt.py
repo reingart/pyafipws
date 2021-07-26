@@ -21,6 +21,7 @@ __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
 
 from decimal import Decimal
+import sys
 
 CHARSET = "latin1"
 
@@ -229,8 +230,9 @@ def escribir_linea_txt(dic, formato):
             valor = dic.get(clave, "")
             if not isinstance(valor, basestring):
                 valor = str(valor)
-            if isinstance(valor, str):
-                valor = valor.encode(CHARSET, "replace")
+            if sys.version_info[0] < 3 :
+                if isinstance(valor, str):
+                    valor = valor.encode(CHARSET, "replace")
             if valor == "None":
                 valor = ""
             if tipo == N and valor and valor != "NULL":
@@ -257,7 +259,7 @@ def escribir_linea_txt(dic, formato):
 
 def leer(fn="entrada.txt"):
     "Analiza un archivo TXT y devuelve un diccionario"
-    f_entrada = open(fn, "r")
+    f_entrada = open(fn, "rb")
     try:
         regs = []
         reg = None

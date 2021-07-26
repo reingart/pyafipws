@@ -32,7 +32,7 @@ __version__ = "3.10c"
 
 DEBUG = False
 HOMO = False
-CONFIG_FILE = "rece.ini"
+CONFIG_FILE = "conf/rece.ini"
 
 LICENCIA = u"""
 pyfepdf.py: Interfaz para generar Facturas Electrónica en formato PDF
