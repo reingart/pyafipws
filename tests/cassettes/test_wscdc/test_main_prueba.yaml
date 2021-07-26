@@ -1,0 +1,59 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <ComprobanteConstatar xmlns=\"http://servicios1.afip.gob.ar/wscdc/\">\n
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2NkYywgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjEwMzE1MDA2NDciIGdlbl90aW1lPSIxNjI2OTkwNTM1IiBleHBfdGltZT0iMTYyNzAzMzc5NSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2NkYyIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>itK5HrP155Zn7nN4kPIsAHHAq1epI6sj8srnKiGRRd5+4ZsshE8Br7TrYnKC4hBiuVnFuwDRaZsy7sV5AfyP4hYFuzkaNrWgsqTSCyIALUAsSDhRnRzTKMTulOd844USke8Kkgsk2LI11a/UzEN1wtid8nfc07EW3t3X6CBO0Cs=</Sign><Cuit>20267565393</Cuit></Auth><CmpReq><CbteModo>CAE</CbteModo><CuitEmisor>20267565393</CuitEmisor><PtoVta>3</PtoVta><CbteTipo>6</CbteTipo><CbteNro>1</CbteNro><CbteFch>20131231</CbteFch><ImpTotal>1.21</ImpTotal><CodAutorizacion>63533727749637</CodAutorizacion><DocTipoReceptor>99</DocTipoReceptor><DocNroReceptor>0</DocNroReceptor></CmpReq></ComprobanteConstatar>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1678'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://servicios1.afip.gob.ar/wscdc/ComprobanteConstatar"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><ambiente>HomologacionExterno
+        - efa</ambiente><fecha>2021-07-22T18:50:38.8332378-03:00</fecha><id>2.0.2.0</id></FEHeaderInfo></soap:Header><soap:Body><ComprobanteConstatarResponse
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><ComprobanteConstatarResult><CmpResp><CbteModo>CAE</CbteModo><CuitEmisor>20267565393</CuitEmisor><PtoVta>3</PtoVta><CbteTipo>6</CbteTipo><CbteNro>1</CbteNro><CbteFch>20131231</CbteFch><ImpTotal>1.21</ImpTotal><CodAutorizacion>63533727749637</CodAutorizacion><DocTipoReceptor>99</DocTipoReceptor><DocNroReceptor>0</DocNroReceptor></CmpResp><Resultado>R</Resultado><Observaciones><Obs><Code>100</Code><Msg>El
+        N\xB0 de CAI/CAE/CAEA consultado no existe en las bases del organismo.</Msg></Obs></Observaciones><FchProceso>20210722185038</FchProceso><Events><Evt><Code>0</Code></Evt></Events></ComprobanteConstatarResult></ComprobanteConstatarResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '1178'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 21:50:38 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddff3be051e1c75940e1189a9b17075cadc436825724908a06824d3fb4010986bad;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
