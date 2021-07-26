@@ -41,7 +41,7 @@ jobs:
         python setup.py install
     - name: Download certificate and private key
       run: |
-        wget https://drive.google.com/u/0/uc?id=1O1Galo51SZaxngyRDTuhi_YkkKonZf6J&export=download
+        !wget  "https://drive.google.com/u/0/uc?id=1O1Galo51SZaxngyRDTuhi_YkkKonZf6J&export=download" -O reingart2019.zip
         unzip reingart2019.zip
     - name: Fix OpenSSL "dh key too small"
       run: |
