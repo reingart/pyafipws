@@ -104,7 +104,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 
 DEBUG = False
 XML = False
-CONFIG_FILE = "wsltv.ini"
+CONFIG_FILE = "conf/wsltv.ini"
 TIMEOUT = 30
 HOMO = False
 
@@ -997,7 +997,7 @@ def main():
                 # genero una liquidación de ejemplo:
 
                 tipo_cbte = 150
-                pto_vta = 6
+                pto_vta = 2002
 
                 if not "--prueba" in sys.argv:
                     # consulto el último número de orden emitido:
@@ -1135,10 +1135,16 @@ def main():
                 assert wsltv.GetParametro("emisor", "domicilio") == u"Peru 100"
                 assert wsltv.GetParametro("emisor", "razon_social") == u"JOCKER"
                 assert wsltv.GetParametro("receptor", "domicilio") == u"Calle 1"
-                assert (
-                    wsltv.GetParametro("receptor", "razon_social")
-                    == u"CUIT PF de Prueba gen\xe9rica"
-                )
+                if sys.version > '3':                    
+                    assert (
+                        wsltv.GetParametro("receptor", "razon_social")
+                        == u'CUIT PF de Prueba gen\xc3\xa9rica'
+                    )
+                else:
+                    assert (
+                        wsltv.GetParametro("receptor", "razon_social")
+                        == u'CUIT PF de Prueba genérica'
+                    )
                 assert (
                     wsltv.GetParametro(
                         "romaneos", 0, "detalle_clase", 0, "cantidad_fardos"
@@ -1265,7 +1271,7 @@ def main():
                     f,
                     sort_keys=True,
                     indent=4,
-                    encoding="utf-8",
+                    # encoding="utf-8",
                 )
 
         if "--ult" in sys.argv:
@@ -1285,7 +1291,7 @@ def main():
                     print(wsltv.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wsltv.NroComprobante)
             print("Errores:", wsltv.Errores)
-            sys.exit(0)
+            # sys.exit(0)
 
         # Recuperar parámetros:
 

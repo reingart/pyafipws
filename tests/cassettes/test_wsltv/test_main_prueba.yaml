@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wsltv/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:GenerarLiquidacionReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMjIwODYzOTQ2IiBnZW5fdGltZT0iMTYyNjk1ODAwNSIgZXhwX3RpbWU9IjE2MjcwMDEyNjUiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NsdHYiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>XyEyoD8XDPuaDZiI5Y/8j0w+/XD7c5ggKmQUpclJp3WTgi/xPrMkYy8wxTEZJudjwHHH25+lwgBBvlZV8PFwp64Sk+psvPAwwlynGO2MB/fscFB/ezDiGjugJ5P8gk0kPSMQLJRulNG8uBhLdIrdMr1IqD9pYMP6maNFnEY0lQ8=</sign><cuit>20267565393</cuit></auth><solicitud><liquidacion><tipoComprobante>150</tipoComprobante><nroComprobante>1</nroComprobante><puntoVenta>6</puntoVenta><codDepositoAcopio>1000</codDepositoAcopio><fechaLiquidacion>2016-04-18</fechaLiquidacion><tipoCompra>CPS</tipoCompra><condicionVenta><codigo>99</codigo><descripcion>otra</descripcion></condicionVenta><variedadTabaco>BR</variedadTabaco><codProvinciaOrigenTabaco>1</codProvinciaOrigenTabaco><puerta>22</puerta><nroTarjeta>6569866</nroTarjeta><horas>12</horas><control>FFAA</control><nroInterno>77888</nroInterno><fechaInicioActividad>2016-04-01</fechaInicioActividad></liquidacion><receptor><cuit>20111111112</cuit><iibb>123456</iibb><nroSocio>11223</nroSocio><nroFET>22</nroFET></receptor><romaneo><nroRomaneo>321</nroRomaneo><fechaRomaneo>2015-12-10</fechaRomaneo><fardo><codTrazabilidad>356</codTrazabilidad><claseTabaco>4</claseTabaco><peso>900</peso></fardo></romaneo><precioClase><claseTabaco>4</claseTabaco><precio>190</precio></precioClase><retencion><codRetencion>15</codRetencion><descripcion>otra
+      retencion</descripcion><importe>12</importe></retencion><tributo><codigoTributo>99</codigoTributo><descripcion>Ganancias</descripcion><baseImponible>15000</baseImponible><alicuota>8</alicuota><importe>1200</importe></tributo><flete><descripcion>transporte</descripcion><importe>1000.0</importe></flete><bonificacion><porcentaje>10.0</porcentaje><importe>100.0</importe></bonificacion></solicitud></ser:GenerarLiquidacionReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2694'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wsltv/generarLiquidacion"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsltv/LtvService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:GenerarLiquidacionResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wsltv/"><respuesta><errores><error><codigo>1004</codigo><descripcion>La
+        CUIT no registra alta en IVA.</descripcion></error></errores></respuesta></ns2:GenerarLiquidacionResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 12:50:47 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfadc10c94d75bad4046aec823de0b05edb522795b83832330032fbc0d63a4a35a;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -21,7 +21,7 @@ __license__ = "GPL 3.0"
 import os
 import pytest
 from pyafipws.wsaa import WSAA
-from pyafipws.wsltv import WSLTV
+from pyafipws.wsltv import WSLTV, main
 import sys
 
 
@@ -376,3 +376,95 @@ def test_mostrar_pdf(auth):
             f.write(pdf)
     show = wsltv.MostrarPDF(archivo="liq.pdf", imprimir=True)
     assert show is False
+
+def test_main(auth):
+    sys.argv = []
+    sys.argv.append("--dummy")
+    main()
+
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append("--autorizar")
+    sys.argv.append("--prueba")
+    main()
+
+def test_main_autorizar_testing(auth):
+    sys.argv = []
+    sys.argv.append("--autorizar")
+    sys.argv.append("--prueba")
+    sys.argv.append("--testing")
+    main()
+
+def test_main_generar_ajuste_fisico(auth):
+    sys.argv = []
+    sys.argv.append("--generar-ajuste-fisico")
+    sys.argv.append("--prueba")
+    main()
+
+def test_main_ajustar(auth):
+    sys.argv = []
+    sys.argv.append("--ajustar")
+    sys.argv.append("--prueba")
+    main()
+
+def test_main_consultar(auth):
+    sys.argv = []
+    sys.argv.append("--consultar")
+    sys.argv.append("--debug")
+    main()
+
+def test_main_consultar_mostrar(auth):
+    sys.argv = []
+    sys.argv.append("--autorizar")
+    sys.argv.append("--prueba")
+    sys.argv.append("--consultar")
+    sys.argv.append("--mostrar")
+    main()
+
+def test_main_json(auth):
+    sys.argv = []
+    sys.argv.append("--autorizar")
+    sys.argv.append("--prueba")
+    sys.argv.append("--json")
+    main()
+
+def test_main_ult(auth):
+    sys.argv = []
+    sys.argv.append("--ult")
+    main()
+
+def test_main_provincias(auth):
+    sys.argv = []
+    sys.argv.append("--provincias")
+    main()
+
+def test_main_condiciones_venta(auth):
+    sys.argv = []
+    sys.argv.append("--condicionesventa")
+    main()
+
+def test_main_tributos(auth):
+    sys.argv = []
+    sys.argv.append("--tributos")
+    main()
+
+def test_main_retenciones(auth):
+    sys.argv = []
+    sys.argv.append("--retenciones")
+    main()
+
+def test_main_variedades(auth):
+    sys.argv = []
+    sys.argv.append("--variedades")
+    main()
+
+def test_main_depositos(auth):
+    sys.argv = []
+    sys.argv.append("--depositos")
+    main()
+
+def test_main_puntos_venta(auth):
+    sys.argv = []
+    sys.argv.append("--puntosventa")
+    main()

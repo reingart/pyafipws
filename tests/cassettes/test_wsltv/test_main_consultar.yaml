@@ -1,0 +1,47 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wsltv/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarLiquidacionXNroComprobanteReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMzAxMjcwNjA2IiBnZW5fdGltZT0iMTYyNjk2MTA0NiIgZXhwX3RpbWU9IjE2MjcwMDQzMDYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NsdHYiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>rx8jRRByWFKSuGEfeirB96QygNRVZb17y0MZhARRe/Uo/k5YodKTVyHvfF0TXOXpxebLOCoWDUQlNByknSzs7rt5D9geiiuQS51jDXfUpe598Gd1W2C1EBfkS5XH8HQ6OGiBzeZsfafZ9x7BcCYLQLtVV0A5boTS1Lt+N7uXngE=</sign><cuit>20267565393</cuit></auth><solicitud><puntoVenta>1</puntoVenta><tipoComprobante>--debug</tipoComprobante><nroComprobante>0</nroComprobante><pdf>true</pdf></solicitud></ser:ConsultarLiquidacionXNroComprobanteReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1443'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wsltv/consultarLiquidacionXNroComprobante"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsltv/LtvService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarLiquidacionXNroComprobanteResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wsltv/\"><respuesta><errores><error><codigo>cvc-enumeration-valid</codigo><descripcion>
+        El valor '--debug' no est\xE1 inclu\xEDdo en la lista '[150, 151]'. Debe tener
+        un valor de la lista.</descripcion></error><error><codigo>cvc-type.3.1.3</codigo><descripcion>
+        El valor '--debug' del elemento 'tipoComprobante' no es v\xE1lido.</descripcion></error><error><codigo>cvc-minInclusive-valid</codigo><descripcion>
+        El valor '0' no cumple con la restricci\xF3n minInclusive '1' para el tipo
+        'NroComprobante'.</descripcion></error><error><codigo>cvc-type.3.1.3</codigo><descripcion>
+        El valor '0' del elemento 'nroComprobante' no es v\xE1lido.</descripcion></error><error><codigo>500</codigo><descripcion>Error
+        general de aplicaci\xF3n.</descripcion></error></errores></respuesta></ns2:ConsultarLiquidacionXNroComprobanteResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 13:40:01 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf06c59185014399abe98d2ac04b4c015b7fd2765bb9ac66d9011104d5ed69eac2;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1
