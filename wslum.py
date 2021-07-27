@@ -101,7 +101,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslum/LumService?wsdl"
 
 DEBUG = False
 XML = False
-CONFIG_FILE = "wslum.ini"
+CONFIG_FILE = "conf/wslum.ini"
 HOMO = True
 
 
@@ -812,7 +812,7 @@ def main():
                     % (clave, comienzo, longitud, tipo, dec)
                 )
                 comienzo += longitud
-        sys.exit(0)
+        # sys.exit(0)
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -1033,7 +1033,7 @@ def main():
                         f,
                         sort_keys=True,
                         indent=4,
-                        encoding="utf-8",
+                        # encoding="utf-8",
                     )
 
             print(
@@ -1138,7 +1138,7 @@ def main():
                     print(wslum.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wslum.NroComprobante)
             print("Errores:", wslum.Errores)
-            sys.exit(0)
+            # sys.exit(0)
 
         # Recuperar parámetros:
 
@@ -1192,7 +1192,7 @@ def main():
     finally:
         if XML:
             open("wslum_request.xml", "w").write(wslum.client.xml_request)
-            open("wslum_response.xml", "w").write(wslum.client.xml_response)
+            open("wslum_response.xml", "w").write(wslum.client.xml_response.decode("utf-8"))
 
 if __name__ == "__main__":
     main()

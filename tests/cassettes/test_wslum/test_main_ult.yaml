@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslum/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarUltimoNroComprobantePorPtoVtaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzOTc1Njc2NzgiIGdlbl90aW1lPSIxNjI2OTM5NjI3IiBleHBfdGltZT0iMTYyNjk4Mjg4NyIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2x1bSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>Tq58hl2TDNEzb1BNvPaZGKYjh32W1dQ0/+Q0SVXmHqyxS22vMTTK5K9g/idpQKlDfECn869Kq6yiwZ8d3iUY/tYW7l8cHmeitxDn9dqby6XYr9g5J/air5oOTG4TsxIZn3m3qkP8sGXKnTbIFZ6uO+I7lypVLMxuRtOrtbYLAgo=</sign><cuit>20267565393</cuit></auth><solicitud><puntoVenta>1</puntoVenta><tipoComprobante>--debug</tipoComprobante></solicitud></ser:ConsultarUltimoNroComprobantePorPtoVtaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1396'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslum/consultarUltimoNroComprobantePorPtoVta"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslum/LumService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarUltimoNroComprobantePorPtoVtaResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslum/\"><respuesta><nroComprobante>0</nroComprobante><errores><error><codigo>cvc-datatype-valid.1.2.1</codigo><descripcion>
+        '--debug' no es un valor v\xE1lido para 'integer'.</descripcion></error><error><codigo>cvc-type.3.1.3</codigo><descripcion>
+        El valor '--debug' del elemento 'tipoComprobante' no es v\xE1lido.</descripcion></error></errores></respuesta></ns2:ConsultarUltimoNroComprobantePorPtoVtaResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 08:29:22 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf06d4698edc96762cdef8542057b171c3d14ce404b0af6be3ef736a2a94065bb1;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -1,0 +1,92 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslum/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:GenerarLiquidacionReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxMDE3NzM1MTUiIGdlbl90aW1lPSIxNjI2OTQ0NDczIiBleHBfdGltZT0iMTYyNjk4NzczMyIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2x1bSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>nVEOYN7Hx17aFVHUFnGHxit19Mh0XLnB7ehDbfzcXRD534B4bwQCYCsrP51eLDAa2a90p3L5rNxU8DeQT+UPO7NEbh3V0dO6Gxmq3/bo3Z9Wt9jKR5OZuDW5u4RzC6A2mPlCkDLvCvYESXHDYW7R29h1wqDuLyaestTPXtdI78o=</sign><cuit>20267565393</cuit></auth><solicitud><liquidacion><periodo>2015/12</periodo><fechaComprobante>2015-12-31</fechaComprobante><puntoVenta>1</puntoVenta><iibbAdquirente>123456789012345</iibbAdquirente><tipoComprobante>27</tipoComprobante><nroComprobante>1</nroComprobante><domicilioSede>Domicilio
+      Administrativo</domicilioSede><inscripcionRegistroPublico>Nro IGJ</inscripcionRegistroPublico><datosAdicionales>Datos
+      Adicionales Varios</datosAdicionales><alicuotaIVA>21.0</alicuotaIVA><condicionVenta><codigo>1</codigo></condicionVenta></liquidacion><tambero><cuit>11111111111</cuit><iibb>123456789012345</iibb></tambero><tambo><nroTamboInterno>123456789</nroTamboInterno><nroTamboProvincial>100000000</nroTamboProvincial><nroRenspa>12.345.6.78901/12</nroRenspa><ubicacionTambo><latitud>-34.62987</latitud><longitud>-58.65155</longitud><domicilio>Domicilio
+      Tambo</domicilio><codLocalidad>10109</codLocalidad><codProvincia>1</codProvincia><nombrePartidoDepto>Partido
+      Tambo</nombrePartidoDepto><codigoPostal>1234</codigoPostal></ubicacionTambo><fechaVencCertTuberculosis>2015-01-01</fechaVencCertTuberculosis><fechaVencCertBrucelosis>2015-01-01</fechaVencCertBrucelosis></tambo><balanceLitrosPorcentajesSolidos><litrosRemitidos>11000</litrosRemitidos><litrosDecomisados>1000</litrosDecomisados><kgGrasa>100.0</kgGrasa><kgProteina>100.0</kgProteina></balanceLitrosPorcentajesSolidos><conceptosBasicosMercadoInterno><kgProduccionGB>100</kgProduccionGB><precioPorKgProduccionGB>5.0</precioPorKgProduccionGB><kgProduccionPR>100</kgProduccionPR><precioPorKgProduccionPR>5.0</precioPorKgProduccionPR></conceptosBasicosMercadoInterno><conceptosBasicosMercadoExterno><kgProduccionGB>0</kgProduccionGB><precioPorKgProduccionGB>0.0</precioPorKgProduccionGB><kgProduccionPR>0</kgProduccionPR><precioPorKgProduccionPR>0.0</precioPorKgProduccionPR></conceptosBasicosMercadoExterno><bonificacionPenalizacion><codBonificacionPenalizacion>1</codBonificacionPenalizacion><detalle>opcional</detalle><resultado>400</resultado><porcentajeAAplicar>10.0</porcentajeAAplicar></bonificacionPenalizacion><bonificacionPenalizacion><codBonificacionPenalizacion>10</codBonificacionPenalizacion><detalle>opcional</detalle><resultado>2.5</resultado><porcentajeAAplicar>10.0</porcentajeAAplicar></bonificacionPenalizacion><bonificacionPenalizacion><codBonificacionPenalizacion>4</codBonificacionPenalizacion><detalle>opcional</detalle><resultado>400</resultado><porcentajeAAplicar>10.0</porcentajeAAplicar></bonificacionPenalizacion><bonificacionPenalizacion><codBonificacionPenalizacion>5</codBonificacionPenalizacion><detalle>opcional</detalle><resultado>En
+      Saneamiento</resultado><porcentajeAAplicar>10.0</porcentajeAAplicar></bonificacionPenalizacion><otroImpuesto><tipo>1</tipo><detalle></detalle><alicuota>10.0</alicuota><baseImponible>100.0</baseImponible></otroImpuesto><otroImpuesto><tipo>9</tipo><detalle>Detalle
+      Otras Percepciones</detalle><alicuota>10.0</alicuota><baseImponible>100.0</baseImponible></otroImpuesto><otroImpuesto><tipo>8</tipo><detalle></detalle><alicuota>10.0</alicuota><baseImponible>100.0</baseImponible></otroImpuesto><remito>123456789012</remito><remito>123456789</remito></solicitud></ser:GenerarLiquidacionReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '4417'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslum/generarLiquidacion"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslum/LumService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:GenerarLiquidacionResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wslum/"><respuesta><errores><error><codigo>2034</codigo><descripcion>La
+        cuit ingresada, no corresponde a un Operador Comercial.</descripcion></error></errores></respuesta></ns2:GenerarLiquidacionResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 09:55:27 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf308535bf71ec2598f021ed4d9d226762f74c4099569eb6e9a66e260c414e0c9b;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslum/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarLiquidacionPorNroComprobanteReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxMDE3NzM1MTUiIGdlbl90aW1lPSIxNjI2OTQ0NDczIiBleHBfdGltZT0iMTYyNjk4NzczMyIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2x1bSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>nVEOYN7Hx17aFVHUFnGHxit19Mh0XLnB7ehDbfzcXRD534B4bwQCYCsrP51eLDAa2a90p3L5rNxU8DeQT+UPO7NEbh3V0dO6Gxmq3/bo3Z9Wt9jKR5OZuDW5u4RzC6A2mPlCkDLvCvYESXHDYW7R29h1wqDuLyaestTPXtdI78o=</sign><cuit>20267565393</cuit></auth><solicitud><puntoVenta>1</puntoVenta><tipoComprobante>--mostrar</tipoComprobante><nroComprobante>0</nroComprobante><pdf>true</pdf></solicitud></ser:ConsultarLiquidacionPorNroComprobanteReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1445'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslum/consultarLiquidacionPorNroComprobante"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslum/LumService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarLiquidacionPorNroComprobanteResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslum/\"><respuesta><errores><error><codigo>cvc-complex-type.2.4.a</codigo><descripcion>
+        Se encontr\xF3 contenido inv\xE1lido en el elemento 'puntoVenta'. Se espera
+        '{cuitComprador}'.</descripcion></error><error><codigo>cvc-datatype-valid.1.2.1</codigo><descripcion>
+        '--mostrar' no es un valor v\xE1lido para 'integer'.</descripcion></error><error><codigo>cvc-type.3.1.3</codigo><descripcion>
+        El valor '--mostrar' del elemento 'tipoComprobante' no es v\xE1lido.</descripcion></error><error><codigo>cvc-minInclusive-valid</codigo><descripcion>
+        El valor '0' no cumple con la restricci\xF3n minInclusive '1' para el tipo
+        'NroComprobante'.</descripcion></error><error><codigo>cvc-type.3.1.3</codigo><descripcion>
+        El valor '0' del elemento 'nroComprobante' no es v\xE1lido.</descripcion></error></errores></respuesta></ns2:ConsultarLiquidacionPorNroComprobanteResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 09:55:30 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf4aa94541c4b5972ffeab6878ad9ba8631250651c3bebc9d196888c77f714da71;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1
