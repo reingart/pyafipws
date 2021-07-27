@@ -90,13 +90,14 @@ from .utils import (
 # constantes de configuración (producción/homologación):
 
 WSDL = [
-    "https://serviciosjava.afip.gob.ar/wsremcarne/RemCarneService?wsdl",
     "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl",
+    "https://serviciosjava.afip.gob.ar/wsremcarne/RemCarneService?wsdl",
+    
 ]
 
 DEBUG = False
 XML = False
-CONFIG_FILE = "wsremcarne.ini"
+CONFIG_FILE = "conf/wsremcarne.ini"
 HOMO = False
 ENCABEZADO = []
 
@@ -383,7 +384,7 @@ class WSRemCarne(BaseWS):
             self.QR = ret.get("qr") or ""
             if archivo:
                 f = open(archivo, "wb")
-                f.write(self.QR)
+                f.write((self.QR).encode('ascii'))
                 f.close()
 
     @inicializar_y_capturar_excepciones

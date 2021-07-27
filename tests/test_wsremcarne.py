@@ -18,10 +18,10 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
-import os
+import os, sys
 import pytest
 from pyafipws.wsaa import WSAA
-from pyafipws.wsremcarne import WSRemCarne
+from pyafipws.wsremcarne import WSRemCarne, main
 
 __WSDL__ = "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl"
 __obj__ = WSRemCarne()
@@ -34,7 +34,7 @@ PKEY = "reingart.key"
 CACHE = ""
 
 
-pytestmark =pytest.mark.vcr
+pytestmark =[pytest.mark.vcr]
 
 
 
@@ -292,3 +292,79 @@ def test_consultar_codigos_domicilio(auth):
     cuit = 20333333331
     consulta = wsremcarne.ConsultarCodigosDomicilio(cuit)
     assert consulta == []
+
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--debug')
+    main()
+
+def test_main_consultar(auth):
+    sys.argv = []
+    sys.argv.append('--consultar')
+    sys.argv.append('--debug')
+    main()
+
+
+def test_main_cargar(auth):
+    sys.argv = []
+    sys.argv.append('--cargar')
+    sys.argv.append('--debug')
+    main()
+
+
+def test_main_ult(auth):
+    sys.argv = []
+    sys.argv.append('--ult')
+    main()
+
+def test_main_generar(auth):
+    sys.argv = []
+    sys.argv.append('--consultar')
+    sys.argv.append('--prueba')
+    sys.argv.append('--generar')    
+    main()
+
+
+def test_main_grabar(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--grabar')
+    main()
+
+def test_main_tipos_comprobante(auth):
+    sys.argv = []
+    sys.argv.append('--tipos-comprobante')
+    main()
+
+def test_main_tipos_contingencia():
+    sys.argv = []
+    sys.argv.append('--tipos_contingencia')
+    main()
+
+def test_main_tipos_categoria_emisor():
+    sys.argv = []
+    sys.argv.append('--tipos_categoria_emisor')
+    main()
+
+def test_main_tipos_categoria_receptor():
+    sys.argv = []
+    sys.argv.append('--tipos_categoria_receptor')
+    main()
+
+def test_main_tipos_estados():
+    sys.argv = []
+    sys.argv.append('--tipos_estados')
+    main()
+
+def test_main_grupos_carne():
+    sys.argv = []
+    sys.argv.append('-grupos_carne')
+    main()
+
+def test_main_tipos_carne():
+    sys.argv = []
+    sys.argv.append('--tipos_carne')
+    main()
+
