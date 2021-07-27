@@ -1138,7 +1138,7 @@ def main():
                 if sys.version > '3':                    
                     assert (
                         wsltv.GetParametro("receptor", "razon_social")
-                        == u'CUIT PF de Prueba gen\xc3\xa9rica'
+                        == u'CUIT PF de Prueba genÃ©rica'
                     )
                 else:
                     assert (
