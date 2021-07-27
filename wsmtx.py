@@ -1497,7 +1497,7 @@ def main():
             obs = "Observaciones Comerciales, libre"
             if "--caea" in sys.argv:
                 periodo = fecha.replace("-", "")[:6]
-                orden = 1 if fecha[-2:] < 16 else 2
+                orden = 1 if int(fecha[-2:]) < 16 else 2
                 caea = wsmtxca.ConsultarCAEA(periodo, orden)
             else:
                 caea = None

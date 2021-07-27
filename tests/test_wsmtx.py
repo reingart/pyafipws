@@ -22,7 +22,7 @@ import os
 import datetime
 import pytest
 from pyafipws.wsaa import WSAA
-from pyafipws.wsmtx import WSMTXCA
+from pyafipws.wsmtx import WSMTXCA, main
 import sys
 
 __WSDL__ = "https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService?wsdl"
@@ -337,7 +337,6 @@ def test_informar_comprobante_caea(auth):
     # KeyError: 'caea'
     pass
 
-
 def test_informar_ajuste_iva_caea(auth):
     wsmtx = auth
     tipo_cbte = 2
@@ -531,3 +530,62 @@ def test_consultar_puntos_venta_caea_no_informados(auth):
     caea = "31263355536606"
     consulta = wsmtx.ConsultarPtosVtaCAEANoInformados(caea)
     assert consulta == []
+
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append('--dummy')
+    sys.argv.append('--prueba')
+    main()
+
+def test_main_fce(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--fce')
+    main()
+
+def test_main_rg4540(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--rg4540')
+    main()
+
+def test_main_ajustar(auth):
+    sys.argv = []
+    sys.argv.append('--ajustar')
+    main()
+
+def test_main_punto_venta(auth):
+    sys.argv = []
+    sys.argv.append('--puntosventa')
+    main()
+
+def test_main_cotizacion(auth):
+    sys.argv = []
+    sys.argv.append('--cotizacion')
+    main()
+
+def test_main_parametros(auth):
+    sys.argv = []
+    sys.argv.append('--parametros')
+    main()
+
+@pytest.mark.freeze_time("2019-07-22")
+def test_main_solicitar_caea(auth):
+    sys.argv = []
+    fecha = datetime.datetime.now().strftime("%Y-%m-%d")
+    periodo = fecha.replace("-", "")[:6]
+    orden = 1 if int(fecha[-2:]) < 16 else 2
+    sys.argv.append('--debug')
+    sys.argv.append('--solicitar-caea')
+    sys.argv.append(periodo)
+    sys.argv.append(orden)
+    main()
+
+
+def test_main_caea(auth):
+    sys.argv = []
+    sys.argv.append('--debug')
+    sys.argv.append('--prueba')
+    sys.argv.append('--caea')
+    main()
