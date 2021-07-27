@@ -1135,16 +1135,10 @@ def main():
                 assert wsltv.GetParametro("emisor", "domicilio") == u"Peru 100"
                 assert wsltv.GetParametro("emisor", "razon_social") == u"JOCKER"
                 assert wsltv.GetParametro("receptor", "domicilio") == u"Calle 1"
-                if sys.version > '3':                    
-                    assert (
-                        wsltv.GetParametro("receptor", "razon_social")
-                        == u'CUIT PF de Prueba genÃ©rica'
-                    )
-                else:
-                    assert (
-                        wsltv.GetParametro("receptor", "razon_social")
-                        == u'CUIT PF de Prueba genérica'
-                    )
+                assert (
+                    wsltv.GetParametro("receptor", "razon_social")
+                    == u'CUIT PF de Prueba genérica'
+                )
                 assert (
                     wsltv.GetParametro(
                         "romaneos", 0, "detalle_clase", 0, "cantidad_fardos"
