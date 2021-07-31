@@ -31,6 +31,12 @@ CONFIG_FILE = "conf/rece.ini"
 
 pytestmark =[pytest.mark.vcr, pytest.mark.dontusefix, pytest.mark.freeze_time('2021-07-30')]
 
+def test_main_prueba():
+    sys.argv = []
+    sys.argv.append("/debug")
+    sys.argv.append("/prueba")
+    rece1.main()
+
 def test_main_ayuda():
     sys.argv = []
     sys.argv.append("/ayuda")
@@ -48,12 +54,6 @@ def test_main_formato():
     rece1.main()
 
 
-
-def test_main_prueba():
-    sys.argv = []
-    sys.argv.append("/debug")
-    sys.argv.append("/prueba")
-    rece1.main()
 
 def test_prueba_proyectus():
     sys.argv = []
