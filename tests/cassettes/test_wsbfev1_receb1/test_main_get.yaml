@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <BFEGetCMP xmlns=\"http://ar.gov.afip.dif.bfev1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2JmZSwgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjM1MTA2ODcxNDMiIGdlbl90aW1lPSIxNjI3ODQ3NTM3IiBleHBfdGltZT0iMTYyNzg5MDc5NyIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2JmZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>scyTj5TJ0SvZM/FuyQCI8d8rM3CSJQUrDrdtgJ8Jf0JXO9lfm/qfTGCn/sTk7jINWLI7V27jjXKu4WPEDTypr2WUF9O2sXwnrCBz7eSOyk/Zdjm/OS4F4+oQDNdNwXRAZ7WKgM9uOuDi3BoxRvxm0/rl/9vpgPvw7LafAtEkCB8=</Sign><Cuit>20267565393</Cuit></Auth><Cmp><Tipo_cbte>1</Tipo_cbte><Punto_vta>2</Punto_vta><Cbte_nro>133833</Cbte_nro></Cmp></BFEGetCMP>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1426'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.bfev1/BFEGetCMP"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsbfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-08-01T17:01:44.8990226-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEGetCMPResponse
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><BFEGetCMPResult><BFEResultGet><Id>993456789012392</Id><Cuit>20267565393</Cuit><Tipo_doc>80</Tipo_doc><Nro_doc>23111111113</Nro_doc><Tipo_cbte>1</Tipo_cbte><Punto_vta>2</Punto_vta><Cbte_nro>133833</Cbte_nro><Imp_total>0</Imp_total><Imp_tot_conc>0</Imp_tot_conc><Imp_neto>390</Imp_neto><Impto_liq>81.9</Impto_liq><Impto_liq_rni>0</Impto_liq_rni><Imp_op_ex>0</Imp_op_ex><Imp_perc>0</Imp_perc><Imp_iibb>0</Imp_iibb><Imp_perc_mun>0</Imp_perc_mun><Imp_internos>0</Imp_internos><Imp_moneda_Id>PES</Imp_moneda_Id><Imp_moneda_ctz>1</Imp_moneda_ctz><Fecha_cbte_orig>20210801</Fecha_cbte_orig><Fecha_cbte_cae>20210801</Fecha_cbte_cae><Fch_venc_Cae>20210811</Fch_venc_Cae><Cae>71313958066688</Cae><Resultado>A</Resultado><Obs>
+        </Obs><Items><Item><Pro_codigo_ncm>7308.10.00</Pro_codigo_ncm><Pro_codigo_sec
+        /><Pro_ds>prueba</Pro_ds><Pro_qty>2</Pro_qty><Pro_umed>7</Pro_umed><Pro_precio_uni>100</Pro_precio_uni><Imp_bonif>0</Imp_bonif><Imp_total>242</Imp_total><Iva_id>5</Iva_id></Item><Item><Pro_codigo_ncm>7308.20.00</Pro_codigo_ncm><Pro_codigo_sec
+        /><Pro_ds>prueba 2</Pro_ds><Pro_qty>4</Pro_qty><Pro_umed>7</Pro_umed><Pro_precio_uni>50</Pro_precio_uni><Imp_bonif>10</Imp_bonif><Imp_total>229.9</Imp_total><Iva_id>5</Iva_id></Item></Items></BFEResultGet><BFEErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></BFEErr><BFEEvents><EventCode>0</EventCode><EventMsg
+        /></BFEEvents></BFEGetCMPResult></BFEGetCMPResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '1897'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Sun, 01 Aug 2021 20:01:44 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddfbdf94367e51692e325c4ebbeb22e50d5389bbcc6e706b77ff361b423871008fd;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
