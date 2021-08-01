@@ -7,7 +7,7 @@
 import "unknwn.idl","oaidl.idl"; 
 
 [
-	uuid(9588B307-67B7-4F27-8968-B78A37D342A2),
+	uuid(FF10876A-3865-48BF-A658-979965C0258A),
 	helpstring("PyAfipWs WSFEv1 interface"),
 	pointer_default(unique),
 	dual,
@@ -37,6 +37,7 @@ interface IWSFEv1 : IDispatch
                                   [in] BSTR moneda_id, 
                                   [in] BSTR moneda_ctz, 
                                   [in] BSTR caea, 
+                                  [in] BSTR fecha_hs_gen,
                                   [out, retval] BOOL * ok);
     [id( 2)] HRESULT AgregarIva(
                                 [in] BSTR iva_id, 
@@ -56,6 +57,8 @@ interface IWSFEv1 : IDispatch
                                     [in] BSTR tipo, 
                                     [in] BSTR pto_vta, 
                                     [in] BSTR nro, 
+                                    [in] BSTR cuit, 
+                                    [in] BSTR fecha, 
                                     [out, retval] BOOL * ok);
     [id( 6)] HRESULT CompUltimoAutorizado(
                                           [in] BSTR tipo_cbte, 
@@ -205,18 +208,29 @@ interface IWSFEv1 : IDispatch
     [id(74)] HRESULT LeerFacturaX([in] int indice,
                                   [out, retval] BOOL * ok);
 
+    [id(75)] HRESULT AgregarPeriodoComprobantesAsociados(
+                                [in] BSTR fecha_desde, 
+                                [in] BSTR fecha_hasta, 
+                                [out, retval] BOOL * ok);
+
+    [id(76)] HRESULT AgregarComprador(
+                                [in] BSTR doc_tipo, 
+                                [in] BSTR doc_nro, 
+                                [in] BSTR porcentaje, 
+                                [out, retval] BOOL * ok);
+
 };  //end interface def
 
 [
-	uuid(B1D7283C-3EC2-463E-89B4-11F5228E2A15),
-	version(1.18),
-	helpstring("PyAfipWs WSFEv1 1.18 Type Library"),
+	uuid(C7190CBC-FB36-4370-9190-BA46F861F539),
+	version(1.25),
+	helpstring("PyAfipWs WSFEv1 1.25 Type Library"),
 ] library PyAfipWsWSFEv1Lib
 {
 	importlib("stdole32.tlb");
 
 	[
-		uuid(D50B5D14-621E-4473-AC63-8A7B5E9DD57F),
+		uuid(B1DC6AC0-D8F9-4AC2-BEC3-0A568AF03E9B),
 		helpstring("WSFEv1 Component Class")
 	] coclass WSFEv1
 	{
