@@ -19,7 +19,7 @@ __version__ = "3.38c"
 
 import pytest
 import sys
-
+import shutil
 from pyafipws import wsbfev1
 from pyafipws import receb1
 from pyafipws.wsaa import WSAA
@@ -27,20 +27,24 @@ from pyafipws.wsaa import WSAA
 HOMO = wsbfev1.HOMO
 CONFIG_FILE = "conf/rece.ini"
 
+# entrada.txt required for testing
+shutil.copy('tests/txt/entrada_receb1.txt','entrada.txt')
+
 pytestmark =[pytest.mark.vcr, pytest.mark.dontusefix, pytest.mark.freeze_time('2021-08-02')]
-
-
-def test_main_prueba():
-    sys.argv = []
-    sys.argv.append('/debug')
-    sys.argv.append('/prueba')
-    receb1.main()
 
 def test_main_ayuda():
     sys.argv = []
     sys.argv.append('/debug')
     sys.argv.append('/ayuda')
     receb1.main()
+
+
+def test_main_prueba():
+    sys.argv = []
+    sys.argv.append('/prueba')
+    sys.argv.append('/debug')
+    receb1.main()
+
 
 def test_main_formato():
     sys.argv = []
