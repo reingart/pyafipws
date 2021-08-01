@@ -20,23 +20,23 @@ interactions:
     body:
       string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
-        xmlns="http://ar.gov.afip.dif.bfev1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-07-31T16:21:34.0057125-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEDummyResponse
+        xmlns="http://ar.gov.afip.dif.bfev1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-08-01T17:48:12.94082-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEDummyResponse
         xmlns="http://ar.gov.afip.dif.bfev1/"><BFEDummyResult><AppServer>OK</AppServer><DbServer>OK</DbServer><AuthServer>OK</AuthServer></BFEDummyResult></BFEDummyResponse></soap:Body></soap:Envelope>
     headers:
       Cache-Control:
       - private, max-age=0
       Content-Length:
-      - '626'
+      - '624'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sat, 31 Jul 2021 19:21:34 GMT
+      - Sun, 01 Aug 2021 20:48:12 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf3595d8e2661427b92dd85727dac29def5eb551a1781d72635287f4249784afd4;
+      - TS01983a04=01439f1ddf6f5f561f02c6ba1758b5bbe617e236e1b2d38af042e3d72c3257575a90a292a0;
         Path=/
       Strict-Transport-Security:
       - nosniff

@@ -2,7 +2,7 @@ interactions:
 - request:
     body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
       xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
-      \   <BFEGetLast_ID xmlns=\"http://ar.gov.afip.dif.bfev1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2JmZSwgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjM1MTA2ODcxNDMiIGdlbl90aW1lPSIxNjI3ODQ3NTM3IiBleHBfdGltZT0iMTYyNzg5MDc5NyIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2JmZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>scyTj5TJ0SvZM/FuyQCI8d8rM3CSJQUrDrdtgJ8Jf0JXO9lfm/qfTGCn/sTk7jINWLI7V27jjXKu4WPEDTypr2WUF9O2sXwnrCBz7eSOyk/Zdjm/OS4F4+oQDNdNwXRAZ7WKgM9uOuDi3BoxRvxm0/rl/9vpgPvw7LafAtEkCB8=</Sign><Cuit>20267565393</Cuit></Auth></BFEGetLast_ID>\n</soap:Body>\n</soap:Envelope>"
+      \   <BFEGetLast_ID xmlns=\"http://ar.gov.afip.dif.bfev1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2JmZSwgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjE1MzQxOTcwNzIiIGdlbl90aW1lPSIxNjI3ODUwNzQwIiBleHBfdGltZT0iMTYyNzg5NDAwMCIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2JmZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>QSbVJwxkqUjozv3UwKg+qomi2upZh7AjAMmGElfrMLsIOrgi/qFoaApM1rLXhuor3iPfUL1aA9Old9dDJMQKk6hr3lZErBc3sDzMFEhzBuu8wCvOfNGAyo4pxBzI0oXwZVbSCZo280b2nzfkb8ZEYam/n1oqXH9F2AX9VBHCb0M=</Sign><Cuit>20267565393</Cuit></Auth></BFEGetLast_ID>\n</soap:Body>\n</soap:Envelope>"
     headers:
       accept-encoding:
       - gzip, deflate
@@ -20,23 +20,23 @@ interactions:
     body:
       string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
-        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-08-01T16:57:12.6638681-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEGetLast_IDResponse
-        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><BFEGetLast_IDResult><BFEResultGet><Id>993456789012392</Id></BFEResultGet><BFEErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></BFEErr><BFEEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></BFEEvents></BFEGetLast_IDResult></BFEGetLast_IDResponse></soap:Body></soap:Envelope>\r\n"
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-08-01T17:48:17.940852-03:00</fecha><id>1.7.0.0</id></FEHeaderInfo></soap:Header><soap:Body><BFEGetLast_IDResponse
+        xmlns=\"http://ar.gov.afip.dif.bfev1/\"><BFEGetLast_IDResult><BFEResultGet><Id>993456789012394</Id></BFEResultGet><BFEErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></BFEErr><BFEEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></BFEEvents></BFEGetLast_IDResult></BFEGetLast_IDResponse></soap:Body></soap:Envelope>\r\n"
     headers:
       Cache-Control:
       - private, max-age=0
       Content-Length:
-      - '752'
+      - '751'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Sun, 01 Aug 2021 19:57:12 GMT
+      - Sun, 01 Aug 2021 20:48:17 GMT
       Expect-CT:
       - enforce
       MicrosoftOfficeWebServer:
       - 5.0_Pub
       Set-Cookie:
-      - TS01983a04=01439f1ddf749b167fe75ff3abc90e02c5a385adcb4a66a9a0090be320d81f5f22bf11bca4;
+      - TS01983a04=01439f1ddfee5dd790fcc8557d6e446e8d3adca74363a1f3dda13bb7e4b9ecb97c05b81176;
         Path=/
       Strict-Transport-Security:
       - nosniff

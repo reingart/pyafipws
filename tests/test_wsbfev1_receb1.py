@@ -27,7 +27,7 @@ from pyafipws.wsaa import WSAA
 HOMO = wsbfev1.HOMO
 CONFIG_FILE = "conf/rece.ini"
 
-pytestmark =[pytest.mark.vcr, pytest.mark.dontusefix, pytest.mark.freeze_time('2021-08-01')]
+pytestmark =[pytest.mark.vcr, pytest.mark.dontusefix, pytest.mark.freeze_time('2021-08-02')]
 
 
 def test_main_prueba():
