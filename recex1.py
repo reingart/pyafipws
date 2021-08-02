@@ -383,7 +383,7 @@ def main():
             # sys.exit(0)
 
         if "/formato" in sys.argv:
-            from .formatos.formato_dbf import definir_campos
+            from pyafipws.formatos.formato_dbf import definir_campos
 
             print("Formato:")
             for msg, formato in [
