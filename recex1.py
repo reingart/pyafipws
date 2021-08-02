@@ -383,7 +383,7 @@ def main():
             # sys.exit(0)
 
         if "/formato" in sys.argv:
-            from pyafipws.formatos.formato_dbf import definir_campos
+            from .formatos import formato_dbf 
 
             print("Formato:")
             for msg, formato in [
@@ -406,7 +406,7 @@ def main():
                 else:
                     filename = "%s.dbf" % msg.lower()[:8]
                     print("==== %s (%s) ====" % (msg, filename))
-                    claves, campos = definir_campos(formato)
+                    claves, campos = formato_dbf.definir_campos(formato)
                     for campo in campos:
                         print(" * Campo: %s" % (campo,))
             # sys.exit(0)
