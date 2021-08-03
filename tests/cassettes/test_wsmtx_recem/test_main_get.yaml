@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarComprobanteRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMDI2OTI1NTgwIiBnZW5fdGltZT0iMTYyNzk4MTY0OSIgZXhwX3RpbWU9IjE2MjgwMjQ5MDkiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NtdHhjYSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>ob25bv/M4ORD7IEVc/tyb/VzcWXAh2txgVYIo0A6aWt/N2OWBrGCZWFZQ4vAX/yq8N9mWdWjYeBVpLZMUTGGDhTlaFoRkAT0Ivjy4ccy3Dmy9b7Q5aPscpNX5mqQcWqrq9t/kErKott04414qNWQIt6P8E2kC5qqckGbLVdoY34=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><consultaComprobanteRequest><codigoTipoComprobante>1</codigoTipoComprobante><numeroPuntoVenta>4000</numeroPuntoVenta><numeroComprobante>1845</numeroComprobante></consultaComprobanteRequest></ser:consultarComprobanteRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1517'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/consultarComprobante"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns1:consultarComprobanteResponse
+        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><comprobante><codigoTipoComprobante>1</codigoTipoComprobante><numeroPuntoVenta>4000</numeroPuntoVenta><numeroComprobante>1845</numeroComprobante><fechaEmision>2021-08-03</fechaEmision><codigoTipoAutorizacion>E</codigoTipoAutorizacion><codigoAutorizacion>71313958262222</codigoAutorizacion><fechaVencimiento>2021-08-13</fechaVencimiento><codigoTipoDocumento>80</codigoTipoDocumento><numeroDocumento>30000000007</numeroDocumento><importeGravado>100.00</importeGravado><importeNoGravado>0.00</importeNoGravado><importeExento>0.00</importeExento><importeSubtotal>100.00</importeSubtotal><importeTotal>121.00</importeTotal><codigoMoneda>PES</codigoMoneda><cotizacionMoneda>1.000000</cotizacionMoneda><observaciones>Observaciones
+        Comerciales, libre</observaciones><codigoConcepto>3</codigoConcepto><fechaServicioDesde>2021-08-03</fechaServicioDesde><fechaServicioHasta>2021-08-03</fechaServicioHasta><fechaVencimientoPago>2021-08-03</fechaVencimientoPago><arrayItems><item><unidadesMtx>123456</unidadesMtx><codigoMtx>1234567890123</codigoMtx><codigo>P0001</codigo><descripcion>Descripcion
+        del producto P0001</descripcion><cantidad>1.000000</cantidad><codigoUnidadMedida>7</codigoUnidadMedida><precioUnitario>100.000000</precioUnitario><importeBonificacion>0.000000</importeBonificacion><codigoCondicionIVA>5</codigoCondicionIVA><importeIVA>21.00</importeIVA><importeItem>121.00</importeItem></item><item><unidadesMtx>123456</unidadesMtx><codigoMtx>1234567890123</codigoMtx><codigo>P0001</codigo><descripcion>PRUEBA</descripcion><cantidad>1.000000</cantidad><codigoUnidadMedida>7</codigoUnidadMedida><precioUnitario>1.000000</precioUnitario><importeBonificacion>0.000000</importeBonificacion><codigoCondicionIVA>5</codigoCondicionIVA><importeIVA>0.21</importeIVA><importeItem>1.21</importeItem></item><item><unidadesMtx>1</unidadesMtx><codigoMtx>DESC</codigoMtx><codigo>DESC</codigo><descripcion>Descuento</descripcion><codigoUnidadMedida>99</codigoUnidadMedida><codigoCondicionIVA>5</codigoCondicionIVA><importeIVA>-0.21</importeIVA><importeItem>-1.21</importeItem></item></arrayItems><arraySubtotalesIVA><subtotalIVA><codigo>5</codigo><importe>21.00</importe></subtotalIVA></arraySubtotalesIVA></comprobante></ns1:consultarComprobanteResponse></soapenv:Body></soapenv:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Tue, 03 Aug 2021 09:15:44 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf4a48d5c98f6fb443d9c1c43f695c961bea2cee456920961dffdae7d442b7b1ed;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

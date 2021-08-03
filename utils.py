@@ -719,7 +719,9 @@ def leer(linea, formato, expandir_fechas=False):
                 else:
                     valor = None
             else:
-                valor = valor.decode("ascii", "ignore")
+                if isinstance(valor, bytes):
+                    valor = valor.decode("ascii", "ignore")
+                valor = valor
             if not valor and clave in dic and len(linea) <= comienzo:
                 pass  # ignorar - compatibilidad hacia atrás (cambios tamaño)
             else:
@@ -744,8 +746,9 @@ def escribir(dic, formato, contraer_fechas=False):
             if clave.capitalize() in dic:
                 clave = clave.capitalize()
             s = dic.get(clave, "")
-            if isinstance(s, str):
-                s = s.encode("latin1")
+            if sys.version_info[0] < 3:
+                if isinstance(s, str):
+                    s = s.encode("latin1")
             if s is None:
                 valor = ""
             else:

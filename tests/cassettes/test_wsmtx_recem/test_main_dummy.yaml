@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   \n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '249'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/dummy"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns1:dummyResponse
+        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><appserver>OK</appserver><authserver>OK</authserver><dbserver>OK</dbserver></ns1:dummyResponse></soapenv:Body></soapenv:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Tue, 03 Aug 2021 09:15:34 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddffdf964e03c7d576ab55f2ab8a737b8877fe39a2af2f4d741ffdab2680f3afbdc;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1
