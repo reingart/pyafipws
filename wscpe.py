@@ -315,11 +315,38 @@ class WSCPE(BaseWS):
     @inicializar_y_capturar_excepciones
     def AutorizarCPE(self, archivo="qr.png"):
         "Autorizar o denegar un cpe (cuando corresponde autorizacion) por parte del titular/depositario"
-        response = self.client.autorizarCPE(
-                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-                                codCPE=self.cpe['codCPE'],
-                                estado=self.cpe['estado'])
-        ret = response.get("autorizarCPEReturn")
+        response = self.client.autorizarCPEAutomotor(
+            auth={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            solicitud={
+                'cabecera': {'tipoCP': int, 'cuitSolicitante': long, 'sucursal': int, 'nroOrden': int},
+                'origen': {'operador': {'planta': int, 'codProvincia': int, 'codLocalidad': int},
+                'correspondeRetiroProductor': bool,
+                'esSolicitanteCampo': unicode,
+                'retiroProductor': {'certificadoCOE': long, 'cuitRemitenteComercialProductor': long},
+                'intervinientes': {'cuitMercadoATermino': long, 'cuitCorredorVentaPrimaria': long, 'cuitCorredorVentaSecundaria': long, 'cuitRemitenteComercialVentaSecundaria': long, 'cuitIntermediario': long, 'cuitRemitenteComercialVentaPrimaria': long, 'cuitRepresentanteEntregador': long},
+                'datosCarga': {'pesoTara': int, 'codGrano': int, 'pesoBruto': int, 'cosecha': int},
+                'destino': {'planta': int, 'codProvincia': int, 'esDestinoCampo': unicode, 'codLocalidad': int, 'cuit': long},
+                'destinatario': {'cuit': long},
+                'transporte': {'fechaHoraPartida': datetime.datetime, 'codigoTurno': unicode, 'cuitTransportista': long, 'dominio': [{None: unicode}], 'kmRecorrer': int},
+                'productor': {'codLocalidad': int}},
+                }
+        )
+        ret = response.get("respuesta")
+        # 'cabecera': {'fechaEmision': datetime.datetime, 'sucursal': int, 'planta': int, 'tipoCartaPorte': int, 'nroCPE': long, 'nroOrden': long, 'fechaInicioEstado': datetime.datetime, 'estado': unicode, 'fechaVencimiento': datetime.datetime},
+        # 'origen': {'planta': int, 'codProvincia': int, 'domicilio': unicode, 'codLocalidad': int},
+        # 'correspondeRetiroProductor': bool,
+        # 'retiroProductor': {
+        #     'certificadoCOE': long,
+        #     'cuitRemitenteComercialProductor': long},
+        # 'intervinientes': {'cuitMercadoATermino': long, 'cuitCorredorVentaPrimaria': long, 'cuitCorredorVentaSecundaria': long, 'cuitRemitenteComercialVentaSecundaria': long, 'cuitIntermediario': long, 'cuitRemitenteComercialVentaPrimaria': long, 'cuitRepresentanteEntregador': long},
+        # 'datosCarga': {
+        #     'pesoTara': int, 'codGrano': int, 'pesoBruto': int, 'cosecha': int},
+        # 'destino': {'planta': int, 'codProvincia': int, 'codLocalidad': int, 'cuit': long},
+        # 'destinatario': {'cuit': long},
+        # 'transporte': [{'fechaHoraPartida': datetime.datetime, 'codigoTurno': int, 'cuitTransportista': long, 'dominio': unicode, 'kmRecorrer': int}], 
+        # 'errores': [{'error': [{'descripcion': unicode, 'codigo': unicode}]}], 
+        # 'pdf': b64decode,
+        # 'metadata': {'servidor': unicode, 'fechaHora': datetime.datetime}}
         if ret:
             self.__analizar_errores(ret)
             self.__analizar_observaciones(ret)
