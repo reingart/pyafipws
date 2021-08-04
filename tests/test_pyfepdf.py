@@ -335,4 +335,4 @@ def test_mostrar_pdf(mocker):
     salida = conf_fact.get("salida", "")
     fepdf.MostrarPDF(archivo=salida)
     if sys.platform.startswith("linux" or "linux2"):
-        os.system.assert_called_with(salida)
+        os.system.assert_called_with("evince %s" % salida)
