@@ -22,7 +22,7 @@ import datetime
 import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.pyfepdf import FEPDF
-from pyafipws.pyfepdf import main 
+from pyafipws.pyfepdf import main
 from builtins import str
 from pyafipws.utils import SafeConfigParser
 import shutil
@@ -32,17 +32,20 @@ CERT = "reingart.crt"
 PKEY = "reingart.key"
 CONFIG_FILE = "rece.ini"
 
-URL = ["https://www.afip.gob.ar/fe/qr/?p=b'eyJ2ZXIiOiAxLCAiZmVjaGEiOiAiMjAyMS0wOC0wNSIsICJjdWl0IjogMzAwMDAwMDAwMDcsICJwdG9WdGEiOiA0MDAwLCAidGlwb0NtcCI6IDIwMSwgIm5yb0NtcCI6IDEyMzQ1Njc4LCAiaW1wb3J0ZSI6IDEyNy4wLCAibW9uZWRhIjogIlBFUyIsICJjdHoiOiAxLjAsICJ0aXBvRG9jUmVjIjogODAsICJucm9Eb2NSZWMiOiAzMDAwMDAwMDAwNywgInRpcG9Db2RBdXQiOiAiRSIsICJjb2RBdXQiOiA2MTEyMzAyMjkyNTg1NX0='",
-    "https://www.afip.gob.ar/fe/qr/?p=eyJjdWl0IjogMzAwMDAwMDAwMDcsICJ0aXBvRG9jUmVjIjogODAsICJtb25lZGEiOiAiUEVTIiwgInB0b1Z0YSI6IDQwMDAsICJpbXBvcnRlIjogMTI3LjAsICJ2ZXIiOiAxLCAiY29kQXV0IjogNjExMjMwMjI5MjU4NTUsICJ0aXBvQ29kQXV0IjogIkUiLCAiZmVjaGEiOiAiMjAyMS0wOC0wNSIsICJjdHoiOiAxLjAsICJ0aXBvQ21wIjogMjAxLCAibnJvQ21wIjogMTIzNDU2NzgsICJucm9Eb2NSZWMiOiAzMDAwMDAwMDAwN30="]
+URL = [
+    "https://www.afip.gob.ar/fe/qr/?p=b'eyJ2ZXIiOiAxLCAiZmVjaGEiOiAiMjAyMS0wOC0wNSIsICJjdWl0IjogMzAwMDAwMDAwMDcsICJwdG9WdGEiOiA0MDAwLCAidGlwb0NtcCI6IDIwMSwgIm5yb0NtcCI6IDEyMzQ1Njc4LCAiaW1wb3J0ZSI6IDEyNy4wLCAibW9uZWRhIjogIlBFUyIsICJjdHoiOiAxLjAsICJ0aXBvRG9jUmVjIjogODAsICJucm9Eb2NSZWMiOiAzMDAwMDAwMDAwNywgInRpcG9Db2RBdXQiOiAiRSIsICJjb2RBdXQiOiA2MTEyMzAyMjkyNTg1NX0='",
+    "https://www.afip.gob.ar/fe/qr/?p=eyJjdWl0IjogMzAwMDAwMDAwMDcsICJ0aXBvRG9jUmVjIjogODAsICJtb25lZGEiOiAiUEVTIiwgInB0b1Z0YSI6IDQwMDAsICJpbXBvcnRlIjogMTI3LjAsICJ2ZXIiOiAxLCAiY29kQXV0IjogNjExMjMwMjI5MjU4NTUsICJ0aXBvQ29kQXV0IjogIkUiLCAiZmVjaGEiOiAiMjAyMS0wOC0wNSIsICJjdHoiOiAxLjAsICJ0aXBvQ21wIjogMjAxLCAibnJvQ21wIjogMTIzNDU2NzgsICJucm9Eb2NSZWMiOiAzMDAwMDAwMDAwN30=",
+]
 
 fepdf = FEPDF()
 
 pytestmark = [pytest.mark.dontusefix]
-shutil.copy('tests/facturas.json','facturas.json')
+shutil.copy("tests/facturas.json", "facturas.json")
+
 
 def test_crear_factura():
     """Test de creación de una factura (Interna)."""
-    
+
     tipo_cbte = 19 if "--expo" in sys.argv else 201
     punto_vta = 4000
     fecha = datetime.datetime.now().strftime("%Y%m%d")
@@ -118,11 +121,12 @@ def test_crear_factura():
 
     assert fact == True
 
+
 def test_agregar_detalle_item():
     """Test de agregando un artículo a una factura (interna).."""
-    
+
     tipo_cbte = 19 if "--expo" in sys.argv else 201
-    
+
     test_crear_factura()
 
     # detalle de artículos:
@@ -231,6 +235,7 @@ def test_agregar_tributo():
 
     assert chk == True
 
+
 def test_agregar_cmp_asoc():
     tipo = 5
     pto_vta = 2
@@ -239,31 +244,33 @@ def test_agregar_cmp_asoc():
 
     assert chk == True
 
+
 def test_crear_plantilla():
     sys.argv = []
 
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
-    conf_fact = dict(config.items("FACTURA")) 
+    conf_fact = dict(config.items("FACTURA"))
 
     fepdf.CrearPlantilla(
         papel=conf_fact.get("papel", "legal"),
         orientacion=conf_fact.get("orientacion", "portrait"),
     )
 
+
 def test_procesar_plantilla():
     sys.argv = []
-    sys.argv.append('--debug')
+    sys.argv.append("--debug")
 
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
-    conf_fact = dict(config.items("FACTURA")) 
+    conf_fact = dict(config.items("FACTURA"))
 
     chk = fepdf.ProcesarPlantilla(
         num_copias=int(conf_fact.get("copias", 1)),
         lineas_max=int(conf_fact.get("lineas_max", 24)),
         qty_pos=conf_fact.get("cant_pos") or "izq",
-    )   
+    )
 
     assert chk == False
 
@@ -273,11 +280,13 @@ def test_generar_qr():
     url = fepdf.GenerarQR()
     assert url in URL
 
+
 def test_main_prueba():
     sys.argv = []
     sys.argv.append("--prueba")
     sys.argv.append("--debug")
     main()
+
 
 def test_main_cargar():
     sys.argv = []
@@ -286,6 +295,7 @@ def test_main_cargar():
     sys.argv.append("tests/facturas.txt")
     main()
 
+
 def test_main_cargar_json():
     sys.argv = []
     sys.argv.append("--cargar")
@@ -293,6 +303,7 @@ def test_main_cargar_json():
     sys.argv.append("--entrada")
     sys.argv.append("facturas.json")
     main()
+
 
 def test_main_grabar():
     sys.argv = []
@@ -306,8 +317,9 @@ def test_main_grabar():
     d2 = f2.readlines()
     f1.close()
     f2.close()
-    diff = [ x for x in d1 if x not in d2 ]
+    diff = [x for x in d1 if x not in d2]
     assert diff == []
+
 
 def test_main_grabar_json():
     sys.argv = []
@@ -322,15 +334,16 @@ def test_main_grabar_json():
     d2 = f2.readlines()
     f1.close()
     f2.close()
-    diff = [ x for x in d1 if x not in d2 ]
+    diff = [x for x in d1 if x not in d2]
     assert diff == []
+
 
 def test_mostrar_pdf(mocker):
     sys.argv = []
     mocker.patch("os.system")
     config = SafeConfigParser()
     config.read(CONFIG_FILE)
-    conf_fact = dict(config.items("FACTURA")) 
+    conf_fact = dict(config.items("FACTURA"))
 
     salida = conf_fact.get("salida", "")
     fepdf.MostrarPDF(archivo=salida)
