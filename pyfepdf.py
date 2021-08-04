@@ -32,7 +32,7 @@ __version__ = "3.10c"
 
 DEBUG = False
 HOMO = False
-CONFIG_FILE = "conf/rece.ini"
+CONFIG_FILE = "rece.ini"
 
 LICENCIA = u"""
 pyfepdf.py: Interfaz para generar Facturas Electrónica en formato PDF
@@ -2037,10 +2037,13 @@ def main():
             elif "--json" in sys.argv:
                 from .formatos import formato_json
 
-                archivo = "salida.json"
+                archivo = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG:
                     print("Escribiendo", archivo)
-                regs = formato_json.escribir([reg], archivo)
+                if sys.version_info[0] < 3:
+                    regs = formato_json.escribir([reg], archivo, encoding='utf-8')
+                else:
+                    regs = formato_json.escribir([reg], archivo)
             else:
                 from .formatos import formato_txt
 
