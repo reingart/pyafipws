@@ -62,7 +62,7 @@ Opciones:
 Ver wscpe.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, time, base64
+import os, sys, time, base64, datetime
 from utils import date
 import traceback
 from pysimplesoap.client import SoapFault
@@ -318,17 +318,17 @@ class WSCPE(BaseWS):
         response = self.client.autorizarCPEAutomotor(
             auth={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             solicitud={
-                'cabecera': {'tipoCP': int, 'cuitSolicitante': long, 'sucursal': int, 'nroOrden': int},
-                'origen': {'operador': {'planta': int, 'codProvincia': int, 'codLocalidad': int},
-                'correspondeRetiroProductor': bool,
-                'esSolicitanteCampo': unicode,
-                'retiroProductor': {'certificadoCOE': long, 'cuitRemitenteComercialProductor': long},
-                'intervinientes': {'cuitMercadoATermino': long, 'cuitCorredorVentaPrimaria': long, 'cuitCorredorVentaSecundaria': long, 'cuitRemitenteComercialVentaSecundaria': long, 'cuitIntermediario': long, 'cuitRemitenteComercialVentaPrimaria': long, 'cuitRepresentanteEntregador': long},
-                'datosCarga': {'pesoTara': int, 'codGrano': int, 'pesoBruto': int, 'cosecha': int},
-                'destino': {'planta': int, 'codProvincia': int, 'esDestinoCampo': unicode, 'codLocalidad': int, 'cuit': long},
-                'destinatario': {'cuit': long},
-                'transporte': {'fechaHoraPartida': datetime.datetime, 'codigoTurno': unicode, 'cuitTransportista': long, 'dominio': [{None: unicode}], 'kmRecorrer': int},
-                'productor': {'codLocalidad': int}},
+                'cabecera': {'tipoCP': 1, 'cuitSolicitante': 20267565393, 'sucursal': 1, 'nroOrden': 1},
+                'origen': {'operador': {'planta': 1, 'codProvincia': 12, 'codLocalidad': 5544}},
+                'correspondeRetiroProductor': True,
+                'esSolicitanteCampo': "N",
+                'retiroProductor': {'certificadoCOE': 330100025869, 'cuitRemitenteComercialProductor': 20111111112},
+                'intervinientes': {'cuitMercadoATermino': 20222222223, 'cuitCorredorVentaPrimaria': 20222222223, 'cuitCorredorVentaSecundaria': 20222222223, 'cuitRemitenteComercialVentaSecundaria': 20222222223, 'cuitIntermediario': 20222222223, 'cuitRemitenteComercialVentaPrimaria': 20222222223, 'cuitRepresentanteEntregador': 20222222223},
+                'datosCarga': {'pesoTara': 1000, 'codGrano': 31, 'pesoBruto': 1000, 'cosecha': 910},
+                'destino': {'planta': 1, 'codProvincia': 12, 'esDestinoCampo': "M", 'codLocalidad': 3058, 'cuit': 20111111112},
+                'destinatario': {'cuit': 30000000006},
+                'transporte': {'fechaHoraPartida': datetime.datetime.now(), 'codigoTurno': "00", 'cuitTransportista': 20333333334, 'dominio': "ZZZ000", 'kmRecorrer': 500},
+                'productor': {'codLocalidad': 3059},
                 }
         )
         ret = response.get("respuesta")
