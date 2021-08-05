@@ -2099,5 +2099,7 @@ def main():
         if "--mostrar" in sys.argv:
             fepdf.MostrarPDF(archivo=salida, imprimir="--imprimir" in sys.argv)
 
+    return fepdf
+
 if __name__ == "__main__":
     main()
