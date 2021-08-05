@@ -530,6 +530,92 @@ class WSCPE(BaseWS):
         lista = [it['codigoDescripcion'] for it in array]
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarProvincias(self, sep="||"):
+        "Obtener los códigos numéricos de las provincias."
+        response = self.client.consultarProvincias(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+        )
+        ret = response.get("respuesta")
+        print(ret)
+        self.__analizar_errores(ret)
+        array = ret.get("provincia", [])
+        return [
+            (u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it)
+            if sep
+            else it
+            for it in array
+        ]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarLocalidadesPorProvincia(self, cod_provincia=10, sep="||"):
+        "Obtener los códigos de las localidades por provincia."
+        response = self.client.consultarLocalidadesPorProvincia(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud={
+                "codProvincia": cod_provincia
+            }
+        )
+        ret = response.get("respuesta")
+        self.__analizar_errores(ret)
+        array = ret.get("localidad", [])
+        return [
+            (u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it)
+            if sep
+            else it
+            for it in array
+        ]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarTiposGrano(self, sep="||"):
+        "Obtener los códigos numéricos de los tipos de granos."
+        response = self.client.consultarTiposGrano(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+        )
+        ret = response.get("respuesta")
+        self.__analizar_errores(ret)
+        array = ret.get("grano", [])
+        return [
+            (u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it)
+            if sep
+            else it
+            for it in array
+        ]
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarLocalidadesProductor(self, cuit_productor=1, sep="||"):
+        "Obtener de localidades del cuit asociado al productor."
+        response = self.client.consultarLocalidadesProductor(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud={
+                "cuit": cuit_productor
+            }
+        )
+        ret = response.get("respuesta")
+        self.__analizar_errores(ret)
+        array = ret.get("localidad", [])
+        return [
+            (u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it)
+            if sep
+            else it
+            for it in array
+        ]
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -798,10 +884,21 @@ if __name__ == '__main__':
             ret = wscpe.ConsultarGruposAzucar()
             print "\n".join(ret)
 
-        if '--tipos_granos' in sys.argv:
-            for grupo_granos in wscpe.ConsultarGruposAzucar(sep=None):
-                ret = wscpe.ConsultarTiposAzucar(grupo_granos['codigo'])
-                print "\n".join(ret)
+        if "--provincias" in sys.argv:
+            ret = wscpe.ConsultarProvincias()
+            print("\n".join(ret))
+
+        if "--localidades_por_provincias" in sys.argv:
+            ret = wscpe.ConsultarLocalidadesPorProvincia()
+            print("\n".join(ret))
+
+        if "--tipos_grano" in sys.argv:
+            ret = wscpe.ConsultarTiposGrano()
+            print("\n".join(ret))
+
+        if "--localidades_productor" in sys.argv:
+            ret = wscpe.ConsultarLocalidadesProductor(20267565393)
+            print("\n".join(ret))
 
         if '--codigos_domicilio' in sys.argv:
             cuit = raw_input("Cuit Titular Domicilio: ")
