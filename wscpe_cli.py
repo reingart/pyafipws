@@ -202,13 +202,14 @@ if __name__ == '__main__':
         for msg, formato, key, tipo_reg in FORMATOS:
             comienzo = 1
             print "=== %s ===" % msg
+            print "|| Campo %-39s || Posición || Longitud || Tipo %7s || Dec. || Valor ||" % (" ", " ")
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print " * Campo: %-45s Posición: %3d Longitud: %4d Tipo: %s %s %s" % (
+                print "|| %-45s || %8d || %8d || %-12s || %-4s || %-5s ||" % (
                     clave, comienzo, longitud, tipo,
-                    ("Decimales: %s" % dec) if tipo == I else "",
-                    ("Valor: %s" % tipo_reg) if clave == "tipo_reg" else "",
+                    ("%s" % dec) if tipo == I else "",
+                    ("%s" % tipo_reg) if clave == "tipo_reg" else "",
                 )
                 comienzo += longitud
         sys.exit(0)
