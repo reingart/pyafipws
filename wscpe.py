@@ -1004,10 +1004,64 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
+        cabecera = {"tipo_cp": 1, "cuit_solicitante": 20267565393, "sucursal": 1, "nro_orden": 1}
+        origen = {"planta": 1, "cod_provincia": 12, "cod_localidad_operador": 5544, "cod_localidad_productor": 3059}
+        retiro_productor = {
+            "certificado_coe": 330100025869,
+            "cuit_remitente_comercial_productor": 20111111112,
+        }
+        intervinientes = {
+            "cuit_mercado_a_termino": 20222222223,
+            "cuit_corredor_venta_primaria": 20222222223,
+            "cuit_corredor_venta_secundaria": 20222222223,
+            "cuit_remitente_comercial_venta_secundaria": 20222222223,
+            "cuit_intermediario": 20222222223,
+            "cuit_remitente_comercial_venta_primaria": 20222222223,
+            "cuit_representante_entregador": 20222222223,
+        }
+        datos_carga = {
+            "peso_tara": 1000,
+            "cod_grano": 31,
+            "peso_bruto": 1000,
+            "cosecha": 910,
+        }
+        destinatario = {"cuit_destinatario": 30000000006}
+        destino = {
+            "planta": 1,
+            "cod_provincia": 12,
+            "es_destino_campo": "M",
+            "cod_localidad": 3058,
+            "cuit_destino": 20111111112,
+        }
+        destino.update(destinatario)
+        retiro_productor_final = {
+            "corresponde_retiro_productor": True,
+            "es_solicitante_campo": "N",
+        }
+        retiro_productor_final.update(retiro_productor)
+        transporte = {
+            "cuit_transportista": 20333333334,
+            "fecha_hora_partida": datetime.datetime.now(),
+            "codigo_turno": "00",
+            "dominio": ["ZZZ000", "ZZZ999"],  # 1 or more repetitions
+            "km_recorrer": 500,
+        }
+        wscpe.AgregarCabeceraAutomotor(**cabecera)
+        wscpe.AgregarOrigenAutomotor(**origen)
+        wscpe.AgregarDestinoAutomotor(**destino)
+        wscpe.AgregarTransporteAutomotor(**transporte)
+        wscpe.AgregarRetiroProductorAutomotor(**retiro_productor_final)
+        wscpe.AgregarIntervinientesAutomotor(**intervinientes)
+        wscpe.AgregarDatosCargaAutomotor(**datos_carga)
         wscpe.AutorizarCPEAutomotor()
-
-    # if "--" in sys.argv:
-    #     wscpe.()
+        if wscpe.CodCPE:
+            print(wscpe.Planta)
+            print(wscpe.NroCPE)
+            print(wscpe.FechaEmision)
+            print(wscpe.Estado)
+            print(wscpe.FechaInicioEstado)
+            print(wscpe.FechaVencimiento)
+            # print(wscpe.CPEAutomotorPDF)  # base64
 
     if "--autorizar_cpe_ferroviaria" in sys.argv:
         wscpe.AutorizarCPEFerroviaria()
