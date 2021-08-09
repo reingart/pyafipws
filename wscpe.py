@@ -150,8 +150,8 @@ class WSCPE(BaseWS):
         "Evento",
         "Eventos",
     ]
-    _reg_progid_ = "WSRemAzucar"
-    _reg_clsid_ = "{448F912A-C013-4E19-8D52-7FC88305590A}"
+    _reg_progid_ = "WSCPE"
+    _reg_clsid_ = "{37F6A7B5-344E-45C5-9198-0CF7B206F409}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
