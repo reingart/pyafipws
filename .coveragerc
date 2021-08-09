@@ -8,7 +8,6 @@ omit =
         *pyemail*
         *pyfepdf*
         *pyi25*
-        *pyqr*
         *rece1*
         *receb1*
         *recem*
