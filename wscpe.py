@@ -165,13 +165,10 @@ class WSCPE(BaseWS):
 
     def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.CodRemito = self.TipoComprobante = self.PuntoEmision = None
-        self.NroRemito = self.CodAutorizacion = self.FechaVencimiento = self.FechaEmision = None
-        self.Estado = self.Resultado = self.QR = None
+        self.CodCPE = self.Planta = self.Estado = None
+        self.FechaInicioEstado = self.FechaVencimiento = self.FechaEmision = None
+        self.Estado = self.Resultado = self.CPEAutomotorPDF = None
         self.Errores = []
-        self.ErroresFormato = []
-        self.Observaciones = []
-        self.Eventos = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
 
     def __analizar_errores(self, ret):
