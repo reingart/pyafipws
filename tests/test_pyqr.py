@@ -92,7 +92,7 @@ def test_main_mostrar(mocker):
     if(sys.platform == 'linux2' or sys.platform == 'linux'):
         os.system.assert_called_with("eog " "%s" "" % archivo)
 
-@pytest.mark.xfail
+
 def test_main_archivo():
     archivo = "prueba_qr.png"
     sys.argv = []
@@ -102,7 +102,10 @@ def test_main_archivo():
 
     assert os.path.exists(archivo)
     #compare the image with a reference one
-    ref = Image.open("tests/images/qr.png")
+    if sys.version_info[0] < 3:
+        ref = Image.open("tests/images/qr2.png")
+    else:
+        ref = Image.open("tests/images/qr.png")        
     test = Image.open(archivo)
     diff = ImageChops.difference(ref, test)
     assert diff.getbbox() is None
