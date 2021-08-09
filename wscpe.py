@@ -495,11 +495,18 @@ class WSCPE(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AnalizarCPEAutomotor(self, ret, archivo="cpe_automotor.pdf"):
-        pass
-        # if ret:
-        #     self.pdf_cpe_automotor = ret["pdf"]  # base64
-        #     with open(archivo, "wb") as fh:
-        #         fh.write(self.pdf_cpe_automotor)
+        "Extrae los resultados de autorización de una carta porte automotor."
+        cab = ret["cabecera"]
+        self.NroCPE = cab["nroCPE"]
+        self.FechaEmision = cab["fechaEmision"]
+        self.Estado = cab["estado"]
+        self.FechaInicioEstado = cab["fechaInicioEstado"]
+        self.FechaVencimiento = cab["fechaVencimiento"]
+        # self.CPEAutomotorPDF = cab["pdf"]  # base64
+        # cpe_automotor_bytes = self.CPEAutomotorPDF.encode('utf-8')  # si vienen bytes, no hace falta
+        # cpe_automotor_pdf = base64.b64decode(cpe_automotor_bytes)
+        # with open(archivo, "wb") as fh:
+        #     fh.write(cpe_automotor_pdf)
 
     @inicializar_y_capturar_excepciones  # green
     def AnularCPE(self):
