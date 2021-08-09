@@ -120,7 +120,7 @@ class PyQR(object):
 
         # convertir a representación json y codificar en base64:
         datos_cmp_json = json.dumps(datos_cmp)
-        url = self.URL % (base64.b64encode(datos_cmp_json.encode('ascii')))
+        url = self.URL % (base64.b64encode(datos_cmp_json.encode('ascii')).decode('ascii'))
 
         qr = qrcode.QRCode(
             version=self.qr_ver,
