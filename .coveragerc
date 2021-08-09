@@ -7,7 +7,6 @@ omit =
         */padron.py
         *pyemail*
         *pyfepdf*
-        *pyi25*
         *pyqr*
         *rece1*
         *receb1*
