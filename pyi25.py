@@ -256,7 +256,7 @@ def main():
 
         if not "--mostrar" in sys.argv:
             pass
-        elif sys.platform == "linux2":
+        elif sys.platform == "linux2" or sys.platform == "linux":
             os.system("eog " "%s" "" % archivo)
         else:
             os.startfile(archivo)
