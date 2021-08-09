@@ -84,8 +84,10 @@ def test_main_prueba():
 def test_main_mostrar(mocker):
     mocker.patch("os.system")
     sys.argv = []
+    archivo = "qr.png"
+    sys.argv.append("--archivo")
+    sys.argv.append(archivo)
     sys.argv.append("--mostrar")
-    archivo = pyqr.CrearArchivo()
     main()
     if(sys.platform == 'linux2' or sys.platform == 'linux'):
         os.system.assert_called_with("eog " "%s" "" % archivo)
