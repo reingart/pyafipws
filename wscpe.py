@@ -341,12 +341,9 @@ class WSCPE(BaseWS):
         ret = response.get("respuesta")
         if ret:
             self.__analizar_errores(ret)
-            # self.AnalizarCPEFerroviario(ret, archivo)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
         return True
-
-    @inicializar_y_capturar_excepciones
-    def AnalizarCPEFerroviario(self, ret, archivo=None):
-        pass
 
     @inicializar_y_capturar_excepciones
     def AgregarCabeceraAutomotor(self, tipo_cp=None, cuit_solicitante=None, sucursal=None, nro_orden=None, **kwargs):
