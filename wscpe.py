@@ -346,20 +346,36 @@ class WSCPE(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarCabeceraAutomotor(self, tipo_cp=None, cuit_solicitante=None, sucursal=None, nro_orden=None, **kwargs):
+    def AgregarCabecera(
+        self, actualizar=False, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, **kwargs
+    ):
         """Inicializa internamente los datos de cabecera para cpe automotor."""
-        cabecera = {
-            "tipoCP": tipo_cp,
-            "cuitSolicitante": cuit_solicitante,
-            "sucursal": sucursal,
-            "nroOrden": nro_orden,
-        }
-        # creo el diccionario para agregar datos cpe
-        self.cpe_automotor = {"cabecera": cabecera}
+        # cabecera para modificaciones, rechazos o anulaciones.
+        if actualizar:
+            cabecera = {
+                "cuitSolicitante": cuit_solicitante,
+                "cartaPorte": {
+                    "tipoCPE": tipo_cpe,
+                    "sucursal": sucursal,
+                    "nroOrden": nro_orden,
+                },
+            }
+            if not cabecera["cuitSolicitante"]:
+                del cabecera["cuitSolicitante"]
+            self.cpe = cabecera
+        else:
+            cabecera = {
+                "tipoCP": tipo_cpe,
+                "cuitSolicitante": cuit_solicitante,
+                "sucursal": sucursal,
+                "nroOrden": nro_orden,
+            }
+            # creo el diccionario para agregar datos cpe
+            self.cpe = {"cabecera": cabecera}
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarOrigenAutomotor(
+    def AgregarOrigen(
         self,
         cod_provincia=None,
         cod_localidad_operador=None,
@@ -377,11 +393,11 @@ class WSCPE(BaseWS):
             "codLocalidad": cod_localidad_productor,
         }
         origen = {"operador": operador, "productor": productor}
-        self.cpe_automotor["origen"] = origen
+        self.cpe["origen"] = origen
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarRetiroProductorAutomotor(
+    def AgregarRetiroProductor(
         self,
         corresponde_retiro_productor=None,
         es_solicitante_campo=None,
@@ -394,13 +410,13 @@ class WSCPE(BaseWS):
             "certificadoCOE": certificado_coe,
             "cuitRemitenteComercialProductor": cuit_remitente_comercial_productor,
         }
-        self.cpe_automotor["correspondeRetiroProductor"] = corresponde_retiro_productor
-        self.cpe_automotor["esSolicitanteCampo"] = es_solicitante_campo
-        self.cpe_automotor["retiroProductor"] = retiro_productor
+        self.cpe["correspondeRetiroProductor"] = corresponde_retiro_productor
+        self.cpe["esSolicitanteCampo"] = es_solicitante_campo
+        self.cpe["retiroProductor"] = retiro_productor
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarIntervinientesAutomotor(
+    def AgregarIntervinientes(
         self,
         cuit_intermediario=None,
         cuit_remitente_comercial_venta_primaria=None,
@@ -421,11 +437,11 @@ class WSCPE(BaseWS):
             "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
             "cuitRepresentanteEntregador": cuit_representante_entregador,
         }
-        self.cpe_automotor["intervinientes"] = intervinientes
+        self.cpe["intervinientes"] = intervinientes
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarDatosCargaAutomotor(self, cod_grano=None, cosecha=None, peso_bruto=None, peso_tara=None, **kwargs):
+    def AgregarDatosCarga(self, cod_grano=None, cosecha=None, peso_bruto=None, peso_tara=None, **kwargs):
         """Inicializa internamente los datos de carga para cpe automotor."""
         datos_carga = {
             "codGrano": cod_grano,
@@ -433,11 +449,15 @@ class WSCPE(BaseWS):
             "pesoBruto": peso_bruto,
             "pesoTara": peso_tara,
         }
-        self.cpe_automotor["datosCarga"] = datos_carga
+        if not datos_carga["cosecha"]:
+            self.cpe["pesoBrutoDescarga"] = peso_bruto
+            self.cpe["pesoTaraDescarga"] = peso_tara
+        else:
+            self.cpe["datosCarga"] = datos_carga
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarDestinoAutomotor(
+    def AgregarDestino(
         self,
         cuit_destino=None,
         es_destino_campo=None,
@@ -456,12 +476,15 @@ class WSCPE(BaseWS):
             "planta": planta,
         }
         cuit_destinatario = {"cuit": cuit_destinatario}
-        self.cpe_automotor["destino"] = destino
-        self.cpe_automotor["destinatario"] = cuit_destinatario
+        # maneja distintos campos para diferentes metodos
+        if destino["cuit"]:
+            self.cpe["destino"] = destino
+        if cuit_destinatario["cuit"]:
+            self.cpe["destinatario"] = cuit_destinatario
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarTransporteAutomotor(
+    def AgregarTransporte(
         self,
         cuit_transportista=None,
         dominio=None,  # 1 or more repetitions
@@ -471,14 +494,28 @@ class WSCPE(BaseWS):
         **kwargs,
     ):
         """Inicializa internamente los datos de transporte para cpe automotor."""
-        transporte = {
+        transp = {
             "cuitTransportista": cuit_transportista,
             "dominio": dominio,
             "fechaHoraPartida": fecha_hora_partida,
             "kmRecorrer": km_recorrer,
             "codigoTurno": codigo_turno,
         }
-        self.cpe_automotor["transporte"] = transporte
+        transporte = {}
+        for campo, dato in transp.items():
+            if transp[campo]:
+                transporte[campo] = dato
+
+        self.cpe["transporte"] = transporte
+        return True
+
+    def AgregarContingencia(
+        self,
+        concepto=None,
+        descripcion=None,  # solo necesario si la opcion es F "otros"
+    ):
+        """Inicialliza datos para contingencias en cpe."""
+        self.cpe["contingencia"] = {"concepto": concepto, "descripcion": descripcion}
         return True
 
     @inicializar_y_capturar_excepciones
@@ -490,7 +527,7 @@ class WSCPE(BaseWS):
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud=self.cpe_automotor,
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
         self.__analizar_errores(ret)
@@ -507,11 +544,11 @@ class WSCPE(BaseWS):
         self.Estado = cab["estado"]
         self.FechaInicioEstado = cab["fechaInicioEstado"]
         self.FechaVencimiento = cab["fechaVencimiento"]
-        # self.CPEAutomotorPDF = cab["pdf"]  # base64
-        # cpe_automotor_bytes = self.CPEAutomotorPDF.encode('utf-8')  # si vienen bytes, no hace falta
-        # cpe_automotor_pdf = base64.b64decode(cpe_automotor_bytes)
+        # self.PDF = cab["pdf"]  # base64
+        # cpe_bytes = self.PDF.encode('utf-8')  # si vienen bytes, no hace falta
+        # cpe_pdf = base64.b64decode(cpe_automotor_bytes)
         # with open(archivo, "wb") as fh:
-        #     fh.write(cpe_automotor_pdf)
+        #     fh.write(cpe_pdf)
 
     @inicializar_y_capturar_excepciones  # green
     def AnularCPE(self):
