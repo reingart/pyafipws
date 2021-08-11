@@ -550,40 +550,95 @@ class WSCPE(BaseWS):
         # with open(archivo, "wb") as fh:
         #     fh.write(cpe_pdf)
 
-    @inicializar_y_capturar_excepciones  # green
-    def AnularCPE(self):
-        "Informar los datos necesarios para la generación de una nueva carta porte."
+    @inicializar_y_capturar_excepciones
+    def AnularCPE(self, archivo="cpe.pdf"):
+        """Informar los datos necesarios para la generación de una nueva carta porte."""
         response = self.client.anularCPE(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cartaPorte": {"tipoCPE": 75, "sucursal": 1, "nroOrden": 1},
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
         if ret:
             self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
-    @inicializar_y_capturar_excepciones  # green
-    def RechazoCPE(self):
-        "Informar el rechazo de una carta de porte existente."
+    @inicializar_y_capturar_excepciones
+    def RechazoCPE(self, archivo="cpe.pdf"):
+        """Informar el rechazo de una carta de porte existente."""
         response = self.client.rechazoCPE(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 75, "sucursal": 1, "nroOrden": 1},
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
         if ret:
             self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def InformarContingencia(self, archivo="cpe.pdf"):
+        """informa de contingencia de una CPE existente."""
+        response = self.client.informarContingencia(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConfirmarArriboCPE(self, archivo="cpe.pdf"):
+        "Informar la confirmación de arribo."
+        response = self.client.confirmarArriboCPE(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def DescargadoDestinoCPE(self, archivo="cpe.pdf"):
+        "indicar por el solicitante de la Carta de Porte que la mercadería ha sido enviada."
+        response = self.client.descargadoDestinoCPE(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
     @inicializar_y_capturar_excepciones  # green
     def ConsultarCPEFerroviaria(self):
@@ -619,25 +674,6 @@ class WSCPE(BaseWS):
         if ret:
             self.__analizar_errores(ret)
 
-    @inicializar_y_capturar_excepciones  # green
-    def ConfirmarArriboCPE(self):
-        "Informar la confirmación de arribo."
-        response = self.client.confirmarArriboCPE(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 75, "sucursal": 1, "nroOrden": 1},
-            },
-        )
-        ret = response.get("respuesta")
-        print(ret)
-        if ret:
-            self.__analizar_errores(ret)
-
     @inicializar_y_capturar_excepciones
     def ConfirmacionDefinitivaCPEFerroviaria(self):  # green
         "Informar la confirmación definitiva de una carta de porte existente."
@@ -667,59 +703,6 @@ class WSCPE(BaseWS):
         if ret:
             self.__analizar_errores(ret)
 
-    @inicializar_y_capturar_excepciones  # green
-    def ConsultarCPEAutomotor(self):
-        "Busca una CPE existente según parámetros de búsqueda y retorna información de la misma."
-        response = self.client.consultarCPEAutomotor(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={"cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1}},
-        )
-        ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
-    @inicializar_y_capturar_excepciones  # green
-    def ConfirmacionDefinitivaCPEAutomotor(self):
-        "Informar la confirmación definitiva de una carta de porte existente."
-        response = self.client.confirmacionDefinitivaCPEAutomotor(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "pesoBrutoDescarga": 1000,
-                "pesoTaraDescarga": 1000,
-            },
-        )
-        ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
-    @inicializar_y_capturar_excepciones  # green
-    def InformarContingencia(self):
-        "informa de contingencia de una CPE existente."
-        response = self.client.informarContingencia(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "contingencia": {"concepto": "F", "descripcion": "XXXXX"},  # otros
-            },
-        )
-        ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
     @inicializar_y_capturar_excepciones
     def CerrarContingenciaCPEFerroviaria(self):  # green
         "Informar del cierre de una contingencia asociado a una carta de porte ferroviaria."
@@ -740,23 +723,6 @@ class WSCPE(BaseWS):
             },
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
-    @inicializar_y_capturar_excepciones  # green!!!
-    def ConsultarUltNroOrden(self):
-        "Obtiene el último número de orden de CPE autorizado según número de sucursal."
-        response = self.client.consultarUltNroOrden(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={"sucursal": 1, "tipoCPE": 74},
-        )
-        ret = response.get("respuesta")
-        self.NroOrden = ret["nroOrden"]
-        print(self.NroOrden)
         if ret:
             self.__analizar_errores(ret)
 
@@ -851,103 +817,109 @@ class WSCPE(BaseWS):
         if ret:
             self.__analizar_errores(ret)
 
-    @inicializar_y_capturar_excepciones  # green
-    def DescargadoDestinoCPE(self):
-        "indicar por el solicitante de la Carta de Porte que la mercadería ha sido enviada."
-        response = self.client.descargadoDestinoCPE(
+    @inicializar_y_capturar_excepciones
+    def ConsultarCPEAutomotor(self, archivo="cpe.pdf"):
+        "Busca una CPE existente según parámetros de búsqueda y retorna información de la misma."
+        response = self.client.consultarCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
         if ret:
             self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
-    @inicializar_y_capturar_excepciones  # green
-    def NuevoDestinoDestinatarioCPEAutomotor(self):
-        "Informar el nuevo destino o destinatario de una carta deporte existente."
+    @inicializar_y_capturar_excepciones
+    def ConfirmacionDefinitivaCPEAutomotor(self, archivo="cpe.pdf"):
+        "Informar la confirmación definitiva de una carta de porte existente."
+        response = self.client.confirmacionDefinitivaCPEAutomotor(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def NuevoDestinoDestinatarioCPEAutomotor(self, archivo="cpe.pdf"):
+        """Informar el nuevo destino o destinatario de una carta deporte existente."""
         response = self.client.nuevoDestinoDestinatarioCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "destino": {
-                    "cuit": 20111111112,
-                    "codProvincia": 1,
-                    "codLocalidad": 10216,  # newton
-                    "planta": 1,
-                    "esDestinoCampo": "M",  # string
-                },
-                # "destinatario": {"cuit": 30000000006},
-                "transporte": {
-                    "fechaHoraPartida": datetime.datetime.now(),
-                    "kmRecorrer": 333,
-                },
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
+        self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
-    @inicializar_y_capturar_excepciones  # green
-    def RegresoOrigenCPEAutomotor(self):
-        "Informar el regreso a origen de una carta de porte existente."
+    @inicializar_y_capturar_excepciones
+    def RegresoOrigenCPEAutomotor(self, archivo="cpe.pdf"):
+        """Informar el regreso a origen de una carta de porte existente."""
         response = self.client.regresoOrigenCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "destinatario": {"cuit": 30000000006},
-                "transporte": {
-                    "fechaHoraPartida": datetime.datetime.now(),
-                    "kmRecorrer": 100,
-                },
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
+        self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
-    @inicializar_y_capturar_excepciones  # green
-    def DesvioCPEAutomotor(self):
-        "Informar el desvío de una carta de porte existente."
+    @inicializar_y_capturar_excepciones
+    def DesvioCPEAutomotor(self, archivo="cpe.pdf"):
+        """Informar el desvío de una carta de porte existente."""
         response = self.client.desvioCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "destino": {
-                    "cuit": 20111111112,
-                    "codProvincia": 1,
-                    "codLocalidad": 10216,  # newton
-                    "planta": 1,
-                    "esDestinoCampo": "N",  # string
-                },
-                "transporte": {
-                    "fechaHoraPartida": datetime.datetime.now(),
-                    "kmRecorrer": 333,
-                },
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
+        self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarUltNroOrden(self, sucursal=1, tipo_cpe=74):
+        "Obtiene el último número de orden de CPE autorizado según número de sucursal."
+        response = self.client.consultarUltNroOrden(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud={"sucursal": sucursal, "tipoCPE": tipo_cpe},
+        )
+        ret = response.get("respuesta")
+        self.__analizar_errores(ret)
+        if "nroOrden" in ret:
+            self.NroOrden = ret["nroOrden"]
+        return True
 
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
@@ -996,7 +968,7 @@ class WSCPE(BaseWS):
         return [("%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in array]
 
     @inicializar_y_capturar_excepciones
-    def ConsultarLocalidadesProductor(self, cuit_productor=1, sep="||"):
+    def ConsultarLocalidadesProductor(self, cuit_productor=None, sep="||"):
         "Obtener de localidades del cuit asociado al productor."
         response = self.client.consultarLocalidadesProductor(
             auth={
