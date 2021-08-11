@@ -46,6 +46,9 @@ jobs:
     - name: Fix OpenSSL "dh key too small"
       run: |
         sudo cp .github/openssl.cnf /etc/ssl/openssl.cnf
+    - name: Copy rece.ini file
+      run: |
+        sudo cp conf/rece.ini rece.ini
     - name: Test with pytest
       run: |
         pytest --html=report.html --self-contained-html
