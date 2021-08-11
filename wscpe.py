@@ -178,9 +178,9 @@ class WSCPE(BaseWS):
 
     def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.CodCPE = self.Planta = self.Estado = None
+        self.CodCPE = self.NroOrden = None
         self.FechaInicioEstado = self.FechaVencimiento = self.FechaEmision = None
-        self.Estado = self.Resultado = self.CPEAutomotorPDF = None
+        self.Estado = self.Resultado = self.PDF = None
         self.Errores = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
 
