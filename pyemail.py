@@ -92,11 +92,12 @@ class PyEmail(object):
                 # inicio una sesión segura (TLS)
                 self.smtp.starttls()
             if usuario and clave:
-                # convertir a string (hmac necesita string "bytes")
-                # if isinstance(usuario, str):
-                #     usuario = usuario.encode("utf8")
-                # if isinstance(clave, str):
-                #     clave = clave.encode("utf8")
+                if sys.version_info[0] < 3:
+                    #convertir a string (hmac necesita string "bytes")
+                    if isinstance(usuario, str):
+                        usuario = usuario.encode("utf8")
+                    if isinstance(clave, str):
+                        clave = clave.encode("utf8")
                 self.smtp.login(usuario, clave)
             return True
         except Exception as e:
