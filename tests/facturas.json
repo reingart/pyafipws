@@ -1,0 +1,102 @@
+[
+    {
+        "cae": "61233038185853", 
+        "cbt_numero": "7", 
+        "cbte_nro": "7", 
+        "concepto": "1", 
+        "condicion_frente_iva": "Exento", 
+        "cuit": "20205766", 
+        "datos": [
+            {
+                "campo": "domicilio", 
+                "pagina": "", 
+                "valor": null
+            }, 
+            {
+                "campo": "nombre", 
+                "pagina": "", 
+                "valor": null
+            }, 
+            {
+                "campo": "telefono", 
+                "pagina": "", 
+                "valor": null
+            }, 
+            {
+                "campo": "categoria", 
+                "pagina": "", 
+                "valor": null
+            }, 
+            {
+                "campo": "localidad", 
+                "pagina": "", 
+                "valor": null
+            }
+        ], 
+        "detalles": [
+            {
+                "codigo": "P1675G", 
+                "ds": "PRUEBA ART", 
+                "imp_iva": "0.00", 
+                "importe": "1076.68", 
+                "iva_id": "0", 
+                "numero_despacho": "110170P", 
+                "precio": "1076.68", 
+                "qty": "1.0", 
+                "umed": "07"
+            }
+        ], 
+        "domicilio_cliente": "Patricia 1 - Cdad de Buenos Aires - 1405 - Capital Federal - Argentina", 
+        "email": "mariano@sistemasagiles.com.ar", 
+        "fecha_cbte": "20110609", 
+        "fecha_serv_desde": "", 
+        "fecha_serv_hasta": "", 
+        "fecha_venc_pago": "", 
+        "fecha_vto": "20110619", 
+        "forma_pago": "30 Dias", 
+        "id": "1", 
+        "id_impositivo": null, 
+        "idioma": "1", 
+        "imp_iva": "186.86", 
+        "imp_neto": "889.82", 
+        "imp_op_ex": "0.00", 
+        "imp_tot_conc": "0.00", 
+        "imp_total": "1085.57", 
+        "imp_trib": "8.89", 
+        "ivas": [
+            {
+                "base_imp": "889.82", 
+                "importe": "186.86", 
+                "iva_id": "5"
+            }
+        ], 
+        "localidad_cliente": null, 
+        "moneda_ctz": "1.000000", 
+        "moneda_id": "PES", 
+        "motivo": "", 
+        "nombre_cliente": "Cliente XXX", 
+        "nro_doc": "30500010912", 
+        "numero_cliente": "21601192", 
+        "numero_cotizacion": "82016336", 
+        "numero_orden_compra": "6443", 
+        "numero_remito": "00008001", 
+        "obs_comerciales": null, 
+        "obs_generales": null, 
+        "provincia_cliente": null, 
+        "punto_vta": "5", 
+        "reproceso": "S", 
+        "resultado": "A", 
+        "telefono_cliente": null, 
+        "tipo_cbte": "6", 
+        "tipo_doc": "80", 
+        "tributos": [
+            {
+                "alic": "1.00", 
+                "base_imp": "889.82", 
+                "desc": "Impuesto municipal matanza", 
+                "importe": "8.89", 
+                "tributo_id": "99"
+            }
+        ]
+    }
+]
