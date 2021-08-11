@@ -6,7 +6,7 @@ omit =
         *nsis*
         */padron.py
         *pyemail*
-        *pyfepdf*
+        *formatos*
         *pyi25*
         *rece1*
         *receb1*

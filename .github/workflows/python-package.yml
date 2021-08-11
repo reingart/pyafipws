@@ -41,11 +41,14 @@ jobs:
         python setup.py install
     - name: Download certificate and private key
       run: |
-        wget https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2019.zip
+        wget  "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -O reingart2019.zip
         unzip reingart2019.zip
     - name: Fix OpenSSL "dh key too small"
       run: |
         sudo cp .github/openssl.cnf /etc/ssl/openssl.cnf
+    - name: Copy rece.ini file
+      run: |
+        sudo cp conf/rece.ini rece.ini
     - name: Test with pytest
       run: |
         pytest --html=report.html --self-contained-html
