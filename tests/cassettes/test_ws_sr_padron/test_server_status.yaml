@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:loginCms>\n    <in0>MIIHAwYJKoZIhvcNAQcCoIIG9DCCBvACAQExDzANBglghkgBZQMEAgEFADCCASoG\nCSqGSIb3DQEHAaCCARsEggEXPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0i\nVVRGLTgiPz48bG9naW5UaWNrZXRSZXF1ZXN0IHZlcnNpb249IjEuMCI+PGhlYWRl\ncj48dW5pcXVlSWQ+MTYyODYxMDM2ODwvdW5pcXVlSWQ+PGdlbmVyYXRpb25UaW1l\nPjIwMjEtMDgtMTBUMTY6MTY6MDg8L2dlbmVyYXRpb25UaW1lPjxleHBpcmF0aW9u\nVGltZT4yMDIxLTA4LTExVDAyOjE2OjA4PC9leHBpcmF0aW9uVGltZT48L2hlYWRl\ncj48c2VydmljZT53c19zcl9wYWRyb25fYTU8L3NlcnZpY2U+PC9sb2dpblRpY2tl\ndFJlcXVlc3Q+oIIDUDCCA0wwggI0oAMCAQICCHP/g1N1dym+MA0GCSqGSIb3DQEB\nDQUAMDgxGjAYBgNVBAMMEUNvbXB1dGFkb3JlcyBUZXN0MQ0wCwYDVQQKDARBRklQ\nMQswCQYDVQQGEwJBUjAeFw0yMTA3MTMxNDQ4NTFaFw0yMzA3MTMxNDQ4NTFaMDIx\nFTATBgNVBAMMDHJlaW5nYXJ0MjAyMTEZMBcGA1UEBRMQQ1VJVCAyMDI2NzU2NTM5\nMzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALY3GgmDiEpTnE7c6rds\nDaFhXXo9m775F6dTOMNN/V+h8XD0tngWwm7U5qq5nMIhwuaBhrj2mgdFNM9MPXXW\nczlEYCNCWmDyS9HhN48yG9qAhNR09qrAEVKY9xtZbNGYHBWzqd3TbzWCYCdpUeOR\nTiD6B2dZT0LlAwbseE6YpwkPfiJiXYDH4UHPsh3kJEfqQG8q50JGK7RIN5cjq+Bz\n6iHaMhZHfRAhybaymqde1JyHIt3nXOG6u4ET/9JQn8bfum82LqbKYs9AApJdTflb\nQsPynaebCmTIMXiFfST4mg1unZAFrykGwZETm2JYcR0YlrQXg4KOQLfdf5vT6YyD\n6OECAwEAAaNgMF4wDAYDVR0TAQH/BAIwADAfBgNVHSMEGDAWgBSzstP//em63t6N\nrxEhnNYgffJPbzAdBgNVHQ4EFgQUt66XTdFvJDMRcOVBmckQKXDFwdswDgYDVR0P\nAQH/BAQDAgXgMA0GCSqGSIb3DQEBDQUAA4IBAQAPqigum7hqxXPu024sgOZZDjke\n33cXGLpOi+6o0sY0IBGhmmrzVQNoEHdfRIDGbefmOLkKvG1ORoW/QDtLNghPszt2\nSTWBChVOBC2tuCPAk61bruCjPuoR7CW6Jj4Nhcu370+QUwJMmxDIOvWsoSRNNbjC\niN9dJe1tJtM1GxpfwHxKG89vhlxqjw4yctqRmE8hxMb3JdNj7X3nBOZmcWLLv1wl\nivg22OGRluHoB1GdDHU1W7BnhiXBRWZveIMhtmnM3MkXWLOPNc5FGDIw9/Y+Ejep\nZf8kY+NeJwbZl8uyl697YKzpuf/0JPSZa/UsplLuH0zpP/yw7oWw4gydKTk2MYIC\nVjCCAlICAQEwRDA4MRowGAYDVQQDDBFDb21wdXRhZG9yZXMgVGVzdDENMAsGA1UE\nCgwEQUZJUDELMAkGA1UEBhMCQVICCHP/g1N1dym+MA0GCWCGSAFlAwQCAQUAoIHk\nMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIxMDgx\nMDIxMTYwOFowLwYJKoZIhvcNAQkEMSIEIEnfQ7GS4YullK9UR3akkdNfE3U3qnpI\nclTzNMCUOTGaMHkGCSqGSIb3DQEJDzFsMGowCwYJYIZIAWUDBAEqMAsGCWCGSAFl\nAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0G\nCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMA0GCSqGSIb3DQEB\nAQUABIIBAELDIFcZqnDhSu5w+0Z84k097K580m72C+klV4m5ABTlt2inroXYFE0I\nJBR50i8tfKx/6tzM8V0U9ubEF9Ux9TGebrYO5y5YfF2EMB7ZumVsQVhiHZlOEisl\n8JGZPsBNS1CxEqTjla1+J0Jqw4PmAluUpT4MNFgiu1Tjzw/fayFAUbrKEtUMxyxX\n/dlhm+xFtI+JJGFxeg6YdLCmFC5Z/HHaHxFc2eKBfHknnQt5zrCUtVjEtk4Yj9sn\nGSWguvIYJ0bHCPn7hvnlYL5CrIE4EqIVTX1iGnmrpqvRQUoUXszSRWqDioPBruRZ\nA2pgMTNoYUmYzCRQDA5Rm5X+7hKKsJk=\n\n</in0></ser:loginCms>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2734'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wsaahomo.afip.gov.ar/ws/services/LoginCms
+  response:
+    body:
+      string: <?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><soapenv:Fault><faultcode
+        xmlns:ns1="http://xml.apache.org/axis/">ns1:coe.alreadyAuthenticated</faultcode><faultstring>El
+        CEE ya posee un TA valido para el acceso al WSN solicitado</faultstring><detail><ns2:exceptionName
+        xmlns:ns2="http://xml.apache.org/axis/">gov.afip.desein.dvadac.sua.view.wsaa.LoginFault</ns2:exceptionName><ns3:hostname
+        xmlns:ns3="http://xml.apache.org/axis/">wsaaext0.homo.afip.gov.ar</ns3:hostname></detail></soapenv:Fault></soapenv:Body></soapenv:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Tue, 10 Aug 2021 21:16:21 GMT
+      Set-Cookie:
+      - TS01b14f84=0145b27a976e301f831d25b9cc9f7b380f5a6a7c09ab266fcf8696dfb9d77de0112156fbcc;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 500
+      message: Internal Server Error
+version: 1
