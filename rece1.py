@@ -39,7 +39,7 @@ HOMO = wsfev1.HOMO
 DEBUG = False
 XML = False
 TIMEOUT = 30
-CONFIG_FILE = "conf/rece.ini"
+CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
 rece1.py: Interfaz de texto para generar Facturas Electrónica Mercado Interno V1
