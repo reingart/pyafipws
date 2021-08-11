@@ -5,7 +5,6 @@ omit =
         *iibb*
         *nsis*
         */padron.py
-        *pyfepdf*
         *pyi25*
         *pyqr*
         *rece1*
