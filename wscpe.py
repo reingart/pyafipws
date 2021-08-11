@@ -186,11 +186,9 @@ class WSCPE(BaseWS):
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        self.Errores = [err["error"] for err in ret.get("errores", [])]
-        if self.Errores:
-            errores = self.Errores[0]
-        else:
-            errores = self.Errores
+        errores = self.Errores = [err["error"] for err in ret.get("errores", [])]
+        if errores:
+            errores = errores[0]
         self.ErrCode = " ".join(["%(codigo)s" % err for err in errores])
         self.ErrMsg = "\n".join(["%(codigo)s: %(descripcion)s" % err for err in errores])
 
