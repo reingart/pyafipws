@@ -519,7 +519,7 @@ class WSCPE(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AutorizarCPEAutomotor(self, archivo="cpe_automotor.pdf"):  # green
+    def AutorizarCPEAutomotor(self, archivo="cpe.pdf"):
         """Informar los datos necesarios para la generación de una nueva carta porte."""
         response = self.client.autorizarCPEAutomotor(
             auth={
@@ -532,11 +532,11 @@ class WSCPE(BaseWS):
         ret = response.get("respuesta")
         self.__analizar_errores(ret)
         if "cabecera" in ret:
-            self.AnalizarCPEAutomotor(ret, archivo)
+            self.AnalizarCPE(ret, archivo)
         return True
 
     @inicializar_y_capturar_excepciones
-    def AnalizarCPEAutomotor(self, ret, archivo="cpe_automotor.pdf"):
+    def AnalizarCPE(self, ret, archivo="cpe.pdf"):
         "Extrae los resultados de autorización de una carta porte automotor."
         cab = ret["cabecera"]
         self.NroCPE = cab["nroCPE"]
@@ -1025,7 +1025,7 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
-        ok = wscpe.AgregarCabecera(tipo_cpe=1, cuit_solicitante=20267565393, sucursal=1, nro_orden=1)
+        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=20267565393, sucursal=1, nro_orden=1)
         ok = wscpe.AgregarOrigen(planta=1, cod_provincia=12, cod_localidad_operador=5544, cod_localidad_productor=3059)
         ok = wscpe.AgregarDestino(
             planta=1,
