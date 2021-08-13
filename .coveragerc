@@ -5,10 +5,6 @@ omit =
         *iibb*
         *nsis*
         */padron.py
-        *pyemail*
-        *formatos*
-        *pyi25*
-        *pyqr*
         *receb1*
         *recem*
         *recet*
