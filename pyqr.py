@@ -12,7 +12,7 @@
 
 "Módulo para generar códigos QR"
 from __future__ import print_function
-
+from __future__ import unicode_literals
 from builtins import object
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
@@ -120,7 +120,7 @@ class PyQR(object):
 
         # convertir a representación json y codificar en base64:
         datos_cmp_json = json.dumps(datos_cmp)
-        url = self.URL % (base64.b64encode(datos_cmp_json))
+        url = self.URL % (base64.b64encode(datos_cmp_json.encode('ascii')).decode('ascii'))
 
         qr = qrcode.QRCode(
             version=self.qr_ver,
@@ -171,7 +171,7 @@ def main():
                 tipo_doc_rec,
                 nro_doc_rec,
                 tipo_cod_aut,
-                cod_aut,
+                cod_aut
             ) = args
         else:
             ver = 1
@@ -257,10 +257,12 @@ def main():
 
         if not "--mostrar" in sys.argv:
             pass
-        elif sys.platform == "linux2":
+        elif sys.platform == "linux2" or sys.platform == "linux":
             os.system("eog " "%s" "" % pyqr.Archivo)
         else:
-            os.startfile(pyqr.archivo)
+            os.startfile(pyqr.Archivo)
+
+    return url
 
 if __name__ == "__main__":
     main()
