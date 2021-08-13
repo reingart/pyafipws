@@ -98,7 +98,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wslsp/LspService?wsdl"
 
 DEBUG = False
 XML = False
-CONFIG_FILE = "conf/wslsp.ini"
+CONFIG_FILE = "wslsp.ini"
 HOMO = False
 
 
@@ -1052,7 +1052,7 @@ def main():
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
-        sys.exit(0)
+        return
     if "--formato" in sys.argv:
         print("Formato:")
         for msg, formato in []:
@@ -1066,7 +1066,7 @@ def main():
                     % (clave, comienzo, longitud, tipo, dec)
                 )
                 comienzo += longitud
-        sys.exit(0)
+        return
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -1166,7 +1166,7 @@ def main():
             print("AppServerStatus", wslsp.AppServerStatus)
             print("DbServerStatus", wslsp.DbServerStatus)
             print("AuthServerStatus", wslsp.AuthServerStatus)
-            ##sys.exit(0)
+            return
 
         if "--autorizar" in sys.argv:
 
@@ -1431,7 +1431,7 @@ def main():
                     print(wslsp.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wslsp.NroComprobante)
             print("Errores:", wslsp.Errores)
-            # sys.exit(0)
+            return
 
         if "--guardar" in sys.argv:
             # grabar un archivo de texto (intercambio) con el resultado:
