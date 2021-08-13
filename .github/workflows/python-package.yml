@@ -46,6 +46,9 @@ jobs:
     - name: Fix OpenSSL "dh key too small"
       run: |
         sudo cp .github/openssl.cnf /etc/ssl/openssl.cnf
+    - name: Copy wsremcarne.ini file
+      run: |
+        sudo cp conf/wsremcarne.ini wsremcarne.ini
     - name: Test with pytest
       run: |
         pytest --html=report.html --self-contained-html
