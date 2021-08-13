@@ -1295,7 +1295,7 @@ def main():
         print("AppServerStatus", wsfev1.AppServerStatus)
         print("DbServerStatus", wsfev1.DbServerStatus)
         print("AuthServerStatus", wsfev1.AuthServerStatus)
-        # sys.exit(0)
+        return
 
     # obteniendo el TA para pruebas
     from .wsaa import WSAA
