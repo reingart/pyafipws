@@ -401,7 +401,7 @@ def main():
                 csv_writer.writerow(
                     [norm(getattr(padron, campo, "")) for campo in columnas]
                 )
-        # sys.exit(0)
+        return
 
     try:
 
