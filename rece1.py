@@ -552,7 +552,7 @@ def main():
             print("AppServerStatus", ws.AppServerStatus)
             print("DbServerStatus", ws.DbServerStatus)
             print("AuthServerStatus", ws.AuthServerStatus)
-            # sys.exit(0)
+            return
 
         if "/formato" in sys.argv:
             print("Formato:")
