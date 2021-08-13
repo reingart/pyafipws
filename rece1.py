@@ -448,7 +448,7 @@ def main():
         print(" /dbf: lee y almacena la información en tablas DBF")
         print()
         print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
-        # sys.exit(0)
+        return
 
     if "/debug" in sys.argv:
         DEBUG = True
@@ -584,7 +584,7 @@ def main():
                     claves, campos = definir_campos(formato)
                     for campo in campos:
                         print(" * Campo: %s" % (campo,))
-            # sys.exit(0)
+            return
 
         # obteniendo el TA
         from .wsaa import WSAA
@@ -747,7 +747,7 @@ def main():
                 ],
                 open(salida, "w"),
             )
-            #sys.exit(0)
+            return
 
         if "/get" in sys.argv:
             print("Recuperar comprobante:")
@@ -802,7 +802,7 @@ def main():
             )
             escribir_facturas([factura], open(salida, "w"))
 
-            #sys.exit(0)
+            return
 
         if "/solicitarcaea" in sys.argv:
             i = sys.argv.index("/solicitarcaea")
@@ -852,7 +852,7 @@ def main():
                 open(salida, "w"),
             )
 
-            #sys.exit(0)
+            return
 
         if "/consultarcaea" in sys.argv:
             i = sys.argv.index("/consultarcaea")
@@ -881,13 +881,13 @@ def main():
                 print("FchVigHasta:", ws.FchVigHasta)
                 print("FchTopeInf:", ws.FchTopeInf)
                 print("FchProceso:", ws.FchProceso)
-            #sys.exit(0)
+            return
 
         if "/ptosventa" in sys.argv:
 
             print("=== Puntos de Venta ===")
             print(u"\n".join(ws.ParamGetPtosVenta()))
-            #sys.exit(0)
+            return
 
         if "/informarcaeanoutilizadoptovta" in sys.argv:
             i = sys.argv.index("/informarcaeanoutilizadoptovta")
@@ -906,7 +906,7 @@ def main():
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-            #sys.exit(0)
+            return
 
         ws.LanzarExcepciones = False
         f_entrada = f_salida = None
@@ -927,7 +927,7 @@ def main():
                 f_salida.close()
             if XML:
                 depurar_xml(ws.client, RUTA_XML)
-        #sys.exit(0)
+        return
 
     except SoapFault as e:
         print("SoapFault:", e.faultcode, e.faultstring.encode("ascii", "ignore"))
