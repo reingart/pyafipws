@@ -36,7 +36,7 @@ def leer(fn="entrada.json"):
     return regs
 
 
-def escribir(filas, fn="salida.json"):
+def escribir(filas, fn="salida.json", **kwargs):
     "Dado una lista de comprobantes (diccionarios), escribe JSON"
     import codecs
 
@@ -46,6 +46,6 @@ def escribir(filas, fn="salida.json"):
         jsonfile,
         sort_keys=True,
         indent=4,
-        encoding="utf-8",
+        **kwargs
     )
     jsonfile.close()
