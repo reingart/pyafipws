@@ -36,7 +36,7 @@ from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wswhomo.afip.gov.ar/WSCDC/service.asmx?WSDL"
 HOMO = False
-CONFIG_FILE = "conf/rece.ini"
+CONFIG_FILE = "rece.ini"
 
 # No debería ser necesario modificar nada despues de esta linea
 
@@ -363,7 +363,7 @@ def main():
                     % (clave, comienzo, longitud, tipo, desc.encode("latin1"))
                 )
                 comienzo += longitud
-        # sys.exit(0)
+        return
 
     # leer configuracion
     global CONFIG_FILE
@@ -404,7 +404,7 @@ def main():
         print("AppServerStatus", wscdc.AppServerStatus)
         print("DbServerStatus", wscdc.DbServerStatus)
         print("AuthServerStatus", wscdc.AuthServerStatus)
-        # sys.exit(0)
+        return
 
     # Gestionar credenciales de acceso con AFIP:
     from .wsaa import WSAA
