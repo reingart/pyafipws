@@ -97,7 +97,7 @@ WSDL = [
 
 DEBUG = False
 XML = False
-CONFIG_FILE = "conf/wsremcarne.ini"
+CONFIG_FILE = "wsremcarne.ini"
 HOMO = False
 ENCABEZADO = []
 
@@ -688,7 +688,7 @@ def main():
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
-        sys.exit(0)
+        return
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -761,7 +761,7 @@ def main():
             print("AppServerStatus", wsremcarne.AppServerStatus)
             print("DbServerStatus", wsremcarne.DbServerStatus)
             print("AuthServerStatus", wsremcarne.AuthServerStatus)
-            sys.exit(0)
+            return
 
         if "--ult" in sys.argv:
             try:

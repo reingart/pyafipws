@@ -368,3 +368,7 @@ def test_main_tipos_carne():
     sys.argv.append('--tipos_carne')
     main()
 
+def test_main_ayuda():
+    sys.argv = []
+    sys.argv.append('--ayuda')
+    main()
