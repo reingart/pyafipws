@@ -49,6 +49,9 @@ jobs:
     - name: Copy rece.ini file
       run: |
         sudo cp conf/rece.ini rece.ini
+    - name: Copy wslsp.ini file
+      run: |
+        sudo cp conf/wslsp.ini wslsp.ini
     - name: Test with pytest
       run: |
         pytest --html=report.html --self-contained-html
