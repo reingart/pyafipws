@@ -38,7 +38,7 @@ HOMO = wsmtx.HOMO
 DEBUG = False
 PDB = False
 XML = False
-CONFIG_FILE = "conf/rece.ini"
+CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
 recem.py: Interfaz de texto para generar Facturas Electrónica MATRIX
@@ -340,7 +340,7 @@ def main():
         print(" /dbf: lee y almacena la información en tablas DBF")
         print()
         print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
-        # sys.exit(0)
+        return
 
     if "/debug" in sys.argv:
         DEBUG = True
@@ -401,7 +401,7 @@ def main():
             print("AppServerStatus", ws.AppServerStatus)
             print("DbServerStatus", ws.DbServerStatus)
             print("AuthServerStatus", ws.AuthServerStatus)
-            # sys.exit(0)
+            return
 
         if "/formato" in sys.argv:
             print("Formato:")
@@ -426,7 +426,7 @@ def main():
                         % (clave, comienzo, longitud, tipo, dec)
                     )
                     comienzo += longitud
-            # sys.exit(0)
+            return
 
         # obteniendo el TA
         from .wsaa import WSAA
@@ -444,7 +444,7 @@ def main():
             if "--testing" in sys.argv:
                 ws.LoadTestXML("tests/wsmtx_ptosvta_caea_resp.xml")
             print("\n".join(ws.ConsultarPuntosVentaCAEA()))
-            # sys.exit(0)
+            return
 
         if "/prueba" in sys.argv:
             # generar el archivo de prueba para la próxima factura
@@ -599,7 +599,7 @@ def main():
                 },
                 open(salida, "w"),
             )
-            # sys.exit(0)
+            return
 
         if "/get" in sys.argv:
             print("Recuperar comprobante:")
@@ -637,7 +637,7 @@ def main():
                 open(salida, "w"),
             )
 
-            # sys.exit(0)
+            return
 
         if "/solicitarcaea" in sys.argv:
             if len(sys.argv) > sys.argv.index("/solicitarcaea") + 1:
@@ -684,7 +684,7 @@ def main():
                 open(salida, "w"),
             )
 
-            # sys.exit(0)
+            return
 
         if "/consultarcaea" in sys.argv:
             if len(sys.argv) > sys.argv.index("/consultarcaea") + 1:
@@ -712,7 +712,7 @@ def main():
                 print("FchVigHasta:", ws.FchVigHasta)
                 print("FchTopeInf:", ws.FchTopeInf)
                 print("FchProceso:", ws.FchProceso)
-            # sys.exit(0)
+            return
 
         if "/informarcaeanoutilizado" in sys.argv:
             i = sys.argv.index("/informarcaeanoutilizado")
@@ -728,7 +728,7 @@ def main():
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-            # sys.exit(0)
+            return
 
         if "/informarcaeanoutilizadoptovta" in sys.argv:
             i = sys.argv.index("/informarcaeanoutilizadoptovta")
@@ -746,7 +746,7 @@ def main():
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-            # sys.exit(0)
+            return
 
         if "/consultarptosvtacaeanoinformados" in sys.argv:
             i = sys.argv.index("/consultarptosvtacaeanoinformados")
@@ -762,7 +762,7 @@ def main():
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-            # sys.exit(0)
+            return
 
         if "/ptosventa" in sys.argv:
 
@@ -770,7 +770,7 @@ def main():
             print(u"\n".join(ws.ConsultarPuntosVentaCAE()))
             print("=== Puntos de Venta CAEA ===")
             print(u"\n".join(ws.ConsultarPuntosVentaCAEA()))
-            # sys.exit(0)
+            return
 
         f_entrada = f_salida = None
         try:
@@ -790,7 +790,7 @@ def main():
                 f_salida.close()
             if XML:
                 depurar_xml(ws.client)
-        # sys.exit(0)
+        return
 
     except SoapFault as e:
         print(e.faultcode, e.faultstring.encode("ascii", "ignore"))
