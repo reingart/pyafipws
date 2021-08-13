@@ -92,11 +92,12 @@ class PyEmail(object):
                 # inicio una sesión segura (TLS)
                 self.smtp.starttls()
             if usuario and clave:
-                # convertir a string (hmac necesita string "bytes")
-                if isinstance(usuario, str):
-                    usuario = usuario.encode("utf8")
-                if isinstance(clave, str):
-                    clave = clave.encode("utf8")
+                if sys.version_info[0] < 3:
+                    #convertir a string (hmac necesita string "bytes")
+                    if isinstance(usuario, str):
+                        usuario = usuario.encode("utf8")
+                    if isinstance(clave, str):
+                        clave = clave.encode("utf8")
                 self.smtp.login(usuario, clave)
             return True
         except Exception as e:
@@ -275,10 +276,14 @@ def main():
     elif "/prueba" in sys.argv:
         pyemail = PyEmail()
         import getpass
-
-        usuario = input("usuario:")
-        clave = getpass.getpass("clave:")
-        ok = pyemail.Conectar("smtp.gmail.com", "reingart", clave, 587)
+        i = sys.argv.index("/prueba")
+        if i + 2 < len(sys.argv):
+            usuario = sys.argv[sys.argv.index("/prueba") + 1]
+            clave = sys.argv[sys.argv.index("/prueba") + 2]
+        else:
+            usuario = input("usuario:")
+            clave = getpass.getpass("clave:")
+        ok = pyemail.Conectar("smtp.gmail.com", usuario=usuario, clave=clave, puerto=587)
         print("login ok?", ok, pyemail.Excepcion)
         print(pyemail.Traceback)
         ok = pyemail.Enviar(usuario, "prueba", usuario, "prueba!", None)
