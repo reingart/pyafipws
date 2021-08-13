@@ -20,7 +20,8 @@ import pytest
 import os
 import sys
 import base64
-from pyafipws.wsaa import WSAA
+from pyafipws.wsaa import WSAA, call_wsaa
+from pyafipws.wsaa import main
 from past.builtins import basestring
 from builtins import str
 from pyafipws.utils import *
@@ -184,3 +185,39 @@ def test_wsaa_sign_tra_inline(key_and_cert):
     assert isinstance(sign_2, str)
     assert sign_2.startswith("MIIG+")
 
+@pytest.mark.vcr
+def test_main():
+    sys.argv = []
+    sys.argv.append("--debug")
+    main()
+
+
+@pytest.mark.vcr
+def test_main_crear_pedido_cert():
+    sys.argv = []
+    sys.argv.append("--crear_pedido_cert")
+    sys.argv.append("20267565393")
+    sys.argv.append("PyAfipWs")
+    sys.argv.append("54654654")
+    sys.argv.append(" ")
+    main()
+
+@pytest.mark.vcr
+def test_main_analizar():
+    sys.argv = []
+    sys.argv.append("--analizar")
+    main()
+
+@pytest.mark.vcr
+def test_CallWSAA(key_and_cert):
+    wsaa = WSAA()
+    tra=wsaa.CreateTRA(service="wsfe",ttl=DEFAULT_TTL)
+    cms=wsaa.SignTRA(tra,key_and_cert[1],key_and_cert[0])
+    assert wsaa.CallWSAA(cms,WSDL)
+
+@pytest.mark.vcr
+def test_call_wsaa(key_and_cert):
+    wsaa = WSAA()
+    tra=wsaa.CreateTRA(service="wsfe",ttl=DEFAULT_TTL)
+    cms=wsaa.SignTRA(tra,key_and_cert[1],key_and_cert[0])
+    assert call_wsaa(cms,WSDL)
