@@ -25,7 +25,7 @@ from pyafipws import receb1
 from pyafipws.wsaa import WSAA
 
 HOMO = wsbfev1.HOMO
-CONFIG_FILE = "conf/rece.ini"
+CONFIG_FILE = "rece.ini"
 
 # entrada.txt required for testing
 shutil.copy('tests/txt/entrada_receb1.txt','entrada.txt')
