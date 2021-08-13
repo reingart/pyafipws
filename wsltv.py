@@ -104,7 +104,7 @@ WSDL = "https://fwshomo.afip.gov.ar/wsltv/LtvService?wsdl"
 
 DEBUG = False
 XML = False
-CONFIG_FILE = "conf/wsltv.ini"
+CONFIG_FILE = "wsltv.ini"
 TIMEOUT = 30
 HOMO = False
 
@@ -863,7 +863,7 @@ def main():
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
-        sys.exit(0)
+        return
     if "--formato" in sys.argv:
         print("Formato:")
         for msg, formato in []:
@@ -877,7 +877,7 @@ def main():
                     % (clave, comienzo, longitud, tipo, dec)
                 )
                 comienzo += longitud
-        sys.exit(0)
+        return
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -983,7 +983,7 @@ def main():
             print("AppServerStatus", wsltv.AppServerStatus)
             print("DbServerStatus", wsltv.DbServerStatus)
             print("AuthServerStatus", wsltv.AuthServerStatus)
-            ##sys.exit(0)
+            return
 
         if "--json" in sys.argv and os.path.exists("wsltv.json"):
             # cargar un archivo de texto:
@@ -1285,7 +1285,7 @@ def main():
                     print(wsltv.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wsltv.NroComprobante)
             print("Errores:", wsltv.Errores)
-            # sys.exit(0)
+            return
 
         # Recuperar parámetros:
 
