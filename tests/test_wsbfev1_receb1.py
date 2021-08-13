@@ -39,16 +39,15 @@ def test_main_ayuda():
     receb1.main()
 
 
+def test_main_formato():
+    sys.argv = []
+    sys.argv.append('/formato')
+    receb1.main()
+
 def test_main_prueba():
     sys.argv = []
     sys.argv.append('/prueba')
     sys.argv.append('/debug')
-    receb1.main()
-
-
-def test_main_formato():
-    sys.argv = []
-    sys.argv.append('/formato')
     receb1.main()
 
 def test_main_dummy():
