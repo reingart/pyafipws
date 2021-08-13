@@ -38,7 +38,7 @@ HOMO = wsfexv1.HOMO
 DEBUG = False
 XML = False
 TIMEOUT = 30
-CONFIG_FILE = "conf/rece.ini"
+CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
 recex.py: Interfaz de texto para generar Facturas Electrónica Exportación
