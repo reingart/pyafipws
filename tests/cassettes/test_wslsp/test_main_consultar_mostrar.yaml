@@ -1,0 +1,84 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:GenerarLiquidacionReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzNDkxNTYyNDk4IiBnZW5fdGltZT0iMTYyNjk2ODY3NCIgZXhwX3RpbWU9IjE2MjcwMTE5MzQiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>h/BYZfpWRFkW32mIPuaM4j8rpK+3+QnjWOdh0duuStM4pfXkH68JPc+RvZHwAiziqgS7JC4nofpwBr4rwc3LZ5pAKsdUx7BQfZsFtCHzCSQ3ASUKl0GwzbRmPCn5HkzFYnkA3drpKRjR/HmvrfzO4S57W8g1a1hcT4OHTDKFIUY=</sign><cuit>20267565393</cuit></auth><solicitud><codOperacion>1</codOperacion><emisor><puntoVenta>3000</puntoVenta><tipoComprobante>180</tipoComprobante><nroComprobante>64</nroComprobante><codCaracter>5</codCaracter><fechaInicioActividades>2016-01-01</fechaInicioActividades><iibb>123456789</iibb><nroRUCA>305</nroRUCA></emisor><receptor><codCaracter>3</codCaracter><operador><cuit>30160000011</cuit><iibb>3456</iibb><nroRenspa>22.123.1.12345/A4</nroRenspa></operador></receptor><datosLiquidacion><fechaComprobante>2017-04-23</fechaComprobante><fechaOperacion>2017-04-23</fechaOperacion><lugarRealizacion>CORONEL
+      SUAREZ</lugarRealizacion><codMotivo>6</codMotivo></datosLiquidacion><guia><nroGuia>1</nroGuia></guia><dte><nroDTE>418-1</nroDTE><nroRenspa>22.123.1.12345/A5</nroRenspa></dte><dte><nroDTE>418-2</nroDTE><nroRenspa>22.123.1.12346/A5</nroRenspa></dte><itemDetalleLiquidacion><cuitCliente>20160000199</cuitCliente><codCategoria>51020102</codCategoria><tipoLiquidacion>1</tipoLiquidacion><cantidad>2</cantidad><precioUnitario>10.0</precioUnitario><alicuotaIVA>10.5</alicuotaIVA><raza><codRaza>1</codRaza></raza><liquidacionCompraAsociada><tipoComprobante>185</tipoComprobante><puntoVenta>3000</puntoVenta><nroComprobante>33</nroComprobante><nroItem>1</nroItem><cantidadAsociada>2</cantidadAsociada></liquidacionCompraAsociada></itemDetalleLiquidacion><gasto><codGasto>16</codGasto><baseImponible>230520.6</baseImponible><alicuota>3</alicuota><alicuotaIVA>10.5</alicuotaIVA></gasto><gasto><codGasto>99</codGasto><descripcion>Exento
+      WSLSPv1.4.1</descripcion><alicuota>1</alicuota><tipoIVANulo>EX</tipoIVANulo></gasto><tributo><codTributo>5</codTributo><baseImponible>230520.6</baseImponible><alicuota>2.5</alicuota></tributo><tributo><codTributo>3</codTributo><importe>397</importe></tributo></solicitud></ser:GenerarLiquidacionReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '3041'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/generarLiquidacion"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:GenerarLiquidacionResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslsp/\"><respuesta><errores><error><codigo>1009</codigo><descripcion>N\xB0
+        de comprobante incorrecto para el tipo de comprobante y punto de venta ingresados.
+        El nro de comprobante ya existe</descripcion></error></errores><metadata><servidor>vivaldi</servidor><fechaHora>2021-07-22T12:54:03</fechaHora></metadata></respuesta></ns2:GenerarLiquidacionResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 15:54:03 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddffe248da593a382f287dc7bc1bf41931376f99765bda637249388843c954f65da;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarLiquidacionPorNroComprobanteReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzNDkxNTYyNDk4IiBnZW5fdGltZT0iMTYyNjk2ODY3NCIgZXhwX3RpbWU9IjE2MjcwMTE5MzQiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>h/BYZfpWRFkW32mIPuaM4j8rpK+3+QnjWOdh0duuStM4pfXkH68JPc+RvZHwAiziqgS7JC4nofpwBr4rwc3LZ5pAKsdUx7BQfZsFtCHzCSQ3ASUKl0GwzbRmPCn5HkzFYnkA3drpKRjR/HmvrfzO4S57W8g1a1hcT4OHTDKFIUY=</sign><cuit>20267565393</cuit></auth><solicitud><puntoVenta>3000</puntoVenta><tipoComprobante>--mostrar</tipoComprobante><nroComprobante>1</nroComprobante></solicitud></ser:ConsultarLiquidacionPorNroComprobanteReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1437'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarLiquidacionPorNroComprobante"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarLiquidacionPorNroComprobanteResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslsp/\"><respuesta><errores><error><codigo>cvc-datatype-valid.1.2.1</codigo><descripcion>
+        '--mostrar' no es un valor v\xE1lido para 'integer'.</descripcion></error><error><codigo>cvc-type.3.1.3</codigo><descripcion>
+        El valor '--mostrar' del elemento 'tipoComprobante' no es v\xE1lido.</descripcion></error></errores><metadata><servidor>vivaldi</servidor><fechaHora>2021-07-22T12:54:05</fechaHora></metadata></respuesta></ns2:ConsultarLiquidacionPorNroComprobanteResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 15:54:05 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddff8dae346e5cd47096108963980d33ea138e45758f8fe09dc0014101808fcbb04;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

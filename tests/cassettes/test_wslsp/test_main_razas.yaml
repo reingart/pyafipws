@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarRazasReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzOTQ2MzYzNDUiIGdlbl90aW1lPSIxNjI2OTcwODAyIiBleHBfdGltZT0iMTYyNzAxNDA2MiIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2xzcCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>tAXfme2n4K109OzQs51Jm+m27lj+9bqkQrrMgevewlyGH3iLYRKvqSt2cFlrAyXFBeWfzZcN5CgBsRoLSXa15EeE6G/38MQlAHkmhvCFFhOfGFV92XaQ0LANOJdKz10wsMSQYHbI3I83zymiqlmTmRqdFFapvhPhtoWDcguKsjI=</sign><cuit>20267565393</cuit></auth></ser:ConsultarRazasReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1257'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarRazas"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarRazasResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslsp/\"><respuesta><raza><codigo>99</codigo><descripcion>Otra</descripcion></raza><raza><codigo>21</codigo><descripcion>XD
+        - Decomisado</descripcion></raza><raza><codigo>22</codigo><descripcion>XZ
+        - Golpeado</descripcion></raza><raza><codigo>23</codigo><descripcion>Ca\xEDdo</descripcion></raza><raza><codigo>1</codigo><descripcion>Aberdeen
+        Angus</descripcion></raza><raza><codigo>2</codigo><descripcion>Belted Galloway</descripcion></raza><raza><codigo>3</codigo><descripcion>Blonde
+        d'aquitaine</descripcion></raza><raza><codigo>4</codigo><descripcion>Bobino
+        Criollo</descripcion></raza><raza><codigo>5</codigo><descripcion>Braford</descripcion></raza><raza><codigo>6</codigo><descripcion>Brahman</descripcion></raza><raza><codigo>7</codigo><descripcion>Brangus</descripcion></raza><raza><codigo>8</codigo><descripcion>Charolais</descripcion></raza><raza><codigo>9</codigo><descripcion>Hereford</descripcion></raza><raza><codigo>10</codigo><descripcion>Holando
+        Argentino</descripcion></raza><raza><codigo>11</codigo><descripcion>Jersey</descripcion></raza><raza><codigo>12</codigo><descripcion>Limangus</descripcion></raza><raza><codigo>13</codigo><descripcion>Limuosin</descripcion></raza><raza><codigo>14</codigo><descripcion>Piemontese</descripcion></raza><raza><codigo>15</codigo><descripcion>Polled
+        Hereford</descripcion></raza><raza><codigo>16</codigo><descripcion>Retinta</descripcion></raza><raza><codigo>17</codigo><descripcion>Santa
+        Gertrudis</descripcion></raza><raza><codigo>18</codigo><descripcion>Shorthorn</descripcion></raza><raza><codigo>19</codigo><descripcion>Flieckvieh
+        Simmental</descripcion></raza><raza><codigo>20</codigo><descripcion>West Highland</descripcion></raza><razaPorcina><codigo>5201</codigo><descripcion>YORKSHIRE
+        / LARGE-WHITE</descripcion></razaPorcina><razaPorcina><codigo>5202</codigo><descripcion>LANDRACE
+        (DAN\xC9S)</descripcion></razaPorcina><razaPorcina><codigo>5203</codigo><descripcion>LANDRACE
+        (BELGA)</descripcion></razaPorcina><razaPorcina><codigo>5204</codigo><descripcion>PIETRAIN</descripcion></razaPorcina><razaPorcina><codigo>5205</codigo><descripcion>DUROC
+        HERSEY</descripcion></razaPorcina><razaPorcina><codigo>5206</codigo><descripcion>HAMPSHIRE</descripcion></razaPorcina><razaPorcina><codigo>5207</codigo><descripcion>L\xCDNEA
+        H\xCDBRIDA MATERNA</descripcion></razaPorcina><razaPorcina><codigo>5208</codigo><descripcion>L\xCDNEA
+        H\xCDBRIDA PATERNA</descripcion></razaPorcina><razaPorcina><codigo>5299</codigo><descripcion>Otra</descripcion></razaPorcina><razaPorcina><codigo>5221</codigo><descripcion>XD
+        - Decomisado</descripcion></razaPorcina><razaPorcina><codigo>5222</codigo><descripcion>XZ
+        - Golpeado</descripcion></razaPorcina><razaPorcina><codigo>5223</codigo><descripcion>Ca\xEDdos</descripcion></razaPorcina><razaPorcina><codigo>5224</codigo><descripcion>Cruza</descripcion></razaPorcina><metadata><servidor>vivaldi</servidor><fechaHora>2021-07-22T13:21:48</fechaHora></metadata></respuesta></ns2:ConsultarRazasResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 16:21:48 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfd7746342a5ad9a1467aafacf24f99a5fc47896f4a716554754d99f664983b61f;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

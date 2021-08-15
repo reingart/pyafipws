@@ -21,7 +21,7 @@ __license__ = "GPL 3.0"
 import os
 import pytest
 from pyafipws.wsaa import WSAA
-from pyafipws.wslsp import WSLSP
+from pyafipws.wslsp import WSLSP, main
 import vcr
 import sys
 
@@ -446,3 +446,107 @@ def test_mostrar_pdf(auth):
     wslsp=auth
     show = wslsp.MostrarPDF(archivo="liq.pdf", imprimir=True)
     assert show is False
+
+
+def test_main(auth):
+    sys.argv = []
+    sys.argv.append('--version')
+    sys.argv.append('--dummy')
+    sys.argv.append('--debug')
+    main()
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append('--autorizar')
+    sys.argv.append('--prueba')
+    main()
+
+def test_main_ajustar(auth):
+    sys.argv = []
+    sys.argv.append('--ajustar')
+    sys.argv.append('--prueba')
+    main()
+
+def test_main_consultar(auth):
+    sys.argv = []
+    sys.argv.append('--consultar')
+    main()
+
+def test_main_consultar_mostrar(auth):
+    sys.argv = []
+    sys.argv.append('--autorizar')
+    sys.argv.append('--prueba')
+    sys.argv.append('--consultar')
+    sys.argv.append('--mostrar')
+    main()
+
+def test_main_ult(auth):
+    sys.argv = []
+    sys.argv.append('--ult')
+    main()
+
+def test_main_provincias(auth):
+    sys.argv = []
+    sys.argv.append('--provincias')
+    main()
+
+def test_main_localidades(auth):
+    sys.argv = []
+    sys.argv.append('--localidades')
+    sys.argv.append('1')
+    main()
+
+def test_main_operaciones(auth):
+    sys.argv = []
+    sys.argv.append('--operaciones')
+    main()
+
+def test_main_tributos(auth):
+    sys.argv = []
+    sys.argv.append('--tributos')
+    main()
+
+def test_main_gastos(auth):
+    sys.argv = []
+    sys.argv.append('--gastos')
+    main()
+
+def test_main_tipos_cbte(auth):
+    sys.argv = []
+    sys.argv.append('--tipos_cbte')
+    main()
+
+def test_main_tipos_liq(auth):
+    sys.argv = []
+    sys.argv.append('--tipos_liq')
+    main()
+
+def test_main_caracteres(auth):
+    sys.argv = []
+    sys.argv.append('--caracteres')
+    main()
+
+def test_main_categorias(auth):
+    sys.argv = []
+    sys.argv.append('--categorias')
+    main()
+
+def test_main_motivos(auth):
+    sys.argv = []
+    sys.argv.append('--motivos')
+    main()
+
+def test_main_razas(auth):
+    sys.argv = []
+    sys.argv.append('--razas')
+    main()
+
+def test_main_cortes(auth):
+    sys.argv = []
+    sys.argv.append('--cortes')
+    main()
+
+def test_main_puntos_venta(auth):
+    sys.argv = []
+    sys.argv.append('--puntosventa')
+    main()

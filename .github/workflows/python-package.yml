@@ -52,6 +52,12 @@ jobs:
     - name: Copy wsremcarne.ini file
       run: |
         sudo cp conf/wsremcarne.ini wsremcarne.ini
+    - name: Copy wsltv.ini file
+      run: |
+        sudo cp conf/wsltv.ini wsltv.ini
+    - name: Copy wslsp.ini file
+      run: |
+        sudo cp conf/wslsp.ini wslsp.ini
     - name: Test with pytest
       run: |
         pytest --html=report.html --self-contained-html
