@@ -835,7 +835,7 @@ def main():
         if "--params" in sys.argv:
             import codecs, locale
 
-            sys.stdout = codecs.getwriter("latin1")(sys.stdout)
+            # sys.stdout = codecs.getwriter("latin1")(sys.stdout)
 
             print("=== Tipos de Comprobante ===")
             print(u"\n".join(wsbfev1.GetParamTipoCbte()))
