@@ -1812,7 +1812,7 @@ def main():
             # datos generales del encabezado:
             tipo_cbte = 19 if "--expo" in sys.argv else 201
             punto_vta = 4000
-            fecha = datetime.datetime.now().strftime("%Y%m%d")
+            fecha = '20210805' if "--fecha_prueba" in sys.argv else datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
             tipo_doc = 80
             nro_doc = "30000000007"
