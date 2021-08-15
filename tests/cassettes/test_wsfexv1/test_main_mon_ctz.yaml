@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEXGetPARAM_MON_CON_COTIZACION xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIxMDgwODU4NzU2IiBnZW5fdGltZT0iMTYyNjk3NzYwMyIgZXhwX3RpbWU9IjE2MjcwMjA4NjMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>NWkHNKrzHva56P+1YnxOy+YpddSJfMu3SRsYjZumSB3uyaQPPquZfm5Re8YAQBM5+/ILqDYshvyxyKmlB9Ja2ndvdaW/CEVP5TU3QmNdrpKJEOXFXBY9//oSe5NqXdYSkbIL7kzt5ajCv2so5rOoS4MrSq+3xctKU216Oiit0sk=</Sign><Cuit>20267565393</Cuit></Auth><Fecha_CTZ>20210723</Fecha_CTZ></FEXGetPARAM_MON_CON_COTIZACION>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1413'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.fexv1/FEXGetPARAM_MON_CON_COTIZACION"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfexv1/service.asmx
+  response:
+    body:
+      string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
+        xmlns="http://ar.gov.afip.dif.fexv1/"><ambiente>Homologacion - efa</ambiente><fecha>2021-07-22T15:32:55.3776507-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetPARAM_MON_CON_COTIZACIONResponse
+        xmlns="http://ar.gov.afip.dif.fexv1/"><FEXGetPARAM_MON_CON_COTIZACIONResult><FEXResultGet><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>002</Mon_Id><Mon_ctz>2.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>007</Mon_Id><Mon_ctz>7.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>009</Mon_Id><Mon_ctz>9.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>010</Mon_Id><Mon_ctz>10.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>011</Mon_Id><Mon_ctz>11.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>012</Mon_Id><Mon_ctz>12.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>014</Mon_Id><Mon_ctz>14.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>015</Mon_Id><Mon_ctz>15.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>016</Mon_Id><Mon_ctz>16.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>018</Mon_Id><Mon_ctz>18.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>019</Mon_Id><Mon_ctz>19.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>021</Mon_Id><Mon_ctz>21.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>023</Mon_Id><Mon_ctz>23.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>024</Mon_Id><Mon_ctz>24.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>025</Mon_Id><Mon_ctz>25.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>026</Mon_Id><Mon_ctz>26.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>027</Mon_Id><Mon_ctz>27.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>028</Mon_Id><Mon_ctz>28.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>029</Mon_Id><Mon_ctz>29.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>030</Mon_Id><Mon_ctz>30.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>031</Mon_Id><Mon_ctz>31.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>032</Mon_Id><Mon_ctz>32.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>033</Mon_Id><Mon_ctz>33.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>034</Mon_Id><Mon_ctz>34.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>035</Mon_Id><Mon_ctz>35.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>036</Mon_Id><Mon_ctz>36.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>040</Mon_Id><Mon_ctz>40.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>041</Mon_Id><Mon_ctz>41.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>042</Mon_Id><Mon_ctz>42.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>043</Mon_Id><Mon_ctz>43.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>044</Mon_Id><Mon_ctz>44.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>045</Mon_Id><Mon_ctz>45.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>046</Mon_Id><Mon_ctz>46.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>047</Mon_Id><Mon_ctz>47.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>049</Mon_Id><Mon_ctz>49.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>051</Mon_Id><Mon_ctz>51.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>052</Mon_Id><Mon_ctz>52.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>053</Mon_Id><Mon_ctz>53.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>054</Mon_Id><Mon_ctz>54.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>055</Mon_Id><Mon_ctz>55.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>056</Mon_Id><Mon_ctz>56.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>057</Mon_Id><Mon_ctz>57.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>059</Mon_Id><Mon_ctz>59.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>060</Mon_Id><Mon_ctz>60.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>061</Mon_Id><Mon_ctz>61.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>062</Mon_Id><Mon_ctz>62.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>063</Mon_Id><Mon_ctz>63.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>064</Mon_Id><Mon_ctz>64.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion><ClsFEXResponse_Mon_CON_Cotizacion><Mon_Id>DOL</Mon_Id><Mon_ctz>101.2020</Mon_ctz><Fecha_ctz>7/21/2021</Fecha_ctz></ClsFEXResponse_Mon_CON_Cotizacion></FEXResultGet><FEXErr><ErrCode>0</ErrCode><ErrMsg>OK</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetPARAM_MON_CON_COTIZACIONResult></FEXGetPARAM_MON_CON_COTIZACIONResponse></soap:Body></soap:Envelope>
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '8093'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 18:34:12 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddfcddb6cb9f1a8bebc5bf429cfbdf296418f6795f8ee4cd47d504f7989cb6ff953;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

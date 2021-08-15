@@ -1,0 +1,306 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <ComprobantesModalidadConsultar xmlns=\"http://servicios1.afip.gob.ar/wscdc/\">\n
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2NkYywgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjEwMzE1MDA2NDciIGdlbl90aW1lPSIxNjI2OTkwNTM1IiBleHBfdGltZT0iMTYyNzAzMzc5NSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2NkYyIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>itK5HrP155Zn7nN4kPIsAHHAq1epI6sj8srnKiGRRd5+4ZsshE8Br7TrYnKC4hBiuVnFuwDRaZsy7sV5AfyP4hYFuzkaNrWgsqTSCyIALUAsSDhRnRzTKMTulOd844USke8Kkgsk2LI11a/UzEN1wtid8nfc07EW3t3X6CBO0Cs=</Sign><Cuit>20267565393</Cuit></Auth></ComprobantesModalidadConsultar>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1389'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://servicios1.afip.gob.ar/wscdc/ComprobantesModalidadConsultar"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx
+  response:
+    body:
+      string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
+        xmlns="http://servicios1.afip.gob.ar/wscdc/"><ambiente>HomologacionExterno
+        - efa</ambiente><fecha>2021-07-22T18:51:02.8646416-03:00</fecha><id>2.0.2.0</id></FEHeaderInfo></soap:Header><soap:Body><ComprobantesModalidadConsultarResponse
+        xmlns="http://servicios1.afip.gob.ar/wscdc/"><ComprobantesModalidadConsultarResult><ResultGet><FacModTipo><Cod>CAE</Cod><Desc>Comprobantes
+        - CAE</Desc></FacModTipo><FacModTipo><Cod>CAEA</Cod><Desc>Comprobantes - CAEA</Desc></FacModTipo><FacModTipo><Cod>CAI</Cod><Desc>Comprobantes
+        - CAI</Desc></FacModTipo></ResultGet><Events><Evt><Code>0</Code></Evt></Events></ComprobantesModalidadConsultarResult></ComprobantesModalidadConsultarResponse></soap:Body></soap:Envelope>
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '937'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 21:51:41 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf8e84898775a43c2d5590bf0c77191261dc06fba7dc21cf593e1b44f1ac931374;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <ComprobantesTipoConsultar xmlns=\"http://servicios1.afip.gob.ar/wscdc/\">\n
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2NkYywgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjEwMzE1MDA2NDciIGdlbl90aW1lPSIxNjI2OTkwNTM1IiBleHBfdGltZT0iMTYyNzAzMzc5NSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2NkYyIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>itK5HrP155Zn7nN4kPIsAHHAq1epI6sj8srnKiGRRd5+4ZsshE8Br7TrYnKC4hBiuVnFuwDRaZsy7sV5AfyP4hYFuzkaNrWgsqTSCyIALUAsSDhRnRzTKMTulOd844USke8Kkgsk2LI11a/UzEN1wtid8nfc07EW3t3X6CBO0Cs=</Sign><Cuit>20267565393</Cuit></Auth></ComprobantesTipoConsultar>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1379'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://servicios1.afip.gob.ar/wscdc/ComprobantesTipoConsultar"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><ambiente>HomologacionExterno
+        - efa</ambiente><fecha>2021-07-22T18:51:03.2708942-03:00</fecha><id>2.0.2.0</id></FEHeaderInfo></soap:Header><soap:Body><ComprobantesTipoConsultarResponse
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><ComprobantesTipoConsultarResult><ResultGet><CbteTipo><Id>1</Id><Desc>Factura
+        A</Desc></CbteTipo><CbteTipo><Id>2</Id><Desc>Nota de D\xE9bito A</Desc></CbteTipo><CbteTipo><Id>3</Id><Desc>Nota
+        de Cr\xE9dito A</Desc></CbteTipo><CbteTipo><Id>4</Id><Desc>Recibo A</Desc></CbteTipo><CbteTipo><Id>5</Id><Desc>Nota
+        de Venta al Contado A</Desc></CbteTipo><CbteTipo><Id>6</Id><Desc>Factura B</Desc></CbteTipo><CbteTipo><Id>7</Id><Desc>Nota
+        de D\xE9bito B</Desc></CbteTipo><CbteTipo><Id>8</Id><Desc>Nota de Cr\xE9dito
+        B</Desc></CbteTipo><CbteTipo><Id>9</Id><Desc>Recibo B</Desc></CbteTipo><CbteTipo><Id>10</Id><Desc>Nota
+        de Venta al Contado B</Desc></CbteTipo><CbteTipo><Id>11</Id><Desc>Factura
+        C</Desc></CbteTipo><CbteTipo><Id>12</Id><Desc>Nota de D\xE9bito C</Desc></CbteTipo><CbteTipo><Id>13</Id><Desc>Nota
+        de Cr\xE9dito C</Desc></CbteTipo><CbteTipo><Id>15</Id><Desc>Recibo C</Desc></CbteTipo><CbteTipo><Id>19</Id><Desc>Factura
+        de Exportaci\xF3n</Desc></CbteTipo><CbteTipo><Id>20</Id><Desc>Nota D\xE9b.
+        P/Operac. con el Exterior</Desc></CbteTipo><CbteTipo><Id>21</Id><Desc>Nota
+        Cr\xE9d. P/Operac. con el Exterior</Desc></CbteTipo><CbteTipo><Id>22</Id><Desc>Fac.
+        Perm. Export. Simp. - Dto.855/97</Desc></CbteTipo><CbteTipo><Id>30</Id><Desc>Cbtes.
+        Compra de Bienes Usados</Desc></CbteTipo><CbteTipo><Id>31</Id><Desc>Mandato/Consignaci\xF3n</Desc></CbteTipo><CbteTipo><Id>32</Id><Desc>Comprobantes
+        de Compra de Materiales a Reciclar Provenientes</Desc></CbteTipo><CbteTipo><Id>34</Id><Desc>Cbtes.
+        A del Anexo I, Apartado A,Inc.F),R.G.Nro. 1415</Desc></CbteTipo><CbteTipo><Id>35</Id><Desc>Cbtes.
+        B del Anexo I, Apartado A, Inc. F), R.G. Nro. 1415</Desc></CbteTipo><CbteTipo><Id>37</Id><Desc>Nota
+        D\xE9b/Doc. Equiv. que Cumplan con la R.G. Nro. 1415</Desc></CbteTipo><CbteTipo><Id>38</Id><Desc>Nota
+        Cr\xE9d/Doc. Equiv. que Cumplan con la R.G. Nro. 1415</Desc></CbteTipo><CbteTipo><Id>39</Id><Desc>Otros
+        Comprobantes A que Cumplan con la R.G. Nro. 1415</Desc></CbteTipo><CbteTipo><Id>40</Id><Desc>Otros
+        Comprobantes B que Cumplan con la R.G. Nro. 1415</Desc></CbteTipo><CbteTipo><Id>51</Id><Desc>Factura
+        M</Desc></CbteTipo><CbteTipo><Id>52</Id><Desc>Nota de D\xE9bito M</Desc></CbteTipo><CbteTipo><Id>53</Id><Desc>Nota
+        de Cr\xE9dito M</Desc></CbteTipo><CbteTipo><Id>54</Id><Desc>Recibo M</Desc></CbteTipo><CbteTipo><Id>55</Id><Desc>Nota
+        de Venta al Contado M</Desc></CbteTipo><CbteTipo><Id>56</Id><Desc>Comprobantes
+        M del Anexo I, Apartado A, Inc. F) R.G. Nro.1415</Desc></CbteTipo><CbteTipo><Id>57</Id><Desc>Otros
+        Comprobantes M que Cumplan con la R.G. Nro. 1415</Desc></CbteTipo><CbteTipo><Id>58</Id><Desc>Cuenta
+        de Venta Y L\xEDquido Producto M</Desc></CbteTipo><CbteTipo><Id>59</Id><Desc>Liquidaci\xF3n
+        M</Desc></CbteTipo><CbteTipo><Id>60</Id><Desc>Cta. de Vta. Y L\xEDquido Prod.
+        A</Desc></CbteTipo><CbteTipo><Id>61</Id><Desc>Cta. de Vta. Y L\xEDquido Prod.
+        B</Desc></CbteTipo><CbteTipo><Id>63</Id><Desc>Liquidaci\xF3n A</Desc></CbteTipo><CbteTipo><Id>64</Id><Desc>Liquidaci\xF3n
+        B</Desc></CbteTipo><CbteTipo><Id>70</Id><Desc>Recibo de Factura de Cr\xE9dito
+        R</Desc></CbteTipo><CbteTipo><Id>91</Id><Desc>Remito R</Desc></CbteTipo><CbteTipo><Id>49</Id><Desc>Comprobante
+        de Compra de Bienes Usados</Desc></CbteTipo><CbteTipo><Id>27</Id><Desc>Liquidaci\xF3n
+        \xDAnica Comercial Impositiva Clase A</Desc></CbteTipo><CbteTipo><Id>28</Id><Desc>Liquidaci\xF3n
+        \xDAnica Comercial Impositiva Clase B</Desc></CbteTipo><CbteTipo><Id>43</Id><Desc>Nota
+        de Cr\xE9dito Liquidaci\xF3n \xDAnica Comercial Impositiva Clase B</Desc></CbteTipo><CbteTipo><Id>45</Id><Desc>Nota
+        de D\xE9bito Liquidaci\xF3n \xDAnica Comercial Impositiva Clase A</Desc></CbteTipo><CbteTipo><Id>46</Id><Desc>Nota
+        de D\xE9bito Liquidaci\xF3n \xDAnica Comercial Impositiva Clase B</Desc></CbteTipo><CbteTipo><Id>48</Id><Desc>Nota
+        de Cr\xE9dito Liquidaci\xF3n \xDAnica Comercial Impositiva Clase A</Desc></CbteTipo><CbteTipo><Id>201</Id><Desc>Factura
+        de Cr\xE9dito (FCE) A</Desc></CbteTipo><CbteTipo><Id>202</Id><Desc>Nota de
+        D\xE9bito (FCE) A</Desc></CbteTipo><CbteTipo><Id>203</Id><Desc>Nota de Cr\xE9dito
+        (FCE) A</Desc></CbteTipo><CbteTipo><Id>206</Id><Desc>Factura de Cr\xE9dito
+        (FCE) B</Desc></CbteTipo><CbteTipo><Id>207</Id><Desc>Nota de D\xE9bito (FCE)
+        B</Desc></CbteTipo><CbteTipo><Id>208</Id><Desc>Nota de Cr\xE9dito (FCE) B</Desc></CbteTipo><CbteTipo><Id>211</Id><Desc>Factura
+        de Cr\xE9dito (FCE) C</Desc></CbteTipo><CbteTipo><Id>212</Id><Desc>Nota de
+        D\xE9bito (FCE) C</Desc></CbteTipo><CbteTipo><Id>213</Id><Desc>Nota de Cr\xE9dito
+        (FCE) C</Desc></CbteTipo></ResultGet><Events><Evt><Code>0</Code></Evt></Events></ComprobantesTipoConsultarResult></ComprobantesTipoConsultarResponse></soap:Body></soap:Envelope>"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '5083'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 21:51:41 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf84a7a5fa6719c5aa071a3b06e93ec680c1ad8be3283cbf367e41a88be23bf8fe;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <DocumentosTipoConsultar xmlns=\"http://servicios1.afip.gob.ar/wscdc/\">\n
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2NkYywgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjEwMzE1MDA2NDciIGdlbl90aW1lPSIxNjI2OTkwNTM1IiBleHBfdGltZT0iMTYyNzAzMzc5NSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2NkYyIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>itK5HrP155Zn7nN4kPIsAHHAq1epI6sj8srnKiGRRd5+4ZsshE8Br7TrYnKC4hBiuVnFuwDRaZsy7sV5AfyP4hYFuzkaNrWgsqTSCyIALUAsSDhRnRzTKMTulOd844USke8Kkgsk2LI11a/UzEN1wtid8nfc07EW3t3X6CBO0Cs=</Sign><Cuit>20267565393</Cuit></Auth></DocumentosTipoConsultar>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1375'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://servicios1.afip.gob.ar/wscdc/DocumentosTipoConsultar"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><ambiente>HomologacionExterno
+        - efa</ambiente><fecha>2021-07-22T18:51:03.6927719-03:00</fecha><id>2.0.2.0</id></FEHeaderInfo></soap:Header><soap:Body><DocumentosTipoConsultarResponse
+        xmlns=\"http://servicios1.afip.gob.ar/wscdc/\"><DocumentosTipoConsultarResult><ResultGet><DocTipo><Id>80</Id><Desc>CUIT</Desc></DocTipo><DocTipo><Id>86</Id><Desc>CUIL</Desc></DocTipo><DocTipo><Id>87</Id><Desc>CDI</Desc></DocTipo><DocTipo><Id>89</Id><Desc>LE</Desc></DocTipo><DocTipo><Id>90</Id><Desc>LC</Desc></DocTipo><DocTipo><Id>91</Id><Desc>CI
+        Extranjera</Desc></DocTipo><DocTipo><Id>92</Id><Desc>en tr\xE1mite</Desc></DocTipo><DocTipo><Id>93</Id><Desc>Acta
+        Nacimiento</Desc></DocTipo><DocTipo><Id>95</Id><Desc>CI Bs. As. RNP</Desc></DocTipo><DocTipo><Id>96</Id><Desc>DNI</Desc></DocTipo><DocTipo><Id>94</Id><Desc>Pasaporte</Desc></DocTipo><DocTipo><Id>00</Id><Desc>CI
+        Polic\xEDa Federal</Desc></DocTipo><DocTipo><Id>01</Id><Desc>CI Buenos Aires</Desc></DocTipo><DocTipo><Id>02</Id><Desc>CI
+        Catamarca</Desc></DocTipo><DocTipo><Id>03</Id><Desc>CI C\xF3rdoba</Desc></DocTipo><DocTipo><Id>04</Id><Desc>CI
+        Corrientes</Desc></DocTipo><DocTipo><Id>05</Id><Desc>CI Entre R\xEDos</Desc></DocTipo><DocTipo><Id>06</Id><Desc>CI
+        Jujuy</Desc></DocTipo><DocTipo><Id>07</Id><Desc>CI Mendoza</Desc></DocTipo><DocTipo><Id>08</Id><Desc>CI
+        La Rioja</Desc></DocTipo><DocTipo><Id>09</Id><Desc>CI Salta</Desc></DocTipo><DocTipo><Id>10</Id><Desc>CI
+        San Juan</Desc></DocTipo><DocTipo><Id>11</Id><Desc>CI San Luis</Desc></DocTipo><DocTipo><Id>12</Id><Desc>CI
+        Santa Fe</Desc></DocTipo><DocTipo><Id>13</Id><Desc>CI Santiago del Estero</Desc></DocTipo><DocTipo><Id>14</Id><Desc>CI
+        Tucum\xE1n</Desc></DocTipo><DocTipo><Id>16</Id><Desc>CI Chaco</Desc></DocTipo><DocTipo><Id>17</Id><Desc>CI
+        Chubut</Desc></DocTipo><DocTipo><Id>18</Id><Desc>CI Formosa</Desc></DocTipo><DocTipo><Id>19</Id><Desc>CI
+        Misiones</Desc></DocTipo><DocTipo><Id>20</Id><Desc>CI Neuqu\xE9n</Desc></DocTipo><DocTipo><Id>21</Id><Desc>CI
+        La Pampa</Desc></DocTipo><DocTipo><Id>22</Id><Desc>CI R\xEDo Negro</Desc></DocTipo><DocTipo><Id>23</Id><Desc>CI
+        Santa Cruz</Desc></DocTipo><DocTipo><Id>24</Id><Desc>CI Tierra del Fuego</Desc></DocTipo><DocTipo><Id>99</Id><Desc>Doc.
+        (Otro)</Desc></DocTipo></ResultGet><Events><Evt><Code>0</Code></Evt></Events></DocumentosTipoConsultarResult></DocumentosTipoConsultarResponse></soap:Body></soap:Envelope>"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '2628'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 21:51:41 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf995decae5dd4d82a1b1879c89f2bb98ab5ab0ba0ff4da63a59286e09d76dc6bd;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <OpcionalesTipoConsultar xmlns=\"http://servicios1.afip.gob.ar/wscdc/\">\n
+      \   <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2NkYywgTz1BRklQLCBDPUFSIiB1bmlxdWVfaWQ9IjEwMzE1MDA2NDciIGdlbl90aW1lPSIxNjI2OTkwNTM1IiBleHBfdGltZT0iMTYyNzAzMzc5NSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2NkYyIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>itK5HrP155Zn7nN4kPIsAHHAq1epI6sj8srnKiGRRd5+4ZsshE8Br7TrYnKC4hBiuVnFuwDRaZsy7sV5AfyP4hYFuzkaNrWgsqTSCyIALUAsSDhRnRzTKMTulOd844USke8Kkgsk2LI11a/UzEN1wtid8nfc07EW3t3X6CBO0Cs=</Sign><Cuit>20267565393</Cuit></Auth></OpcionalesTipoConsultar>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1375'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://servicios1.afip.gob.ar/wscdc/OpcionalesTipoConsultar"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx
+  response:
+    body:
+      string: '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
+        xmlns="http://servicios1.afip.gob.ar/wscdc/"><ambiente>HomologacionExterno
+        - efa</ambiente><fecha>2021-07-22T18:51:04.0990245-03:00</fecha><id>2.0.2.0</id></FEHeaderInfo></soap:Header><soap:Body><OpcionalesTipoConsultarResponse
+        xmlns="http://servicios1.afip.gob.ar/wscdc/"><OpcionalesTipoConsultarResult><Errors><Err><Code>503</Code><Msg>Sin
+        Resultados: - Metodo OpcionalesTipoConsultar</Msg></Err></Errors><Events><Evt><Code>0</Code></Evt></Events></OpcionalesTipoConsultarResult></OpcionalesTipoConsultarResponse></soap:Body></soap:Envelope>'
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '777'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 21:51:42 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf2c29251c6d94862738fe8279bf59a7609fea5579c567ab2f58b76cd3e3621fb0;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

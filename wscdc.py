@@ -363,14 +363,17 @@ def main():
                     % (clave, comienzo, longitud, tipo, desc.encode("latin1"))
                 )
                 comienzo += longitud
-        sys.exit(0)
+        return
 
     # leer configuracion
     global CONFIG_FILE
     if len(sys.argv) > 1 and sys.argv[1][0] not in "-/":
         CONFIG_FILE = sys.argv.pop(1)
     config = SafeConfigParser()
-    config.read(CONFIG_FILE)
+    if sys.version_info[0] < 3 :
+        config.read(CONFIG_FILE, encoding="latin-1")
+    else:
+        config.read(CONFIG_FILE)
     crt = config.get("WSAA", "CERT")
     key = config.get("WSAA", "PRIVATEKEY")
     cuit = config.get("WSCDC", "CUIT")
@@ -401,7 +404,7 @@ def main():
         print("AppServerStatus", wscdc.AppServerStatus)
         print("DbServerStatus", wscdc.DbServerStatus)
         print("AuthServerStatus", wscdc.AuthServerStatus)
-        sys.exit(0)
+        return
 
     # Gestionar credenciales de acceso con AFIP:
     from .wsaa import WSAA

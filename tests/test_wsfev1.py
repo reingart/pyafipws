@@ -11,7 +11,7 @@
 # for more details.
 
 from pyafipws.wsaa import WSAA
-from pyafipws.wsfev1 import WSFEv1
+from pyafipws.wsfev1 import WSFEv1, main
 from builtins import str
 
 "Pruebas para WSFEv1 de AFIP (Factura Electrónica Mercado Interno sin detalle)"
@@ -223,3 +223,121 @@ def test_reproceso_nota_debito(auth):
     assert (wsfev1.Reproceso == "S")
 
 
+def test_main(auth):
+    sys.argv = []
+    sys.argv.append('--debug')
+    sys.argv.append('--dummy')
+    main()
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--debug')
+    main()
+
+def test_main_prueba_multiple(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--multiple')
+    main()
+
+def test_main_prueba_usados(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--usados')
+    main()
+
+def test_main_prueba_fce(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--fce')
+    main()
+
+def test_main_prueba_caea(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--caea')
+    main()
+
+def test_main_prueba_proyectus(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--proyectos')
+    main()
+
+def test_main_prueba_rg3668(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--rg3668')
+    main()
+
+def test_main_prueba_rg4004(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--rg4004')
+    main()
+
+def test_main_prueba_rg4109(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--rg4109')
+    main()
+
+def test_main_prueba_rg4540(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--rg4540')
+    main()
+
+def test_main_prueba_consultar(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--consultar')
+    main()
+
+def test_main_prueba_get(auth):
+    sys.argv = []
+    sys.argv.append('--get')
+    main()
+
+def test_main_sinmovimiento_caea(auth):
+    sys.argv = []
+    sys.argv.append('--sinmovimiento-caea')
+    sys.argv.append('4000')
+    sys.argv.append('71293955911805')
+    main()
+
+def test_main_solicitar_caea(auth):
+    sys.argv = []
+    sys.argv.append('--solicitar-caea')
+    sys.argv.append('202107')
+    sys.argv.append('1')
+    sys.argv.append('--debug')
+    main()
+
+def test_main_cotizacion(auth):
+    sys.argv = []
+    sys.argv.append('--cotizacion')
+    main()
+
+def test_main_comptox(auth):
+    sys.argv = []
+    sys.argv.append('--comptox')
+    main()
+
+def test_main_ptos_venta(auth):
+    sys.argv = []
+    sys.argv.append('--ptosventa')
+    main()
+
+def test_main_parametros(auth):
+    sys.argv = []
+    sys.argv.append('--parametros')
+    main()
+
+
+def test_main_reprocesar(auth):
+    wsfev1 = auth
+    wsfev1.reprocesar = True
+    wsfev1.CAESolicitar()
+    assert wsfev1.Reproceso == "S"

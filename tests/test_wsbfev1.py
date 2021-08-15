@@ -22,6 +22,7 @@ from datetime import datetime, timedelta
 import pytest
 from pyafipws.wsaa import WSAA
 from pyafipws.wsbfev1 import WSBFEv1
+from pyafipws.wsbfev1 import main
 from pysimplesoap.simplexml import SimpleXMLElement 
 from builtins import str
 
@@ -221,4 +222,31 @@ def test_parametros(auth):
     # assertIsNotNone(wsbfev1.GetParamCtz('DOL'))
 
 
+
+def test_main(auth):
+    sys.argv = []
+    sys.argv.append('--dummy')
+    sys.argv.append('--debug')
+    main()
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    main()
+
+def test_main_prueba_fce(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    sys.argv.append('--fce')
+    main()
+
+def test_main_get(auth):
+    sys.argv = []
+    sys.argv.append('--get')
+    main()
+
+def test_main_params(auth):
+    sys.argv = []
+    sys.argv.append('--params')
+    main()
 

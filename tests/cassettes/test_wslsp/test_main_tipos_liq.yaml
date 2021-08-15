@@ -1,0 +1,46 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarTiposLiquidacionReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzOTQ2MzYzNDUiIGdlbl90aW1lPSIxNjI2OTcwODAyIiBleHBfdGltZT0iMTYyNzAxNDA2MiIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2xzcCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>tAXfme2n4K109OzQs51Jm+m27lj+9bqkQrrMgevewlyGH3iLYRKvqSt2cFlrAyXFBeWfzZcN5CgBsRoLSXa15EeE6G/38MQlAHkmhvCFFhOfGFV92XaQ0LANOJdKz10wsMSQYHbI3I83zymiqlmTmRqdFFapvhPhtoWDcguKsjI=</sign><cuit>20267565393</cuit></auth></ser:ConsultarTiposLiquidacionReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1279'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarTiposLiquidacion"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:ConsultarTiposLiquidacionResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wslsp/"><respuesta><tipoLiquidacion><codigo>2</codigo><descripcion>Por
+        Kilo vivo</descripcion></tipoLiquidacion><tipoLiquidacion><codigo>3</codigo><descripcion>Por
+        Kilo de carne</descripcion></tipoLiquidacion><tipoLiquidacion><codigo>5</codigo><descripcion>Por
+        Corte</descripcion></tipoLiquidacion><tipoLiquidacion><codigo>1</codigo><descripcion>Por
+        Cabeza</descripcion></tipoLiquidacion><tipoLiquidacion><codigo>6</codigo><descripcion>Kg.
+        por Corte</descripcion></tipoLiquidacion><tipoLiquidacion><codigo>7</codigo><descripcion>Kg.
+        Carne Aviar</descripcion></tipoLiquidacion><metadata><servidor>vivaldi</servidor><fechaHora>2021-07-22T13:21:39</fechaHora></metadata></respuesta></ns2:ConsultarTiposLiquidacionResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 16:21:39 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfe05f293bf4a917ee492d79690403fac78a5efc7465f73bc7c12a6ed195b40a20;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

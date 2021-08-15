@@ -1,0 +1,53 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://a5.soap.ws.server.puc.sr/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:getPersona>\n    <token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMzkyNDE2ODI0IiBnZW5fdGltZT0iMTYyODYyOTYwOCIgZXhwX3RpbWU9IjE2Mjg2NzI4NjgiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nfc3JfcGFkcm9uX2E1IiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMjEiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</token><sign>qljPWZn7p4+Jn9nrXKPbfwrDLSLm8C8wga98LZtGvV/IgmoHxzwBUHrnCkCXnaxcX97enYea9DQ3jl3SLP3Cn5xCftaZ7OFmtwNQRD2QNSk9gxOoFfTHvWcbTzIiGuhpkpAIx8yxyelPRnlapSkRf4teUKd3gHJRv0+Ue+sTUaM=</sign><cuitRepresentada>20267565393</cuitRepresentada><idPersona>20201797064</idPersona></ser:getPersona>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1297'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5
+  response:
+    body:
+      string: "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body><ns2:getPersonaResponse
+        xmlns:ns2=\"http://a5.soap.ws.server.puc.sr/\"><personaReturn><datosGenerales><apellido>VICTORIA
+        CAROLINA</apellido><domicilioFiscal><codPostal>1030</codPostal><descripcionProvincia>CIUDAD
+        AUTONOMA BUENOS AIRES</descripcionProvincia><direccion>LARREA 1</direccion><idProvincia>0</idProvincia><tipoDomicilio>FISCAL</tipoDomicilio></domicilioFiscal><estadoClave>ACTIVO</estadoClave><idPersona>20201797064</idPersona><mesCierre>12</mesCierre><nombre>DARIO</nombre><tipoClave>CUIT</tipoClave><tipoPersona>FISICA</tipoPersona></datosGenerales><datosRegimenGeneral><actividad><descripcionActividad>SUMINISTRO
+        DE VAPOR Y AIRE ACONDICIONADO</descripcionActividad><idActividad>353001</idActividad><nomenclador>883</nomenclador><orden>2</orden><periodo>201311</periodo></actividad><actividad><descripcionActividad>FORMACI\xD3N
+        DE POSGRADO</descripcionActividad><idActividad>853300</idActividad><nomenclador>883</nomenclador><orden>1</orden><periodo>201311</periodo></actividad><impuesto><descripcionImpuesto>GANANCIAS
+        PERSONAS FISICAS</descripcionImpuesto><idImpuesto>11</idImpuesto><periodo>201101</periodo></impuesto><impuesto><descripcionImpuesto>IVA</descripcionImpuesto><idImpuesto>30</idImpuesto><periodo>201101</periodo></impuesto><impuesto><descripcionImpuesto>DACI\xD3N
+        EN PAGO DE ESP.PUBLICI.</descripcionImpuesto><idImpuesto>936</idImpuesto><periodo>200701</periodo></impuesto></datosRegimenGeneral><errorMonotributo><error>Datos
+        de monotributo incompletos- no posee categor\xEDa</error><mensaje>No cumple
+        con las condiciones para enviar datos monotributo</mensaje></errorMonotributo><metadata><fechaHora>2021-08-10T18:10:22.424-03:00</fechaHora><servidor>setiwsh2</servidor></metadata></personaReturn></ns2:getPersonaResponse></soap:Body></soap:Envelope>"
+    headers:
+      Content-Length:
+      - '1853'
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Tue, 10 Aug 2021 21:10:22 GMT
+      Set-Cookie:
+      - HttpOnly;Secure
+      - TS01a1c3b4=01439f1ddf7c01d20ab4d9aa045aa9b1089c9783f431ab26bc1ee2052f588187be7359228d0bad5b4cefd89aab9dc53213c88c5328;
+        Path=/
+      Strict-Transport-Security:
+      - max-age=300; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
