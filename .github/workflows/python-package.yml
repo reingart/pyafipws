@@ -58,9 +58,6 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --html=report.html --self-contained-html
-    - name: Remove pyfepdf test support files
-      run: |
-        sudo rm facturas.txt
     - name: Upload test report
       uses: actions/upload-artifact@v2
       if: ${{ always() }}

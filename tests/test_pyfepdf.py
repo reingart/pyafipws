@@ -344,6 +344,8 @@ def test_main_grabar_json():
     f2.close()
     diff = [x for x in d1 if x not in d2]
     assert diff == []
+    os.remove('facturas.txt')
+    os.remove('facturas.json')  
 
 
 def test_mostrar_pdf(mocker):
