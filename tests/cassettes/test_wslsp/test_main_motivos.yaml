@@ -1,0 +1,47 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarMotivosReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzOTQ2MzYzNDUiIGdlbl90aW1lPSIxNjI2OTcwODAyIiBleHBfdGltZT0iMTYyNzAxNDA2MiIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2xzcCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>tAXfme2n4K109OzQs51Jm+m27lj+9bqkQrrMgevewlyGH3iLYRKvqSt2cFlrAyXFBeWfzZcN5CgBsRoLSXa15EeE6G/38MQlAHkmhvCFFhOfGFV92XaQ0LANOJdKz10wsMSQYHbI3I83zymiqlmTmRqdFFapvhPhtoWDcguKsjI=</sign><cuit>20267565393</cuit></auth></ser:ConsultarMotivosReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1261'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarMotivos"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:ConsultarMotivosResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wslsp/"><respuesta><motivo><codigo>1</codigo><descripcion>FAENA</descripcion></motivo><motivo><codigo>2</codigo><descripcion>INVERNADA</descripcion></motivo><motivo><codigo>3</codigo><descripcion>REPRODUCCION</descripcion></motivo><motivo><codigo>4</codigo><descripcion>CRIA</descripcion></motivo><motivo><codigo>5</codigo><descripcion>REMATE
+        DE CARNE</descripcion></motivo><motivo><codigo>6</codigo><descripcion>FAENA
+        Y VENTA DE CARNE POR CUENTA Y ORDEN</descripcion></motivo><motivoPorcino><codigo>1</codigo><descripcion>FAENA</descripcion></motivoPorcino><motivoPorcino><codigo>2</codigo><descripcion>INVERNADA</descripcion></motivoPorcino><motivoPorcino><codigo>3</codigo><descripcion>REPRODUCCION</descripcion></motivoPorcino><motivoPorcino><codigo>4</codigo><descripcion>CRIA</descripcion></motivoPorcino><motivoPorcino><codigo>5</codigo><descripcion>REMATE
+        DE CARNE</descripcion></motivoPorcino><motivoPorcino><codigo>6</codigo><descripcion>FAENA
+        Y VENTA DE CARNE POR CUENTA Y ORDEN</descripcion></motivoPorcino><motivoAvicola><codigo>201</codigo><descripcion>FAENA</descripcion></motivoAvicola><motivoAvicola><codigo>202</codigo><descripcion>CRIANZA</descripcion></motivoAvicola><motivoAvicola><codigo>203</codigo><descripcion>REMATE
+        DE CARNE</descripcion></motivoAvicola><motivoAvicola><codigo>204</codigo><descripcion>FAENA
+        Y VENTA DE CARNE POR CUENTA Y ORDEN</descripcion></motivoAvicola><motivoAvicola><codigo>205</codigo><descripcion>VENTA
+        ANIMALES VIVOS</descripcion></motivoAvicola><metadata><servidor>vivaldi</servidor><fechaHora>2021-07-22T13:21:46</fechaHora></metadata></respuesta></ns2:ConsultarMotivosResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 16:21:46 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfc561069d7791463e8a942a40a51e54b5d3b536386a1881c934b7d4a47e52cf14;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1
