@@ -70,8 +70,9 @@ import utils
 
 # importo funciones compartidas:
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
-from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from utils import leer_txt, grabar_txt, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
+from wscpe import WSCPE
 
 # constantes de configuración (producción/homologación):
 
@@ -179,16 +180,77 @@ ERROR = [
     ('descripcion', 250, A), 
     ]
 
-FORMATOS = [('Encabezado', ENCABEZADO, 'encabezado', "0"), 
-            ('Origen', ORIGEN, 'origen', "O"),
-            ('Intervinientes', INTERVINIENTES, 'intervinientes', "I"), 
-            ('Retiro Productor', RETIRO_PRODUCTOR, 'retiro_productor', "R"),
-            ('Datos Carga', DATOS_CARGA, 'datos_carga', "C"),
-            ('Destino', DESTINO, 'destino', "D"),
-            ('Transporte', TRANSPORTE, 'transporte', "T"),
-            ('Error', ERROR, 'errores', "E"),
-            ('Eventos', ERROR, 'eventos', "V"),
-            ]
+FORMATOS = {
+    'encabezado': ENCABEZADO,
+    'origen': ORIGEN,
+    'intervinientes': INTERVINIENTES,
+    'retiro_productor': RETIRO_PRODUCTOR,
+    'datos_carga': DATOS_CARGA,
+    'destino': DESTINO,
+    'transporte': TRANSPORTE,
+    'errores': ERROR,
+    'eventos': EVENTO,
+}
+TIPO_REGISTROS = {
+    "0": 'encabezado',
+    "O": 'origen',
+    "I": 'intervinientes',
+    "R": 'retiro_productor',
+    "C": 'datos_carga',
+    "D": 'destino',
+    "T": 'transporte',
+    "E": 'errores',
+    "V": 'eventos',
+}
+
+
+def preparar_registros(dic, header='encabezado'):
+    formatos = []
+    tipos_registros_rev = dict([(v, k) for (k, v) in TIPO_REGISTROS.items()])
+    for key, formato in FORMATOS.items():
+        nombre = key
+        tipo_reg = tipos_registros_rev[key]
+        if key != header:
+            regs = dic.get(key, [])
+        else:
+            regs = dic
+        if not isinstance(regs, list):
+            regs = [regs]
+        for reg in regs:
+            try:
+                reg["tipo_reg"] = tipo_reg
+            except Exception as e:
+                print(e)
+
+        formatos.append((nombre, formato, regs))
+    return formatos
+
+
+def escribir_archivo(dic, nombre_archivo, agrega=True):
+    if '--json' in sys.argv:
+        with open(nombre_archivo, agrega and "a" or "w") as archivo:
+            json.dump(dic, archivo, sort_keys=True, indent=4)
+    elif '--dbf' in sys.argv:
+        formatos = preparar_registros(dic)
+        guardar_dbf(formatos, agrega, conf_dbf)
+    else:
+        grabar_txt(FORMATOS, TIPO_REGISTROS, nombre_archivo, [dic], agrega)
+
+
+def leer_archivo(nombre_archivo):
+    if '--json' in sys.argv:
+        with open(nombre_archivo, "r") as archivo:
+            dic = json.load(archivo)
+    elif '--dbf' in sys.argv:
+        dic = []
+        formatos = preparar_registros(dic)
+        leer_dbf(formatos, conf_dbf)
+    else:
+        dics = leer_txt(FORMATOS, TIPO_REGISTROS, nombre_archivo)
+        dic = dics[0]
+    if DEBUG:
+        import pprint; pprint.pprint(dic)
+    return dic
 
 
 if __name__ == '__main__':
@@ -268,7 +330,7 @@ if __name__ == '__main__':
         # cliente soap del web service
         wscpe = WSCPE()
         wscpe.Conectar(wsdl=wscpe_url)
-        print(wscpe.client.help("autorizarCPEAutomotor"))
+        ##print(wscpe.client.help("autorizarCPEAutomotor"))
         wscpe.SetTicketAcceso(ta)
         wscpe.Cuit = CUIT
         ok = None
@@ -322,67 +384,81 @@ if __name__ == '__main__':
 
         ##wscpe.client.help("generarCPE")
         if '--prueba' in sys.argv:
-            rec = dict(
-                    tipo_comprobante=997, punto_emision=1,
-                    tipo_titular_mercaderia=1,
-                    cuit_titular_mercaderia='20222222223',
-                    cuit_autorizado_retirar='20111111112',
-                    cuit_productor_contrato=None, 
-                    numero_maquila=9999,
-                    cod_cpe=1234 if '--informar-contingencia' in sys.argv else None,
-                    estado=None,
-                    id_req=int(time.time()),
-                    es_entrega_mostrador='S',
-                )
-            if "--autorizar" in sys.argv:
-                rec["estado"] = 'A'  # 'A': Autorizar, 'D': Denegar
-            rec['receptor'] = dict(
-                    cuit_pais_receptor='50000000016',
-                    cuit_receptor='20111111112', cod_dom_receptor=1,
-                    cuit_despachante=None, codigo_aduana=None, 
-                    denominacion_receptor=None, domicilio_receptor=None)
-            rec['viaje'] = dict(fecha_inicio_viaje='2020-04-01', distancia_km=999, cod_pais_transportista=200, ducto="S")
-            rec['viaje']['vehiculo'] = dict(
-                    dominio_vehiculo='AAA000', dominio_acoplado='ZZZ000', 
-                    cuit_transportista='20333333334', cuit_conductor='20333333334',  
-                    apellido_conductor=None, cedula_conductor=None, denom_transportista=None,
-                    id_impositivo=None, nombre_conductor=None)
-            rec['mercaderias'] = [dict(orden=1, cod_tipo_prod=1, cod_tipo_emb=1, cantidad_emb=1, cod_tipo_unidad=1, cant_unidad=1,
-                                       anio_safra=2019 )]
-            rec['datos_autorizacion'] = None # dict(nro_cpe=None, cod_autorizacion=None, fecha_emision=None, fecha_vencimiento=None)
-            rec['contingencias'] = [dict(tipo=1, observacion="anulacion")]
-            with open(ENTRADA, "w") as archivo:
-                json.dump(rec, archivo, sort_keys=True, indent=4)
+            dic = dict(
+                    tipo_cp=74,  # 74: CPE Automotor, 75: CPE Ferroviaria,  99: Flete Corto.
+                    cuit_solicitante="33568425249",
+                    sucursal=1,
+                    nro_orden=1,
+            )
+            dic["origen"] = [dict(
+                    cod_provincia_operador=12,
+                    cod_localidad_operador=5544,
+                    planta=1,
+                    cod_provincia_productor=12,
+                    cod_localidad_productor=5544,
+            )]
+            dic["retiro_productor"] = [dict(
+                    corresponde_retiro_productor=True,
+                    es_solicitante_campo=False,
+                    certificado_coe=330100025869,
+                    cuit_remitente_comercial_productor=20111111112,
+            )]
+            dic["intervinientes"] = [dict(
+                    cuit_intermediario=20222222223,
+                    cuit_remitente_comercial_venta_primaria=20222222223,
+                    cuit_remitente_comercial_venta_secundaria=20222222223,
+                    cuit_mercado_a_termino=20222222223,
+                    cuit_corredor_venta_primaria=20222222223,
+                    cuit_corredor_venta_secundaria=20222222223,
+                    cuit_representante_entregador=20222222223,
+            )]
+            dic["datos_carga"] = [dict(
+                    cod_grano=23,
+                    cosecha=910,
+                    peso_bruto=1000,
+                    peso_tara=1000,
+            )]
+            dic["destino"] = [dict(
+                    cuit_destino="20111111112",
+                    es_destino_campo=True,
+                    cod_provincia=12,
+                    cod_localidad=3058,
+                    planta=1,
+                    cuit_destinatario="20111111112",
+            )]
+            dic["transporte"] = [dict(
+                    cuit_transportista=20333333334,
+                    dominio="ZZZ000",
+                    fecha_hora_partida="2016-11-17T12:00:39",
+                    km_recorrer=500,
+                    codigo_turno="00",
+            )]
+            escribir_archivo(dic, ENTRADA, True)
 
         if '--cargar' in sys.argv:
-            with open(ENTRADA, "r") as archivo:
-                rec = json.load(archivo)
-            wscpe.CrearCPE(**rec)
-            if 'receptor' in rec:
-                wscpe.AgregarReceptor(**rec['receptor'])
-            if 'viaje' in rec:
-                wscpe.AgregarViaje(**rec['viaje'])
-                if not rec["viaje"].get("ducto"):
-                    wscpe.AgregarVehiculo(**rec['viaje']['vehiculo'])
-            for mercaderia in rec.get('mercaderias', []):
-                wscpe.AgregarMercaderia(**mercaderia)
-            datos_aut = rec.get('datos_autorizacion')
-            if datos_aut:
-                wscpe.AgregarDatosAutorizacion(**datos_aut)
-            for contingencia in rec.get('contingencias', []):
-                wscpe.AgregarContingencias(**contingencia)
+            dic = leer_archivo(ENTRADA)
+            wscpe.CrearCPE(**dic)
+            if dic.get("origen"):
+                wscpe.AgregarOrigenAutomotor(**dic['origen'])
+            if dic.get("retiro_productor"):
+                wscpe.AgregarRetiroProductorAutomotor(**dic['retiro_productor'])
+            if dic.get("intervinientes"):
+                wscpe.AgregarIntervinientesAutomotor(**dic['intervinientes'])
+            if dic.get("datos_carga"):
+                wscpe.AgregarDatosCargaAutomotor(**dic['datos_carga'])
+            if dic.get("destino"):
+                wscpe.AgregarDestinoAutomotor(**dic['destino'])
+            if dic.get("Transporte"):
+                wscpe.AgregarTransporteAutomotor(**dic['Transporte'])
 
-        if '--generar' in sys.argv:
+        if '--autorizar' in sys.argv:
             if '--testing' in sys.argv:
                 wscpe.LoadTestXML("tests/xml/wscpe.xml")  # cargo respuesta
 
-            ok = wscpe.GenerarCPE(id_req=rec['id_req'], archivo="qr.jpg")
+            ok = wscpe.AutorizarCPEAutomotor(archivo="cpe.pdf")
 
         if '--emitir' in sys.argv:
             ok = wscpe.EmitirCPE()
-
-        if '--autorizar' in sys.argv:
-            ok = wscpe.AutorizarCPE()
 
         if '--anular' in sys.argv:
             ok = wscpe.AnularCPE()
@@ -413,8 +489,7 @@ if __name__ == '__main__':
             rec['evento'] = wscpe.Evento
 
         if '--grabar' in sys.argv:
-            with open(SALIDA, "w") as archivo:
-                json.dump(rec, archivo, sort_keys=True, indent=4, default=json_serializer)
+            escribir_archivo(dic, ENTRADA)
 
         # Recuperar parámetros:
 
