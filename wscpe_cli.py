@@ -363,20 +363,20 @@ if __name__ == '__main__':
         if '--consultar' in sys.argv:
             rec = {}
             try:
-                cod_cpe = sys.argv[sys.argv.index("--consultar") + 1]
-                print "Consultando cpe cod_cpe=%s" % (cod_cpe, )
-                ok = wscpe.ConsultarCPE(cod_cpe=cod_cpe)
+                nro_orden = sys.argv[sys.argv.index("--consultar") + 1]
+                sucursal = sys.argv[sys.argv.index("--consultar") + 2]
+                tipo_cpe = sys.argv[sys.argv.index("--consultar") + 3]
             except IndexError, ValueError:
-                pto_emision = raw_input("Punto de emision [1]:") or 1
-                tipo_cbte = raw_input("Tipo de comprobante [995]:") or 995
-                nro_comprobante = raw_input("Nro de comprobante:") or 1
-                ok = wscpe.ConsultarCPE(tipo_comprobante=tipo_cbte,
-                                                 punto_emision=pto_emision,
-                                                 nro_comprobante=nro_comprobante)
+                tipo_cpe = raw_input("Tipo de CPE [74]:") or 74
+                sucursal = raw_input("Sucursal [1]:") or 1
+                nro_orden = raw_input("Nro de orden:") or 1
+            ok = wscpe.ConsultarCPEAutomotor(tipo_cpe=tipo_cpe,
+                                             sucursal=sucursal,
+                                             nro_orden=nro_orden)
             if wscpe.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wscpe.Excepcion
                 if DEBUG: print >> sys.stderr, wscpe.Traceback
-            print "Ultimo Nro de CPE", wscpe.NroCPE
+            print "Nro de CPE", wscpe.NroCPE
             print "Errores:", wscpe.Errores
             if DEBUG:
                 import pprint
