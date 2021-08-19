@@ -344,20 +344,20 @@ if __name__ == '__main__':
 
         if '--ult' in sys.argv:
             try:
-                pto_emision = int(sys.argv[sys.argv.index("--ult") + 1])
+                sucursal = int(sys.argv[sys.argv.index("--ult") + 1])
             except IndexError, ValueError:
-                pto_emision = 1
+                sucursal = 1
             try:
-                tipo_cbte = int(sys.argv[sys.argv.index("--ult") + 1])
+                tipo_cpe = int(sys.argv[sys.argv.index("--ult") + 2])
             except IndexError, ValueError:
-                tipo_comprobante = 995
+                tipo_cpe = 74
             rec = {}
-            print "Consultando ultimo cpe pto_emision=%s tipo_comprobante=%s" % (pto_emision, tipo_comprobante)
-            ok = wscpe.ConsultarUltimoCPEEmitido(tipo_comprobante, pto_emision)
+            print "Consultando ultimo cpe sucursal=%s tipo_cpe=%s" % (sucursal, tipo_cpe)
+            ok = wscpe.ConsultarUltNroOrden(tipo_cpe, sucursal)
             if wscpe.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wscpe.Excepcion
                 if DEBUG: print >> sys.stderr, wscpe.Traceback
-            print "Ultimo Nro de CPE", wscpe.NroCPE
+            print "Ultimo Nro de CPE", wscpe.NroOrden
             print "Errores:", wscpe.Errores
 
         if '--consultar' in sys.argv:
