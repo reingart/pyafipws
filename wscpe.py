@@ -335,7 +335,7 @@ class WSCPE(BaseWS):
         corresponde_retiro_productor=None,
         certificado_coe=None,
         cuit_remitente_comercial_productor=None,
-        **kwargs,
+        **kwargs
     ):
         """Inicializa internamente los datos de retiro de productor para cpe ferroviario."""
         self.cpe_ferroviaria.update({"correspondeRetiroProductor": corresponde_retiro_productor})
@@ -359,7 +359,7 @@ class WSCPE(BaseWS):
         cuit_corredor_venta_primaria,
         cuit_corredor_venta_secundaria,
         cuit_representante_entregador,
-        **kwargs,
+        **kwargs
     ):
         """Inicializa internamente los datos de intervinientes para cpe ferroviario."""
         intervinientes = {
@@ -395,7 +395,7 @@ class WSCPE(BaseWS):
         cod_localidad,
         planta,
         cuit_destinatario,
-        **kwargs,
+        **kwargs
     ):
         """Inicializa internamente los datos de destino para cpe ferroviario."""
         destino = {
@@ -423,7 +423,7 @@ class WSCPE(BaseWS):
         mercaderia_fumigada,
         codigo,
         descripcion=None,
-        **kwargs,
+        **kwargs
     ):
         """Inicializa internamente los datos de transporte para cpe ferroviario."""
         transporte = {
