@@ -261,7 +261,7 @@ class WSCPE(BaseWS):
         "AppServerStatus",
         "DbServerStatus",
         "AuthServerStatus",
-        "CodCPE",
+        "NroCTG",
         "NroOrden",
         "FechaInicioEstado",
         "FechaEmision",
@@ -293,7 +293,7 @@ class WSCPE(BaseWS):
 
     def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.CodCPE = self.NroOrden = None
+        self.NroCTG = self.NroOrden = None
         self.FechaInicioEstado = self.FechaVencimiento = self.FechaEmision = None
         self.Estado = self.Resultado = self.PDF = None
         self.Errores = []
@@ -492,19 +492,21 @@ class WSCPE(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarOrigen(
         self,
-        cod_provincia=None,
+        cod_provincia_operador=None,
         cod_localidad_operador=None,
         planta=None,
+        cod_provincia_productor=None,
         cod_localidad_productor=None,
-        **kwargs,
+        **kwargs
     ):
         """Inicializa internamente los datos de origen para cpe automotor."""
         operador = {
-            "codProvincia": cod_provincia,
+            "codProvincia": cod_provincia_operador,
             "codLocalidad": cod_localidad_operador,
             "planta": planta,
         }
         productor = {
+            "codProvincia": cod_provincia_productor,
             "codLocalidad": cod_localidad_productor,
         }
         origen = {"operador": operador, "productor": productor}
@@ -518,7 +520,7 @@ class WSCPE(BaseWS):
         es_solicitante_campo=None,
         certificado_coe=None,
         cuit_remitente_comercial_productor=None,
-        **kwargs,
+        **kwargs
     ):
         """Inicializa internamente los datos de retiro de productor para cpe automotor."""
         retiro_productor = {
@@ -540,7 +542,8 @@ class WSCPE(BaseWS):
         cuit_corredor_venta_primaria=None,
         cuit_corredor_venta_secundaria=None,
         cuit_representante_entregador=None,
-        **kwargs,
+        cuit_representante_recibidor=None,
+        **kwargs
     ):
         """Inicializa internamente los datos de los intervinientes para cpe automotor."""
         intervinientes = {
@@ -551,6 +554,7 @@ class WSCPE(BaseWS):
             "cuitCorredorVentaPrimaria": cuit_corredor_venta_primaria,
             "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
             "cuitRepresentanteEntregador": cuit_representante_entregador,
+            "cuitRepresentanteRecibidor": cuit_representante_recibidor,
         }
         self.cpe["intervinientes"] = intervinientes
         return True
@@ -580,7 +584,7 @@ class WSCPE(BaseWS):
         cod_localidad=None,
         planta=None,
         cuit_destinatario=None,
-        **kwargs,
+        **kwargs
     ):
         """Inicializa internamente los datos de destino para cpe automotor."""
         destino = {
@@ -606,7 +610,12 @@ class WSCPE(BaseWS):
         fecha_hora_partida=None,
         km_recorrer=None,
         codigo_turno=None,
-        **kwargs,
+        cuit_chofer=None,
+        tarifa=None,
+        cuit_pagador_flete=None,
+        cuit_intermediario_flete=None,
+        mercaderia_fumigada=None,
+        **kwargs
     ):
         """Inicializa internamente los datos de transporte para cpe automotor."""
         transp = {
@@ -615,6 +624,11 @@ class WSCPE(BaseWS):
             "fechaHoraPartida": fecha_hora_partida,
             "kmRecorrer": km_recorrer,
             "codigoTurno": codigo_turno,
+            "cuitChofer": cuit_chofer,
+            "tarifa": tarifa,
+            "cuitPagadorFlete": cuit_pagador_flete,
+            "cuitIntermediarioFlete": cuit_intermediario_flete,
+            "mercaderiaFumigada": mercaderia_fumigada,
         }
         transporte = {}
         for campo, dato in transp.items():
@@ -654,7 +668,7 @@ class WSCPE(BaseWS):
     def AnalizarCPE(self, ret, archivo="cpe.pdf"):
         "Extrae los resultados de autorización de una carta porte automotor."
         cab = ret["cabecera"]
-        self.NroCPE = cab["nroCPE"]
+        self.NroCTG = cab["nroCTG"]
         self.FechaEmision = cab["fechaEmision"]
         self.Estado = cab["estado"]
         self.FechaInicioEstado = cab["fechaInicioEstado"]
@@ -1179,8 +1193,8 @@ if __name__ == "__main__":
             km_recorrer=500,
         )
         ok = wscpe.AutorizarCPEAutomotor()
-        if wscpe.CodCPE:
-            print("Numero de cpe:", wscpe.NroCPE)
+        if wscpe.NroCTG:
+            print("Numero de cpe:", wscpe.NroCTG)
             print("Fecha de emision:", wscpe.FechaEmision)
             print("Estado:", wscpe.Estado, "detalle:", ESTADO_CPE[wscpe.Estado])
             print("Fecha de inicio de estado:", wscpe.FechaInicioEstado)
