@@ -66,12 +66,128 @@ from pyafipws import utils
 
 # importo funciones compartidas:
 from pyafipws.utils import (
+    leer,
+    escribir,
+    leer_dbf,
+    guardar_dbf,
+    N,
+    A,
+    I,
     json,
     BaseWS,
     inicializar_y_capturar_excepciones,
     get_install_dir,
     json_serializer,
 )
+
+
+# definición del formato del archivo de intercambio:
+ENCABEZADO = [
+    ("tipo_reg", 1, A),
+    ("tipo_cpe", 2, N),
+    ("sucursal", 5, N),
+    ("nro_orden", 18, N),
+    ("planta", 5, N),
+    ("planta", 5, N),  # ?
+    ("cuit_solicitante", 11, N),
+    ("razon_social_titular_planta", 11, A),
+    ("peso_bruto_descarga", 10, I),
+    ("peso_tara_descarga", 10, I),
+    ("nro_cpe", 12, N),
+    ("fecha_emision", 19, A),
+    ("fecha_inicio_estado", 19, A),
+    ("estado", 15, A),
+    ("fecha_vencimiento", 19, A),
+]
+
+# CARTA_PORTE = [
+# ("tipo_reg", 1, A),
+# ]
+
+ORIGEN = [
+    ("tipo_reg", 1, A),
+    ("cod_provincia_operador", 2, N),
+    ("cod_localidad_operador", 6, N),
+    ("planta", 5, N),
+    ("cod_provincia_productor", 2, N),
+    ("cod_localidad_productor", 6, N),
+]
+INTERVINIENTES = [
+    ("tipo_reg", 1, A),
+    ("cuit_intermediario", 11, N),
+    ("cuit_remitente_comercial_venta_primaria", 11, N),
+    ("cuit_remitente_comercial_venta_secundaria", 11, N),
+    ("cuit_mercado_a_termino", 11, N),
+    ("cuit_corredor_venta_primaria", 11, N),
+    ("cuit_corredor_venta_secundaria", 11, N),
+    ("cuit_representante_entregador", 11, N),
+]
+
+RETIRO_PRODUCTOR = [
+    ("tipo_reg", 1, A),
+    ("corresponde_retiro_productor", 1, I),  # boolean
+    ("es_solicitante_campo", 1, A),  # "S" or "N"
+    ("certificado_coe", 12, N),
+    ("cuit_remitente_comercial_productor", 11, N),
+]
+
+DATOS_CARGA = [
+    ("tipo_reg", 1, A),
+    ("cod_grano", 2, N),
+    ("cosecha", 4, N),
+    ("peso_bruto", 10, I),
+    ("peso_tara", 10, I),
+]
+
+DESTINO = [
+    ("tipo_reg", 1, A),
+    ("cuit_destino", 11, N),
+    ("es_destino_campo", 4, N),
+    ("cod_provincia", 2, N),  # Numeric
+    ("cod_localidad", 6, N),  # Numeric
+    ("planta", 5, N),
+    ("cuit_destinatario", 11, N),
+]
+
+TRANSPORTE = [
+    ("tipo_reg", 1, A),
+    ("cuit_transportista", 11, N),
+    ("dominio", 10, A),
+    ("fecha_hora_partida", 20, A),
+    ("km_recorrer", 5, I),
+    ("codigo_turno", 30, N),
+]
+
+# CONTINGENCIA = [
+# ("tipo_reg", 1, A),
+# ]
+
+ERROR = [
+    ("tipo_reg", 1, A),
+    ("codigo", 4, A),
+    ("descripcion", 250, A),
+]
+
+EVENTOS = [
+    ("tipo_reg", 1, A),
+    ("codigo", 4, A),
+    ("descripcion", 250, A),
+]
+
+# constantes de estado cpe.
+ESTADO_CPE = {
+    "AC": "Activa",
+    "AN": "Anulada",
+    "BR": "Borrador",
+    "CF": "Activa con confirmacion de arribo",
+    "CN": "confirmada",
+    "CO": "Activa con contingencia",
+    "DE": "Desactivada",
+    "RE": "Rechazada",
+    "PA": "Pendiente de Aceptacion por el Productor",
+    "AP": "Anulacion por el Productor",
+    "DD": "Descargado en destino",
+}
 
 # constantes de configuración (producción/homologación):
 WSDL = [
@@ -84,7 +200,6 @@ DEBUG = True
 XML = False
 CONFIG_FILE = "wscpe.ini"
 HOMO = True
-ENCABEZADO = []
 
 
 class WSCPE(BaseWS):
@@ -1065,12 +1180,11 @@ if __name__ == "__main__":
         )
         ok = wscpe.AutorizarCPEAutomotor()
         if wscpe.CodCPE:
-            print(wscpe.Planta)
-            print(wscpe.NroCPE)
-            print(wscpe.FechaEmision)
-            print(wscpe.Estado)
-            print(wscpe.FechaInicioEstado)
-            print(wscpe.FechaVencimiento)
+            print("Numero de cpe:", wscpe.NroCPE)
+            print("Fecha de emision:", wscpe.FechaEmision)
+            print("Estado:", wscpe.Estado, "detalle:", ESTADO_CPE[wscpe.Estado])
+            print("Fecha de inicio de estado:", wscpe.FechaInicioEstado)
+            print("Fecha de vencimiento:", wscpe.FechaVencimiento)
 
     if "--autorizar_cpe_ferroviaria" in sys.argv:
         wscpe.AutorizarCPEFerroviaria()
