@@ -70,7 +70,7 @@ import utils
 
 # importo funciones compartidas:
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
-from utils import leer_txt, grabar_txt, leer_dbf, guardar_dbf, N, A, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from utils import leer_txt, grabar_txt, leer_dbf, guardar_dbf, N, A, B, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
 from wscpe import WSCPE
 
@@ -84,8 +84,6 @@ XML = False
 CONFIG_FILE = "wscpe.ini"
 HOMO = True
 
-B = I
-
 ENCABEZADO = [
     ('tipo_reg', 1, A), # 0: encabezado carta de porte
 
@@ -95,18 +93,16 @@ ENCABEZADO = [
     ('nro_orden', 18, N),
     ('planta', 5, N),
 
-    ('planta', 5, N),
-
     # desvio cpe automotor
     ('cuit_solicitante', 11, N),
     ('razon_social_titular_planta', 11, A),
 
     # confirmación definitiva
-    ('peso_bruto_descarga', 10, I , 2),
-    ('peso_tara_descarga', 10, I , 2),
+    ('peso_bruto_descarga', 10, N),
+    ('peso_tara_descarga', 10, N),
 
     # resultado:
-    ('nro_cpe', 12, N),
+    ('nro_ctg', 12, N),
     ('fecha_emision', 10, A), # 26/02/2013
     ('fecha_inicio_estado', 10, N),
     ('estado', 15, N),
@@ -131,12 +127,13 @@ INTERVINIENTES = [
     ('cuit_corredor_venta_primaria', 11, N),
     ('cuit_corredor_venta_secundaria', 11, N),
     ('cuit_representante_entregador', 11, N),
+    ('cuit_representante_recibidor', 11, N),
     ]
 
 RETIRO_PRODUCTOR = [
     ('tipo_reg', 1, A), # R: Retiro Productor
-    ('corresponde_retiro_productor', 1, B),
-    ('es_solicitante_campo', 1, B),
+    ('corresponde_retiro_productor', 5, B),
+    ('es_solicitante_campo', 5, B),
     ('certificado_coe', 12, N),
     ('cuit_remitente_comercial_productor', 11, N),
     ]
@@ -145,16 +142,16 @@ DATOS_CARGA = [
     ('tipo_reg', 1, A), # C
     ('cod_grano', 2, N),
     ('cosecha', 4, N),
-    ('peso_bruto', 10, I , 2),
-    ('peso_tara', 10, I , 2),
+    ('peso_bruto', 10, N),
+    ('peso_tara', 10, N),
     ]
 
 DESTINO = [
     ('tipo_reg', 1, A), # D
     ('cuit_destino', 11, N),
-    ('es_destino_campo', 4, N),
-    ('cod_provincia', 2, I , 2),
-    ('cod_localidad', 6, I , 2),
+    ('es_destino_campo', 5, B),
+    ('cod_provincia', 2, N),
+    ('cod_localidad', 6, N),
     ('planta', 5, N),
     ('cuit_destinatario', 11, N),
     ]
@@ -164,8 +161,13 @@ TRANSPORTE = [
     ('cuit_transportista', 11, N),
     ('dominio', 10, A),
     ('fecha_hora_partida', 20, A),  # 2016-11-17T12:00:39
-    ('km_recorrer', 5, I),
+    ('km_recorrer', 5, N),
     ('codigo_turno', 30, N),
+    ('cuit_chofer', 11, N),
+    ('tarifa', 10, I, 2),  # 99999.99
+    ('cuit_intermediario_flete', 11, N),
+    ('cuitPagadorFlete', 11, N),
+    ('mercaderia_fumigada', 5, B),
     ]
 
 EVENTO = [
@@ -370,13 +372,12 @@ if __name__ == '__main__':
                 tipo_cpe = raw_input("Tipo de CPE [74]:") or 74
                 sucursal = raw_input("Sucursal [1]:") or 1
                 nro_orden = raw_input("Nro de orden:") or 1
-            ok = wscpe.ConsultarCPEAutomotor(tipo_cpe=tipo_cpe,
-                                             sucursal=sucursal,
-                                             nro_orden=nro_orden)
+            wscpe.AgregarCabecera(actualizar=True, tipo_cpe=tipo_cpe, sucursal=sucursal, nro_orden=nro_orden, cuit_solicitante=wscpe.Cuit)
+            ok = wscpe.ConsultarCPEAutomotor()
             if wscpe.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wscpe.Excepcion
                 if DEBUG: print >> sys.stderr, wscpe.Traceback
-            print "Nro de CPE", wscpe.NroCPE
+            print "Nro de CTG", wscpe.NroCTG
             print "Errores:", wscpe.Errores
             if DEBUG:
                 import pprint
@@ -385,71 +386,74 @@ if __name__ == '__main__':
         ##wscpe.client.help("generarCPE")
         if '--prueba' in sys.argv:
             dic = dict(
-                    tipo_cp=74,  # 74: CPE Automotor, 75: CPE Ferroviaria,  99: Flete Corto.
-                    cuit_solicitante="33568425249",
+                    tipo_cpe=74,  # 74: CPE Automotor, 75: CPE Ferroviaria,  99: Flete Corto.
+                    cuit_solicitante=wscpe.Cuit,
                     sucursal=1,
                     nro_orden=1,
             )
             dic["origen"] = [dict(
                     cod_provincia_operador=12,
-                    cod_localidad_operador=5544,
+                    cod_localidad_operador=6904,
                     planta=1,
                     cod_provincia_productor=12,
-                    cod_localidad_productor=5544,
+                    cod_localidad_productor=6904,
             )]
             dic["retiro_productor"] = [dict(
-                    corresponde_retiro_productor=True,
-                    es_solicitante_campo=False,
+                    corresponde_retiro_productor="false",
+                    es_solicitante_campo="true",
                     certificado_coe=330100025869,
                     cuit_remitente_comercial_productor=20111111112,
             )]
             dic["intervinientes"] = [dict(
-                    cuit_intermediario=20222222223,
+                    cuit_intermediario=20400000000,
                     cuit_remitente_comercial_venta_primaria=20222222223,
                     cuit_remitente_comercial_venta_secundaria=20222222223,
                     cuit_mercado_a_termino=20222222223,
                     cuit_corredor_venta_primaria=20222222223,
                     cuit_corredor_venta_secundaria=20222222223,
-                    cuit_representante_entregador=20222222223,
+                    cuit_representante_entregador=27000000014,
             )]
             dic["datos_carga"] = [dict(
                     cod_grano=23,
-                    cosecha=910,
-                    peso_bruto=1000,
-                    peso_tara=1000,
+                    cosecha=2021,
+                    peso_bruto=110,
+                    peso_tara=10,
             )]
             dic["destino"] = [dict(
-                    cuit_destino="20111111112",
-                    es_destino_campo=True,
+                    cuit_destino=wscpe.Cuit,
+                    es_destino_campo="true",
                     cod_provincia=12,
-                    cod_localidad=3058,
+                    cod_localidad=7717,
                     planta=1,
-                    cuit_destinatario="20111111112",
+                    cuit_destinatario=wscpe.Cuit,
             )]
             dic["transporte"] = [dict(
-                    cuit_transportista=20333333334,
-                    dominio="ZZZ000",
-                    fecha_hora_partida="2016-11-17T12:00:39",
+                    cuit_transportista=20120372913,
+                    dominio="AA001ST",
+                    fecha_hora_partida="2021-08-21T12:00:39",
                     km_recorrer=500,
+                    cuit_chofer='20267565393',
                     codigo_turno="00",
+                    mercaderia_fumigada="true",
             )]
             escribir_archivo(dic, ENTRADA, True)
 
         if '--cargar' in sys.argv:
             dic = leer_archivo(ENTRADA)
-            wscpe.CrearCPE(**dic)
+            import pdb; pdb.set_trace()
+            wscpe.AgregarCabecera(**dic)
             if dic.get("origen"):
-                wscpe.AgregarOrigenAutomotor(**dic['origen'])
+                wscpe.AgregarOrigen(**dic['origen'][0])
             if dic.get("retiro_productor"):
-                wscpe.AgregarRetiroProductorAutomotor(**dic['retiro_productor'])
+                wscpe.AgregarRetiroProductor(**dic['retiro_productor'][0])
             if dic.get("intervinientes"):
-                wscpe.AgregarIntervinientesAutomotor(**dic['intervinientes'])
+                wscpe.AgregarIntervinientes(**dic['intervinientes'][0])
             if dic.get("datos_carga"):
-                wscpe.AgregarDatosCargaAutomotor(**dic['datos_carga'])
+                wscpe.AgregarDatosCarga(**dic['datos_carga'][0])
             if dic.get("destino"):
-                wscpe.AgregarDestinoAutomotor(**dic['destino'])
-            if dic.get("Transporte"):
-                wscpe.AgregarTransporteAutomotor(**dic['Transporte'])
+                wscpe.AgregarDestino(**dic['destino'][0])
+            if dic.get("transporte"):
+                wscpe.AgregarTransporte(**dic['transporte'][0])
 
         if '--autorizar' in sys.argv:
             if '--testing' in sys.argv:
@@ -468,24 +472,19 @@ if __name__ == '__main__':
 
         if ok is not None:
             print "Resultado: ", wscpe.Resultado
-            print "Cod CPE: ", wscpe.CodCPE
-            if wscpe.CodAutorizacion:
-                print "Numero CPE: ", wscpe.NroCPE
-                print "Cod Autorizacion: ", wscpe.CodAutorizacion
-                print "Fecha Emision", wscpe.FechaEmision
-                print "Fecha Vencimiento", wscpe.FechaVencimiento
+            print "Numero CTG: ", wscpe.NroCTG
+            print "Fecha Emision", wscpe.FechaEmision
+            print "Fecha Vencimiento", wscpe.FechaVencimiento
             print "Estado: ", wscpe.Estado
             print "Observaciones: ", wscpe.Observaciones
             print "Errores:", wscpe.Errores
-            print "Errores Formato:", wscpe.ErroresFormato
             print "Evento:", wscpe.Evento
-            rec['cod_cpe'] = wscpe.CodCPE
+            rec['nro_ctg'] = wscpe.NroCTG
             rec['resultado'] = wscpe.Resultado
             rec['observaciones'] = wscpe.Observaciones
             rec['fecha_emision'] = wscpe.FechaEmision
             rec['fecha_vencimiento'] = wscpe.FechaVencimiento
             rec['errores'] = wscpe.Errores
-            rec['errores_formato'] = wscpe.ErroresFormato
             rec['evento'] = wscpe.Evento
 
         if '--grabar' in sys.argv:
@@ -543,8 +542,8 @@ if __name__ == '__main__':
             ret = wscpe.ConsultarCodigosDomicilio(cuit)
             print "\n".join(utils.norm(ret))
 
-        if wscpe.Errores or wscpe.ErroresFormato:
-            print "Errores:", wscpe.Errores, wscpe.ErroresFormato
+        if wscpe.Errores:
+            print "Errores:", wscpe.Errores
 
         print "hecho."
         
