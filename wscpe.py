@@ -544,11 +544,11 @@ class WSCPE(BaseWS):
         self.Estado = cab["estado"]
         self.FechaInicioEstado = cab["fechaInicioEstado"]
         self.FechaVencimiento = cab["fechaVencimiento"]
-        # self.PDF = cab["pdf"]  # base64
-        # cpe_bytes = self.PDF.encode('utf-8')  # si vienen bytes, no hace falta
-        # cpe_pdf = base64.b64decode(cpe_automotor_bytes)
-        # with open(archivo, "wb") as fh:
-        #     fh.write(cpe_pdf)
+        self.PDF = ret["pdf"]  # base64
+        cpe_bytes = self.PDF.encode("utf-8")
+        cpe_pdf = base64.b64decode(cpe_bytes)
+        with open(archivo, "wb") as fh:
+            fh.write(cpe_pdf)
 
     @inicializar_y_capturar_excepciones
     def AnularCPE(self, archivo="cpe.pdf"):
