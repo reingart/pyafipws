@@ -298,6 +298,8 @@ class WSCPE(BaseWS):
         self.Estado = self.Resultado = self.PDF = None
         self.Errores = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
+        if not hasattr(self, "cpe"):
+            self.cpe = {}
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -462,7 +464,7 @@ class WSCPE(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarCabecera(
-        self, actualizar=False, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, nro_ctg=None, **kwargs
+        self, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, nro_ctg=None, actualizar=False, **kwargs
     ):
         """Inicializa internamente los datos de cabecera para cpe automotor."""
         # cabecera para modificaciones, rechazos o anulaciones.
@@ -675,10 +677,11 @@ class WSCPE(BaseWS):
         self.FechaInicioEstado = cab["fechaInicioEstado"]
         self.FechaVencimiento = cab["fechaVencimiento"]
         self.PDF = ret["pdf"]  # base64
-        cpe_bytes = self.PDF.encode("utf-8")
-        cpe_pdf = base64.b64decode(cpe_bytes)
+        cpe_bytes = self.PDF
+        if isinstance(cpe_bytes, unicode):
+            cpe_bytes = cpe_bytes.encode("utf-8")
         with open(archivo, "wb") as fh:
-            fh.write(cpe_pdf)
+            fh.write(cpe_bytes)
 
     @inicializar_y_capturar_excepciones
     def AnularCPE(self, archivo="cpe.pdf"):
@@ -771,23 +774,35 @@ class WSCPE(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones  # green
-    def ConsultarCPEFerroviaria(self):
+    def ConsultarCPEFerroviaria(self,  tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, nro_ctg=None, archivo="cpe.pdf"):
         "Busca una CPE existente según parámetros de búsqueda y retorna información de la misma."
+        if not nro_ctg:
+            solicitud = {
+                "cartaPorte": {
+                    "tipoCPE": tipo_cpe,
+                    "sucursal": sucursal,
+                    "nroOrden": nro_orden,
+                },
+            }
+        else:
+            solicitud = {
+                "nroCTG": nro_ctg,
+            }
+        solicitud["cuitSolicitante"] = cuit_solicitante
         response = self.client.consultarCPEFerroviaria(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 75, "sucursal": 1, "nroOrden": 1},
-            },
+            solicitud=solicitud,
         )
         ret = response.get("respuesta")
-        print(ret)
         if ret:
             self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
     @inicializar_y_capturar_excepciones
     def ConsultaCPEFerroviariaPorNroOperativo(self):  # green
@@ -948,15 +963,28 @@ class WSCPE(BaseWS):
             self.__analizar_errores(ret)
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCPEAutomotor(self, archivo="cpe.pdf"):
+    def ConsultarCPEAutomotor(self, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, nro_ctg=None, archivo="cpe.pdf"):
         "Busca una CPE existente según parámetros de búsqueda y retorna información de la misma."
+        if not nro_ctg:
+            solicitud = {
+                "cartaPorte": {
+                    "tipoCPE": tipo_cpe,
+                    "sucursal": sucursal,
+                    "nroOrden": nro_orden,
+                },
+            }
+        else:
+            solicitud = {
+                "nroCTG": nro_ctg,
+            }
+        solicitud["cuitSolicitante"] = cuit_solicitante
         response = self.client.consultarCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud=self.cpe,
+            solicitud=solicitud,
         )
         ret = response.get("respuesta")
         if ret:
@@ -1253,8 +1281,7 @@ if __name__ == "__main__":
         wscpe.DesvioCPEFerroviaria()
 
     if "--consultar_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20111111112, nro_ctg=10100000542, tipo_cpe=74, sucursal=1, nro_orden=1)
-        wscpe.ConsultarCPEAutomotor()
+        wscpe.ConsultarCPEAutomotor(tipo_cpe=74, sucursal=1, nro_orden=1, cuit_solicitante=CUIT)
 
     if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
         wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
