@@ -26,7 +26,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.00a"
+__version__ = "1.01b"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -60,12 +60,11 @@ import sys
 import time
 import traceback
 
-from pyafipws.utils import date
 from pysimplesoap.client import SoapFault
-from pyafipws import utils
 
 # importo funciones compartidas:
 from pyafipws.utils import (
+    date,
     leer,
     escribir,
     leer_dbf,
@@ -80,99 +79,6 @@ from pyafipws.utils import (
     json_serializer,
 )
 
-
-# definición del formato del archivo de intercambio:
-ENCABEZADO = [
-    ("tipo_reg", 1, A),
-    ("tipo_cpe", 2, N),
-    ("sucursal", 5, N),
-    ("nro_orden", 18, N),
-    ("planta", 5, N),
-    ("planta", 5, N),  # ?
-    ("cuit_solicitante", 11, N),
-    ("razon_social_titular_planta", 11, A),
-    ("peso_bruto_descarga", 10, I),
-    ("peso_tara_descarga", 10, I),
-    ("nro_cpe", 12, N),
-    ("fecha_emision", 19, A),
-    ("fecha_inicio_estado", 19, A),
-    ("estado", 15, A),
-    ("fecha_vencimiento", 19, A),
-]
-
-# CARTA_PORTE = [
-# ("tipo_reg", 1, A),
-# ]
-
-ORIGEN = [
-    ("tipo_reg", 1, A),
-    ("cod_provincia_operador", 2, N),
-    ("cod_localidad_operador", 6, N),
-    ("planta", 5, N),
-    ("cod_provincia_productor", 2, N),
-    ("cod_localidad_productor", 6, N),
-]
-INTERVINIENTES = [
-    ("tipo_reg", 1, A),
-    ("cuit_intermediario", 11, N),
-    ("cuit_remitente_comercial_venta_primaria", 11, N),
-    ("cuit_remitente_comercial_venta_secundaria", 11, N),
-    ("cuit_mercado_a_termino", 11, N),
-    ("cuit_corredor_venta_primaria", 11, N),
-    ("cuit_corredor_venta_secundaria", 11, N),
-    ("cuit_representante_entregador", 11, N),
-]
-
-RETIRO_PRODUCTOR = [
-    ("tipo_reg", 1, A),
-    ("corresponde_retiro_productor", 1, I),  # boolean
-    ("es_solicitante_campo", 1, A),  # "S" or "N"
-    ("certificado_coe", 12, N),
-    ("cuit_remitente_comercial_productor", 11, N),
-]
-
-DATOS_CARGA = [
-    ("tipo_reg", 1, A),
-    ("cod_grano", 2, N),
-    ("cosecha", 4, N),
-    ("peso_bruto", 10, I),
-    ("peso_tara", 10, I),
-]
-
-DESTINO = [
-    ("tipo_reg", 1, A),
-    ("cuit_destino", 11, N),
-    ("es_destino_campo", 4, N),
-    ("cod_provincia", 2, N),  # Numeric
-    ("cod_localidad", 6, N),  # Numeric
-    ("planta", 5, N),
-    ("cuit_destinatario", 11, N),
-]
-
-TRANSPORTE = [
-    ("tipo_reg", 1, A),
-    ("cuit_transportista", 11, N),
-    ("dominio", 10, A),
-    ("fecha_hora_partida", 20, A),
-    ("km_recorrer", 5, I),
-    ("codigo_turno", 30, N),
-]
-
-# CONTINGENCIA = [
-# ("tipo_reg", 1, A),
-# ]
-
-ERROR = [
-    ("tipo_reg", 1, A),
-    ("codigo", 4, A),
-    ("descripcion", 250, A),
-]
-
-EVENTOS = [
-    ("tipo_reg", 1, A),
-    ("codigo", 4, A),
-    ("descripcion", 250, A),
-]
 
 # constantes de estado cpe.
 ESTADO_CPE = {
@@ -512,7 +418,11 @@ class WSCPE(BaseWS):
             "codProvincia": cod_provincia_productor,
             "codLocalidad": cod_localidad_productor,
         }
-        origen = {"operador": operador, "productor": productor}
+        origen = {}
+        if planta:
+            origen["operador"] = operador
+        if cod_localidad_productor:
+            origen["productor"] = productor
         self.cpe["origen"] = origen
         return True
 
@@ -532,7 +442,8 @@ class WSCPE(BaseWS):
         }
         self.cpe["correspondeRetiroProductor"] = corresponde_retiro_productor
         self.cpe["esSolicitanteCampo"] = es_solicitante_campo
-        self.cpe["retiroProductor"] = retiro_productor
+        if certificado_coe:
+            self.cpe["retiroProductor"] = retiro_productor
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1159,9 +1070,9 @@ if __name__ == "__main__":
     wsaa_url = ""
     wscpe_url = WSDL[HOMO]
 
-    CERT = "reingart.crt"
-    PRIVATEKEY = "reingart.key"
-    CUIT = os.environ["CUIT"]
+    CERT = os.getenv("CERT", "reingart.crt")
+    PRIVATEKEY = os.getenv("PKEY", "reingart.key")
+    CUIT = os.getenv("CUIT", "20267565393")
 
     wsaa = WSAA()
     ta = wsaa.Autenticar("wscpe", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
@@ -1183,50 +1094,57 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
-        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=20111111112, sucursal=1, nro_orden=1)
-        ok = wscpe.AgregarOrigen(planta=1, cod_provincia_operador=12, cod_localidad_operador=5544, cod_provincia_productor=12, cod_localidad_productor=5544)
-        ok = wscpe.AgregarDestino(
+        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=3)
+        ok = wscpe.AgregarOrigen(
             planta=1,
+            cod_provincia_operador=12,
+            cod_localidad_operador=7717,
+            #cod_provincia_productor=12,
+            #cod_localidad_productor=7717
+        )
+        ok = wscpe.AgregarDestino(
+            planta=1938,
             cod_provincia=12,
             es_destino_campo=True,
-            cod_localidad=3058,
-            cuit_destino=20111111112,
-            cuit_destinatario=30000000006,
+            cod_localidad=7717,
+            cuit_destino=CUIT,
+            cuit_destinatario=CUIT,
         )
         ok = wscpe.AgregarRetiroProductor(
-            certificado_coe=330100025869,
-            cuit_remitente_comercial_productor=20111111112,
-            corresponde_retiro_productor=True,  # chequear dice booleano
+            #certificado_coe=330100025869,
+            #cuit_remitente_comercial_productor=20111111112,
+            corresponde_retiro_productor=False,  # chequear dice booleano
             es_solicitante_campo=True,  # chequear dice booleano
         )
         ok = wscpe.AgregarIntervinientes(
-            cuit_mercado_a_termino=20222222223,
-            cuit_corredor_venta_primaria=20222222223,
-            cuit_corredor_venta_secundaria=20222222223,
-            cuit_remitente_comercial_venta_secundaria=20222222223,
-            cuit_intermediario=20222222223,
-            cuit_remitente_comercial_venta_primaria=20222222223,
-            cuit_representante_entregador=20222222223,
-            cuit_representante_recibidor=20222222223
+            #cuit_mercado_a_termino=20222222223,
+            #cuit_corredor_venta_primaria=20200000006,
+            #cuit_corredor_venta_secundaria=20222222223,
+            #cuit_remitente_comercial_venta_secundaria=20222222223,
+            cuit_intermediario=20400000000,
+            cuit_remitente_comercial_venta_primaria=27000000014,
+            #cuit_representante_entregador=20222222223,
+            #cuit_representante_recibidor=20222222223
         )
         ok = wscpe.AgregarDatosCarga(
-            peso_tara=1000,
-            cod_grano=31,
-            peso_bruto=1000,
-            cosecha=910,
+            peso_tara=10,
+            cod_grano=23,
+            peso_bruto=110,
+            cosecha=2021,
         )
         ok = wscpe.AgregarTransporte(
-            cuit_transportista=20333333334,
-            fecha_hora_partida=datetime.datetime.now(),
-            codigo_turno="00",
-            dominio=["ZZZ000", "ZZZ999"],  # 1 or more repetitions
+            cuit_transportista=20120372913,
+            fecha_hora_partida=datetime.datetime.now() + datetime.timedelta(days=1),
+            #codigo_turno="00",
+            dominio=["AA001ST"],  # 1 or more repetitions
             km_recorrer=500,
             cuit_chofer=20333333334,
-            tarifa=100.10,
-            cuit_pagador_flete=20333333334,
-            cuit_intermediario_flete=20333333334,
+            #tarifa=100.10,
+            #cuit_pagador_flete=20333333334,
+            #cuit_intermediario_flete=20333333334,
             mercaderia_fumigada=True,
         )
+        wscpe.LanzarExcepciones = False
         ok = wscpe.AutorizarCPEAutomotor()
         if wscpe.NroCTG:
             print("Numero de cpe:", wscpe.NroCTG)
@@ -1234,6 +1152,11 @@ if __name__ == "__main__":
             print("Estado:", wscpe.Estado, "detalle:", ESTADO_CPE[wscpe.Estado])
             print("Fecha de inicio de estado:", wscpe.FechaInicioEstado)
             print("Fecha de vencimiento:", wscpe.FechaVencimiento)
+
+        with open("wscpe.xml", "w") as x:
+            import xml.dom.minidom
+            dom =  xml.dom.minidom.parseString(wscpe.XmlRequest)
+            x.write(dom.toprettyxml())
 
     if "--autorizar_cpe_ferroviaria" in sys.argv:
         wscpe.AutorizarCPEFerroviaria()
