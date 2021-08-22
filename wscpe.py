@@ -1166,19 +1166,19 @@ if __name__ == "__main__":
         print("Nro Orden: ", wscpe.NroOrden)
 
     if "--anular_cpe" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AnularCPE()
 
     if "--rechazo_cpe" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.RechazoCPE()
 
     if "--confirmar_arribo_cpe" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.ConfirmarArriboCPE()
 
     if "--informar_contingencia" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarContingencia(concepto="F", descripcion="XXXXX")
         wscpe.InformarContingencia()
 
@@ -1207,13 +1207,13 @@ if __name__ == "__main__":
         wscpe.ConsultarCPEAutomotor(tipo_cpe=74, sucursal=1, nro_orden=1, cuit_solicitante=CUIT)
 
     if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarIntervinientes(cuit_representante_recibidor=20222222223)
         wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
         wscpe.ConfirmacionDefinitivaCPEAutomotor()
 
     if "--nuevo_destino_destinatario_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarDestino(
             cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True
         )
@@ -1222,7 +1222,7 @@ if __name__ == "__main__":
         wscpe.NuevoDestinoDestinatarioCPEAutomotor()
 
     if "--regreso_origen_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarDestino(
             cuit_destinatario=30000000006,
         )
@@ -1231,7 +1231,7 @@ if __name__ == "__main__":
         wscpe.RegresoOrigenCPEAutomotor()
 
     if "--desvio_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(actualizarcuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarDestino(
             cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True  # newton
         )
