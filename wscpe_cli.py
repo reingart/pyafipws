@@ -398,7 +398,7 @@ if __name__ == '__main__':
             dic["origen"] = [dict(
                     cod_provincia_operador=12,
                     cod_localidad_operador=6904,
-                    planta=1,
+                    planta=1938,
                     cod_provincia_productor=12,
                     cod_localidad_productor=6904,
             )]
@@ -416,6 +416,7 @@ if __name__ == '__main__':
                     cuit_corredor_venta_primaria=20222222223,
                     cuit_corredor_venta_secundaria=20222222223,
                     cuit_representante_entregador=27000000014,
+                    cuit_representante_recibidor=27000000014,
             )]
             dic["datos_carga"] = [dict(
                     cod_grano=23,
@@ -428,7 +429,7 @@ if __name__ == '__main__':
                     es_destino_campo="true",
                     cod_provincia=12,
                     cod_localidad=7717,
-                    planta=1,
+                    planta=1938,
                     cuit_destinatario=wscpe.Cuit,
             )]
             dic["transporte"] = [dict(
@@ -444,12 +445,11 @@ if __name__ == '__main__':
 
         if '--cargar' in sys.argv:
             dic = leer_archivo(ENTRADA)
-            import pdb; pdb.set_trace()
             wscpe.AgregarCabecera(**dic)
             if dic.get("origen"):
                 wscpe.AgregarOrigen(**dic['origen'][0])
             if dic.get("retiro_productor"):
-                wscpe.AgregarRetiroProductor(**dic['retiro_productor'][0])
+                pass#wscpe.AgregarRetiroProductor(**dic['retiro_productor'][0])
             if dic.get("intervinientes"):
                 wscpe.AgregarIntervinientes(**dic['intervinientes'][0])
             if dic.get("datos_carga"):
@@ -483,13 +483,13 @@ if __name__ == '__main__':
             print "Observaciones: ", wscpe.Observaciones
             print "Errores:", wscpe.Errores
             print "Evento:", wscpe.Evento
-            rec['nro_ctg'] = wscpe.NroCTG
-            rec['resultado'] = wscpe.Resultado
-            rec['observaciones'] = wscpe.Observaciones
-            rec['fecha_emision'] = wscpe.FechaEmision
-            rec['fecha_vencimiento'] = wscpe.FechaVencimiento
-            rec['errores'] = wscpe.Errores
-            rec['evento'] = wscpe.Evento
+            dic['nro_ctg'] = wscpe.NroCTG
+            dic['resultado'] = wscpe.Resultado
+            dic['observaciones'] = wscpe.Observaciones
+            dic['fecha_emision'] = wscpe.FechaEmision
+            dic['fecha_vencimiento'] = wscpe.FechaVencimiento
+            dic['errores'] = wscpe.Errores
+            dic['evento'] = wscpe.Evento
 
         if '--grabar' in sys.argv:
             escribir_archivo(dic, ENTRADA)
