@@ -1154,12 +1154,12 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
-        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=20267565393, sucursal=1, nro_orden=1)
-        ok = wscpe.AgregarOrigen(planta=1, cod_provincia=12, cod_localidad_operador=5544, cod_localidad_productor=3059)
+        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=20111111112, sucursal=1, nro_orden=1)
+        ok = wscpe.AgregarOrigen(planta=1, cod_provincia_operador=12, cod_localidad_operador=5544, cod_provincia_productor=12, cod_localidad_productor=5544)
         ok = wscpe.AgregarDestino(
             planta=1,
             cod_provincia=12,
-            es_destino_campo="M",
+            es_destino_campo=True,
             cod_localidad=3058,
             cuit_destino=20111111112,
             cuit_destinatario=30000000006,
@@ -1167,8 +1167,8 @@ if __name__ == "__main__":
         ok = wscpe.AgregarRetiroProductor(
             certificado_coe=330100025869,
             cuit_remitente_comercial_productor=20111111112,
-            corresponde_retiro_productor=True,
-            es_solicitante_campo="N",
+            corresponde_retiro_productor=True,  # chequear dice booleano
+            es_solicitante_campo=True,  # chequear dice booleano
         )
         ok = wscpe.AgregarIntervinientes(
             cuit_mercado_a_termino=20222222223,
@@ -1178,6 +1178,7 @@ if __name__ == "__main__":
             cuit_intermediario=20222222223,
             cuit_remitente_comercial_venta_primaria=20222222223,
             cuit_representante_entregador=20222222223,
+            cuit_representante_recibidor=20222222223
         )
         ok = wscpe.AgregarDatosCarga(
             peso_tara=1000,
@@ -1191,6 +1192,11 @@ if __name__ == "__main__":
             codigo_turno="00",
             dominio=["ZZZ000", "ZZZ999"],  # 1 or more repetitions
             km_recorrer=500,
+            cuit_chofer=20333333334,
+            tarifa=100.10,
+            cuit_pagador_flete=20333333334,
+            cuit_intermediario_flete=20333333334,
+            mercaderia_fumigada=True,
         )
         ok = wscpe.AutorizarCPEAutomotor()
         if wscpe.NroCTG:
