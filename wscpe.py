@@ -305,7 +305,7 @@ class WSCPE(BaseWS):
         if errores:
             errores = errores[0]
         self.ErrCode = " ".join(["%(codigo)s" % err for err in errores])
-        self.ErrMsg = "\n".join(["%(codigo)s: %(descripcion)s" % err for err in errores])
+        self.ErrMsg = "\n".join(["%(codigo)s - %(descripcion)s" % err for err in errores])
 
     def __analizar_observaciones(self, ret):
         "Comprueba y extrae observaciones si existen en la respuesta XML"
@@ -462,13 +462,14 @@ class WSCPE(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarCabecera(
-        self, actualizar=False, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, **kwargs
+        self, actualizar=False, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, nro_ctg=None, **kwargs
     ):
         """Inicializa internamente los datos de cabecera para cpe automotor."""
         # cabecera para modificaciones, rechazos o anulaciones.
         if actualizar:
             cabecera = {
                 "cuitSolicitante": cuit_solicitante,
+                "nroCTG": nro_ctg,
                 "cartaPorte": {
                     "tipoCPE": tipo_cpe,
                     "sucursal": sucursal,
@@ -1252,24 +1253,21 @@ if __name__ == "__main__":
         wscpe.DesvioCPEFerroviaria()
 
     if "--consultar_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20111111112, nro_ctg=10100000542, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.ConsultarCPEAutomotor()
 
     if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
         wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarIntervinientes(cuit_representante_recibidor=20222222223)
         wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
         wscpe.ConfirmacionDefinitivaCPEAutomotor()
-
-    if "--descargado_destino_cpe" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
-        wscpe.DescargadoDestinoCPE()
 
     if "--nuevo_destino_destinatario_cpe_automotor" in sys.argv:
         wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
-            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo="M"
+            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
         print(wscpe.cpe)
         wscpe.NuevoDestinoDestinatarioCPEAutomotor()
 
@@ -1278,16 +1276,16 @@ if __name__ == "__main__":
         wscpe.AgregarDestino(
             cuit_destinatario=30000000006,
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
         print(wscpe.cpe)
         wscpe.RegresoOrigenCPEAutomotor()
 
     if "--desvio_cpe_automotor" in sys.argv:
         wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
-            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo="N"  # newton
+            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True  # newton
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
         wscpe.DesvioCPEAutomotor()
 
     if "--provincias" in sys.argv:
@@ -1313,4 +1311,4 @@ if __name__ == "__main__":
             bh.write(wscpe.XmlRequest)
 
     if wscpe.Errores:
-        print(wscpe.ErrMsg)
+        print("Error:", wscpe.ErrMsg)
