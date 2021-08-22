@@ -26,17 +26,15 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.00a"
+__version__ = "1.01a"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
 Resolución General 5017/2021
 Copyright (C) 2021 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CartadePorte
-
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
-
 Para información adicional sobre garantía, soporte técnico comercial
 e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
@@ -45,11 +43,9 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 AYUDA = """  # grey
 Opciones: 
   --ayuda: este mensaje
-
   --debug: modo depuración (detalla y confirma las operaciones)
   --prueba: genera y autoriza una rec de prueba (no usar en producción!)
   --dummy: consulta estado de servidores
-
 Ver wscpe.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
@@ -679,8 +675,6 @@ class WSCPE(BaseWS):
         cpe_bytes = self.PDF
         if isinstance(cpe_bytes, unicode):
             cpe_bytes = cpe_bytes.encode("utf-8")
-        #import pdb; pdb.set_trace()
-        #cpe_pdf = base64.b64decode(cpe_bytes)
         with open(archivo, "wb") as fh:
             fh.write(cpe_bytes)
 
