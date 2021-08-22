@@ -33,8 +33,10 @@ wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
 Resolución General 5017/2021
 Copyright (C) 2021 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CartadePorte
+
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
+
 Para información adicional sobre garantía, soporte técnico comercial
 e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
@@ -43,9 +45,11 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 AYUDA = """  # grey
 Opciones: 
   --ayuda: este mensaje
+
   --debug: modo depuración (detalla y confirma las operaciones)
   --prueba: genera y autoriza una rec de prueba (no usar en producción!)
   --dummy: consulta estado de servidores
+
 Ver wscpe.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
@@ -62,12 +66,128 @@ from pyafipws import utils
 
 # importo funciones compartidas:
 from pyafipws.utils import (
+    leer,
+    escribir,
+    leer_dbf,
+    guardar_dbf,
+    N,
+    A,
+    I,
     json,
     BaseWS,
     inicializar_y_capturar_excepciones,
     get_install_dir,
     json_serializer,
 )
+
+
+# definición del formato del archivo de intercambio:
+ENCABEZADO = [
+    ("tipo_reg", 1, A),
+    ("tipo_cpe", 2, N),
+    ("sucursal", 5, N),
+    ("nro_orden", 18, N),
+    ("planta", 5, N),
+    ("planta", 5, N),  # ?
+    ("cuit_solicitante", 11, N),
+    ("razon_social_titular_planta", 11, A),
+    ("peso_bruto_descarga", 10, I),
+    ("peso_tara_descarga", 10, I),
+    ("nro_cpe", 12, N),
+    ("fecha_emision", 19, A),
+    ("fecha_inicio_estado", 19, A),
+    ("estado", 15, A),
+    ("fecha_vencimiento", 19, A),
+]
+
+# CARTA_PORTE = [
+# ("tipo_reg", 1, A),
+# ]
+
+ORIGEN = [
+    ("tipo_reg", 1, A),
+    ("cod_provincia_operador", 2, N),
+    ("cod_localidad_operador", 6, N),
+    ("planta", 5, N),
+    ("cod_provincia_productor", 2, N),
+    ("cod_localidad_productor", 6, N),
+]
+INTERVINIENTES = [
+    ("tipo_reg", 1, A),
+    ("cuit_intermediario", 11, N),
+    ("cuit_remitente_comercial_venta_primaria", 11, N),
+    ("cuit_remitente_comercial_venta_secundaria", 11, N),
+    ("cuit_mercado_a_termino", 11, N),
+    ("cuit_corredor_venta_primaria", 11, N),
+    ("cuit_corredor_venta_secundaria", 11, N),
+    ("cuit_representante_entregador", 11, N),
+]
+
+RETIRO_PRODUCTOR = [
+    ("tipo_reg", 1, A),
+    ("corresponde_retiro_productor", 1, I),  # boolean
+    ("es_solicitante_campo", 1, A),  # "S" or "N"
+    ("certificado_coe", 12, N),
+    ("cuit_remitente_comercial_productor", 11, N),
+]
+
+DATOS_CARGA = [
+    ("tipo_reg", 1, A),
+    ("cod_grano", 2, N),
+    ("cosecha", 4, N),
+    ("peso_bruto", 10, I),
+    ("peso_tara", 10, I),
+]
+
+DESTINO = [
+    ("tipo_reg", 1, A),
+    ("cuit_destino", 11, N),
+    ("es_destino_campo", 4, N),
+    ("cod_provincia", 2, N),  # Numeric
+    ("cod_localidad", 6, N),  # Numeric
+    ("planta", 5, N),
+    ("cuit_destinatario", 11, N),
+]
+
+TRANSPORTE = [
+    ("tipo_reg", 1, A),
+    ("cuit_transportista", 11, N),
+    ("dominio", 10, A),
+    ("fecha_hora_partida", 20, A),
+    ("km_recorrer", 5, I),
+    ("codigo_turno", 30, N),
+]
+
+# CONTINGENCIA = [
+# ("tipo_reg", 1, A),
+# ]
+
+ERROR = [
+    ("tipo_reg", 1, A),
+    ("codigo", 4, A),
+    ("descripcion", 250, A),
+]
+
+EVENTOS = [
+    ("tipo_reg", 1, A),
+    ("codigo", 4, A),
+    ("descripcion", 250, A),
+]
+
+# constantes de estado cpe.
+ESTADO_CPE = {
+    "AC": "Activa",
+    "AN": "Anulada",
+    "BR": "Borrador",
+    "CF": "Activa con confirmacion de arribo",
+    "CN": "confirmada",
+    "CO": "Activa con contingencia",
+    "DE": "Desactivada",
+    "RE": "Rechazada",
+    "PA": "Pendiente de Aceptacion por el Productor",
+    "AP": "Anulacion por el Productor",
+    "DD": "Descargado en destino",
+}
 
 # constantes de configuración (producción/homologación):
 WSDL = [
@@ -80,7 +200,6 @@ DEBUG = True
 XML = False
 CONFIG_FILE = "wscpe.ini"
 HOMO = True
-ENCABEZADO = []
 
 
 class WSCPE(BaseWS):
@@ -90,6 +209,14 @@ class WSCPE(BaseWS):
         "Dummy",
         "SetTicketAcceso",
         "DebugLog",
+        "AgregarCabecera",
+        "AgregarOrigen",
+        "AgregarRetiroProductor",
+        "AgregarIntervinientes",
+        "AgregarDatosCarga",
+        "AgregarDestino",
+        "AgregarTransporte",
+        "AgregarContingencia",
         "DescargadoDestinoCPE",
         "NuevoDestinoDestinatarioCPEFerroviaria",
         "AutorizarCPEAutomotor",
@@ -121,7 +248,7 @@ class WSCPE(BaseWS):
         "ObtenerTagXml",
         "LoadTestXML",
     ]
-    _public_attrs_ = [  # grey
+    _public_attrs_ = [
         "XmlRequest",
         "XmlResponse",
         "Version",
@@ -134,9 +261,14 @@ class WSCPE(BaseWS):
         "AppServerStatus",
         "DbServerStatus",
         "AuthServerStatus",
+        "NroCTG",
+        "NroOrden",
+        "FechaInicioEstado",
+        "FechaEmision",
+        "FechaVencimiento",
         "Estado",
         "Resultado",
-        "QR",
+        "PDF",
         "ErrCode",
         "ErrMsg",
         "Errores",
@@ -146,8 +278,8 @@ class WSCPE(BaseWS):
         "Evento",
         "Eventos",
     ]
-    _reg_progid_ = "WSRemAzucar"
-    _reg_clsid_ = "{448F912A-C013-4E19-8D52-7FC88305590A}"
+    _reg_progid_ = "WSCPE"
+    _reg_clsid_ = "{37F6A7B5-344E-45C5-9198-0CF7B206F409}"
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -161,22 +293,19 @@ class WSCPE(BaseWS):
 
     def inicializar(self):
         self.AppServerStatus = self.DbServerStatus = self.AuthServerStatus = None
-        self.CodRemito = self.TipoComprobante = self.PuntoEmision = None
-        self.NroRemito = self.CodAutorizacion = self.FechaVencimiento = self.FechaEmision = None
-        self.Estado = self.Resultado = self.QR = None
+        self.NroCTG = self.NroOrden = None
+        self.FechaInicioEstado = self.FechaVencimiento = self.FechaEmision = None
+        self.Estado = self.Resultado = self.PDF = None
         self.Errores = []
-        self.ErroresFormato = []
-        self.Observaciones = []
-        self.Eventos = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
+        if not hasattr(self, "cpe"):
+            self.cpe = {}
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        self.Errores = [err["error"] for err in ret.get("errores", [])]
-        if self.Errores:
-            errores = self.Errores[0]
-        else:
-            errores = self.Errores
+        errores = self.Errores = [err["error"] for err in ret.get("errores", [])]
+        if errores:
+            errores = errores[0]
         self.ErrCode = " ".join(["%(codigo)s" % err for err in errores])
         self.ErrMsg = "\n".join(["%(codigo)s: %(descripcion)s" % err for err in errores])
 
@@ -193,9 +322,9 @@ class WSCPE(BaseWS):
             self.Evento = "%(codigo)s: %(descripcion)s" % evt
 
     @inicializar_y_capturar_excepciones
-    def AgregarCabecera(self, sucursal, nro_orden, planta, **kwargs):
-        """Inicializa internamente los datos de una carta porte."""
-        self.carta_porte["cabecera"] = {
+    def AgregarCabeceraFerroviaria(self, sucursal, nro_orden, planta, **kwargs):
+        """Inicializa internamente los datos de cabecera para cpe ferroviaria."""
+        self.cpe_ferroviaria["cabecera"] = {
             "sucursal": sucursal,
             "nroOrden": nro_orden,
             "planta": planta,
@@ -203,26 +332,27 @@ class WSCPE(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarRetiroProductor(
+    def AgregarRetiroProductorFerroviaria(
         self,
-        corresponde_retiro_productor,
+        corresponde_retiro_productor=None,
         certificado_coe=None,
         cuit_remitente_comercial_productor=None,
         **kwargs
     ):
-        """Agrega datos de retiro del productor."""
-        self.carta_porte.update({"correspondeRetiroProductor": corresponde_retiro_productor})
+        """Inicializa internamente los datos de retiro de productor para cpe ferroviario."""
+        self.cpe_ferroviaria.update({"correspondeRetiroProductor": corresponde_retiro_productor})
 
         if corresponde_retiro_productor:
-            self.carta_porte["retiroProductor"] = {
+            self.cpe_ferroviaria["retiroProductor"] = {
                 "certificadoCOE": certificado_coe,
                 "cuitRemitenteComercialProductor": cuit_remitente_comercial_productor,
             }
         else:
-            self.carta_porte["retiroProductor"] = {}
+            self.cpe_ferroviaria["retiroProductor"] = {}
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarIntervinientes(
+    def AgregarIntervinientesFerroviaria(
         self,
         cuit_intermediario,
         cuit_remitente_comercial_venta_primaria,
@@ -233,6 +363,7 @@ class WSCPE(BaseWS):
         cuit_representante_entregador,
         **kwargs
     ):
+        """Inicializa internamente los datos de intervinientes para cpe ferroviario."""
         intervinientes = {
             "cuitIntermediario": cuit_intermediario,
             "cuitRemitenteComercialVentaPrimaria": cuit_remitente_comercial_venta_primaria,
@@ -242,20 +373,24 @@ class WSCPE(BaseWS):
             "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
             "cuitRepresentanteEntregador": cuit_representante_entregador,
         }
-        self.carta_porte["intervinientes"] = intervinientes
+        self.cpe_ferroviaria["intervinientes"] = intervinientes
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarDatosCarga(self, cod_grano, cosecha, peso_bruto, peso_tara, **kwargs):
+    def AgregarDatosCargaFerroviaria(self, cod_grano, cosecha, peso_bruto, peso_tara, **kwargs):
+        """Inicializa internamente los datos de carga para cpe ferroviario."""
+
         datos_carga = {
             "codGrano": cod_grano,
             "cosecha": cosecha,
             "pesoBruto": peso_bruto,
             "pesoTara": peso_tara,
         }
-        self.carta_porte["datosCarga"] = datos_carga
+        self.cpe_ferroviaria["datosCarga"] = datos_carga
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarDestino(
+    def AgregarDestinoFerroviaria(
         self,
         cuit_destino,
         cod_provincia,
@@ -264,6 +399,7 @@ class WSCPE(BaseWS):
         cuit_destinatario,
         **kwargs
     ):
+        """Inicializa internamente los datos de destino para cpe ferroviario."""
         destino = {
             "cuit": cuit_destino,
             "codProvincia": cod_provincia,
@@ -271,13 +407,15 @@ class WSCPE(BaseWS):
             "planta": planta,
         }
         cuit_destinatario = {"cuit": cuit_destinatario}
-        self.carta_porte["destino"] = destino
-        self.carta_porte["destinatario"] = cuit_destinatario
+        self.cpe_ferroviaria["destino"] = destino
+        self.cpe_ferroviaria["destinatario"] = cuit_destinatario
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarTransporte(
+    def AgregarTransporteFerroviaria(
         self,
         cuit_transportista,
+        cuit_transportista_tramo2,
         nro_vagon,
         nro_precinto,
         nro_operativo,
@@ -289,8 +427,10 @@ class WSCPE(BaseWS):
         descripcion=None,
         **kwargs
     ):
+        """Inicializa internamente los datos de transporte para cpe ferroviario."""
         transporte = {
             "cuitTransportista": cuit_transportista,
+            "cuitTransportistaTramo2": cuit_transportista_tramo2,
             "nroVagon": nro_vagon,
             "nroPrecinto": nro_precinto,
             "nroOperativo": nro_operativo,
@@ -301,10 +441,11 @@ class WSCPE(BaseWS):
         }
         ramal = {"codigo": codigo, "descripcion": descripcion}
         transporte["ramal"] = ramal
-        self.carta_porte["transporte"] = transporte
+        self.cpe_ferroviaria["transporte"] = transporte
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AutorizarCPEFerroviaria(self, archivo="qr.png"):  # green
+    def AutorizarCPEFerroviaria(self, archivo="cpe_ferroviaria.pdf"):  # green
         """Informar los datos necesarios para la generación de una nueva carta porte."""
         response = self.client.autorizarCPEFerroviaria(
             auth={
@@ -312,76 +453,55 @@ class WSCPE(BaseWS):
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cabecera": {"sucursal": 1, "nroOrden": 1, "planta": 1},
-                "correspondeRetiroProductor": True,
-                "retiroProductor": {
-                    "certificadoCOE": 330100025869,
-                    "cuitRemitenteComercialProductor": 20111111112,
-                },
-                "intervinientes": {
-                    "cuitIntermediario": 20222222223,
-                    "cuitRemitenteComercialVentaPrimaria": 20222222223,
-                    "cuitRemitenteComercialVentaSecundaria": 20222222223,
-                    "cuitMercadoATermino": 20222222223,
-                    "cuitCorredorVentaPrimaria": 20222222223,
-                    "cuitCorredorVentaSecundaria": 20222222223,
-                    "cuitRepresentanteEntregador": 20222222223,
-                },
-                "datosCarga": {"codGrano": 2, "cosecha": 1, "pesoBruto": 10000, "pesoTara": 10100},  # girasol
-                "destino": {
-                    "cuit": 20111111112,
-                    "esDestinoCampo": "M",
-                    "codProvincia": 1,
-                    "codLocalidad": 10216,  # newton
-                    "planta": 10,
-                },
-                "destinatario": {"cuit": 30000000006},
-                "transporte": {
-                    "cuitTransportista": 20333333334,
-                    "cuitTransportistaTramo2": 20444444445,
-                    "nroVagon": 55555555,
-                    "nroPrecinto": 1,
-                    "nroOperativo": 1111111111,
-                    "ramal": {"codigo": 99, "descripcion": "OK"},
-                    "fechaHoraPartidaTren": datetime.datetime.now(),
-                    "kmRecorrer": 333,
-                    "cuitPagadorFlete": 20333333335,
-                    "mercaderiaFumigada": True,
-                },
-            },
+            solicitud=self.cpe_ferroviaria,
         )
         ret = response.get("respuesta")
         if ret:
             self.__analizar_errores(ret)
-            self.__analizar_observaciones(ret)
-            self.__analizar_evento(ret)
-            # self.AnalizarCPEFerroviario(ret, archivo)
-        return bool(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AnalizarCPEFerroviario(self, ret, archivo=None):
-        pass
-
-    @inicializar_y_capturar_excepciones
-    def AgregarCabeceraAutomotor(self, tipo_cp, cuit_solicitante, sucursal, nro_orden, **kwargs):
-        cabecera = {
-            "tipoCP": tipo_cp,
-            "cuitSolicitante": cuit_solicitante,
-            "sucursal": sucursal,
-            "nroOrden": nro_orden,
-        }
-        self.carta_porte_automotor["cabecera"] = cabecera
-
-    @inicializar_y_capturar_excepciones
-    def AgregarOrigenAutomotor(
-        self,
-        cod_provincia_operador,
-        cod_localidad_operador,
-        planta,
-        cod_provincia_productor,
-        cod_localidad_productor,
+    def AgregarCabecera(
+        self, actualizar=False, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, **kwargs
     ):
+        """Inicializa internamente los datos de cabecera para cpe automotor."""
+        # cabecera para modificaciones, rechazos o anulaciones.
+        if actualizar:
+            cabecera = {
+                "cuitSolicitante": cuit_solicitante,
+                "cartaPorte": {
+                    "tipoCPE": tipo_cpe,
+                    "sucursal": sucursal,
+                    "nroOrden": nro_orden,
+                },
+            }
+            if not cabecera["cuitSolicitante"]:
+                del cabecera["cuitSolicitante"]
+            self.cpe = cabecera
+        else:
+            cabecera = {
+                "tipoCP": tipo_cpe,
+                "cuitSolicitante": cuit_solicitante,
+                "sucursal": sucursal,
+                "nroOrden": nro_orden,
+            }
+            # creo el diccionario para agregar datos cpe
+            self.cpe = {"cabecera": cabecera}
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarOrigen(
+        self,
+        cod_provincia_operador=None,
+        cod_localidad_operador=None,
+        planta=None,
+        cod_provincia_productor=None,
+        cod_localidad_productor=None,
+        **kwargs
+    ):
+        """Inicializa internamente los datos de origen para cpe automotor."""
         operador = {
             "codProvincia": cod_provincia_operador,
             "codLocalidad": cod_localidad_operador,
@@ -392,36 +512,42 @@ class WSCPE(BaseWS):
             "codLocalidad": cod_localidad_productor,
         }
         origen = {"operador": operador, "productor": productor}
-        self.carta_porte_automotor["origen"] = origen
+        self.cpe["origen"] = origen
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarRetiroProductorAutomotor(
+    def AgregarRetiroProductor(
         self,
-        corresponde_retiro_productor,
-        es_solicitante_campo,
+        corresponde_retiro_productor=None,
+        es_solicitante_campo=None,
         certificado_coe=None,
         cuit_remitente_comercial_productor=None,
         **kwargs
     ):
+        """Inicializa internamente los datos de retiro de productor para cpe automotor."""
         retiro_productor = {
             "certificadoCOE": certificado_coe,
             "cuitRemitenteComercialProductor": cuit_remitente_comercial_productor,
         }
-        self.carta_porte_automotor["correspondeRetiroProductor"] = corresponde_retiro_productor
-        self.carta_porte_automotor["esSolicitanteCampo"] = es_solicitante_campo
-        self.carta_porte_automotor["retiroProductor"] = retiro_productor
+        self.cpe["correspondeRetiroProductor"] = corresponde_retiro_productor
+        self.cpe["esSolicitanteCampo"] = es_solicitante_campo
+        self.cpe["retiroProductor"] = retiro_productor
+        return True
 
-    def AgregarIntervinientesAutomotor(
+    @inicializar_y_capturar_excepciones
+    def AgregarIntervinientes(
         self,
-        cuit_intermediario,
-        cuit_remitente_comercial_venta_primaria,
-        cuit_remitente_comercial_venta_secundaria,
-        cuit_mercado_a_termino,
-        cuit_corredor_venta_primaria,
-        cuit_corredor_venta_secundaria,
-        cuit_representante_entregador,
+        cuit_intermediario=None,
+        cuit_remitente_comercial_venta_primaria=None,
+        cuit_remitente_comercial_venta_secundaria=None,
+        cuit_mercado_a_termino=None,
+        cuit_corredor_venta_primaria=None,
+        cuit_corredor_venta_secundaria=None,
+        cuit_representante_entregador=None,
+        cuit_representante_recibidor=None,
         **kwargs
     ):
+        """Inicializa internamente los datos de los intervinientes para cpe automotor."""
         intervinientes = {
             "cuitIntermediario": cuit_intermediario,
             "cuitRemitenteComercialVentaPrimaria": cuit_remitente_comercial_venta_primaria,
@@ -430,30 +556,39 @@ class WSCPE(BaseWS):
             "cuitCorredorVentaPrimaria": cuit_corredor_venta_primaria,
             "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
             "cuitRepresentanteEntregador": cuit_representante_entregador,
+            "cuitRepresentanteRecibidor": cuit_representante_recibidor,
         }
-        self.carta_porte_automotor["intervinientes"] = intervinientes
+        self.cpe["intervinientes"] = intervinientes
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarDatosCargaAutomotor(self, cod_grano, cosecha, peso_bruto, peso_tara, **kwargs):
+    def AgregarDatosCarga(self, cod_grano=None, cosecha=None, peso_bruto=None, peso_tara=None, **kwargs):
+        """Inicializa internamente los datos de carga para cpe automotor."""
         datos_carga = {
             "codGrano": cod_grano,
             "cosecha": cosecha,
             "pesoBruto": peso_bruto,
             "pesoTara": peso_tara,
         }
-        self.carta_porte_automotor["datosCarga"] = datos_carga
+        if not datos_carga["cosecha"]:
+            self.cpe["pesoBrutoDescarga"] = peso_bruto
+            self.cpe["pesoTaraDescarga"] = peso_tara
+        else:
+            self.cpe["datosCarga"] = datos_carga
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarDestinoAutomotor(
+    def AgregarDestino(
         self,
-        cuit_destino,
-        es_destino_campo,
-        cod_provincia,
-        cod_localidad,
-        planta,
-        cuit_destinatario,
+        cuit_destino=None,
+        es_destino_campo=None,
+        cod_provincia=None,
+        cod_localidad=None,
+        planta=None,
+        cuit_destinatario=None,
         **kwargs
     ):
+        """Inicializa internamente los datos de destino para cpe automotor."""
         destino = {
             "cuit": cuit_destino,
             "esDestinoCampo": es_destino_campo,
@@ -462,156 +597,213 @@ class WSCPE(BaseWS):
             "planta": planta,
         }
         cuit_destinatario = {"cuit": cuit_destinatario}
-        self.carta_porte_automotor["destino"] = destino
-        self.carta_porte_automotor["destinatario"] = cuit_destinatario
+        # maneja distintos campos para diferentes metodos
+        if destino["cuit"]:
+            self.cpe["destino"] = destino
+        if cuit_destinatario["cuit"]:
+            self.cpe["destinatario"] = cuit_destinatario
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AgregarTransporteAutomotor(
+    def AgregarTransporte(
         self,
-        cuit_transportista,
-        dominio,
-        fecha_hora_partida,
-        km_recorrer,
-        codigo_turno,
+        cuit_transportista=None,
+        dominio=None,  # 1 or more repetitions
+        fecha_hora_partida=None,
+        km_recorrer=None,
+        codigo_turno=None,
+        cuit_chofer=None,
+        tarifa=None,
+        cuit_pagador_flete=None,
+        cuit_intermediario_flete=None,
+        mercaderia_fumigada=None,
         **kwargs
     ):
-        transporte = {
+        """Inicializa internamente los datos de transporte para cpe automotor."""
+        transp = {
             "cuitTransportista": cuit_transportista,
             "dominio": dominio,
             "fechaHoraPartida": fecha_hora_partida,
             "kmRecorrer": km_recorrer,
             "codigoTurno": codigo_turno,
+            "cuitChofer": cuit_chofer,
+            "tarifa": tarifa,
+            "cuitPagadorFlete": cuit_pagador_flete,
+            "cuitIntermediarioFlete": cuit_intermediario_flete,
+            "mercaderiaFumigada": mercaderia_fumigada,
         }
-        self.carta_porte_automotor["transporte"] = transporte
+        transporte = {}
+        for campo, dato in transp.items():
+            if transp[campo]:
+                transporte[campo] = dato
+
+        self.cpe["transporte"] = transporte
+        return True
+
+    def AgregarContingencia(
+        self,
+        concepto=None,
+        descripcion=None,  # solo necesario si la opcion es F "otros"
+    ):
+        """Inicialliza datos para contingencias en cpe."""
+        self.cpe["contingencia"] = {"concepto": concepto, "descripcion": descripcion}
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AutorizarCPEAutomotor(self, archivo="qr.png"):  # green
-
+    def AutorizarCPEAutomotor(self, archivo="cpe.pdf"):
+        """Informar los datos necesarios para la generación de una nueva carta porte."""
         response = self.client.autorizarCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cabecera": {
-                    "tipoCP": 1,
-                    "cuitSolicitante": 20267565393,
-                    "sucursal": 1,
-                    "nroOrden": 1,
-                },
-                "origen": {
-                    "operador": {"planta": 1, "codProvincia": 12, "codLocalidad": 5544},
-                    "productor": {"codLocalidad": 3059},
-                },
-                "correspondeRetiroProductor": True,
-                "esSolicitanteCampo": "N",
-                "retiroProductor": {
-                    "certificadoCOE": 330100025869,
-                    "cuitRemitenteComercialProductor": 20111111112,
-                },
-                "intervinientes": {
-                    "cuitMercadoATermino": 20222222223,
-                    "cuitCorredorVentaPrimaria": 20222222223,
-                    "cuitCorredorVentaSecundaria": 20222222223,
-                    "cuitRemitenteComercialVentaSecundaria": 20222222223,
-                    "cuitIntermediario": 20222222223,
-                    "cuitRemitenteComercialVentaPrimaria": 20222222223,
-                    "cuitRepresentanteEntregador": 20222222223,
-                },
-                "datosCarga": {
-                    "pesoTara": 1000,
-                    "codGrano": 31,
-                    "pesoBruto": 1000,
-                    "cosecha": 910,
-                },
-                "destino": {
-                    "planta": 1,
-                    "codProvincia": 12,
-                    "esDestinoCampo": "M",
-                    "codLocalidad": 3058,
-                    "cuit": 20111111112,
-                },
-                "destinatario": {"cuit": 30000000006},
-                "transporte": {
-                    "fechaHoraPartida": datetime.datetime.now(),
-                    "codigoTurno": "00",
-                    "cuitTransportista": 20333333334,
-                    "dominio": "ZZZ000",
-                    "kmRecorrer": 500,
-                },
-            },
+            solicitud=self.cpe,
         )
-
         ret = response.get("respuesta")
-        print(ret)
-        if ret:
-            self.__analizar_errores(ret)
-        if not "errores" in ret:
-            self.AnalizarCPEAutomotor(ret, archivo)
-        return 1
+        self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
     @inicializar_y_capturar_excepciones
-    def AnalizarCPEAutomotor(self, ret, archivo="cpe_automotor.pdf"):
-        pass
-        # if ret:
-        #     self.pdf_cpe_automotor = ret["pdf"]  # base64
-        #     with open(archivo, "wb") as fh:
-        #         fh.write(self.pdf_cpe_automotor)
+    def AnalizarCPE(self, ret, archivo="cpe.pdf"):
+        "Extrae los resultados de autorización de una carta porte automotor."
+        cab = ret["cabecera"]
+        self.NroCTG = cab["nroCTG"]
+        self.FechaEmision = cab["fechaEmision"]
+        self.Estado = cab["estado"]
+        self.FechaInicioEstado = cab["fechaInicioEstado"]
+        self.FechaVencimiento = cab["fechaVencimiento"]
+        self.PDF = ret["pdf"]  # base64
+        cpe_bytes = self.PDF
+        if isinstance(cpe_bytes, unicode):
+            cpe_bytes = cpe_bytes.encode("utf-8")
+        #import pdb; pdb.set_trace()
+        #cpe_pdf = base64.b64decode(cpe_bytes)
+        with open(archivo, "wb") as fh:
+            fh.write(cpe_bytes)
 
-    @inicializar_y_capturar_excepciones  # green
-    def AnularCPE(self):
-        "Informar los datos necesarios para la generación de una nueva carta porte."
+    @inicializar_y_capturar_excepciones
+    def AnularCPE(self, archivo="cpe.pdf"):
+        """Informar los datos necesarios para la generación de una nueva carta porte."""
         response = self.client.anularCPE(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cartaPorte": {"tipoCPE": 75, "sucursal": 1, "nroOrden": 1},
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
         if ret:
             self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
-    @inicializar_y_capturar_excepciones  # green
-    def RechazoCPE(self):
-        "Informar el rechazo de una carta de porte existente."
+    @inicializar_y_capturar_excepciones
+    def RechazoCPE(self, archivo="cpe.pdf"):
+        """Informar el rechazo de una carta de porte existente."""
         response = self.client.rechazoCPE(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 75, "sucursal": 1, "nroOrden": 1},
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
         if ret:
             self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def InformarContingencia(self, archivo="cpe.pdf"):
+        """informa de contingencia de una CPE existente."""
+        response = self.client.informarContingencia(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConfirmarArriboCPE(self, archivo="cpe.pdf"):
+        "Informar la confirmación de arribo."
+        response = self.client.confirmarArriboCPE(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def DescargadoDestinoCPE(self, archivo="cpe.pdf"):
+        "indicar por el solicitante de la Carta de Porte que la mercadería ha sido enviada."
+        response = self.client.descargadoDestinoCPE(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
     @inicializar_y_capturar_excepciones  # green
-    def ConsultarCPEFerroviaria(self):
+    def ConsultarCPEFerroviaria(self,  tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, nro_ctg=None, archivo="cpe.pdf"):
         "Busca una CPE existente según parámetros de búsqueda y retorna información de la misma."
+        if not nro_ctg:
+            solicitud = {
+                "cartaPorte": {
+                    "tipoCPE": tipo_cpe,
+                    "sucursal": sucursal,
+                    "nroOrden": nro_orden,
+                },
+            }
+        else:
+            solicitud = {
+                "nroCTG": nro_ctg,
+            }
+        solicitud["cuitSolicitante"] = cuit_solicitante
         response = self.client.consultarCPEFerroviaria(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 75, "sucursal": 1, "nroOrden": 1},
-            },
+            solicitud=solicitud,
         )
         ret = response.get("respuesta")
-        print(ret)
         if ret:
             self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
     @inicializar_y_capturar_excepciones
     def ConsultaCPEFerroviariaPorNroOperativo(self):  # green
@@ -625,25 +817,6 @@ class WSCPE(BaseWS):
             solicitud={"nroOperativo": 1111111111},
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
-    @inicializar_y_capturar_excepciones  # green
-    def ConfirmarArriboCPE(self):
-        "Informar la confirmación de arribo."
-        response = self.client.confirmarArriboCPE(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 75, "sucursal": 1, "nroOrden": 1},
-            },
-        )
-        ret = response.get("respuesta")
-        print(ret)
         if ret:
             self.__analizar_errores(ret)
 
@@ -676,59 +849,6 @@ class WSCPE(BaseWS):
         if ret:
             self.__analizar_errores(ret)
 
-    @inicializar_y_capturar_excepciones  # green
-    def ConsultarCPEAutomotor(self):
-        "Busca una CPE existente según parámetros de búsqueda y retorna información de la misma."
-        response = self.client.consultarCPEAutomotor(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={"cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1}},
-        )
-        ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
-    @inicializar_y_capturar_excepciones  # green
-    def ConfirmacionDefinitivaCPEAutomotor(self):
-        "Informar la confirmación definitiva de una carta de porte existente."
-        response = self.client.confirmacionDefinitivaCPEAutomotor(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "pesoBrutoDescarga": 1000,
-                "pesoTaraDescarga": 1000,
-            },
-        )
-        ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
-    @inicializar_y_capturar_excepciones  # green
-    def InformarContingencia(self):
-        "informa de contingencia de una CPE existente."
-        response = self.client.informarContingencia(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "contingencia": {"concepto": "F", "descripcion": "XXXXX"},  # otros
-            },
-        )
-        ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
     @inicializar_y_capturar_excepciones
     def CerrarContingenciaCPEFerroviaria(self):  # green
         "Informar del cierre de una contingencia asociado a una carta de porte ferroviaria."
@@ -749,23 +869,6 @@ class WSCPE(BaseWS):
             },
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-
-    @inicializar_y_capturar_excepciones  # green!!!
-    def ConsultarUltNroOrden(self):
-        "Obtiene el último número de orden de CPE autorizado según número de sucursal."
-        response = self.client.consultarUltNroOrden(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud={"sucursal": 1, "tipoCPE": 74},
-        )
-        ret = response.get("respuesta")
-        self.NroOrden = ret["nroOrden"]
-        print(self.NroOrden)
         if ret:
             self.__analizar_errores(ret)
 
@@ -860,103 +963,122 @@ class WSCPE(BaseWS):
         if ret:
             self.__analizar_errores(ret)
 
-    @inicializar_y_capturar_excepciones  # green
-    def DescargadoDestinoCPE(self):
-        "indicar por el solicitante de la Carta de Porte que la mercadería ha sido enviada."
-        response = self.client.descargadoDestinoCPE(
+    @inicializar_y_capturar_excepciones
+    def ConsultarCPEAutomotor(self, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, nro_ctg=None, archivo="cpe.pdf"):
+        "Busca una CPE existente según parámetros de búsqueda y retorna información de la misma."
+        if not nro_ctg:
+            solicitud = {
+                "cartaPorte": {
+                    "tipoCPE": tipo_cpe,
+                    "sucursal": sucursal,
+                    "nroOrden": nro_orden,
+                },
+            }
+        else:
+            solicitud = {
+                "nroCTG": nro_ctg,
+            }
+        solicitud["cuitSolicitante"] = cuit_solicitante
+        response = self.client.consultarCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-            },
+            solicitud=solicitud,
         )
         ret = response.get("respuesta")
         if ret:
             self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
-    @inicializar_y_capturar_excepciones  # green
-    def NuevoDestinoDestinatarioCPEAutomotor(self):
-        "Informar el nuevo destino o destinatario de una carta deporte existente."
+    @inicializar_y_capturar_excepciones
+    def ConfirmacionDefinitivaCPEAutomotor(self, archivo="cpe.pdf"):
+        "Informar la confirmación definitiva de una carta de porte existente."
+        response = self.client.confirmacionDefinitivaCPEAutomotor(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def NuevoDestinoDestinatarioCPEAutomotor(self, archivo="cpe.pdf"):
+        """Informar el nuevo destino o destinatario de una carta deporte existente."""
         response = self.client.nuevoDestinoDestinatarioCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "destino": {
-                    "cuit": 20111111112,
-                    "codProvincia": 1,
-                    "codLocalidad": 10216,  # newton
-                    "planta": 1,
-                    "esDestinoCampo": "M",  # string
-                },
-                # "destinatario": {"cuit": 30000000006},
-                "transporte": {
-                    "fechaHoraPartida": datetime.datetime.now(),
-                    "kmRecorrer": 333,
-                },
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
+        self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
-    @inicializar_y_capturar_excepciones  # green
-    def RegresoOrigenCPEAutomotor(self):
-        "Informar el regreso a origen de una carta de porte existente."
+    @inicializar_y_capturar_excepciones
+    def RegresoOrigenCPEAutomotor(self, archivo="cpe.pdf"):
+        """Informar el regreso a origen de una carta de porte existente."""
         response = self.client.regresoOrigenCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "destinatario": {"cuit": 30000000006},
-                "transporte": {
-                    "fechaHoraPartida": datetime.datetime.now(),
-                    "kmRecorrer": 100,
-                },
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
+        self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
 
-    @inicializar_y_capturar_excepciones  # green
-    def DesvioCPEAutomotor(self):
-        "Informar el desvío de una carta de porte existente."
+    @inicializar_y_capturar_excepciones
+    def DesvioCPEAutomotor(self, archivo="cpe.pdf"):
+        """Informar el desvío de una carta de porte existente."""
         response = self.client.desvioCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud={
-                "cuitSolicitante": 20267565393,
-                "cartaPorte": {"tipoCPE": 74, "sucursal": 1, "nroOrden": 1},
-                "destino": {
-                    "cuit": 20111111112,
-                    "codProvincia": 1,
-                    "codLocalidad": 10216,  # newton
-                    "planta": 1,
-                    "esDestinoCampo": "N",  # string
-                },
-                "transporte": {
-                    "fechaHoraPartida": datetime.datetime.now(),
-                    "kmRecorrer": 333,
-                },
-            },
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
+        self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def ConsultarUltNroOrden(self, sucursal=1, tipo_cpe=74):
+        "Obtiene el último número de orden de CPE autorizado según número de sucursal."
+        response = self.client.consultarUltNroOrden(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud={"sucursal": sucursal, "tipoCPE": tipo_cpe},
+        )
+        ret = response.get("respuesta")
+        self.__analizar_errores(ret)
+        if "nroOrden" in ret:
+            self.NroOrden = ret["nroOrden"]
+        return True
 
     @inicializar_y_capturar_excepciones
     def ConsultarProvincias(self, sep="||"):
@@ -1005,7 +1127,7 @@ class WSCPE(BaseWS):
         return [("%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in array]
 
     @inicializar_y_capturar_excepciones
-    def ConsultarLocalidadesProductor(self, cuit_productor=1, sep="||"):
+    def ConsultarLocalidadesProductor(self, cuit_productor=None, sep="||"):
         "Obtener de localidades del cuit asociado al productor."
         response = self.client.consultarLocalidadesProductor(
             auth={
@@ -1062,19 +1184,75 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
-        wscpe.AutorizarCPEAutomotor()
-
-    # if "--" in sys.argv:
-    #     wscpe.()
+        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=20267565393, sucursal=1, nro_orden=1)
+        ok = wscpe.AgregarOrigen(planta=1, cod_provincia=12, cod_localidad_operador=5544, cod_localidad_productor=3059)
+        ok = wscpe.AgregarDestino(
+            planta=1,
+            cod_provincia=12,
+            es_destino_campo="M",
+            cod_localidad=3058,
+            cuit_destino=20111111112,
+            cuit_destinatario=30000000006,
+        )
+        ok = wscpe.AgregarRetiroProductor(
+            certificado_coe=330100025869,
+            cuit_remitente_comercial_productor=20111111112,
+            corresponde_retiro_productor=True,
+            es_solicitante_campo="N",
+        )
+        ok = wscpe.AgregarIntervinientes(
+            cuit_mercado_a_termino=20222222223,
+            cuit_corredor_venta_primaria=20222222223,
+            cuit_corredor_venta_secundaria=20222222223,
+            cuit_remitente_comercial_venta_secundaria=20222222223,
+            cuit_intermediario=20222222223,
+            cuit_remitente_comercial_venta_primaria=20222222223,
+            cuit_representante_entregador=20222222223,
+        )
+        ok = wscpe.AgregarDatosCarga(
+            peso_tara=1000,
+            cod_grano=31,
+            peso_bruto=1000,
+            cosecha=910,
+        )
+        ok = wscpe.AgregarTransporte(
+            cuit_transportista=20333333334,
+            fecha_hora_partida=datetime.datetime.now(),
+            codigo_turno="00",
+            dominio=["ZZZ000", "ZZZ999"],  # 1 or more repetitions
+            km_recorrer=500,
+        )
+        ok = wscpe.AutorizarCPEAutomotor()
+        if wscpe.NroCTG:
+            print("Numero de cpe:", wscpe.NroCTG)
+            print("Fecha de emision:", wscpe.FechaEmision)
+            print("Estado:", wscpe.Estado, "detalle:", ESTADO_CPE[wscpe.Estado])
+            print("Fecha de inicio de estado:", wscpe.FechaInicioEstado)
+            print("Fecha de vencimiento:", wscpe.FechaVencimiento)
 
     if "--autorizar_cpe_ferroviaria" in sys.argv:
         wscpe.AutorizarCPEFerroviaria()
 
+    if "--ult" in sys.argv:
+        wscpe.ConsultarUltNroOrden()
+        print("Nro Orden: ", wscpe.NroOrden)
+
     if "--anular_cpe" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AnularCPE()
 
     if "--rechazo_cpe" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.RechazoCPE()
+
+    if "--confirmar_arribo_cpe" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.ConfirmarArriboCPE()
+
+    if "--informar_contingencia" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarContingencia(concepto="F", descripcion="XXXXX")
+        wscpe.InformarContingencia()
 
     if "--consultar_cpe_ferroviaria" in sys.argv:
         wscpe.ConsultarCPEFerroviaria()
@@ -1082,26 +1260,11 @@ if __name__ == "__main__":
     if "--consulta_cpe_ferroviaria_por_nro_operativo" in sys.argv:
         wscpe.ConsultaCPEFerroviariaPorNroOperativo()
 
-    if "--confirmar_arribo_cpe" in sys.argv:
-        wscpe.ConfirmarArriboCPE()
-
     if "--confirmacion_definitiva_cpe_ferroviaria" in sys.argv:
         wscpe.ConfirmacionDefinitivaCPEFerroviaria()
 
-    if "--consultar_cpe_automotor" in sys.argv:
-        wscpe.ConsultarCPEAutomotor()
-
-    if "--informar_contingencia" in sys.argv:
-        wscpe.InformarContingencia()
-
-    if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
-        wscpe.ConfirmacionDefinitivaCPEAutomotor()
-
     if "--cerrar_contingencia_cpe_ferroviaria" in sys.argv:
         wscpe.CerrarContingenciaCPEFerroviaria()
-
-    if "--ult" in sys.argv:
-        wscpe.ConsultarUltNroOrden()
 
     if "--nuevo_destino_destinatario_cpe_ferroviaria" in sys.argv:
         wscpe.NuevoDestinoDestinatarioCPEFerroviaria()
@@ -1112,16 +1275,42 @@ if __name__ == "__main__":
     if "--desvio_cpe_ferroviario" in sys.argv:
         wscpe.DesvioCPEFerroviaria()
 
+    if "--consultar_cpe_automotor" in sys.argv:
+        wscpe.ConsultarCPEAutomotor(tipo_cpe=74, sucursal=1, nro_orden=1)
+
+    if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
+        wscpe.ConfirmacionDefinitivaCPEAutomotor()
+
     if "--descargado_destino_cpe" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.DescargadoDestinoCPE()
 
     if "--nuevo_destino_destinatario_cpe_automotor" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarDestino(
+            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo="M"
+        )
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
+        print(wscpe.cpe)
         wscpe.NuevoDestinoDestinatarioCPEAutomotor()
 
     if "--regreso_origen_cpe_automotor" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarDestino(
+            cuit_destinatario=30000000006,
+        )
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
+        print(wscpe.cpe)
         wscpe.RegresoOrigenCPEAutomotor()
 
     if "--desvio_cpe_automotor" in sys.argv:
+        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarDestino(
+            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo="N"  # newton
+        )
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
         wscpe.DesvioCPEAutomotor()
 
     if "--provincias" in sys.argv:
