@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.00a"
+__version__ = "1.01a"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
