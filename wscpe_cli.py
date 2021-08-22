@@ -204,14 +204,13 @@ TIPO_REGISTROS = {
     "E": 'errores',
     "V": 'eventos',
 }
-
+TIPO_REGISTROS_REV = dict([(v, k) for (k, v) in TIPO_REGISTROS.items()])
 
 def preparar_registros(dic, header='encabezado'):
     formatos = []
-    tipos_registros_rev = dict([(v, k) for (k, v) in TIPO_REGISTROS.items()])
     for key, formato in FORMATOS.items():
         nombre = key
-        tipo_reg = tipos_registros_rev[key]
+        tipo_reg = TIPO_REGISTROS_REV[key]
         if key != header:
             regs = dic.get(key, [])
         else:
@@ -263,7 +262,8 @@ if __name__ == '__main__':
 
     if '--formato' in sys.argv:
         print "Formato:"
-        for msg, formato, key, tipo_reg in FORMATOS:
+        for msg, formato in sorted(FORMATOS.items(), key=lambda x: TIPO_REGISTROS_REV[x[0]]):
+            tipo_reg = TIPO_REGISTROS_REV[msg]
             comienzo = 1
             print "=== %s ===" % msg
             print "|| Campo %-39s || Posición || Longitud || Tipo %7s || Dec. || Valor ||" % (" ", " ")
