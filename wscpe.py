@@ -33,8 +33,10 @@ wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
 Resolución General 5017/2021
 Copyright (C) 2021 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CartadePorte
+
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
+
 Para información adicional sobre garantía, soporte técnico comercial
 e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
@@ -43,9 +45,11 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 AYUDA = """  # grey
 Opciones: 
   --ayuda: este mensaje
+
   --debug: modo depuración (detalla y confirma las operaciones)
   --prueba: genera y autoriza una rec de prueba (no usar en producción!)
   --dummy: consulta estado de servidores
+
 Ver wscpe.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
@@ -209,7 +213,7 @@ class WSCPE(BaseWS):
         if errores:
             errores = errores[0]
         self.ErrCode = " ".join(["%(codigo)s" % err for err in errores])
-        self.ErrMsg = "\n".join(["%(codigo)s: %(descripcion)s" % err for err in errores])
+        self.ErrMsg = "\n".join(["%(codigo)s - %(descripcion)s" % err for err in errores])
 
     def __analizar_observaciones(self, ret):
         "Comprueba y extrae observaciones si existen en la respuesta XML"
@@ -366,13 +370,14 @@ class WSCPE(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarCabecera(
-        self, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, actualizar=False, **kwargs
+        self, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, nro_ctg=None, actualizar=False, **kwargs
     ):
         """Inicializa internamente los datos de cabecera para cpe automotor."""
         # cabecera para modificaciones, rechazos o anulaciones.
         if actualizar:
             cabecera = {
                 "cuitSolicitante": cuit_solicitante,
+                "nroCTG": nro_ctg,
                 "cartaPorte": {
                     "tipoCPE": tipo_cpe,
                     "sucursal": sucursal,
@@ -1199,23 +1204,20 @@ if __name__ == "__main__":
         wscpe.DesvioCPEFerroviaria()
 
     if "--consultar_cpe_automotor" in sys.argv:
-        wscpe.ConsultarCPEAutomotor(tipo_cpe=74, sucursal=221, nro_orden=3, cuit_solicitante=CUIT)
+        wscpe.ConsultarCPEAutomotor(tipo_cpe=74, sucursal=1, nro_orden=1, cuit_solicitante=CUIT)
 
     if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
         wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarIntervinientes(cuit_representante_recibidor=20222222223)
         wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
         wscpe.ConfirmacionDefinitivaCPEAutomotor()
-
-    if "--descargado_destino_cpe" in sys.argv:
-        wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
-        wscpe.DescargadoDestinoCPE()
 
     if "--nuevo_destino_destinatario_cpe_automotor" in sys.argv:
         wscpe.AgregarCabecera(actualizar=True, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
-            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo="M"
+            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
         print(wscpe.cpe)
         wscpe.NuevoDestinoDestinatarioCPEAutomotor()
 
@@ -1224,16 +1226,16 @@ if __name__ == "__main__":
         wscpe.AgregarDestino(
             cuit_destinatario=30000000006,
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
         print(wscpe.cpe)
         wscpe.RegresoOrigenCPEAutomotor()
 
     if "--desvio_cpe_automotor" in sys.argv:
         wscpe.AgregarCabecera(actualizar=True, cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
-            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo="N"  # newton
+            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True  # newton
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333)
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
         wscpe.DesvioCPEAutomotor()
 
     if "--provincias" in sys.argv:
@@ -1259,4 +1261,4 @@ if __name__ == "__main__":
             bh.write(wscpe.XmlRequest)
 
     if wscpe.Errores:
-        print(wscpe.ErrMsg)
+        print("Error:", wscpe.ErrMsg)
