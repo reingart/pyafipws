@@ -368,12 +368,16 @@ if __name__ == '__main__':
                 nro_orden = sys.argv[sys.argv.index("--consultar") + 1]
                 sucursal = sys.argv[sys.argv.index("--consultar") + 2]
                 tipo_cpe = sys.argv[sys.argv.index("--consultar") + 3]
+                nro_ctg = sys.argv[sys.argv.index("--consultar") + 4]
             except IndexError, ValueError:
                 tipo_cpe = raw_input("Tipo de CPE [74]:") or 74
                 sucursal = raw_input("Sucursal [1]:") or 1
                 nro_orden = raw_input("Nro de orden:") or 1
-            wscpe.AgregarCabecera(actualizar=True, tipo_cpe=tipo_cpe, sucursal=sucursal, nro_orden=nro_orden, cuit_solicitante=wscpe.Cuit)
-            ok = wscpe.ConsultarCPEAutomotor()
+                nro_ctg = raw_input("Nro de CTG:") or None
+            if nro_ctg:
+                ok = wscpe.ConsultarCPEAutomotor(cuit_solicitante=wscpe.Cuit, nro_ctg=nro_ctg)
+            else:
+                ok = wscpe.ConsultarCPEAutomotor(tipo_cpe=tipo_cpe, sucursal=sucursal, nro_orden=nro_orden, cuit_solicitante=wscpe.Cuit)
             if wscpe.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wscpe.Excepcion
                 if DEBUG: print >> sys.stderr, wscpe.Traceback
