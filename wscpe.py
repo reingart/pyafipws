@@ -1231,7 +1231,7 @@ if __name__ == "__main__":
         wscpe.RegresoOrigenCPEAutomotor()
 
     if "--desvio_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(actualizarcuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarDestino(
             cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True  # newton
         )
