@@ -464,7 +464,7 @@ class WSCPE(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarCabecera(
-        self, actualizar=False, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, **kwargs
+        self, tipo_cpe=None, cuit_solicitante=None, sucursal=None, nro_orden=None, actualizar=False, **kwargs
     ):
         """Inicializa internamente los datos de cabecera para cpe automotor."""
         # cabecera para modificaciones, rechazos o anulaciones.
