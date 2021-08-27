@@ -147,6 +147,8 @@ class WSCPE(BaseWS):
         "ConsultarTiposGrano",
         "AutorizarCPEFerroviaria",
         "DesvioCPEAutomotor",
+        "EditarCPEAutomotor",
+        "EditarCPEFerroviaria",
         "SetParametros",
         "SetParametro",
         "GetParametro",
