@@ -1260,17 +1260,27 @@ if __name__ == "__main__":
         wscpe.AnularCPE()
 
     if "--rechazo_cpe" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.RechazoCPE()
 
     if "--confirmar_arribo_cpe" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.ConfirmarArriboCPE()
 
     if "--informar_contingencia" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarContingencia(concepto="F", descripcion="XXXXX")
         wscpe.InformarContingencia()
+
+    if "--descargado_destino_cpe" in sys.argv:
+        wscpe.AgregarCabecera(
+            cuit_solicitante=CUIT,
+            tipo_cpe=74,
+            sucursal=1,
+            nro_orden=1,
+            actualizar=True,
+        )
+        wscpe.DescargadoDestinoCPE()
 
     if "--editar_cpe_ferroviaria" in sys.argv:
         wscpe.EditarCPEFerroviaria(
@@ -1322,7 +1332,7 @@ if __name__ == "__main__":
         wscpe.ConsultarCPEAutomotor(tipo_cpe=74, sucursal=1, nro_orden=1, cuit_solicitante=CUIT)
 
     if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarIntervinientes(cuit_representante_recibidor=20222222223)
         wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
         wscpe.ConfirmacionDefinitivaCPEAutomotor()
@@ -1346,7 +1356,7 @@ if __name__ == "__main__":
         wscpe.RegresoOrigenCPEAutomotor()
 
     if "--desvio_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
         wscpe.AgregarDestino(
             cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True  # newton
         )
@@ -1366,7 +1376,7 @@ if __name__ == "__main__":
         print("\n".join(ret))
 
     if "--localidades_productor" in sys.argv:
-        ret = wscpe.ConsultarLocalidadesProductor(cuit_productor=20267565393)
+        ret = wscpe.ConsultarLocalidadesProductor(cuit_productor=CUIT)
         print("\n".join(ret))
 
     if "--debug" in sys.argv:
