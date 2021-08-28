@@ -1199,7 +1199,62 @@ if __name__ == "__main__":
             x.write(dom.toprettyxml())
 
     if "--autorizar_cpe_ferroviaria" in sys.argv:
+        ok = wscpe.AgregarCabecera(sucursal=1, nro_orden=1, planta=1)
+        ok = wscpe.AgregarDestino(
+            cuit_destinatario=30000000006,
+            cuit_destino=20111111112,
+            es_destino_campo=True,
+            planta=1,
+            cod_provincia=12,
+            cod_localidad=3058,
+        )
+        ok = wscpe.AgregarRetiroProductor(
+            # certificado_coe=330100025869,
+            # cuit_remitente_comercial_productor=20111111112,
+            corresponde_retiro_productor=False,
+        )
+        # ok = wscpe.AgregarIntervinientes(
+        #     cuit_mercado_a_termino=20222222223,
+        #     cuit_corredor_venta_primaria=20222222223,
+        #     cuit_corredor_venta_secundaria=20222222223,
+        #     cuit_remitente_comercial_venta_secundaria=20222222223,
+        #     cuit_intermediario=20222222223,
+        #     cuit_remitente_comercial_venta_primaria=20222222223,
+        #     cuit_representante_entregador=20222222223,
+        #     cuit_representante_recibidor=20222222223,  # nuevo
+        # )
+        ok = wscpe.AgregarDatosCarga(
+            peso_tara=1000,
+            cod_grano=31,
+            peso_bruto=1000,
+            cosecha=910,
+        )
+        ok = wscpe.AgregarTransporte(
+            # cuit_pagador_flete=20333333335,
+            cuit_transportista=20333333334,
+            # cuit_transportista_tramo2=20222222223,
+            nro_vagon=55555555,
+            nro_precinto=1,
+            nro_operativo=1111111111,
+            fecha_hora_partida=datetime.datetime.now(),
+            km_recorrer=500,
+            codigo_ramal=99,
+            descripcion_ramal="XXXXX",
+            mercaderia_fumigada=True,
+        )
         wscpe.AutorizarCPEFerroviaria()
+        if wscpe.NroCTG:
+            print(wscpe.NroCTG)
+            print(wscpe.FechaEmision)
+            print(wscpe.Estado)
+            print(wscpe.FechaInicioEstado)
+            print(wscpe.FechaVencimiento)
+
+        with open("wscpe.xml", "w") as x:
+            import xml.dom.minidom
+
+            dom = xml.dom.minidom.parseString(wscpe.XmlRequest)
+            x.write(dom.toprettyxml())
 
     if "--ult" in sys.argv:
         wscpe.ConsultarUltNroOrden()
