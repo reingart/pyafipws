@@ -236,11 +236,13 @@ class WSCPE(BaseWS):
         cuit_solicitante=None,
         sucursal=None,
         nro_orden=None,
+        planta=None,
+        carta_porte=None,
         nro_ctg=None,
         actualizar=False,
         **kwargs
     ):
-        """Inicializa internamente los datos de cabecera para cpe automotor."""
+        """Inicializa internamente los datos de cabecera para una cpe."""
         # cabecera para modificaciones, rechazos o anulaciones.
         if actualizar:
             cabecera = {
@@ -254,6 +256,8 @@ class WSCPE(BaseWS):
             }
             if not cabecera["cuitSolicitante"]:
                 del cabecera["cuitSolicitante"]
+            if not sucursal:
+                del cabecera["cartaPorte"]
             self.cpe = cabecera
         else:
             cabecera = {
@@ -261,7 +265,15 @@ class WSCPE(BaseWS):
                 "cuitSolicitante": cuit_solicitante,
                 "sucursal": sucursal,
                 "nroOrden": nro_orden,
+                "planta": planta,
             }
+            # descarto campos segun tipo cp Automotor-Ferroviaria
+            if not cabecera["cuitSolicitante"]:
+                del cabecera["cuitSolicitante"]
+            if not cabecera["tipoCP"]:
+                del cabecera["tipoCP"]
+            if not cabecera["planta"]:
+                del cabecera["planta"]
             # creo el diccionario para agregar datos cpe
             self.cpe = {"cabecera": cabecera}
         return True
@@ -276,7 +288,7 @@ class WSCPE(BaseWS):
         cod_localidad_productor=None,
         **kwargs
     ):
-        """Inicializa internamente los datos de origen para cpe automotor."""
+        """Inicializa internamente los datos de origen para una cpe."""
         operador = {
             "codProvincia": cod_provincia_operador,
             "codLocalidad": cod_localidad_operador,
@@ -303,7 +315,7 @@ class WSCPE(BaseWS):
         cuit_remitente_comercial_productor=None,
         **kwargs
     ):
-        """Inicializa internamente los datos de retiro de productor para cpe automotor."""
+        """Inicializa internamente los datos de retiro de productor para una cpe."""
         retiro_productor = {
             "certificadoCOE": certificado_coe,
             "cuitRemitenteComercialProductor": cuit_remitente_comercial_productor,
@@ -327,7 +339,7 @@ class WSCPE(BaseWS):
         cuit_representante_recibidor=None,
         **kwargs
     ):
-        """Inicializa internamente los datos de los intervinientes para cpe automotor."""
+        """Inicializa internamente los datos de los intervinientes para una cpe."""
         intervinientes = {
             "cuitIntermediario": cuit_intermediario,
             "cuitRemitenteComercialVentaPrimaria": cuit_remitente_comercial_venta_primaria,
@@ -343,7 +355,7 @@ class WSCPE(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def AgregarDatosCarga(self, cod_grano=None, cosecha=None, peso_bruto=None, peso_tara=None, **kwargs):
-        """Inicializa internamente los datos de carga para cpe automotor."""
+        """Inicializa internamente los datos de carga para una cpe."""
         datos_carga = {
             "codGrano": cod_grano,
             "cosecha": cosecha,
@@ -368,7 +380,7 @@ class WSCPE(BaseWS):
         cuit_destinatario=None,
         **kwargs
     ):
-        """Inicializa internamente los datos de destino para cpe automotor."""
+        """Inicializa internamente los datos de destino para una cpe."""
         destino = {
             "cuit": cuit_destino,
             "esDestinoCampo": es_destino_campo,
@@ -388,6 +400,10 @@ class WSCPE(BaseWS):
     def AgregarTransporte(
         self,
         cuit_transportista=None,
+        cuit_transportista_tramo2=None,
+        nro_vagon=None,
+        nro_precinto=None,
+        nro_operativo=None,
         dominio=None,  # 1 or more repetitions
         fecha_hora_partida=None,
         km_recorrer=None,
@@ -395,29 +411,50 @@ class WSCPE(BaseWS):
         cuit_chofer=None,
         tarifa=None,
         cuit_pagador_flete=None,
-        cuit_intermediario_flete=None,
         mercaderia_fumigada=None,
+        cuit_intermediario_flete=None,
+        codigo_ramal=None,
+        descripcion_ramal=None,
         **kwargs
     ):
-        """Inicializa internamente los datos de transporte para cpe automotor."""
-        transp = {
-            "cuitTransportista": cuit_transportista,
-            "dominio": dominio,
-            "fechaHoraPartida": fecha_hora_partida,
-            "kmRecorrer": km_recorrer,
-            "codigoTurno": codigo_turno,
-            "cuitChofer": cuit_chofer,
-            "tarifa": tarifa,
-            "cuitPagadorFlete": cuit_pagador_flete,
-            "cuitIntermediarioFlete": cuit_intermediario_flete,
-            "mercaderiaFumigada": mercaderia_fumigada,
-        }
-        transporte = {}
-        for campo, dato in transp.items():
-            if transp[campo]:
-                transporte[campo] = dato
-
-        self.cpe["transporte"] = transporte
+        """Inicializa internamente los datos de transporte para una cpe."""
+        if codigo_ramal:  # cpe ferroviaria
+            transporte = {
+                "cuitTransportista": cuit_transportista,
+                "cuitTransportistaTramo2": cuit_transportista_tramo2,
+                "nroVagon": nro_vagon,
+                "nroPrecinto": nro_precinto,
+                "nroOperativo": nro_operativo,
+                "fechaHoraPartidaTren": fecha_hora_partida,
+                "kmRecorrer": km_recorrer,
+                "cuitPagadorFlete": cuit_pagador_flete,
+                "mercaderiaFumigada": mercaderia_fumigada,
+            }
+            ramal = {"codigo": codigo_ramal, "descripcion": descripcion_ramal}
+            # ajuste para confirmacion_definitiva_cpe_ferroviaria
+            # ajuste para desviocpeferroviaria
+            if cuit_transportista or km_recorrer:
+                transporte["ramal"] = ramal
+            else:
+                transporte["ramalDescarga"] = ramal
+        else:
+            transporte = {
+                "cuitTransportista": cuit_transportista,
+                "dominio": dominio,
+                "fechaHoraPartida": fecha_hora_partida,
+                "kmRecorrer": km_recorrer,  # obligatorio en todos los metodos que lo solicitan
+                "codigoTurno": codigo_turno,
+                "cuitChofer": cuit_chofer,
+                "tarifa": tarifa,
+                "cuitPagadorFlete": cuit_pagador_flete,
+                "cuitIntermediarioFlete": cuit_intermediario_flete,
+                "mercaderiaFumigada": mercaderia_fumigada,
+            }
+        # ajuste para confirmacion_definitiva_cpe_ferroviaria
+        if transporte["kmRecorrer"]:
+            self.cpe["transporte"] = transporte
+        else:
+            self.cpe.update(transporte)
         return True
 
     def AgregarContingencia(
@@ -428,6 +465,36 @@ class WSCPE(BaseWS):
         """Inicialliza datos para contingencias en cpe."""
         self.cpe["contingencia"] = {"concepto": concepto, "descripcion": descripcion}
         return True
+
+    def AgregarCerrarContingenciaFerroviaria(
+        self,
+        concepto=None,
+        cuit_transportista=None,
+        nro_operativo=None,
+        concepto_desactivacion=None,
+        descripcion=None,
+        **kwrags
+    ):
+        """Inicializa datos para el cierre, la reactivacion, extension de una contingencias en cpe ferroviaria.
+
+            A: Reactivación para descarga en destino.
+            B: Extensión cierre contingencia.
+            C: Desactivar definitivamente la CP.
+        """
+        if concepto == "A":
+            motivo = {
+                "concepto": concepto,  # A, B, C
+                "reactivacionDestino": {
+                    "cuitTransportista": cuit_transportista,
+                    "nroOperativo": nro_operativo,
+                }
+            }
+        else:
+            motivo = {
+                "concepto": concepto,  # A, B, C - distintos para la desactivacion
+                "motivoDesactivacionCP": {"concepto": concepto_desactivacion, "descripcion": descripcion}
+            }
+        self.cpe.update(motivo)
 
     @inicializar_y_capturar_excepciones
     def AutorizarCPEFerroviaria(self, archivo="cpe_ferroviaria.pdf"):  # green
