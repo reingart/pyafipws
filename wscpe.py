@@ -230,141 +230,6 @@ class WSCPE(BaseWS):
             self.Evento = "%(codigo)s: %(descripcion)s" % evt
 
     @inicializar_y_capturar_excepciones
-    def AgregarCabeceraFerroviaria(self, sucursal, nro_orden, planta, **kwargs):
-        """Inicializa internamente los datos de cabecera para cpe ferroviaria."""
-        self.cpe_ferroviaria["cabecera"] = {
-            "sucursal": sucursal,
-            "nroOrden": nro_orden,
-            "planta": planta,
-        }
-        return True
-
-    @inicializar_y_capturar_excepciones
-    def AgregarRetiroProductorFerroviaria(
-        self,
-        corresponde_retiro_productor=None,
-        certificado_coe=None,
-        cuit_remitente_comercial_productor=None,
-        **kwargs
-    ):
-        """Inicializa internamente los datos de retiro de productor para cpe ferroviario."""
-        self.cpe_ferroviaria.update({"correspondeRetiroProductor": corresponde_retiro_productor})
-
-        if corresponde_retiro_productor:
-            self.cpe_ferroviaria["retiroProductor"] = {
-                "certificadoCOE": certificado_coe,
-                "cuitRemitenteComercialProductor": cuit_remitente_comercial_productor,
-            }
-        else:
-            self.cpe_ferroviaria["retiroProductor"] = {}
-        return True
-
-    @inicializar_y_capturar_excepciones
-    def AgregarIntervinientesFerroviaria(
-        self,
-        cuit_intermediario,
-        cuit_remitente_comercial_venta_primaria,
-        cuit_remitente_comercial_venta_secundaria,
-        cuit_mercado_a_termino,
-        cuit_corredor_venta_primaria,
-        cuit_corredor_venta_secundaria,
-        cuit_representante_entregador,
-        **kwargs
-    ):
-        """Inicializa internamente los datos de intervinientes para cpe ferroviario."""
-        intervinientes = {
-            "cuitIntermediario": cuit_intermediario,
-            "cuitRemitenteComercialVentaPrimaria": cuit_remitente_comercial_venta_primaria,
-            "cuitRemitenteComercialVentaSecundaria": cuit_remitente_comercial_venta_secundaria,
-            "cuitMercadoATermino": cuit_mercado_a_termino,
-            "cuitCorredorVentaPrimaria": cuit_corredor_venta_primaria,
-            "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
-            "cuitRepresentanteEntregador": cuit_representante_entregador,
-        }
-        self.cpe_ferroviaria["intervinientes"] = intervinientes
-        return True
-
-    @inicializar_y_capturar_excepciones
-    def AgregarDatosCargaFerroviaria(self, cod_grano, cosecha, peso_bruto, peso_tara, **kwargs):
-        """Inicializa internamente los datos de carga para cpe ferroviario."""
-
-        datos_carga = {
-            "codGrano": cod_grano,
-            "cosecha": cosecha,
-            "pesoBruto": peso_bruto,
-            "pesoTara": peso_tara,
-        }
-        self.cpe_ferroviaria["datosCarga"] = datos_carga
-        return True
-
-    @inicializar_y_capturar_excepciones
-    def AgregarDestinoFerroviaria(
-        self, cuit_destino, cod_provincia, cod_localidad, planta, cuit_destinatario, **kwargs
-    ):
-        """Inicializa internamente los datos de destino para cpe ferroviario."""
-        destino = {
-            "cuit": cuit_destino,
-            "codProvincia": cod_provincia,
-            "codLocalidad": cod_localidad,
-            "planta": planta,
-        }
-        cuit_destinatario = {"cuit": cuit_destinatario}
-        self.cpe_ferroviaria["destino"] = destino
-        self.cpe_ferroviaria["destinatario"] = cuit_destinatario
-        return True
-
-    @inicializar_y_capturar_excepciones
-    def AgregarTransporteFerroviaria(
-        self,
-        cuit_transportista,
-        cuit_transportista_tramo2,
-        nro_vagon,
-        nro_precinto,
-        nro_operativo,
-        fecha_hora_partida_tren,
-        km_recorrer,
-        cuit_pagador_flete,
-        mercaderia_fumigada,
-        codigo,
-        descripcion=None,
-        **kwargs
-    ):
-        """Inicializa internamente los datos de transporte para cpe ferroviario."""
-        transporte = {
-            "cuitTransportista": cuit_transportista,
-            "cuitTransportistaTramo2": cuit_transportista_tramo2,
-            "nroVagon": nro_vagon,
-            "nroPrecinto": nro_precinto,
-            "nroOperativo": nro_operativo,
-            "fechaHoraPartidaTren": fecha_hora_partida_tren,
-            "kmRecorrer": km_recorrer,
-            "cuitPagadorFlete": cuit_pagador_flete,
-            "mercaderiaFumigada": mercaderia_fumigada,
-        }
-        ramal = {"codigo": codigo, "descripcion": descripcion}
-        transporte["ramal"] = ramal
-        self.cpe_ferroviaria["transporte"] = transporte
-        return True
-
-    @inicializar_y_capturar_excepciones
-    def AutorizarCPEFerroviaria(self, archivo="cpe_ferroviaria.pdf"):  # green
-        """Informar los datos necesarios para la generación de una nueva carta porte."""
-        response = self.client.autorizarCPEFerroviaria(
-            auth={
-                "token": self.Token,
-                "sign": self.Sign,
-                "cuitRepresentada": self.Cuit,
-            },
-            solicitud=self.cpe_ferroviaria,
-        )
-        ret = response.get("respuesta")
-        if ret:
-            self.__analizar_errores(ret)
-        if "cabecera" in ret:
-            self.AnalizarCPE(ret, archivo)
-        return True
-
-    @inicializar_y_capturar_excepciones
     def AgregarCabecera(
         self,
         tipo_cpe=None,
@@ -562,6 +427,24 @@ class WSCPE(BaseWS):
     ):
         """Inicialliza datos para contingencias en cpe."""
         self.cpe["contingencia"] = {"concepto": concepto, "descripcion": descripcion}
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def AutorizarCPEFerroviaria(self, archivo="cpe_ferroviaria.pdf"):  # green
+        """Informar los datos necesarios para la generación de una nueva carta porte."""
+        response = self.client.autorizarCPEFerroviaria(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
         return True
 
     @inicializar_y_capturar_excepciones
