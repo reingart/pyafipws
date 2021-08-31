@@ -18,6 +18,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 from future import standard_library
+from future.utils import string_types
 
 standard_library.install_aliases()
 from builtins import str
@@ -542,7 +543,7 @@ class WSCPE(BaseWS):
         self.FechaVencimiento = cab["fechaVencimiento"]
         self.PDF = ret["pdf"]  # base64
         cpe_bytes = self.PDF
-        if isinstance(cpe_bytes, unicode):
+        if isinstance(cpe_bytes, string_types):
             cpe_bytes = cpe_bytes.encode("utf-8")
         with open(archivo, "wb") as fh:
             fh.write(cpe_bytes)
@@ -727,7 +728,7 @@ class WSCPE(BaseWS):
             self.__analizar_errores(ret)
         if 'resumenCartaPorte' in ret:
             cps = [
-                '\n'.join(f'{campo}: {valor}' for campo, valor in carta_porte.items())
+                '\n'.join('{}: {}'.format(campo, valor) for campo, valor in carta_porte.items())
                 for carta_porte in ret['resumenCartaPorte']
             ]
             return '\n==========\n'.join(cps)
