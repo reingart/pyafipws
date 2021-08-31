@@ -968,7 +968,7 @@ class WSCPE(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConsultarUltNroOrden(self, sucursal=1, tipo_cpe=74):
+    def ConsultarUltNroOrden(self, sucursal=None, tipo_cpe=None):
         """Obtiene el último número de orden de CPE autorizado según número de sucursal."""
         response = self.client.consultarUltNroOrden(
             auth={
@@ -1212,8 +1212,9 @@ if __name__ == "__main__":
             x.write(dom.toprettyxml())
 
     if "--ult" in sys.argv:
-        wscpe.ConsultarUltNroOrden()
-        print("Nro Orden: ", wscpe.NroOrden)
+        wscpe.ConsultarUltNroOrden(sucursal=221, tipo_cpe=74)
+        if wscpe.NroOrden:
+            print("Nro Orden: ", wscpe.NroOrden)
 
     if "--anular_cpe" in sys.argv:
         wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
