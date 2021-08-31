@@ -1088,7 +1088,9 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
-        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=3)
+        wscpe.ConsultarUltNroOrden(sucursal=221, tipo_cpe=74)
+        nro_orden = wscpe.NroOrden + 1
+        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=nro_orden)
         ok = wscpe.AgregarOrigen(
             planta=1,
             cod_provincia_operador=12,
@@ -1141,9 +1143,9 @@ if __name__ == "__main__":
         wscpe.LanzarExcepciones = False
         ok = wscpe.AutorizarCPEAutomotor()
         if wscpe.NroCTG:
-            print("Numero de cpe:", wscpe.NroCTG)
+            print("Numero de ctg:", wscpe.NroCTG)
             print("Fecha de emision:", wscpe.FechaEmision)
-            print("Estado:", wscpe.Estado, "detalle:", ESTADO_CPE[wscpe.Estado])
+            print("Estado:", wscpe.Estado, "-", ESTADO_CPE[wscpe.Estado])
             print("Fecha de inicio de estado:", wscpe.FechaInicioEstado)
             print("Fecha de vencimiento:", wscpe.FechaVencimiento)
 
