@@ -116,6 +116,7 @@ class WSCPE(BaseWS):
         "Dummy",
         "SetTicketAcceso",
         "DebugLog",
+        "CrearCPE",
         "AgregarCabecera",
         "AgregarOrigen",
         "AgregarRetiroProductor",
