@@ -209,6 +209,8 @@ class WSCPE(BaseWS):
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
         if not hasattr(self, "cpe"):
             self.cpe = {}
+        if not hasattr(self, "_actualizar"):
+            self._actualizar = True
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -230,6 +232,11 @@ class WSCPE(BaseWS):
             self.Eventos = [evt]
             self.Evento = "%(codigo)s: %(descripcion)s" % evt
 
+    def CrearCPE(self):
+        """Cambia la estructura de datos en AgregarCabecera para crear una CPE."""
+        self._actualizar = False
+        return True
+
     @inicializar_y_capturar_excepciones
     def AgregarCabecera(
         self,
@@ -240,12 +247,11 @@ class WSCPE(BaseWS):
         planta=None,
         carta_porte=None,
         nro_ctg=None,
-        actualizar=False,
         **kwargs
     ):
         """Inicializa internamente los datos de cabecera para una cpe."""
         # cabecera para modificaciones, rechazos o anulaciones.
-        if actualizar:
+        if self._actualizar:
             cabecera = {
                 "cuitSolicitante": cuit_solicitante,
                 "nroCTG": nro_ctg,
@@ -255,8 +261,6 @@ class WSCPE(BaseWS):
                     "nroOrden": nro_orden,
                 },
             }
-            if not cabecera["cuitSolicitante"]:
-                del cabecera["cuitSolicitante"]
             if not sucursal:
                 del cabecera["cartaPorte"]
             self.cpe = cabecera
@@ -268,13 +272,6 @@ class WSCPE(BaseWS):
                 "nroOrden": nro_orden,
                 "planta": planta,
             }
-            # descarto campos segun tipo cp Automotor-Ferroviaria
-            if not cabecera["cuitSolicitante"]:
-                del cabecera["cuitSolicitante"]
-            if not cabecera["tipoCP"]:
-                del cabecera["tipoCP"]
-            if not cabecera["planta"]:
-                del cabecera["planta"]
             # creo el diccionario para agregar datos cpe
             self.cpe = {"cabecera": cabecera}
         return True
@@ -498,7 +495,7 @@ class WSCPE(BaseWS):
         self.cpe.update(motivo)
 
     @inicializar_y_capturar_excepciones
-    def AutorizarCPEFerroviaria(self, archivo="cpe_ferroviaria.pdf"):  # green
+    def AutorizarCPEFerroviaria(self, archivo="cpe_ferroviaria.pdf"):
         """Informar los datos necesarios para la generación de una nueva carta porte."""
         response = self.client.autorizarCPEFerroviaria(
             auth={
@@ -1088,8 +1085,9 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
-        wscpe.ConsultarUltNroOrden(sucursal=221, tipo_cpe=74)
+        ok = wscpe.ConsultarUltNroOrden(sucursal=221, tipo_cpe=74)
         nro_orden = wscpe.NroOrden + 1
+        ok = wscpe.CrearCPE()
         ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=nro_orden)
         ok = wscpe.AgregarOrigen(
             planta=1,
@@ -1156,6 +1154,7 @@ if __name__ == "__main__":
             x.write(dom.toprettyxml())
 
     if "--autorizar_cpe_ferroviaria" in sys.argv:
+        ok = wscpe.CrearCPE()
         ok = wscpe.AgregarCabecera(sucursal=1, nro_orden=1, planta=1)
         ok = wscpe.AgregarDestino(
             cuit_destinatario=30000000006,
@@ -1219,19 +1218,19 @@ if __name__ == "__main__":
             print("Nro Orden: ", wscpe.NroOrden)
 
     if "--anular_cpe" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AnularCPE()
 
     if "--rechazo_cpe" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.RechazoCPE()
 
     if "--confirmar_arribo_cpe" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.ConfirmarArriboCPE()
 
     if "--informar_contingencia" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarContingencia(concepto="F", descripcion="XXXXX")
         wscpe.InformarContingencia()
 
@@ -1241,7 +1240,6 @@ if __name__ == "__main__":
             tipo_cpe=74,
             sucursal=1,
             nro_orden=1,
-            actualizar=True,
         )
         wscpe.DescargadoDestinoCPE()
 
@@ -1265,7 +1263,7 @@ if __name__ == "__main__":
 
     if "--confirmacion_definitiva_cpe_ferroviaria" in sys.argv:
         wscpe.AgregarCabecera(
-            cuit_solicitante=CUIT, tipo_cpe=75, sucursal=1, nro_orden=1, actualizar=True
+            cuit_solicitante=CUIT, tipo_cpe=75, sucursal=1, nro_orden=1
         )
         # wscpe.AgregarDestino(
         #     cuit_destinatario=30000000006,
@@ -1290,7 +1288,6 @@ if __name__ == "__main__":
             tipo_cpe=75,
             sucursal=1,
             nro_orden=1,
-            actualizar=True,
         )
         wscpe.AgregarCerrarContingenciaFerroviaria(
             concepto="A",
@@ -1306,7 +1303,6 @@ if __name__ == "__main__":
             tipo_cpe=75,
             sucursal=1,
             nro_orden=1,
-            actualizar=True,
         )
         wscpe.AgregarDestino(
             # cuit_destinatario=30000000006,
@@ -1329,7 +1325,6 @@ if __name__ == "__main__":
             tipo_cpe=75,
             sucursal=1,
             nro_orden=1,
-            actualizar=True,
         )
         # wscpe.AgregarDestino(
         #     cuit_destinatario=30000000006
@@ -1348,7 +1343,6 @@ if __name__ == "__main__":
             tipo_cpe=75,
             sucursal=1,
             nro_orden=1,
-            actualizar=True,
         )
         wscpe.AgregarDestino(
             cuit_destino=20111111112,
@@ -1382,13 +1376,13 @@ if __name__ == "__main__":
         wscpe.ConsultarCPEAutomotor(tipo_cpe=74, sucursal=1, nro_orden=1, cuit_solicitante=CUIT)
 
     if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         # wscpe.AgregarIntervinientes(cuit_representante_recibidor=20222222223)
         wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
         wscpe.ConfirmacionDefinitivaCPEAutomotor()
 
     if "--nuevo_destino_destinatario_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
             cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True, cuit_destinatario=30000000006
         )
@@ -1396,7 +1390,7 @@ if __name__ == "__main__":
         wscpe.NuevoDestinoDestinatarioCPEAutomotor()
 
     if "--regreso_origen_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
             cuit_destinatario=30000000006,
         )
@@ -1404,7 +1398,7 @@ if __name__ == "__main__":
         wscpe.RegresoOrigenCPEAutomotor()
 
     if "--desvio_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
             cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True  # newton
         )
