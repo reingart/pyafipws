@@ -30,7 +30,7 @@ __license__ = "LGPL 3.0"
 __version__ = "1.01b"
 
 LICENCIA = """
-wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
+wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.1.0
 Resolución General 5017/2021
 Copyright (C) 2021 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CartadePorte
