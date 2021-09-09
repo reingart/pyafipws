@@ -151,6 +151,7 @@ class WSCPE(BaseWS):
         "DesvioCPEAutomotor",
         "EditarCPEAutomotor",
         "EditarCPEFerroviaria",
+        "ConsultarPlantas",
         "SetParametros",
         "SetParametro",
         "GetParametro",
