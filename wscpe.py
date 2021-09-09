@@ -1045,6 +1045,32 @@ class WSCPE(BaseWS):
         return [("%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in array]
 
     @inicializar_y_capturar_excepciones
+    def ConsultarPlantas(self, cuit, sep="||"):
+        """Permite la consulta de plantas activas"""
+        response = self.client.consultarPlantas(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud={"cuit": cuit},
+        )
+        ret = response.get("respuesta")
+        self.__analizar_errores(ret)
+        # agrego titulos para respuesta
+        array = [
+            {
+                "nroPlanta": "Nro Planta",
+                "codProvincia": "Cod Provincia",
+                "codLocalidad": "Cod Localidad"
+            }
+        ]
+        array.extend(ret.get("planta", []))
+        return [
+            ("%s {nroPlanta} %s {codProvincia} %s {codLocalidad} %s" % (sep, sep, sep, sep)).format(**it)
+            if sep else it for it in array
+        ]
+    @inicializar_y_capturar_excepciones
     def Dummy(self):
         """Obtener el estado de los servidores de la AFIP."""
         results = self.client.dummy()["respuesta"]
@@ -1091,17 +1117,17 @@ if __name__ == "__main__":
         ok = wscpe.CrearCPE()
         ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=nro_orden)
         ok = wscpe.AgregarOrigen(
-            planta=1,
-            cod_provincia_operador=12,
-            cod_localidad_operador=7717,
-            # cod_provincia_productor=12,
-            # cod_localidad_productor=7717
+            # planta=1,
+            # cod_provincia_operador=12,
+            # cod_localidad_operador=7717,
+            cod_provincia_productor=1,
+            cod_localidad_productor=14310
         )
         ok = wscpe.AgregarDestino(
             planta=1938,
             cod_provincia=12,
             es_destino_campo=True,
-            cod_localidad=7717,
+            cod_localidad=14310,
             cuit_destino=CUIT,
             cuit_destinatario=CUIT,
         )
@@ -1420,6 +1446,10 @@ if __name__ == "__main__":
 
     if "--localidades_productor" in sys.argv:
         ret = wscpe.ConsultarLocalidadesProductor(cuit_productor=CUIT)
+        print("\n".join(ret))
+
+    if "--plantas" in sys.argv:
+        ret = wscpe.ConsultarPlantas(cuit=CUIT)
         print("\n".join(ret))
 
     if "--debug" in sys.argv:
