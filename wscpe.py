@@ -1071,6 +1071,7 @@ class WSCPE(BaseWS):
             ("%s {nroPlanta} %s {codProvincia} %s {codLocalidad} %s" % (sep, sep, sep, sep)).format(**it)
             if sep else it for it in array
         ]
+
     @inicializar_y_capturar_excepciones
     def Dummy(self):
         """Obtener el estado de los servidores de la AFIP."""
