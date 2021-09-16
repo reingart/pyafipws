@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01a"
+__version__ = "1.03a"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -42,9 +42,6 @@ Opciones:
   --xml: almacena los requerimientos y respuestas XML (depuración)
   --dummy: consulta estado de servidores
 
-  --generar: generar un cpe
-  --emitir: emite un cpe
-  --anular: anula un cpe
   --autorizar: autoriza un cpe
 
   --ult: consulta ultimo nro cpe emitido
