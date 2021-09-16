@@ -50,14 +50,10 @@ Opciones:
   --ult: consulta ultimo nro cpe emitido
   --consultar: consulta un cpe generado
 
-  --tipos_comprobante: tabla de parametros para tipo de comprobante
-  --tipos_contingencia: tipo de contingencia que puede reportar
-  --tipos_categoria_emisor: tipos de categorías de emisor
-  --tipos_categoria_receptor: tipos de categorías de receptor
-  --tipos_estados: estados posibles en los que puede estar un cpe granosero
-  --grupos_granos' grupos de los distintos tipos de cortes de granos
-  --tipos_granos': tipos de corte de granos
-  --codigos_domicilio: codigos de depositos habilitados para el cuit
+  --provincias: listado de provincias
+  --localidades_por_provincias: listado de localidades
+  --tipos_granos': listado de granos
+  --plantas: codigos de plantas habilitados para el cuit
 
 Ver wscpe.ini para parámetros de configuración (URL, certificados, etc.)"
 """
@@ -435,7 +431,7 @@ if __name__ == '__main__':
             dic["transporte"] = [dict(
                     cuit_transportista=20120372913,
                     dominio="AA001ST",
-                    fecha_hora_partida="2021-08-21T12:00:39",
+                    fecha_hora_partida="2021-08-21T23:29:26.579557",
                     km_recorrer=500,
                     cuit_chofer='20267565393',
                     codigo_turno="00",
@@ -496,55 +492,21 @@ if __name__ == '__main__':
 
         # Recuperar parámetros:
 
-        if '--tipos_comprobante' in sys.argv:
-            ret = wscpe.ConsultarTiposComprobante()
-            print "\n".join(ret)
+        if "--provincias" in sys.argv:
+            ret = wscpe.ConsultarProvincias()
+            print("\n".join(ret))
 
-        if '--tipos_contingencia' in sys.argv:
-            ret = wscpe.ConsultarTiposContingencia()
-            print "\n".join(ret)
-
-        if '--tipos_mercaderia' in sys.argv:
-            ret = wscpe.ConsultarTiposMercaderia()
-            print "\n".join(ret)
-
-        if '--tipos_embalaje' in sys.argv:
-            ret = wscpe.ConsultarTiposEmbalaje()
-            print "\n".join(ret)
-
-        if '--tipos_unidades' in sys.argv:
-            ret = wscpe.ConsultarTiposUnidades()
-            print "\n".join(ret)
-
-        if '--tipos_categoria_emisor' in sys.argv:
-            ret = wscpe.ConsultarTiposCategoriaEmisor()
-            print "\n".join(ret)
-
-        if '--tipos_categoria_receptor' in sys.argv:
-            ret = wscpe.ConsultarTiposCategoriaReceptor()
-            print "\n".join(ret)
-
-        if '--tipos_estados' in sys.argv:
-            ret = wscpe.ConsultarTiposEstado()
-            print "\n".join(ret)
-
-        if '--paises' in sys.argv:
-            ret = wscpe.ConsultarPaises()
-            print "\n".join(ret)
-
-        if '--grupos_granos' in sys.argv:
-            ret = wscpe.ConsultarGruposAzucar()
-            print "\n".join(ret)
+        if "--localidades_por_provincias" in sys.argv:
+            ret = wscpe.ConsultarLocalidadesPorProvincia()
+            print("\n".join(ret))
 
         if '--tipos_granos' in sys.argv:
-            for grupo_granos in wscpe.ConsultarGruposAzucar(sep=None):
-                ret = wscpe.ConsultarTiposAzucar(grupo_granos['codigo'])
-                print "\n".join(ret)
+            ret = wscpe.ConsultarTiposGrano()
+            print("\n".join(ret))
 
-        if '--codigos_domicilio' in sys.argv:
-            cuit = raw_input("Cuit Titular Domicilio: ")
-            ret = wscpe.ConsultarCodigosDomicilio(cuit)
-            print "\n".join(utils.norm(ret))
+        if "--plantas" in sys.argv:
+            ret = wscpe.ConsultarPlantas(cuit=CUIT)
+            print("\n".join(ret))
 
         if wscpe.Errores:
             print "Errores:", wscpe.Errores
