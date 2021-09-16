@@ -351,7 +351,7 @@ if __name__ == '__main__':
                 tipo_cpe = 74
             rec = {}
             print "Consultando ultimo cpe sucursal=%s tipo_cpe=%s" % (sucursal, tipo_cpe)
-            ok = wscpe.ConsultarUltNroOrden(tipo_cpe, sucursal)
+            ok = wscpe.ConsultarUltNroOrden(tipo_cpe=tipo_cpe, sucursal=sucursal)
             if wscpe.Excepcion:
                 print >> sys.stderr, "EXCEPCION:", wscpe.Excepcion
                 if DEBUG: print >> sys.stderr, wscpe.Traceback
@@ -454,6 +454,8 @@ if __name__ == '__main__':
                 wscpe.AgregarDestino(**dic['destino'][0])
             if dic.get("transporte"):
                 wscpe.AgregarTransporte(**dic['transporte'][0])
+        else:
+            dic = {}
 
         if '--autorizar' in sys.argv:
             if '--testing' in sys.argv:
