@@ -542,7 +542,7 @@ class WSCPE(BaseWS):
         self.FechaVencimiento = cab["fechaVencimiento"]
         self.PDF = ret["pdf"]  # base64
         cpe_bytes = self.PDF
-        if isinstance(cpe_bytes, string_types):
+        if isinstance(cpe_bytes, string_types) and sys.version_info[0] >= 3:
             cpe_bytes = cpe_bytes.encode("utf-8")
         with open(archivo, "wb") as fh:
             fh.write(cpe_bytes)
