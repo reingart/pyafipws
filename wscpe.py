@@ -27,10 +27,10 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01c"
+__version__ = "1.03a"
 
 LICENCIA = """
-wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
+wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.3.0
 Resolución General 5017/2021
 Copyright (C) 2021 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CartadePorte
@@ -64,7 +64,7 @@ import traceback
 from pysimplesoap.client import SoapFault
 
 # importo funciones compartidas:
-from utils import (
+from pyafipws.utils import (
     date,
     leer,
     escribir,
@@ -106,7 +106,7 @@ WSDL = [
 DEBUG = True
 XML = False
 CONFIG_FILE = "wscpe.ini"
-HOMO = False
+HOMO = True
 
 
 class WSCPE(BaseWS):
@@ -1085,10 +1085,10 @@ INSTALL_DIR = WSCPE.InstallDir = get_install_dir()
 
 if __name__ == "__main__":
     # obteniendo el TA
-    from wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     wsaa_url = ""
-    wscpe_url = WSDL[-1]
+    wscpe_url = WSDL[HOMO]
 
     CERT = os.getenv("CERT", "reingart.crt")
     PRIVATEKEY = os.getenv("PKEY", "reingart.key")
@@ -1114,13 +1114,15 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
-        ok = wscpe.ConsultarUltNroOrden(tipo_cpe=74, sucursal=221)
-        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=wscpe.NroOrden+1)
+        ok = wscpe.ConsultarUltNroOrden(sucursal=221, tipo_cpe=74)
+        nro_orden = wscpe.NroOrden + 1
+        ok = wscpe.CrearCPE()
+        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=nro_orden)
         ok = wscpe.AgregarOrigen(
-            #planta=1,
-            #cod_provincia_operador=12,
-            #cod_localidad_operador=14310,
-            cod_provincia_productor=12,
+            # planta=1,
+            # cod_provincia_operador=12,
+            # cod_localidad_operador=7717,
+            cod_provincia_productor=1,
             cod_localidad_productor=14310
         )
         ok = wscpe.AgregarDestino(
@@ -1132,20 +1134,20 @@ if __name__ == "__main__":
             cuit_destinatario=CUIT,
         )
         ok = wscpe.AgregarRetiroProductor(
-            #certificado_coe=330100025869,
-            #cuit_remitente_comercial_productor=20111111112,
+            # certificado_coe=330100025869,
+            # cuit_remitente_comercial_productor=20111111112,
             corresponde_retiro_productor=False,  # chequear dice booleano
             es_solicitante_campo=True,  # chequear dice booleano
         )
         ok = wscpe.AgregarIntervinientes(
-            #cuit_mercado_a_termino=20222222223,
-            #cuit_corredor_venta_primaria=20200000006,
-            #cuit_corredor_venta_secundaria=20222222223,
-            #cuit_remitente_comercial_venta_secundaria=20222222223,
+            # cuit_mercado_a_termino=20222222223,
+            # cuit_corredor_venta_primaria=20200000006,
+            # cuit_corredor_venta_secundaria=20222222223,
+            # cuit_remitente_comercial_venta_secundaria=20222222223,
             cuit_intermediario=20400000000,
             cuit_remitente_comercial_venta_primaria=27000000014,
-            #cuit_representante_entregador=20222222223,
-            #cuit_representante_recibidor=20222222223
+            # cuit_representante_entregador=20222222223,
+            # cuit_representante_recibidor=20222222223
         )
         ok = wscpe.AgregarDatosCarga(
             peso_tara=10,
@@ -1156,107 +1158,280 @@ if __name__ == "__main__":
         ok = wscpe.AgregarTransporte(
             cuit_transportista=20120372913,
             fecha_hora_partida=datetime.datetime.now() + datetime.timedelta(days=1),
-            #codigo_turno="00",
+            # codigo_turno="00",
             dominio=["AA001ST"],  # 1 or more repetitions
             km_recorrer=500,
             cuit_chofer=20333333334,
-            #tarifa=100.10,
-            #cuit_pagador_flete=20333333334,
-            #cuit_intermediario_flete=20333333334,
+            # tarifa=100.10,
+            # cuit_pagador_flete=20333333334,
+            # cuit_intermediario_flete=20333333334,
             mercaderia_fumigada=True,
         )
-        wscpe.LanzarExcepciones = True
+        wscpe.LanzarExcepciones = False
         ok = wscpe.AutorizarCPEAutomotor()
-        if wscpe.NroCTG or True:
-            print("Numero de cpe:", wscpe.NroCTG)
+        if wscpe.NroCTG:
+            print("Numero de ctg:", wscpe.NroCTG)
             print("Fecha de emision:", wscpe.FechaEmision)
-            print("Estado:", wscpe.Estado, "detalle:", ESTADO_CPE[wscpe.Estado])
+            print("Estado:", wscpe.Estado, "-", ESTADO_CPE[wscpe.Estado])
             print("Fecha de inicio de estado:", wscpe.FechaInicioEstado)
             print("Fecha de vencimiento:", wscpe.FechaVencimiento)
 
         with open("wscpe.xml", "w") as x:
             import xml.dom.minidom
-            dom =  xml.dom.minidom.parseString(wscpe.XmlRequest)
+
+            dom = xml.dom.minidom.parseString(wscpe.XmlRequest)
             x.write(dom.toprettyxml())
 
     if "--autorizar_cpe_ferroviaria" in sys.argv:
+        ok = wscpe.CrearCPE()
+        ok = wscpe.AgregarCabecera(sucursal=1, nro_orden=1, planta=1)
+        ok = wscpe.AgregarDestino(
+            cuit_destinatario=30000000006,
+            cuit_destino=20111111112,
+            es_destino_campo=True,
+            planta=1,
+            cod_provincia=12,
+            cod_localidad=3058,
+        )
+        ok = wscpe.AgregarRetiroProductor(
+            # certificado_coe=330100025869,
+            # cuit_remitente_comercial_productor=20111111112,
+            corresponde_retiro_productor=False,
+        )
+        # ok = wscpe.AgregarIntervinientes(
+        #     cuit_mercado_a_termino=20222222223,
+        #     cuit_corredor_venta_primaria=20222222223,
+        #     cuit_corredor_venta_secundaria=20222222223,
+        #     cuit_remitente_comercial_venta_secundaria=20222222223,
+        #     cuit_intermediario=20222222223,
+        #     cuit_remitente_comercial_venta_primaria=20222222223,
+        #     cuit_representante_entregador=20222222223,
+        #     cuit_representante_recibidor=20222222223,  # nuevo
+        # )
+        ok = wscpe.AgregarDatosCarga(
+            peso_tara=1000,
+            cod_grano=31,
+            peso_bruto=1000,
+            cosecha=910,
+        )
+        ok = wscpe.AgregarTransporte(
+            # cuit_pagador_flete=20333333335,
+            cuit_transportista=20333333334,
+            # cuit_transportista_tramo2=20222222223,
+            nro_vagon=55555555,
+            nro_precinto=1,
+            nro_operativo=1111111111,
+            fecha_hora_partida=datetime.datetime.now(),
+            km_recorrer=500,
+            codigo_ramal=99,
+            descripcion_ramal="XXXXX",
+            mercaderia_fumigada=True,
+        )
         wscpe.AutorizarCPEFerroviaria()
+        if wscpe.NroCTG:
+            print(wscpe.NroCTG)
+            print(wscpe.FechaEmision)
+            print(wscpe.Estado)
+            print(wscpe.FechaInicioEstado)
+            print(wscpe.FechaVencimiento)
+
+        with open("wscpe.xml", "w") as x:
+            import xml.dom.minidom
+
+            dom = xml.dom.minidom.parseString(wscpe.XmlRequest)
+            x.write(dom.toprettyxml())
 
     if "--ult" in sys.argv:
-        wscpe.ConsultarUltNroOrden()
-        print("Nro Orden: ", wscpe.NroOrden)
+        wscpe.ConsultarUltNroOrden(sucursal=221, tipo_cpe=74)
+        if wscpe.NroOrden:
+            print("Nro Orden: ", wscpe.NroOrden)
 
     if "--anular_cpe" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AnularCPE()
 
     if "--rechazo_cpe" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.RechazoCPE()
 
     if "--confirmar_arribo_cpe" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.ConfirmarArriboCPE()
 
     if "--informar_contingencia" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarContingencia(concepto="F", descripcion="XXXXX")
         wscpe.InformarContingencia()
 
+    if "--descargado_destino_cpe" in sys.argv:
+        wscpe.AgregarCabecera(
+            cuit_solicitante=CUIT,
+            tipo_cpe=74,
+            sucursal=1,
+            nro_orden=1,
+        )
+        wscpe.DescargadoDestinoCPE()
+
+    if "--editar_cpe_ferroviaria" in sys.argv:
+        wscpe.EditarCPEFerroviaria(
+            nro_ctg=10100000542,
+            cuit_intermediario=20111111113,
+            cuit_corredor_venta_primaria=20222222223,
+            cuit_corredor_venta_secundaria=20222222223,
+            cuit_remitente_comercial_venta_primaria=20222222223,
+            cuit_remitente_comercial_venta_secundaria=20222222223,
+            peso_bruto=1000,
+            cod_grano=31,
+        )
+
     if "--consultar_cpe_ferroviaria" in sys.argv:
-        wscpe.ConsultarCPEFerroviaria()
+        wscpe.ConsultarCPEFerroviaria(tipo_cpe=75, sucursal=1, nro_orden=1, cuit_solicitante=CUIT)
 
     if "--consulta_cpe_ferroviaria_por_nro_operativo" in sys.argv:
-        wscpe.ConsultaCPEFerroviariaPorNroOperativo()
+        wscpe.ConsultaCPEFerroviariaPorNroOperativo(nro_operativo=1111111111)
 
     if "--confirmacion_definitiva_cpe_ferroviaria" in sys.argv:
+        wscpe.AgregarCabecera(
+            cuit_solicitante=CUIT, tipo_cpe=75, sucursal=1, nro_orden=1
+        )
+        # wscpe.AgregarDestino(
+        #     cuit_destinatario=30000000006,
+        # )
+        # wscpe.AgregarIntervinientes(
+        #     cuit_intermediario=20222222223,
+        #     cuit_corredor_venta_primaria=20222222223,
+        #     cuit_corredor_venta_secundaria=20222222223,
+        #     cuit_remitente_comercial_venta_primaria=20222222223,
+        #     cuit_remitente_comercial_venta_secundaria=20222222223,
+        #     cuit_representante_recibidor=20222222223,  # nuevo
+        # )
+        wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
+        wscpe.AgregarTransporte(
+            codigo_ramal=99,
+            descripcion_ramal="XXXXX",
+        )
         wscpe.ConfirmacionDefinitivaCPEFerroviaria()
 
     if "--cerrar_contingencia_cpe_ferroviaria" in sys.argv:
+        wscpe.AgregarCabecera(
+            tipo_cpe=75,
+            sucursal=1,
+            nro_orden=1,
+        )
+        wscpe.AgregarCerrarContingenciaFerroviaria(
+            concepto="A",
+            # cuit_transportista=20333333334,
+            # nro_operativo=1111111111,
+            # concepto_desactivacion="A",
+            # descripcion="bloqueo"
+        )
         wscpe.CerrarContingenciaCPEFerroviaria()
 
     if "--nuevo_destino_destinatario_cpe_ferroviaria" in sys.argv:
+        wscpe.AgregarCabecera(
+            tipo_cpe=75,
+            sucursal=1,
+            nro_orden=1,
+        )
+        wscpe.AgregarDestino(
+            # cuit_destinatario=30000000006,
+            cuit_destino=20111111112,
+            cod_provincia=1,
+            cod_localidad=10216,
+            planta=1,
+        )
+        wscpe.AgregarTransporte(
+            codigo_ramal=99,
+            descripcion_ramal="Ok",
+            fecha_hora_partida=datetime.datetime.now()+datetime.timedelta(days=1),
+            km_recorrer=333,
+        )
         wscpe.NuevoDestinoDestinatarioCPEFerroviaria()
 
     if "--regreso_origen_cpe_ferroviaria" in sys.argv:
+        wscpe.AgregarCabecera(
+            cuit_solicitante=CUIT,
+            tipo_cpe=75,
+            sucursal=1,
+            nro_orden=1,
+        )
+        # wscpe.AgregarDestino(
+        #     cuit_destinatario=30000000006
+        # )
+        wscpe.AgregarTransporte(
+            codigo_ramal=99,
+            descripcion_ramal="Ok",
+            fecha_hora_partida=datetime.datetime.now(),
+            km_recorrer=333,
+        )
         wscpe.RegresoOrigenCPEFerroviaria()
 
-    if "--desvio_cpe_ferroviario" in sys.argv:
+    if "--desvio_cpe_ferroviaria" in sys.argv:
+        wscpe.AgregarCabecera(
+            cuit_solicitante=CUIT,
+            tipo_cpe=75,
+            sucursal=1,
+            nro_orden=1,
+        )
+        wscpe.AgregarDestino(
+            cuit_destino=20111111112,
+            cod_provincia=1,
+            cod_localidad=10216,
+            planta=1,
+            # es_destino_campo=True,
+        )
+        wscpe.AgregarTransporte(
+            codigo_ramal=99,
+            descripcion_ramal="Ok",
+            fecha_hora_partida=datetime.datetime.now() + datetime.timedelta(days=1),
+            km_recorrer=333,
+        )
         wscpe.DesvioCPEFerroviaria()
+
+    if "--editar_cpe_automotor" in sys.argv:
+        wscpe.EditarCPEAutomotor(
+            nro_ctg=10100000542,
+            cuit_intermediario=20222222223,
+            cuit_corredor_venta_primaria=20222222223,
+            cuit_corredor_venta_secundaria=20222222223,
+            cuit_remitente_comercial_venta_primaria=20222222223,
+            cuit_remitente_comercial_venta_secundaria=20222222223,
+            peso_bruto=1000,
+            cod_grano=31,
+            dominio=["AA001ST"],
+        )
 
     if "--consultar_cpe_automotor" in sys.argv:
         wscpe.ConsultarCPEAutomotor(tipo_cpe=74, sucursal=1, nro_orden=1, cuit_solicitante=CUIT)
 
     if "--confirmacion_definitiva_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
-        wscpe.AgregarIntervinientes(cuit_representante_recibidor=20222222223)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
+        # wscpe.AgregarIntervinientes(cuit_representante_recibidor=20222222223)
         wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
         wscpe.ConfirmacionDefinitivaCPEAutomotor()
 
     if "--nuevo_destino_destinatario_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
-            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True
+            cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True, cuit_destinatario=30000000006
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
-        print(wscpe.cpe)
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno="00")
         wscpe.NuevoDestinoDestinatarioCPEAutomotor()
 
     if "--regreso_origen_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
             cuit_destinatario=30000000006,
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
-        print(wscpe.cpe)
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno="00")
         wscpe.RegresoOrigenCPEAutomotor()
 
     if "--desvio_cpe_automotor" in sys.argv:
-        wscpe.AgregarCabecera(cuit_solicitante=20267565393, tipo_cpe=74, sucursal=1, nro_orden=1, actualizar=True)
+        wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
         wscpe.AgregarDestino(
             cuit_destino=20111111112, cod_provincia=1, cod_localidad=10216, planta=1, es_destino_campo=True  # newton
         )
-        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno='00')
+        wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno="00")
         wscpe.DesvioCPEAutomotor()
 
     if "--provincias" in sys.argv:
