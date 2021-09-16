@@ -159,7 +159,7 @@ TRANSPORTE = [
     ('cuit_chofer', 11, N),
     ('tarifa', 10, I, 2),  # 99999.99
     ('cuit_intermediario_flete', 11, N),
-    ('cuitPagadorFlete', 11, N),
+    ('cuit_agador_flete', 11, N),
     ('mercaderia_fumigada', 5, B),
     ]
 
@@ -382,24 +382,26 @@ if __name__ == '__main__':
 
         ##wscpe.client.help("generarCPE")
         if '--prueba' in sys.argv:
+            ok = wscpe.ConsultarUltNroOrden(sucursal=1, tipo_cpe=74)
+            nro_orden = wscpe.NroOrden + 1
             dic = dict(
                     tipo_cpe=74,  # 74: CPE Automotor, 75: CPE Ferroviaria,  99: Flete Corto.
                     cuit_solicitante=wscpe.Cuit,
                     sucursal=1,
-                    nro_orden=1,
+                    nro_orden=nro_orden,
             )
             dic["origen"] = [dict(
-                    cod_provincia_operador=12,
-                    cod_localidad_operador=6904,
-                    planta=1938,
+                    #cod_provincia_operador=12,
+                    #cod_localidad_operador=6904,
+                    #planta=1938,
                     cod_provincia_productor=12,
-                    cod_localidad_productor=6904,
+                    cod_localidad_productor=14310,
             )]
             dic["retiro_productor"] = [dict(
                     corresponde_retiro_productor="false",
                     es_solicitante_campo="true",
-                    certificado_coe=330100025869,
-                    cuit_remitente_comercial_productor=20111111112,
+                    #certificado_coe=330100025869,
+                    #cuit_remitente_comercial_productor=20111111112,
             )]
             dic["intervinientes"] = [dict(
                     cuit_intermediario=20400000000,
@@ -421,28 +423,32 @@ if __name__ == '__main__':
                     cuit_destino=wscpe.Cuit,
                     es_destino_campo="true",
                     cod_provincia=12,
-                    cod_localidad=7717,
+                    cod_localidad=14310,
                     planta=1938,
                     cuit_destinatario=wscpe.Cuit,
             )]
             dic["transporte"] = [dict(
                     cuit_transportista=20120372913,
                     dominio="AA001ST",
-                    fecha_hora_partida="2021-08-21T23:29:26.579557",
+                    fecha_hora_partida="2021-08-21T23:29:26",
                     km_recorrer=500,
-                    cuit_chofer='20267565393',
+                    cuit_chofer='20333333334',
                     codigo_turno="00",
                     mercaderia_fumigada="true",
+                    cuit_pagador_flete='20333333334',
+                    cuit_intermediario_flete='20267565393',
+                    tarifa=100,
             )]
             escribir_archivo(dic, ENTRADA, True)
 
         if '--cargar' in sys.argv:
             dic = leer_archivo(ENTRADA)
+            wscpe.CrearCPE()
             wscpe.AgregarCabecera(**dic)
             if dic.get("origen"):
                 wscpe.AgregarOrigen(**dic['origen'][0])
             if dic.get("retiro_productor"):
-                pass#wscpe.AgregarRetiroProductor(**dic['retiro_productor'][0])
+                wscpe.AgregarRetiroProductor(**dic['retiro_productor'][0])
             if dic.get("intervinientes"):
                 wscpe.AgregarIntervinientes(**dic['intervinientes'][0])
             if dic.get("datos_carga"):
@@ -521,3 +527,9 @@ if __name__ == '__main__':
         if DEBUG:
             raise
         sys.exit(5)
+
+    finally:
+        with open("wscpe_cli.xml", "w") as x:
+            import xml.dom.minidom
+            dom = xml.dom.minidom.parseString(wscpe.XmlRequest)
+            x.write(dom.toprettyxml())
