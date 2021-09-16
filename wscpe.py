@@ -26,7 +26,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.01c"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -63,7 +63,7 @@ import traceback
 from pysimplesoap.client import SoapFault
 
 # importo funciones compartidas:
-from pyafipws.utils import (
+from utils import (
     date,
     leer,
     escribir,
@@ -97,7 +97,7 @@ ESTADO_CPE = {
 
 # constantes de configuración (producción/homologación):
 WSDL = [
-    "https://serviciosjava.afip.gob.ar/cpe-ws/services/wscpe?wsdl",
+    "https://serviciosjava.afip.gob.ar/wscpe/services/soap?wsdl",
     "https://fwshomo.afip.gov.ar/wscpe/services/soap?wsdl",
 ]
 
@@ -105,7 +105,7 @@ WSDL = [
 DEBUG = True
 XML = False
 CONFIG_FILE = "wscpe.ini"
-HOMO = True
+HOMO = False
 
 
 class WSCPE(BaseWS):
@@ -1065,10 +1065,10 @@ INSTALL_DIR = WSCPE.InstallDir = get_install_dir()
 
 if __name__ == "__main__":
     # obteniendo el TA
-    from pyafipws.wsaa import WSAA
+    from wsaa import WSAA
 
     wsaa_url = ""
-    wscpe_url = WSDL[HOMO]
+    wscpe_url = WSDL[-1]
 
     CERT = os.getenv("CERT", "reingart.crt")
     PRIVATEKEY = os.getenv("PKEY", "reingart.key")
@@ -1094,19 +1094,20 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if "--autorizar_cpe_automotor" in sys.argv:
-        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=3)
+        ok = wscpe.ConsultarUltNroOrden(tipo_cpe=74, sucursal=221)
+        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=wscpe.NroOrden+1)
         ok = wscpe.AgregarOrigen(
-            planta=1,
-            cod_provincia_operador=12,
-            cod_localidad_operador=7717,
-            #cod_provincia_productor=12,
-            #cod_localidad_productor=7717
+            #planta=1,
+            #cod_provincia_operador=12,
+            #cod_localidad_operador=14310,
+            cod_provincia_productor=12,
+            cod_localidad_productor=14310
         )
         ok = wscpe.AgregarDestino(
             planta=1938,
             cod_provincia=12,
             es_destino_campo=True,
-            cod_localidad=7717,
+            cod_localidad=14310,
             cuit_destino=CUIT,
             cuit_destinatario=CUIT,
         )
@@ -1144,9 +1145,9 @@ if __name__ == "__main__":
             #cuit_intermediario_flete=20333333334,
             mercaderia_fumigada=True,
         )
-        wscpe.LanzarExcepciones = False
+        wscpe.LanzarExcepciones = True
         ok = wscpe.AutorizarCPEAutomotor()
-        if wscpe.NroCTG:
+        if wscpe.NroCTG or True:
             print("Numero de cpe:", wscpe.NroCTG)
             print("Fecha de emision:", wscpe.FechaEmision)
             print("Estado:", wscpe.Estado, "detalle:", ESTADO_CPE[wscpe.Estado])
