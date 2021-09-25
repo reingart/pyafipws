@@ -135,7 +135,7 @@ class WSCPE(BaseWS):
         "InformarContingencia",
         "ConsultarCPEFerroviaria",
         "ConfirmacionDefinitivaCPEFerroviaria",
-        "CerrarContingenciaCPEFerroviaria",
+        "CerrarContingenciaCPE",
         "ConsultarUltNroOrden",
         "ConsultarCPEAutomotor",
         "NuevoDestinoDestinatarioCPEAutomotor",
@@ -466,7 +466,7 @@ class WSCPE(BaseWS):
         self.cpe["contingencia"] = {"concepto": concepto, "descripcion": descripcion}
         return True
 
-    def AgregarCerrarContingenciaFerroviaria(
+    def AgregarCerrarContingencia(
         self,
         concepto=None,
         cuit_transportista=None,
@@ -751,9 +751,9 @@ class WSCPE(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def CerrarContingenciaCPEFerroviaria(self, archivo="cpe.pdf"):
+    def CerrarContingenciaCPE(self, archivo="cpe.pdf"):
         """Informar del cierre de una contingencia asociado a una carta de porte ferroviaria."""
-        response = self.client.cerrarContingenciaCPEFerroviaria(
+        response = self.client.cerrarContingenciaCPE(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
@@ -1312,20 +1312,20 @@ if __name__ == "__main__":
         )
         wscpe.ConfirmacionDefinitivaCPEFerroviaria()
 
-    if "--cerrar_contingencia_cpe_ferroviaria" in sys.argv:
+    if "--cerrar_contingencia" in sys.argv:
         wscpe.AgregarCabecera(
             tipo_cpe=75,
             sucursal=1,
             nro_orden=1,
         )
-        wscpe.AgregarCerrarContingenciaFerroviaria(
+        wscpe.AgregarCerrarContingencia(
             concepto="A",
             # cuit_transportista=20333333334,
             # nro_operativo=1111111111,
             # concepto_desactivacion="A",
             # descripcion="bloqueo"
         )
-        wscpe.CerrarContingenciaCPEFerroviaria()
+        wscpe.CerrarContingenciaCPE()
 
     if "--nuevo_destino_destinatario_cpe_ferroviaria" in sys.argv:
         wscpe.AgregarCabecera(
