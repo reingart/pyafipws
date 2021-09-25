@@ -329,9 +329,9 @@ class WSCPE(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarIntervinientes(
         self,
-        cuit_intermediario=None,
         cuit_remitente_comercial_venta_primaria=None,
         cuit_remitente_comercial_venta_secundaria=None,
+        cuit_remitente_comercial_venta_secundaria2=None,
         cuit_mercado_a_termino=None,
         cuit_corredor_venta_primaria=None,
         cuit_corredor_venta_secundaria=None,
@@ -341,9 +341,9 @@ class WSCPE(BaseWS):
     ):
         """Inicializa internamente los datos de los intervinientes para una cpe."""
         intervinientes = {
-            "cuitIntermediario": cuit_intermediario,
             "cuitRemitenteComercialVentaPrimaria": cuit_remitente_comercial_venta_primaria,
             "cuitRemitenteComercialVentaSecundaria": cuit_remitente_comercial_venta_secundaria,
+            "cuitRemitenteComercialVentaSecundaria2": cuit_remitente_comercial_venta_secundaria2,
             "cuitMercadoATermino": cuit_mercado_a_termino,
             "cuitCorredorVentaPrimaria": cuit_corredor_venta_primaria,
             "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
@@ -475,7 +475,7 @@ class WSCPE(BaseWS):
         descripcion=None,
         **kwrags
     ):
-        """Inicializa datos para el cierre, la reactivacion, extension de una contingencias en cpe ferroviaria.
+        """Inicializa datos para el cierre, la reactivacion, extension de una contingencias en cpe.
 
             A: Reactivación para descarga en destino.
             B: Extensión cierre contingencia.
@@ -641,11 +641,11 @@ class WSCPE(BaseWS):
     def EditarCPEFerroviaria(
         self,
         nro_ctg=None,
-        cuit_intermediario=None,
         cuit_corredor_venta_primaria=None,
         cuit_corredor_venta_secundaria=None,
         cuit_remitente_comercial_venta_primaria=None,
         cuit_remitente_comercial_venta_secundaria=None,
+        cuit_remitente_comercial_venta_secundaria2=None,
         peso_bruto=None,
         cod_grano=None,
         archivo="cpe.pdf",
@@ -654,11 +654,11 @@ class WSCPE(BaseWS):
         """Modificar datos de una CP Ferroviaria en estado Activo."""
         solicitud = {
             "nroCTG": nro_ctg,
-            "cuitIntermediario": cuit_intermediario,
             "cuitCorredorVentaPrimaria": cuit_corredor_venta_primaria,
             "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
             "cuitRemitenteComercialVentaPrimaria": cuit_remitente_comercial_venta_primaria,
             "cuitRemitenteComercialVentaSecundaria": cuit_remitente_comercial_venta_secundaria,
+            "cuitRemitenteComercialVentaSecundaria2": cuit_remitente_comercial_venta_secundaria2,
             "pesoBruto": peso_bruto,
             "codGrano": cod_grano,
         }
@@ -826,11 +826,11 @@ class WSCPE(BaseWS):
     def EditarCPEAutomotor(
         self,
         nro_ctg=None,
-        cuit_intermediario=None,
         cuit_corredor_venta_primaria=None,
         cuit_corredor_venta_secundaria=None,
         cuit_remitente_comercial_venta_primaria=None,
         cuit_remitente_comercial_venta_secundaria=None,
+        cuit_remitente_comercial_venta_secundaria2=None,
         peso_bruto=None,
         cod_grano=None,
         dominio=None,
@@ -840,11 +840,11 @@ class WSCPE(BaseWS):
         """Modificar datos de una CP Automotor en estado Activo."""
         solicitud = {
             "nroCTG": nro_ctg,
-            "cuitIntermediario": cuit_intermediario,
             "cuitCorredorVentaPrimaria": cuit_corredor_venta_primaria,
             "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
             "cuitRemitenteComercialVentaPrimaria": cuit_remitente_comercial_venta_primaria,
             "cuitRemitenteComercialVentaSecundaria": cuit_remitente_comercial_venta_secundaria,
+            "cuitRemitenteComercialVentaSecundaria2": cuit_remitente_comercial_venta_secundaria2,
             "pesoBruto": peso_bruto,
             "codGrano": cod_grano,
             "dominio": dominio,
@@ -1144,7 +1144,7 @@ if __name__ == "__main__":
             # cuit_corredor_venta_primaria=20200000006,
             # cuit_corredor_venta_secundaria=20222222223,
             # cuit_remitente_comercial_venta_secundaria=20222222223,
-            cuit_intermediario=20400000000,
+            cuit_remitente_comercial_venta_secundaria2=20400000000,
             cuit_remitente_comercial_venta_primaria=27000000014,
             # cuit_representante_entregador=20222222223,
             # cuit_representante_recibidor=20222222223
@@ -1203,7 +1203,7 @@ if __name__ == "__main__":
         #     cuit_corredor_venta_primaria=20222222223,
         #     cuit_corredor_venta_secundaria=20222222223,
         #     cuit_remitente_comercial_venta_secundaria=20222222223,
-        #     cuit_intermediario=20222222223,
+        #     cuit_remitente_comercial_venta_secundaria2=20222222223,
         #     cuit_remitente_comercial_venta_primaria=20222222223,
         #     cuit_representante_entregador=20222222223,
         #     cuit_representante_recibidor=20222222223,  # nuevo
@@ -1275,11 +1275,11 @@ if __name__ == "__main__":
     if "--editar_cpe_ferroviaria" in sys.argv:
         wscpe.EditarCPEFerroviaria(
             nro_ctg=10100000542,
-            cuit_intermediario=20111111113,
             cuit_corredor_venta_primaria=20222222223,
             cuit_corredor_venta_secundaria=20222222223,
             cuit_remitente_comercial_venta_primaria=20222222223,
             cuit_remitente_comercial_venta_secundaria=20222222223,
+            cuit_remitente_comercial_venta_secundaria2=20111111113,
             peso_bruto=1000,
             cod_grano=31,
         )
@@ -1298,11 +1298,11 @@ if __name__ == "__main__":
         #     cuit_destinatario=30000000006,
         # )
         # wscpe.AgregarIntervinientes(
-        #     cuit_intermediario=20222222223,
         #     cuit_corredor_venta_primaria=20222222223,
         #     cuit_corredor_venta_secundaria=20222222223,
         #     cuit_remitente_comercial_venta_primaria=20222222223,
         #     cuit_remitente_comercial_venta_secundaria=20222222223,
+        #     cuit_remitente_comercial_venta_secundaria2=20222222223,
         #     cuit_representante_recibidor=20222222223,  # nuevo
         # )
         wscpe.AgregarDatosCarga(peso_bruto=1000, peso_tara=10000)
@@ -1391,11 +1391,11 @@ if __name__ == "__main__":
     if "--editar_cpe_automotor" in sys.argv:
         wscpe.EditarCPEAutomotor(
             nro_ctg=10100000542,
-            cuit_intermediario=20222222223,
             cuit_corredor_venta_primaria=20222222223,
             cuit_corredor_venta_secundaria=20222222223,
             cuit_remitente_comercial_venta_primaria=20222222223,
             cuit_remitente_comercial_venta_secundaria=20222222223,
+            cuit_remitente_comercial_venta_secundaria2=20222222223,
             peso_bruto=1000,
             cod_grano=31,
             dominio=["AA001ST"],
