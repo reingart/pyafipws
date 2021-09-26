@@ -138,6 +138,7 @@ class WSCPE(BaseWS):
         "CerrarContingenciaCPE",
         "ConsultarUltNroOrden",
         "ConsultarCPEAutomotor",
+        "ConsultarCPEPorDestino",
         "NuevoDestinoDestinatarioCPEAutomotor",
         "RegresoOrigenCPEFerroviaria",
         "RegresoOrigenCPEAutomotor",
@@ -973,6 +974,40 @@ class WSCPE(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
+    def ConsultarCPEPorDestino(self, planta=None, fecha_desde=None, fecha_hasta=None, sep="||"):
+        """Consulta de CPE en calidad de destino para una planta y rango de fechas específicos."""
+        solicitud = {
+            "planta": planta,
+            "fechaDesde": fecha_desde,
+            "fechaHasta": fecha_hasta,
+        }
+        response = self.client.consultarCPEPorDestino(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=solicitud
+        )
+        ret = response.get("respuesta")
+        self.__analizar_errores(ret)
+        if "cartaPorte" in ret:
+            # agrego titulos para respuesta
+            array = [
+                {
+                    "nroCTG": "Nro CTG",
+                    "fechaPartida": "Fecha de Partida",
+                    "estado": "Estado",
+                    "fechaUltimaModificacion": "Ultima fecha de modificacion",
+                }
+            ]
+            array.extend(ret.get("cartaPorte", []))
+            return [
+                ("%s {nroCTG} %s {fechaPartida} %s {estado} %s {fechaUltimaModificacion} %s" % (sep, sep, sep, sep, sep)).format(**it)
+                if sep else it for it in array
+            ]
+
+    @inicializar_y_capturar_excepciones
     def ConsultarUltNroOrden(self, sucursal=None, tipo_cpe=None):
         """Obtiene el último número de orden de CPE autorizado según número de sucursal."""
         response = self.client.consultarUltNroOrden(
@@ -1458,6 +1493,16 @@ if __name__ == "__main__":
         )
         wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno="00")
         wscpe.DesvioCPEAutomotor()
+
+    if "--consultar_cpe_por_destino" in sys.argv:
+        today = datetime.datetime.now().date()
+        ret = wscpe.ConsultarCPEPorDestino(
+            planta=1938,
+            fecha_desde=today - datetime.timedelta(days=3),  # solo hasta 3 dias antes
+            fecha_hasta=today
+        )
+        if ret:
+            print("\n".join(ret))
 
     if "--provincias" in sys.argv:
         ret = wscpe.ConsultarProvincias()
