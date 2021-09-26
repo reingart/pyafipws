@@ -831,6 +831,8 @@ class WSCPE(BaseWS):
         cuit_remitente_comercial_venta_primaria=None,
         cuit_remitente_comercial_venta_secundaria=None,
         cuit_remitente_comercial_venta_secundaria2=None,
+        cuit_chofer=None,
+        cuit_transportista=None,
         peso_bruto=None,
         cod_grano=None,
         dominio=None,
@@ -838,24 +840,26 @@ class WSCPE(BaseWS):
         **kwargs
     ):
         """Modificar datos de una CP Automotor en estado Activo."""
-        solicitud = {
+        self.cpe.update({
             "nroCTG": nro_ctg,
             "cuitCorredorVentaPrimaria": cuit_corredor_venta_primaria,
             "cuitCorredorVentaSecundaria": cuit_corredor_venta_secundaria,
             "cuitRemitenteComercialVentaPrimaria": cuit_remitente_comercial_venta_primaria,
             "cuitRemitenteComercialVentaSecundaria": cuit_remitente_comercial_venta_secundaria,
             "cuitRemitenteComercialVentaSecundaria2": cuit_remitente_comercial_venta_secundaria2,
+            "cuitChofer": cuit_chofer,
+            "cuitTransportista": cuit_transportista,
             "pesoBruto": peso_bruto,
             "codGrano": cod_grano,
             "dominio": dominio,
-        }
+        })
         response = self.client.editarCPEAutomotor(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            solicitud=solicitud,
+            solicitud=self.cpe,
         )
         ret = response.get("respuesta")
         if ret:
@@ -1389,6 +1393,14 @@ if __name__ == "__main__":
         wscpe.DesvioCPEFerroviaria()
 
     if "--editar_cpe_automotor" in sys.argv:
+        wscpe.AgregarDestino(
+            cuit_destinatario=30000000006,
+            cuit_destino=20111111112,
+            es_destino_campo=True,
+            cod_provincia=1,
+            cod_localidad=10216,
+            planta=1,
+        )
         wscpe.EditarCPEAutomotor(
             nro_ctg=10100000542,
             cuit_corredor_venta_primaria=20222222223,
@@ -1396,6 +1408,8 @@ if __name__ == "__main__":
             cuit_remitente_comercial_venta_primaria=20222222223,
             cuit_remitente_comercial_venta_secundaria=20222222223,
             cuit_remitente_comercial_venta_secundaria2=20222222223,
+            cuit_chofer=20333333334,
+            cuit_transportista=20120372913,
             peso_bruto=1000,
             cod_grano=31,
             dominio=["AA001ST"],
