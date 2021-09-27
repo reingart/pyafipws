@@ -139,6 +139,7 @@ class WSCPE(BaseWS):
         "ConsultarUltNroOrden",
         "ConsultarCPEAutomotor",
         "ConsultarCPEPorDestino",
+        "ConsultarCPEPendientesDeResolucion",
         "NuevoDestinoDestinatarioCPEAutomotor",
         "RegresoOrigenCPEFerroviaria",
         "RegresoOrigenCPEAutomotor",
@@ -1008,6 +1009,39 @@ class WSCPE(BaseWS):
             ]
 
     @inicializar_y_capturar_excepciones
+    def ConsultarCPEPendientesDeResolucion(self, perfil=None, planta=None, sep="||"):
+        """consulta de CPE que se encuentran pendientes de resolución."""
+        solicitud = {
+            "perfil": perfil,
+            "planta": planta,
+        }
+        response = self.client.consultarCPEPPendientesDeResolucion(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=solicitud
+        )
+        ret = response.get("respuesta")
+        self.__analizar_errores(ret)
+        if "cartaPorte" in ret:
+            # agrego titulos para respuesta
+            array = [
+                {
+                    "nroCTG": "Nro CTG",
+                    "fechaPartida": "Fecha de Partida",
+                    "estado": "Estado",
+                    "fechaUltimaModificacion": "Ultima fecha de modificacion",
+                }
+            ]
+            array.extend(ret.get("cartaPorte", []))
+            return [
+                ("%s {nroCTG} %s {fechaPartida} %s {estado} %s {fechaUltimaModificacion} %s" % (sep, sep, sep, sep, sep)).format(**it)
+                if sep else it for it in array
+            ]
+
+    @inicializar_y_capturar_excepciones
     def ConsultarUltNroOrden(self, sucursal=None, tipo_cpe=None):
         """Obtiene el último número de orden de CPE autorizado según número de sucursal."""
         response = self.client.consultarUltNroOrden(
@@ -1500,6 +1534,14 @@ if __name__ == "__main__":
             planta=1938,
             fecha_desde=today - datetime.timedelta(days=3),  # solo hasta 3 dias antes
             fecha_hasta=today
+        )
+        if ret:
+            print("\n".join(ret))
+
+    if "--consultar_cpe_pendientes_de_resolucion" in sys.argv:
+        ret = wscpe.ConsultarCPEPendientesDeResolucion(
+            perfil="S",  # S: Solicitante, D: Destino
+            # planta=1938,
         )
         if ret:
             print("\n".join(ret))
