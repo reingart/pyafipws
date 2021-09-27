@@ -1133,19 +1133,20 @@ class WSCPE(BaseWS):
         )
         ret = response.get("respuesta")
         self.__analizar_errores(ret)
-        # agrego titulos para respuesta
-        array = [
-            {
-                "nroPlanta": "Nro Planta",
-                "codProvincia": "Cod Provincia",
-                "codLocalidad": "Cod Localidad"
-            }
-        ]
-        array.extend(ret.get("planta", []))
-        return [
-            ("%s {nroPlanta} %s {codProvincia} %s {codLocalidad} %s" % (sep, sep, sep, sep)).format(**it)
-            if sep else it for it in array
-        ]
+        if "planta" in ret:
+            # agrego titulos para respuesta
+            array = [
+                {
+                    "nroPlanta": "Nro Planta",
+                    "codProvincia": "Cod Provincia",
+                    "codLocalidad": "Cod Localidad"
+                }
+            ]
+            array.extend(ret.get("planta", []))
+            return [
+                ("%s {nroPlanta} %s {codProvincia} %s {codLocalidad} %s" % (sep, sep, sep, sep)).format(**it)
+                if sep else it for it in array
+            ]
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
@@ -1564,7 +1565,8 @@ if __name__ == "__main__":
 
     if "--plantas" in sys.argv:
         ret = wscpe.ConsultarPlantas(cuit=CUIT)
-        print("\n".join(ret))
+        if ret:
+            print("\n".join(ret))
 
     if "--debug" in sys.argv:
         with open("xml_response.xml", "wb") as bh:
