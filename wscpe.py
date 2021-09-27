@@ -30,7 +30,7 @@ __license__ = "LGPL 3.0"
 __version__ = "1.01b"
 
 LICENCIA = """
-wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.1.0
+wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.4.0
 Resolución General 5017/2021
 Copyright (C) 2021 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CartadePorte
@@ -1440,9 +1440,6 @@ if __name__ == "__main__":
             sucursal=1,
             nro_orden=1,
         )
-        # wscpe.AgregarDestino(
-        #     cuit_destinatario=30000000006
-        # )
         wscpe.AgregarTransporte(
             codigo_ramal=99,
             descripcion_ramal="Ok",
@@ -1515,9 +1512,6 @@ if __name__ == "__main__":
 
     if "--regreso_origen_cpe_automotor" in sys.argv:
         wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
-        wscpe.AgregarDestino(
-            cuit_destinatario=30000000006,
-        )
         wscpe.AgregarTransporte(fecha_hora_partida=datetime.datetime.now(), km_recorrer=333, codigo_turno="00")
         wscpe.RegresoOrigenCPEAutomotor()
 
