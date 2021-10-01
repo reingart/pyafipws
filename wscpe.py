@@ -975,12 +975,20 @@ class WSCPE(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCPEPorDestino(self, planta=None, fecha_desde=None, fecha_hasta=None, sep="||"):
+    def ConsultarCPEPorDestino(
+        self,
+        planta=None,
+        fecha_partida_desde=None,
+        fecha_partida_hasta=None,
+        tipo_cpe=None,
+        sep="||"
+    ):
         """Consulta de CPE en calidad de destino para una planta y rango de fechas específicos."""
         solicitud = {
             "planta": planta,
-            "fechaDesde": fecha_desde,
-            "fechaHasta": fecha_hasta,
+            "fechaPartidaDesde": fecha_partida_desde,
+            "fechaPartidaHasta": fecha_partida_hasta,
+            "tipoCartaPorte": tipo_cpe,
         }
         response = self.client.consultarCPEPorDestino(
             auth={
@@ -1527,8 +1535,9 @@ if __name__ == "__main__":
         today = datetime.datetime.now().date()
         ret = wscpe.ConsultarCPEPorDestino(
             planta=1938,
-            fecha_desde=today - datetime.timedelta(days=3),  # solo hasta 3 dias antes
-            fecha_hasta=today
+            fecha_partida_desde=today - datetime.timedelta(days=3),  # solo hasta 3 dias antes
+            fecha_partida_hasta=today,
+            tipo_cpe=74  # opcional
         )
         if ret:
             print("\n".join(ret))
