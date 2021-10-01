@@ -251,6 +251,7 @@ class WSCPE(BaseWS):
         planta=None,
         carta_porte=None,
         nro_ctg=None,
+        observaciones=None,
         **kwargs
     ):
         """Inicializa internamente los datos de cabecera para una cpe."""
@@ -277,7 +278,10 @@ class WSCPE(BaseWS):
                 "planta": planta,
             }
             # creo el diccionario para agregar datos cpe
-            self.cpe = {"cabecera": cabecera}
+            self.cpe = {
+                "cabecera": cabecera,
+                "observaciones": observaciones,
+            }
         return True
 
     @inicializar_y_capturar_excepciones
@@ -1201,7 +1205,13 @@ if __name__ == "__main__":
         ok = wscpe.ConsultarUltNroOrden(sucursal=221, tipo_cpe=74)
         nro_orden = wscpe.NroOrden + 1
         ok = wscpe.CrearCPE()
-        ok = wscpe.AgregarCabecera(tipo_cpe=74, cuit_solicitante=CUIT, sucursal=221, nro_orden=nro_orden)
+        ok = wscpe.AgregarCabecera(
+            tipo_cpe=74,
+            cuit_solicitante=CUIT,
+            sucursal=221,
+            nro_orden=nro_orden,
+            observaciones="Notas del transporte"
+        )
         ok = wscpe.AgregarOrigen(
             # planta=1,
             # cod_provincia_operador=12,
@@ -1268,7 +1278,12 @@ if __name__ == "__main__":
 
     if "--autorizar_cpe_ferroviaria" in sys.argv:
         ok = wscpe.CrearCPE()
-        ok = wscpe.AgregarCabecera(sucursal=1, nro_orden=1, planta=1)
+        ok = wscpe.AgregarCabecera(
+            sucursal=1,
+            nro_orden=1,
+            planta=1,
+            observaciones="Notas del transporte"
+        )
         ok = wscpe.AgregarDestino(
             cuit_destinatario=30000000006,
             cuit_destino=20111111112,
