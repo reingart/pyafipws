@@ -27,7 +27,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.03b"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.3.0
@@ -64,7 +64,7 @@ import traceback
 from pysimplesoap.client import SoapFault
 
 # importo funciones compartidas:
-from pyafipws.utils import (
+from utils import (
     date,
     leer,
     escribir,
@@ -1088,7 +1088,7 @@ if __name__ == "__main__":
     from pyafipws.wsaa import WSAA
 
     wsaa_url = ""
-    wscpe_url = WSDL[HOMO]
+    wscpe_url = WSDL[True]  # [HOMO]
 
     CERT = os.getenv("CERT", "reingart.crt")
     PRIVATEKEY = os.getenv("PKEY", "reingart.key")
@@ -1247,8 +1247,14 @@ if __name__ == "__main__":
             print("Nro Orden: ", wscpe.NroOrden)
 
     if "--anular_cpe" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
-        wscpe.AnularCPE()
+        suc = 221
+        tc = 74
+        ok = wscpe.ConsultarUltNroOrden(sucursal=suc, tipo_cpe=tc)
+        n = wscpe.NroOrden
+        for i in range(1,n):
+            print("anulando", tc, suc, i)
+            wscpe.AgregarCabecera(tipo_cpe=tc, sucursal=suc, nro_orden=i)
+            wscpe.AnularCPE()
 
     if "--rechazo_cpe" in sys.argv:
         wscpe.AgregarCabecera(cuit_solicitante=CUIT, tipo_cpe=74, sucursal=1, nro_orden=1)
