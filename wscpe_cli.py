@@ -48,7 +48,8 @@ Opciones:
   --consultar: consulta un cpe generado
 
   --provincias: listado de provincias
-  --localidades_por_provincias: listado de localidades
+  --localidades_por_provincia: listado de localidades para la provincia dada
+  --localidades_por_productor: listado de localidades para el CUIT
   --tipos_granos': listado de granos
   --plantas: codigos de plantas habilitados para el cuit
 
@@ -503,8 +504,12 @@ if __name__ == '__main__':
             ret = wscpe.ConsultarProvincias()
             print("\n".join(ret))
 
-        if "--localidades_por_provincias" in sys.argv:
-            ret = wscpe.ConsultarLocalidadesPorProvincia()
+        if "--localidades_por_provincia" in sys.argv:
+            ret = wscpe.ConsultarLocalidadesPorProvincia(sys.argv[2])
+            print("\n".join(ret))
+
+        if "--localidades_por_productor" in sys.argv:
+            ret = wscpe.ConsultarLocalidadesProductor(wscpe.Cuit)
             print("\n".join(ret))
 
         if '--tipos_granos' in sys.argv:
@@ -533,5 +538,6 @@ if __name__ == '__main__':
     finally:
         with open("wscpe_cli.xml", "w") as x:
             import xml.dom.minidom
-            dom = xml.dom.minidom.parseString(wscpe.XmlRequest)
-            x.write(dom.toprettyxml())
+            if wscpe.XmlRequest:
+                dom = xml.dom.minidom.parseString(wscpe.XmlRequest)
+                x.write(dom.toprettyxml())
