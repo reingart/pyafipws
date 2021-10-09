@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.03a"
+__version__ = "1.05a"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -80,15 +80,14 @@ HOMO = True
 ENCABEZADO = [
     ('tipo_reg', 1, A), # 0: encabezado carta de porte
 
-    ('tipo_cpe', 2, N),  # 74: CPE Automotor, 75: CPE Ferroviaria,  99: Flete Corto.
+    ('tipo_cpe', 3, N),  # 74: CPE Automotor, 75: CPE Ferroviaria,  99: Flete Corto.
     
     ('sucursal', 5, N),
-    ('nro_orden', 18, N),
-    ('planta', 5, N),
+    ('nro_orden', 8, N),
+    ('planta', 6, N),
 
     # desvio cpe automotor
     ('cuit_solicitante', 11, N),
-    ('razon_social_titular_planta', 11, A),
 
     # confirmación definitiva
     ('peso_bruto_descarga', 10, N),
@@ -96,31 +95,35 @@ ENCABEZADO = [
 
     # resultado:
     ('nro_ctg', 12, N),
-    ('fecha_emision', 10, A), # 26/02/2013
-    ('fecha_inicio_estado', 10, N),
+    ('fecha_emision', 25, A), # 2021-08-21T23:29:26
+    ('fecha_inicio_estado', 25, A),
     ('estado', 15, N),
-    ('fecha_vencimiento', 10, A), # 26/02/2013
+    ('fecha_vencimiento', 25, A), # 26/02/2013
+
+    ('observaciones', 2000, A),
     ]
 
 ORIGEN = [
     ('tipo_reg', 1, A), # O: Origen
     ('cod_provincia_operador', 2, N),
     ('cod_localidad_operador', 6, N), 
-    ('planta', 5, N),
+    ('planta', 6, N),
     ('cod_provincia_productor', 2, N),
     ('cod_localidad_productor', 6, N), 
     ]
 
 INTERVINIENTES = [
     ('tipo_reg', 1, A), # I: Intervinientes
-    ('cuit_intermediario', 11, N),
     ('cuit_remitente_comercial_venta_primaria', 11, N),
     ('cuit_remitente_comercial_venta_secundaria', 11, N),
+    ('cuit_remitente_comercial_venta_secundaria2', 11, N),
     ('cuit_mercado_a_termino', 11, N),
     ('cuit_corredor_venta_primaria', 11, N),
     ('cuit_corredor_venta_secundaria', 11, N),
     ('cuit_representante_entregador', 11, N),
     ('cuit_representante_recibidor', 11, N),
+    ('cuit_chofer', 11, N),
+    ('cuit_transportista', 11, N),
     ]
 
 RETIRO_PRODUCTOR = [
@@ -145,7 +148,7 @@ DESTINO = [
     ('es_destino_campo', 5, B),
     ('cod_provincia', 2, N),
     ('cod_localidad', 6, N),
-    ('planta', 5, N),
+    ('planta', 6, N),
     ('cuit_destinatario', 11, N),
     ]
 
@@ -155,7 +158,7 @@ TRANSPORTE = [
     ('dominio', 10, A),
     ('fecha_hora_partida', 20, A),  # 2016-11-17T12:00:39
     ('km_recorrer', 5, N),
-    ('codigo_turno', 30, N),
+    ('codigo_turno', 30, A),
     ('cuit_chofer', 11, N),
     ('tarifa', 10, I, 2),  # 99999.99
     ('cuit_intermediario_flete', 11, N),
@@ -404,7 +407,6 @@ if __name__ == '__main__':
                     #cuit_remitente_comercial_productor=20111111112,
             )]
             dic["intervinientes"] = [dict(
-                    cuit_intermediario=20400000000,
                     cuit_remitente_comercial_venta_primaria=20222222223,
                     cuit_remitente_comercial_venta_secundaria=20222222223,
                     cuit_mercado_a_termino=20222222223,
