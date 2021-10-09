@@ -27,7 +27,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.05b"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -1114,7 +1114,7 @@ class WSCPE(BaseWS):
         ret = response.get("respuesta")
         self.__analizar_errores(ret)
         array = ret.get("grano", [])
-        return [("%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in array]
+        return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in array]
 
     @inicializar_y_capturar_excepciones
     def ConsultarLocalidadesProductor(self, cuit_productor=None, sep="||"):
