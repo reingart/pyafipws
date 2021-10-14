@@ -123,8 +123,6 @@ INTERVINIENTES = [
     ('cuit_corredor_venta_secundaria', 11, N),
     ('cuit_representante_entregador', 11, N),
     ('cuit_representante_recibidor', 11, N),
-    ('cuit_chofer', 11, N),
-    ('cuit_transportista', 11, N),
     ]
 
 RETIRO_PRODUCTOR = [
@@ -442,7 +440,7 @@ if __name__ == '__main__':
                     cuit_intermediario_flete='20267565393',
                     tarifa=100,
             )]
-            escribir_archivo(dic, ENTRADA, True)
+            escribir_archivo(dic, ENTRADA, False)
 
         if '--cargar' in sys.argv:
             dic = leer_archivo(ENTRADA)
@@ -496,7 +494,7 @@ if __name__ == '__main__':
             dic['evento'] = wscpe.Evento
 
         if '--grabar' in sys.argv:
-            escribir_archivo(dic, ENTRADA)
+            escribir_archivo(dic, SALIDA)
 
         # Recuperar parámetros:
 
