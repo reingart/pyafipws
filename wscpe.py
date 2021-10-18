@@ -27,7 +27,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05c"
+__version__ = "1.05d"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -546,7 +546,7 @@ class WSCPE(BaseWS):
         self.Estado = cab["estado"]
         self.FechaInicioEstado = cab["fechaInicioEstado"]
         self.FechaVencimiento = cab["fechaVencimiento"]
-        self.PDF = ret["pdf"]  # base64
+        self.PDF = ret.get("pdf", "")  # base64
         cpe_bytes = self.PDF
         if isinstance(cpe_bytes, string_types) and sys.version_info[0] >= 3:
             cpe_bytes = cpe_bytes.encode("utf-8")
