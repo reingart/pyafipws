@@ -547,6 +547,7 @@ class WSCPE(BaseWS):
         self.FechaInicioEstado = cab["fechaInicioEstado"]
         self.FechaVencimiento = cab["fechaVencimiento"]
         self.PDF = ret.get("pdf", "")  # base64
+        self.Observaciones = ret.get("observaciones", "")
         cpe_bytes = self.PDF
         if isinstance(cpe_bytes, string_types) and sys.version_info[0] >= 3:
             cpe_bytes = cpe_bytes.encode("utf-8")
