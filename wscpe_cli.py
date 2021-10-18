@@ -534,8 +534,10 @@ if __name__ == '__main__':
         sys.exit(5)
 
     finally:
-        with open("wscpe_cli.xml", "w") as x:
-            import xml.dom.minidom
-            if wscpe.XmlRequest:
-                dom = xml.dom.minidom.parseString(wscpe.XmlRequest)
-                x.write(dom.toprettyxml())
+        import xml.dom.minidom
+        if XML:
+            for (xml_data, xml_path) in ((wscpe.XmlRequest, "wscpe_cli_req.xml"), (wscpe.XmlResponse, "wscpe_cli_res.xml")):
+                with open(xml_path, "w") as x:
+                    if xml_data:
+                        dom = xml.dom.minidom.parseString(xml_data)
+                        x.write(dom.toprettyxml())
