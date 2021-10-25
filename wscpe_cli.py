@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05b"
+__version__ = "1.05c"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -46,6 +46,17 @@ Opciones:
 
   --ult: consulta ultimo nro cpe emitido
   --consultar: consulta un cpe generado
+
+  --anular: un CPE existente (usa cabecera)
+  --informar_contingencia: (usa cabecera y contingencias)
+  --cerrar_contingencia: (usa cabecera y contingencias)
+  --rechazo: (usa cabecera)
+  --confirmar_arribo: (usa cabecera)
+  --descargado_destino: (usa cabecera)
+  --confirmacion_definitiva: (usa cabecera, datos_carga)
+  --nuevo_destino_destinatario: (usa cabecera, destino, transporte)
+  --regreso_origen: (usa cabecera, transporte)
+  --desvio: (usa cabecera, destino, transporte)
 
   --provincias: listado de provincias
   --localidades_por_provincia: listado de localidades para la provincia dada
@@ -444,7 +455,8 @@ if __name__ == '__main__':
 
         if '--cargar' in sys.argv:
             dic = leer_archivo(ENTRADA)
-            wscpe.CrearCPE()
+            if '--autorizar' in sys.argv:
+                wscpe.CrearCPE()
             wscpe.AgregarCabecera(**dic)
             if dic.get("origen"):
                 wscpe.AgregarOrigen(**dic['origen'][0])
@@ -467,14 +479,47 @@ if __name__ == '__main__':
 
             ok = wscpe.AutorizarCPEAutomotor(archivo="cpe.pdf")
 
-        if '--emitir' in sys.argv:
-            ok = wscpe.EmitirCPE()
-
         if '--anular' in sys.argv:
             ok = wscpe.AnularCPE()
 
-        if '--informar-contingencia' in sys.argv:
+        if '--informar_contingencia' in sys.argv:
             ok = wscpe.InformarContingencia()
+
+        if '--cerrar_contingencia' in sys.argv:
+            ok = wscpe.CerrarContingencia()
+
+        if '--rechazo' in sys.argv:
+            ok = wscpe.RechazoCPE()
+
+        if '--confirmar_arribo' in sys.argv:
+            ok = wscpe.ConfirmarArriboCPE()
+
+        if '--descargado_destino' in sys.argv:
+            ok = wscpe.DescargadoDestinoCPE()
+
+        if '--confirmacion_definitiva' in sys.argv:
+            if not "--ferroviaria" in sys.argv:
+                ok = wscpe.ConfirmacionDefinitivaCPEAutomotor()
+            else:
+                ok = wscpe.ConfirmacionDefinitivaCPEFerroviaria()
+
+        if '--nuevo_destino_destinatario' in sys.argv:
+            if not "--ferroviaria" in sys.argv:
+                ok = wscpe.NuevoDestinoDestinatarioCPEAutomotor()
+            else:
+                ok = wscpe.NuevoDestinoDestinatarioCPEFerroviaria()
+
+        if '--regreso_origen' in sys.argv:
+            if not "--ferroviaria" in sys.argv:
+                ok = wscpe.RegresoOrigenCPEAutomotor()
+            else:
+                ok = wscpe.RegresoOrigenCPEFerroviaria()
+
+        if '--desvio' in sys.argv:
+            if not "--ferroviaria" in sys.argv:
+                ok = wscpe.DesvioCPEAutomotor()
+            else:
+                ok = wscpe.DesvioCPEFerroviaria()
 
         if ok is not None:
             print "Resultado: ", wscpe.Resultado
