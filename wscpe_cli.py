@@ -176,6 +176,15 @@ TRANSPORTE = [
     ('mercaderia_fumigada', 5, B),
     ]
 
+CONTINGENCIA = [
+    ('tipo_reg', 1, A), # D
+    ('concepto', 2, A),
+    ('cuit_transportista', 11, N),
+    ('nro_operativo', 11, N),
+    ('concepto_desactivacion', 2, A),
+    ('descripcion', 140, A),
+]
+
 EVENTO = [
     ('tipo_reg', 1, A), # E: Evento
     ('codigo', 4, A), 
@@ -196,6 +205,7 @@ FORMATOS = {
     'datos_carga': DATOS_CARGA,
     'destino': DESTINO,
     'transporte': TRANSPORTE,
+    'contingencia': CONTINGENCIA,
     'errores': ERROR,
     'eventos': EVENTO,
 }
@@ -207,6 +217,7 @@ TIPO_REGISTROS = {
     "C": 'datos_carga',
     "D": 'destino',
     "T": 'transporte',
+    "N": 'contingencia',
     "E": 'errores',
     "V": 'eventos',
 }
@@ -451,6 +462,13 @@ if __name__ == '__main__':
                     cuit_intermediario_flete='20267565393',
                     tarifa=100,
             )]
+            dic["contingencia"] = [dict(
+                    concepto="B",
+                    cuit_transportista=20333333334,
+                    nro_operativo=1111111111,
+                    concepto_desactivacion="B",
+                    descripcion="Desctrucción carga",
+            )]
             escribir_archivo(dic, ENTRADA, False)
 
         if '--cargar' in sys.argv:
@@ -470,6 +488,15 @@ if __name__ == '__main__':
                 wscpe.AgregarDestino(**dic['destino'][0])
             if dic.get("transporte"):
                 wscpe.AgregarTransporte(**dic['transporte'][0])
+            if dic.get("contingencia"):
+                contingencia = dic['contingencia'][0]
+                del contingencia["tipo_reg"]
+                if '--informar_contingencia' in sys.argv:
+                    for campo in "cuit_transportista", "nro_operativo", "concepto_desactivacion":
+                        del contingencia[campo]
+                    wscpe.AgregarContingencia(**contingencia)
+                elif '--cerrar_contingencia' in sys.argv:
+                    wscpe.AgregarCerrarContingencia(**contingencia)
         else:
             dic = {}
 
@@ -486,7 +513,7 @@ if __name__ == '__main__':
             ok = wscpe.InformarContingencia()
 
         if '--cerrar_contingencia' in sys.argv:
-            ok = wscpe.CerrarContingencia()
+            ok = wscpe.CerrarContingenciaCPE()
 
         if '--rechazo' in sys.argv:
             ok = wscpe.RechazoCPE()
