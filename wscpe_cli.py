@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05c"
+__version__ = "1.05d"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -109,7 +109,7 @@ ENCABEZADO = [
     ('nro_ctg', 12, N),
     ('fecha_emision', 25, A), # 2021-08-21T23:29:26
     ('fecha_inicio_estado', 25, A),
-    ('estado', 15, N),
+    ('estado', 15, A),
     ('fecha_vencimiento', 25, A), # 26/02/2013
 
     ('observaciones', 2000, A),
@@ -552,16 +552,20 @@ if __name__ == '__main__':
             print "Resultado: ", wscpe.Resultado
             print "Numero CTG: ", wscpe.NroCTG
             print "Fecha Emision", wscpe.FechaEmision
+            print "Fecha Inicio Estado", wscpe.FechaInicioEstado
             print "Fecha Vencimiento", wscpe.FechaVencimiento
             print "Estado: ", wscpe.Estado
             print "Observaciones: ", wscpe.Observaciones
             print "Errores:", wscpe.Errores
             print "Evento:", wscpe.Evento
             dic['nro_ctg'] = wscpe.NroCTG
+
             dic['resultado'] = wscpe.Resultado
+            dic['estado'] = wscpe.Estado
             dic['observaciones'] = wscpe.Observaciones
             dic['fecha_emision'] = wscpe.FechaEmision
             dic['fecha_vencimiento'] = wscpe.FechaVencimiento
+            dic['fecha_inicio_estado'] = wscpe.FechaInicioEstado
             dic['errores'] = wscpe.Errores
             dic['evento'] = wscpe.Evento
 
