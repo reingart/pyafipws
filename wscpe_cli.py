@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05e"
+__version__ = "1.05f"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -561,14 +561,15 @@ if __name__ == '__main__':
             print "Fecha Inicio Estado", wscpe.FechaInicioEstado
             print "Fecha Vencimiento", wscpe.FechaVencimiento
             print "Estado: ", wscpe.Estado
-            print "Observaciones: ", wscpe.Observaciones
+            obs = wscpe.Observaciones.strip() if wscpe.Observaciones else ""
+            print "Observaciones:", obs
             print "Errores:", wscpe.Errores
             print "Evento:", wscpe.Evento
             dic['nro_ctg'] = wscpe.NroCTG
 
             dic['resultado'] = wscpe.Resultado
             dic['estado'] = wscpe.Estado
-            dic['observaciones'] = wscpe.Observaciones
+            dic['observaciones'] = obs
             dic['fecha_emision'] = wscpe.FechaEmision
             dic['fecha_vencimiento'] = wscpe.FechaVencimiento
             dic['fecha_inicio_estado'] = wscpe.FechaInicioEstado
