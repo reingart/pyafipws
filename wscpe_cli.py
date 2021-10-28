@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05d"
+__version__ = "1.05e"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -461,6 +461,8 @@ if __name__ == '__main__':
                     cuit_pagador_flete='20333333334',
                     cuit_intermediario_flete='20267565393',
                     tarifa=100,
+            ), dict(
+                    dominio="AA001ST101",
             )]
             dic["contingencia"] = [dict(
                     concepto="B",
@@ -487,7 +489,11 @@ if __name__ == '__main__':
             if dic.get("destino"):
                 wscpe.AgregarDestino(**dic['destino'][0])
             if dic.get("transporte"):
-                wscpe.AgregarTransporte(**dic['transporte'][0])
+                dominios = []
+                for transporte in reversed(dic['transporte']):
+                    dominios.insert(0, transporte["dominio"])
+                transporte["dominio"] = dominios
+                wscpe.AgregarTransporte(**transporte)
             if dic.get("contingencia"):
                 contingencia = dic['contingencia'][0]
                 del contingencia["tipo_reg"]
