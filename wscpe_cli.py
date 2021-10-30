@@ -518,6 +518,25 @@ if __name__ == '__main__':
         if '--anular' in sys.argv:
             ok = wscpe.AnularCPE()
 
+        if '--anular_todo' in sys.argv:
+            # Limpieza de CPE pendientes para evitar el error de validación de AFIP:
+            # 2002: 'No es posible guardar la solicitud si posee cartas de porte vencidas.'
+            ok = raw_input("CUIDADO: esto anulara todas las CPE, ingresar Si para confirmar: ")
+            if ok == "Si":
+                sucursal_desde = int(raw_input("Sucursal desde: "))
+                sucursal_hasta = int(raw_input("Sucursal hasta: "))
+                for tipo in 74, 75, 99:
+                    for suc in range(sucursal_desde, sucursal_hasta+1):
+                        wscpe.ConsultarUltNroOrden(sucursal=suc, tipo_cpe=tipo)
+                        ult = wscpe.NroOrden
+                        print ("ConsultarUltNroOrden: Tipo %s suc %4d ult %d" % (tipo, suc, ult))
+                        for nro in range(ult, 1, -1):
+                            wscpe.AgregarCabecera(tipo_cpe=tipo, sucursal=suc, nro_orden=nro)
+                            wscpe.AnularCPE()
+                            err = wscpe.ErrMsg
+                            estado = wscpe.Estado
+                            print ("AnularCPE: Tipo %s suc %4d num %d -> %s %s" % (tipo, suc, nro, estado, err))
+
         if '--informar_contingencia' in sys.argv:
             ok = wscpe.InformarContingencia()
 
