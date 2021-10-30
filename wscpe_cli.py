@@ -406,35 +406,37 @@ if __name__ == '__main__':
 
         ##wscpe.client.help("generarCPE")
         if '--prueba' in sys.argv:
-            ok = wscpe.ConsultarUltNroOrden(sucursal=1, tipo_cpe=74)
+            ok = wscpe.ConsultarUltNroOrden(sucursal=222, tipo_cpe=74)
             nro_orden = wscpe.NroOrden + 1
             dic = dict(
                     tipo_cpe=74,  # 74: CPE Automotor, 75: CPE Ferroviaria,  99: Flete Corto.
                     cuit_solicitante=wscpe.Cuit,
-                    sucursal=1,
+                    sucursal=222,
                     nro_orden=nro_orden,
+                    observaciones="Notas del transporte",
             )
             dic["origen"] = [dict(
                     #cod_provincia_operador=12,
                     #cod_localidad_operador=6904,
                     #planta=1938,
-                    cod_provincia_productor=12,
+                    cod_provincia_productor=1,
                     cod_localidad_productor=14310,
             )]
             dic["retiro_productor"] = [dict(
                     corresponde_retiro_productor="false",
                     es_solicitante_campo="true",
-                    #certificado_coe=330100025869,
-                    #cuit_remitente_comercial_productor=20111111112,
+                    certificado_coe=None,  # 330100025869
+                    cuit_remitente_comercial_productor=None,  # 20111111112
             )]
             dic["intervinientes"] = [dict(
-                    cuit_remitente_comercial_venta_primaria=20222222223,
-                    cuit_remitente_comercial_venta_secundaria=20222222223,
-                    cuit_mercado_a_termino=20222222223,
-                    cuit_corredor_venta_primaria=20222222223,
-                    cuit_corredor_venta_secundaria=20222222223,
-                    cuit_representante_entregador=27000000014,
-                    cuit_representante_recibidor=27000000014,
+                    cuit_remitente_comercial_venta_primaria=27000000014,
+                    cuit_remitente_comercial_venta_secundaria=None,
+                    cuit_mercado_a_termino=None,
+                    cuit_corredor_venta_primaria=None,
+                    cuit_corredor_venta_secundaria=None,
+                    cuit_remitente_comercial_venta_secundaria2=20400000000,
+                    cuit_representante_entregador=None,
+                    cuit_representante_recibidor=None,
             )]
             dic["datos_carga"] = [dict(
                     cod_grano=23,
@@ -451,19 +453,20 @@ if __name__ == '__main__':
                     cuit_destinatario=wscpe.Cuit,
             )]
             dic["transporte"] = [dict(
-                    cuit_transportista=20120372913,
-                    dominio="AA001ST",
-                    fecha_hora_partida="2021-08-21T23:29:26",
+                    cuit_transportista=20333333334,
+                    dominio="AB001ST",
+                    fecha_hora_partida=(datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()[:-7],
                     km_recorrer=500,
                     cuit_chofer='20333333334',
-                    codigo_turno="00",
+                    codigo_turno=None,
                     mercaderia_fumigada="true",
-                    cuit_pagador_flete='20333333334',
-                    cuit_intermediario_flete='20267565393',
-                    tarifa=100,
+                    cuit_pagador_flete=None,
+                    cuit_intermediario_flete=None,
+                    tarifa=None,
             ), dict(
-                    dominio="AA001ST101",
-            )]
+                    dominio="AC001ST",
+            )
+            ]
             dic["contingencia"] = [dict(
                     concepto="B",
                     cuit_transportista=20333333334,
