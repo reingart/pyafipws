@@ -644,7 +644,8 @@ def escribir(dic, formato, contraer_fechas=False):
             if isinstance(s, unicode):
                 s = s.encode("latin1")
             if s is None:
-                valor = ""
+                valor = chr(127)
+                tipo = None
             else:
                 valor = str(s)
             # reemplazo saltos de linea por tabulaci{on vertical
