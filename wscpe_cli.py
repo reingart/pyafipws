@@ -583,7 +583,6 @@ if __name__ == '__main__':
             print "Estado: ", wscpe.Estado
             obs = wscpe.Observaciones.strip() if wscpe.Observaciones else ""
             print "Observaciones:", obs
-            print "Errores:", wscpe.Errores
             print "Evento:", wscpe.Evento
             dic['nro_ctg'] = wscpe.NroCTG
 
@@ -593,7 +592,7 @@ if __name__ == '__main__':
             dic['fecha_emision'] = wscpe.FechaEmision
             dic['fecha_vencimiento'] = wscpe.FechaVencimiento
             dic['fecha_inicio_estado'] = wscpe.FechaInicioEstado
-            dic['errores'] = wscpe.Errores
+            dic['errores'] = wscpe.errores
             dic['evento'] = wscpe.Evento
 
         if '--grabar' in sys.argv:
