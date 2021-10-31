@@ -1179,7 +1179,7 @@ if __name__ == "__main__":
     from pyafipws.wsaa import WSAA
 
     wsaa_url = ""
-    wscpe_url = WSDL[HOMO]
+    wscpe_url = WSDL[True]
 
     CERT = os.getenv("CERT", "reingart.crt")
     PRIVATEKEY = os.getenv("PKEY", "reingart.key")
@@ -1597,3 +1597,11 @@ if __name__ == "__main__":
 
     if wscpe.Errores:
         print("Error:", wscpe.ErrMsg)
+
+    if "--xml" in sys.argv:
+        import xml.dom.minidom
+        for (xml_data, xml_path) in ((wscpe.XmlRequest, "wscpe_req.xml"), (wscpe.XmlResponse, "wscpe_res.xml")):
+            with open(xml_path, "w") as x:
+                if xml_data:
+                    dom = xml.dom.minidom.parseString(xml_data)
+                    x.write(dom.toprettyxml())
