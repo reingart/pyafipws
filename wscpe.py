@@ -27,7 +27,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05f"
+__version__ = "1.05g"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -209,6 +209,7 @@ class WSCPE(BaseWS):
         self.NroCTG = self.NroOrden = None
         self.FechaInicioEstado = self.FechaVencimiento = self.FechaEmision = None
         self.Estado = self.Resultado = self.PDF = None
+        self.errores = []
         self.Errores = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
         if not hasattr(self, "cpe"):
@@ -218,9 +219,11 @@ class WSCPE(BaseWS):
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        errores = self.Errores = [err["error"] for err in ret.get("errores", [])]
-        if errores:
+        errores = [err["error"] for err in ret.get("errores", [])]
+        if errores and isinstance(errores[0], (list, tuple)):
             errores = errores[0]
+        self.errores = errores
+        self.Errores = ["%(codigo)s: %(descripcion)s" % err for err in errores]
         self.ErrCode = " ".join(["%(codigo)s" % err for err in errores])
         self.ErrMsg = "\n".join(["%(codigo)s - %(descripcion)s" % err for err in errores])
 
