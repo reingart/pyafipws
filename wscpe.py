@@ -27,7 +27,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05g"
+__version__ = "1.05h"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -124,6 +124,7 @@ class WSCPE(BaseWS):
         "AgregarDatosCarga",
         "AgregarDestino",
         "AgregarTransporte",
+        "AgregarDominio",
         "AgregarContingencia",
         "DescargadoDestinoCPE",
         "NuevoDestinoDestinatarioCPEFerroviaria",
@@ -465,6 +466,17 @@ class WSCPE(BaseWS):
         else:
             self.cpe.update(transporte)
         return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarDominio(
+        self,
+        dominio,
+        **kwargs
+    ):
+        dominios = self.cpe["transporte"]["dominio"]
+        if not isinstance(dominios, list):
+            self.cpe["transporte"]["dominio"] = [dominios]
+        self.cpe["transporte"]["dominio"].append(dominio)
 
     def AgregarContingencia(
         self,
@@ -1256,7 +1268,7 @@ if __name__ == "__main__":
             cuit_transportista=20120372913,
             fecha_hora_partida=datetime.datetime.now() + datetime.timedelta(days=1),
             # codigo_turno="00",
-            dominio=["AB001ST"],  # 1 or more repetitions
+            dominio="AB001ST",  # 1 or more repetitions
             km_recorrer=500,
             cuit_chofer=20333333334,
             # tarifa=100.10,
@@ -1264,6 +1276,7 @@ if __name__ == "__main__":
             # cuit_intermediario_flete=20333333334,
             mercaderia_fumigada=True,
         )
+        ok = wscpe.AgregarDominio("AC000TU")
         wscpe.LanzarExcepciones = False
         ok = wscpe.AutorizarCPEAutomotor()
         if wscpe.NroCTG:
