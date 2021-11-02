@@ -461,7 +461,9 @@ class WSCPE(BaseWS):
                 "mercaderiaFumigada": mercaderia_fumigada,
             }
         # ajuste para confirmacion_definitiva_cpe_ferroviaria
-        if transporte["kmRecorrer"]:
+        if "transporte" in self.cpe and dominio:
+            self.AgregarDominio(dominio)
+        elif transporte["kmRecorrer"]:
             self.cpe["transporte"] = transporte
         else:
             self.cpe.update(transporte)
@@ -1276,6 +1278,7 @@ if __name__ == "__main__":
             # cuit_intermediario_flete=20333333334,
             mercaderia_fumigada=True,
         )
+        ok = wscpe.AgregarTransporte(dominio="AD000UV")
         ok = wscpe.AgregarDominio("AC000TU")
         wscpe.LanzarExcepciones = False
         ok = wscpe.AutorizarCPEAutomotor()
