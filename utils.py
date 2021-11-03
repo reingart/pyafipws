@@ -590,6 +590,8 @@ def leer(linea, formato, expandir_fechas=False):
         try:
             if chr(8) in valor or chr(127) in valor or chr(255) in valor:
                 valor = None        # nulo
+            elif (valor == "" or valor == "NULL") and tipo in (N, I):
+                valor = None
             elif tipo == N:
                 if valor:
                     valor = long(valor)
