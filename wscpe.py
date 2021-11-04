@@ -16,6 +16,7 @@ para transporte ferroviario y automotor RG 5017/2021
 
 from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from future import standard_library
 from future.utils import string_types
