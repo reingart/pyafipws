@@ -1253,7 +1253,7 @@ if __name__ == "__main__":
             cuit_transportista=20120372913,
             fecha_hora_partida=datetime.datetime.now() + datetime.timedelta(days=1),
             # codigo_turno="00",
-            dominio=["AA001ST"],  # 1 or more repetitions
+            dominio=["AA001SC", "BB111CC"],  # 1 or more repetitions
             km_recorrer=500,
             cuit_chofer=20333333334,
             # tarifa=100.10,
