@@ -65,7 +65,7 @@ import traceback
 from pysimplesoap.client import SoapFault
 
 # importo funciones compartidas:
-from pyafipws.utils import (
+from .utils import (
     date,
     leer,
     escribir,
@@ -1174,7 +1174,7 @@ INSTALL_DIR = WSCPE.InstallDir = get_install_dir()
 
 if __name__ == "__main__":
     # obteniendo el TA
-    from pyafipws.wsaa import WSAA
+    from .wsaa import WSAA
 
     wsaa_url = ""
     wscpe_url = WSDL[HOMO]
