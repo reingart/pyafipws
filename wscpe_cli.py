@@ -582,6 +582,7 @@ if __name__ == '__main__':
             print "Fecha Vencimiento", wscpe.FechaVencimiento
             print "Estado: ", wscpe.Estado
             obs = wscpe.Observaciones.strip() if wscpe.Observaciones else ""
+            obs = obs.replace("\n", "\t").replace("\r", "\t")
             print "Observaciones:", obs
             print "Evento:", wscpe.Evento
             dic['nro_ctg'] = wscpe.NroCTG
