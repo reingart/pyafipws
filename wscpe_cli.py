@@ -77,7 +77,7 @@ import utils
 from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
 from utils import leer_txt, grabar_txt, leer_dbf, guardar_dbf, N, A, B, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
-from wscpe import WSCPE
+from wscpe import WSCPE, HOMO
 
 # constantes de configuración (producción/homologación):
 
@@ -87,7 +87,6 @@ WSDL = ["https://serviciosjava.afip.gob.ar/cpe-ws/services/wscpe?wsdl",
 DEBUG = False
 XML = False
 CONFIG_FILE = "wscpe.ini"
-HOMO = True
 
 ENCABEZADO = [
     ('tipo_reg', 1, A), # 0: encabezado carta de porte
@@ -452,7 +451,7 @@ if __name__ == '__main__':
             )]
             dic["transporte"] = [dict(
                     cuit_transportista=20333333334,
-                    dominio="AB001ST",
+                    dominio="AB000ST",
                     fecha_hora_partida=(datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()[:-7],
                     km_recorrer=500,
                     cuit_chofer='20333333334',

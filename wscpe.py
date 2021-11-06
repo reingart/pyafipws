@@ -1364,7 +1364,7 @@ if __name__ == "__main__":
             print("Nro Orden: ", wscpe.NroOrden)
 
     if "--anular_cpe" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=211, nro_orden=1)
         wscpe.AnularCPE()
 
     if "--rechazo_cpe" in sys.argv:
