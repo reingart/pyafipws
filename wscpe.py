@@ -182,6 +182,7 @@ class WSCPE(BaseWS):
         "FechaVencimiento",
         "Estado",
         "Resultado",
+        "TarifaReferencia",
         "PDF",
         "ErrCode",
         "ErrMsg",
@@ -210,6 +211,7 @@ class WSCPE(BaseWS):
         self.NroCTG = self.NroOrden = None
         self.FechaInicioEstado = self.FechaVencimiento = self.FechaEmision = None
         self.Estado = self.Resultado = self.PDF = None
+        self.TarifaReferencia = None
         self.errores = []
         self.Errores = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
@@ -424,6 +426,7 @@ class WSCPE(BaseWS):
         cuit_intermediario_flete=None,
         codigo_ramal=None,
         descripcion_ramal=None,
+        tarifa_referencia=None,
         **kwargs
     ):
         """Inicializa internamente los datos de transporte para una cpe."""
@@ -455,6 +458,7 @@ class WSCPE(BaseWS):
                 "codigoTurno": codigo_turno,
                 "cuitChofer": cuit_chofer,
                 "tarifa": tarifa,
+                "tarifaReferencia": tarifa_referencia,
                 "cuitPagadorFlete": cuit_pagador_flete,
                 "cuitIntermediarioFlete": cuit_intermediario_flete,
                 "mercaderiaFumigada": mercaderia_fumigada,
@@ -563,6 +567,9 @@ class WSCPE(BaseWS):
         self.FechaVencimiento = cab["fechaVencimiento"]
         self.PDF = ret.get("pdf", "")  # base64
         self.Observaciones = cab.get("observaciones", "")
+        transportes = ret.get('transporte', [])
+        self.TarifaReferencia = transportes[0].get('tarifaReferencia') if transportes else None
+
         cpe_bytes = self.PDF
         if isinstance(cpe_bytes, string_types) and sys.version_info[0] >= 3:
             cpe_bytes = cpe_bytes.encode("utf-8")

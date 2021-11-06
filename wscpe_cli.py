@@ -173,6 +173,7 @@ TRANSPORTE = [
     ('cuit_intermediario_flete', 11, N),
     ('cuit_pagador_flete', 11, N),
     ('mercaderia_fumigada', 5, B),
+    ('tarifa_referencia', 10, I, 2),  # 99999.99
     ]
 
 CONTINGENCIA = [
@@ -450,7 +451,7 @@ if __name__ == '__main__':
                     cuit_destinatario=wscpe.Cuit,
             )]
             dic["transporte"] = [dict(
-                    cuit_transportista=20333333334,
+                    cuit_transportista=20120372913,
                     dominio="AB000ST",
                     fecha_hora_partida=(datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()[:-7],
                     km_recorrer=500,
@@ -460,6 +461,7 @@ if __name__ == '__main__':
                     cuit_pagador_flete=None,
                     cuit_intermediario_flete=None,
                     tarifa=None,
+                    tarifa_referencia=1234.5,
             ), dict(
                     dominio="AC001ST",
             )
@@ -582,6 +584,7 @@ if __name__ == '__main__':
             obs = wscpe.Observaciones.strip() if wscpe.Observaciones else ""
             obs = obs.replace("\n", "\t").replace("\r", "\t")
             print "Observaciones:", obs
+            print "Tarifa Referencia:", wscpe.TarifaReferencia
             print "Evento:", wscpe.Evento
             dic['nro_ctg'] = wscpe.NroCTG
 
@@ -593,6 +596,8 @@ if __name__ == '__main__':
             dic['fecha_inicio_estado'] = wscpe.FechaInicioEstado
             dic['errores'] = wscpe.errores
             dic['evento'] = wscpe.Evento
+            if dic.get('transporte'):
+                dic['transporte'][0]['tarifa_referencia'] = wscpe.TarifaReferencia
 
         if '--grabar' in sys.argv:
             escribir_archivo(dic, SALIDA)
