@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05g"
+__version__ = "1.05h"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -476,8 +476,7 @@ if __name__ == '__main__':
 
         if '--cargar' in sys.argv:
             dic = leer_archivo(ENTRADA)
-            if '--autorizar' in sys.argv:
-                wscpe.CrearCPE()
+            wscpe.CrearCPE(actualiza='--autorizar' not in sys.argv)
             wscpe.AgregarCabecera(**dic)
             if dic.get("origen"):
                 wscpe.AgregarOrigen(**dic['origen'][0])

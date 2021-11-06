@@ -27,7 +27,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05h"
+__version__ = "1.05i"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -213,10 +213,6 @@ class WSCPE(BaseWS):
         self.errores = []
         self.Errores = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
-        if not hasattr(self, "cpe"):
-            self.cpe = {}
-        if not hasattr(self, "_actualizar"):
-            self._actualizar = True
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
@@ -240,9 +236,12 @@ class WSCPE(BaseWS):
             self.Eventos = [evt]
             self.Evento = "%(codigo)s: %(descripcion)s" % evt
 
-    def CrearCPE(self):
+    def CrearCPE(self, actualiza=False):
         """Cambia la estructura de datos en AgregarCabecera para crear una CPE."""
-        self._actualizar = False
+        # Autorizar requiere actualiza = False (predeterminado)
+        # Anular, Rechazar y otros métodos requieren actualiza = True
+        self._actualizar = actualiza
+        self.cpe = {}
         return True
 
     @inicializar_y_capturar_excepciones
