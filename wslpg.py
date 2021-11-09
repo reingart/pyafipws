@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.34a"
+__version__ = "1.35a"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -338,8 +338,8 @@ CERTIFICACION = [
     # campos para cgAutorizarRetiroTransferencia (WSLPGv1.6):
     ('cuit_receptor', 11, N),
     ('fecha', 10, A),                           # no usado WSLPGv1.8
-    ('nro_carta_porte_a_utilizar', 9, N),       # obligatorio para retiro
-    ('cee_carta_porte_a_utilizar', 14, N),      # no usado WSLPGv1.8
+    ('nro_carta_porte_a_utilizar', 13, N),       # obligatorio para retiro
+    ('cee_carta_porte_a_utilizar', 10, N),      # no usado WSLPGv1.8
     # para cgAutorizarPreexistente (WSLPGv1.6):
     ('tipo_certificado_deposito_preexistente', 1, N),  # "R": Retiro "T": Tra.
     ('nro_certificado_deposito_preexistente', 12, N),
@@ -380,8 +380,8 @@ CERTIFICACION = [
 
 CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
     ('tipo_reg', 1, A), # C: CTG
-    ('nro_ctg', 8, N),
-    ('nro_carta_porte', 9, N),
+    ('nro_ctg', 12, N),
+    ('nro_carta_porte', 13, N),
     ('porcentaje_secado_humedad', 5, I, 2),
     ('importe_secado', 10, I, 2),
     ('peso_neto_merma_secado', 10, I, 2),
