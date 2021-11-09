@@ -27,7 +27,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05i"
+__version__ = "1.05j"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -560,11 +560,11 @@ class WSCPE(BaseWS):
     def AnalizarCPE(self, ret, archivo="cpe.pdf"):
         "Extrae los resultados de autorización de una carta porte automotor."
         cab = ret["cabecera"]
-        self.NroCTG = cab["nroCTG"]
-        self.FechaEmision = cab["fechaEmision"]
-        self.Estado = cab["estado"]
-        self.FechaInicioEstado = cab["fechaInicioEstado"]
-        self.FechaVencimiento = cab["fechaVencimiento"]
+        self.NroCTG = cab.get("nroCTG")
+        self.FechaEmision = cab.get("fechaEmision")
+        self.Estado = cab.get("estado")
+        self.FechaInicioEstado = cab.get("fechaInicioEstado")
+        self.FechaVencimiento = cab.get("fechaVencimiento")
         self.PDF = ret.get("pdf", "")  # base64
         self.Observaciones = cab.get("observaciones", "")
         transportes = ret.get('transporte', [])
