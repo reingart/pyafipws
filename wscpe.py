@@ -541,13 +541,13 @@ class WSCPE(BaseWS):
     @inicializar_y_capturar_excepciones
     def AnalizarCPE(self, ret, archivo="cpe.pdf"):
         "Extrae los resultados de autorización de una carta porte automotor."
-        cab = ret["cabecera"]
-        self.NroCTG = cab["nroCTG"]
-        self.FechaEmision = cab["fechaEmision"]
-        self.Estado = cab["estado"]
-        self.FechaInicioEstado = cab["fechaInicioEstado"]
-        self.FechaVencimiento = cab["fechaVencimiento"]
-        self.PDF = ret["pdf"]  # base64
+        cab = ret.get("cabecera")
+        self.NroCTG = cab.get("nroCTG")
+        self.FechaEmision = cab.get("fechaEmision")
+        self.Estado = cab.get("estado")
+        self.FechaInicioEstado = cab.get("fechaInicioEstado")
+        self.FechaVencimiento = cab.get("fechaVencimiento")
+        self.PDF = ret.get("pdf")  # base64
         cpe_bytes = self.PDF
         if isinstance(cpe_bytes, string_types):
             cpe_bytes = cpe_bytes.encode("utf-8")
