@@ -17,12 +17,16 @@ para transporte ferroviario y automotor RG 5017/2021
 from __future__ import print_function
 from __future__ import absolute_import
 
-from future import standard_library
-from future.utils import string_types
 
-standard_library.install_aliases()
-from builtins import str
-from builtins import input
+# python 2 compatibility:
+if 'xrange' not in dir(__builtins__):
+    from future import standard_library
+    from future.utils import string_types
+
+    standard_library.install_aliases()
+    from builtins import str
+    from builtins import input
+
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
@@ -571,7 +575,7 @@ class WSCPE(BaseWS):
         self.TarifaReferencia = transportes[0].get('tarifaReferencia') if transportes else None
 
         cpe_bytes = self.PDF
-        if isinstance(cpe_bytes, string_types) and sys.version_info[0] >= 3:
+        if sys.version_info[0] >= 3 and isinstance(cpe_bytes, string_types):
             cpe_bytes = cpe_bytes.encode("utf-8")
         with open(archivo, "wb") as fh:
             fh.write(cpe_bytes)
