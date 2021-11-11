@@ -1199,6 +1199,18 @@ class WSCPE(BaseWS):
 INSTALL_DIR = WSCPE.InstallDir = get_install_dir()
 
 if __name__ == "__main__":
+
+    if "--register" in sys.argv or "--unregister" in sys.argv:
+        import win32com.server.register
+        win32com.server.register.UseCommandLine(WSCPE)
+        sys.exit(0)
+    elif "/Automate" in sys.argv:
+        # MS seems to like /automate to run the class factories.
+        import win32com.server.localserver
+        #win32com.server.localserver.main()
+        # start the server.
+        win32com.server.localserver.serve([WSCPE._reg_clsid_])
+
     # obteniendo el TA
     from pyafipws.wsaa import WSAA
 
