@@ -646,4 +646,4 @@ if __name__ == '__main__':
                 with open(xml_path, "w") as x:
                     if xml_data:
                         dom = xml.dom.minidom.parseString(xml_data)
-                        x.write(dom.toprettyxml())
+                        x.write(dom.toprettyxml(encoding="utf8"))
