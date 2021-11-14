@@ -31,7 +31,7 @@ if 'xrange' not in dir(__builtins__):
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.06c"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -403,12 +403,13 @@ class WSCPE(BaseWS):
             "codLocalidad": cod_localidad,
             "planta": planta,
         }
-        cuit_destinatario = {"cuit": cuit_destinatario}
+        destinatario = {"cuit": cuit_destinatario}
         # maneja distintos campos para diferentes metodos
         if destino["cuit"]:
-            self.cpe["destino"] = destino
-        if cuit_destinatario["cuit"]:
-            self.cpe["destinatario"] = cuit_destinatario
+            self.cpe["destino"] = destino  # autorizar/editar
+        if cuit_destinatario:
+            self.cpe["destinatario"] = destinatario  # autorizar (estructura)
+            self.cpe["cuitDestinatario"] = cuit_destinatario  # editar (sólo cuit)
         return True
 
     @inicializar_y_capturar_excepciones
