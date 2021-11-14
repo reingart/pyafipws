@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05h"
+__version__ = "1.06a"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -174,6 +174,12 @@ TRANSPORTE = [
     ('cuit_pagador_flete', 11, N),
     ('mercaderia_fumigada', 5, B),
     ('tarifa_referencia', 10, I, 2),  # 99999.99
+    ('cuit_transportista_tramo2', 11, N),
+    ('nro_vagon', 8, N),  # 10000000 hasta 99999999
+    ('nro_precinto', 20, A),
+    ('nro_operativo', 10, N),
+    ('codigo_ramal', 2, N),  # 1: Roca, 2: Sarmiento, 3: Mitre, 4: Urquiza, 5: Belgrano, 6: San Martín, 99: Otro
+    ('descripcion_ramal', 50, A),
     ]
 
 CONTINGENCIA = [
@@ -511,7 +517,10 @@ if __name__ == '__main__':
             if '--testing' in sys.argv:
                 wscpe.LoadTestXML("tests/xml/wscpe.xml")  # cargo respuesta
 
-            ok = wscpe.AutorizarCPEAutomotor(archivo="cpe.pdf")
+            if not "--ferroviaria" in sys.argv:
+                ok = wscpe.AutorizarCPEAutomotor(archivo="cpe.pdf")
+            else:
+                ok = wscpe.AutorizarCPEFerroviaria(archivo="cpe.pdf")
 
         if '--anular' in sys.argv:
             ok = wscpe.AnularCPE()
