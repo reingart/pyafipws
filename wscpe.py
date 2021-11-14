@@ -31,7 +31,7 @@ if 'xrange' not in dir(__builtins__):
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -565,6 +565,7 @@ class WSCPE(BaseWS):
         "Extrae los resultados de autorización de una carta porte automotor."
         cab = ret["cabecera"]
         self.NroCTG = cab.get("nroCTG")
+        self.NroOrden = cab.get("nroOrden")
         self.FechaEmision = cab.get("fechaEmision")
         self.Estado = cab.get("estado")
         self.FechaInicioEstado = cab.get("fechaInicioEstado")

@@ -577,6 +577,7 @@ if __name__ == '__main__':
         if ok is not None:
             print "Resultado: ", wscpe.Resultado
             print "Numero CTG: ", wscpe.NroCTG
+            print "Numero Orden: ", wscpe.NroOrden
             print "Fecha Emision", wscpe.FechaEmision
             print "Fecha Inicio Estado", wscpe.FechaInicioEstado
             print "Fecha Vencimiento", wscpe.FechaVencimiento
