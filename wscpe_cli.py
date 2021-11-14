@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.06b"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -57,6 +57,8 @@ Opciones:
   --nuevo_destino_destinatario: (usa cabecera, destino, transporte)
   --regreso_origen: (usa cabecera, transporte)
   --desvio: (usa cabecera, destino, transporte)
+
+  --editar: modificar datos (cabecera: ctg, destino, datos_carga y transporte)
 
   --provincias: listado de provincias
   --localidades_por_provincia: listado de localidades para la provincia dada
@@ -521,6 +523,38 @@ if __name__ == '__main__':
                 ok = wscpe.AutorizarCPEAutomotor(archivo="cpe.pdf")
             else:
                 ok = wscpe.AutorizarCPEFerroviaria(archivo="cpe.pdf")
+
+        if '--editar' in sys.argv:
+            cabecera = dic
+            interviniente = dic["intervinientes"][0] if "intervinientes" in dic else {}
+            transporte = dic["transporte"][0] if "transporte" in dic else {}
+            datos_carga = dic["datos_carga"][0] if "datos_carga" in dic else {}
+            if not "--ferroviaria" in sys.argv:
+                ok = wscpe.EditarCPEAutomotor(
+                    nro_ctg=cabecera.get("nro_ctg"),
+                    cuit_corredor_venta_primaria=interviniente.get("cuit_corredor_venta_primaria"),
+                    cuit_corredor_venta_secundaria=interviniente.get("cuit_corredor_venta_secundaria"),
+                    cuit_remitente_comercial_venta_primaria=interviniente.get("cuit_remitente_comercial_venta_primaria"),
+                    cuit_remitente_comercial_venta_secundaria=interviniente.get("cuit_remitente_comercial_venta_secundaria"),
+                    cuit_remitente_comercial_venta_secundaria2=interviniente.get("cuit_remitente_comercial_venta_secundaria2"),
+                    cuit_chofer=transporte.get("cuit_chofer"),
+                    cuit_transportista=transporte.get("cuit_transportista"),
+                    peso_bruto=datos_carga.get("peso_bruto"),
+                    cod_grano=datos_carga.get("cod_grano"),
+                    dominio=transporte.get("dominio"),
+                )
+            else:
+                ok = wscpe.EditarCPEFerroviaria(
+                    nro_ctg=cabecera.get("nro_ctg"),
+                    cuit_corredor_venta_primaria=interviniente.get("cuit_corredor_venta_primaria"),
+                    cuit_corredor_venta_secundaria=interviniente.get("cuit_corredor_venta_secundaria"),
+                    cuit_remitente_comercial_venta_primaria=interviniente.get("cuit_remitente_comercial_venta_primaria"),
+                    cuit_remitente_comercial_venta_secundaria=interviniente.get("cuit_remitente_comercial_venta_secundaria"),
+                    cuit_remitente_comercial_venta_secundaria2=interviniente.get("cuit_remitente_comercial_venta_secundaria2"),
+                    cuit_transportista=transporte.get("cuit_transportista"),
+                    peso_bruto=datos_carga.get("peso_bruto"),
+                    cod_grano=datos_carga.get("cod_grano"),
+                )
 
         if '--anular' in sys.argv:
             ok = wscpe.AnularCPE()
