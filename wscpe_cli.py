@@ -529,6 +529,7 @@ if __name__ == '__main__':
                         ult = wscpe.NroOrden
                         print ("ConsultarUltNroOrden: Tipo %s suc %4d ult %d" % (tipo, suc, ult))
                         for nro in range(ult, 1, -1):
+                            wscpe.CrearCPE(True)
                             wscpe.AgregarCabecera(tipo_cpe=tipo, sucursal=suc, nro_orden=nro)
                             wscpe.AnularCPE()
                             err = wscpe.ErrMsg
