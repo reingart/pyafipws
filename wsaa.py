@@ -13,6 +13,7 @@
 "Módulo para obtener un ticket de autorización del web service WSAA de AFIP"
 from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 # Basado en wsaa-client.php de Gerardo Fisanotti - DvSHyS/DiOPIN/AFIP - 13-apr-07
 # Definir WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL
@@ -26,9 +27,17 @@ __copyright__ = "Copyright (C) 2008-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
 __version__ = "3.11c"
 
-import hashlib, datetime, email, os, sys, time, traceback, warnings
+import datetime
+import email
+import hashlib
+import os
 import shutil
+import sys
+import time
+import traceback
 import unicodedata
+import warnings
+
 from pysimplesoap.client import SimpleXMLElement
 from .utils import (
     inicializar_y_capturar_excepciones,
@@ -40,12 +49,19 @@ from .utils import (
 )
 
 try:
-    from M2Crypto import BIO, Rand, SMIME, SSL
+    from cryptography import x509
+    from cryptography.x509.oid import NameOID
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.hazmat.bindings.openssl.binding import Binding
+
 except ImportError:
     ex = exception_info()
-    warnings.warn("No es posible importar M2Crypto (OpenSSL)")
+    warnings.warn("No es posible importar cryptography (OpenSSL)")
     warnings.warn(ex["msg"])  # revisar instalación y DLLs de OpenSSL
-    BIO = Rand = SMIME = SSL = None
+    Binding = None
     # utilizar alternativa (ejecutar proceso por separado)
     from subprocess import Popen, PIPE
     from base64 import b64encode
@@ -69,7 +85,7 @@ CACERT = "conf/afip_ca_info.crt"  # WSAA CA Cert (Autoridades de Confiaza)
 HOMO = False
 TYPELIB = False
 DEFAULT_TTL = 60 * 60 * 5  # five hours
-DEBUG = False
+DEBUG = True
 
 # No debería ser necesario modificar nada despues de esta linea
 
@@ -95,41 +111,69 @@ def create_tra(service=SERVICE, ttl=2400):
 def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
     "Firmar PKCS#7 el TRA y devolver CMS (recortando los headers SMIME)"
 
-    if BIO:
-        # Firmar el texto (tra) usando m2crypto (openssl bindings para python)
-        buf = BIO.MemoryBuffer(tra.encode("utf8"))  # Crear un buffer desde el texto
-        # Rand.load_file('randpool.dat', -1)     # Alimentar el PRNG
-        s = SMIME.SMIME()  # Instanciar un SMIME
-        # soporte de contraseña de encriptación (clave privada, opcional)
-        callback = lambda *args, **kwarg: passphrase
-        # Cargar clave privada y certificado
-        if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
-            # leer contenido desde archivo (evitar problemas Applink / MSVCRT)
-            if os.path.exists(privatekey) and os.path.exists(cert):
-                privatekey = open(privatekey, "rb").read()
-                cert = open(cert, "rb").read()
-            else:
-                raise RuntimeError(
-                    "Archivos no encontrados: %s, %s" % (privatekey, cert)
-                )
-        # crear buffers en memoria de la clave privada y certificado:
-        key_bio = BIO.MemoryBuffer(privatekey)
-        crt_bio = BIO.MemoryBuffer(cert)
-        s.load_key_bio(key_bio, crt_bio, callback)  # (desde buffer)
-        p7 = s.sign(buf, 0)  # Firmar el buffer
-        out = BIO.MemoryBuffer()  # Crear un buffer para la salida
-        s.write(out, p7)  # Generar p7 en formato mail
-        # Rand.save_file('randpool.dat')         # Guardar el estado del PRNG's
+    if isinstance(tra, str):
+        tra = tra.encode("utf8")
 
-        msg_out = out.read()
-        if isinstance(msg_out, bytes):
-            msg_out = msg_out.decode("utf8")
-        # extraer el cuerpo del mensaje (parte firmada)
-        msg = email.message_from_string(msg_out)
+    if Binding:
+        _lib = Binding.lib
+        _ffi = Binding.ffi
+        # Crear un buffer desde el texto
+        bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
+
+        # Leer privatekey y cert
+        if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
+            privatekey = open(privatekey).read()
+            if isinstance(privatekey, str):
+                privatekey = privatekey.encode("utf-8")
+
+        if not passphrase:
+            password = None
+        else:
+            password = passphrase
+        private_key = serialization.load_pem_private_key(
+            privatekey, password, default_backend()
+        )
+
+        if not cert.startswith(b"-----BEGIN CERTIFICATE-----"):
+            cert = open(cert).read()
+            if isinstance(cert, str):
+                cert = cert.encode("utf-8")
+        cert = x509.load_pem_x509_certificate(cert, default_backend())
+
+        try:
+            # Firmar el texto (tra) usando cryptography (openssl bindings para python)
+            p7 = _lib.PKCS7_sign(
+                cert._x509, private_key._evp_pkey, _ffi.NULL, bio_in, 0
+            )
+        finally:
+            # Liberar memoria asignada
+            _lib.BIO_free(bio_in)
+        # Se crea un buffer nuevo porque la firma lo consume
+        bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
+        try:
+            # Crear buffer de salida
+            bio_out = _lib.BIO_new(_lib.BIO_s_mem())
+            try:
+                # Instanciar un SMIME
+                _lib.SMIME_write_PKCS7(bio_out, p7, bio_in, 0)
+
+                # Tomar datos para la salida
+                result_buffer = _ffi.new("char**")
+                buffer_length = _lib.BIO_get_mem_data(bio_out, result_buffer)
+                output = _ffi.buffer(result_buffer[0], buffer_length)[:]
+            finally:
+                _lib.BIO_free(bio_out)
+        finally:
+            _lib.BIO_free(bio_in)
+
+        # Generar p7 en formato mail y recortar headers
+        msg = email.message_from_string(output.decode("utf8"))
         for part in msg.walk():
             filename = part.get_filename()
-            if filename == "smime.p7m":  # es la parte firmada?
-                return part.get_payload(decode=False)  # devolver CMS
+            if filename == "smime.p7m":
+                # Es la parte firmada?
+                # Devolver CMS
+                return part.get_payload(decode=False)
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
@@ -149,7 +193,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
                 stdin=PIPE,
                 stdout=PIPE,
                 stderr=PIPE,
-            ).communicate(tra.encode("utf8"))[0]
+            ).communicate(tra)[0]
             return b64encode(out)
         except OSError as e:
             if e.errno == 2:
@@ -160,7 +204,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
 def openssl_exe():
     try:
         openssl = shutil.which("openssl")
-    except:
+    except Exception:
         openssl = None
     if not openssl:
         if sys.platform.startswith("linux"):
@@ -185,7 +229,7 @@ def call_wsaa(cms, location=WSAAURL, proxy=None, trace=False, cacert=None):
             raise RuntimeError(wsaa.Excepcion)
         else:
             return ta
-    except:
+    except Exception:
         raise
 
 
@@ -245,21 +289,20 @@ class WSAA(BaseWS):
     @inicializar_y_capturar_excepciones
     def AnalizarCertificado(self, crt, binary=False):
         "Carga un certificado digital y extrae los campos más importantes"
-        from M2Crypto import BIO, EVP, RSA, X509
 
         if binary:
-            bio = BIO.MemoryBuffer(cert)
-            x509 = X509.load_cert_bio(bio, X509.FORMAT_DER)
+            cert = x509.load_pem_x509_certificate(crt, default_backend())
         else:
             if not crt.startswith("-----BEGIN CERTIFICATE-----"):
                 crt = open(crt).read()
-            bio = BIO.MemoryBuffer(crt)
-            x509 = X509.load_cert_bio(bio, X509.FORMAT_PEM)
-        if x509:
-            self.Identidad = x509.get_subject().as_text()
-            self.Caducidad = x509.get_not_after().get_datetime()
-            self.Emisor = x509.get_issuer().as_text()
-            self.CertX509 = x509.as_text()
+                if isinstance(crt, str):
+                    crt = crt.encode("utf-8")
+            cert = x509.load_pem_x509_certificate(crt, default_backend())
+        if cert:
+            self.Identidad = cert.subject
+            self.Caducidad = cert.not_valid_after
+            self.Emisor = cert.issuer
+            self.CertX509 = cert
         return True
 
     @inicializar_y_capturar_excepciones
@@ -271,21 +314,28 @@ class WSAA(BaseWS):
         passphrase="",
     ):
         "Crea una clave privada (private key)"
-        from M2Crypto import RSA, EVP
-
-        # only protect if passphrase was given (it will fail otherwise)
-        callback = lambda *args, **kwarg: passphrase
-        chiper = None if not passphrase else "aes_128_cbc"
         # create the RSA key pair (and save the result to a file):
-        rsa_key_pair = RSA.gen_key(key_length, pub_exponent, callback)
-        bio = BIO.MemoryBuffer()
-        rsa_key_pair.save_key_bio(bio, chiper, callback)
-        f = open(filename, "w")
-        f.write(bio.read())
-        f.close()
-        # create a public key to sign the certificate request:
-        self.pkey = EVP.PKey(md="sha256")
-        self.pkey.assign_rsa(rsa_key_pair)
+        rsa_key = rsa.generate_private_key(
+            pub_exponent, key_length, backend=default_backend()
+        )
+
+        if passphrase:
+            passp = passphrase.encode("utf-8")
+            # encryption AES-256-CBC
+            cypher = serialization.BestAvailableEncryption(passp)
+        else:
+            cypher = serialization.NoEncryption()
+
+        with open(filename, "wb") as f:
+            f.write(
+                rsa_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.TraditionalOpenSSL,
+                    encryption_algorithm=cypher,
+                )
+            )
+
+        self.rsa_key = rsa_key
         return True
 
     @inicializar_y_capturar_excepciones
@@ -293,10 +343,8 @@ class WSAA(BaseWS):
         self, cuit="", empresa="", nombre="pyafipws", filename="empresa.csr"
     ):
         "Crear un certificate signing request (X509 CSR)"
-        from M2Crypto import RSA, EVP, X509
-
         # create the certificate signing request (CSR):
-        self.x509_req = X509.Request()
+        self.x509_req = x509.CertificateSigningRequestBuilder()
 
         # normalizar encoding (reemplazar acentos, eñe, etc.)
         if isinstance(empresa, str):
@@ -305,24 +353,22 @@ class WSAA(BaseWS):
             nombre = unicodedata.normalize("NFKD", nombre).encode("ASCII", "ignore")
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
-        x509name = X509.X509_Name()
-        # default OpenSSL parameters:
-        kwargs = {"type": 0x1000 | 1, "len": -1, "loc": -1, "set": 0}
-        x509name.add_entry_by_txt(field="C", entry="AR", **kwargs)
-        x509name.add_entry_by_txt(field="O", entry=empresa, **kwargs)
-        x509name.add_entry_by_txt(field="CN", entry=nombre, **kwargs)
-        x509name.add_entry_by_txt(
-            field="serialNumber", entry="CUIT %s" % str(cuit), **kwargs
-        )
-        self.x509_req.set_subject_name(x509name)
-
         # sign the request with the previously created key (CrearClavePrivada)
-        self.x509_req.set_pubkey(pkey=self.pkey)
-        self.x509_req.sign(pkey=self.pkey, md="sha256")
+        csrs = self.x509_req.subject_name(
+            x509.Name(
+                [
+                    x509.NameAttribute(NameOID.COUNTRY_NAME, "AR"),
+                    x509.NameAttribute(NameOID.ORGANIZATION_NAME, "{}".format(empresa)),
+                    x509.NameAttribute(NameOID.COMMON_NAME, "{}".format(nombre)),
+                    x509.NameAttribute(NameOID.SERIAL_NUMBER, "CUIT {}".format(cuit)),
+                ]
+            )
+        ).sign(self.rsa_key, hashes.SHA256(), default_backend())
+
         # save the CSR result to a file:
-        f = open(filename, "w")
-        f.write(self.x509_req.as_pem())
-        f.close()
+        with open(filename, "wb") as f:
+            f.write(csrs.public_bytes(serialization.Encoding.PEM))
+
         return True
 
     @inicializar_y_capturar_excepciones
@@ -409,7 +455,7 @@ class WSAA(BaseWS):
                 tra = self.CreateTRA(service=service, ttl=DEFAULT_TTL)
                 # firmarlo criptográficamente
                 if DEBUG:
-                    print("Frimando TRA...")
+                    print("Firmando TRA...")
                 cms = self.SignTRA(tra, crt, key)
                 # concectar con el servicio web:
                 if DEBUG:
@@ -439,7 +485,7 @@ class WSAA(BaseWS):
             self.AnalizarXml(xml=ta)
             self.Token = self.ObtenerTagXml("token")
             self.Sign = self.ObtenerTagXml("sign")
-        except:
+        except Exception:
             ta = ""
             if not self.Excepcion:
                 # avoid encoding problem when reporting exceptions to the user:
@@ -456,8 +502,8 @@ class WSAA(BaseWS):
 INSTALL_DIR = WSAA.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
-
+def main():
+    global HOMO, TYPELIB, DEBUG
     safe_console()
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
@@ -528,9 +574,9 @@ if __name__ == "__main__":
         print(pedido_cert)
         # convertir a terminación de linea windows y abrir con bloc de notas
         if sys.platform == "win32":
-            txt = open(pedido_cert + ".txt", "wb")
+            txt = open(pedido_cert + ".txt", "w")
             for linea in open(pedido_cert, "r"):
-                txt.write("%s\r\n" % linea)
+                txt.write("{}".format(linea))
             txt.close()
             os.startfile(pedido_cert + ".txt")
     else:
@@ -590,5 +636,6 @@ if __name__ == "__main__":
             print("Generation Time:", wsaa.ObtenerTagXml("generationTime"))
             print("Expiration Time:", wsaa.ObtenerTagXml("expirationTime"))
             print("Expiro?", wsaa.Expirado())
-            ##import time; time.sleep(10)
-            ##print "Expiro?", wsaa.Expirado()
+
+if __name__=="__main__":
+    main()

@@ -799,8 +799,8 @@ def p_assert_eq(a, b):
     print(a, a == b and "==" or "!=", b)
 
 
-if __name__ == "__main__":
-
+def main():
+    global HOMO, WSDL
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 
@@ -835,7 +835,7 @@ if __name__ == "__main__":
             wsdl = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
         cache = proxy = ""
         wrapper = "httplib2"
-        cacert = open("conf/afip_ca_info.crt").read()
+        cacert = "conf/afip_ca_info.crt"
         ok = wsfexv1.Conectar(cache, wsdl, proxy, wrapper, cacert)
 
         if "--dummy" in sys.argv:
@@ -863,7 +863,7 @@ if __name__ == "__main__":
                 dst_cmp = 203  # país destino
                 cliente = "Joao Da Silva"
                 cuit_pais_cliente = "50000000016"
-                domicilio_cliente = u"Rúa Ñ°76 km 34.5 Alagoas"
+                domicilio_cliente = u"Rua 76 km 34.5 Alagoas"
                 id_impositivo = "PJ54482221-l"
                 moneda_id = (
                     "DOL"  # para reales, "DOL" o "PES" (ver tabla de parámetros)
@@ -994,7 +994,7 @@ if __name__ == "__main__":
         if "--params" in sys.argv:
             import codecs, locale
 
-            sys.stdout = codecs.getwriter("latin1")(sys.stdout)
+            # sys.stdout = codecs.getwriter("latin1")(sys.stdout)
 
             print("=== Incoterms ===")
             idiomas = wsfexv1.GetParamIncoterms(sep="||")
@@ -1047,3 +1047,6 @@ if __name__ == "__main__":
 
         if "--ptosventa" in sys.argv:
             print(wsfexv1.GetParamPtosVenta())
+
+if __name__ == "__main__":
+    main()

@@ -12,11 +12,11 @@
 
 from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import with_statement
 from future import standard_library
 
 standard_library.install_aliases()
 from builtins import str
-from __future__ import with_statement
 
 """Módulo para obtener código de autorización electrónica (CAE) para 
 Liquidación de Tabaco Verde del web service WSLTV de AFIP
@@ -75,7 +75,7 @@ Opciones:
 Ver wsltv.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, shelve
+import os, sys, shelve, subprocess
 import decimal, datetime
 import traceback
 import pprint
@@ -844,7 +844,7 @@ class WSLTV(BaseWS):
     def MostrarPDF(self, archivo, imprimir=False):
         try:
             if sys.platform == "linux2":
-                os.system("evince " "%s" "" % archivo)
+                subprocess.call(["evince", archivo])
             else:
                 operation = imprimir and "print" or ""
                 os.startfile(archivo, operation)
@@ -858,11 +858,12 @@ class WSLTV(BaseWS):
 INSTALL_DIR = WSLTV.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global DEBUG, XML, CONFIG_FILE, TIMEOUT, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
-        sys.exit(0)
+        return
     if "--formato" in sys.argv:
         print("Formato:")
         for msg, formato in []:
@@ -876,7 +877,7 @@ if __name__ == "__main__":
                     % (clave, comienzo, longitud, tipo, dec)
                 )
                 comienzo += longitud
-        sys.exit(0)
+        return
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -982,7 +983,7 @@ if __name__ == "__main__":
             print("AppServerStatus", wsltv.AppServerStatus)
             print("DbServerStatus", wsltv.DbServerStatus)
             print("AuthServerStatus", wsltv.AuthServerStatus)
-            ##sys.exit(0)
+            return
 
         if "--json" in sys.argv and os.path.exists("wsltv.json"):
             # cargar un archivo de texto:
@@ -996,7 +997,7 @@ if __name__ == "__main__":
                 # genero una liquidación de ejemplo:
 
                 tipo_cbte = 150
-                pto_vta = 6
+                pto_vta = 2002
 
                 if not "--prueba" in sys.argv:
                     # consulto el último número de orden emitido:
@@ -1136,7 +1137,7 @@ if __name__ == "__main__":
                 assert wsltv.GetParametro("receptor", "domicilio") == u"Calle 1"
                 assert (
                     wsltv.GetParametro("receptor", "razon_social")
-                    == u"CUIT PF de Prueba gen\xe9rica"
+                    == u'CUIT PF de Prueba genérica'
                 )
                 assert (
                     wsltv.GetParametro(
@@ -1264,7 +1265,7 @@ if __name__ == "__main__":
                     f,
                     sort_keys=True,
                     indent=4,
-                    encoding="utf-8",
+                    # encoding="utf-8",
                 )
 
         if "--ult" in sys.argv:
@@ -1284,7 +1285,7 @@ if __name__ == "__main__":
                     print(wsltv.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wsltv.NroComprobante)
             print("Errores:", wsltv.Errores)
-            sys.exit(0)
+            return
 
         # Recuperar parámetros:
 
@@ -1343,3 +1344,6 @@ if __name__ == "__main__":
         if XML:
             open("wsltv_request.xml", "w").write(wsltv.client.xml_request)
             open("wsltv_response.xml", "w").write(wsltv.client.xml_response)
+
+if __name__ == "__main__":
+    main()

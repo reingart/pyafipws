@@ -1156,7 +1156,7 @@ class WSMTXCA(BaseWS):
                     "numeroDocumento": f["nro_doc"],
                     "numeroComprobante": f["cbt_desde"],
                     "numeroComprobante": f["cbt_hasta"],
-                    "fechaEmision": f["fecha_cbte"],
+                    "fechaEmision": f["fecha_cbte"].isoformat(),
                     "importeTotal": decimal.Decimal(str(f["imp_total"])),
                     "importeNoGravado": decimal.Decimal(str(f["imp_tot_conc"])),
                     "importeGravado": decimal.Decimal(str(f["imp_neto"])),
@@ -1165,9 +1165,9 @@ class WSMTXCA(BaseWS):
                     and decimal.Decimal(str(f["imp_trib"]))
                     or None,
                     "importeSubtotal": f["imp_subtotal"],
-                    "fechaServicioDesde": f.get("fecha_serv_desde"),
-                    "fechaServicioHasta": f.get("fecha_serv_hasta"),
-                    "fechaVencimientoPago": f.get("fecha_venc_pago"),
+                    "fechaServicioDesde": f.get("fecha_serv_desde").isoformat(),
+                    "fechaServicioHasta": f.get("fecha_serv_hasta").isoformat(),
+                    "fechaVencimientoPago": f.get("fecha_venc_pago").isoformat(),
                     "codigoMoneda": f["moneda_id"],
                     "cotizacionMoneda": str(decimal.Decimal(str(f["moneda_ctz"]))),
                     "arrayItems": [
@@ -1497,7 +1497,7 @@ def main():
             obs = "Observaciones Comerciales, libre"
             if "--caea" in sys.argv:
                 periodo = fecha.replace("-", "")[:6]
-                orden = 1 if fecha[-2:] < 16 else 2
+                orden = 1 if int(fecha[-2:]) < 16 else 2
                 caea = wsmtxca.ConsultarCAEA(periodo, orden)
             else:
                 caea = None

@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [2.7, 3.7, 3.8, 3.9]
+        python-version: [2.7, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -27,8 +27,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
+        python -m pip install flake8
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
     - name: Lint with flake8
       run: |
         # TODO: stop the build if there are Python syntax errors or undefined names
@@ -38,6 +39,38 @@ jobs:
     - name: Install package
       run: |
         python setup.py install
+    - name: Download certificate and private key
+      run: |
+        wget  "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -O reingart2019.zip
+        unzip reingart2019.zip
+    - name: Fix OpenSSL "dh key too small"
+      run: |
+        sudo cp .github/openssl.cnf /etc/ssl/openssl.cnf
+    - name: Copy rece.ini file
+      run: |
+        sudo cp conf/rece.ini rece.ini
+    - name: Copy wsltv.ini file
+      run: |
+        sudo cp conf/wsltv.ini wsltv.ini
+    - name: Copy wslsp.ini file
+      run: |
+        sudo cp conf/wslsp.ini wslsp.ini
     - name: Test with pytest
       run: |
-        pytest
+        pytest --html=report.html --self-contained-html
+    - name: Upload test report
+      uses: actions/upload-artifact@v2
+      if: ${{ always() }}
+      with:
+        name: report.html
+        path: report.html
+
+    - name: Coverage Report
+      run: |
+        pytest --cov-config=.coveragerc --cov-report=html --cov=pyafipws tests/
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      if: ${{ always() }}
+      with:
+        name: Coverage_Report
+        path: htmlcov

@@ -44,7 +44,7 @@ e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-AYUDA = """  # grey
+AYUDA="""
 Opciones: 
   --ayuda: este mensaje
 
@@ -192,6 +192,7 @@ class WSCPE(BaseWS):
         "Evento",
         "Eventos",
     ]
+
     _reg_progid_ = "WSCPE"
     _reg_clsid_ = "{37F6A7B5-344E-45C5-9198-0CF7B206F409}"
 

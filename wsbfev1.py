@@ -650,8 +650,8 @@ def p_assert_eq(a, b):
     print(a, a == b and "==" or "!=", b)
 
 
-if __name__ == "__main__":
-
+def main():
+    global HOMO
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 
@@ -677,7 +677,7 @@ if __name__ == "__main__":
         wsdl = "http://wswhomo.afip.gov.ar/WSBFEv1/service.asmx"
         cache = proxy = ""
         wrapper = "httplib2"
-        cacert = open("conf/afip_ca_info.crt").read()
+        cacert = "conf/afip_ca_info.crt"
         ok = wsbfev1.Conectar(cache, wsdl, proxy, wrapper, cacert)
 
         if "--dummy" in sys.argv:
@@ -835,7 +835,7 @@ if __name__ == "__main__":
         if "--params" in sys.argv:
             import codecs, locale
 
-            sys.stdout = codecs.getwriter("latin1")(sys.stdout)
+            # sys.stdout = codecs.getwriter("latin1")(sys.stdout)
 
             print("=== Tipos de Comprobante ===")
             print(u"\n".join(wsbfev1.GetParamTipoCbte()))
@@ -860,3 +860,6 @@ if __name__ == "__main__":
 
         if "--ctz" in sys.argv:
             print(wsbfev1.GetParamCtz("DOL"))
+
+if __name__ == "__main__":
+    main()

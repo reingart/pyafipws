@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarTiposComprobanteReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzOTQ2MzYzNDUiIGdlbl90aW1lPSIxNjI2OTcwODAyIiBleHBfdGltZT0iMTYyNzAxNDA2MiIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2xzcCIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>tAXfme2n4K109OzQs51Jm+m27lj+9bqkQrrMgevewlyGH3iLYRKvqSt2cFlrAyXFBeWfzZcN5CgBsRoLSXa15EeE6G/38MQlAHkmhvCFFhOfGFV92XaQ0LANOJdKz10wsMSQYHbI3I83zymiqlmTmRqdFFapvhPhtoWDcguKsjI=</sign><cuit>20267565393</cuit></auth></ser:ConsultarTiposComprobanteReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1279'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarTiposComprobante"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarTiposComprobanteResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslsp/\"><respuesta><tipoComprobante><codigo>157</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto A - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>158</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto B - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>159</codigo><descripcion>Liquidaci\xF3n
+        de Compra A - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>160</codigo><descripcion>Liquidaci\xF3n
+        de Compra B - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>161</codigo><descripcion>Liquidaci\xF3n
+        de Compra Directa A - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>162</codigo><descripcion>Liquidaci\xF3n
+        de Compra Directa B - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>163</codigo><descripcion>Liquidaci\xF3n
+        de Compra Directa C - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>164</codigo><descripcion>Liquidaci\xF3n
+        de Venta Directa A - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>165</codigo><descripcion>Liquidaci\xF3n
+        de Venta Directa B - Sector Av\xEDcola</descripcion></tipoComprobante><tipoComprobante><codigo>166</codigo><descripcion>Liquidaci\xF3n
+        de Contrataci\xF3n de Crianza Pollos Parrilleros A</descripcion></tipoComprobante><tipoComprobante><codigo>167</codigo><descripcion>Liquidaci\xF3n
+        de Contrataci\xF3n de Crianza Pollos Parrilleros B</descripcion></tipoComprobante><tipoComprobante><codigo>168</codigo><descripcion>Liquidaci\xF3n
+        de Contrataci\xF3n de Crianza Pollos Parrilleros C</descripcion></tipoComprobante><tipoComprobante><codigo>169</codigo><descripcion>Liquidaci\xF3n
+        de Crianza Pollos Parrilleros A</descripcion></tipoComprobante><tipoComprobante><codigo>170</codigo><descripcion>Liquidaci\xF3n
+        de Crianza Pollos Parrilleros B</descripcion></tipoComprobante><tipoComprobante><codigo>180</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto A - Sector Pecuario</descripcion></tipoComprobante><tipoComprobante><codigo>182</codigo><descripcion>Cuenta
+        de Venta y L\xEDquido Producto B - Sector Pecuario</descripcion></tipoComprobante><tipoComprobante><codigo>183</codigo><descripcion>Liquidaci\xF3n
+        de Compra A - Sector Pecuario</descripcion></tipoComprobante><tipoComprobante><codigo>185</codigo><descripcion>Liquidaci\xF3n
+        de Compra B - Sector Pecuario</descripcion></tipoComprobante><tipoComprobante><codigo>186</codigo><descripcion>Liquidaci\xF3n
+        de Compra Directa A - Sector Pecuario</descripcion></tipoComprobante><tipoComprobante><codigo>188</codigo><descripcion>Liquidaci\xF3n
+        de Compra Directa B - Sector Pecuario</descripcion></tipoComprobante><tipoComprobante><codigo>189</codigo><descripcion>Liquidaci\xF3n
+        de Compra Directa C - Sector Pecuario</descripcion></tipoComprobante><tipoComprobante><codigo>190</codigo><descripcion>Liquidaci\xF3n
+        de Venta  Directa A - Sector Pecuario</descripcion></tipoComprobante><tipoComprobante><codigo>191</codigo><descripcion>Liquidaci\xF3n
+        de Venta  Directa B - Sector Pecuario</descripcion></tipoComprobante><metadata><servidor>vivaldi</servidor><fechaHora>2021-07-22T13:21:37</fechaHora></metadata></respuesta></ns2:ConsultarTiposComprobanteResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 16:21:37 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfea0b09432a19c3f475de3ac6e2c593f652d627af33379b59d90ce4e9250ee50d;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

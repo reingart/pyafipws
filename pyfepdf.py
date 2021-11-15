@@ -767,7 +767,7 @@ class FEPDF(object):
                 import locale
 
                 locale.setlocale(locale.LC_ALL, loc)
-                return locale.format(
+                return locale.format_string(
                     fmt,
                     Decimal(str(i).replace(",", ".")),
                     grouping=True,
@@ -1541,7 +1541,7 @@ class FEPDF(object):
                     else:
                         barras = ""
 
-                    f.set("CodigoBarras", unicode(barras))
+                    f.set("CodigoBarras", str(barras))
                     f.set("CodigoBarrasLegible", barras)
 
                     if not HOMO and barras and fact.get("resultado") == "A":
@@ -1651,7 +1651,7 @@ class FEPDF(object):
 
     @utils.inicializar_y_capturar_excepciones_simple
     def MostrarPDF(self, archivo, imprimir=False):
-        if sys.platform.startswith(("linux2", "java")):
+        if sys.platform.startswith(("linux2", "java", "linux")):
             os.system("evince " "%s" "" % archivo)
         else:
             operation = imprimir and "print" or ""
@@ -1707,8 +1707,9 @@ else:
 INSTALL_DIR = os.path.dirname(os.path.abspath(basepath))
 
 
-if __name__ == "__main__":
-
+def main():
+    global CONFIG_FILE, DEBUG, HOMO
+    
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
 
@@ -1811,7 +1812,7 @@ if __name__ == "__main__":
             # datos generales del encabezado:
             tipo_cbte = 19 if "--expo" in sys.argv else 201
             punto_vta = 4000
-            fecha = datetime.datetime.now().strftime("%Y%m%d")
+            fecha = '20210805' if "--fecha_prueba" in sys.argv else datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
             tipo_doc = 80
             nro_doc = "30000000007"
@@ -2039,7 +2040,10 @@ if __name__ == "__main__":
                 archivo = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG:
                     print("Escribiendo", archivo)
-                regs = formato_json.escribir([reg], archivo)
+                if sys.version_info[0] < 3:
+                    regs = formato_json.escribir([reg], archivo, encoding='utf-8')
+                else:
+                    regs = formato_json.escribir([reg], archivo)
             else:
                 from .formatos import formato_txt
 
@@ -2094,3 +2098,8 @@ if __name__ == "__main__":
         fepdf.GenerarPDF(archivo=salida)
         if "--mostrar" in sys.argv:
             fepdf.MostrarPDF(archivo=salida, imprimir="--imprimir" in sys.argv)
+
+    return fepdf
+
+if __name__ == "__main__":
+    main()

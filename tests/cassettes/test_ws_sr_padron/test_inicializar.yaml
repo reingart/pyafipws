@@ -1,0 +1,379 @@
+interactions:
+- request:
+    body: null
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: GET
+    uri: https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<wsdl:definitions targetNamespace=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"
+        xmlns:apachesoap=\"http://xml.apache.org/xml-soap\" xmlns:impl=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"
+        xmlns:intf=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\" xmlns:tns1=\"http://wsaa.view.sua.dvadac.desein.afip.gov\"
+        xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:wsdlsoap=\"http://schemas.xmlsoap.org/wsdl/soap/\"
+        xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n<!--WSDL created by Apache
+        Axis version: 1.4\nBuilt on Apr 22, 2006 (06:55:48 PDT)-->\n <wsdl:types>\n
+        \ <schema elementFormDefault=\"qualified\" targetNamespace=\"http://wsaa.view.sua.dvadac.desein.afip.gov\"
+        xmlns=\"http://www.w3.org/2001/XMLSchema\">\n   <import namespace=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"/>\n
+        \  <element name=\"loginCms\">\n    <complexType>\n     <sequence>\n      <element
+        name=\"in0\" type=\"xsd:string\"/>\n     </sequence>\n    </complexType>\n
+        \  </element>\n   <element name=\"loginCmsResponse\">\n    <complexType>\n
+        \    <sequence>\n      <element name=\"loginCmsReturn\" type=\"xsd:string\"/>\n
+        \    </sequence>\n    </complexType>\n   </element>\n  </schema>\n  <schema
+        elementFormDefault=\"qualified\" targetNamespace=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"
+        xmlns=\"http://www.w3.org/2001/XMLSchema\">\n   <complexType name=\"LoginFault\">\n
+        \   <sequence/>\n   </complexType>\n   <element name=\"fault\" type=\"impl:LoginFault\"/>\n
+        \ </schema>\n </wsdl:types>\n\n   <wsdl:message name=\"loginCmsRequest\">\n\n
+        \     <wsdl:part element=\"tns1:loginCms\" name=\"parameters\">\n\n      </wsdl:part>\n\n
+        \  </wsdl:message>\n\n   <wsdl:message name=\"LoginFault\">\n\n      <wsdl:part
+        element=\"impl:fault\" name=\"fault\">\n\n      </wsdl:part>\n\n   </wsdl:message>\n\n
+        \  <wsdl:message name=\"loginCmsResponse\">\n\n      <wsdl:part element=\"tns1:loginCmsResponse\"
+        name=\"parameters\">\n\n      </wsdl:part>\n\n   </wsdl:message>\n\n   <wsdl:portType
+        name=\"LoginCMS\">\n\n      <wsdl:operation name=\"loginCms\">\n\n         <wsdl:input
+        message=\"impl:loginCmsRequest\" name=\"loginCmsRequest\">\n\n       </wsdl:input>\n\n
+        \        <wsdl:output message=\"impl:loginCmsResponse\" name=\"loginCmsResponse\">\n\n
+        \      </wsdl:output>\n\n         <wsdl:fault message=\"impl:LoginFault\"
+        name=\"LoginFault\">\n\n       </wsdl:fault>\n\n      </wsdl:operation>\n\n
+        \  </wsdl:portType>\n\n   <wsdl:binding name=\"LoginCmsSoapBinding\" type=\"impl:LoginCMS\">\n\n
+        \     <wsdlsoap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>\n\n
+        \     <wsdl:operation name=\"loginCms\">\n\n         <wsdlsoap:operation soapAction=\"\"/>\n\n
+        \        <wsdl:input name=\"loginCmsRequest\">\n\n            <wsdlsoap:body
+        use=\"literal\"/>\n\n         </wsdl:input>\n\n         <wsdl:output name=\"loginCmsResponse\">\n\n
+        \           <wsdlsoap:body use=\"literal\"/>\n\n         </wsdl:output>\n\n
+        \        <wsdl:fault name=\"LoginFault\">\n\n            <wsdlsoap:fault name=\"LoginFault\"
+        use=\"literal\"/>\n\n         </wsdl:fault>\n\n      </wsdl:operation>\n\n
+        \  </wsdl:binding>\n\n   <wsdl:service name=\"LoginCMSService\">\n\n      <wsdl:port
+        binding=\"impl:LoginCmsSoapBinding\" name=\"LoginCms\">\n\n         <wsdlsoap:address
+        location=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"/>\n\n      </wsdl:port>\n\n
+        \  </wsdl:service>\n\n</wsdl:definitions>\n"
+    headers:
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:33:47 GMT
+      Set-Cookie:
+      - TS01b14f84=0145b27a9741e3c845817101c10f1eea107b78349dac106d87a3ecb35d0e789e3ee39f0813;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:loginCms>\n    <in0>MIIHBgYJKoZIhvcNAQcCoIIG9zCCBvMCAQExDzANBglghkgBZQMEAgEFADCCASoG\nCSqGSIb3DQEHAaCCARsEggEXPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0i\nVVRGLTgiPz48bG9naW5UaWNrZXRSZXF1ZXN0IHZlcnNpb249IjEuMCI+PGhlYWRl\ncj48dW5pcXVlSWQ+MTYyNDE5NDIyNDwvdW5pcXVlSWQ+PGdlbmVyYXRpb25UaW1l\nPjIwMjEtMDYtMjBUMTM6MzM6NDQ8L2dlbmVyYXRpb25UaW1lPjxleHBpcmF0aW9u\nVGltZT4yMDIxLTA2LTIwVDIzOjMzOjQ0PC9leHBpcmF0aW9uVGltZT48L2hlYWRl\ncj48c2VydmljZT53c19zcl9wYWRyb25fYTU8L3NlcnZpY2U+PC9sb2dpblRpY2tl\ndFJlcXVlc3Q+oIIDUzCCA08wggI3oAMCAQICCBya0Ls2YR/oMA0GCSqGSIb3DQEB\nDQUAMDgxGjAYBgNVBAMMEUNvbXB1dGFkb3JlcyBUZXN0MQ0wCwYDVQQKDARBRklQ\nMQswCQYDVQQGEwJBUjAeFw0xOTA3MTMxNjQxMDNaFw0yMTA3MTIxNjQxMDNaMDUx\nGDAWBgNVBAMMD3JlaW5nYXJ0MjAxOXB1YjEZMBcGA1UEBRMQQ1VJVCAyMDI2NzU2\nNTM5MzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANzHPyGfF98fGISG\ntEkPPVY0joRHWHCZ332uUKgLaiEkNw4t/NgeFzhw0YNwg87f43JN3yhFeyv8H4Et\n9ygwL9hFltpkyWiWR5S0mNOQrWnrB6cZQQmJc03O89GgATsfnvUtUfNEeS2dWvpM\nxHIDg3h4uDyrtGdah75KLa2fRRMdpJd28HV+C48sQinXqi+LWNTjpKTaurE+YHhg\nbB5/MkDVc+4j9jlGDuwHLN7KOxiy62bW/81sdcclgeT1bPAxmNoitth+ZNo572rP\nYM57bIb0RunPv7JFjhu77Radqi+07wGrYROWEBKf9k9Yi3IMa6rVFdiuyx4n7yYI\nSsYDdeUCAwEAAaNgMF4wDAYDVR0TAQH/BAIwADAfBgNVHSMEGDAWgBSzstP//em6\n3t6NrxEhnNYgffJPbzAdBgNVHQ4EFgQUjVrB08q2p0nytRhg1Di4z2Ht2ekwDgYD\nVR0PAQH/BAQDAgXgMA0GCSqGSIb3DQEBDQUAA4IBAQBVltWubA5uHvia2YAjOAsB\n4ctiXlPWvBpaqXP1VpH/b12GmnB7QEUXTYGTV2xAeLWVWCFHCxCrzILxLNqMJZV4\nksZSIVoglj3UVvGqHDQEqgQ+yt1Nc6aWcmwvGVzsLw9lofFPbOnK1+0F/Qrcdmkt\nfWu4qRx3wDhvGfdE825biCBT4IIiyl++i1blvHOMweXYECbAmpzC+IzMDFI/VBCL\npamGN7vN+c4T8ChbUzIZ3mt99nMC3QKTA1ObjGFWunaXefEW9+lEw7yXPDh1e3ko\nYBkmoxGRZL7sI7LJxZGtQOS28hNQjQCZ5/51h/OLqOnQ4+fRJtU4Fw0PoP0bG4mU\nMYICVjCCAlICAQEwRDA4MRowGAYDVQQDDBFDb21wdXRhZG9yZXMgVGVzdDENMAsG\nA1UECgwEQUZJUDELMAkGA1UEBhMCQVICCBya0Ls2YR/oMA0GCWCGSAFlAwQCAQUA\noIHkMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIx\nMDYyMDE4MzM0NFowLwYJKoZIhvcNAQkEMSIEIKjqRp3ZLDUzYEzbhY4lFJd7SDNn\n2vaPql8fRAENR3psMHkGCSqGSIb3DQEJDzFsMGowCwYJYIZIAWUDBAEqMAsGCWCG\nSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCA\nMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIHMA0GCCqGSIb3DQMCAgEoMA0GCSqGSIb3\nDQEBAQUABIIBAFKWERhf2itW0V1zNLisR1PHMJeP/mrpIFI07TxnbYmxCe367znA\nghWaqSFwiPzBB2po/LX5YNTW+8kSdjip9h6CYheD4K8ghu7/VJe7J8ic8conWV4o\n7Z/OEIa4J1mw/oE9F7rtirWIU6Y5Dup9/IRlBCHdBMCwfB8eoNmMJXGeYW1Ycmw9\nl0BJSngWd28Gg1C4dwy7jQtVPBRmSKJp2mPmKHAUdVm/z/WR2ed31CsFXgfl1m8v\nmoCfn0wuIWB15GY3Uo+bNaiOruuCizUriRQsAXuDaJidiSE+LobB0u2z11VuiT8F\nOT6EJcg6ORWl4BRFRmIkit6z+xthKCRl020=\n\n</in0></ser:loginCms>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2738'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wsaahomo.afip.gov.ar/ws/services/LoginCms
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginCmsResponse
+        xmlns=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"><loginCmsReturn>&lt;?xml
+        version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;\n&lt;loginTicketResponse
+        version=&quot;1.0&quot;&gt;\n    &lt;header&gt;\n        &lt;source&gt;CN=wsaahomo,
+        O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239&lt;/source&gt;\n        &lt;destination&gt;SERIALNUMBER=CUIT
+        20267565393, CN=reingart2019pub&lt;/destination&gt;\n        &lt;uniqueId&gt;449795463&lt;/uniqueId&gt;\n
+        \       &lt;generationTime&gt;2021-06-20T15:33:49.080-03:00&lt;/generationTime&gt;\n
+        \       &lt;expirationTime&gt;2021-06-21T03:33:49.080-03:00&lt;/expirationTime&gt;\n
+        \   &lt;/header&gt;\n    &lt;credentials&gt;\n        &lt;token&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyOTgwODQxNjQ3IiBnZW5fdGltZT0iMTYyNDIxMzk2OSIgZXhwX3RpbWU9IjE2MjQyNTcyMjkiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nfc3JfcGFkcm9uX2E1IiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMTlwdWIiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=&lt;/token&gt;\n
+        \       &lt;sign&gt;afwGAiTF1DSjgugwn/Tq3uQWCKr7hr2H1C6SrY2g83vVnoQ0srJ1QVKqz3uxjQVP09s+olwxlMdstoEbMX+r54yE7yNY6j8abGMJb6QmwrPwT8REcxvv15laAYrxK+5YeGuZDW09r+NCuzmDkmeTo5x86HNRcEk9daW+qu4DSzw=&lt;/sign&gt;\n
+        \   &lt;/credentials&gt;\n&lt;/loginTicketResponse&gt;\n</loginCmsReturn></loginCmsResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 18:33:49 GMT
+      Set-Cookie:
+      - TS01b14f84=0145b27a973c69a2917009426dd4719a0ecb207308d601464f553f65aa4c09ca89615d2397;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: GET
+    uri: https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5?wsdl
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name=\"PersonaServiceA5\"
+        targetNamespace=\"http://a5.soap.ws.server.puc.sr/\" xmlns:ns1=\"http://schemas.xmlsoap.org/soap/http\"
+        xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\" xmlns:tns=\"http://a5.soap.ws.server.puc.sr/\"
+        xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n
+        \ <wsdl:types>\n<xs:schema attributeFormDefault=\"unqualified\" elementFormDefault=\"unqualified\"
+        targetNamespace=\"http://a5.soap.ws.server.puc.sr/\" xmlns:tns=\"http://a5.soap.ws.server.puc.sr/\"
+        xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n  <xs:element name=\"dummy\"
+        type=\"tns:dummy\"/>\n  <xs:element name=\"dummyResponse\" type=\"tns:dummyResponse\"/>\n
+        \ <xs:element name=\"getPersona\" type=\"tns:getPersona\"/>\n  <xs:element
+        name=\"getPersonaList\" type=\"tns:getPersonaList\"/>\n  <xs:element name=\"getPersonaListResponse\"
+        type=\"tns:getPersonaListResponse\"/>\n  <xs:element name=\"getPersonaList_v2\"
+        type=\"tns:getPersonaList_v2\"/>\n  <xs:element name=\"getPersonaList_v2Response\"
+        type=\"tns:getPersonaList_v2Response\"/>\n  <xs:element name=\"getPersonaResponse\"
+        type=\"tns:getPersonaResponse\"/>\n  <xs:element name=\"getPersona_v2\" type=\"tns:getPersona_v2\"/>\n
+        \ <xs:element name=\"getPersona_v2Response\" type=\"tns:getPersona_v2Response\"/>\n
+        \ <xs:complexType name=\"getPersona\">\n    <xs:sequence>\n      <xs:element
+        name=\"token\" type=\"xs:string\"/>\n      <xs:element name=\"sign\" type=\"xs:string\"/>\n
+        \     <xs:element name=\"cuitRepresentada\" type=\"xs:long\"/>\n      <xs:element
+        name=\"idPersona\" type=\"xs:long\"/>\n    </xs:sequence>\n  </xs:complexType>\n
+        \ <xs:complexType name=\"getPersonaResponse\">\n    <xs:sequence>\n      <xs:element
+        minOccurs=\"0\" name=\"personaReturn\" type=\"tns:personaReturn\"/>\n    </xs:sequence>\n
+        \ </xs:complexType>\n  <xs:complexType name=\"personaReturn\">\n    <xs:sequence>\n
+        \     <xs:element minOccurs=\"0\" name=\"datosGenerales\" type=\"tns:datosGenerales\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"datosMonotributo\" type=\"tns:datosMonotributo\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"datosRegimenGeneral\" type=\"tns:datosRegimenGeneral\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"errorConstancia\" type=\"tns:errorConstancia\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"errorMonotributo\" type=\"tns:errorMonotributo\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"errorRegimenGeneral\" type=\"tns:errorRegimenGeneral\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"metadata\" type=\"tns:metadata\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"datosGenerales\">\n
+        \   <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"apellido\" type=\"xs:string\"/>\n
+        \     <xs:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"caracterizacion\"
+        nillable=\"true\" type=\"tns:caracterizacion\"/>\n      <xs:element minOccurs=\"0\"
+        name=\"dependencia\" type=\"tns:dependencia\"/>\n      <xs:element minOccurs=\"0\"
+        name=\"domicilioFiscal\" type=\"tns:domicilio\"/>\n      <xs:element minOccurs=\"0\"
+        name=\"estadoClave\" type=\"xs:string\"/>\n      <xs:element minOccurs=\"0\"
+        name=\"fechaContratoSocial\" type=\"xs:dateTime\"/>\n      <xs:element minOccurs=\"0\"
+        name=\"fechaFallecimiento\" type=\"xs:dateTime\"/>\n      <xs:element minOccurs=\"0\"
+        name=\"idPersona\" type=\"xs:long\"/>\n      <xs:element minOccurs=\"0\" name=\"mesCierre\"
+        type=\"xs:int\"/>\n      <xs:element minOccurs=\"0\" name=\"nombre\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"razonSocial\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"tipoClave\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"tipoPersona\" type=\"xs:string\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"caracterizacion\">\n
+        \   <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"descripcionCaracterizacion\"
+        type=\"xs:string\"/>\n      <xs:element minOccurs=\"0\" name=\"idCaracterizacion\"
+        type=\"xs:int\"/>\n      <xs:element minOccurs=\"0\" name=\"periodo\" type=\"xs:int\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"dependencia\">\n
+        \   <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"codPostal\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"descripcionDependencia\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"descripcionProvincia\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"direccion\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idDependencia\" type=\"xs:int\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idProvincia\" type=\"xs:int\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"localidad\" type=\"xs:string\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"domicilio\">\n
+        \   <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"codPostal\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"datoAdicional\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"descripcionProvincia\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"direccion\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idProvincia\" type=\"xs:int\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"localidad\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"tipoDatoAdicional\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"tipoDomicilio\" type=\"xs:string\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"datosMonotributo\">\n
+        \   <xs:sequence>\n      <xs:element maxOccurs=\"unbounded\" minOccurs=\"0\"
+        name=\"actividad\" nillable=\"true\" type=\"tns:actividad\"/>\n      <xs:element
+        minOccurs=\"0\" name=\"actividadMonotributista\" type=\"tns:actividad\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"categoriaMonotributo\" type=\"tns:categoria\"/>\n
+        \     <xs:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"componenteDeSociedad\"
+        nillable=\"true\" type=\"tns:relacion\"/>\n      <xs:element maxOccurs=\"unbounded\"
+        minOccurs=\"0\" name=\"impuesto\" nillable=\"true\" type=\"tns:impuesto\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"actividad\">\n
+        \   <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"descripcionActividad\"
+        type=\"xs:string\"/>\n      <xs:element minOccurs=\"0\" name=\"idActividad\"
+        type=\"xs:long\"/>\n      <xs:element minOccurs=\"0\" name=\"nomenclador\"
+        type=\"xs:int\"/>\n      <xs:element minOccurs=\"0\" name=\"orden\" type=\"xs:int\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"periodo\" type=\"xs:int\"/>\n    </xs:sequence>\n
+        \ </xs:complexType>\n  <xs:complexType name=\"categoria\">\n    <xs:sequence>\n
+        \     <xs:element minOccurs=\"0\" name=\"descripcionCategoria\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idCategoria\" type=\"xs:int\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idImpuesto\" type=\"xs:int\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"periodo\" type=\"xs:int\"/>\n    </xs:sequence>\n
+        \ </xs:complexType>\n  <xs:complexType name=\"relacion\">\n    <xs:sequence>\n
+        \     <xs:element minOccurs=\"0\" name=\"apellidoPersonaAsociada\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"ffRelacion\" type=\"xs:dateTime\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"ffVencimiento\" type=\"xs:dateTime\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idPersonaAsociada\" type=\"xs:long\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"nombrePersonaAsociada\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"razonSocialPersonaAsociada\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"tipoComponente\" type=\"xs:string\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"impuesto\">\n
+        \   <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"descripcionImpuesto\"
+        type=\"xs:string\"/>\n      <xs:element minOccurs=\"0\" name=\"idImpuesto\"
+        type=\"xs:int\"/>\n      <xs:element minOccurs=\"0\" name=\"periodo\" type=\"xs:int\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"datosRegimenGeneral\">\n
+        \   <xs:sequence>\n      <xs:element maxOccurs=\"unbounded\" minOccurs=\"0\"
+        name=\"actividad\" nillable=\"true\" type=\"tns:actividad\"/>\n      <xs:element
+        minOccurs=\"0\" name=\"categoriaAutonomo\" type=\"tns:categoria\"/>\n      <xs:element
+        maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"impuesto\" nillable=\"true\"
+        type=\"tns:impuesto\"/>\n      <xs:element maxOccurs=\"unbounded\" minOccurs=\"0\"
+        name=\"regimen\" nillable=\"true\" type=\"tns:regimen\"/>\n    </xs:sequence>\n
+        \ </xs:complexType>\n  <xs:complexType name=\"regimen\">\n    <xs:sequence>\n
+        \     <xs:element minOccurs=\"0\" name=\"descripcionRegimen\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idImpuesto\" type=\"xs:int\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idRegimen\" type=\"xs:int\"/>\n      <xs:element
+        minOccurs=\"0\" name=\"periodo\" type=\"xs:int\"/>\n      <xs:element minOccurs=\"0\"
+        name=\"tipoRegimen\" type=\"xs:string\"/>\n    </xs:sequence>\n  </xs:complexType>\n
+        \ <xs:complexType name=\"errorConstancia\">\n    <xs:sequence>\n      <xs:element
+        minOccurs=\"0\" name=\"apellido\" type=\"xs:string\"/>\n      <xs:element
+        maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"error\" nillable=\"true\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"idPersona\" type=\"xs:long\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"nombre\" type=\"xs:string\"/>\n    </xs:sequence>\n
+        \ </xs:complexType>\n  <xs:complexType name=\"errorMonotributo\">\n    <xs:sequence>\n
+        \     <xs:element maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"error\" nillable=\"true\"
+        type=\"xs:string\"/>\n      <xs:element minOccurs=\"0\" name=\"mensaje\" type=\"xs:string\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"errorRegimenGeneral\">\n
+        \   <xs:sequence>\n      <xs:element maxOccurs=\"unbounded\" minOccurs=\"0\"
+        name=\"error\" nillable=\"true\" type=\"xs:string\"/>\n      <xs:element minOccurs=\"0\"
+        name=\"mensaje\" type=\"xs:string\"/>\n    </xs:sequence>\n  </xs:complexType>\n
+        \ <xs:complexType name=\"metadata\">\n    <xs:sequence>\n      <xs:element
+        minOccurs=\"0\" name=\"fechaHora\" type=\"xs:dateTime\"/>\n      <xs:element
+        minOccurs=\"0\" name=\"servidor\" type=\"xs:string\"/>\n    </xs:sequence>\n
+        \ </xs:complexType>\n  <xs:complexType name=\"getPersonaList\">\n    <xs:sequence>\n
+        \     <xs:element name=\"token\" type=\"xs:string\"/>\n      <xs:element name=\"sign\"
+        type=\"xs:string\"/>\n      <xs:element name=\"cuitRepresentada\" type=\"xs:long\"/>\n
+        \     <xs:element maxOccurs=\"unbounded\" name=\"idPersona\" type=\"xs:long\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"getPersonaListResponse\">\n
+        \   <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"personaListReturn\"
+        type=\"tns:personaListReturn\"/>\n    </xs:sequence>\n  </xs:complexType>\n
+        \ <xs:complexType name=\"personaListReturn\">\n    <xs:sequence>\n      <xs:element
+        minOccurs=\"0\" name=\"metadata\" type=\"tns:metadata\"/>\n      <xs:element
+        maxOccurs=\"unbounded\" minOccurs=\"0\" name=\"persona\" nillable=\"true\"
+        type=\"tns:persona\"/>\n    </xs:sequence>\n  </xs:complexType>\n  <xs:complexType
+        name=\"persona\">\n    <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"datosGenerales\"
+        type=\"tns:datosGenerales\"/>\n      <xs:element minOccurs=\"0\" name=\"datosMonotributo\"
+        type=\"tns:datosMonotributo\"/>\n      <xs:element minOccurs=\"0\" name=\"datosRegimenGeneral\"
+        type=\"tns:datosRegimenGeneral\"/>\n      <xs:element minOccurs=\"0\" name=\"errorConstancia\"
+        type=\"tns:errorConstancia\"/>\n      <xs:element minOccurs=\"0\" name=\"errorMonotributo\"
+        type=\"tns:errorMonotributo\"/>\n      <xs:element minOccurs=\"0\" name=\"errorRegimenGeneral\"
+        type=\"tns:errorRegimenGeneral\"/>\n    </xs:sequence>\n  </xs:complexType>\n
+        \ <xs:complexType name=\"getPersona_v2\">\n    <xs:sequence>\n      <xs:element
+        name=\"token\" type=\"xs:string\"/>\n      <xs:element name=\"sign\" type=\"xs:string\"/>\n
+        \     <xs:element name=\"cuitRepresentada\" type=\"xs:long\"/>\n      <xs:element
+        name=\"idPersona\" type=\"xs:long\"/>\n    </xs:sequence>\n  </xs:complexType>\n
+        \ <xs:complexType name=\"getPersona_v2Response\">\n    <xs:sequence>\n      <xs:element
+        minOccurs=\"0\" name=\"personaReturn\" type=\"tns:personaReturn\"/>\n    </xs:sequence>\n
+        \ </xs:complexType>\n  <xs:complexType name=\"dummy\">\n    <xs:sequence/>\n
+        \ </xs:complexType>\n  <xs:complexType name=\"dummyResponse\">\n    <xs:sequence>\n
+        \     <xs:element minOccurs=\"0\" name=\"return\" type=\"tns:dummyReturn\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"dummyReturn\">\n
+        \   <xs:sequence>\n      <xs:element minOccurs=\"0\" name=\"appserver\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"authserver\" type=\"xs:string\"/>\n
+        \     <xs:element minOccurs=\"0\" name=\"dbserver\" type=\"xs:string\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:complexType name=\"getPersonaList_v2\">\n
+        \   <xs:sequence>\n      <xs:element name=\"token\" type=\"xs:string\"/>\n
+        \     <xs:element name=\"sign\" type=\"xs:string\"/>\n      <xs:element name=\"cuitRepresentada\"
+        type=\"xs:long\"/>\n      <xs:element maxOccurs=\"unbounded\" name=\"idPersona\"
+        type=\"xs:long\"/>\n    </xs:sequence>\n  </xs:complexType>\n  <xs:complexType
+        name=\"getPersonaList_v2Response\">\n    <xs:sequence>\n      <xs:element
+        minOccurs=\"0\" name=\"personaListReturn\" type=\"tns:personaListReturn\"/>\n
+        \   </xs:sequence>\n  </xs:complexType>\n  <xs:element name=\"SRValidationException\"
+        type=\"tns:SRValidationException\"/>\n  <xs:complexType name=\"SRValidationException\">\n
+        \   <xs:sequence/>\n  </xs:complexType>\n</xs:schema>\n  </wsdl:types>\n  <wsdl:message
+        name=\"getPersonaListResponse\">\n    <wsdl:part element=\"tns:getPersonaListResponse\"
+        name=\"parameters\">\n    </wsdl:part>\n  </wsdl:message>\n  <wsdl:message
+        name=\"dummyResponse\">\n    <wsdl:part element=\"tns:dummyResponse\" name=\"parameters\">\n
+        \   </wsdl:part>\n  </wsdl:message>\n  <wsdl:message name=\"getPersona\">\n
+        \   <wsdl:part element=\"tns:getPersona\" name=\"parameters\">\n    </wsdl:part>\n
+        \ </wsdl:message>\n  <wsdl:message name=\"getPersonaList_v2Response\">\n    <wsdl:part
+        element=\"tns:getPersonaList_v2Response\" name=\"parameters\">\n    </wsdl:part>\n
+        \ </wsdl:message>\n  <wsdl:message name=\"getPersona_v2Response\">\n    <wsdl:part
+        element=\"tns:getPersona_v2Response\" name=\"parameters\">\n    </wsdl:part>\n
+        \ </wsdl:message>\n  <wsdl:message name=\"getPersonaList\">\n    <wsdl:part
+        element=\"tns:getPersonaList\" name=\"parameters\">\n    </wsdl:part>\n  </wsdl:message>\n
+        \ <wsdl:message name=\"getPersonaResponse\">\n    <wsdl:part element=\"tns:getPersonaResponse\"
+        name=\"parameters\">\n    </wsdl:part>\n  </wsdl:message>\n  <wsdl:message
+        name=\"dummy\">\n    <wsdl:part element=\"tns:dummy\" name=\"parameters\">\n
+        \   </wsdl:part>\n  </wsdl:message>\n  <wsdl:message name=\"getPersonaList_v2\">\n
+        \   <wsdl:part element=\"tns:getPersonaList_v2\" name=\"parameters\">\n    </wsdl:part>\n
+        \ </wsdl:message>\n  <wsdl:message name=\"SRValidationException\">\n    <wsdl:part
+        element=\"tns:SRValidationException\" name=\"SRValidationException\">\n    </wsdl:part>\n
+        \ </wsdl:message>\n  <wsdl:message name=\"getPersona_v2\">\n    <wsdl:part
+        element=\"tns:getPersona_v2\" name=\"parameters\">\n    </wsdl:part>\n  </wsdl:message>\n
+        \ <wsdl:portType name=\"PersonaServiceA5\">\n    <wsdl:operation name=\"getPersona\">\n
+        \     <wsdl:input message=\"tns:getPersona\" name=\"getPersona\">\n    </wsdl:input>\n
+        \     <wsdl:output message=\"tns:getPersonaResponse\" name=\"getPersonaResponse\">\n
+        \   </wsdl:output>\n      <wsdl:fault message=\"tns:SRValidationException\"
+        name=\"SRValidationException\">\n    </wsdl:fault>\n    </wsdl:operation>\n
+        \   <wsdl:operation name=\"getPersonaList\">\n      <wsdl:input message=\"tns:getPersonaList\"
+        name=\"getPersonaList\">\n    </wsdl:input>\n      <wsdl:output message=\"tns:getPersonaListResponse\"
+        name=\"getPersonaListResponse\">\n    </wsdl:output>\n      <wsdl:fault message=\"tns:SRValidationException\"
+        name=\"SRValidationException\">\n    </wsdl:fault>\n    </wsdl:operation>\n
+        \   <wsdl:operation name=\"getPersona_v2\">\n      <wsdl:input message=\"tns:getPersona_v2\"
+        name=\"getPersona_v2\">\n    </wsdl:input>\n      <wsdl:output message=\"tns:getPersona_v2Response\"
+        name=\"getPersona_v2Response\">\n    </wsdl:output>\n      <wsdl:fault message=\"tns:SRValidationException\"
+        name=\"SRValidationException\">\n    </wsdl:fault>\n    </wsdl:operation>\n
+        \   <wsdl:operation name=\"dummy\">\n      <wsdl:input message=\"tns:dummy\"
+        name=\"dummy\">\n    </wsdl:input>\n      <wsdl:output message=\"tns:dummyResponse\"
+        name=\"dummyResponse\">\n    </wsdl:output>\n    </wsdl:operation>\n    <wsdl:operation
+        name=\"getPersonaList_v2\">\n      <wsdl:input message=\"tns:getPersonaList_v2\"
+        name=\"getPersonaList_v2\">\n    </wsdl:input>\n      <wsdl:output message=\"tns:getPersonaList_v2Response\"
+        name=\"getPersonaList_v2Response\">\n    </wsdl:output>\n      <wsdl:fault
+        message=\"tns:SRValidationException\" name=\"SRValidationException\">\n    </wsdl:fault>\n
+        \   </wsdl:operation>\n  </wsdl:portType>\n  <wsdl:binding name=\"PersonaServiceA5SoapBinding\"
+        type=\"tns:PersonaServiceA5\">\n    <soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>\n
+        \   <wsdl:operation name=\"getPersona\">\n      <soap:operation soapAction=\"\"
+        style=\"document\"/>\n      <wsdl:input name=\"getPersona\">\n        <soap:body
+        use=\"literal\"/>\n      </wsdl:input>\n      <wsdl:output name=\"getPersonaResponse\">\n
+        \       <soap:body use=\"literal\"/>\n      </wsdl:output>\n      <wsdl:fault
+        name=\"SRValidationException\">\n        <soap:fault name=\"SRValidationException\"
+        use=\"literal\"/>\n      </wsdl:fault>\n    </wsdl:operation>\n    <wsdl:operation
+        name=\"getPersonaList\">\n      <soap:operation soapAction=\"\" style=\"document\"/>\n
+        \     <wsdl:input name=\"getPersonaList\">\n        <soap:body use=\"literal\"/>\n
+        \     </wsdl:input>\n      <wsdl:output name=\"getPersonaListResponse\">\n
+        \       <soap:body use=\"literal\"/>\n      </wsdl:output>\n      <wsdl:fault
+        name=\"SRValidationException\">\n        <soap:fault name=\"SRValidationException\"
+        use=\"literal\"/>\n      </wsdl:fault>\n    </wsdl:operation>\n    <wsdl:operation
+        name=\"getPersona_v2\">\n      <soap:operation soapAction=\"\" style=\"document\"/>\n
+        \     <wsdl:input name=\"getPersona_v2\">\n        <soap:body use=\"literal\"/>\n
+        \     </wsdl:input>\n      <wsdl:output name=\"getPersona_v2Response\">\n
+        \       <soap:body use=\"literal\"/>\n      </wsdl:output>\n      <wsdl:fault
+        name=\"SRValidationException\">\n        <soap:fault name=\"SRValidationException\"
+        use=\"literal\"/>\n      </wsdl:fault>\n    </wsdl:operation>\n    <wsdl:operation
+        name=\"dummy\">\n      <soap:operation soapAction=\"\" style=\"document\"/>\n
+        \     <wsdl:input name=\"dummy\">\n        <soap:body use=\"literal\"/>\n
+        \     </wsdl:input>\n      <wsdl:output name=\"dummyResponse\">\n        <soap:body
+        use=\"literal\"/>\n      </wsdl:output>\n    </wsdl:operation>\n    <wsdl:operation
+        name=\"getPersonaList_v2\">\n      <soap:operation soapAction=\"\" style=\"document\"/>\n
+        \     <wsdl:input name=\"getPersonaList_v2\">\n        <soap:body use=\"literal\"/>\n
+        \     </wsdl:input>\n      <wsdl:output name=\"getPersonaList_v2Response\">\n
+        \       <soap:body use=\"literal\"/>\n      </wsdl:output>\n      <wsdl:fault
+        name=\"SRValidationException\">\n        <soap:fault name=\"SRValidationException\"
+        use=\"literal\"/>\n      </wsdl:fault>\n    </wsdl:operation>\n  </wsdl:binding>\n
+        \ <wsdl:service name=\"PersonaServiceA5\">\n    <wsdl:port binding=\"tns:PersonaServiceA5SoapBinding\"
+        name=\"PersonaServiceA5Port\">\n      <soap:address location=\"https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5\"/>\n
+        \   </wsdl:port>\n  </wsdl:service>\n</wsdl:definitions>"
+    headers:
+      Content-Type:
+      - text/xml
+      Date:
+      - Sun, 20 Jun 2021 18:33:51 GMT
+      Set-Cookie:
+      - HttpOnly;Secure
+      - TS01a1c3b4=01439f1ddf0787d44646fd0ca4fdf53a00335943bc01bab2b8d98d8c32dd2afbca7f55e8597bd78351d8a7f475b214dc0038c9b503;
+        Path=/
+      Strict-Transport-Security:
+      - max-age=300; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

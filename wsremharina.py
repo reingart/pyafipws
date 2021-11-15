@@ -787,7 +787,8 @@ else:
 INSTALL_DIR = WSRemHarina.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global DEBUG, XML, CONFIG_FILE, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -1086,3 +1087,6 @@ if __name__ == "__main__":
         if DEBUG:
             raise
         sys.exit(5)
+
+if __name__ == "__main__":
+    main()

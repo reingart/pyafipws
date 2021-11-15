@@ -25,7 +25,7 @@ from builtins import input
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.03d"
+__version__ = "3.05a"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Azúcar AFIP v2.0.3
@@ -238,6 +238,7 @@ class WSRemAzucar(BaseWS):
         numero_maquila=None,
         cod_remito=None,
         estado=None,
+        es_entrega_mostrador=None,
         **kwargs
     ):
         "Inicializa internamente los datos de un remito para autorizar"
@@ -249,6 +250,7 @@ class WSRemAzucar(BaseWS):
             "cuitProductorContrato": cuit_productor_contrato,
             "numeroMaquila": numero_maquila,
             "codRemito": cod_remito,
+            'esEntregaMostrador': es_entrega_mostrador,
             "arrayMercaderias": [],
             "arrayContingencias": [],
         }
@@ -499,6 +501,30 @@ class WSRemAzucar(BaseWS):
         return bool(self.CodRemito)
 
     @inicializar_y_capturar_excepciones
+    def InformarContingencia(self, archivo="qr.png"):
+        "Reportar una contingencia que impide el envío de la mercadería y realiza la anulación del remito"
+        mercaderias = []
+        for it in self.remito['arrayMercaderias']:
+            mercaderia = it['mercaderia']
+            mercaderias.append({"mercaderia": [mercaderia]})
+
+        response = self.client.informarContingencia(
+                                authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+                                informarContingencia={
+                                    'codigoRemito': self.remito["codRemito"],
+                                    'tipoContingencia': self.remito['arrayContingencias'][0]["contingencia"]["tipoContingencia"],
+                                    'observaciones': self.remito['arrayContingencias'][0]["contingencia"]["observacion"],
+                                    'arrayMercaderiaPerdida': mercaderias,
+                                })
+        ret = response.get("informarContingenciaReturn")
+        if ret:
+            self.__analizar_errores(ret)
+            self.__analizar_observaciones(ret)
+            self.__analizar_evento(ret)
+            self.AnalizarRemito(ret, archivo)
+        return ret["resultado"]
+
+    @inicializar_y_capturar_excepciones
     def ConsultarUltimoRemitoEmitido(self, tipo_comprobante=995, punto_emision=1):
         "Obtener el último número de remito que se emitió por tipo de comprobante y punto de emisión"
         response = self.client.consultarUltimoRemitoEmitido(
@@ -717,7 +743,8 @@ else:
 INSTALL_DIR = WSRemAzucar.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global DEBUG, XML, CONFIG_FILE, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -854,9 +881,10 @@ if __name__ == "__main__":
                 cuit_autorizado_retirar="20111111112",
                 cuit_productor_contrato=None,
                 numero_maquila=9999,
-                cod_remito=None,
+                cod_remito=1234 if '--informar-contingencia' in sys.argv else None,
                 estado=None,
                 id_req=int(time.time()),
+                es_entrega_mostrador='S',
             )
             if "--autorizar" in sys.argv:
                 rec["estado"] = "A"  # 'A': Autorizar, 'D': Denegar
@@ -936,6 +964,9 @@ if __name__ == "__main__":
 
         if "--anular" in sys.argv:
             ok = wsremazucar.AnularRemito()
+
+        if '--informar-contingencia' in sys.argv:
+            ok = wsremazucar.InformarContingencia()
 
         if ok is not None:
             print("Resultado: ", wsremazucar.Resultado)
@@ -1031,3 +1062,6 @@ if __name__ == "__main__":
         if DEBUG:
             raise
         sys.exit(5)
+
+if __name__ == "__main__":
+    main()

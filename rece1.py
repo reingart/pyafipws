@@ -20,7 +20,7 @@ from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.38c"
+__version__ = "3.38d"
 
 import datetime
 import os
@@ -87,6 +87,7 @@ ENCABEZADO = [
     ("fecha_serv_hasta", 8, A),  # opcional solo conceptos 2 y 3
     ("tipo_cbte", 3, N),
     ("punto_vta", 5, N),
+    ('fecha_hs_gen', 14, A),  # CAEA: yyyymmddhhmiss generaci¨®n p/ contingencia
 ]
 
 # DETALLE = [
@@ -427,7 +428,8 @@ def depurar_xml(client, ruta="."):
         f.close()
 
 
-if __name__ == "__main__":
+def main():
+    global HOMO, DEBUG, CONFIG_FILE, TIMEOUT, XML
     if "/ayuda" in sys.argv:
         print(LICENCIA)
         print()
@@ -955,3 +957,7 @@ if __name__ == "__main__":
     finally:
         if DEBUG:
             print(ws.DebugLog())
+
+
+if __name__ == "__main__":
+    main()

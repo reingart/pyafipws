@@ -1,0 +1,45 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslum/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:GenerarLiquidacionReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyNzI4NTYzNjQ0IiBnZW5fdGltZT0iMTYyNDIwODI1NyIgZXhwX3RpbWU9IjE2MjQyNTE1MTciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NsdW0iIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>DahqGiu2TkyX04UgMRD02uLzsf6mhszv5QBfe/MzNH+YQXUtfX+8KjjZzdZmJ1doR+XEPrHcFR4U+wN0eQGVu/H0DnVAsHoNFSGwHrjf4JtkjhiusiZgk+7HzZCyMd1c9l8VQvmBF/21A3t7K+SuWUp3pbF4bEqkek0Ulp2zrF4=</sign><cuit>20267565393</cuit></auth><solicitud><liquidacion><periodo>2015/12</periodo><fechaComprobante>2015-12-31</fechaComprobante><puntoVenta>1</puntoVenta><iibbAdquirente>123456789012345</iibbAdquirente><tipoComprobante>27</tipoComprobante><nroComprobante>1</nroComprobante><domicilioSede>Domicilio
+      Administrativo</domicilioSede><inscripcionRegistroPublico>Nro IGJ</inscripcionRegistroPublico><datosAdicionales>Datos
+      Adicionales Varios</datosAdicionales><alicuotaIVA>21.0</alicuotaIVA><condicionVenta><codigo>1</codigo></condicionVenta></liquidacion><tambero><cuit>11111111111</cuit><iibb>123456789012345</iibb></tambero><tambo><nroTamboInterno>123456789</nroTamboInterno><nroTamboProvincial>100000000</nroTamboProvincial><nroRenspa>12.345.6.78901/12</nroRenspa><ubicacionTambo><latitud>-34.62987</latitud><longitud>-58.65155</longitud><domicilio>Domicilio
+      Tambo</domicilio><codLocalidad>10109</codLocalidad><codProvincia>1</codProvincia><nombrePartidoDepto>Partido
+      Tambo</nombrePartidoDepto><codigoPostal>1234</codigoPostal></ubicacionTambo><fechaVencCertTuberculosis>2015-01-01</fechaVencCertTuberculosis><fechaVencCertBrucelosis>2015-01-01</fechaVencCertBrucelosis></tambo><balanceLitrosPorcentajesSolidos><litrosRemitidos>11000</litrosRemitidos><litrosDecomisados>1000</litrosDecomisados><kgGrasa>100.0</kgGrasa><kgProteina>100.0</kgProteina></balanceLitrosPorcentajesSolidos><conceptosBasicosMercadoInterno><kgProduccionGB>0</kgProduccionGB><precioPorKgProduccionGB>0</precioPorKgProduccionGB><kgProduccionPR>0</kgProduccionPR><precioPorKgProduccionPR>0</precioPorKgProduccionPR></conceptosBasicosMercadoInterno><bonificacionPenalizacion><codBonificacionPenalizacion>1</codBonificacionPenalizacion><detalle>opcional</detalle><resultado>400</resultado><porcentajeAAplicar>10.0</porcentajeAAplicar></bonificacionPenalizacion><otroImpuesto><tipo>1</tipo><detalle></detalle><alicuota>10.0</alicuota><baseImponible>100.0</baseImponible></otroImpuesto><remito>123456789012</remito></solicitud></ser:GenerarLiquidacionReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '3233'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslum/generarLiquidacion"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslum/LumService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:GenerarLiquidacionResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wslum/"><respuesta><errores><error><codigo>2034</codigo><descripcion>La
+        cuit ingresada, no corresponde a un Operador Comercial.</descripcion></error></errores></respuesta></ns2:GenerarLiquidacionResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:58:47 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfdb8413d473db6c8b635b553e3ded408c611e60539d732a8a63883aeae1f394d8;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

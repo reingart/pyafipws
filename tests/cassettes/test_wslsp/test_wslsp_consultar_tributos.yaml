@@ -1,0 +1,76 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarTributosReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMTY1NjczNjk2IiBnZW5fdGltZT0iMTYyNDIwODE0MyIgZXhwX3RpbWU9IjE2MjQyNTE0MDMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAxOXB1YiIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>sRzxCdzVSfX1OvEEUauHz5PKTvjStpOaSYafcrIXmTwg3uCOA6MkkaBWYSie1bqxEe/QIn2t1mI2Gp+xZI66VxLrhWQTqpO1xSTLlwTg0Q+9IHOnzjQ/Vcgt5VW1wqaNuQ20Kj6KneZSAFnCSnW9BWL2P9Oe3JAnE91aiEHeheU=</sign><cuit>20267565393</cuit></auth></ser:ConsultarTributosReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1271'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarTributos"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarTributosResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wslsp/\"><respuesta><tributo><codigo>20</codigo><descripcion>Percepci\xF3n
+        RG 2126/06</descripcion></tributo><tributo><codigo>1</codigo><descripcion>Impuestos
+        nacionales</descripcion></tributo><tributo><codigo>2</codigo><descripcion>Impuestos
+        provinciales</descripcion></tributo><tributo><codigo>3</codigo><descripcion>Impuestos
+        municipales</descripcion></tributo><tributo><codigo>4</codigo><descripcion>Impuestos
+        internos</descripcion></tributo><tributo><codigo>5</codigo><descripcion>IIBB</descripcion></tributo><tributo><codigo>6</codigo><descripcion>Percepci\xF3n
+        de IVA</descripcion></tributo><tributo><codigo>7</codigo><descripcion>Percepci\xF3n
+        de IIBB</descripcion></tributo><tributo><codigo>8</codigo><descripcion>Percepciones
+        por Impuestos Municipales</descripcion></tributo><tributo><codigo>9</codigo><descripcion>Otras
+        Percepciones</descripcion></tributo><tributo><codigo>14</codigo><descripcion>Retencion
+        IIGG - RG 830</descripcion></tributo><tributo><codigo>15</codigo><descripcion>Retencion
+        IVA - RG 3873</descripcion></tributo><tributo><codigo>16</codigo><descripcion>Pago
+        a cuenta IVA - RG 3873</descripcion></tributo><tributo><codigo>17</codigo><descripcion>Percepci\xF3n
+        IVA . RG 3873</descripcion></tributo><tributo><codigo>99</codigo><descripcion>Otros</descripcion></tributo><tributoPorcino><codigo>20</codigo><descripcion>Percepci\xF3n
+        RG 2126/06</descripcion></tributoPorcino><tributoPorcino><codigo>23</codigo><descripcion>Retenci\xF3n
+        IVA - RG 4199</descripcion></tributoPorcino><tributoPorcino><codigo>21</codigo><descripcion>Pago
+        a cuenta IVA - RG 4199</descripcion></tributoPorcino><tributoPorcino><codigo>22</codigo><descripcion>Percepci\xF3n
+        IVA  RG 4199</descripcion></tributoPorcino><tributoPorcino><codigo>1</codigo><descripcion>Impuestos
+        nacionales</descripcion></tributoPorcino><tributoPorcino><codigo>2</codigo><descripcion>Impuestos
+        provinciales</descripcion></tributoPorcino><tributoPorcino><codigo>3</codigo><descripcion>Impuestos
+        municipales</descripcion></tributoPorcino><tributoPorcino><codigo>4</codigo><descripcion>Impuestos
+        internos</descripcion></tributoPorcino><tributoPorcino><codigo>5</codigo><descripcion>IIBB</descripcion></tributoPorcino><tributoPorcino><codigo>6</codigo><descripcion>Percepci\xF3n
+        de IVA</descripcion></tributoPorcino><tributoPorcino><codigo>7</codigo><descripcion>Percepci\xF3n
+        de IIBB</descripcion></tributoPorcino><tributoPorcino><codigo>8</codigo><descripcion>Percepciones
+        por Impuestos Municipales</descripcion></tributoPorcino><tributoPorcino><codigo>9</codigo><descripcion>Otras
+        Percepciones</descripcion></tributoPorcino><tributoPorcino><codigo>14</codigo><descripcion>Retencion
+        IIGG - RG 830</descripcion></tributoPorcino><tributoPorcino><codigo>99</codigo><descripcion>Otros</descripcion></tributoPorcino><tributoAvicola><codigo>20</codigo><descripcion>Percepci\xF3n
+        RG 2126/06</descripcion></tributoAvicola><tributoAvicola><codigo>1</codigo><descripcion>Impuestos
+        nacionales</descripcion></tributoAvicola><tributoAvicola><codigo>2</codigo><descripcion>Impuestos
+        provinciales</descripcion></tributoAvicola><tributoAvicola><codigo>3</codigo><descripcion>Impuestos
+        municipales</descripcion></tributoAvicola><tributoAvicola><codigo>4</codigo><descripcion>Impuestos
+        internos</descripcion></tributoAvicola><tributoAvicola><codigo>5</codigo><descripcion>IIBB</descripcion></tributoAvicola><tributoAvicola><codigo>6</codigo><descripcion>Percepci\xF3n
+        de IVA</descripcion></tributoAvicola><tributoAvicola><codigo>7</codigo><descripcion>Percepci\xF3n
+        de IIBB</descripcion></tributoAvicola><tributoAvicola><codigo>8</codigo><descripcion>Percepciones
+        por Impuestos Municipales</descripcion></tributoAvicola><tributoAvicola><codigo>9</codigo><descripcion>Otras
+        Percepciones</descripcion></tributoAvicola><tributoAvicola><codigo>14</codigo><descripcion>Retencion
+        IIGG - RG 830</descripcion></tributoAvicola><tributoAvicola><codigo>99</codigo><descripcion>Otros</descripcion></tributoAvicola><metadata><servidor>vivaldi</servidor><fechaHora>2021-06-20T13:57:12</fechaHora></metadata></respuesta></ns2:ConsultarTributosResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Sun, 20 Jun 2021 16:57:12 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf205f45c6a22b64f8f8e44661131e310a722cedb1a8e2c639269cd1e336733f4e;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

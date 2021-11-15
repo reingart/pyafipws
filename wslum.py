@@ -12,12 +12,12 @@
 
 from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import with_statement
 from future import standard_library
 
 standard_library.install_aliases()
 from builtins import input
 from builtins import str
-from __future__ import with_statement
 
 """Módulo para obtener código de autorización electrónica (CAE) para 
 Liquidación Única Mensual (lechería) del web service WSLUM de AFIP
@@ -72,7 +72,7 @@ Opciones:
 Ver wslum.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, shelve
+import os, sys, shelve, subprocess
 import decimal, datetime
 import traceback
 import pprint
@@ -779,7 +779,7 @@ class WSLUM(BaseWS):
     def MostrarPDF(self, archivo, imprimir=False):
         try:
             if sys.platform == "linux2":
-                os.system("evince " "%s" "" % archivo)
+                subprocess.call(["evince", archivo])
             else:
                 operation = imprimir and "print" or ""
                 os.startfile(archivo, operation)
@@ -793,7 +793,8 @@ class WSLUM(BaseWS):
 INSTALL_DIR = WSLUM.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global DEBUG, XML, CONFIG_FILE, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
@@ -1192,3 +1193,6 @@ if __name__ == "__main__":
         if XML:
             open("wslum_request.xml", "w").write(wslum.client.xml_request)
             open("wslum_response.xml", "w").write(wslum.client.xml_response)
+
+if __name__ == "__main__":
+    main()

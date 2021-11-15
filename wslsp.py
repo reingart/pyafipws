@@ -12,12 +12,12 @@
 
 from __future__ import print_function
 from __future__ import absolute_import
+from __future__ import with_statement
 from future import standard_library
 
 standard_library.install_aliases()
 from builtins import str
 from builtins import input
-from __future__ import with_statement
 
 """Módulo para obtener código de autorización electrónica (CAE) para 
 Liquidación Sector Pecuario (hacienda/carne) del web service WSLSP de AFIP
@@ -69,7 +69,7 @@ Opciones:
 Ver wslsp.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
-import os, sys, shelve
+import os, sys, shelve, subprocess
 import decimal, datetime
 import traceback
 import pprint
@@ -1033,7 +1033,7 @@ class WSLSP(BaseWS):
     def MostrarPDF(self, archivo, imprimir=False):
         try:
             if sys.platform == "linux2":
-                os.system("evince " "%s" "" % archivo)
+                subprocess.call(["evince", archivo])
             else:
                 operation = imprimir and "print" or ""
                 os.startfile(archivo, operation)
@@ -1047,11 +1047,12 @@ class WSLSP(BaseWS):
 INSTALL_DIR = WSLSP.InstallDir = get_install_dir()
 
 
-if __name__ == "__main__":
+def main():
+    global DEBUG, XML, CONFIG_FILE, HOMO
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
-        sys.exit(0)
+        return
     if "--formato" in sys.argv:
         print("Formato:")
         for msg, formato in []:
@@ -1065,7 +1066,7 @@ if __name__ == "__main__":
                     % (clave, comienzo, longitud, tipo, dec)
                 )
                 comienzo += longitud
-        sys.exit(0)
+        return
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -1165,7 +1166,7 @@ if __name__ == "__main__":
             print("AppServerStatus", wslsp.AppServerStatus)
             print("DbServerStatus", wslsp.DbServerStatus)
             print("AuthServerStatus", wslsp.AuthServerStatus)
-            ##sys.exit(0)
+            return
 
         if "--autorizar" in sys.argv:
 
@@ -1359,7 +1360,7 @@ if __name__ == "__main__":
                         f,
                         sort_keys=True,
                         indent=4,
-                        encoding="utf-8",
+                        # encoding="utf-8",
                     )
             else:
                 # cargar un archivo de texto:
@@ -1430,7 +1431,7 @@ if __name__ == "__main__":
                     print(wslsp.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wslsp.NroComprobante)
             print("Errores:", wslsp.Errores)
-            sys.exit(0)
+            return
 
         if "--guardar" in sys.argv:
             # grabar un archivo de texto (intercambio) con el resultado:
@@ -1527,3 +1528,6 @@ if __name__ == "__main__":
         if XML:
             open("wslsp_request.xml", "w").write(wslsp.client.xml_request)
             open("wslsp_response.xml", "w").write(wslsp.client.xml_response)
+
+if __name__ == "__main__":
+    main()

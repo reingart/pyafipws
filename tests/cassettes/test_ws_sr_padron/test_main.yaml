@@ -1,0 +1,96 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:loginCms>\n    <in0>MIIHEAYJKoZIhvcNAQcCoIIHATCCBv0CAQExDzANBglghkgBZQMEAgEFADCCATcG\nCSqGSIb3DQEHAaCCASgEggEkPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0i\nVVRGLTgiPz48bG9naW5UaWNrZXRSZXF1ZXN0IHZlcnNpb249IjEuMCI+PGhlYWRl\ncj48dW5pcXVlSWQ+MTYyODY3MDQyODwvdW5pcXVlSWQ+PGdlbmVyYXRpb25UaW1l\nPjIwMjEtMDgtMTFUMDg6NTc6MDg8L2dlbmVyYXRpb25UaW1lPjxleHBpcmF0aW9u\nVGltZT4yMDIxLTA4LTExVDE4OjU3OjA4PC9leHBpcmF0aW9uVGltZT48L2hlYWRl\ncj48c2VydmljZT53c19zcl9jb25zdGFuY2lhX2luc2NyaXBjaW9uPC9zZXJ2aWNl\nPjwvbG9naW5UaWNrZXRSZXF1ZXN0PqCCA1AwggNMMIICNKADAgECAghz/4NTdXcp\nvjANBgkqhkiG9w0BAQ0FADA4MRowGAYDVQQDDBFDb21wdXRhZG9yZXMgVGVzdDEN\nMAsGA1UECgwEQUZJUDELMAkGA1UEBhMCQVIwHhcNMjEwNzEzMTQ0ODUxWhcNMjMw\nNzEzMTQ0ODUxWjAyMRUwEwYDVQQDDAxyZWluZ2FydDIwMjExGTAXBgNVBAUTEENV\nSVQgMjAyNjc1NjUzOTMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC2\nNxoJg4hKU5xO3Oq3bA2hYV16PZu++RenUzjDTf1fofFw9LZ4FsJu1OaquZzCIcLm\ngYa49poHRTTPTD111nM5RGAjQlpg8kvR4TePMhvagITUdPaqwBFSmPcbWWzRmBwV\ns6nd0281gmAnaVHjkU4g+gdnWU9C5QMG7HhOmKcJD34iYl2Ax+FBz7Id5CRH6kBv\nKudCRiu0SDeXI6vgc+oh2jIWR30QIcm2spqnXtSchyLd51zhuruBE//SUJ/G37pv\nNi6mymLPQAKSXU35W0LD8p2nmwpkyDF4hX0k+JoNbp2QBa8pBsGRE5tiWHEdGJa0\nF4OCjkC33X+b0+mMg+jhAgMBAAGjYDBeMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgw\nFoAUs7LT//3put7eja8RIZzWIH3yT28wHQYDVR0OBBYEFLeul03RbyQzEXDlQZnJ\nEClwxcHbMA4GA1UdDwEB/wQEAwIF4DANBgkqhkiG9w0BAQ0FAAOCAQEAD6ooLpu4\nasVz7tNuLIDmWQ45Ht93Fxi6TovuqNLGNCARoZpq81UDaBB3X0SAxm3n5ji5Crxt\nTkaFv0A7SzYIT7M7dkk1gQoVTgQtrbgjwJOtW67goz7qEewluiY+DYXLt+9PkFMC\nTJsQyDr1rKEkTTW4wojfXSXtbSbTNRsaX8B8ShvPb4Zcao8OMnLakZhPIcTG9yXT\nY+195wTmZnFiy79cJYr4NtjhkZbh6AdRnQx1NVuwZ4YlwUVmb3iDIbZpzNzJF1iz\njzXORRgyMPf2PhI3qWX/JGPjXicG2ZfLspeve2Cs6bn/9CT0mWv1LKZS7h9M6T/8\nsO6FsOIMnSk5NjGCAlYwggJSAgEBMEQwODEaMBgGA1UEAwwRQ29tcHV0YWRvcmVz\nIFRlc3QxDTALBgNVBAoMBEFGSVAxCzAJBgNVBAYTAkFSAghz/4NTdXcpvjANBglg\nhkgBZQMEAgEFAKCB5DAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3\nDQEJBTEPFw0yMTA4MTExMzU3MDhaMC8GCSqGSIb3DQEJBDEiBCAEMtLADe4Iqb21\nGWK9SUttv3FcEqieLK6i7FYvEN2xszB5BgkqhkiG9w0BCQ8xbDBqMAsGCWCGSAFl\nAwQBKjALBglghkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMA4GCCqG\nSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCBzANBggqhkiG9w0DAgIB\nKDANBgkqhkiG9w0BAQEFAASCAQBs8v6khPakgbVOYM+vb3rCcFeswhotuLter1Ga\ndRjljnePbQDJhEBFxMFQQOl8A0fFIUkc9OD+WmxZAob+NsDb6WKyGr+Sr4kYOkyR\n1x/RSU16ZqtI64WvidrLl0LkZDZJjO2HTrCivTd8/Z2C1H54+q757wTT7q7pU1WQ\nAMLD5XCTM++0VRgwe23RZKpNJXeR4WJO61FQxiwZnafDh6ktzsI0+OXObh3Ochn/\nwlOwopEJl3Ph1rQhompOgQxW/yzGLr9WV9lXuSYbklSWg92kdsBl1FleVWvJqABK\nHsx/jxzMQmeX8x85a7nHFZNZxBtQ8GhifJU/iodsuzcGR+J6\n\n</in0></ser:loginCms>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2750'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wsaahomo.afip.gov.ar/ws/services/LoginCms
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginCmsResponse
+        xmlns=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"><loginCmsReturn>&lt;?xml
+        version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;\n&lt;loginTicketResponse
+        version=&quot;1.0&quot;&gt;\n    &lt;header&gt;\n        &lt;source&gt;CN=wsaahomo,
+        O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239&lt;/source&gt;\n        &lt;destination&gt;SERIALNUMBER=CUIT
+        20267565393, CN=reingart2021&lt;/destination&gt;\n        &lt;uniqueId&gt;377544856&lt;/uniqueId&gt;\n
+        \       &lt;generationTime&gt;2021-08-11T10:57:11.799-03:00&lt;/generationTime&gt;\n
+        \       &lt;expirationTime&gt;2021-08-11T22:57:11.799-03:00&lt;/expirationTime&gt;\n
+        \   &lt;/header&gt;\n    &lt;credentials&gt;\n        &lt;token&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI1NDU4MDYxNTUiIGdlbl90aW1lPSIxNjI4NjkwMTcxIiBleHBfdGltZT0iMTYyODczMzQzMSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c19zcl9jb25zdGFuY2lhX2luc2NyaXBjaW9uIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMjEiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=&lt;/token&gt;\n
+        \       &lt;sign&gt;nBOmb8KBTYunXQ/Lnq83pP//0GnpxGCYFFrZfGCkd7sdWyq1UZrzU5bhaEMY51SQcapHOAfaGVP+C3KKhWPa8TfX4kRfXzFpgEEof8k8/6G1iU0n4TrMkrVmon6w+oyvmhWUY2RFnctjTMYsj+KP8x1a7cfJQ1JXAWa19Fp1kGQ=&lt;/sign&gt;\n
+        \   &lt;/credentials&gt;\n&lt;/loginTicketResponse&gt;\n</loginCmsReturn></loginCmsResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 11 Aug 2021 13:57:11 GMT
+      Set-Cookie:
+      - TS01b14f84=0145b27a9751990d784b5df2fc143ff51f6e24d6871f496afdcccf928011466496097164a6;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://a5.soap.ws.server.puc.sr/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:getPersona>\n    <token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI1NDU4MDYxNTUiIGdlbl90aW1lPSIxNjI4NjkwMTcxIiBleHBfdGltZT0iMTYyODczMzQzMSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c19zcl9jb25zdGFuY2lhX2luc2NyaXBjaW9uIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMjEiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</token><sign>nBOmb8KBTYunXQ/Lnq83pP//0GnpxGCYFFrZfGCkd7sdWyq1UZrzU5bhaEMY51SQcapHOAfaGVP+C3KKhWPa8TfX4kRfXzFpgEEof8k8/6G1iU0n4TrMkrVmon6w+oyvmhWUY2RFnctjTMYsj+KP8x1a7cfJQ1JXAWa19Fp1kGQ=</sign><cuitRepresentada>20267565393</cuitRepresentada><idPersona>20000000516</idPersona></ser:getPersona>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1313'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ns2:getPersonaResponse
+        xmlns:ns2="http://a5.soap.ws.server.puc.sr/"><personaReturn><datosGenerales><apellido>ERNESTO
+        DANIEL</apellido><domicilioFiscal><codPostal>8371</codPostal><datoAdicional>N/A
+        PATRICIA ANDREA</datoAdicional><descripcionProvincia>NEUQUEN</descripcionProvincia><direccion>LAGUNA
+        LOS SAUCES 2</direccion><idProvincia>20</idProvincia><localidad>JUNIN DE LOS
+        ANDES</localidad><tipoDatoAdicional>NO DETERMINADO</tipoDatoAdicional><tipoDomicilio>FISCAL</tipoDomicilio></domicilioFiscal><estadoClave>ACTIVO</estadoClave><idPersona>20000000516</idPersona><mesCierre>12</mesCierre><nombre>MARCELO
+        NICOLAS</nombre><tipoClave>CUIT</tipoClave><tipoPersona>FISICA</tipoPersona></datosGenerales><errorRegimenGeneral><error>El
+        contribuyente cuenta con impuestos con baja de oficio por Decreto 1299/98</error><mensaje>No
+        cumple con las condiciones para enviar datos del regimen general</mensaje></errorRegimenGeneral><metadata><fechaHora>2021-08-11T10:57:15.249-03:00</fechaHora><servidor>setiwsh2</servidor></metadata></personaReturn></ns2:getPersonaResponse></soap:Body></soap:Envelope>
+    headers:
+      Content-Length:
+      - '1174'
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Wed, 11 Aug 2021 13:57:15 GMT
+      Set-Cookie:
+      - HttpOnly;Secure
+      - TS01a1c3b4=01439f1ddfe2375885e0be844af621fbd694446ae91feddbe5556cbcb420e5046dd780f614fb274ad8a8189a416d34f690e582dfbe;
+        Path=/
+      Strict-Transport-Security:
+      - max-age=300; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

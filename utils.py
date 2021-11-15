@@ -1108,7 +1108,8 @@ def norm(x, encoding="latin1"):
 def date(fmt=None, timestamp=None):
     "Manejo de fechas (simil PHP)"
     if fmt == "U":  # return timestamp
-        t = datetime.datetime.now()
+        # use universal standard time to avoid timezone differences
+        t = datetime.datetime.utcnow()
         return int(time.mktime(t.timetuple()))
     if fmt == "c":  # return isoformat
         d = datetime.datetime.fromtimestamp(timestamp)
