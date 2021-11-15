@@ -137,7 +137,7 @@ class WSFEv1(BaseWS):
     _reg_clsid_ = "{CA0E604D-E3D7-493A-8880-F6CDD604185E}"
 
     if TYPELIB:
-        _typelib_guid_ = "{B1D7283C-3EC2-463E-89B4-11F5228E2A15}"
+        _typelib_guid_ = '{C7190CBC-FB36-4370-9190-BA46F861F539}'
         _typelib_version_ = 1, 18
         _com_interfaces_ = ["IWSFEv1"]
         ##_reg_class_spec_ = "wsfev1.WSFEv1"
