@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.35a"
+__version__ = "1.35b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -380,8 +380,8 @@ CERTIFICACION = [
 
 CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
     ('tipo_reg', 1, A), # C: CTG
-    ('nro_ctg', 12, N),
-    ('nro_carta_porte', 13, N),
+    ('nro_ctg', 12, A),
+    ('nro_carta_porte', 13, A),
     ('porcentaje_secado_humedad', 5, I, 2),
     ('importe_secado', 10, I, 2),
     ('peso_neto_merma_secado', 10, I, 2),
