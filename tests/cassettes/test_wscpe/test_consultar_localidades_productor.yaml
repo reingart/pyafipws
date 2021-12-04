@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarLocalidadesProductorReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI0MDk2OTA1NjI1IiBnZW5fdGltZT0iMTYzNjE2MTU5NiIgZXhwX3RpbWU9IjE2MzYyMDQ4NTYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>T5R1kLFhI5tcKlEaf8tP7ndei7MNont1pWAOtM3xAIFj4S862ubKhss5CaHpDKrOhUuGGfV/XBTCvKqEkvV2gF05sLikanoUgkBYzN6G5AqY3DTDi+RV1m70Q+oQkj1OS+J0quCJb92cTZuVSZlWHjyG1yZUAPJCG4yOWlOgDhI=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><cuit>20267565393</cuit></solicitud></ser:ConsultarLocalidadesProductorReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1363'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/consultarLocalidadesProductor"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>05/11/2021
+        23:37:53 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636166273529ms</elapsedTime><id>20211105113753572nQebprYDXWYnoJdtBldSomiRVMvmvTAU</id></soap:Header><soap:Body><ns2:ConsultarLocalidadesProductorResp
+        xmlns:ns2="https://serviciosjava.afip.gob.ar/wscpe/"><respuesta><localidad><codigo>1069</codigo><descripcion>BALDE
+        DE LA ISLA (ID Provincia: 11)</descripcion></localidad><localidad><codigo>14310</codigo><descripcion>VENADO
+        TUERTO (ID Provincia: 12)</descripcion></localidad><errores/><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-05T23:37:53</fechaHora></metadata></respuesta></ns2:ConsultarLocalidadesProductorResp></soap:Body></soap:Envelope>'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 06 Nov 2021 02:37:53 GMT
+      Set-Cookie:
+      - JSESSIONID=C5A2CCCFE7CD3C8BE581F166FB81CCB6; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddfaff370afb189f109473838a552ba19ede3e201bb2056732e5eace04ef95736251aede49976ea9433f2cd23a5ea6baccc;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

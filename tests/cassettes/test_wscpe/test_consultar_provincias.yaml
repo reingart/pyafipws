@@ -1,0 +1,51 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarProvinciasReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI0MDk2OTA1NjI1IiBnZW5fdGltZT0iMTYzNjE2MTU5NiIgZXhwX3RpbWU9IjE2MzYyMDQ4NTYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>T5R1kLFhI5tcKlEaf8tP7ndei7MNont1pWAOtM3xAIFj4S862ubKhss5CaHpDKrOhUuGGfV/XBTCvKqEkvV2gF05sLikanoUgkBYzN6G5AqY3DTDi+RV1m70Q+oQkj1OS+J0quCJb92cTZuVSZlWHjyG1yZUAPJCG4yOWlOgDhI=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth></ser:ConsultarProvinciasReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1296'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/consultarProvincias"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>06/11/2021
+        00:01:49 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636167709213ms</elapsedTime><id>20211106120149266QGoHjnuVoomfNFAQONAWwiDGvjtTBcjJ</id></soap:Header><soap:Body><ns2:ConsultarProvinciasResp
+        xmlns:ns2="https://serviciosjava.afip.gob.ar/wscpe/"><respuesta><provincia><codigo>1</codigo><descripcion>BUENOS
+        AIRES</descripcion></provincia><provincia><codigo>0</codigo><descripcion>CAP.FEDERAL</descripcion></provincia><provincia><codigo>2</codigo><descripcion>CATAMARCA</descripcion></provincia><provincia><codigo>16</codigo><descripcion>CHACO</descripcion></provincia><provincia><codigo>17</codigo><descripcion>CHUBUT</descripcion></provincia><provincia><codigo>3</codigo><descripcion>CORDOBA</descripcion></provincia><provincia><codigo>4</codigo><descripcion>CORRIENTES</descripcion></provincia><provincia><codigo>5</codigo><descripcion>ENTRE
+        RIOS</descripcion></provincia><provincia><codigo>18</codigo><descripcion>FORMOSA</descripcion></provincia><provincia><codigo>6</codigo><descripcion>JUJUY</descripcion></provincia><provincia><codigo>21</codigo><descripcion>LA
+        PAMPA</descripcion></provincia><provincia><codigo>8</codigo><descripcion>LA
+        RIOJA</descripcion></provincia><provincia><codigo>7</codigo><descripcion>MENDOZA</descripcion></provincia><provincia><codigo>19</codigo><descripcion>MISIONES</descripcion></provincia><provincia><codigo>20</codigo><descripcion>NEUQUEN</descripcion></provincia><provincia><codigo>22</codigo><descripcion>RIO
+        NEGRO</descripcion></provincia><provincia><codigo>9</codigo><descripcion>SALTA</descripcion></provincia><provincia><codigo>10</codigo><descripcion>SAN
+        JUAN</descripcion></provincia><provincia><codigo>11</codigo><descripcion>SAN
+        LUIS</descripcion></provincia><provincia><codigo>23</codigo><descripcion>SANTA
+        CRUZ</descripcion></provincia><provincia><codigo>12</codigo><descripcion>SANTA
+        FE</descripcion></provincia><provincia><codigo>13</codigo><descripcion>SGO.DEL
+        ESTERO</descripcion></provincia><provincia><codigo>24</codigo><descripcion>TIER.DEL
+        FUEGO</descripcion></provincia><provincia><codigo>14</codigo><descripcion>TUCUMAN</descripcion></provincia><errores/><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-06T00:01:49</fechaHora></metadata></respuesta></ns2:ConsultarProvinciasResp></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 06 Nov 2021 03:01:49 GMT
+      Set-Cookie:
+      - JSESSIONID=D0B6ABB6AEE5B4B1D4D80686576E9625; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddf9bd213239c44889f6bdd934eaddcdc721465a7b03e818dd5307191222918a0ac3e314016862d6823ef90500dd15aed4b;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

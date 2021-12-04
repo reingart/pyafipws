@@ -1,0 +1,80 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarTiposGranoReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI0MDk2OTA1NjI1IiBnZW5fdGltZT0iMTYzNjE2MTU5NiIgZXhwX3RpbWU9IjE2MzYyMDQ4NTYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>T5R1kLFhI5tcKlEaf8tP7ndei7MNont1pWAOtM3xAIFj4S862ubKhss5CaHpDKrOhUuGGfV/XBTCvKqEkvV2gF05sLikanoUgkBYzN6G5AqY3DTDi+RV1m70Q+oQkj1OS+J0quCJb92cTZuVSZlWHjyG1yZUAPJCG4yOWlOgDhI=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth></ser:ConsultarTiposGranoReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1296'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/consultarTiposGrano"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Header><serverTime>05/11/2021
+        23:24:26 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636165466120ms</elapsedTime><id>20211105112426166cyfjqDssWWrhlXxATFkDvOTFSgynsiUF</id></soap:Header><soap:Body><ns2:ConsultarTiposGranoResp
+        xmlns:ns2=\"https://serviciosjava.afip.gob.ar/wscpe/\"><respuesta><grano><codigo>59</codigo><descripcion>Garbanzo</descripcion></grano><grano><codigo>60</codigo><descripcion>Amaranto
+        (Amaranthus caudatus)</descripcion></grano><grano><codigo>61</codigo><descripcion>Amapola
+        (Papaver rhoeas)</descripcion></grano><grano><codigo>62</codigo><descripcion>Ch\xEDa
+        (Salvia Hispanica)</descripcion></grano><grano><codigo>63</codigo><descripcion>Coriandro
+        (Coriandrum sativum)</descripcion></grano><grano><codigo>64</codigo><descripcion>Habas
+        (Vicia faba)</descripcion></grano><grano><codigo>65</codigo><descripcion>Lupines
+        (Lupinus mutabilis)</descripcion></grano><grano><codigo>66</codigo><descripcion>Lupino
+        (Lupinus albus)</descripcion></grano><grano><codigo>68</codigo><descripcion>Mostaza
+        Marr\xF3n (Brassica juncea)</descripcion></grano><grano><codigo>69</codigo><descripcion>Mostaza
+        Negra ( Brassica nigra)</descripcion></grano><grano><codigo>70</codigo><descripcion>Mostaza
+        Blanca ( Sinapis alba)</descripcion></grano><grano><codigo>73</codigo><descripcion>Poroto
+        Manteca  (Phaseolus lunatus) </descripcion></grano><grano><codigo>74</codigo><descripcion>Poroto
+        Mung (Vigna radiata)</descripcion></grano><grano><codigo>76</codigo><descripcion>Poroto
+        Pallar (Phaseolus coccineus L)</descripcion></grano><grano><codigo>77</codigo><descripcion>Quinoa
+        (Chenopodium Quinoa Willd)</descripcion></grano><grano><codigo>78</codigo><descripcion>S\xE9samo
+        (Sesamum indicum)</descripcion></grano><grano><codigo>80</codigo><descripcion>Trigo
+        Sarraceno (Fagopyrum Esculentum)</descripcion></grano><grano><codigo>81</codigo><descripcion>Avena
+        Amarilla (Avena Byzantina)</descripcion></grano><grano><codigo>100</codigo><descripcion>Cebada</descripcion></grano><grano><codigo>101</codigo><descripcion>Man\xED</descripcion></grano><grano><codigo>102</codigo><descripcion>Poroto</descripcion></grano><grano><codigo>103</codigo><descripcion>Trigo</descripcion></grano><grano><codigo>104</codigo><descripcion>Sorgo</descripcion></grano><grano><codigo>105</codigo><descripcion>Otros
+        granos y legumbres provenientes de Cultivos de Invierno (\"COSECHA FINA\")</descripcion></grano><grano><codigo>106</codigo><descripcion>Otros
+        granos y legumbres provenientes de Cultivos de Verano (\"COSECHA GRUESA\")</descripcion></grano><grano><codigo>107</codigo><descripcion>Colza/Canola</descripcion></grano><grano><codigo>19</codigo><descripcion>Ma\xEDz</descripcion></grano><grano><codigo>35</codigo><descripcion>Arroz</descripcion></grano><grano><codigo>1</codigo><descripcion>Lino</descripcion></grano><grano><codigo>2</codigo><descripcion>Girasol</descripcion></grano><grano><codigo>3</codigo><descripcion>Man\xED
+        en caja</descripcion></grano><grano><codigo>5</codigo><descripcion>Man\xED
+        para industria de selecci\xF3n</descripcion></grano><grano><codigo>6</codigo><descripcion>Man\xED
+        para industria aceitera</descripcion></grano><grano><codigo>7</codigo><descripcion>Man\xED
+        tipo confiter\xEDa</descripcion></grano><grano><codigo>8</codigo><descripcion>Colza</descripcion></grano><grano><codigo>9</codigo><descripcion>Colza
+        \"00\" / Canola</descripcion></grano><grano><codigo>10</codigo><descripcion>Trigo
+        Forrajero</descripcion></grano><grano><codigo>11</codigo><descripcion>Cebada
+        Forrajera</descripcion></grano><grano><codigo>12</codigo><descripcion>Cebada
+        apta para Malter\xEDa</descripcion></grano><grano><codigo>14</codigo><descripcion>Trigo
+        Candeal</descripcion></grano><grano><codigo>15</codigo><descripcion>Trigo
+        Pan</descripcion></grano><grano><codigo>16</codigo><descripcion>Avena</descripcion></grano><grano><codigo>17</codigo><descripcion>Cebada
+        Cervecera</descripcion></grano><grano><codigo>18</codigo><descripcion>Centeno</descripcion></grano><grano><codigo>20</codigo><descripcion>Mijo</descripcion></grano><grano><codigo>21</codigo><descripcion>Arroz
+        C\xE1scara</descripcion></grano><grano><codigo>22</codigo><descripcion>Sorgo
+        Gran\xEDfero</descripcion></grano><grano><codigo>23</codigo><descripcion>Soja</descripcion></grano><grano><codigo>24</codigo><descripcion>Trigo
+        Blando</descripcion></grano><grano><codigo>25</codigo><descripcion>Trigo Plata</descripcion></grano><grano><codigo>26</codigo><descripcion>Ma\xEDz
+        Flynt o Plata</descripcion></grano><grano><codigo>27</codigo><descripcion>Ma\xEDz
+        Pisingallo</descripcion></grano><grano><codigo>28</codigo><descripcion>Triticale</descripcion></grano><grano><codigo>30</codigo><descripcion>Alpiste</descripcion></grano><grano><codigo>31</codigo><descripcion>Algod\xF3n</descripcion></grano><grano><codigo>32</codigo><descripcion>C\xE1rtamo</descripcion></grano><grano><codigo>33</codigo><descripcion>Poroto
+        Blanco Natural Oval Y Alubia</descripcion></grano><grano><codigo>34</codigo><descripcion>Poroto
+        Distinto del Blanco Oval Y Alubia</descripcion></grano><grano><codigo>46</codigo><descripcion>Lenteja</descripcion></grano><grano><codigo>47</codigo><descripcion>Arveja</descripcion></grano><grano><codigo>48</codigo><descripcion>Poroto
+        Blanco Seleccionado Oval y Alubia</descripcion></grano><grano><codigo>49</codigo><descripcion>Otras
+        Legumbres</descripcion></grano><grano><codigo>50</codigo><descripcion>Otros
+        Granos</descripcion></grano><errores/><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-05T23:24:26</fechaHora></metadata></respuesta></ns2:ConsultarTiposGranoResp></soap:Body></soap:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 06 Nov 2021 02:24:26 GMT
+      Set-Cookie:
+      - JSESSIONID=E67BE5DE8227D47FFA498E68ACCDF4D1; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddf78b79c25612950d920d40e3fff75f20979def31545e8a70cbccadc2ad42c19e96b0a12c4dfd316c28eb9bd0f81e15dba;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1
