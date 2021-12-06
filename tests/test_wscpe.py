@@ -460,7 +460,7 @@ def test_consultar_cpe_pendientes_de_resolucion(auth):
 def test_consultar_ult_nro_orden(auth):
     wscpe = auth
     wscpe.ConsultarUltNroOrden(sucursal=221, tipo_cpe=74)
-    assert type(wscpe.NroOrden) == int
+    assert wscpe.NroOrden == 44
 
 
 def test_consultar_provincias(auth):
