@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from future import standard_library
-from future.utils import string_types
 
 standard_library.install_aliases()
 from builtins import str
@@ -551,8 +550,6 @@ class WSCPE(BaseWS):
         self.PDF = ret.get("pdf")  # base64
         if self.PDF is not None:
             cpe_bytes = self.PDF
-            if isinstance(cpe_bytes, string_types):
-                cpe_bytes = cpe_bytes.encode("utf-8")
             with open(archivo, "wb") as fh:
                 fh.write(cpe_bytes)
 
