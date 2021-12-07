@@ -36,6 +36,12 @@ pytestmark = pytest.mark.vcr
 xfail = pytest.mark.xfail
 
 
+def test_inicializar(auth):
+    wscpe = auth
+    assert wscpe.NroCTG is None
+    assert wscpe.Errores == []
+
+
 @xfail
 def test_autorizar_cpe_ferroviaria(auth):
     wscpe = auth
