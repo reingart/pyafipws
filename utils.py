@@ -718,9 +718,10 @@ def grabar_txt(formatos, registros, nombre_archivo, dicts, agrega=False):
             dic["tipo_reg"] = '0'
             archivo.write(escribir(dic, encabezado))
             for tipo_reg, estructura in sorted(registros.items()):
-                for d in dic.get(estructura, []):
-                    d["tipo_reg"] = tipo_reg
-                    archivo.write(escribir(d, formatos[estructura]))
+                for it in dic.get(estructura, {}):
+                    for d in ([it] if isinstance(it, dict) else it):
+                        d["tipo_reg"] = tipo_reg
+                        archivo.write(escribir(d, formatos[estructura]))
 
 
 # Funciones para manejo de Panillas CSV y Tablas
