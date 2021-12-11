@@ -438,7 +438,12 @@ class WSFEv1(BaseWS):
                             'Porcentaje': comprador['porcentaje'],
                             }} for comprador in f['compradores']],
                     }
-                verifica(verificaciones, resultget.copy(), difs)
+                copia = resultget.copy()
+                # TODO: ordenar / convertir opcionales (por ahora no se verifican)
+                del verificaciones['Opcionales']
+                if 'Opcionales' in copia:
+                    del copia['Opcionales']
+                verifica(verificaciones, copia, difs)
                 if difs:
                     print "Diferencias:", difs
                     self.log("Diferencias: %s" % difs)
