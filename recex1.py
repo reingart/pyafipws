@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28a"
+__version__ = "1.28b"
 
 import datetime
 import os
@@ -344,7 +344,7 @@ if __name__ == "__main__":
             # generar el archivo de prueba para la próxima factura
             f_entrada = open(entrada,"w")
 
-            tipo_cbte = 21 # FC Expo (ver tabla de parámetros)
+            tipo_cbte = 19 # FC Expo (ver tabla de parámetros)
             punto_vta = 7
             # Obtengo el último número de comprobante y le agrego 1
             cbte_nro = int(ws.GetLastCMP(tipo_cbte, punto_vta)) + 1
@@ -357,7 +357,7 @@ if __name__ == "__main__":
             domicilio_cliente = "Rua 76 km 34.5 Alagoas"
             id_impositivo = "PJ54482221-l"
             moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de parámetros)
-            moneda_ctz = 19.80
+            moneda_ctz = ws.GetParamCtz(moneda_id)
             obs_comerciales = "Observaciones comerciales"
             obs = "Sin observaciones"
             forma_pago = "30 dias"
@@ -444,15 +444,28 @@ if __name__ == "__main__":
             print "Vencimiento = ", ws.Vencimiento
             print ws.ErrMsg 
 
+            ws.AnalizarXml("XmlResponse")
+            if DEBUG:
+                print(ws.ObtenerTagXml('Id_impositivo'))
+                print(ws.ObtenerTagXml('Cuit_pais_cliente'))
+                print(ws.ObtenerTagXml('Moneda_Id'))
+                print(ws.ObtenerTagXml('Moneda_ctz'))
+                print(ws.ObtenerTagXml('Obs,Motivos_Obs'))
+
             depurar_xml(ws.client)
             escribir_factura({'tipo_cbte': tipo_cbte, 
                               'punto_vta': ws.PuntoVenta, 
                               'cbte_nro': ws.CbteNro, 
-                              'fecha_cbte': ws.FechaCbte, 
+                              'fecha_cbte': ws.FechaCbte,
+                              'id_impositivo': ws.ObtenerTagXml('Id_impositivo'),
+                              'cuit_pais_cliente': ws.ObtenerTagXml('Cuit_pais_cliente'),
+                              'moneda_id': ws.ObtenerTagXml('Moneda_Id'),
+                              'moneda_ctz': ws.ObtenerTagXml('Moneda_ctz'),
                               'imp_total': ws.ImpTotal, 
                               'cae': str(ws.CAE), 
                               'fch_venc_cae': ws.Vencimiento,  
                               'err_msg': ws.ErrMsg,
+                              'motivos_obs': ws.ObtenerTagXml('Obs,Motivos_Obs'),
                             }, open(salida,"w"))
             sys.exit(0)
 
