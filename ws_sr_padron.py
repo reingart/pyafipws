@@ -18,7 +18,7 @@ Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.03e"
+__version__ = "1.04e"
 
 import csv
 import datetime
@@ -283,7 +283,11 @@ def main():
     from wsaa import WSAA
 
     cache = ""
-    ta = WSAA().Autenticar(service, crt, key, url_wsaa)
+    wsaa = WSAA()
+    ta = wsaa.Autenticar(service, crt, key, url_wsaa)
+    if DEBUG:
+        print "WSAA.Excepcion:", wsaa.Excepcion
+        print "WSAA.Traceback:", wsaa.Traceback
 
     padron.SetTicketAcceso(ta)
     padron.Cuit = cuit
