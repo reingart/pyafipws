@@ -33,18 +33,25 @@ EwLCJ0aXBvQ21wIjoxLCJucm9DbXAiOjk0LCJpbXBvcnRlIjoxMjEwMCwibW9uZWRhIjoiRE9MIiwi
 Y3R6Ijo2NSwidGlwb0RvY1JlYyI6ODAsIm5yb0RvY1JlYyI6MjAwMDAwMDAwMDEsInRpcG9Db2RBdX
 QiOiJFIiwiY29kQXV0Ijo3MDQxNzA1NDM2NzQ3Nn0=""".replace("\n", "")
 
+TYPELIB = False
+
 
 class PyQR:
     "Interfaz para generar Codigo QR de Factura Electr�nica"
     _public_methods_ = ['GenerarImagen', 'CrearArchivo',
                         ]
     _public_attrs_ = ['Version', 'Excepcion', 'Traceback', "URL",
-                      "Archivo", "Extension",
+                      "Archivo", "Extension", 'InstallDir',
                       'qr_ver', 'box_size', 'border', 'error_correction',
                      ]
 
     _reg_progid_ = "PyQR"
     _reg_clsid_ = "{0868A2B6-2DC7-478D-8884-A10E92C588DE}"
+
+    if TYPELIB:
+        _typelib_guid_ = '{EB94A8D1-1ADA-4EC2-AEDD-46417B27B84B}'
+        _typelib_version_ = 1, 4
+        _com_interfaces_ = ['IPyQR']
 
     URL = "https://www.afip.gob.ar/fe/qr/?p=%s"
     Archivo = "qr.png"
@@ -115,9 +122,28 @@ class PyQR:
         return url
 
 
+from utils import get_install_dir
+INSTALL_DIR = PyQR.InstallDir = get_install_dir()
+
+
 if __name__ == '__main__':
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
+        import pythoncom
+        if TYPELIB:
+            if '--register' in sys.argv:
+                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "pyqr.tlb"))
+                print "Registering %s" % (tlb,)
+                tli=pythoncom.LoadTypeLib(tlb)
+                pythoncom.RegisterTypeLib(tli, tlb)
+            elif '--unregister' in sys.argv:
+                k = PyQR
+                pythoncom.UnRegisterTypeLib(k._typelib_guid_,
+                                            k._typelib_version_[0],
+                                            k._typelib_version_[1],
+                                            0,
+                                            pythoncom.SYS_WIN32)
+                print "Unregistered typelib"
         import win32com.server.register
         win32com.server.register.UseCommandLine(PyQR)
     elif "/Automate" in sys.argv:
