@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.38d"
+__version__ = "1.38e"
 
 import datetime
 import os
@@ -316,6 +316,8 @@ def escribir_facturas(encabezados, archivo, agrega=False):
     else:
         for dic in encabezados:
             dic['tipo_reg'] = 0
+            if "caea" in dic:
+                dic["cae"] = dic["caea"]
             archivo.write(escribir(dic, ENCABEZADO))
             if 'tributos' in dic:
                 for it in dic['tributos']:
@@ -349,7 +351,7 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                     ('Comprobante Asociado', CMP_ASOC, dic.get('cbtes_asoc', [])),
                     ('Datos Opcionales', OPCIONAL, dic.get("opcionales", [])),
                     ('Compradores', COMPRADOR, dic.get("compradores", [])),
-                    ('Periodo Asociado', PERIODO_ASOC, [dic['periodo_cbtes_asoc']])
+                    ('Periodo Asociado', PERIODO_ASOC, dic.get('periodo_cbtes_asoc', [])),
                     ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
@@ -526,12 +528,13 @@ if __name__ == "__main__":
             # Fechas del período del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
+            caea = 32023696937881
 
             ws.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
                 cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
                 imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
                 fecha_serv_desde, fecha_serv_hasta, #--
-                moneda_id, moneda_ctz)
+                moneda_id, moneda_ctz, caea=caea)
             
             if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):
                 tipo = 201
