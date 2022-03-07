@@ -7,7 +7,7 @@
 import "unknwn.idl","oaidl.idl"; 
 
 [
-	uuid(FF10876A-3865-48BF-A658-979965C0258A),
+	uuid(39D10107-E8B3-40EA-85F5-9A5ED8C21796),
 	helpstring("PyAfipWs WSFEv1 interface"),
 	pointer_default(unique),
 	dual,
@@ -222,15 +222,15 @@ interface IWSFEv1 : IDispatch
 };  //end interface def
 
 [
-	uuid(C7190CBC-FB36-4370-9190-BA46F861F539),
-	version(1.25),
-	helpstring("PyAfipWs WSFEv1 1.25 Type Library"),
+	uuid(8AE2BD1D-A216-4E98-95DB-24A11225EF67),
+	version(1.26),
+	helpstring("PyAfipWs WSFEv1 1.26 Type Library"),
 ] library PyAfipWsWSFEv1Lib
 {
 	importlib("stdole32.tlb");
 
 	[
-		uuid(B1DC6AC0-D8F9-4AC2-BEC3-0A568AF03E9B),
+		uuid(FA1BB90B-53D1-4FDA-8D1F-DEED2700E739),
 		helpstring("WSFEv1 Component Class")
 	] coclass WSFEv1
 	{

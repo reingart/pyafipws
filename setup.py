@@ -234,7 +234,7 @@ if 'py2exe' in sys.argv:
             Target(module=rg3685, script='rg3685.py'), 
             ]             
         if wsfev1.TYPELIB:
-            kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
+            kwargs['windows'] += [Target(module=wsfev1, script="wsfev1.py", dest_base="wsfev1")]
             data_files.append(("typelib", ["typelib/wsfev1.tlb"]))
         __version__ += "+wsfev1_" + wsfev1.__version__
         HOMO &= wsfev1.HOMO
