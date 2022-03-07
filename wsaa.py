@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.11c"
+__version__ = "2.12a"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
@@ -161,11 +161,11 @@ class WSAA(BaseWS):
                     ]
     _readonly_attrs_ = _public_attrs_[:-1]
     _reg_progid_ = "WSAA"
-    _reg_clsid_ = "{6268820C-8900-4AE9-8A2D-F0A1EBD4CAC5}"
+    _reg_clsid_ = "{51342E57-9681-4610-AF2B-686267470930}"
 
     if TYPELIB:
-        _typelib_guid_ = '{30E9C94B-7385-4534-9A80-DF50FD169253}'
-        _typelib_version_ = 2, 11
+        _typelib_guid_ = '{6E4B43FD-0ABB-4627-AA4E-2AD08BD3D212}'
+        _typelib_version_ = 2, 12
         _com_interfaces_ = ['IWSAA']
 
     # Variables globales para BaseWS:
