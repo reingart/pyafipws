@@ -7,7 +7,7 @@
 import "unknwn.idl","oaidl.idl"; 
 
 [
-	uuid(BCAE3C78-594A-42C3-832C-C15689B253D0),
+	uuid(68A2E877-5020-4650-ABA1-2BEA6A27D35F),
 	helpstring("PyQR interface"),
 	pointer_default(unique),
 	dual,
@@ -18,10 +18,10 @@ interface IPyQR : IDispatch
 {
 	[id(1)] HRESULT CrearArchivo(
 					[out, retval] BSTR * archivo);
-	[id(2)] HRESULT GenerarImagen([in] int ver, [in] BSTR fecha, [in] int cuit,
-                    [in] int pto_vta, [in] int tipo_cmp, [in] int nro_cmp,
-                    [in] float importe, [in] BSTR moneda, [in] float ctz,
-                    [in] int tipo_doc_rec, [in] int nro_doc_rec,
+	[id(2)] HRESULT GenerarImagen([in] BSTR ver, [in] BSTR fecha, [in] BSTR cuit,
+                    [in] BSTR pto_vta, [in] BSTR tipo_cmp, [in] BSTR nro_cmp,
+                    [in] BSTR importe, [in] BSTR moneda, [in] BSTR ctz,
+                    [in] BSTR tipo_doc_rec, [in] BSTR nro_doc_rec,
                     [in] BSTR tipo_cod_aut, [in] BSTR cod_aut,
 					[out, retval] BSTR * url);
 
@@ -33,15 +33,15 @@ interface IPyQR : IDispatch
 };  //end interface def
 
 [
-	uuid(106D3947-7A41-4762-BB90-4958A87570C6),
-	version(1.4),
-	helpstring("PyAfipWs PyQR 1.04b Type Library"),
+	uuid(418C11BF-1051-4B51-95CE-638DC3686634),
+	version(1.5),
+	helpstring("PyAfipWs PyQR 1.05b Type Library"),
 ] library PyAfipWsPyQRLib
 {
 	importlib("stdole32.tlb");
 
 	[
-		uuid(FC5FDFC3-1F41-4E4D-A346-5459DE1CE973),
+		uuid(B176B1CE-E7B5-4BB2-ADEC-9EB9F249DF07),
 		helpstring("PyQR Component Class")
 	] coclass PyQR
 	{

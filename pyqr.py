@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.04b"
+__version__ = "1.05b"
 
 import base64
 import json
@@ -46,11 +46,11 @@ class PyQR:
                      ]
 
     _reg_progid_ = "PyQR"
-    _reg_clsid_ = "{0868A2B6-2DC7-478D-8884-A10E92C588DE}"
+    _reg_clsid_ = "{B176B1CE-E7B5-4BB2-ADEC-9EB9F249DF07}"
 
     if TYPELIB:
-        _typelib_guid_ = '{EB94A8D1-1ADA-4EC2-AEDD-46417B27B84B}'
-        _typelib_version_ = 1, 4
+        _typelib_guid_ = '{418C11BF-1051-4B51-95CE-638DC3686634}'
+        _typelib_version_ = 1, 5
         _com_interfaces_ = ['IPyQR']
 
     URL = "https://www.afip.gob.ar/fe/qr/?p=%s"

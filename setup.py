@@ -356,11 +356,14 @@ if 'py2exe' in sys.argv:
 
     if 'pyqr' in globals():
         kwargs['com_server'] += [
-            Target(module=pyqr, modules="pyqr", create_exe=False, create_dll=True),
+            Target(module=pyqr, modules="pyqr", create_exe=not pyqr.TYPELIB, create_dll=not pyqr.TYPELIB),
             ]
         if pyqr.TYPELIB:
             kwargs['windows'] += [Target(module=pyqr, script="pyqr.py", dest_base="pyqr")]
             data_files.append(("typelib", ["typelib/pyqr.tlb"]))
+            kwargs['console'] += [
+                Target(module=pyqr, script='pyqr.py', dest_base="pyqr_cli"),
+                ]
         else:
             kwargs['console'] += [
                 Target(module=pyqr, script='pyqr.py', dest_base="pyqr"),
