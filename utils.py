@@ -114,8 +114,9 @@ try:
 
         httplib2._build_ssl_context = _build_ssl_context_new
 
-except:
-    print("para soporte de WebClient debe instalar httplib2")
+except ModuleNotFoundError as mnfe:
+    if "httplib2" in str(mnfe):
+        print("para soporte de WebClient debe instalar httplib2")
 
 
 DEBUG = False
