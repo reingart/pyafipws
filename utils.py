@@ -114,7 +114,7 @@ try:
 
         httplib2._build_ssl_context = _build_ssl_context_new
 
-except ModuleNotFoundError as mnfe:
+except ImportError as mnfe:
     if "httplib2" in str(mnfe):
         print("para soporte de WebClient debe instalar httplib2")
 
@@ -1135,7 +1135,7 @@ def get_install_dir():
         try:
             import pythoncom
             pythoncom.frozen = 1
-        except ModuleNotFoundError:
+        except ImportError:
             pass
         sys.argv[0] = sys.executable
 
