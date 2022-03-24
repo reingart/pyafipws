@@ -1,0 +1,88 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:loginCms>\n    <in0>MIIG+QYJKoZIhvcNAQcCoIIG6jCCBuYCAQExDzANBglghkgBZQMEAgEFADCCASAG\nCSqGSIb3DQEHAaCCAREEggENPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0i\nVVRGLTgiPz48bG9naW5UaWNrZXRSZXF1ZXN0IHZlcnNpb249IjEuMCI+PGhlYWRl\ncj48dW5pcXVlSWQ+MTYzNjY3MDY0NjwvdW5pcXVlSWQ+PGdlbmVyYXRpb25UaW1l\nPjIwMjEtMTEtMTFUMTQ6NDQ6MDY8L2dlbmVyYXRpb25UaW1lPjxleHBpcmF0aW9u\nVGltZT4yMDIxLTExLTEyVDAwOjQ0OjA2PC9leHBpcmF0aW9uVGltZT48L2hlYWRl\ncj48c2VydmljZT53c2NwZTwvc2VydmljZT48L2xvZ2luVGlja2V0UmVxdWVzdD6g\nggNQMIIDTDCCAjSgAwIBAgIIc/+DU3V3Kb4wDQYJKoZIhvcNAQENBQAwODEaMBgG\nA1UEAwwRQ29tcHV0YWRvcmVzIFRlc3QxDTALBgNVBAoMBEFGSVAxCzAJBgNVBAYT\nAkFSMB4XDTIxMDcxMzE0NDg1MVoXDTIzMDcxMzE0NDg1MVowMjEVMBMGA1UEAwwM\ncmVpbmdhcnQyMDIxMRkwFwYDVQQFExBDVUlUIDIwMjY3NTY1MzkzMIIBIjANBgkq\nhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtjcaCYOISlOcTtzqt2wNoWFdej2bvvkX\np1M4w039X6HxcPS2eBbCbtTmqrmcwiHC5oGGuPaaB0U0z0w9ddZzOURgI0JaYPJL\n0eE3jzIb2oCE1HT2qsARUpj3G1ls0ZgcFbOp3dNvNYJgJ2lR45FOIPoHZ1lPQuUD\nBux4TpinCQ9+ImJdgMfhQc+yHeQkR+pAbyrnQkYrtEg3lyOr4HPqIdoyFkd9ECHJ\ntrKap17UnIci3edc4bq7gRP/0lCfxt+6bzYupspiz0ACkl1N+VtCw/Kdp5sKZMgx\neIV9JPiaDW6dkAWvKQbBkRObYlhxHRiWtBeDgo5At91/m9PpjIPo4QIDAQABo2Aw\nXjAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFLOy0//96bre3o2vESGc1iB98k9v\nMB0GA1UdDgQWBBS3rpdN0W8kMxFw5UGZyRApcMXB2zAOBgNVHQ8BAf8EBAMCBeAw\nDQYJKoZIhvcNAQENBQADggEBAA+qKC6buGrFc+7TbiyA5lkOOR7fdxcYuk6L7qjS\nxjQgEaGaavNVA2gQd19EgMZt5+Y4uQq8bU5Ghb9AO0s2CE+zO3ZJNYEKFU4ELa24\nI8CTrVuu4KM+6hHsJbomPg2Fy7fvT5BTAkybEMg69ayhJE01uMKI310l7W0m0zUb\nGl/AfEobz2+GXGqPDjJy2pGYTyHExvcl02PtfecE5mZxYsu/XCWK+DbY4ZGW4egH\nUZ0MdTVbsGeGJcFFZm94gyG2aczcyRdYs481zkUYMjD39j4SN6ll/yRj414nBtmX\ny7KXr3tgrOm5//Qk9Jlr9SymUu4fTOk//LDuhbDiDJ0pOTYxggJWMIICUgIBATBE\nMDgxGjAYBgNVBAMMEUNvbXB1dGFkb3JlcyBUZXN0MQ0wCwYDVQQKDARBRklQMQsw\nCQYDVQQGEwJBUgIIc/+DU3V3Kb4wDQYJYIZIAWUDBAIBBQCggeQwGAYJKoZIhvcN\nAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjExMTExMTk0NDA2WjAv\nBgkqhkiG9w0BCQQxIgQgpe2YPvL9nh8YsGPLwJIchtYXExw2M/SpJEyTlu91NZ8w\neQYJKoZIhvcNAQkPMWwwajALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG\nSAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwIC\nAUAwBwYFKw4DAgcwDQYIKoZIhvcNAwICASgwDQYJKoZIhvcNAQEBBQAEggEAbeRh\nV/BZNpkuzo9Q1vn5lKCGZ8sF1iwIGFU98QiV2ZnFFAqYHnu/GWhnbi1Z7LCkd9sP\nFBZJHPtaEIKzKoXOtKQIINAvWvsTXfTIvw+dXlerogZcVuIa6Xg301TOZ38fEJes\nh96j8EKjRoK/3hhZxt5Y35ek+BPDqkoemD1WIRfQ8WUCz3Sj/ncYVYvsfceAA+ee\nU4Lo6XEkbrChdbndvLmSTfigZx2aI8vkZVgEbzt0iV35X3c4DLHTt/fg+BeQVU4y\nJUcGGovTYpewpW1hRsg4NRfhCLwWqONXrRLaGF+nV3hZINGKYoBSJMpd6ONlGi7z\ny7nH3xwLbQDktJWn2Q==\n\n</in0></ser:loginCms>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2722'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wsaahomo.afip.gov.ar/ws/services/LoginCms
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginCmsResponse
+        xmlns=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"><loginCmsReturn>&lt;?xml
+        version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;\n&lt;loginTicketResponse
+        version=&quot;1.0&quot;&gt;\n    &lt;header&gt;\n        &lt;source&gt;CN=wsaahomo,
+        O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239&lt;/source&gt;\n        &lt;destination&gt;SERIALNUMBER=CUIT
+        20267565393, CN=reingart2021&lt;/destination&gt;\n        &lt;uniqueId&gt;1087141449&lt;/uniqueId&gt;\n
+        \       &lt;generationTime&gt;2021-11-11T16:44:07.401-03:00&lt;/generationTime&gt;\n
+        \       &lt;expirationTime&gt;2021-11-12T04:44:07.401-03:00&lt;/expirationTime&gt;\n
+        \   &lt;/header&gt;\n    &lt;credentials&gt;\n        &lt;token&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMzcwODU4Nzk5IiBnZW5fdGltZT0iMTYzNjY1OTc4NyIgZXhwX3RpbWU9IjE2MzY3MDMwNDciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==&lt;/token&gt;\n
+        \       &lt;sign&gt;IPDXxt8k+TgVjSpdx2nPNN5yKRxgEEtG/KAeeKOfJL/YXi0eZiheee2fgkDGcXZX+AAZy1PIXSfPiVm2RnOV469PsqzG3DE6T7wpuSE2IsRDE8k0OwFaPR9MXs0ma9Q6osFV1IMaGCjHEHsO6EKEcRtUTYw++bV396X7dMld+lA=&lt;/sign&gt;\n
+        \   &lt;/credentials&gt;\n&lt;/loginTicketResponse&gt;\n</loginCmsReturn></loginCmsResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 11 Nov 2021 19:44:07 GMT
+      Set-Cookie:
+      - TS01b14f84=0145b27a97c035e30ba89cc0cc1d5842faaf0fbc65ef164a8cacc94fedd3145837e2b25949;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:AutorizarCPEFerroviariaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMzcwODU4Nzk5IiBnZW5fdGltZT0iMTYzNjY1OTc4NyIgZXhwX3RpbWU9IjE2MzY3MDMwNDciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>IPDXxt8k+TgVjSpdx2nPNN5yKRxgEEtG/KAeeKOfJL/YXi0eZiheee2fgkDGcXZX+AAZy1PIXSfPiVm2RnOV469PsqzG3DE6T7wpuSE2IsRDE8k0OwFaPR9MXs0ma9Q6osFV1IMaGCjHEHsO6EKEcRtUTYw++bV396X7dMld+lA=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><cabecera><sucursal>1</sucursal><nroOrden>1</nroOrden><planta>1</planta></cabecera><correspondeRetiroProductor>false</correspondeRetiroProductor><datosCarga><codGrano>31</codGrano><cosecha>910</cosecha><pesoBruto>1000</pesoBruto><pesoTara>1000</pesoTara></datosCarga><destino><cuit>20111111112</cuit><esDestinoCampo>true</esDestinoCampo><codProvincia>12</codProvincia><codLocalidad>3058</codLocalidad><planta>1</planta></destino><destinatario><cuit>30000000006</cuit></destinatario><transporte><cuitTransportista>20333333334</cuitTransportista><nroVagon>55555555</nroVagon><nroPrecinto>1</nroPrecinto><nroOperativo>1111111111</nroOperativo><ramal><codigo>99</codigo><descripcion>XXXXX</descripcion></ramal><fechaHoraPartidaTren>2021-11-11T16:44:06.940062</fechaHoraPartidaTren><kmRecorrer>500</kmRecorrer><mercaderiaFumigada>true</mercaderiaFumigada></transporte><observaciones>Notas
+      del transporte</observaciones></solicitud></ser:AutorizarCPEFerroviariaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2241'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/autorizarCPEFerroviaria"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>11/11/2021
+        16:44:07 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636659847674ms</elapsedTime><id>20211111044407762vEWNeXZqTzgiwYcQyhDzIXzRBUherfLE</id></soap:Header><soap:Body><ns2:AutorizarCPEFerroviariaResp
+        xmlns:ns2="https://serviciosjava.afip.gob.ar/wscpe/"><respuesta><errores><error><codigo>2007</codigo><descripcion>La
+        localidad y/o provincia indicada no coincide con la localidad y/o provincia
+        georeferenciada en el Registro Sistemico de Movimientos y Existencia de Granos
+        para la planta de procedencia</descripcion></error></errores><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-11T16:44:07</fechaHora></metadata></respuesta></ns2:AutorizarCPEFerroviariaResp></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Thu, 11 Nov 2021 19:44:07 GMT
+      Set-Cookie:
+      - JSESSIONID=4455E9D334BB2B8DB3CB21614F9BE9D1; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddf9f05c8fae1a116a87317e0a76e3ebc034135b2d811ce4246ae37ad275871175d2f7a61633cbb17f43ae7755cc3bd0814;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

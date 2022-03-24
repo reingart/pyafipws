@@ -1,0 +1,39 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   \n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '241'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/dummy"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>05/11/2021
+        23:01:59 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636164119619ms</elapsedTime><id>20211105110159639jOpMVWyuMqdnCqkwaCTathgyuzDKPRzm</id></soap:Header><soap:Body><ns2:DummyResp
+        xmlns:ns2="https://serviciosjava.afip.gob.ar/wscpe/"><respuesta><appserver>Ok</appserver><authserver>Ok</authserver><dbserver>Ok</dbserver></respuesta></ns2:DummyResp></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 06 Nov 2021 02:01:59 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf4b4da7199b04776ff3965769d9a3810ec414a8abc6abb2f7bd8463c689f0e593;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1
