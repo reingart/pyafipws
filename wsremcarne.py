@@ -90,8 +90,9 @@ from .utils import (
 # constantes de configuración (producción/homologación):
 
 WSDL = [
-    "https://serviciosjava.afip.gob.ar/wsremcarne/RemCarneService?wsdl",
     "https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService?wsdl",
+    "https://serviciosjava.afip.gob.ar/wsremcarne/RemCarneService?wsdl",
+    
 ]
 
 DEBUG = False
@@ -383,7 +384,7 @@ class WSRemCarne(BaseWS):
             self.QR = ret.get("qr") or ""
             if archivo:
                 f = open(archivo, "wb")
-                f.write(self.QR)
+                f.write((self.QR).encode('ascii'))
                 f.close()
 
     @inicializar_y_capturar_excepciones
@@ -687,7 +688,7 @@ def main():
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
-        sys.exit(0)
+        return
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -760,7 +761,7 @@ def main():
             print("AppServerStatus", wsremcarne.AppServerStatus)
             print("DbServerStatus", wsremcarne.DbServerStatus)
             print("AuthServerStatus", wsremcarne.AuthServerStatus)
-            sys.exit(0)
+            return
 
         if "--ult" in sys.argv:
             try:
