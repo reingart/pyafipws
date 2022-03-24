@@ -1651,7 +1651,7 @@ class FEPDF(object):
 
     @utils.inicializar_y_capturar_excepciones_simple
     def MostrarPDF(self, archivo, imprimir=False):
-        if sys.platform.startswith(("linux2", "java")):
+        if sys.platform.startswith(("linux2", "java", "linux")):
             os.system("evince " "%s" "" % archivo)
         else:
             operation = imprimir and "print" or ""
@@ -1812,7 +1812,7 @@ def main():
             # datos generales del encabezado:
             tipo_cbte = 19 if "--expo" in sys.argv else 201
             punto_vta = 4000
-            fecha = datetime.datetime.now().strftime("%Y%m%d")
+            fecha = '20210805' if "--fecha_prueba" in sys.argv else datetime.datetime.now().strftime("%Y%m%d")
             concepto = 3
             tipo_doc = 80
             nro_doc = "30000000007"
@@ -2040,7 +2040,10 @@ def main():
                 archivo = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG:
                     print("Escribiendo", archivo)
-                regs = formato_json.escribir([reg], archivo)
+                if sys.version_info[0] < 3:
+                    regs = formato_json.escribir([reg], archivo, encoding='utf-8')
+                else:
+                    regs = formato_json.escribir([reg], archivo)
             else:
                 from .formatos import formato_txt
 
@@ -2095,6 +2098,8 @@ def main():
         fepdf.GenerarPDF(archivo=salida)
         if "--mostrar" in sys.argv:
             fepdf.MostrarPDF(archivo=salida, imprimir="--imprimir" in sys.argv)
+
+    return fepdf
 
 if __name__ == "__main__":
     main()

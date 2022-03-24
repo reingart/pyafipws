@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   \n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '269'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://servicios1.afip.gob.ar/wscdc/ComprobanteDummy"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/WSCDC/service.asmx
+  response:
+    body:
+      string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
+        xmlns="http://servicios1.afip.gob.ar/wscdc/"><ambiente>HomologacionExterno
+        - efa</ambiente><fecha>2021-07-22T18:48:13.6756748-03:00</fecha><id>2.0.2.0</id></FEHeaderInfo></soap:Header><soap:Body><ComprobanteDummyResponse
+        xmlns="http://servicios1.afip.gob.ar/wscdc/"><ComprobanteDummyResult><AppServer>OK</AppServer><DbServer>OK</DbServer><AuthServer>OK</AuthServer></ComprobanteDummyResult></ComprobanteDummyResponse></soap:Body></soap:Envelope>
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '679'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 21:48:13 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddfd12e25d7171f5fa5593e0f3d3c9d6845a4b53ccb7cb9f820b693ce3674154ad0;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

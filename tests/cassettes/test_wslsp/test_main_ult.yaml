@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wslsp/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarUltimoNroComprobantePorPtoVtaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzNzI1ODU3NDEzIiBnZW5fdGltZT0iMTYyNjk2OTY5MyIgZXhwX3RpbWU9IjE2MjcwMTI5NTMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nsc3AiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>mkAXpe+bxluT7r73wTQiiZr0L9GCvP9gt1gxdT5LUD9mZvIZlMGLTM5qCyE9IV0p3gQUIa+fFvxXPHkrqulTzSBqXlVCco7E61UvNQvPkajNKDfIofrecC6UuXwfC9i0sQSyAsEqOrAfTKThi9QAh+ghLgDT+CVg10y+bVP/Fzk=</sign><cuit>20267565393</cuit></auth><solicitud><puntoVenta>1</puntoVenta><tipoComprobante>27</tipoComprobante></solicitud></ser:ConsultarUltimoNroComprobantePorPtoVtaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1395'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wslsp/consultarUltimoNroComprobantePorPtoVta"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wslsp/LspService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns2:ConsultarUltimoNroComprobantePorPtoVtaResp
+        xmlns:ns2="http://serviciosjava.afip.gob.ar/wslsp/"><respuesta><nroComprobante>0</nroComprobante><metadata><servidor>vivaldi</servidor><fechaHora>2021-07-22T13:02:47</fechaHora></metadata></respuesta></ns2:ConsultarUltimoNroComprobantePorPtoVtaResp></S:Body></S:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 16:02:47 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf41c89b0b77b52e5b70f6c1d169ecaf42ff9785accc483987793c4163c3e16efd;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -356,14 +356,14 @@ def main():
 
     if "--dummy" in sys.argv:
         print(padron.client.help("dummy"))
-        wssrpadron4.Dummy()
-        print("AppServerStatus", wssrpadron4.AppServerStatus)
-        print("DbServerStatus", wssrpadron4.DbServerStatus)
-        print("AuthServerStatus", wssrpadron4.AuthServerStatus)
+        padron.Dummy()
+        print("AppServerStatus", padron.AppServerStatus)
+        print("DbServerStatus", padron.DbServerStatus)
+        print("AuthServerStatus", padron.AuthServerStatus)
 
     if "--csv" in sys.argv:
         csv_reader = csv.reader(
-            open("entrada.csv", "rU"), dialect="excel", delimiter=","
+            open("tests/entrada.csv", "rU"), dialect="excel", delimiter=","
         )
         csv_writer = csv.writer(open("salida.csv", "w"), dialect="excel", delimiter=",")
         encabezado = next(csv_reader)
@@ -401,7 +401,7 @@ def main():
                 csv_writer.writerow(
                     [norm(getattr(padron, campo, "")) for campo in columnas]
                 )
-        sys.exit(0)
+        return
 
     try:
 
@@ -441,6 +441,8 @@ def main():
         raise
         print(padron.XmlRequest)
         print(padron.XmlResponse)
+    
+    return padron
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)

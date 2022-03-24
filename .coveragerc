@@ -5,14 +5,8 @@ omit =
         *iibb*
         *nsis*
         */padron.py
-        *pyemail*
-        *pyfepdf*
-        *pyi25*
-        *pyqr*
-        *rece1*
-        *recem*
         *recet*
-        *recex1*
+        *formatos*
         *rg3685*
         *setup_win*
         *sired*

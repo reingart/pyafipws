@@ -863,7 +863,7 @@ def main():
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
-        sys.exit(0)
+        return
     if "--formato" in sys.argv:
         print("Formato:")
         for msg, formato in []:
@@ -877,7 +877,7 @@ def main():
                     % (clave, comienzo, longitud, tipo, dec)
                 )
                 comienzo += longitud
-        sys.exit(0)
+        return
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -983,7 +983,7 @@ def main():
             print("AppServerStatus", wsltv.AppServerStatus)
             print("DbServerStatus", wsltv.DbServerStatus)
             print("AuthServerStatus", wsltv.AuthServerStatus)
-            ##sys.exit(0)
+            return
 
         if "--json" in sys.argv and os.path.exists("wsltv.json"):
             # cargar un archivo de texto:
@@ -997,7 +997,7 @@ def main():
                 # genero una liquidación de ejemplo:
 
                 tipo_cbte = 150
-                pto_vta = 6
+                pto_vta = 2002
 
                 if not "--prueba" in sys.argv:
                     # consulto el último número de orden emitido:
@@ -1137,7 +1137,7 @@ def main():
                 assert wsltv.GetParametro("receptor", "domicilio") == u"Calle 1"
                 assert (
                     wsltv.GetParametro("receptor", "razon_social")
-                    == u"CUIT PF de Prueba gen\xe9rica"
+                    == u'CUIT PF de Prueba genérica'
                 )
                 assert (
                     wsltv.GetParametro(
@@ -1265,7 +1265,7 @@ def main():
                     f,
                     sort_keys=True,
                     indent=4,
-                    encoding="utf-8",
+                    # encoding="utf-8",
                 )
 
         if "--ult" in sys.argv:
@@ -1285,7 +1285,7 @@ def main():
                     print(wsltv.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wsltv.NroComprobante)
             print("Errores:", wsltv.Errores)
-            sys.exit(0)
+            return
 
         # Recuperar parámetros:
 

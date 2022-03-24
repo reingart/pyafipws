@@ -1142,7 +1142,7 @@ def main():
         print("\n".join(wsct.ConsultarCUITsPaises()))
 
     if "--cotizacion" in sys.argv:
-        print(wsct.ConsultarCotizacionMoneda("DOL"))
+        print(wsct.ConsultarCotizacion("DOL"))
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)

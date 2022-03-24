@@ -18,13 +18,13 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
-import os
+import os, sys
 import pytest
 
 from datetime import datetime
 
 from pyafipws.wsaa import WSAA
-from pyafipws.wsct import WSCT
+from pyafipws.wsct import WSCT, main
 
 
 __WSDL__ = "https://fwshomo.afip.gov.ar/wsct/CTService?wsdl"
@@ -375,3 +375,14 @@ def test_consultar_tipos_cuenta(auth):
     wsct=auth
     consulta = wsct.ConsultarTiposCuenta()
     assert consulta
+
+def test_main(auth):
+    sys.argv = []
+    sys.argv.append('--dummy')
+    sys.argv.append('--debug')
+    main()
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    main()

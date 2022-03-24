@@ -20,7 +20,7 @@ import os
 import sys
 import pytest
 from pyafipws.wsaa import WSAA
-from pyafipws.wscdc import WSCDC
+from pyafipws.wscdc import WSCDC, main
 from pyafipws import wscdc as ws
 
 
@@ -146,3 +146,24 @@ def test_consultar_tipo_opcionales(wscdc_):
     assert consulta == []
 
 
+def test_main(wscdc_):
+    sys.argv = []
+    sys.argv.append("--dummy")
+    sys.argv.append("--debug")
+    main()
+
+def test_main_formato(wscdc_):
+    sys.argv = []
+    sys.argv.append("--formato")
+    main()
+
+def test_main_prueba(wscdc_):
+    sys.argv = []
+    sys.argv.append("--constatar")
+    sys.argv.append("--prueba")
+    main()
+
+def test_main_params(wscdc_):
+    sys.argv = []
+    sys.argv.append("--params")
+    main()

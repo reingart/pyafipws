@@ -19,11 +19,11 @@ __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
 
-import os
+import os, sys
 import pytest
 
 from pyafipws.wsaa import WSAA
-from pyafipws.ws_sr_padron import WSSrPadronA4, WSSrPadronA5
+from pyafipws.ws_sr_padron import WSSrPadronA4, WSSrPadronA5, main
 
 
 __WSDL__ = "https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5?wsdl"
@@ -40,7 +40,7 @@ pytestmark =pytest.mark.vcr
 
 
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_server_status(auth):
     """Test de estado de servidores."""
     # Estados de servidores respuesta no funciona afip
@@ -60,26 +60,51 @@ def test_inicializar(auth):
     assert wspa5.actividades == []
 
 
-@pytest.mark.skip
+
 def test_consultar(auth):
     """Test consultar."""
     wspa5=auth
     # Consulta Nivel A4 afip no esta funcionando.
-    id_persona = "20002307554"
-    consulta = wspa4.Consultar(id_persona)
-    assert consulta
+    id_persona = "20201797064"
+    consulta = wspa5.Consultar(id_persona)
+    assert consulta == False
 
-@pytest.mark.xfail
+
 def test_consultar_a5(auth):
     """Test consultar padron nivel A5."""
     wspa5=auth
     id_persona = "20201797064"
     consulta = wspa5.Consultar(id_persona)
-    assert consulta
+
     assert wspa5.direccion == "LARREA 1"
     assert wspa5.provincia == "CIUDAD AUTONOMA BUENOS AIRES"
     assert wspa5.cod_postal == "1030"
 
     # metodo analizar datos
-    assert wspa5.imp_iva == "N"
-    assert wspa5.cat_iva == 5
+    assert wspa5.imp_iva == "S"
+    assert wspa5.cat_iva == 1
+
+
+def test_main(auth):
+    sys.argv = []
+    sys.argv.append("--debug")
+    sys.argv.append("--constancia")
+    sys.argv.append('--prueba')
+    padron = main()
+    assert padron.denominacion == "ERNESTO DANIEL, MARCELO NICOLAS"
+    assert padron.tipo_doc == 80
+    assert padron.tipo_persona == "FISICA"
+    assert padron.nro_doc == 20000000516
+    assert padron.estado == "ACTIVO"
+    assert padron.localidad == "JUNIN DE LOS ANDES"
+    assert padron.cod_postal == "8371"
+
+
+def test_main_csv(auth):
+    sys.argv = []
+    sys.argv.append("")
+    sys.argv.append("20000000516")
+    sys.argv.append("--constancia")
+    sys.argv.append("--csv")
+    main()
+    assert os.path.isfile("salida.csv")

@@ -1,0 +1,52 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://a5.soap.ws.server.puc.sr/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:getPersona>\n    <token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODM4NTU4ODc1IiBnZW5fdGltZT0iMTYyODY5NTI0NiIgZXhwX3RpbWU9IjE2Mjg3Mzg1MDYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3Nfc3JfY29uc3RhbmNpYV9pbnNjcmlwY2lvbiIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>ZTqcQVTFR6RrUVcOtheRC3uvVKui+nlWjUjfsoNw2OCrYhzmLCRR9wd4FTZ6s3GY3wtaK/e9Q1fa3VhwamOEFpIuh5FCuIshsl1LQXA38V/i1BRHNdFILkXeUwExAoySNwksQ6JUOBOIgEQqKo1aCBdCQUhi7wxUK+TfGbxnOF4=</sign><cuitRepresentada>20267565393</cuitRepresentada><idPersona>20000000516</idPersona></ser:getPersona>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1313'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://awshomo.afip.gov.ar/sr-padron/webservices/personaServiceA5
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ns2:getPersonaResponse
+        xmlns:ns2="http://a5.soap.ws.server.puc.sr/"><personaReturn><datosGenerales><apellido>ERNESTO
+        DANIEL</apellido><domicilioFiscal><codPostal>8371</codPostal><datoAdicional>N/A
+        PATRICIA ANDREA</datoAdicional><descripcionProvincia>NEUQUEN</descripcionProvincia><direccion>LAGUNA
+        LOS SAUCES 2</direccion><idProvincia>20</idProvincia><localidad>JUNIN DE LOS
+        ANDES</localidad><tipoDatoAdicional>NO DETERMINADO</tipoDatoAdicional><tipoDomicilio>FISCAL</tipoDomicilio></domicilioFiscal><estadoClave>ACTIVO</estadoClave><idPersona>20000000516</idPersona><mesCierre>12</mesCierre><nombre>MARCELO
+        NICOLAS</nombre><tipoClave>CUIT</tipoClave><tipoPersona>FISICA</tipoPersona></datosGenerales><errorRegimenGeneral><error>El
+        contribuyente cuenta con impuestos con baja de oficio por Decreto 1299/98</error><mensaje>No
+        cumple con las condiciones para enviar datos del regimen general</mensaje></errorRegimenGeneral><metadata><fechaHora>2021-08-11T12:27:05.282-03:00</fechaHora><servidor>setiwsh2</servidor></metadata></personaReturn></ns2:getPersonaResponse></soap:Body></soap:Envelope>
+    headers:
+      Content-Length:
+      - '1174'
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Wed, 11 Aug 2021 15:27:05 GMT
+      Set-Cookie:
+      - HttpOnly;Secure
+      - TS01a1c3b4=01439f1ddfbcd43a6a5852fee3d3697b05d40994b2778ad4a9839d4d002421a10acfdf2993c206a34d4dac4aa26b98ed853ea90381;
+        Path=/
+      Strict-Transport-Security:
+      - max-age=300; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - sameorigin
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
