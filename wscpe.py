@@ -549,11 +549,12 @@ class WSCPE(BaseWS):
         self.FechaInicioEstado = cab.get("fechaInicioEstado")
         self.FechaVencimiento = cab.get("fechaVencimiento")
         self.PDF = ret.get("pdf")  # base64
-        cpe_bytes = self.PDF
-        if isinstance(cpe_bytes, string_types):
-            cpe_bytes = cpe_bytes.encode("utf-8")
-        with open(archivo, "wb") as fh:
-            fh.write(cpe_bytes)
+        if self.PDF is not None:
+            cpe_bytes = self.PDF
+            if isinstance(cpe_bytes, string_types):
+                cpe_bytes = cpe_bytes.encode("utf-8")
+            with open(archivo, "wb") as fh:
+                fh.write(cpe_bytes)
 
     @inicializar_y_capturar_excepciones
     def AnularCPE(self, archivo="cpe.pdf"):
