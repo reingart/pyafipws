@@ -1,0 +1,48 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposEstadoRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest></ser:consultarTiposEstadoRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1330'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposEstado"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:25:31</fecha></info></S:Header><S:Body><ns2:consultarTiposEstadoResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposEstadoReturn><arrayTiposEstado><codigoDescripcionString><codigo>ACE</codigo><descripcion>Aceptado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>ACP</codigo><descripcion>Aceptado
+        Parcialmente</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>ANU</codigo><descripcion>Anulado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>BOR</codigo><descripcion>Borrador</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>CAN</codigo><descripcion>Cancelado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>DEN</codigo><descripcion>Denegado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>EMI</codigo><descripcion>Emitido</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>NAC</codigo><descripcion>No
+        Aceptado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>PAD</codigo><descripcion>Pendiente
+        de Autorizar por Depositario</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>PAT</codigo><descripcion>Pendiente
+        de Autorizar por Titular</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>PEM</codigo><descripcion>Pendiente
+        de Emitir</descripcion></codigoDescripcionString></arrayTiposEstado></consultarTiposEstadoReturn></ns2:consultarTiposEstadoResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:25:31 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf2c2625342cadc6003ef24f00ad34bffa316af8e55b0c19dfb03fb84ea9b59ba8;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+version: 1

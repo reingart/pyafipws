@@ -137,7 +137,7 @@ class WSFEv1(BaseWS):
     _reg_clsid_ = "{CA0E604D-E3D7-493A-8880-F6CDD604185E}"
 
     if TYPELIB:
-        _typelib_guid_ = "{B1D7283C-3EC2-463E-89B4-11F5228E2A15}"
+        _typelib_guid_ = '{C7190CBC-FB36-4370-9190-BA46F861F539}'
         _typelib_version_ = 1, 18
         _com_interfaces_ = ["IWSFEv1"]
         ##_reg_class_spec_ = "wsfev1.WSFEv1"
@@ -1295,7 +1295,7 @@ def main():
         print("AppServerStatus", wsfev1.AppServerStatus)
         print("DbServerStatus", wsfev1.DbServerStatus)
         print("AuthServerStatus", wsfev1.AuthServerStatus)
-        sys.exit(0)
+        return
 
     # obteniendo el TA para pruebas
     from .wsaa import WSAA
@@ -1477,7 +1477,7 @@ def main():
             print("t0", t0)
             print("t1", t1)
             print("lapso", t1 - t0)
-            open("xmlrequest.xml", "wb").write(wsfev1.XmlRequest)
+            open("xmlrequest.xml", "wb").write(wsfev1.XmlRequest.encode())
             open("xmlresponse.xml", "wb").write(wsfev1.XmlResponse)
 
         if not "--multiple" in sys.argv:
@@ -1565,8 +1565,9 @@ def main():
         print(u"\n".join(wsfev1.ParamGetTiposOpcional()))
         print("=== Tipos de Tributo ===")
         print(u"\n".join(wsfev1.ParamGetTiposTributos()))
-        print("=== Tipos de Paises ===")
-        print(u"\n".join(wsfev1.ParamGetTiposPaises()))
+        # Internal Database error(Error Code 501)
+        # print("=== Tipos de Paises ===")
+        # print(u"\n".join(wsfev1.ParamGetTiposPaises()))
         print("=== Puntos de Venta ===")
         print(u"\n".join(wsfev1.ParamGetPtosVenta()))
 

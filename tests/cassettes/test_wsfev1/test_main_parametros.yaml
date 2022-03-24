@@ -1,0 +1,707 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetTiposDoc xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetTiposDoc>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1357'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetTiposDoc"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:46:05.739895-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetTiposDocResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FEParamGetTiposDocResult><ResultGet><DocTipo><Id>80</Id><Desc>CUIT</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>86</Id><Desc>CUIL</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>87</Id><Desc>CDI</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>89</Id><Desc>LE</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>90</Id><Desc>LC</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>91</Id><Desc>CI
+        Extranjera</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>92</Id><Desc>en
+        tr\xE1mite</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>93</Id><Desc>Acta
+        Nacimiento</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>95</Id><Desc>CI
+        Bs. As. RNP</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>96</Id><Desc>DNI</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>94</Id><Desc>Pasaporte</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>0</Id><Desc>CI
+        Polic\xEDa Federal</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>1</Id><Desc>CI
+        Buenos Aires</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>2</Id><Desc>CI
+        Catamarca</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>3</Id><Desc>CI
+        C\xF3rdoba</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>4</Id><Desc>CI
+        Corrientes</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>5</Id><Desc>CI
+        Entre R\xEDos</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>6</Id><Desc>CI
+        Jujuy</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>7</Id><Desc>CI
+        Mendoza</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>8</Id><Desc>CI
+        La Rioja</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>9</Id><Desc>CI
+        Salta</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>10</Id><Desc>CI
+        San Juan</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>11</Id><Desc>CI
+        San Luis</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>12</Id><Desc>CI
+        Santa Fe</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>13</Id><Desc>CI
+        Santiago del Estero</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>14</Id><Desc>CI
+        Tucum\xE1n</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>16</Id><Desc>CI
+        Chaco</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>17</Id><Desc>CI
+        Chubut</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>18</Id><Desc>CI
+        Formosa</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>19</Id><Desc>CI
+        Misiones</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>20</Id><Desc>CI
+        Neuqu\xE9n</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>21</Id><Desc>CI
+        La Pampa</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>22</Id><Desc>CI
+        R\xEDo Negro</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>23</Id><Desc>CI
+        Santa Cruz</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>24</Id><Desc>CI
+        Tierra del Fuego</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>99</Id><Desc>Doc.
+        (Otro)</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo></ResultGet></FEParamGetTiposDocResult></FEParamGetTiposDocResponse></soap:Body></soap:Envelope>"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '4483'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:04 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf035aa80bce87d481029fb623102e0622d0b4d096e246f56b34cede82fff7ac15;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetTiposCbte xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetTiposCbte>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1359'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetTiposCbte"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:46:06.177395-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetTiposCbteResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FEParamGetTiposCbteResult><ResultGet><CbteTipo><Id>1</Id><Desc>Factura
+        A</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>2</Id><Desc>Nota
+        de D\xE9bito A</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>3</Id><Desc>Nota
+        de Cr\xE9dito A</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>6</Id><Desc>Factura
+        B</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>7</Id><Desc>Nota
+        de D\xE9bito B</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>8</Id><Desc>Nota
+        de Cr\xE9dito B</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>4</Id><Desc>Recibos
+        A</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>5</Id><Desc>Notas
+        de Venta al contado A</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>9</Id><Desc>Recibos
+        B</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>10</Id><Desc>Notas
+        de Venta al contado B</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>63</Id><Desc>Liquidacion
+        A</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>64</Id><Desc>Liquidacion
+        B</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>34</Id><Desc>Cbtes.
+        A del Anexo I, Apartado A,inc.f),R.G.Nro. 1415</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>35</Id><Desc>Cbtes.
+        B del Anexo I,Apartado A,inc. f),R.G. Nro. 1415</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>39</Id><Desc>Otros
+        comprobantes A que cumplan con R.G.Nro. 1415</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>40</Id><Desc>Otros
+        comprobantes B que cumplan con R.G.Nro. 1415</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>60</Id><Desc>Cta
+        de Vta y Liquido prod. A</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>61</Id><Desc>Cta
+        de Vta y Liquido prod. B</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>11</Id><Desc>Factura
+        C</Desc><FchDesde>20110330</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>12</Id><Desc>Nota
+        de D\xE9bito C</Desc><FchDesde>20110330</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>13</Id><Desc>Nota
+        de Cr\xE9dito C</Desc><FchDesde>20110330</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>15</Id><Desc>Recibo
+        C</Desc><FchDesde>20110330</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>49</Id><Desc>Comprobante
+        de Compra de Bienes Usados a Consumidor Final</Desc><FchDesde>20130401</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>51</Id><Desc>Factura
+        M</Desc><FchDesde>20150522</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>52</Id><Desc>Nota
+        de D\xE9bito M</Desc><FchDesde>20150522</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>53</Id><Desc>Nota
+        de Cr\xE9dito M</Desc><FchDesde>20150522</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>54</Id><Desc>Recibo
+        M</Desc><FchDesde>20150522</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>201</Id><Desc>Factura
+        de Cr\xE9dito electr\xF3nica MiPyMEs (FCE) A</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>202</Id><Desc>Nota
+        de D\xE9bito electr\xF3nica MiPyMEs (FCE) A</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>203</Id><Desc>Nota
+        de Cr\xE9dito electr\xF3nica MiPyMEs (FCE) A</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>206</Id><Desc>Factura
+        de Cr\xE9dito electr\xF3nica MiPyMEs (FCE) B</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>207</Id><Desc>Nota
+        de D\xE9bito electr\xF3nica MiPyMEs (FCE) B</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>208</Id><Desc>Nota
+        de Cr\xE9dito electr\xF3nica MiPyMEs (FCE) B</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>211</Id><Desc>Factura
+        de Cr\xE9dito electr\xF3nica MiPyMEs (FCE) C</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>212</Id><Desc>Nota
+        de D\xE9bito electr\xF3nica MiPyMEs (FCE) C</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo><CbteTipo><Id>213</Id><Desc>Nota
+        de Cr\xE9dito electr\xF3nica MiPyMEs (FCE) C</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></CbteTipo></ResultGet></FEParamGetTiposCbteResult></FEParamGetTiposCbteResponse></soap:Body></soap:Envelope>"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '5207'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:05 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf6264ff96f23ffe28f0575ccba559604e858f2b1cd4b080574fb74feff18e128c;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetTiposConcepto xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetTiposConcepto>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1367'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetTiposConcepto"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
+        xmlns="http://ar.gov.afip.dif.FEV1/"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:46:06.614895-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetTiposConceptoResponse
+        xmlns="http://ar.gov.afip.dif.FEV1/"><FEParamGetTiposConceptoResult><ResultGet><ConceptoTipo><Id>1</Id><Desc>Producto</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></ConceptoTipo><ConceptoTipo><Id>2</Id><Desc>Servicios</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></ConceptoTipo><ConceptoTipo><Id>3</Id><Desc>Productos
+        y Servicios</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></ConceptoTipo></ResultGet></FEParamGetTiposConceptoResult></FEParamGetTiposConceptoResponse></soap:Body></soap:Envelope>
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '994'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:05 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf1b9e5e872f0aed5e89237fa1987c80f7815b63bc319171028eacb3198b78e933;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetTiposDoc xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetTiposDoc>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1357'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetTiposDoc"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:46:05.739895-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetTiposDocResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FEParamGetTiposDocResult><ResultGet><DocTipo><Id>80</Id><Desc>CUIT</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>86</Id><Desc>CUIL</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>87</Id><Desc>CDI</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>89</Id><Desc>LE</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>90</Id><Desc>LC</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>91</Id><Desc>CI
+        Extranjera</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>92</Id><Desc>en
+        tr\xE1mite</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>93</Id><Desc>Acta
+        Nacimiento</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>95</Id><Desc>CI
+        Bs. As. RNP</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>96</Id><Desc>DNI</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>94</Id><Desc>Pasaporte</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>0</Id><Desc>CI
+        Polic\xEDa Federal</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>1</Id><Desc>CI
+        Buenos Aires</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>2</Id><Desc>CI
+        Catamarca</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>3</Id><Desc>CI
+        C\xF3rdoba</Desc><FchDesde>20080725</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>4</Id><Desc>CI
+        Corrientes</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>5</Id><Desc>CI
+        Entre R\xEDos</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>6</Id><Desc>CI
+        Jujuy</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>7</Id><Desc>CI
+        Mendoza</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>8</Id><Desc>CI
+        La Rioja</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>9</Id><Desc>CI
+        Salta</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>10</Id><Desc>CI
+        San Juan</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>11</Id><Desc>CI
+        San Luis</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>12</Id><Desc>CI
+        Santa Fe</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>13</Id><Desc>CI
+        Santiago del Estero</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>14</Id><Desc>CI
+        Tucum\xE1n</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>16</Id><Desc>CI
+        Chaco</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>17</Id><Desc>CI
+        Chubut</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>18</Id><Desc>CI
+        Formosa</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>19</Id><Desc>CI
+        Misiones</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>20</Id><Desc>CI
+        Neuqu\xE9n</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>21</Id><Desc>CI
+        La Pampa</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>22</Id><Desc>CI
+        R\xEDo Negro</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>23</Id><Desc>CI
+        Santa Cruz</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>24</Id><Desc>CI
+        Tierra del Fuego</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo><DocTipo><Id>99</Id><Desc>Doc.
+        (Otro)</Desc><FchDesde>20080728</FchDesde><FchHasta>NULL</FchHasta></DocTipo></ResultGet></FEParamGetTiposDocResult></FEParamGetTiposDocResponse></soap:Body></soap:Envelope>"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '4483'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:05 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf655f6cf8fc8482ae25ca04060646730578a78eb091d27bd7367f80126fce4ea0;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetTiposIva xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetTiposIva>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1357'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetTiposIva"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: <?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Header><FEHeaderInfo
+        xmlns="http://ar.gov.afip.dif.FEV1/"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:46:07.458645-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetTiposIvaResponse
+        xmlns="http://ar.gov.afip.dif.FEV1/"><FEParamGetTiposIvaResult><ResultGet><IvaTipo><Id>3</Id><Desc>0%</Desc><FchDesde>20090220</FchDesde><FchHasta>NULL</FchHasta></IvaTipo><IvaTipo><Id>4</Id><Desc>10.5%</Desc><FchDesde>20090220</FchDesde><FchHasta>NULL</FchHasta></IvaTipo><IvaTipo><Id>5</Id><Desc>21%</Desc><FchDesde>20090220</FchDesde><FchHasta>NULL</FchHasta></IvaTipo><IvaTipo><Id>6</Id><Desc>27%</Desc><FchDesde>20090220</FchDesde><FchHasta>NULL</FchHasta></IvaTipo><IvaTipo><Id>8</Id><Desc>5%</Desc><FchDesde>20141020</FchDesde><FchHasta>NULL</FchHasta></IvaTipo><IvaTipo><Id>9</Id><Desc>2.5%</Desc><FchDesde>20141020</FchDesde><FchHasta>NULL</FchHasta></IvaTipo></ResultGet></FEParamGetTiposIvaResult></FEParamGetTiposIvaResponse></soap:Body></soap:Envelope>
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '1213'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:06 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddfb75d50a98f1d26a57488b8c89f8da24f45f7dc9b8ce06df8fec6b46b3f113c45;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetTiposMonedas xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetTiposMonedas>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1365'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetTiposMonedas"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:46:07.88052-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetTiposMonedasResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FEParamGetTiposMonedasResult><ResultGet><Moneda><Id>PES</Id><Desc>Pesos
+        Argentinos</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>DOL</Id><Desc>D\xF3lar
+        Estadounidense</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>002</Id><Desc>D\xF3lar
+        Libre EEUU</Desc><FchDesde>20090416</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>007</Id><Desc>Florines
+        Holandeses</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>010</Id><Desc>Pesos
+        Mejicanos</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>011</Id><Desc>Pesos
+        Uruguayos</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>014</Id><Desc>Coronas
+        Danesas</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>015</Id><Desc>Coronas
+        Noruegas</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>016</Id><Desc>Coronas
+        Suecas</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>018</Id><Desc>D\xF3lar
+        Canadiense</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>019</Id><Desc>Yens</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>021</Id><Desc>Libra
+        Esterlina</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>023</Id><Desc>Bol\xEDvar
+        Venezolano</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>024</Id><Desc>Corona
+        Checa</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>025</Id><Desc>Dinar
+        Yugoslavo</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>026</Id><Desc>D\xF3lar
+        Australiano</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>027</Id><Desc>Dracma
+        Griego</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>028</Id><Desc>Flor\xEDn
+        (Antillas Holandesas)</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>029</Id><Desc>G\xFCaran\xED</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>031</Id><Desc>Peso
+        Boliviano</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>032</Id><Desc>Peso
+        Colombiano</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>033</Id><Desc>Peso
+        Chileno</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>034</Id><Desc>Rand
+        Sudafricano</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>036</Id><Desc>Sucre
+        Ecuatoriano</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>051</Id><Desc>D\xF3lar
+        de Hong Kong</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>052</Id><Desc>D\xF3lar
+        de Singapur</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>053</Id><Desc>D\xF3lar
+        de Jamaica</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>054</Id><Desc>D\xF3lar
+        de Taiwan</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>055</Id><Desc>Quetzal
+        Guatemalteco</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>056</Id><Desc>Forint
+        (Hungr\xEDa)</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>057</Id><Desc>Baht
+        (Tailandia)</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>059</Id><Desc>Dinar
+        Kuwaiti</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>012</Id><Desc>Real</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>030</Id><Desc>Shekel
+        (Israel)</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>035</Id><Desc>Nuevo
+        Sol Peruano</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>060</Id><Desc>Euro</Desc><FchDesde>20090403</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>040</Id><Desc>Lei
+        Rumano</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>042</Id><Desc>Peso
+        Dominicano</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>043</Id><Desc>Balboas
+        Paname\xF1as</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>044</Id><Desc>C\xF3rdoba
+        Nicarag\xFCense</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>045</Id><Desc>Dirham
+        Marroqu\xED</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>046</Id><Desc>Libra
+        Egipcia</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>047</Id><Desc>Riyal
+        Saudita</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>061</Id><Desc>Zloty
+        Polaco</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>062</Id><Desc>Rupia
+        Hind\xFA</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>063</Id><Desc>Lempira
+        Hondure\xF1a</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>064</Id><Desc>Yuan
+        (Rep. Pop. China)</Desc><FchDesde>20090415</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>009</Id><Desc>Franco
+        Suizo</Desc><FchDesde>20091110</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>041</Id><Desc>Derechos
+        Especiales de Giro</Desc><FchDesde>20100125</FchDesde><FchHasta>NULL</FchHasta></Moneda><Moneda><Id>049</Id><Desc>Gramos
+        de Oro Fino</Desc><FchDesde>20100125</FchDesde><FchHasta>NULL</FchHasta></Moneda></ResultGet></FEParamGetTiposMonedasResult></FEParamGetTiposMonedasResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '6212'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:06 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf3466e502f79d8e83ce1185e76501435879b42f8442910d779f10c8278a1c12c4;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetTiposOpcional xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetTiposOpcional>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1367'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetTiposOpcional"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:46:08.31802-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetTiposOpcionalResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FEParamGetTiposOpcionalResult><ResultGet><OpcionalTipo><Id>2</Id><Desc>RG
+        Empresas Promovidas - Indentificador de proyecto vinculado a R\xE9gimen de
+        Promoci\xF3n Industrial</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>91</Id><Desc>RG
+        Bienes Usados 3411 - Nombre y Apellido o Denominaci\xF3n del vendedor del
+        bien usado.</Desc><FchDesde>20130401</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>92</Id><Desc>RG
+        Bienes Usados 3411 - Nacionalidad del vendedor del bien usado.</Desc><FchDesde>20130401</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>93</Id><Desc>RG
+        Bienes Usados 3411 - Domicilio del vendedor del bien usado.</Desc><FchDesde>20130401</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>5</Id><Desc>Excepcion
+        computo IVA Credito Fiscal</Desc><FchDesde>20141016</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>61</Id><Desc>RG
+        3668 Impuesto al Valor Agregado - Art.12 IVA Firmante Doc Tipo</Desc><FchDesde>20141016</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>62</Id><Desc>RG
+        3668 Impuesto al Valor Agregado - Art.12 IVA Firmante Doc Nro</Desc><FchDesde>20141016</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>7</Id><Desc>RG
+        3668 Impuesto al Valor Agregado - Art.12 IVA Car\xE1cter del Firmante</Desc><FchDesde>20141016</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>10</Id><Desc>RG
+        3.368 Establecimientos de educaci\xF3n p\xFAblica de gesti\xF3n privada -
+        Actividad Comprendida</Desc><FchDesde>20150605</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>1011</Id><Desc>RG
+        3.368 Establecimientos de educaci\xF3n p\xFAblica de gesti\xF3n privada -
+        Tipo de Documento</Desc><FchDesde>20150605</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>1012</Id><Desc>RG
+        3.368 Establecimientos de educaci\xF3n p\xFAblica de gesti\xF3n privada -
+        N\xFAmero de Documento</Desc><FchDesde>20150605</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>11</Id><Desc>RG
+        2.820 Operaciones econ\xF3micas vinculadas con bienes inmuebles - Actividad
+        Comprendida</Desc><FchDesde>20150605</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>12</Id><Desc>RG
+        3.687 Locaci\xF3n temporaria de inmuebles con fines tur\xEDsticos - Actividad
+        Comprendida</Desc><FchDesde>20150605</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>13</Id><Desc>RG
+        2.863 Representantes de Modelos</Desc><FchDesde>20160101</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>14</Id><Desc>RG
+        2.863 Agencias de publicidad</Desc><FchDesde>20160101</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>15</Id><Desc>RG
+        2.863 Personas f\xEDsicas que desarrollen actividad de modelaje</Desc><FchDesde>20160101</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>17</Id><Desc>RG
+        4004-E Locaci\xF3n de inmuebles destino 'casa-habitaci\xF3n'. Dato 2 (dos)
+        = facturaci\xF3n directa / Dato 1 (uno) = facturaci\xF3n a trav\xE9s de intermediario</Desc><FchDesde>20170309</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>1801</Id><Desc>RG
+        4004-E Locaci\xF3n de inmuebles destino 'casa-habitaci\xF3n'. Clave \xDAnica
+        de Identificaci\xF3n Tributaria (CUIT).</Desc><FchDesde>20170309</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>1802</Id><Desc>RG
+        4004-E Locaci\xF3n de inmuebles destino 'casa-habitaci\xF3n'. Apellido y nombres,
+        denominaci\xF3n y/o raz\xF3n social.</Desc><FchDesde>20170309</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>2101</Id><Desc>Factura
+        de Cr\xE9dito Electr\xF3nica MiPyMEs (FCE) - CBU del Emisor</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>2102</Id><Desc>Factura
+        de Cr\xE9dito Electr\xF3nica MiPyMEs (FCE) - Alias del Emisor</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>22</Id><Desc>Factura
+        de Cr\xE9dito Electr\xF3nica MiPyMEs (FCE) - Anulaci\xF3n</Desc><FchDesde>20181226</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>23</Id><Desc>Factura
+        de Cr\xE9dito Electr\xF3nica MiPyMEs (FCE) - Referencia Comercial</Desc><FchDesde>20190308</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo><OpcionalTipo><Id>27</Id><Desc>Factura
+        de Credito Electronica MiPyMEs (FCE) - Transferencia</Desc><FchDesde>20201126</FchDesde><FchHasta>NULL</FchHasta></OpcionalTipo></ResultGet></FEParamGetTiposOpcionalResult></FEParamGetTiposOpcionalResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '5030'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:07 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf3675f29fe59d8b74751d4ae05164ebc82bb955a2d1422461ac539c1bfb4459b3;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetTiposTributos xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetTiposTributos>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1367'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetTiposTributos"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:46:08.739895-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetTiposTributosResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FEParamGetTiposTributosResult><ResultGet><TributoTipo><Id>1</Id><Desc>Impuestos
+        nacionales</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>2</Id><Desc>Impuestos
+        provinciales</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>3</Id><Desc>Impuestos
+        municipales</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>4</Id><Desc>Impuestos
+        Internos</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>99</Id><Desc>Otro</Desc><FchDesde>20100917</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>5</Id><Desc>IIBB</Desc><FchDesde>20170719</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>6</Id><Desc>Percepci\xF3n
+        de IVA</Desc><FchDesde>20170719</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>7</Id><Desc>Percepci\xF3n
+        de IIBB</Desc><FchDesde>20170719</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>8</Id><Desc>Percepciones
+        por Impuestos Municipales</Desc><FchDesde>20170719</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>9</Id><Desc>Otras
+        Percepciones</Desc><FchDesde>20170719</FchDesde><FchHasta>NULL</FchHasta></TributoTipo><TributoTipo><Id>13</Id><Desc>Percepci\xF3n
+        de IVA a no Categorizado</Desc><FchDesde>20170719</FchDesde><FchHasta>NULL</FchHasta></TributoTipo></ResultGet></FEParamGetTiposTributosResult></FEParamGetTiposTributosResponse></soap:Body></soap:Envelope>"
+    headers:
+      Cache-Control:
+      - no-cache
+      Content-Length:
+      - '2002'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:07 GMT
+      Expect-CT:
+      - enforce
+      Expires:
+      - '-1'
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - TS01983a04=01439f1ddf88f541bb8549dd16bda1202ae36fc417d645282caecbf525f51975f3f63772ae;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEParamGetPtosVenta xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iMTQwNDkyNjExOSIgZ2VuX3RpbWU9IjE2MjcyNzgzMDMiIGV4cF90aW1lPSIxNjI3MzIxNTYzIi8+CiAgICA8b3BlcmF0aW9uIHR5cGU9ImxvZ2luIiB2YWx1ZT0iZ3JhbnRlZCI+CiAgICAgICAgPGxvZ2luIGVudGl0eT0iMzM2OTM0NTAyMzkiIHNlcnZpY2U9IndzZmUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>J2ecVb+eGLBw0ksIN6LC7lLz62mQhUXG3ySwdMbXjW2b9nbHN9cgIyYHMvlBW3JlDNSGwd8Uw+1pPvGSy65WW+C5uyQm1V4s7WhbduNt6WdeyT7qqUentKE577HdcH69pB471ASFsUX/FLdrgNqKX4JHd4A2AbDZSdU+YAoPEwo=</Sign><Cuit>20267565393</Cuit></Auth></FEParamGetPtosVenta>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1359'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FEParamGetPtosVenta"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-26T02:56:07.97619-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEParamGetPtosVentaResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FEParamGetPtosVentaResult><ResultGet><PtoVenta><Nro>3</Nro><EmisionTipo>CAE
+        - Ri Iva</EmisionTipo><Bloqueado>N</Bloqueado><FchBaja>NULL</FchBaja></PtoVenta><PtoVenta><Nro>4</Nro><EmisionTipo>CAE
+        - Ri Iva</EmisionTipo><Bloqueado>N</Bloqueado><FchBaja>NULL</FchBaja></PtoVenta><PtoVenta><Nro>6</Nro><EmisionTipo>CAE
+        - Ri Iva</EmisionTipo><Bloqueado>N</Bloqueado><FchBaja>NULL</FchBaja></PtoVenta></ResultGet></FEParamGetPtosVentaResult></FEParamGetPtosVentaResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '980'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 26 Jul 2021 05:56:07 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddf5ed58fc80abfa358a4e45c828101652a80a0e234042656dc033c139265fc2a93;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

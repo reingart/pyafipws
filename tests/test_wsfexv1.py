@@ -18,7 +18,7 @@ import os
 import datetime
 import pytest
 from pyafipws.wsaa import WSAA
-from pyafipws.wsfexv1 import WSFEXv1
+from pyafipws.wsfexv1 import WSFEXv1, main
 import future
 from builtins import str
 
@@ -46,7 +46,7 @@ CACHE = ""
 # obteniendo el TA para pruebas
 
 
-pytestmark =pytest.mark.vcr
+pytestmark = pytest.mark.vcr
 
 
 
@@ -235,4 +235,37 @@ def test_parametros(auth):
     assert isinstance(wsfexv1.GetParamCtz("DOL"),str)
 
 
+def test_main(auth):
+    sys.argv = []
+    sys.argv.append('--dummy')
+    main()
 
+def test_main_get(auth):
+    sys.argv = []
+    sys.argv.append('--get')
+    main()
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append('--prueba')
+    main()
+
+def test_main_params(auth):
+    sys.argv = []
+    sys.argv.append('--params')
+    main()
+
+def test_main_ctz(auth):
+    sys.argv = []
+    sys.argv.append('--ctz')
+    main()
+
+def test_main_mon_ctz(auth):
+    sys.argv = []
+    sys.argv.append('--monctz')
+    main()
+
+def test_ptos_venta(auth):
+    sys.argv = []
+    sys.argv.append('--ptosventa')
+    main()

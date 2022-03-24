@@ -1,0 +1,119 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEXGetCMP xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIzNDYzNTI0MTU0IiBnZW5fdGltZT0iMTYyNzg4NzkzMyIgZXhwX3RpbWU9IjE2Mjc5MzExOTMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>SZ1fyhMT8/62JmbcMZsvdnqAIcy9h2e86ymG5LLcRUzevrWbd9kktHaz89qgK7w0B2JrWfxBQ15s48TpI9sG/zdwIOFs6vOYo2rb/jsAz769kgfwvuMO5n9cnfjKVbqg4+Ur903NgcRocMN4GKo0Sn7G9CJADSgbgiOQCktg6v4=</Sign><Cuit>20267565393</Cuit></Auth><Cmp><Cbte_tipo>21</Cbte_tipo><Punto_vta>7</Punto_vta><Cbte_nro>28</Cbte_nro></Cmp></FEXGetCMP>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1423'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.fexv1/FEXGetCMP"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfexv1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-08-02T04:15:47.9959014-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXGetCMPResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXGetCMPResult><FEXResultGet><Id>0</Id><Cbte_tipo>0</Cbte_tipo><Punto_vta>0</Punto_vta><Cbte_nro>0</Cbte_nro><Tipo_expo>0</Tipo_expo><Dst_cmp>0</Dst_cmp><Cuit_pais_cliente>0</Cuit_pais_cliente><Moneda_ctz>0</Moneda_ctz><Imp_total>0</Imp_total><Idioma_cbte>0</Idioma_cbte></FEXResultGet><FEXErr><ErrCode>1020</ErrCode><ErrMsg>Comprobante
+        inexistente</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXGetCMPResult></FEXGetCMPResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '978'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 02 Aug 2021 07:15:47 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddf9acb767a80bed84268b126c025ecc172be8420ede52c5e4c504c003224053902;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FEXAuthorize xmlns=\"http://ar.gov.afip.dif.fexv1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJjbj13c2ZleCxvPWFmaXAsYz1hciIgdW5pcXVlX2lkPSIzNDYzNTI0MTU0IiBnZW5fdGltZT0iMTYyNzg4NzkzMyIgZXhwX3RpbWU9IjE2Mjc5MzExOTMiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZXgiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</Token><Sign>SZ1fyhMT8/62JmbcMZsvdnqAIcy9h2e86ymG5LLcRUzevrWbd9kktHaz89qgK7w0B2JrWfxBQ15s48TpI9sG/zdwIOFs6vOYo2rb/jsAz769kgfwvuMO5n9cnfjKVbqg4+Ur903NgcRocMN4GKo0Sn7G9CJADSgbgiOQCktg6v4=</Sign><Cuit>20267565393</Cuit></Auth><Cmp><Id>988888888888345</Id><Fecha_cbte>20210802</Fecha_cbte><Cbte_Tipo>21</Cbte_Tipo><Punto_vta>7</Punto_vta><Cbte_nro>28</Cbte_nro><Tipo_expo>1</Tipo_expo><Permiso_existente>S</Permiso_existente><Permisos><Permiso><Id_permiso>99999AAXX999999A</Id_permiso><Dst_merc>225</Dst_merc></Permiso></Permisos><Dst_cmp>203</Dst_cmp><Cliente>Joao
+      Da Silva</Cliente><Cuit_pais_cliente>0</Cuit_pais_cliente><Domicilio_cliente>Rua
+      76 km 34.5 Alagoas</Domicilio_cliente><Id_impositivo>PJ54482221-l</Id_impositivo><Moneda_Id>DOL</Moneda_Id><Moneda_ctz>19.8</Moneda_ctz><Obs_comerciales>Observaciones
+      comerciales</Obs_comerciales><Imp_total>250.0</Imp_total><Obs>Sin observaciones</Obs><Cmps_asoc><Cmp_asoc><Cbte_tipo>19</Cbte_tipo><Cbte_punto_vta>2</Cbte_punto_vta><Cbte_nro>1234</Cbte_nro><Cbte_cuit>20111111111</Cbte_cuit></Cmp_asoc></Cmps_asoc><Forma_pago>30
+      dias</Forma_pago><Incoterms>FOB</Incoterms><Incoterms_Ds>Flete a Bordo</Incoterms_Ds><Idioma_cbte>1</Idioma_cbte><Items><Item><Pro_codigo>PRO1</Pro_codigo><Pro_ds>Producto
+      Tipo 1 Exportacion MERCOSUR ISO 9001</Pro_ds><Pro_qty>2.0</Pro_qty><Pro_umed>1</Pro_umed><Pro_precio_uni>150.0</Pro_precio_uni><Pro_bonificacion>50.0</Pro_bonificacion><Pro_total_item>250.0</Pro_total_item></Item></Items><Fecha_pago></Fecha_pago></Cmp></FEXAuthorize>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2619'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.fexv1/FEXAuthorize"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfexv1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><ambiente>Homologacion - efa</ambiente><fecha>2021-08-02T04:15:48.4334042-03:00</fecha><id>2.1.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FEXAuthorizeResponse
+        xmlns=\"http://ar.gov.afip.dif.fexv1/\"><FEXAuthorizeResult><FEXErr><ErrCode>1667</ErrCode><ErrMsg>El
+        tipo de cambio no podr\xE1 ser inferior al 20% ni superior en un 100% del
+        que suministra AFIP como orientativo de acuerdo a la cotizaci\xF3n oficial.
+        Ver Metodo FEXGetPARAM_Ctz.</ErrMsg></FEXErr><FEXEvents><EventCode>0</EventCode><EventMsg>Ok</EventMsg></FEXEvents></FEXAuthorizeResult></FEXAuthorizeResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '872'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Mon, 02 Aug 2021 07:15:48 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddf498ca19e6334a083c23f2d04068a470b6cd92137305d7f0647fac390d1cdc001;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

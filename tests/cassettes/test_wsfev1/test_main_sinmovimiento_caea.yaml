@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+      xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n<soap:Header/>\n<soap:Body>\n
+      \   <FECAEASinMovimientoInformar xmlns=\"http://ar.gov.afip.dif.FEV1/\">\n    <Auth><Token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgZHN0PSJDTj13c2ZlLCBPPUFGSVAsIEM9QVIiIHVuaXF1ZV9pZD0iNzcwOTIwMTY5IiBnZW5fdGltZT0iMTYyNjk4MTkzOSIgZXhwX3RpbWU9IjE2MjcwMjUxOTkiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NmZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</Token><Sign>Q2L+wFe6xW95HQCeOKUGGIFZc/cow49eBIavuI9qj3A4WCs8X8KywL242f6THDeg7r2CyrwK9KTDsUlFQqnn9w+1E/9yvajj+d7yVIkY/6fSUz3oUsjhH2ejjnz1tmhaMVr7zdA6EItQ5kfyPcyLntu6whiuZMKFF+YIkKUs5Ho=</Sign><Cuit>20267565393</Cuit></Auth><PtoVta>4000</PtoVta><CAEA>71293955911805</CAEA></FECAEASinMovimientoInformar>\n</soap:Body>\n</soap:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1419'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gov.afip.dif.FEV1/FECAEASinMovimientoInformar"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wswhomo.afip.gov.ar/wsfev1/service.asmx
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><soap:Header><FEHeaderInfo
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><ambiente>HomologacionExterno - efa</ambiente><fecha>2021-07-22T16:35:14.2273674-03:00</fecha><id>4.3.0.0</id></FEHeaderInfo></soap:Header><soap:Body><FECAEASinMovimientoInformarResponse
+        xmlns=\"http://ar.gov.afip.dif.FEV1/\"><FECAEASinMovimientoInformarResult><CAEA>71293955911805</CAEA><FchProceso>20210722</FchProceso><PtoVta>4000</PtoVta><Resultado>R</Resultado><Errors><Err><Code>1200</Code><Msg>El
+        codigo de autorizacion debe ser del tipo CAEA</Msg></Err></Errors></FECAEASinMovimientoInformarResult></FECAEASinMovimientoInformarResponse></soap:Body></soap:Envelope>\r\n"
+    headers:
+      Cache-Control:
+      - private, max-age=0
+      Content-Length:
+      - '843'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 19:35:14 GMT
+      Expect-CT:
+      - enforce
+      MicrosoftOfficeWebServer:
+      - 5.0_Pub
+      Set-Cookie:
+      - TS01983a04=01439f1ddfd22c13520a952de778fa622eb214e34a226de2e745475abee2b3577ec1ff2ebb;
+        Path=/
+      Strict-Transport-Security:
+      - nosniff
+      X-AspNet-Version:
+      - 2.0.50727
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Powered-By:
+      - ASP.NET
+      X-Xss-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

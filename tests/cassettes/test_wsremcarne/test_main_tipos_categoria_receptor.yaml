@@ -1,0 +1,93 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:loginCms>\n    <in0>MIIG/gYJKoZIhvcNAQcCoIIG7zCCBusCAQExDzANBglghkgBZQMEAgEFADCCASUG\nCSqGSIb3DQEHAaCCARYEggESPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0i\nVVRGLTgiPz48bG9naW5UaWNrZXRSZXF1ZXN0IHZlcnNpb249IjEuMCI+PGhlYWRl\ncj48dW5pcXVlSWQ+MTYyNjg2NTI1ODwvdW5pcXVlSWQ+PGdlbmVyYXRpb25UaW1l\nPjIwMjEtMDctMjFUMTE6MzA6NTg8L2dlbmVyYXRpb25UaW1lPjxleHBpcmF0aW9u\nVGltZT4yMDIxLTA3LTIxVDIxOjMwOjU4PC9leHBpcmF0aW9uVGltZT48L2hlYWRl\ncj48c2VydmljZT53c3JlbWNhcm5lPC9zZXJ2aWNlPjwvbG9naW5UaWNrZXRSZXF1\nZXN0PqCCA1AwggNMMIICNKADAgECAghz/4NTdXcpvjANBgkqhkiG9w0BAQ0FADA4\nMRowGAYDVQQDDBFDb21wdXRhZG9yZXMgVGVzdDENMAsGA1UECgwEQUZJUDELMAkG\nA1UEBhMCQVIwHhcNMjEwNzEzMTQ0ODUxWhcNMjMwNzEzMTQ0ODUxWjAyMRUwEwYD\nVQQDDAxyZWluZ2FydDIwMjExGTAXBgNVBAUTEENVSVQgMjAyNjc1NjUzOTMwggEi\nMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC2NxoJg4hKU5xO3Oq3bA2hYV16\nPZu++RenUzjDTf1fofFw9LZ4FsJu1OaquZzCIcLmgYa49poHRTTPTD111nM5RGAj\nQlpg8kvR4TePMhvagITUdPaqwBFSmPcbWWzRmBwVs6nd0281gmAnaVHjkU4g+gdn\nWU9C5QMG7HhOmKcJD34iYl2Ax+FBz7Id5CRH6kBvKudCRiu0SDeXI6vgc+oh2jIW\nR30QIcm2spqnXtSchyLd51zhuruBE//SUJ/G37pvNi6mymLPQAKSXU35W0LD8p2n\nmwpkyDF4hX0k+JoNbp2QBa8pBsGRE5tiWHEdGJa0F4OCjkC33X+b0+mMg+jhAgMB\nAAGjYDBeMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUs7LT//3put7eja8RIZzW\nIH3yT28wHQYDVR0OBBYEFLeul03RbyQzEXDlQZnJEClwxcHbMA4GA1UdDwEB/wQE\nAwIF4DANBgkqhkiG9w0BAQ0FAAOCAQEAD6ooLpu4asVz7tNuLIDmWQ45Ht93Fxi6\nTovuqNLGNCARoZpq81UDaBB3X0SAxm3n5ji5CrxtTkaFv0A7SzYIT7M7dkk1gQoV\nTgQtrbgjwJOtW67goz7qEewluiY+DYXLt+9PkFMCTJsQyDr1rKEkTTW4wojfXSXt\nbSbTNRsaX8B8ShvPb4Zcao8OMnLakZhPIcTG9yXTY+195wTmZnFiy79cJYr4Ntjh\nkZbh6AdRnQx1NVuwZ4YlwUVmb3iDIbZpzNzJF1izjzXORRgyMPf2PhI3qWX/JGPj\nXicG2ZfLspeve2Cs6bn/9CT0mWv1LKZS7h9M6T/8sO6FsOIMnSk5NjGCAlYwggJS\nAgEBMEQwODEaMBgGA1UEAwwRQ29tcHV0YWRvcmVzIFRlc3QxDTALBgNVBAoMBEFG\nSVAxCzAJBgNVBAYTAkFSAghz/4NTdXcpvjANBglghkgBZQMEAgEFAKCB5DAYBgkq\nhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMTA3MjExNjMw\nNThaMC8GCSqGSIb3DQEJBDEiBCCXVN/85QSkF5+qk1UlVFloJNL2bCrozNahiyZ4\nipOaGjB5BgkqhkiG9w0BCQ8xbDBqMAsGCWCGSAFlAwQBKjALBglghkgBZQMEARYw\nCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG\n9w0DAgIBQDAHBgUrDgMCBzANBggqhkiG9w0DAgIBKDANBgkqhkiG9w0BAQEFAASC\nAQCnN7QNhYe4aJCuuAc938ljmAx0K+MJNZLoeNhBZIVT4EV7jqHmVSMwGRnUz3UE\ncyJQA3RxD05fVJ6B0iQO6YSOAepy0U3EC2boRC15SLKuVzI3ySWo/dwm7K5tEe7F\noqllCQj0Ol4nw7rSeIY7NwUvzlWnBIKy9DO92VYUyT7V9lTEtl6jPDLxU5HDac4C\nfRGfFkxEENDvC4DMV5A7cj1w4HH9Lj8w26DpfzTwX1110KV0UWdNBNm5yrU6Qjmb\n4HsY+Su6/9717ta+JmQc+y/Q+6CeELNDPVQLWCcBAjSQAwK9RAdAII2nkqkuIeaV\n5ugc+y/6sHavDRUwuaxqin1j\n\n</in0></ser:loginCms>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2726'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"None"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://wsaahomo.afip.gov.ar/ws/services/LoginCms
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+        xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soapenv:Body><loginCmsResponse
+        xmlns=\"https://wsaahomo.afip.gov.ar/ws/services/LoginCms\"><loginCmsReturn>&lt;?xml
+        version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;\n&lt;loginTicketResponse
+        version=&quot;1.0&quot;&gt;\n    &lt;header&gt;\n        &lt;source&gt;CN=wsaahomo,
+        O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239&lt;/source&gt;\n        &lt;destination&gt;SERIALNUMBER=CUIT
+        20267565393, CN=reingart2021&lt;/destination&gt;\n        &lt;uniqueId&gt;3628215498&lt;/uniqueId&gt;\n
+        \       &lt;generationTime&gt;2021-07-21T13:31:01.342-03:00&lt;/generationTime&gt;\n
+        \       &lt;expirationTime&gt;2021-07-22T01:31:01.342-03:00&lt;/expirationTime&gt;\n
+        \   &lt;/header&gt;\n    &lt;credentials&gt;\n        &lt;token&gt;PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMzA1OTEwOTAiIGdlbl90aW1lPSIxNjI2ODg1MDAxIiBleHBfdGltZT0iMTYyNjkyODI2MSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c3JlbWNhcm5lIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMjEiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=&lt;/token&gt;\n
+        \       &lt;sign&gt;SN2uE/FgWbw3vERf0WkEbtmpNup+q2BCyGkWbwFkeB+sQyllQTM9kDlruNZog/rx8ZkKz4p9lKe/LcxYx4tbCw/A1strEl7rW23pLBRDknlhOQtXC3elLU0W4aI5Aeej+SQCCLkNyVPRync/YgR5OnI/RKdOFzvHwbt8BBNbCkg=&lt;/sign&gt;\n
+        \   &lt;/credentials&gt;\n&lt;/loginTicketResponse&gt;\n</loginCmsReturn></loginCmsResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 16:31:01 GMT
+      Set-Cookie:
+      - TS01b14f84=0145b27a9742475d8174a088df0f5e2e77a205b9c926fe76d6ff20bf47bf0fdb8453c1c376;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCategoriaReceptorRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMzA1OTEwOTAiIGdlbl90aW1lPSIxNjI2ODg1MDAxIiBleHBfdGltZT0iMTYyNjkyODI2MSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c3JlbWNhcm5lIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMjEiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</token><sign>SN2uE/FgWbw3vERf0WkEbtmpNup+q2BCyGkWbwFkeB+sQyllQTM9kDlruNZog/rx8ZkKz4p9lKe/LcxYx4tbCw/A1strEl7rW23pLBRDknlhOQtXC3elLU0W4aI5Aeej+SQCCLkNyVPRync/YgR5OnI/RKdOFzvHwbt8BBNbCkg=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest></ser:consultarTiposCategoriaReceptorRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1352'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCategoriaReceptor"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        13:31:04</fecha></info></S:Header><S:Body><ns2:consultarTiposCategoriaReceptorResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarCategoriasReceptorReturn><arrayCategoriasReceptor><codigoDescripcionString><codigo>3</codigo><descripcion>Abastecedor</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8</codigo><descripcion>Carnicero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5</codigo><descripcion>Consignatario
+        C\xE1rnico</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6</codigo><descripcion>Consignatario
+        Directo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7</codigo><descripcion>C\xE1mara
+        de fr\xEDo/Dep\xF3sito/etc.</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>4</codigo><descripcion>Despostador</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>1</codigo><descripcion>Frigor\xEDfico/Establecimiento
+        Faenador</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9</codigo><descripcion>Restaurantes/parrillas,
+        y otros receptores finales</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2</codigo><descripcion>Usuario
+        Faena</descripcion></codigoDescripcionString></arrayCategoriasReceptor></consultarCategoriasReceptorReturn></ns2:consultarTiposCategoriaReceptorResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 16:31:04 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf59fb207a4f69998211a9303c9296e131b60100115d188898306c2720b5f81343;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+version: 1

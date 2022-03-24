@@ -1,0 +1,44 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wsltv/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarRetencionesTabacalerasReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyNjEwNzY2MDc3IiBnZW5fdGltZT0iMTYyNjk2NjA0MSIgZXhwX3RpbWU9IjE2MjcwMDkzMDEiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NsdHYiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>fUnQ4DhRMEKaa5ap8A+aqB2M6G7W9bhRI8Hqb86VHZgE6xbcv37LxpRS3uQsOUsNM6vBhyojkwT2nU0tUaa/hpuvPbAugj+cO7Jd/z24ay2YqVMTVGne9JARBw3ZIGwDloNXicNqpqo1LBGUoAgsJ/tTT+vL6mXKo1l2xlVu5oY=</sign><cuit>20267565393</cuit></auth></ser:ConsultarRetencionesTabacalerasReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1295'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wsltv/consultarRetencionesTabacaleras"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsltv/LtvService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:ConsultarRetencionesTabacalerasResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wsltv/\"><respuesta><retencion><codigo>11</codigo><descripcion>C\xE1mara
+        Tabacalera</descripcion></retencion><retencion><codigo>12</codigo><descripcion>Seguro
+        Granizo</descripcion></retencion><retencion><codigo>13</codigo><descripcion>Asociaci\xF3n
+        Mutual de Prod. Tabacaleros</descripcion></retencion><retencion><codigo>14</codigo><descripcion>Adelantos
+        de insumos</descripcion></retencion><retencion><codigo>15</codigo><descripcion>Otra</descripcion></retencion></respuesta></ns2:ConsultarRetencionesTabacalerasResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 15:14:23 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf028f1436105fe804d4079fb515506cbef80cd4e4ca982e47b47d4d85fc45266d;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

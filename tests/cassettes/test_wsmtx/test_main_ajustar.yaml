@@ -1,0 +1,81 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarUltimoComprobanteAutorizadoRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI5NzgyNDA5ODYiIGdlbl90aW1lPSIxNjI2OTQ4NzA5IiBleHBfdGltZT0iMTYyNjk5MTk2OSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c210eGNhIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMjEiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</token><sign>oZs4H67XvtRe4qOe5jOxptD6Oy2PUCgrnLGoy2VEfaXULG07oPDjMMIVCOdRRgbNmXAUbtlzRev5IezHq/+ZT4PuKOucx3qHXa7/k2UKM9zffbUFrCxjvXRVb/7zmgdrxkt/mWjM6URNXf+t9o5RsqSQQ20F0IJ7ppc2M/ZKsb4=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><consultaUltimoComprobanteAutorizadoRequest><codigoTipoComprobante>2</codigoTipoComprobante><numeroPuntoVenta>4000</numeroPuntoVenta></consultaUltimoComprobanteAutorizadoRequest></ser:consultarUltimoComprobanteAutorizadoRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1538'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/consultarUltimoComprobanteAutorizado"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns1:consultarUltimoComprobanteAutorizadoResponse
+        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><numeroComprobante>80</numeroComprobante></ns1:consultarUltimoComprobanteAutorizadoResponse></soapenv:Body></soapenv:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Thu, 22 Jul 2021 10:22:39 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf0bb8976f65a073e5c601d89b8b188c7c9d43f27f27b69998803a054526afba02;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:informarAjusteIVACAEARequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI5NzgyNDA5ODYiIGdlbl90aW1lPSIxNjI2OTQ4NzA5IiBleHBfdGltZT0iMTYyNjk5MTk2OSIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c210eGNhIiB1aWQ9IlNFUklBTE5VTUJFUj1DVUlUIDIwMjY3NTY1MzkzLCBDTj1yZWluZ2FydDIwMjEiIGF1dGhtZXRob2Q9ImNtcyIgcmVnbWV0aG9kPSIyMiI+CiAgICAgICAgICAgIDxyZWxhdGlvbnM+CiAgICAgICAgICAgICAgICA8cmVsYXRpb24ga2V5PSIyMDI2NzU2NTM5MyIgcmVsdHlwZT0iNCIvPgogICAgICAgICAgICA8L3JlbGF0aW9ucz4KICAgICAgICA8L2xvZ2luPgogICAgPC9vcGVyYXRpb24+Cjwvc3NvPgo=</token><sign>oZs4H67XvtRe4qOe5jOxptD6Oy2PUCgrnLGoy2VEfaXULG07oPDjMMIVCOdRRgbNmXAUbtlzRev5IezHq/+ZT4PuKOucx3qHXa7/k2UKM9zffbUFrCxjvXRVb/7zmgdrxkt/mWjM6URNXf+t9o5RsqSQQ20F0IJ7ppc2M/ZKsb4=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><comprobanteCAEARequest><codigoTipoComprobante>2</codigoTipoComprobante><numeroPuntoVenta>4000</numeroPuntoVenta><numeroComprobante>81</numeroComprobante><fechaEmision>2021-07-22</fechaEmision><codigoTipoAutorizacion>A</codigoTipoAutorizacion><codigoAutorizacion>24163778394093</codigoAutorizacion><codigoTipoDocumento>80</codigoTipoDocumento><numeroDocumento>30000000007</numeroDocumento><importeNoGravado>0.00</importeNoGravado><importeExento>0.00</importeExento><importeSubtotal>0.00</importeSubtotal><importeTotal>21.00</importeTotal><codigoMoneda>PES</codigoMoneda><cotizacionMoneda>1.000</cotizacionMoneda><observaciones>Observaciones
+      Comerciales, libre</observaciones><codigoConcepto>3</codigoConcepto><fechaServicioDesde>2021-07-22</fechaServicioDesde><fechaServicioHasta>2021-07-22</fechaServicioHasta><fechaVencimientoPago>2021-07-22</fechaVencimientoPago><arrayItems><item><unidadesMtx>1</unidadesMtx><codigoMtx>7790001001139</codigoMtx><descripcion>Descripcion
+      del producto P0001</descripcion><codigoUnidadMedida>7</codigoUnidadMedida><codigoCondicionIVA>5</codigoCondicionIVA><importeIVA>21.0</importeIVA><importeItem>21.0</importeItem></item></arrayItems><arraySubtotalesIVA><subtotalIVA><codigo>5</codigo><importe>21</importe></subtotalIVA></arraySubtotalesIVA></comprobanteCAEARequest></ser:informarAjusteIVACAEARequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2631'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/informarAjusteIVACAEA"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns1:informarAjusteIVACAEAResponse
+        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><resultado>R</resultado><fechaProceso>2021-07-22-03:00</fechaProceso><arrayErrores><codigoDescripcion><codigo>705</codigo><descripcion>El
+        CAEA no corresponde a un CAEA previamente otorgado</descripcion></codigoDescripcion></arrayErrores></ns1:informarAjusteIVACAEAResponse></soapenv:Body></soapenv:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Thu, 22 Jul 2021 10:22:41 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfb84105bda2bed74d7501be3d334df29b54d795e8c6ea60c274bee3fc0cdc33d5;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

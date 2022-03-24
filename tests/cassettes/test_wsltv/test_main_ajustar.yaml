@@ -1,0 +1,45 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://serviciosjava.afip.gob.ar/wsltv/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:AjustarLiquidacionReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMzU0Mjc0OTY1IiBnZW5fdGltZT0iMTYyNjk2MDQzNyIgZXhwX3RpbWU9IjE2MjcwMDM2OTciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NsdHYiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>KpUWW7iOXBZbtGu0L7lZiRWRpl1hNwROQWe//vumhc57snJXSPPMTUPc01rwu3HDF/3nB5/H6Dnh/RLcvmrvxmpxgdPdasxiKMNwlPpBtU2QwnDIU5EfOaXUClqZwSZMWNyaY7XmaXrYW9JfBQrvsOQHphxgxEL1BfpeK9Fx3Tc=</sign><cuit>20267565393</cuit></auth><solicitud><liquidacionAjuste><tipoComprobante>151</tipoComprobante><nroComprobante>13</nroComprobante><fechaAjusteLiquidacion>2015-12-31</fechaAjusteLiquidacion><puntoVenta>2958</puntoVenta><codDepositoAcopio>201</codDepositoAcopio><tipoAjuste>C</tipoAjuste><comprobanteAAjustar><tipoComprobante>151</tipoComprobante><puntoVenta>4521</puntoVenta><nroComprobante>12345678</nroComprobante></comprobanteAAjustar><cuitReceptor>222222222</cuitReceptor><iibbReceptor>2</iibbReceptor><fechaInicioActividad>2010-01-01</fechaInicioActividad></liquidacionAjuste><precioClase><claseTabaco>111</claseTabaco><totalKilos>41</totalKilos><totalFardos>1</totalFardos><precio>25</precio></precioClase><retencion><codRetencion>11</codRetencion><importe>20</importe></retencion><tributo><codigoTributo>99</codigoTributo><descripcion>Descripcion
+      otros tributos</descripcion><baseImponible>2</baseImponible><alicuota>2</alicuota><importe>10</importe></tributo></solicitud></ser:AjustarLiquidacionReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2220'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://serviciosjava.afip.gob.ar/wsltv/ajustarLiquidacion"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsltv/LtvService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Body><ns2:AjustarLiquidacionResp
+        xmlns:ns2=\"http://serviciosjava.afip.gob.ar/wsltv/\"><respuesta><errores><error><codigo>cvc-minInclusive-valid</codigo><descripcion>
+        El valor '222222222' no cumple con la restricci\xF3n minInclusive '10000000000'
+        para el tipo 'Cuit'.</descripcion></error><error><codigo>cvc-type.3.1.3</codigo><descripcion>
+        El valor '222222222' del elemento 'cuitReceptor' no es v\xE1lido.</descripcion></error><error><codigo>1004</codigo><descripcion>La
+        CUIT no registra alta en IVA.</descripcion></error></errores></respuesta></ns2:AjustarLiquidacionResp></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Thu, 22 Jul 2021 13:33:52 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfbfaa6694e1387190af051d8dcf6542ddcbf87602033d0a2ba2210739b6c1503a;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1
