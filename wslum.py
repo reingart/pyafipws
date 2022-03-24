@@ -907,7 +907,7 @@ def main():
             print("AppServerStatus", wslum.AppServerStatus)
             print("DbServerStatus", wslum.DbServerStatus)
             print("AuthServerStatus", wslum.AuthServerStatus)
-            #return
+            return
 
         if "--autorizar" in sys.argv:
 
