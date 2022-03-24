@@ -40,7 +40,7 @@ if dbf and hasattr(dbf, "encoding"):
 
 # definición del formato del archivo de intercambio:
 
-from formato_txt import (
+from .formato_txt import (
     A,
     N,
     I,
