@@ -87,7 +87,7 @@ ENCABEZADO = [
     ("fecha_serv_hasta", 8, A),  # opcional solo conceptos 2 y 3
     ("tipo_cbte", 3, N),
     ("punto_vta", 5, N),
-    ('fecha_hs_gen', 14, A),  # CAEA: yyyymmddhhmiss generaci¨®n p/ contingencia
+    ('fecha_hs_gen', 14, A),  # CAEA: yyyymmddhhmiss generacion p/ contingencia
 ]
 
 # DETALLE = [
