@@ -114,8 +114,9 @@ try:
 
         httplib2._build_ssl_context = _build_ssl_context_new
 
-except:
-    print("para soporte de WebClient debe instalar httplib2")
+except ImportError as mnfe:
+    if "httplib2" in str(mnfe):
+        print("para soporte de WebClient debe instalar httplib2")
 
 
 DEBUG = False
@@ -1131,9 +1132,11 @@ def get_install_dir():
 
     if hasattr(sys, "frozen"):
         # we are running as py2exe-packed executable
-        import pythoncom
-
-        pythoncom.frozen = 1
+        try:
+            import pythoncom
+            pythoncom.frozen = 1
+        except ImportError:
+            pass
         sys.argv[0] = sys.executable
 
     return os.path.dirname(os.path.abspath(basepath))
