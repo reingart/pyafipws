@@ -68,7 +68,7 @@ from pysimplesoap.client import SoapFault
 import utils
 
 # importo funciones compartidas:
-from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
+from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer, safe_console
 from utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf, leer_txt, grabar_txt, formato_txt, \
                   generar_csv, tabular
 
@@ -950,6 +950,8 @@ REGISTROS = {
 
 
 if __name__ == '__main__':
+    safe_console()
+
     if '--ayuda' in sys.argv:
         print LICENCIA
         print AYUDA
