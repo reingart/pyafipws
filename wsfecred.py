@@ -1041,10 +1041,10 @@ if __name__ == '__main__':
         if '--ctasctes' in sys.argv:
             try:
                 argv = dict(enumerate(sys.argv[sys.argv.index("--ctasctes"):]))
-                cuit_contraparte = argv.get(1)
+                cuit_contraparte = argv.get(1) or None
                 rol = argv.get(2, "Emisor")
-                fecha_desde = argv.get(3)
-                fecha_hasta = argv.get(4)
+                fecha_desde = argv.get(3) or None
+                fecha_hasta = argv.get(4) or None
                 fecha_tipo= argv.get(5, "Emision")
             except (IndexError, ValueError) as ex:
                 raise RuntimeError("Revise los parámetros: %s" % ex)
