@@ -17,7 +17,7 @@ del web service WSRemCarne versión 3.0 de AFIP (RG4256/18 y RG4303/18)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.03a"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v3.0
@@ -95,6 +95,7 @@ class WSRemCarne(BaseWS):
                         'ConsultarTiposCarne', 'ConsultarTiposCategoriaEmisor', 'ConsultarTiposCategoriaReceptor',
                         'ConsultarTiposComprobante', 'ConsultarTiposContingencia', 'ConsultarTiposEstado',
                         'ConsultarCodigosDomicilio', 'ConsultarGruposCarne', 'ConsultarPuntosEmision',
+                        'ConsultarReceptoresValidos',
                         'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
     _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
@@ -436,6 +437,19 @@ class WSRemCarne(BaseWS):
         return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in lista]
 
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarReceptoresValidos(self, cuit_titular, sep="||"):
+        "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
+        res = self.client.consultarReceptoresValidos(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit, },
+                            arrayReceptores=[{"receptores": {"cuitReceptor": cuit_titular}}],
+                            )
+        ret = res['consultarReceptoresValidosReturn']
+        self.Resultado = ret["resultado"]
+        return True
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"): 
@@ -672,6 +686,14 @@ if __name__ == '__main__':
             cuit = raw_input("Cuit Titular Domicilio: ")
             ret = wsremcarne.ConsultarCodigosDomicilio(cuit)
             print "\n".join(ret)
+
+        if '--receptores' in sys.argv:
+            try:
+                cuit = int(sys.argv[-1])
+            except:
+                cuit = raw_input("Cuit Receptor: ")
+            ret = wsremcarne.ConsultarReceptoresValidos(cuit)
+            print "Resultado:", wsremcarne.Resultado
 
         if wsremcarne.Errores or wsremcarne.ErroresFormato:
             print "Errores:", wsremcarne.Errores, wsremcarne.ErroresFormato
