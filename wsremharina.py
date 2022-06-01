@@ -17,7 +17,7 @@ del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.05d"
+__version__ = "1.06a"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -95,7 +95,7 @@ class WSRemHarina(BaseWS):
                         'AgregarReceptor', 'AgregarDepositario', 'AgregarTransportista',
                         'AgregarDatosAutorizacion', 'AgregarContingencia',
                         'ConsultarTiposMercaderia', 'ConsultarTiposEmbalaje', 'ConsultarTiposUnidades', 'ConsultarTiposComprobante',
-                        'ConsultarPaises',
+                        'ConsultarPaises', 'ConsultarReceptoresValidos',
                         'ConsultarTiposEstado', 'ConsultarTiposContingencia', 'ConsultarCodigosDomicilio', 'ConsultarPuntosEmision',
                         'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         ]
@@ -523,6 +523,19 @@ class WSRemHarina(BaseWS):
             return [("%s %%s %s %%s %s" % (sep, sep, sep)) %
                     (it['codigo'], it['descripcion']) for it in array]
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarReceptoresValidos(self, cuit_titular, sep="||"):
+        "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
+        res = self.client.consultarReceptoresValidos(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit, },
+                            arrayReceptores=[{"receptores": {"cuitReceptor": cuit_titular}}],
+                            )
+        ret = res['consultarReceptoresValidosReturn']
+        self.Resultado = ret["resultado"]
+        return True
+
 
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
@@ -789,6 +802,14 @@ if __name__ == '__main__':
         if '--puntos_emision' in sys.argv:
             ret = wsremharina.ConsultarPuntosEmision()
             print "\n".join(ret)
+
+        if '--receptores' in sys.argv:
+            try:
+                cuit = int(sys.argv[-1])
+            except:
+                cuit = raw_input("Cuit Receptor: ")
+            ret = wsremharina.ConsultarReceptoresValidos(cuit)
+            print "Resultado:", wsremharina.Resultado
 
         if wsremharina.Errores or wsremharina.ErroresFormato:
             print "Errores:", wsremharina.Errores, wsremharina.ErroresFormato
