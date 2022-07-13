@@ -19,7 +19,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "2.12a"
+__version__ = "2.13a"
 
 import hashlib, datetime, email, os, sys, time, traceback, warnings
 import unicodedata
@@ -286,7 +286,7 @@ class WSAA(BaseWS):
         return now > d
         
 
-    def Autenticar(self, service, crt, key, wsdl=None, proxy=None, wrapper=None, cacert=None, cache=None, debug=False):
+    def Autenticar(self, service, crt, key, wsdl=None, proxy=None, wrapper=None, cacert=None, cache=None, debug=False, timeout=30):
         "Método unificado para obtener el ticket de acceso (cacheado)"
 
         self.LanzarExcepciones = True
@@ -313,7 +313,7 @@ class WSAA(BaseWS):
                 cms = self.SignTRA(tra, crt, key)
                 # concectar con el servicio web:
                 if DEBUG: print "Conectando a WSAA..."
-                ok = self.Conectar(cache, wsdl, proxy, wrapper, cacert)
+                ok = self.Conectar(cache, wsdl, proxy, wrapper, cacert, timeout=timeout)
                 if not ok or self.Excepcion:
                     raise RuntimeError(u"Fallo la conexión: %s" % self.Excepcion)
                 # llamar al método remoto para solicitar el TA
