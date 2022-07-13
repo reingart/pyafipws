@@ -44,9 +44,8 @@ TYPELIB = False  # usar librería de tipos (TLB)
 LANZAR_EXCEPCIONES = False  # valor por defecto: True
 
 # WSDL = "https://www.sistemasagiles.com.ar/simulador/wsfev1/call/soap?WSDL=None"
-WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
+WSDL = "https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL"
 # WSDL = "file:///home/reingart/tmp/service.asmx.xml"
-
 
 class WSFEv1(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Version 1 - 2.13"
