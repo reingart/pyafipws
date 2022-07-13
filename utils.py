@@ -89,7 +89,7 @@ try:
     from pysimplesoap.client import SoapClient
     import platform
 
-    monkey_patch = httplib2._build_ssl_context.__module__ != "httplib2"
+    monkey_patch = httplib2._build_ssl_context.__module__ != "httplib2" or sys.version_info < (3, )
     needs_patch = platform.system() == 'Linux' or sys.version_info > (3, 10)
     if needs_patch and not monkey_patch:
         _build_ssl_context = httplib2._build_ssl_context
