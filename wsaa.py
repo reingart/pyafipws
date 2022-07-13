@@ -67,7 +67,7 @@ except ImportError:
     from base64 import b64encode
 
 # Constantes (si se usa el script de linea de comandos)
-WSDL = "https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl"  # El WSDL correspondiente al WSAA
+WSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"  # El WSDL correspondiente al WSAA
 CERT = "reingart.crt"  # El certificado X.509 obtenido de Seg. Inf.
 PRIVATEKEY = "reingart.key"  # La clave privada del certificado CERT
 PASSPHRASE = "xxxxxxx"  # La contraseña para firmar (si hay)
@@ -75,7 +75,7 @@ SERVICE = "wsfe"  # El nombre del web service al que se le pide el TA
 
 # WSAAURL: la URL para acceder al WSAA, verificar http/https y wsaa/wsaahomo
 # WSAAURL = "https://wsaa.afip.gov.ar/ws/services/LoginCms" # PRODUCCION!!!
-WSAAURL = "https://wsaa.afip.gov.ar/ws/services/LoginCms"  # homologacion (pruebas)
+WSAAURL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms"  # homologacion (pruebas)
 SOAP_ACTION = "http://ar.gov.afip.dif.facturaelectronica/"  # Revisar WSDL
 SOAP_NS = "http://wsaa.view.sua.dvadac.desein.afip.gov"  # Revisar WSDL
 
