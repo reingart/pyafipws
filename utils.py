@@ -81,34 +81,23 @@ except ImportError:
         print("para soporte de JSON debe instalar simplejson")
         json = None
 
+
 try:
     import httplib2
 
     # corregir temas de negociacion de SSL en algunas versiones de ubuntu:
-    import platform, distro
-
-    dist, ver, nick = (
-        distro.linux_distribution() if sys.version_info > (2, 6) else ("", "", "")
-    )
-    release, winver, csd, ptype = (
-        platform.win32_ver() if sys.version_info > (2, 6) else ("", "", "", "")
-    )
     from pysimplesoap.client import SoapClient
+    import platform
 
-    monkey_patch = httplib2._build_ssl_context.__module__ != "httplib2"
-    if dist:
-        needs_patch = (dist == "Ubuntu" and ver == "14.04") or (
-            dist == "Ubuntu" and ver >= "20.04"
-        )
-    elif release:
-        needs_patch = release in "XP"
-    else:
-        needs_patch = False
+    monkey_patch = sys.version_info < (3, ) or httplib2._build_ssl_context.__module__ != "httplib2"
+    needs_patch = platform.system() == 'Linux' or sys.version_info > (3, 10)
     if needs_patch and not monkey_patch:
         _build_ssl_context = httplib2._build_ssl_context
 
         def _build_ssl_context_new(*args, **kwargs):
             context = _build_ssl_context(*args, **kwargs)
+            # fix ssl.SSLError: [SSL: DH_KEY_TOO_SMALL] dh key too small
+            # alternative: context.set_ciphers("DEFAULT@SECLEVEL=1")
             context.set_ciphers("AES128-SHA")
             return context
 
