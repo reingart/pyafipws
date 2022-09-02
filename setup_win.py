@@ -31,24 +31,24 @@ HOMO = True
 
 # build a one-click-installer for windows:
 import py2exe
-from .nsis import build_installer, Target
+from pyafipws.nsis import build_installer, Target
 
 # modulos a compilar y empaquetar (comentar si no se desea incluir):
 
 #import pyafipws
 #import pyrece
-from . import wsaa
-from . import wsfev1, rece1, rg3685
+from pyafipws import wsaa
+#from pyafipws import wsfev1, rece1, rg3685
 #import wsfexv1, recex1
 #import wsbfev1, receb1
 #import wsmtx, recem
 #import wsct, recet
 #import wsfecred
 #import ws_sr_padron
-from . import pyfepdf
+#from pyafipws import pyfepdf
 #import pyemail
 #import pyi25
-from . import pyqr
+#from pyafipws import pyqr
 #import ws_sire
 #import wsctg
 #import wslpg
