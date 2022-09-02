@@ -27,7 +27,7 @@ __license__ = "LGPL-3.0-or-later"
 
 import os
 import sys
-from py2exe.build_exe import py2exe
+from py2exe.distutils_buildexe import py2exe
 
 
 nsi_base_script = r"""\
