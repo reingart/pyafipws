@@ -45,4 +45,5 @@ jobs:
         copy conf\rece.ini dist
     - name: Test with pytest
       run: |
-        dist\wsaa-cli.exe
+        cd dist
+        .\wsaa-cli.exe
