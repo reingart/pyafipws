@@ -190,19 +190,19 @@ class build_installer(py2exe):
         # First, let py2exe do it's work.
         py2exe.run(self)
 
-        lib_dir = self.lib_dir
+        ##lib_dir = self.lib_dir
         dist_dir = self.dist_dir
-        comserver_files = self.comserver_files
+        ##comserver_files = self.comserver_files
         metadata = self.distribution.metadata
 
         # create the Installer, using the files py2exe has created.
         script = NSISScript(
             metadata,
-            lib_dir,
+            ##lib_dir,
             dist_dir,
-            self.windows_exe_files,
-            self.lib_files,
-            comserver_files,
+            ##self.windows_exe_files,
+            ##self.lib_files,
+            ##comserver_files,
         )
         print("*** creating the nsis script***")
         script.create()
@@ -215,13 +215,13 @@ class NSISScript(object):
     def __init__(
         self,
         metadata,
-        lib_dir,
+        ##lib_dir,
         dist_dir,
         windows_exe_files=[],
         lib_files=[],
         comserver_files=[],
     ):
-        self.lib_dir = lib_dir
+        ##self.lib_dir = lib_dir
         self.dist_dir = dist_dir
         if not self.dist_dir[-1] in "\\/":
             self.dist_dir += "\\"
