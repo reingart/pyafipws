@@ -38,9 +38,11 @@ QiOiJFIiwiY29kQXV0Ijo3MDQxNzA1NDM2NzQ3Nn0=""".replace(
     "\n", ""
 )
 
+TYPELIB = False
+
 
 class PyQR(object):
-    "Interfaz para generar Codigo QR de Factura Electrï¿½nica"
+    "Interfaz para generar Codigo QR de Factura Electrónica"
     _public_methods_ = [
         "GenerarImagen",
         "CrearArchivo",
