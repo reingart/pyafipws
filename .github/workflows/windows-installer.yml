@@ -38,9 +38,8 @@ jobs:
         python setup_win.py py2exe
     - name: Download certificate and private key
       run: |
-        wget  "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -O reingart2019.zip
-        unzip reingart2019.zip
-        copy reingart.* dist
+        Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -OutFile reingart2019.zip
+        Expand-Archive reingart2019.zip -DestinationPath dist\
     - name: Copy rece.ini file
       run: |
         copy conf\rece.ini dist
