@@ -128,6 +128,9 @@ if 'pyi25' in globals() or 'pyfepdf' in globals() or 'pyqr' in globals():
 
 includes.append("dbf")
 
+# cryptography:
+includes.append("cffi")
+
 # optional modules:
 # required modules for shelve support (not detected by py2exe by default):
 for mod in ['socks', 'dbhash', 'gdbm', 'dbm', 'dumbdbm', 'anydbm']:
