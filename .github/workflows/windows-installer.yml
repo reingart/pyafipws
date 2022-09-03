@@ -25,6 +25,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools wheel
         python -m pip install --upgrade cachetools pefile
+        pip install py2exe==0.11.1.1
         pip install -r requirements.txt
     - name: Install package
       run: |
