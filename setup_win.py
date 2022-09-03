@@ -185,37 +185,6 @@ kwargs['windows'] = []
 import platform
 __version__ += "-" + platform.architecture()[0]
 
-# legacy webservices & utilities:
-if 'pyafipws' in globals():
-    kwargs['com_server'] += ["pyafipws"]
-    kwargs['console'] += ['rece.py', 'receb.py', 'recex.py', 'wsaa.py', 'wsfex.py', 'wsbfe.py']
-
-# visual application
-if 'pyrece' in globals():
-    # find pythoncard resources, to add as 'data_files'
-    pycard_resources=[]
-    for filename in os.listdir('.'):
-        if filename.find('.rsrc.')>-1:
-            pycard_resources+=[filename]
-
-    kwargs['console'] += [
-        Target(module=pyrece, script="pyrece.py", dest_base="pyrece_consola"),
-        ]
-    kwargs['windows'] += [
-        Target(module=pyrece, script='pyrece.py'),
-        ]
-    data_files += [
-        WX_DLL, 
-        ("plantillas", ["plantillas/logo.png", "plantillas/factura.csv", ]),
-        ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", "datos/facturas.xlsx", ])
-        ]
-    if os.path.exists("logo-pyafipws.png"):
-        data_files.append((".", ['logo-pyafipws.png', 'logo-sistemasagiles.png']))
-    data_files.append((".", pycard_resources))
-
-    __version__ += "+pyrece_" + pyrece.__version__
-    HOMO &= pyrece.HOMO
-
 
 # new webservices:
 if 'wsaa' in globals():
@@ -371,11 +340,6 @@ if 'pyqr' in globals():
     data_files += [
         ]
     __version__ += "+pyqr_" + pyqr.__version__
-
-if 'designer' in globals():
-    kwargs['windows'] += [
-        Target(module=designer, script="designer.py", dest_base="designer"),
-        ]
         
 if 'wsctg' in globals():
     kwargs['com_server'] += [
@@ -632,13 +596,9 @@ if 'sired' in globals():
 kwargs['cmdclass'] = {"py2exe": build_installer}
 
 # add certification authorities (newer versions of httplib2)
-try:
-    import httplib2
-    if httplib2.__version__ >= "0.9":
-        data_files += [("httplib2", 
-            [os.path.join(os.path.dirname(httplib2.__file__), "cacerts.txt")])]
-except ImportError:
-    pass
+import httplib2
+data_files += [("httplib2",
+    [os.path.join(os.path.dirname(httplib2.__file__), "cacerts.txt")])]
 
 # add certification authorities (newer versions of httplib2)
 try:
