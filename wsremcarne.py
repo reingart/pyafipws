@@ -904,7 +904,7 @@ def main():
             except:
                 cuit = raw_input("Cuit Receptor: ")
             ret = wsremcarne.ConsultarReceptoresValidos(cuit)
-            print "Resultado:", wsremcarne.Resultado
+            print("Resultado:", wsremcarne.Resultado)
 
         if wsremcarne.Errores or wsremcarne.ErroresFormato:
             print("Errores:", wsremcarne.Errores, wsremcarne.ErroresFormato)

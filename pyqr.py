@@ -154,7 +154,7 @@ def main():
         if TYPELIB:
             if '--register' in sys.argv:
                 tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "pyqr.tlb"))
-                print "Registering %s" % (tlb,)
+                print("Registering %s" % (tlb, ))
                 tli=pythoncom.LoadTypeLib(tlb)
                 pythoncom.RegisterTypeLib(tli, tlb)
             elif '--unregister' in sys.argv:
@@ -164,7 +164,7 @@ def main():
                                             k._typelib_version_[1],
                                             0,
                                             pythoncom.SYS_WIN32)
-                print "Unregistered typelib"
+                print("Unregistered typelib")
         import win32com.server.register
 
         win32com.server.register.UseCommandLine(PyQR)

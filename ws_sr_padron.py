@@ -351,8 +351,8 @@ def main():
     wsaa = WSAA()
     ta = wsaa.Autenticar(service, crt, key, url_wsaa)
     if DEBUG:
-        print "WSAA.Excepcion:", wsaa.Excepcion
-        print "WSAA.Traceback:", wsaa.Traceback
+        print("WSAA.Excepcion:", wsaa.Excepcion)
+        print("WSAA.Traceback:", wsaa.Traceback)
 
     padron.SetTicketAcceso(ta)
     padron.Cuit = cuit
