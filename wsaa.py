@@ -345,10 +345,12 @@ class WSAA(BaseWS):
         self.x509_req = x509.CertificateSigningRequestBuilder()
 
         # normalizar encoding (reemplazar acentos, eñe, etc.)
-        if isinstance(empresa, str):
-            empresa = unicodedata.normalize("NFKD", empresa).encode("ASCII", "ignore")
-        if isinstance(nombre, str):
-            nombre = unicodedata.normalize("NFKD", nombre).encode("ASCII", "ignore")
+        try:
+            empresa = unicodedata.normalize("NFKD", empresa)
+            nombre = unicodedata.normalize("NFKD", nombre)
+        except TypeError as ex:
+            # catch TypeError: normalize() argument 2 must be unicode, not str in python2
+            warnings.warn(str(ex))
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
         # sign the request with the previously created key (CrearClavePrivada)
