@@ -281,25 +281,25 @@ def leer_archivo(nombre_archivo):
 
 if __name__ == '__main__':
     if '--ayuda' in sys.argv:
-        print LICENCIA
-        print AYUDA
+        print(LICENCIA)
+        print(AYUDA)
         sys.exit(0)
 
     if '--formato' in sys.argv:
-        print "Formato:"
+        print("Formato:")
         for msg, formato in sorted(FORMATOS.items(), key=lambda x: TIPO_REGISTROS_REV[x[0]]):
             tipo_reg = TIPO_REGISTROS_REV[msg]
             comienzo = 1
-            print "=== %s ===" % msg
-            print "|| Campo %-39s || Posición || Longitud || Tipo %7s || Dec. || Valor ||" % (" ", " ")
+            print("=== %s ===" % msg)
+            print("|| Campo %-39s || Posición || Longitud || Tipo %7s || Dec. || Valor ||" % (" ", " "))
             for fmt in formato:
                 clave, longitud, tipo = fmt[0:3]
                 dec = len(fmt)>3 and fmt[3] or (tipo=='I' and '2' or '')
-                print "|| %-45s || %8d || %8d || %-12s || %-4s || %-5s ||" % (
+                print("|| %-45s || %8d || %8d || %-12s || %-4s || %-5s ||" % (
                     clave, comienzo, longitud, tipo,
                     ("%s" % dec) if tipo == I else "",
                     ("%s" % tipo_reg) if clave == "tipo_reg" else "",
-                )
+                ))
                 comienzo += longitud
         sys.exit(0)
 
@@ -310,7 +310,7 @@ if __name__ == '__main__':
         for arg in sys.argv[1:]:
             if arg.startswith("--"):
                 break
-            print "Usando configuración:", arg
+            print("Usando configuración:", arg)
             CONFIG_FILE = arg
 
         config = SafeConfigParser()
@@ -332,7 +332,7 @@ if __name__ == '__main__':
 
         if config.has_section('DBF'):
             conf_dbf = dict(config.items('DBF'))
-            if DEBUG: print "conf_dbf", conf_dbf
+            if DEBUG: print("conf_dbf", conf_dbf)
         else:
             conf_dbf = {}
 
@@ -340,10 +340,10 @@ if __name__ == '__main__':
         XML = '--xml' in sys.argv
 
         if DEBUG or "--version" in sys.argv:
-            print "WSCPE cliente:", __version__, "componente:", WSCPE.Version
-            print "Usando Configuración:"
-            print "wsaa_url:", wsaa_url
-            print "wscpe_url:", wscpe_url
+            print("WSCPE cliente:", __version__, "componente:", WSCPE.Version)
+            print("Usando Configuración:")
+            print("wsaa_url:", wsaa_url)
+            print("wscpe_url:", wscpe_url)
 
         # obteniendo el TA
         from wsaa import WSAA
@@ -362,28 +362,28 @@ if __name__ == '__main__':
         
         if '--dummy' in sys.argv:
             ret = wscpe.Dummy()
-            print "AppServerStatus", wscpe.AppServerStatus
-            print "DbServerStatus", wscpe.DbServerStatus
-            print "AuthServerStatus", wscpe.AuthServerStatus
+            print("AppServerStatus", wscpe.AppServerStatus)
+            print("DbServerStatus", wscpe.DbServerStatus)
+            print("AuthServerStatus", wscpe.AuthServerStatus)
             sys.exit(0)
 
         if '--ult' in sys.argv:
             try:
                 sucursal = int(sys.argv[sys.argv.index("--ult") + 1])
-            except IndexError, ValueError:
+            except (IndexError, ValueError):
                 sucursal = 1
             try:
                 tipo_cpe = int(sys.argv[sys.argv.index("--ult") + 2])
-            except IndexError, ValueError:
+            except (IndexError, ValueError):
                 tipo_cpe = 74
             rec = {}
-            print "Consultando ultimo cpe sucursal=%s tipo_cpe=%s" % (sucursal, tipo_cpe)
+            print("Consultando ultimo cpe sucursal=%s tipo_cpe=%s" % (sucursal, tipo_cpe))
             ok = wscpe.ConsultarUltNroOrden(tipo_cpe=tipo_cpe, sucursal=sucursal)
             if wscpe.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wscpe.Excepcion
-                if DEBUG: print >> sys.stderr, wscpe.Traceback
-            print "Ultimo Nro de CPE", wscpe.NroOrden
-            print "Errores:", wscpe.Errores
+                print("EXCEPCION:", wscpe.Excepcion, file=sys.stderr)
+                if DEBUG: print(wscpe.Traceback, sys.stderr)
+            print("Ultimo Nro de CPE", wscpe.NroOrden)
+            print("Errores:", wscpe.Errores)
 
         if '--consultar' in sys.argv:
             rec = {}
@@ -392,7 +392,7 @@ if __name__ == '__main__':
                 sucursal = sys.argv[sys.argv.index("--consultar") + 2]
                 tipo_cpe = sys.argv[sys.argv.index("--consultar") + 3]
                 nro_ctg = sys.argv[sys.argv.index("--consultar") + 4]
-            except IndexError, ValueError:
+            except (IndexError, ValueError):
                 tipo_cpe = raw_input("Tipo de CPE [74]:") or 74
                 sucursal = raw_input("Sucursal [1]:") or 1
                 nro_orden = raw_input("Nro de orden:") or 1
@@ -402,10 +402,10 @@ if __name__ == '__main__':
             else:
                 ok = wscpe.ConsultarCPEAutomotor(tipo_cpe=tipo_cpe, sucursal=sucursal, nro_orden=nro_orden, cuit_solicitante=wscpe.Cuit)
             if wscpe.Excepcion:
-                print >> sys.stderr, "EXCEPCION:", wscpe.Excepcion
-                if DEBUG: print >> sys.stderr, wscpe.Traceback
-            print "Nro de CTG", wscpe.NroCTG
-            print "Errores:", wscpe.Errores
+                print ("EXCEPCION:", wscpe.Excepcion, file=sys.stderr)
+                if DEBUG: print(wscpe.Traceback, file=sys.stderr)
+            print("Nro de CTG", wscpe.NroCTG)
+            print("Errores:", wscpe.Errores)
             if DEBUG:
                 import pprint
                 pprint.pprint(wscpe.cpe)
@@ -619,18 +619,18 @@ if __name__ == '__main__':
                 ok = wscpe.DesvioCPEFerroviaria()
 
         if ok is not None:
-            print "Resultado: ", wscpe.Resultado
-            print "Numero CTG: ", wscpe.NroCTG
-            print "Numero Orden: ", wscpe.NroOrden
-            print "Fecha Emision", wscpe.FechaEmision
-            print "Fecha Inicio Estado", wscpe.FechaInicioEstado
-            print "Fecha Vencimiento", wscpe.FechaVencimiento
-            print "Estado: ", wscpe.Estado
+            print("Resultado: ", wscpe.Resultado)
+            print("Numero CTG: ", wscpe.NroCTG)
+            print("Numero Orden: ", wscpe.NroOrden)
+            print("Fecha Emision", wscpe.FechaEmision)
+            print("Fecha Inicio Estado", wscpe.FechaInicioEstado)
+            print("Fecha Vencimiento", wscpe.FechaVencimiento)
+            print("Estado: ", wscpe.Estado)
             obs = wscpe.Observaciones.strip() if wscpe.Observaciones else ""
             obs = obs.replace("\n", "\t").replace("\r", "\t")
-            print "Observaciones:", obs
-            print "Tarifa Referencia:", wscpe.TarifaReferencia
-            print "Evento:", wscpe.Evento
+            print("Observaciones:", obs)
+            print("Tarifa Referencia:", wscpe.TarifaReferencia)
+            print("Evento:", wscpe.Evento)
             dic['nro_ctg'] = wscpe.NroCTG
 
             dic['resultado'] = wscpe.Resultado
@@ -670,16 +670,16 @@ if __name__ == '__main__':
             print("\n".join(ret))
 
         if wscpe.Errores:
-            print "Errores:", wscpe.Errores
+            print("Errores:", wscpe.Errores)
 
-        print "hecho."
+        print("hecho.")
         
-    except SoapFault,e:
-        print "Falla SOAP:", e.faultcode, e.faultstring.encode("ascii","ignore")
+    except SoapFault as e:
+        print("Falla SOAP:", e.faultcode, e.faultstring)
         sys.exit(3)
-    except Exception, e:
+    except Exception as e:
         ex = utils.exception_info()
-        print ex
+        print(ex)
         if DEBUG:
             raise
         sys.exit(5)

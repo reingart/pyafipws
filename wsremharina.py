@@ -1038,7 +1038,7 @@ def main():
             except:
                 cuit = raw_input("Cuit Receptor: ")
             ret = wsremharina.ConsultarReceptoresValidos(cuit)
-            print "Resultado:", wsremharina.Resultado
+            print("Resultado:", wsremharina.Resultado)
 
         if wsremharina.Errores or wsremharina.ErroresFormato:
             print("Errores:", wsremharina.Errores, wsremharina.ErroresFormato)
