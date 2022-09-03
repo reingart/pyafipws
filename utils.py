@@ -678,6 +678,8 @@ def leer(linea, formato, expandir_fechas=False):
         try:
             if chr(8) in valor or chr(127) in valor or chr(255) in valor:
                 valor = None  # nulo
+            elif (valor == "" or valor == "NULL") and tipo in (N, I):
+                valor = None
             elif tipo == N:
                 if valor:
                     valor = int(valor)
@@ -710,6 +712,9 @@ def leer(linea, formato, expandir_fechas=False):
                     valor = None
             else:
                 valor = valor.decode("ascii", "ignore")
+                # campos string completos con ~ son convertidos a nulo:
+                if valor and valor == "~" * len(valor):
+                    valor = None
             if not valor and clave in dic and len(linea) <= comienzo:
                 pass  # ignorar - compatibilidad hacia atrás (cambios tamaño)
             else:
@@ -737,7 +742,8 @@ def escribir(dic, formato, contraer_fechas=False):
             if isinstance(s, str):
                 s = s.encode("latin1")
             if s is None:
-                valor = ""
+                valor = chr(127)
+                tipo = None
             else:
                 valor = str(s)
             # reemplazo saltos de linea por tabulaci{on vertical
@@ -823,9 +829,10 @@ def grabar_txt(formatos, registros, nombre_archivo, dicts, agrega=False):
             dic["tipo_reg"] = "0"
             archivo.write(escribir(dic, encabezado))
             for tipo_reg, estructura in sorted(registros.items()):
-                for d in dic.get(estructura, []):
-                    d["tipo_reg"] = tipo_reg
-                    archivo.write(escribir(d, formatos[estructura]))
+                for it in dic.get(estructura, {}):
+                    for d in ([it] if isinstance(it, dict) else it):
+                        d["tipo_reg"] = tipo_reg
+                        archivo.write(escribir(d, formatos[estructura]))
 
 
 # Funciones para manejo de Panillas CSV y Tablas

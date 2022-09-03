@@ -23,9 +23,9 @@ standard_library.install_aliases()
 from builtins import next
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017-2021 Mariano Reingart"
-__license__ = "LGPL-3.0-or-later"
-__version__ = "3.03e"
+__copyright__ = "Copyright (C) 2017 Mariano Reingart"
+__license__ = "GPL 3.0"
+__version__ = "3.04e"
 
 import csv
 import datetime
@@ -348,7 +348,11 @@ def main():
     from .wsaa import WSAA
 
     cache = ""
-    ta = WSAA().Autenticar(service, crt, key, url_wsaa)
+    wsaa = WSAA()
+    ta = wsaa.Autenticar(service, crt, key, url_wsaa)
+    if DEBUG:
+        print "WSAA.Excepcion:", wsaa.Excepcion
+        print "WSAA.Traceback:", wsaa.Traceback
 
     padron.SetTicketAcceso(ta)
     padron.Cuit = cuit

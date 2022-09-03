@@ -1,0 +1,50 @@
+//
+// pyqr.idl: source PyAfipWs PyQR COM Type Library 
+// influenced by msdn example2.idl and pythoncom's pippo.idl
+//
+// Use "print pythoncom.CreateGuid()" to make a new one.
+
+import "unknwn.idl","oaidl.idl"; 
+
+[
+	uuid(68A2E877-5020-4650-ABA1-2BEA6A27D35F),
+	helpstring("PyQR interface"),
+	pointer_default(unique),
+	dual,
+	object
+	//oleautomation
+] 
+interface IPyQR : IDispatch
+{
+	[id(1)] HRESULT CrearArchivo(
+					[out, retval] BSTR * archivo);
+	[id(2)] HRESULT GenerarImagen([in] BSTR ver, [in] BSTR fecha, [in] BSTR cuit,
+                    [in] BSTR pto_vta, [in] BSTR tipo_cmp, [in] BSTR nro_cmp,
+                    [in] BSTR importe, [in] BSTR moneda, [in] BSTR ctz,
+                    [in] BSTR tipo_doc_rec, [in] BSTR nro_doc_rec,
+                    [in] BSTR tipo_cod_aut, [in] BSTR cod_aut,
+					[out, retval] BSTR * url);
+
+	[propget, id(3)] HRESULT Version( [out, retval] BSTR *  sign); 
+	[propget, id(4)] HRESULT InstallDir( [out, retval] BSTR *  val); 
+	[propget, id(5)] HRESULT Traceback( [out, retval] BSTR *  val); 
+	[propget, id(6)] HRESULT Excepcion( [out, retval] BSTR *  val); 
+	[propput, id(7)] HRESULT LanzarExcepciones( [in] BOOL * val); 
+};  //end interface def
+
+[
+	uuid(418C11BF-1051-4B51-95CE-638DC3686634),
+	version(1.5),
+	helpstring("PyAfipWs PyQR 1.05b Type Library"),
+] library PyAfipWsPyQRLib
+{
+	importlib("stdole32.tlb");
+
+	[
+		uuid(B176B1CE-E7B5-4BB2-ADEC-9EB9F249DF07),
+		helpstring("PyQR Component Class")
+	] coclass PyQR
+	{
+		[default]interface IPyQR;
+	}
+}; //end library def
