@@ -7,7 +7,7 @@ cryptography==3.4.7; python_version > '3'
 fpdf>=1.7.2
 dbf>=0.88.019
 Pillow>=2.0.0
-#pywin32==219
+pywin32==304; sys_platform == "win32"
 tabulate==0.8.5
 certifi>=2020.4.5.1
 qrcode==6.1
