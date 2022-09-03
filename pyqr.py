@@ -18,7 +18,7 @@ from builtins import object
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2020-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.04b"
+__version__ = "3.05b"
 
 import base64
 import json
@@ -38,9 +38,11 @@ QiOiJFIiwiY29kQXV0Ijo3MDQxNzA1NDM2NzQ3Nn0=""".replace(
     "\n", ""
 )
 
+TYPELIB = False
+
 
 class PyQR(object):
-    "Interfaz para generar Codigo QR de Factura Electrï¿½nica"
+    "Interfaz para generar Codigo QR de Factura Electrónica"
     _public_methods_ = [
         "GenerarImagen",
         "CrearArchivo",
@@ -52,6 +54,7 @@ class PyQR(object):
         "URL",
         "Archivo",
         "Extension",
+        "InstallDir",
         "qr_ver",
         "box_size",
         "border",
@@ -59,7 +62,12 @@ class PyQR(object):
     ]
 
     _reg_progid_ = "PyQR"
-    _reg_clsid_ = "{0868A2B6-2DC7-478D-8884-A10E92C588DE}"
+    _reg_clsid_ = "{B176B1CE-E7B5-4BB2-ADEC-9EB9F249DF07}"
+
+    if TYPELIB:
+        _typelib_guid_ = '{418C11BF-1051-4B51-95CE-638DC3686634}'
+        _typelib_version_ = 1, 5
+        _com_interfaces_ = ['IPyQR']
 
     URL = "https://www.afip.gob.ar/fe/qr/?p=%s"
     Archivo = "qr.png"
@@ -138,9 +146,27 @@ class PyQR(object):
         return url
 
 
+from .utils import get_install_dir
+INSTALL_DIR = PyQR.InstallDir = get_install_dir()
+
+
 def main():
-    
     if "--register" in sys.argv or "--unregister" in sys.argv:
+        import pythoncom
+        if TYPELIB:
+            if '--register' in sys.argv:
+                tlb = os.path.abspath(os.path.join(INSTALL_DIR, "typelib", "pyqr.tlb"))
+                print("Registering %s" % (tlb, ))
+                tli=pythoncom.LoadTypeLib(tlb)
+                pythoncom.RegisterTypeLib(tli, tlb)
+            elif '--unregister' in sys.argv:
+                k = PyQR
+                pythoncom.UnRegisterTypeLib(k._typelib_guid_,
+                                            k._typelib_version_[0],
+                                            k._typelib_version_[1],
+                                            0,
+                                            pythoncom.SYS_WIN32)
+                print("Unregistered typelib")
         import win32com.server.register
 
         win32com.server.register.UseCommandLine(PyQR)

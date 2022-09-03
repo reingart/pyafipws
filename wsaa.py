@@ -19,13 +19,11 @@ from __future__ import unicode_literals
 # Definir WSDL, CERT, PRIVATEKEY, PASSPHRASE, SERVICE, WSAAURL
 # Devuelve TA.xml (ticket de autorización de WSAA)
 
-from builtins import input
-from builtins import str
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.11c"
+__version__ = "3.13a"
 
 import datetime
 import email
@@ -269,12 +267,12 @@ class WSAA(BaseWS):
     ]
     _readonly_attrs_ = _public_attrs_[:-1]
     _reg_progid_ = "WSAA"
-    _reg_clsid_ = "{6268820C-8900-4AE9-8A2D-F0A1EBD4CAC5}"
+    _reg_clsid_ = "{51342E57-9681-4610-AF2B-686267470930}"
 
     if TYPELIB:
-        _typelib_guid_ = "{30E9C94B-7385-4534-9A80-DF50FD169253}"
-        _typelib_version_ = 2, 11
-        _com_interfaces_ = ["IWSAA"]
+        _typelib_guid_ = '{6E4B43FD-0ABB-4627-AA4E-2AD08BD3D212}'
+        _typelib_version_ = 2, 12
+        _com_interfaces_ = ['IWSAA']
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -347,10 +345,12 @@ class WSAA(BaseWS):
         self.x509_req = x509.CertificateSigningRequestBuilder()
 
         # normalizar encoding (reemplazar acentos, eñe, etc.)
-        if isinstance(empresa, str):
-            empresa = unicodedata.normalize("NFKD", empresa).encode("ASCII", "ignore")
-        if isinstance(nombre, str):
-            nombre = unicodedata.normalize("NFKD", nombre).encode("ASCII", "ignore")
+        try:
+            empresa = unicodedata.normalize("NFKD", empresa)
+            nombre = unicodedata.normalize("NFKD", nombre)
+        except TypeError as ex:
+            # catch TypeError: normalize() argument 2 must be unicode, not str in python2
+            warnings.warn(str(ex))
 
         # subjet: C=AR/O=[empresa]/CN=[nombre]/serialNumber=CUIT [nro_cuit]
         # sign the request with the previously created key (CrearClavePrivada)
@@ -424,6 +424,7 @@ class WSAA(BaseWS):
         cacert=None,
         cache=None,
         debug=False,
+        timeout=30,
     ):
         "Método unificado para obtener el ticket de acceso (cacheado)"
 
@@ -460,7 +461,7 @@ class WSAA(BaseWS):
                 # concectar con el servicio web:
                 if DEBUG:
                     print("Conectando a WSAA...")
-                ok = self.Conectar(cache, wsdl, proxy, wrapper, cacert)
+                ok = self.Conectar(cache, wsdl, proxy, wrapper, cacert, timeout=timeout)
                 if not ok or self.Excepcion:
                     raise RuntimeError(u"Fallo la conexión: %s" % self.Excepcion)
                 # llamar al método remoto para solicitar el TA

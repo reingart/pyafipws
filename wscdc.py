@@ -410,7 +410,7 @@ def main():
     from .wsaa import WSAA
 
     wsaa = WSAA()
-    ta = wsaa.Autenticar("wscdc", crt, key, url_wsaa)
+    ta = wsaa.Autenticar("wscdc", crt, key, url_wsaa, proxy=proxy_dict)
     if not ta:
         sys.exit("Imposible autenticar con WSAA: %s" % wsaa.Excepcion)
     wscdc.SetTicketAcceso(ta)
