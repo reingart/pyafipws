@@ -37,7 +37,7 @@ import datetime
 import decimal
 import os
 import sys
-from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from pyafipws.utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False  # solo homologación
 TYPELIB = False  # usar librería de tipos (TLB)
@@ -1303,7 +1303,7 @@ def main():
         return
 
     # obteniendo el TA para pruebas
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", debug=True)
     wsfev1.SetTicketAcceso(ta)

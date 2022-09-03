@@ -37,7 +37,7 @@ import unicodedata
 import warnings
 
 from pysimplesoap.client import SimpleXMLElement
-from .utils import (
+from pyafipws.utils import (
     inicializar_y_capturar_excepciones,
     BaseWS,
     get_install_dir,
