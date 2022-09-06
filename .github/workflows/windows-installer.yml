@@ -59,14 +59,13 @@ jobs:
     - name: Download certificate and private key
       run: |
         Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -OutFile reingart2019.zip
-        Expand-Archive reingart2019.zip -DestinationPath dist\
+        Expand-Archive reingart2019.zip -DestinationPath .
     - name: Copy rece.ini file
       run: |
-        copy conf\rece.ini dist
+        copy conf\rece.ini .
     - name: Test WSAA executables
       continue-on-error: true      # TODO: fix ns1:coe.alreadyAuthenticated
       run: |
-        cd dist
         .\wsaa-cli.exe
 
   pre-release:
