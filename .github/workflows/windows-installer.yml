@@ -60,6 +60,7 @@ jobs:
 
   pre-release:
     name: "Pre Release"
+    needs: build
     runs-on: "ubuntu-latest"
 
     steps:
