@@ -78,8 +78,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
-          path: artifacts
-
+          path: dist
+      - name: Create ZIP archive
+        run: |
+          zip dist.zip -r dist
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -87,4 +89,4 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            artifacts
+            dist.zip
