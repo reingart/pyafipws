@@ -268,6 +268,7 @@ class WSAA(BaseWS):
     _readonly_attrs_ = _public_attrs_[:-1]
     _reg_progid_ = "WSAA"
     _reg_clsid_ = "{51342E57-9681-4610-AF2B-686267470930}"
+    _reg_class_spec_ = "pyafipws.wsaa.WSAA"
 
     if TYPELIB:
         _typelib_guid_ = '{6E4B43FD-0ABB-4627-AA4E-2AD08BD3D212}'
@@ -547,7 +548,7 @@ def main():
         # consultar el padrón online de AFIP si no se especificó razón social:
         empresa = len(args) > 3 and args[3] or ""
         if not empresa:
-            from .padron import PadronAFIP
+            from pyafipws.padron import PadronAFIP
 
             padron = PadronAFIP()
             ok = padron.Consultar(cuit)

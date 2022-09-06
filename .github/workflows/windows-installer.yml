@@ -63,10 +63,16 @@ jobs:
     - name: Copy rece.ini file
       run: |
         copy conf\rece.ini .
-    - name: Test WSAA executables
+    - name: Test WSAA command line interface
       continue-on-error: true      # TODO: fix ns1:coe.alreadyAuthenticated
       run: |
         .\wsaa-cli.exe
+    - name: Test WSAA COM server automation
+      continue-on-error: true      # TODO: fix ns1:coe.alreadyAuthenticated
+      run: |
+        .\wsaa.exe --register
+        pip install pywin32
+        python -c "from win32com.client import Dispatch; wsaa = Dispatch("WSAA"); print(wsaa.Version)"
 
   pre-release:
     name: "Pre Release"
