@@ -191,26 +191,22 @@ __version__ += "-" + platform.architecture()[0]
 
 # new webservices:
 if 'wsaa' in globals():
-    kwargs['com_server'] += [Target(module=wsaa, modules='wsaa', create_exe=not wsaa.TYPELIB, create_dll=not wsaa.TYPELIB)]
+    kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="pyafipws.wsaa")]
     kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")]
     if wsaa.TYPELIB:
-        kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
         data_files.append(("typelib", ["typelib/wsaa.tlb"]))
         
     __version__ += "+wsaa_" + wsaa.__version__
     HOMO &= wsaa.HOMO
 
 if 'wsfev1' in globals():
-    kwargs['com_server'] += [
-        Target(module=wsfev1, modules="wsfev1", create_exe=not wsfev1.TYPELIB, create_dll=not wsfev1.TYPELIB)
-        ]
+    kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="pyafipws.wsfev1")]
     kwargs['console'] += [
         Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
         Target(module=rece1, script='rece1.py'), 
         #Target(module=rg3685, script='rg3685.py'), 
         ]             
     if wsfev1.TYPELIB:
-        kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
         data_files.append(("typelib", ["typelib/wsfev1.tlb"]))
     __version__ += "+wsfev1_" + wsfev1.__version__
     HOMO &= wsfev1.HOMO
