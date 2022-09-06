@@ -131,6 +131,9 @@ includes.append("dbf")
 # cryptography:
 includes.append("cffi")
 
+# win32 COM
+includes.extend(["win32com.server.policy"])
+
 # optional modules:
 # required modules for shelve support (not detected by py2exe by default):
 for mod in ['socks', 'dbhash', 'gdbm', 'dbm', 'dumbdbm', 'anydbm']:
