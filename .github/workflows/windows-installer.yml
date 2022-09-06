@@ -87,6 +87,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "beta"
           prerelease: true
-          title: "Development Build"
+          title: "Development Build #${{ github.event.number }} - ${{ github.sha }}"
           files: |
             dist.zip
