@@ -57,3 +57,23 @@ jobs:
         name: dist
         path: |
           dist/
+
+  pre-release:
+    name: "Pre Release"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Download distribution binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: artifacts
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          #automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            artifacts
