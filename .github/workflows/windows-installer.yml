@@ -20,13 +20,17 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Upgrade the package manager and related libraries
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools wheel
         python -m pip install --upgrade cachetools pefile
-        pip install py2exe==0.11.1.1
+    - name: Install production dependencies
+      run: |
         pip install -r requirements.txt
+    - name: Install development dependencies
+      run: |
+        pip install -r requirements-dev.txt
     - name: Remove python2 library conflicts with py2exe
       run: |
         python -c "import aenum, os; os.unlink(os.path.join(os.path.dirname(aenum.__file__), '_py2.py'))"
