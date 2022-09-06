@@ -40,13 +40,6 @@ jobs:
     - name: Build executables
       run: |
         python setup_win.py py2exe
-    - name: Download certificate and private key
-      run: |
-        Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -OutFile reingart2019.zip
-        Expand-Archive reingart2019.zip -DestinationPath dist\
-    - name: Copy rece.ini file
-      run: |
-        copy conf\rece.ini dist
     - name: Deploy distribution binaries
       uses: actions/upload-artifact@v2
       with:
@@ -59,6 +52,17 @@ jobs:
     needs: compile
     runs-on: windows-2019
     steps:
+    - name: Download distribution binaries
+      uses: actions/download-artifact@v3
+      with:
+        name: dist
+    - name: Download certificate and private key
+      run: |
+        Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -OutFile reingart2019.zip
+        Expand-Archive reingart2019.zip -DestinationPath dist\
+    - name: Copy rece.ini file
+      run: |
+        copy conf\rece.ini dist
     - name: Test WSAA executables
       continue-on-error: true      # TODO: fix ns1:coe.alreadyAuthenticated
       run: |
