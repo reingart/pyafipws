@@ -70,8 +70,6 @@ jobs:
     - name: Test WSAA COM server automation
       run: |
         .\wsaa.exe --register
-        pip install pywin32
-        python -c "from win32com.client import Dispatch; wsaa = Dispatch('WSAA'); print(wsaa.Version)"
         $wsaa = New-Object -ComObject WSAA
         echo $wsaa.InstallDir()
 
