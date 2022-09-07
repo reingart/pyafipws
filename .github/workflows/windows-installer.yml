@@ -67,14 +67,22 @@ jobs:
       continue-on-error: true      # TODO: fix ns1:coe.alreadyAuthenticated
       run: |
         .\wsaa-cli.exe
-    - name: Test WSAA COM server automation
+    - name: Register WSAA component
       run: |
         .\wsaa.exe --register
+        reg export "HKEY_CLASSES_ROOT\CLSID\{51342E57-9681-4610-AF2B-686267470930}" wsaa.reg
+        type wsaa.reg
+    - name: Register WSFEv1 component
+      run: |
+        .\wsfev1.exe --register
+        reg export "HKEY_CLASSES_ROOT\CLSID\{FA1BB90B-53D1-4FDA-8D1F-DEED2700E739}" wsfev1.reg
+        type wsfev1.reg
+    - name: Test WSAA COM server automation
+      run: |
         $wsaa = New-Object -ComObject WSAA
         echo $wsaa.InstallDir()
     - name: Test WSFEv1 COM server automation
       run: |
-        .\wsfev1.exe --register
         $wsfev1 = New-Object -ComObject WSFEv1
         echo $wsfev1.Version()
         echo $wsfev1.InstallDir()
