@@ -68,11 +68,12 @@ jobs:
       run: |
         .\wsaa-cli.exe
     - name: Test WSAA COM server automation
-      continue-on-error: true      # TODO: fix ns1:coe.alreadyAuthenticated
       run: |
         .\wsaa.exe --register
         pip install pywin32
-        python -c "from win32com.client import Dispatch; wsaa = Dispatch("WSAA"); print(wsaa.Version)"
+        python -c "from win32com.client import Dispatch; wsaa = Dispatch('WSAA'); print(wsaa.Version)"
+        $wsaa = New-Object -ComObject WSAA
+        echo $wsaa.InstallDir()
 
   pre-release:
     name: "Pre Release"
