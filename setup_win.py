@@ -191,7 +191,7 @@ __version__ += "-" + platform.architecture()[0]
 
 # new webservices:
 if 'wsaa' in globals():
-    kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
+    kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
     kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")]
     if wsaa.TYPELIB:
         data_files.append(("typelib", ["typelib/wsaa.tlb"]))
