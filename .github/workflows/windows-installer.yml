@@ -72,6 +72,15 @@ jobs:
         .\wsaa.exe --register
         $wsaa = New-Object -ComObject WSAA
         echo $wsaa.InstallDir()
+    - name: Test WSFEv1 COM server automation
+      run: |
+        .\wsfev1.exe --register
+        $wsfev1 = New-Object -ComObject WSFEv1
+        echo $wsfev1.Version()
+        echo $wsfev1.InstallDir()
+        $wsfev1.Conectar()
+        $wsfev1.Dummy()
+        echo $wsfev1.AppServerStatus()
 
   pre-release:
     name: "Pre Release"
