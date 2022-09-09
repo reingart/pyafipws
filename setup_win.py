@@ -191,8 +191,8 @@ __version__ += "-" + platform.architecture()[0]
 
 # new webservices:
 if 'wsaa' in globals():
-    kwargs['com_server'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
-    kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")]
+    kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa_win")]
+    kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
     if wsaa.TYPELIB:
         data_files.append(("typelib", ["typelib/wsaa.tlb"]))
         
@@ -200,9 +200,9 @@ if 'wsaa' in globals():
     HOMO &= wsaa.HOMO
 
 if 'wsfev1' in globals():
-    kwargs['windows'] += [Target(module=wsfev1, script="wsfev1.py", dest_base="wsfev1")]
+    kwargs['windows'] += [Target(module=wsfev1, script="wsfev1.py", dest_base="wsfev1_win")]
     kwargs['console'] += [
-        Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
+        Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1"),
         Target(module=rece1, script='rece1.py'), 
         #Target(module=rg3685, script='rg3685.py'), 
         ]             
