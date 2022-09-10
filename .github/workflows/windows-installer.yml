@@ -70,7 +70,7 @@ jobs:
         copy conf\rece.ini .
     - name: Test WSAA command line interface
       run: |
-        .\wsaa.exe
+        .\wsaa.exe reingart.crt reingart.key wsmtxca
     - name: Register WSAA component
       run: |
         .\wsaa.exe --register
