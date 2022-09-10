@@ -128,6 +128,9 @@ jobs:
         describe TestInvoiceAuthCode { it 'Invoice auth code ok' { [int]$wsfev1.CAE() | Should -Not -BeNullOrEmpty } }
         describe TestInvoiceNoException { it 'No exception' { [int]$wsfev1.Excepcion() | Should -BeNullOrEmpty } }
         describe TestInvoiceNoError { it 'No error' { [int]$wsfev1.ErrMsg() | Should -BeNullOrEmpty } }
+        describe TestException { it 'raises exception' { $wsfev1.ParamGetCotizacion("USD") | Should -Throw COMException } }
+        $wsfev1.CompConsultar(1, 1, 1)
+        describe TestError { it 'returns error' { $wsfev1.ErrMsg() | Should -Be "602: No existen datos en nuestros registros para los parametros ingresados." } }
 
   pre-release:
     name: "Pre Release"
