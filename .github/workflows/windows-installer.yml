@@ -13,6 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10"]
+        targetplatform: [x86, x64]
 
     steps:
     - uses: actions/checkout@v2
@@ -43,19 +44,22 @@ jobs:
     - name: Deploy distribution binaries
       uses: actions/upload-artifact@v2
       with:
-        name: dist
+        name: dist-${{ matrix.targetplatform }}
         path: |
           dist/
 
   test:
     name: "Full End-2-End test"
     needs: compile
-    runs-on: windows-2019
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        targetplatform: [x86, x64]
     steps:
     - name: Download distribution binaries
       uses: actions/download-artifact@v3
       with:
-        name: dist
+        name: dist-${{ matrix.targetplatform }}
     - name: Download certificate and private key
       run: |
         Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -OutFile reingart2019.zip
@@ -109,11 +113,19 @@ jobs:
       - name: Download distribution binaries
         uses: actions/download-artifact@v3
         with:
-          name: dist
-          path: dist
+          name: dist-x86
+          path: dist-32
       - name: Create ZIP archive
         run: |
-          zip dist.zip -r dist
+          zip dist-32.zip -r dist-32
+      - name: Download distribution binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-x64
+          path: dist-64
+      - name: Create ZIP archive
+        run: |
+          zip dist-64.zip -r dist-64
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -121,4 +133,5 @@ jobs:
           prerelease: true
           title: "Development Build #${{ github.event.number }} - ${{ github.sha }}"
           files: |
-            dist.zip
+            dist-32.zip
+            dist-64.zip
