@@ -75,6 +75,9 @@ jobs:
       run: |
         .\wsaa.exe --register
         Get-Content -Path $Env:APPDATA\wsaa.log -ErrorAction SilentlyContinue
+    - name: Register WSAA component (debug)
+      continue-on-error: true
+      run: |
         reg export "HKEY_CLASSES_ROOT\CLSID\{51342E57-9681-4610-AF2B-686267470930}" wsaa.reg
         type wsaa.reg
     - name: Register WSFEv1 component
@@ -82,6 +85,7 @@ jobs:
         .\wsfev1.exe --register
         Get-Content -Path $Env:APPDATA\wsfev1.log -ErrorAction SilentlyContinue
     - name: Register WSFEv1 component (debug)
+      continue-on-error: true
       run: |
         Get-ChildItem -Path Env:\
         reg export "HKEY_CLASSES_ROOT\CLSID\{FA1BB90B-53D1-4FDA-8D1F-DEED2700E739}" wsfev1.reg
