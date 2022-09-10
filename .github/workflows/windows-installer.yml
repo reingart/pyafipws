@@ -90,6 +90,13 @@ jobs:
       run: |
         $wsaa = New-Object -ComObject WSAA
         echo $wsaa.InstallDir()
+        $curdir = Get-Location
+        $cert = Join-Path -Path $curdir -ChildPath "reingart.crt"
+        $pkey = Join-Path -Path $curdir -ChildPath "reingart.key"
+        [xml]$ta = $WSAA.Autenticar( "wsfex", $cert , $pkey )
+        describe TestTA { it 'Authentication access ticket ok' { $ta.loginTicketResponse.header.source | should be 'CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239' } }
+        describe TestToken { it 'Token OK' { $WSAA.Token() } }
+        describe TestSign { it 'Sign OK' { $WSAA.Sign() } }
     - name: Test WSFEv1 COM server automation
       run: |
         $wsfev1 = New-Object -ComObject WSFEv1
@@ -97,7 +104,7 @@ jobs:
         echo $wsfev1.InstallDir()
         $wsfev1.Conectar()
         $wsfev1.Dummy()
-        echo $wsfev1.AppServerStatus()
+        describe TestDummy { it 'Dummy response ok' { $wsfev1.AppServerStatus() | should be 'OK' } }
 
   pre-release:
     name: "Pre Release"
