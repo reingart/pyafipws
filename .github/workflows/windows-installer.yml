@@ -96,7 +96,8 @@ jobs:
         $curdir = Get-Location
         $cert = Join-Path -Path $curdir -ChildPath "reingart.crt"
         $pkey = Join-Path -Path $curdir -ChildPath "reingart.key"
-        [xml]$ta = $WSAA.Autenticar( "wsfex", $cert , $pkey )
+        [xml]$ta = $WSAA.Autenticar( "wsfe", $cert , $pkey )
+        $ta.Save("ta.xml")
         describe TestTA { it 'Authentication access ticket ok' { $ta.loginTicketResponse.header.source | Should -Be 'CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239' } }
         describe TestToken { it 'Token OK' { $WSAA.Token() | Should -Not -BeNullOrEmpty } }
         describe TestSign { it 'Sign OK' { $WSAA.Sign() | Should -Not -BeNullOrEmpty } }
@@ -108,6 +109,25 @@ jobs:
         $wsfev1.Conectar()
         $wsfev1.Dummy()
         describe TestDummy { it 'Dummy response ok' { $wsfev1.AppServerStatus() | Should -Be 'OK' } }
+        $wsfev1.Cuit = "20267565393"
+        $ta = Get-Content ta.xml
+        $wsfev1.SetTicketAcceso([string]$ta)
+        $tipo_cbte = 6
+        $punto_vta = 4002
+        [int]$ult = $wsfev1.CompUltimoAutorizado($tipo_cbte, $punto_vta)
+        describe TestUlt { it 'Last invoice number ok' { [int]$wsfev1.CbteNro() | Should -BeGreaterOrEqual 1 } }
+        $fecha_cbte = (Get-Date).tostring("yyyyMMdd")
+        [int]$cbte_num = [int]$ult + 1
+        $ok = $wsfev1.CrearFactura(1, 80, 33693450239, $tipo_cbte, $punto_vta, `
+                                   $cbte_num, $cbte_num, 121, 0, 100, `
+                                   21, 0, 0, $fecha_cbte, "", "", "", `
+                                   "PES", "1")
+        $ok = $wsfev1.AgregarIva(5, 100, 21)
+        $CAE = $wsfev1.CAESolicitar()
+        describe TestInvoiceResult { it 'Invoice result ok' { [int]$wsfev1.Resultado() | Should -Be 'A' } }
+        describe TestInvoiceAuthCode { it 'Invoice auth code ok' { [int]$wsfev1.CAE() | Should -Not -BeNullOrEmpty } }
+        describe TestInvoiceNoException { it 'No exception' { [int]$wsfev1.Excepcion() | Should -BeNullOrEmpty } }
+        describe TestInvoiceNoError { it 'No error' { [int]$wsfev1.ErrMsg() | Should -BeNullOrEmpty } }
 
   pre-release:
     name: "Pre Release"
