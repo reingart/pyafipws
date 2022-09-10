@@ -130,9 +130,9 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "beta"
-          prerelease: true
-          title: "Development Build #${{ github.event.number }} - ${{ github.sha }}"
+          automatic_release_tag: ${{ (github.ref != 'main') && 'beta' || 'latest' }}
+          prerelease: ${{ (github.ref != 'main') }}
+          title: "Development Build ${{ github.sha }}"
           files: |
             dist-32.zip
             dist-64.zip
