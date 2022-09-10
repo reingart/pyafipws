@@ -87,7 +87,6 @@ jobs:
     - name: Register WSFEv1 component (debug)
       continue-on-error: true
       run: |
-        Get-ChildItem -Path Env:\
         reg export "HKEY_CLASSES_ROOT\CLSID\{FA1BB90B-53D1-4FDA-8D1F-DEED2700E739}" wsfev1.reg
         type wsfev1.reg
     - name: Test WSAA COM server automation
@@ -98,9 +97,9 @@ jobs:
         $cert = Join-Path -Path $curdir -ChildPath "reingart.crt"
         $pkey = Join-Path -Path $curdir -ChildPath "reingart.key"
         [xml]$ta = $WSAA.Autenticar( "wsfex", $cert , $pkey )
-        describe TestTA { it 'Authentication access ticket ok' { $ta.loginTicketResponse.header.source | should be 'CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239' } }
-        describe TestToken { it 'Token OK' { $WSAA.Token() } }
-        describe TestSign { it 'Sign OK' { $WSAA.Sign() } }
+        describe TestTA { it 'Authentication access ticket ok' { $ta.loginTicketResponse.header.source | Should -Be 'CN=wsaahomo, O=AFIP, C=AR, SERIALNUMBER=CUIT 33693450239' } }
+        describe TestToken { it 'Token OK' { $WSAA.Token() | Should -Not -BeNullOrEmpty } }
+        describe TestSign { it 'Sign OK' { $WSAA.Sign() | Should -Not -BeNullOrEmpty } }
     - name: Test WSFEv1 COM server automation
       run: |
         $wsfev1 = New-Object -ComObject WSFEv1
@@ -108,7 +107,7 @@ jobs:
         echo $wsfev1.InstallDir()
         $wsfev1.Conectar()
         $wsfev1.Dummy()
-        describe TestDummy { it 'Dummy response ok' { $wsfev1.AppServerStatus() | should be 'OK' } }
+        describe TestDummy { it 'Dummy response ok' { $wsfev1.AppServerStatus() | Should -Be 'OK' } }
 
   pre-release:
     name: "Pre Release"
