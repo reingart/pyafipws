@@ -21,7 +21,7 @@ import sys
 
 try:  
     rev = subprocess.check_output(['git', 'rev-list', '--count', '--all'],
-                                  stderr=subprocess.PIPE).strip()
+                                  stderr=subprocess.PIPE).strip().decode("ascii")
 except:
     rev = 0
 
