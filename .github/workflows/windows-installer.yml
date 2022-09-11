@@ -129,7 +129,11 @@ jobs:
         describe TestInvoiceNoException { it 'No exception' { $wsfev1.Excepcion() | Should -BeNullOrEmpty } }
         describe TestInvoiceNoError { it 'No error' { $wsfev1.ErrMsg() | Should -BeNullOrEmpty } }
         describe TestException { it 'raises exception' { { $wsfev1.ParamGetCotizacion("USD") } | Should -Throw -ErrorId System.Runtime.InteropServices.COMException } }
-        describe TestNoException { it 'disabled exception' { { $wsfev1.LanzarExcepciones = $false ; $wsfev1.ParamGetCotizacion("USD") } | Should -Not -Throw -ErrorId System.Runtime.InteropServices.COMException } }
+        describe TestNoException { it 'disabled exception' {
+          { $wsfev1.LanzarExcepciones = $false ; $wsfev1.ParamGetCotizacion("USD") } | Should -Not -Throw -ErrorId System.Runtime.InteropServices.COMException
+          $wsfev1.Excepcion() | Should -BeLike '*KeyError: 'ResultGet'*'
+          $wsfev1.Traceback() | Should -Not -BeNullOrEmpty
+        }
         describe TestError { it 'returns error' { $wsfev1.CompConsultar(1, 1, 1) ; $wsfev1.ErrMsg() | Should -Be "602: No existen datos en nuestros registros para los parametros ingresados." } }
         describe TestDummy { it 'Dummy response ok' { $wsfev1.Dummy() ; $wsfev1.AppServerStatus() | Should -Be 'OK' } }
 
