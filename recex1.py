@@ -29,9 +29,9 @@ import time
 import traceback
 
 # revisar la instalación de pyafip.ws:
-from . import wsfexv1
-from .utils import SimpleXMLElement, SoapClient, SoapFault, date
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from pyafipws import wsfexv1
+from pyafipws.utils import SimpleXMLElement, SoapClient, SoapFault, date
+from pyafipws.utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfexv1.HOMO
@@ -383,7 +383,7 @@ def main():
             sys.exit(0)
 
         if "/formato" in sys.argv:
-            from .formatos.formato_dbf import definir_campos
+            from pyafipws.formatos.formato_dbf import definir_campos
 
             print("Formato:")
             for msg, formato in [
@@ -412,7 +412,7 @@ def main():
             sys.exit(0)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar(

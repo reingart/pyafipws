@@ -34,7 +34,7 @@ import json
 import os
 import sys
 
-from .utils import (
+from pyafipws.utils import (
     inicializar_y_capturar_excepciones,
     BaseWS,
     get_install_dir,
@@ -44,7 +44,7 @@ from .utils import (
     SoapFault,
 )
 from configparser import SafeConfigParser
-from .padron import TIPO_CLAVE, PROVINCIAS
+from pyafipws.padron import TIPO_CLAVE, PROVINCIAS
 
 
 HOMO = False
@@ -345,7 +345,7 @@ def main():
         url_ws = config.get(SECTION, "URL")
 
     # obteniendo el TA para pruebas
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     cache = ""
     wsaa = WSAA()

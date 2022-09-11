@@ -30,7 +30,7 @@ import json
 import os
 import sys
 
-from .utils import (
+from pyafipws.utils import (
     inicializar_y_capturar_excepciones,
     BaseWS,
     get_install_dir,
@@ -229,7 +229,7 @@ def main():
         url_ws = config.get(SECTION, "URL")
 
     # obteniendo el TA para pruebas
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     cache = ""
     ta = WSAA().Autenticar(service, crt, key, url_wsaa)

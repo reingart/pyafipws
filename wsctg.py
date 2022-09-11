@@ -76,13 +76,13 @@ Ver wsctg.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
-from .utils import date
+from pyafipws.utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-from . import utils
+from pyafipws import utils
 
 # importo funciones compartidas:
-from .utils import (
+from pyafipws.utils import (
     leer,
     escribir,
     leer_dbf,
@@ -1097,7 +1097,7 @@ def main():
             print("wsctg_url:", wsctg_url)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsctg", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)

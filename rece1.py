@@ -580,7 +580,7 @@ def main():
                         )
                         comienzo += longitud
                 else:
-                    from .formatos.formato_dbf import definir_campos
+                    from pyafipws.formatos.formato_dbf import definir_campos
 
                     filename = "%s.dbf" % msg.lower()[:8]
                     print("==== %s (%s) ====" % (msg, filename))
@@ -590,7 +590,7 @@ def main():
             sys.exit(0)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar(

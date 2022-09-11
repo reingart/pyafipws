@@ -45,7 +45,7 @@ import zipfile
 from email.utils import formatdate
 import sys
 import warnings
-from .utils import (
+from pyafipws.utils import (
     leer,
     escribir,
     N,

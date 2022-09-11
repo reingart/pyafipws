@@ -71,13 +71,13 @@ Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
 from collections import OrderedDict
 import datetime
 import os, sys, time, base64
-from .utils import date
+from pyafipws.utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-from . import utils
+from pyafipws import utils
 
 # importo funciones compartidas:
-from .utils import (
+from pyafipws.utils import (
     json,
     BaseWS,
     inicializar_y_capturar_excepciones,
@@ -85,7 +85,7 @@ from .utils import (
     json_serializer,
     safe_console,
 )
-from .utils import (
+from pyafipws.utils import (
     leer,
     escribir,
     leer_dbf,
@@ -1197,7 +1197,7 @@ def main():
             print("wsfecred_url:", wsfecred_url)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsfecred", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)

@@ -29,9 +29,9 @@ import time
 import traceback
 
 # revisar la instalación de pyafip.ws:
-from . import wsmtx
-from .utils import SimpleXMLElement, SoapClient, SoapFault, date
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from pyafipws import wsmtx
+from pyafipws.utils import SimpleXMLElement, SoapClient, SoapFault, date
+from pyafipws.utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsmtx.HOMO
@@ -143,7 +143,7 @@ if not "--pyfepdf" in sys.argv:
 else:
     print("!" * 78)
     print("importando formato segun pyfepdf")
-    from .formatos.formato_txt import (
+    from pyafipws.formatos.formato_txt import (
         ENCABEZADO,
         DETALLE,
         PERMISO,
@@ -426,7 +426,7 @@ def main():
             sys.exit(0)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsmtxca", cert, privatekey, wsaa_url)
