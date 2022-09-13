@@ -131,7 +131,7 @@ jobs:
         describe TestException { it 'raises exception' { { $wsfev1.ParamGetCotizacion("USD") } | Should -Throw -ErrorId System.Runtime.InteropServices.COMException } }
         describe TestNoException { it 'disabled exception' {
           { $wsfev1.LanzarExcepciones = $false ; $wsfev1.ParamGetCotizacion("USD") } | Should -Not -Throw -ErrorId System.Runtime.InteropServices.COMException
-          $wsfev1.Excepcion() | Should -BeLike '*KeyError: 'ResultGet'*'
+          $wsfev1.Excepcion() | Should -BeLike 'KeyError:*'
           $wsfev1.Traceback() | Should -Not -BeNullOrEmpty
           }
         }
