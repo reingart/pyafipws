@@ -42,6 +42,12 @@ jobs:
     - name: Build executables
       run: |
         python setup_win.py py2exe
+    - name: Save repository metadata for release env-vars
+      run: |
+        echo release_version="${{ matrix.python-version }}".$(git rev-list --count --all) > dist/.env
+        echo git_short_hash=$(git rev-parse --short head) >> dist/.env
+        echo git_branch=$(git branch --show-current) >> dist/.env
+        type dist/.env
     - name: Deploy distribution binaries
       uses: actions/upload-artifact@v2
       with:
@@ -160,12 +166,15 @@ jobs:
       - name: Create ZIP archive
         run: |
           zip dist-64.zip -r dist-64
+      - name: Set release env-vars
+        run: |
+          type dist-64/.env >> $GITHUB_ENV
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: ${{ (github.ref != 'main') && 'beta' || 'latest' }}
           prerelease: ${{ (github.ref != 'main') }}
-          title: "Development Build ${{ github.sha }}"
+          title: "Dev Build ${{ env.release_version }} ${{ env.git_branch }} @ ${{ env.git_short_hash }}"
           files: |
             dist-32.zip
             dist-64.zip
