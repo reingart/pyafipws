@@ -53,6 +53,7 @@ jobs:
         echo release_version="${{ matrix.python-version }}".$(git rev-list --count --all) > dist/.env
         echo git_short_hash=$(git rev-parse --short head) >> dist/.env
         echo git_branch=$(git branch --show-current) >> dist/.env
+        echo workflow trigger: "${{ github.ref }}" - "${{ github.ref_name }}"
         type dist/.env
     - name: Deploy distribution binaries
       uses: actions/upload-artifact@v3
@@ -178,7 +179,7 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ (github.ref != 'main') && 'beta' || 'latest' }}
+          automatic_release_tag: ${{ (github.ref_name != 'main') && 'beta' || 'latest' }}
           prerelease: ${{ (github.ref != 'main') }}
           title: "Dev Build ${{ env.release_version }} ${{ env.git_branch }} @ ${{ env.git_short_hash }}"
           files: |
