@@ -55,7 +55,7 @@ jobs:
         echo git_branch=$(git branch --show-current) >> dist/.env
         type dist/.env
     - name: Deploy distribution binaries
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: dist-${{ matrix.targetplatform }}
         path: |
