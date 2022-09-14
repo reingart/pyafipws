@@ -73,13 +73,13 @@ Ver wsremharina.ini para parámetros de configuración (URL, certificados, etc.)
 """
 
 import os, sys, time, base64
-from .utils import date
+from pyafipws.utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-from . import utils
+from pyafipws import utils
 
 # importo funciones compartidas:
-from .utils import (
+from pyafipws.utils import (
     json,
     BaseWS,
     inicializar_y_capturar_excepciones,
@@ -805,7 +805,7 @@ def main():
             print("wsremharina_url:", wsremharina_url)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsremharina", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)

@@ -30,8 +30,8 @@ import time
 import traceback
 
 # revisar la instalación de pyafip.ws:
-from . import wsaa, wsbfev1
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from pyafipws import wsaa, wsbfev1
+from pyafipws.utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 HOMO = False
 DEBUG = False
@@ -336,7 +336,7 @@ def main():
             sys.exit(0)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsbfe", cert, privatekey, wsaa_url)

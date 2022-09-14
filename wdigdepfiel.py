@@ -35,7 +35,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
 import os, sys, time
-from .utils import date, SimpleXMLElement, SoapClient, SoapFault
+from pyafipws.utils import date, SimpleXMLElement, SoapClient, SoapFault
 
 WSDDFURL = "https://testdia.afip.gov.ar/Dia/Ws/wDigDepFiel/wDigDepFiel.asmx"
 SOAP_ACTION = "ar.gov.afip.dia.serviciosWeb.wDigDepFiel/"
@@ -143,7 +143,7 @@ def main():
     import traceback
     import datetime
 
-    from . import wsaa
+    from pyafipws import wsaa
 
     try:
 

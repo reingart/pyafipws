@@ -30,9 +30,9 @@ import traceback
 import warnings
 
 # revisar la instalación de pyafip.ws:
-from . import wsfev1
-from .utils import SimpleXMLElement, SoapClient, SoapFault, date
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from pyafipws import wsfev1
+from pyafipws.utils import SimpleXMLElement, SoapClient, SoapFault, date
+from pyafipws.utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfev1.HOMO
@@ -580,7 +580,7 @@ def main():
                         )
                         comienzo += longitud
                 else:
-                    from .formatos.formato_dbf import definir_campos
+                    from pyafipws.formatos.formato_dbf import definir_campos
 
                     filename = "%s.dbf" % msg.lower()[:8]
                     print("==== %s (%s) ====" % (msg, filename))
@@ -590,7 +590,7 @@ def main():
             sys.exit(0)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar(

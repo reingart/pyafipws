@@ -110,10 +110,10 @@ import pprint
 import warnings
 from pysimplesoap.client import SoapFault
 from fpdf import Template
-from . import utils
+from pyafipws import utils
 
 # importo funciones compartidas:
-from .utils import (
+from pyafipws.utils import (
     leer,
     escribir,
     leer_dbf,
@@ -624,7 +624,7 @@ class WSLPG(BaseWS):
 
             try:
                 # intento abrir el diccionario persistente de localidades
-                from . import wslpg_datos
+                from pyafipws import wslpg_datos
 
                 localidades_db = os.path.join(self.cache, "localidades.dat")
                 # verificar que puede escribir en el dir, sino abrir solo lectura
@@ -3118,7 +3118,7 @@ class WSLPG(BaseWS):
     def BuscarLocalidades(self, cod_prov, cod_localidad=None, consultar=True):
         "Devuelve la localidad o la consulta en AFIP (uso interno)"
         # si no se especifíca cod_localidad, es util para reconstruir la cache
-        from . import wslpg_datos as datos
+        from pyafipws import wslpg_datos as datos
 
         if not str(cod_localidad) in datos.LOCALIDADES and consultar:
             d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
@@ -3446,7 +3446,7 @@ class WSLPG(BaseWS):
                     elif isinstance(v, datetime.datetime):
                         f.set(k, str(v))
 
-                from . import wslpg_datos as datos
+                from pyafipws import wslpg_datos as datos
 
                 campania = int(liq.get("campania_ppal") or 0)
                 f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
@@ -3948,7 +3948,7 @@ def main():
     import csv
     from configparser import SafeConfigParser
 
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     try:
 
@@ -4009,7 +4009,7 @@ def main():
             print("WRAPPER", WRAPPER)
             print("timeout:", TIMEOUT)
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar(
@@ -5362,7 +5362,7 @@ def main():
 
         if "--shelve" in sys.argv:
             print("# Construyendo BD de Localidades por Provincias")
-            from . import wslpg_datos as datos
+            from pyafipws import wslpg_datos as datos
 
             for cod_prov, desc_prov in list(
                 wslpg.ConsultarProvincias(sep=None).items()

@@ -146,7 +146,7 @@ class PyQR(object):
         return url
 
 
-from .utils import get_install_dir
+from pyafipws.utils import get_install_dir
 INSTALL_DIR = PyQR.InstallDir = get_install_dir()
 
 
