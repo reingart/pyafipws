@@ -17,6 +17,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -172,7 +174,7 @@ jobs:
           zip dist-64.zip -r dist-64
       - name: Set release env-vars
         run: |
-          type dist-64/.env >> $GITHUB_ENV
+          cat dist-64/.env >> $GITHUB_ENV
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
