@@ -42,6 +42,10 @@ jobs:
     - name: Build executables
       run: |
         python setup_win.py py2exe
+    - name: Remove uneeded libs (TK)
+      run: |
+        Remove-Item .\dist\lib\tcl -recurse
+        Remove-Item .\dist\lib\tk -recurse
     - name: Save repository metadata for release env-vars
       run: |
         echo release_version="${{ matrix.python-version }}".$(git rev-list --count --all) > dist/.env
