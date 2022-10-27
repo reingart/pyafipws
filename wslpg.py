@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.35d"
+__version__ = "1.35e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -3813,7 +3813,7 @@ if __name__ == '__main__':
 
             if '--lsg' in sys.argv:
                 print "Anulando COE LSG", coe
-                ret = wslpg.AnularLiquidacionSecundaria(coe)
+                ret = wslpg.AnularLiquidacionSecundaria(pto_emision, nro_orden, coe)
             if '--cg' in sys.argv:
                 print "Anulando COE CG", coe
                 ret = wslpg.AnularCertificacion(coe)
