@@ -15,9 +15,9 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2013-2018 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.35b"
+__version__ = "1.35d"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -138,11 +138,11 @@ ENCABEZADO = [
     ('nro_ing_bruto_corredor', 15, N), 
     ('comision_corredor', 5, I, 2), # 3.2
     ('fecha_precio_operacion', 10, A), # 26/02/2013
-    ('precio_ref_tn', 8, I, 3), # 4.3
+    ('precio_ref_tn', 17, I, 3), # 4.3
     ('cod_grado_ref', 2, A),
     ('cod_grado_ent', 2, A),
     ('factor_ent', 6, I, 3), # 3.3
-    ('precio_flete_tn', 7, I, 2), # 5.2
+    ('precio_flete_tn', 17, I, 2), # 5.2
     ('cont_proteico', 6, I, 3), # 3.3
     ('alic_iva_operacion', 5, I, 2), # 3.2
     ('campania_ppal', 4, N),
@@ -225,7 +225,7 @@ RETENCION = [
     ('tipo_reg', 1, A), # 2: Retencion
     ('codigo_concepto', 2, A), 
     ('detalle_aclaratorio', 30, A),
-    ('base_calculo', 10, I, 2),  # 8.2
+    ('base_calculo', 17, I, 2),  # 8.2
     ('alicuota', 6, I, 2),  # 3.2
     ('nro_certificado_retencion', 14, N), 
     ('fecha_certificado_retencion', 10, A),
@@ -240,17 +240,17 @@ DEDUCCION = [
     ('dias_almacenaje', 4, N),
     ('reservado1', 6, I, 3),
     ('comision_gastos_adm', 5, I, 2), # 3.2
-    ('base_calculo', 10, I, 2),  # 8.2
+    ('base_calculo', 17, I, 2),  # 8.2
     ('alicuota', 6, I, 2),  # 3.2
     ('importe_iva', 17, I, 2), # 17.2
     ('importe_deduccion', 17, I, 2), # 17.2
-    ('precio_pkg_diario', 11, I, 8), # 3.8, ajustado WSLPGv1.2
+    ('precio_pkg_diario', 17, I, 8), # 3.8, ajustado WSLPGv1.2
     ]
 
 PERCEPCION = [
     ('tipo_reg', 1, A), # P: Percepcion
     ('detalle_aclaratoria', 50, A), # max 50 por WSLPGv1.8
-    ('base_calculo', 10, I, 2),  # 8.2
+    ('base_calculo', 17, I, 2),  # 8.2
     ('alicuota', 6, I, 2),  # 3.2
     ('importe_final', 19, I, 2), # 17.2 (LPG WSLPGv1.16)
     ]
