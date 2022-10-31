@@ -299,15 +299,16 @@ class WSRemHarina(BaseWS):
             self.CodRemito = ret.get("codRemito")
             self.TipoComprobante = ret.get("tipoComprobante")
             self.PuntoEmision = ret.get("puntoEmision")
-            datos_aut = ret.get('datosAutAFIP')
+            out = ret.get("remitoOutput")
+            datos_aut = out.get('datosAutAFIP')
             if datos_aut:
                 self.NroRemito = datos_aut.get('nroRemito')
                 self.CodAutorizacion = datos_aut.get('codAutorizacion')
                 self.FechaEmision = datos_aut.get('fechaEmision')
                 self.FechaVencimiento = datos_aut.get('fechaVencimiento')
-            self.Estado = ret.get('estado', ret.get('estadoRemito'))
+            self.Estado = out.get('estado', ret.get('estadoRemito'))
             self.Resultado = ret.get('resultado')
-            self.QR = ret.get('qr') or ""
+            self.QR = out.get('qr') or ""
             if archivo:
                 f = open(archivo, "wb")
                 f.write(self.QR)
