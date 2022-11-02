@@ -16,9 +16,9 @@ Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017 Mariano Reingart"
+__copyright__ = "Copyright (C) 2017-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04e"
+__version__ = "1.04f"
 
 import csv
 import datetime
@@ -28,6 +28,7 @@ import os
 import sys
 
 from utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir, json_serializer, abrir_conf, norm, SoapFault
+from utils import safe_console
 from ConfigParser import SafeConfigParser
 from padron import TIPO_CLAVE, PROVINCIAS
 
@@ -255,6 +256,7 @@ def main():
     global CONFIG_FILE
 
     DEBUG = '--debug' in sys.argv
+    safe_console()
 
     if '--constancia' in sys.argv:
         padron = WSSrPadronA5()
@@ -295,7 +297,7 @@ def main():
 
     if "--dummy" in sys.argv:
         print padron.client.help("dummy")
-        wssrpadron4.Dummy()
+        padron.Dummy()
         print "AppServerStatus", wssrpadron4.AppServerStatus
         print "DbServerStatus", wssrpadron4.DbServerStatus
         print "AuthServerStatus", wssrpadron4.AuthServerStatus
