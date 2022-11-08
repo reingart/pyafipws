@@ -47,6 +47,7 @@ class WSFEv1(BaseWS):
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
                         'AgregarComprador', 'AgregarPeriodoComprobantesAsociados',
+                        'AgregarActividad',
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
                         'CAEASinMovimientoInformar',
@@ -154,6 +155,7 @@ class WSFEv1(BaseWS):
                 'iva': [],
                 'opcionales': [],
                 'compradores': [],
+                'actividades': [],
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
@@ -212,6 +214,12 @@ class WSFEv1(BaseWS):
         comp = { 'doc_tipo': doc_tipo, 'doc_nro': doc_nro,
                  'porcentaje': porcentaje }
         self.factura['compradores'].append(comp)
+        return True
+
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        op = { 'actividad_id': actividad_id }
+        self.factura['actividades'].append(op)
         return True
 
     def ObtenerCampoFactura(self, *campos):
@@ -300,6 +308,10 @@ class WSFEv1(BaseWS):
                             'DocNro': comprador['doc_nro'],
                             'Porcentaje': comprador['porcentaje'],
                             }} for comprador in f['compradores']] or None,
+                    'Actividades': [ 
+                        {'Actividad': {
+                            'Id': actividad['actividad_id'],
+                            }} for actividad in f['actividades']] or None,
                     }
                 }]
             })
@@ -438,6 +450,10 @@ class WSFEv1(BaseWS):
                             'DocNro': comprador['doc_nro'],
                             'Porcentaje': comprador['porcentaje'],
                             }} for comprador in f['compradores']],
+                    'Actividades': [ 
+                        {'Actividad': {
+                            'Id': actividad['actividad_id'],
+                            }} for actividad in f['actividades']],
                     }
                 copia = resultget.copy()
                 # TODO: ordenar / convertir opcionales (por ahora no se verifican)
@@ -508,6 +524,11 @@ class WSFEv1(BaseWS):
                             'porcentaje': comp['Comprador']['Porcentaje'],
                             }
                         for comp in resultget.get('Compradores', [])],
+                    'actividades': [ 
+                            {
+                            'actividad_id': obs['Actividad']['Id'],
+                            }
+                        for obs in resultget.get('Actividades', [])],
                     'cae': resultget.get('CodAutorizacion'),
                     'resultado': resultget.get('Resultado'),
                     'fch_venc_cae': resultget.get('FchVto'),
@@ -624,6 +645,10 @@ class WSFEv1(BaseWS):
                             'Id': opcional['opcional_id'],
                             'Valor': opcional['valor'],
                             }} for opcional in f['opcionales']] or None,
+                    'Actividades': [
+                        {'Actividad': {
+                            'Id': actividad['actividad_id'],
+                            }} for actividad in f['actividades']] or None,
                     }
                 } for f in self.facturas]
             })
