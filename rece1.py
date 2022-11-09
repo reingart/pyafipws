@@ -306,57 +306,56 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ["%s='%s'" % (k, str(v)) for k, v in list(ws.factura.items())]
                 )
             )
-        if not DEBUG :
-            if not informar_caea:
-                cae = ws.CAESolicitar()
-                dic = ws.factura
-            else:
-                cae = ws.CAEARegInformativo()
-                dic = ws.factura
-            print(
-                "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f"
-                % (
-                    TIPO_CBTE.get(dic["tipo_cbte"], dic["tipo_cbte"]),
-                    dic["punto_vta"],
-                    dic["cbt_desde"],
-                    dic["cbt_hasta"],
-                    TIPO_DOC.get(dic["tipo_doc"], dic["tipo_doc"]),
-                    dic["nro_doc"],
-                    float(dic["imp_total"]),
-                    float(dic["imp_iva"] if dic["imp_iva"] is not None else "NaN"),
-                )
-            )
-            dic.update(encabezado)  # preservar la estructura leida
-            dic.update(
-                {
-                    "cae": cae and str(cae) or "",
-                    "fch_venc_cae": ws.Vencimiento and str(ws.Vencimiento) or "",
-                    "resultado": ws.Resultado,
-                    "motivos_obs": ws.Obs,
-                    "err_code": str(ws.ErrCode),
-                    "err_msg": ws.ErrMsg,
-                    "cbt_desde": ws.CbtDesde,
-                    "cbt_hasta": ws.CbtHasta,
-                    "fecha_cbte": ws.FechaCbte,
-                    "reproceso": ws.Reproceso,
-                    "emision_tipo": ws.EmisionTipo,
-                }
-            )
-            dicts.append(dic)
-            print(
-                "NRO:",
+        if not informar_caea:
+            cae = ws.CAESolicitar()
+            dic = ws.factura
+        else:
+            cae = ws.CAEARegInformativo()
+            dic = ws.factura
+        print(
+            "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f"
+            % (
+                TIPO_CBTE.get(dic["tipo_cbte"], dic["tipo_cbte"]),
+                dic["punto_vta"],
                 dic["cbt_desde"],
-                "Resultado:",
-                dic["resultado"],
-                "%s:" % ws.EmisionTipo,
-                dic["cae"],
-                "Obs:",
-                dic["motivos_obs"].encode("ascii", "ignore"),
-                "Err:",
-                dic["err_msg"].encode("ascii", "ignore"),
-                "Reproceso:",
-                dic["reproceso"],
+                dic["cbt_hasta"],
+                TIPO_DOC.get(dic["tipo_doc"], dic["tipo_doc"]),
+                dic["nro_doc"],
+                float(dic["imp_total"]),
+                float(dic["imp_iva"] if dic["imp_iva"] is not None else "NaN"),
             )
+        )
+        dic.update(encabezado)  # preservar la estructura leida
+        dic.update(
+            {
+                "cae": cae and str(cae) or "",
+                "fch_venc_cae": ws.Vencimiento and str(ws.Vencimiento) or "",
+                "resultado": ws.Resultado,
+                "motivos_obs": ws.Obs,
+                "err_code": str(ws.ErrCode),
+                "err_msg": ws.ErrMsg,
+                "cbt_desde": ws.CbtDesde,
+                "cbt_hasta": ws.CbtHasta,
+                "fecha_cbte": ws.FechaCbte,
+                "reproceso": ws.Reproceso,
+                "emision_tipo": ws.EmisionTipo,
+            }
+        )
+        dicts.append(dic)
+        print(
+            "NRO:",
+            dic["cbt_desde"],
+            "Resultado:",
+            dic["resultado"],
+            "%s:" % ws.EmisionTipo,
+            dic["cae"],
+            "Obs:",
+            dic["motivos_obs"].encode("ascii", "ignore"),
+            "Err:",
+            dic["err_msg"].encode("ascii", "ignore"),
+            "Reproceso:",
+            dic["reproceso"],
+        )
     if dicts:
         escribir_facturas(dicts, salida)
 
