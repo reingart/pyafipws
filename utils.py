@@ -81,41 +81,31 @@ except ImportError:
         print("para soporte de JSON debe instalar simplejson")
         json = None
 
+
 try:
     import httplib2
 
     # corregir temas de negociacion de SSL en algunas versiones de ubuntu:
-    import platform, distro
-
-    dist, ver, nick = (
-        distro.linux_distribution() if sys.version_info > (2, 6) else ("", "", "")
-    )
-    release, winver, csd, ptype = (
-        platform.win32_ver() if sys.version_info > (2, 6) else ("", "", "", "")
-    )
     from pysimplesoap.client import SoapClient
+    import platform
 
-    monkey_patch = httplib2._build_ssl_context.__module__ != "httplib2"
-    if dist:
-        needs_patch = (dist == "Ubuntu" and ver == "14.04") or (
-            dist == "Ubuntu" and ver >= "20.04"
-        )
-    elif release:
-        needs_patch = release in "XP"
-    else:
-        needs_patch = False
+    monkey_patch = sys.version_info < (3, ) or httplib2._build_ssl_context.__module__ != "httplib2"
+    needs_patch = platform.system() == 'Linux' or sys.version_info > (3, 10)
     if needs_patch and not monkey_patch:
         _build_ssl_context = httplib2._build_ssl_context
 
         def _build_ssl_context_new(*args, **kwargs):
             context = _build_ssl_context(*args, **kwargs)
+            # fix ssl.SSLError: [SSL: DH_KEY_TOO_SMALL] dh key too small
+            # alternative: context.set_ciphers("DEFAULT@SECLEVEL=1")
             context.set_ciphers("AES128-SHA")
             return context
 
         httplib2._build_ssl_context = _build_ssl_context_new
 
-except:
-    print("para soporte de WebClient debe instalar httplib2")
+except ImportError as mnfe:
+    if "httplib2" in str(mnfe):
+        print("para soporte de WebClient debe instalar httplib2")
 
 
 DEBUG = False
@@ -688,6 +678,8 @@ def leer(linea, formato, expandir_fechas=False):
         try:
             if chr(8) in valor or chr(127) in valor or chr(255) in valor:
                 valor = None  # nulo
+            elif (valor == "" or valor == "NULL") and tipo in (N, I):
+                valor = None
             elif tipo == N:
                 if valor:
                     valor = int(valor)
@@ -721,7 +713,9 @@ def leer(linea, formato, expandir_fechas=False):
             else:
                 if isinstance(valor, bytes):
                     valor = valor.decode("ascii", "ignore")
-                valor = valor
+                # campos string completos con ~ son convertidos a nulo:
+                if valor and valor == "~" * len(valor):
+                    valor = None
             if not valor and clave in dic and len(linea) <= comienzo:
                 pass  # ignorar - compatibilidad hacia atrás (cambios tamaño)
             else:
@@ -750,7 +744,8 @@ def escribir(dic, formato, contraer_fechas=False):
                 if isinstance(s, str):
                     s = s.encode("latin1")
             if s is None:
-                valor = ""
+                valor = chr(127)
+                tipo = None
             else:
                 valor = str(s)
             # reemplazo saltos de linea por tabulaci{on vertical
@@ -836,9 +831,10 @@ def grabar_txt(formatos, registros, nombre_archivo, dicts, agrega=False):
             dic["tipo_reg"] = "0"
             archivo.write(escribir(dic, encabezado))
             for tipo_reg, estructura in sorted(registros.items()):
-                for d in dic.get(estructura, []):
-                    d["tipo_reg"] = tipo_reg
-                    archivo.write(escribir(d, formatos[estructura]))
+                for it in dic.get(estructura, {}):
+                    for d in ([it] if isinstance(it, dict) else it):
+                        d["tipo_reg"] = tipo_reg
+                        archivo.write(escribir(d, formatos[estructura]))
 
 
 # Funciones para manejo de Panillas CSV y Tablas
@@ -1134,9 +1130,11 @@ def get_install_dir():
 
     if hasattr(sys, "frozen"):
         # we are running as py2exe-packed executable
-        import pythoncom
-
-        pythoncom.frozen = 1
+        try:
+            import pythoncom
+            pythoncom.frozen = 1
+        except ImportError:
+            pass
         sys.argv[0] = sys.executable
 
     return os.path.dirname(os.path.abspath(basepath))

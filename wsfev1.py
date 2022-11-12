@@ -31,13 +31,13 @@ from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.25c"
+__version__ = "3.26a"
 
 import datetime
 import decimal
 import os
 import sys
-from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from pyafipws.utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False  # solo homologación
 TYPELIB = False  # usar librería de tipos (TLB)
@@ -134,13 +134,13 @@ class WSFEv1(BaseWS):
     ]
 
     _reg_progid_ = "WSFEv1"
-    _reg_clsid_ = "{CA0E604D-E3D7-493A-8880-F6CDD604185E}"
+    _reg_clsid_ = "{FA1BB90B-53D1-4FDA-8D1F-DEED2700E739}"
+    _reg_class_spec_ = "pyafipws.wsfev1.WSFEv1"
 
     if TYPELIB:
-        _typelib_guid_ = '{C7190CBC-FB36-4370-9190-BA46F861F539}'
-        _typelib_version_ = 1, 18
-        _com_interfaces_ = ["IWSFEv1"]
-        ##_reg_class_spec_ = "wsfev1.WSFEv1"
+        _typelib_guid_ = '{8AE2BD1D-A216-4E98-95DB-24A11225EF67}'
+        _typelib_version_ = 1, 26
+        _com_interfaces_ = ['IWSFEv1']
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -610,7 +610,12 @@ class WSFEv1(BaseWS):
                         for comprador in f["compradores"]
                     ],
                 }
-                verifica(verificaciones, resultget.copy(), difs)
+                copia = resultget.copy()
+                # TODO: ordenar / convertir opcionales (por ahora no se verifican)
+                del verificaciones['Opcionales']
+                if 'Opcionales' in copia:
+                    del copia['Opcionales']
+                verifica(verificaciones, copia, difs)
                 if difs:
                     print("Diferencias:", difs)
                     self.log("Diferencias: %s" % difs)
@@ -1298,7 +1303,7 @@ def main():
         return
 
     # obteniendo el TA para pruebas
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", debug=True)
     wsfev1.SetTicketAcceso(ta)

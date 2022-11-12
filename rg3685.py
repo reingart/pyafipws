@@ -20,7 +20,7 @@ __license__ = "LGPL-3.0-or-later"
 __version__ = "3.01a"
 
 import sys
-from .utils import leer, escribir, C, N, A, I, B, get_install_dir
+from pyafipws.utils import leer, escribir, C, N, A, I, B, get_install_dir
 
 
 # Diseño de registro de Importación de comprobantes de Ventas
@@ -101,7 +101,7 @@ def main():
         reg["imp_iva"] = reg.get("imp_iva", 0.00) + iva["importe"]
         reg.setdefault("iva", []).append(iva)
 
-    from . import rece1
+    from pyafipws import rece1
 
     facts = sorted(
         list(ops.values()),

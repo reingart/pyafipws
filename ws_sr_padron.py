@@ -23,9 +23,9 @@ standard_library.install_aliases()
 from builtins import next
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017-2021 Mariano Reingart"
-__license__ = "LGPL-3.0-or-later"
-__version__ = "3.03e"
+__copyright__ = "Copyright (C) 2017 Mariano Reingart"
+__license__ = "GPL 3.0"
+__version__ = "3.04e"
 
 import csv
 import datetime
@@ -34,7 +34,7 @@ import json
 import os
 import sys
 
-from .utils import (
+from pyafipws.utils import (
     inicializar_y_capturar_excepciones,
     BaseWS,
     get_install_dir,
@@ -44,7 +44,7 @@ from .utils import (
     SoapFault,
 )
 from configparser import SafeConfigParser
-from .padron import TIPO_CLAVE, PROVINCIAS
+from pyafipws.padron import TIPO_CLAVE, PROVINCIAS
 
 
 HOMO = False
@@ -345,10 +345,14 @@ def main():
         url_ws = config.get(SECTION, "URL")
 
     # obteniendo el TA para pruebas
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     cache = ""
-    ta = WSAA().Autenticar(service, crt, key, url_wsaa)
+    wsaa = WSAA()
+    ta = wsaa.Autenticar(service, crt, key, url_wsaa)
+    if DEBUG:
+        print("WSAA.Excepcion:", wsaa.Excepcion)
+        print("WSAA.Traceback:", wsaa.Traceback)
 
     padron.SetTicketAcceso(ta)
     padron.Cuit = cuit

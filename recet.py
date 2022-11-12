@@ -30,9 +30,9 @@ import time
 import traceback
 
 # revisar la instalación de pyafip.ws:
-from . import wsct
-from .utils import SimpleXMLElement, SoapClient, SoapFault, date
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from pyafipws import wsct
+from pyafipws.utils import SimpleXMLElement, SoapClient, SoapFault, date
+from pyafipws.utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsct.HOMO
@@ -423,7 +423,7 @@ def main():
             sys.exit(0)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsct", cert, privatekey, wsaa_url)

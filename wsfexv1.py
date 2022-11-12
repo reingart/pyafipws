@@ -29,7 +29,7 @@ import datetime
 import decimal
 import os
 import sys
-from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from pyafipws.utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 WSDL = "https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
@@ -820,7 +820,7 @@ def main():
         # Setear token y sing de autorización (pasos previos)
 
         # obteniendo el TA para pruebas
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         ta = WSAA().Autenticar("wsfex", "reingart.crt", "reingart.key")
         wsfexv1.SetTicketAcceso(ta)

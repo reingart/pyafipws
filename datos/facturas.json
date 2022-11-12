@@ -70,6 +70,13 @@
                 "iva_id": "5"
             }
         ], 
+        "permiso_existente": "S",
+        "permisos": [
+            {
+                "id_permiso": "99999AAXX999999A", 
+                "dst_merc": "225" 
+            }
+        ], 
         "localidad_cliente": null, 
         "moneda_ctz": "1.000000", 
         "moneda_id": "PES", 
@@ -87,8 +94,17 @@
         "reproceso": "S", 
         "resultado": "A", 
         "telefono_cliente": null, 
-        "tipo_cbte": "6", 
+        "tipo_cbte": "19", 
         "tipo_doc": "80", 
+		"cbtes_asoc": [
+			{
+				"cbte_tipo": 6,
+				"cbte_punto_vta": 5,
+				"cbte_nro": 1234,
+				"cbte_cuit": 20267565393,
+				"cbte_fecha": 20210422
+			}
+		],
         "tributos": [
             {
                 "alic": "1.00", 

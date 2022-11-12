@@ -950,7 +950,7 @@ def main():
     # obteniendo el TA
     TA = "TA-wscoc.xml"
     if not os.path.exists(TA) or os.path.getmtime(TA) + (60 * 60 * 5) < time.time():
-        from . import wsaa
+        from pyafipws import wsaa
 
         tra = wsaa.create_tra(service="wscoc")
         cms = wsaa.sign_tra(tra, "reingart.crt", "reingart.key")

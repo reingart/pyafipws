@@ -16,21 +16,26 @@ para transporte ferroviario y automotor RG 5017/2021
 
 from __future__ import print_function
 from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from future import standard_library
 
-standard_library.install_aliases()
-from builtins import str
-from builtins import input
+# python 2 compatibility:
+if 'xrange' not in dir(__builtins__):
+    from future import standard_library
+    from future.utils import string_types
+
+    standard_library.install_aliases()
+    from builtins import str
+    from builtins import input
+
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.01b"
+__version__ = "1.06c"
 
 LICENCIA = """
-wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.4.0
+wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
 Resolución General 5017/2021
 Copyright (C) 2021 Mariano Reingart reingart@gmail.com
 http://www.sistemasagiles.com.ar/trac/wiki/CartadePorte
@@ -43,7 +48,7 @@ e incorporación/distribución en programas propietarios ver PyAfipWs:
 http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 """
 
-AYUDA="""
+AYUDA = """  # grey
 Opciones: 
   --ayuda: este mensaje
 
@@ -64,7 +69,7 @@ import traceback
 from pysimplesoap.client import SoapFault
 
 # importo funciones compartidas:
-from .utils import (
+from utils import (
     date,
     leer,
     escribir,
@@ -98,7 +103,7 @@ ESTADO_CPE = {
 
 # constantes de configuración (producción/homologación):
 WSDL = [
-    "https://serviciosjava.afip.gob.ar/cpe-ws/services/wscpe?wsdl",
+    "https://serviciosjava.afip.gob.ar/wscpe/services/soap?wsdl",
     "https://fwshomo.afip.gov.ar/wscpe/services/soap?wsdl",
 ]
 
@@ -124,6 +129,7 @@ class WSCPE(BaseWS):
         "AgregarDatosCarga",
         "AgregarDestino",
         "AgregarTransporte",
+        "AgregarDominio",
         "AgregarContingencia",
         "DescargadoDestinoCPE",
         "NuevoDestinoDestinatarioCPEFerroviaria",
@@ -181,6 +187,7 @@ class WSCPE(BaseWS):
         "FechaVencimiento",
         "Estado",
         "Resultado",
+        "TarifaReferencia",
         "PDF",
         "ErrCode",
         "ErrMsg",
@@ -191,7 +198,6 @@ class WSCPE(BaseWS):
         "Evento",
         "Eventos",
     ]
-
     _reg_progid_ = "WSCPE"
     _reg_clsid_ = "{37F6A7B5-344E-45C5-9198-0CF7B206F409}"
 
@@ -210,18 +216,18 @@ class WSCPE(BaseWS):
         self.NroCTG = self.NroOrden = None
         self.FechaInicioEstado = self.FechaVencimiento = self.FechaEmision = None
         self.Estado = self.Resultado = self.PDF = None
+        self.TarifaReferencia = None
+        self.errores = []
         self.Errores = []
         self.Evento = self.ErrCode = self.ErrMsg = self.Obs = ""
-        if not hasattr(self, "cpe"):
-            self.cpe = {}
-        if not hasattr(self, "_actualizar"):
-            self._actualizar = True
 
     def __analizar_errores(self, ret):
         "Comprueba y extrae errores si existen en la respuesta XML"
-        errores = self.Errores = [err["error"] for err in ret.get("errores", [])]
-        if errores:
+        errores = [err["error"] for err in ret.get("errores", [])]
+        if errores and isinstance(errores[0], (list, tuple)):
             errores = errores[0]
+        self.errores = errores
+        self.Errores = ["%(codigo)s: %(descripcion)s" % err for err in errores]
         self.ErrCode = " ".join(["%(codigo)s" % err for err in errores])
         self.ErrMsg = "\n".join(["%(codigo)s - %(descripcion)s" % err for err in errores])
 
@@ -237,9 +243,12 @@ class WSCPE(BaseWS):
             self.Eventos = [evt]
             self.Evento = "%(codigo)s: %(descripcion)s" % evt
 
-    def CrearCPE(self):
+    def CrearCPE(self, actualiza=False):
         """Cambia la estructura de datos en AgregarCabecera para crear una CPE."""
-        self._actualizar = False
+        # Autorizar requiere actualiza = False (predeterminado)
+        # Anular, Rechazar y otros métodos requieren actualiza = True
+        self._actualizar = actualiza
+        self.cpe = {}
         return True
 
     @inicializar_y_capturar_excepciones
@@ -395,12 +404,13 @@ class WSCPE(BaseWS):
             "codLocalidad": cod_localidad,
             "planta": planta,
         }
-        cuit_destinatario = {"cuit": cuit_destinatario}
+        destinatario = {"cuit": cuit_destinatario}
         # maneja distintos campos para diferentes metodos
         if destino["cuit"]:
-            self.cpe["destino"] = destino
-        if cuit_destinatario["cuit"]:
-            self.cpe["destinatario"] = cuit_destinatario
+            self.cpe["destino"] = destino  # autorizar/editar
+        if cuit_destinatario:
+            self.cpe["destinatario"] = destinatario  # autorizar (estructura)
+            self.cpe["cuitDestinatario"] = cuit_destinatario  # editar (sólo cuit)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -422,6 +432,7 @@ class WSCPE(BaseWS):
         cuit_intermediario_flete=None,
         codigo_ramal=None,
         descripcion_ramal=None,
+        tarifa_referencia=None,
         **kwargs
     ):
         """Inicializa internamente los datos de transporte para una cpe."""
@@ -453,16 +464,30 @@ class WSCPE(BaseWS):
                 "codigoTurno": codigo_turno,
                 "cuitChofer": cuit_chofer,
                 "tarifa": tarifa,
+                "tarifaReferencia": tarifa_referencia,
                 "cuitPagadorFlete": cuit_pagador_flete,
                 "cuitIntermediarioFlete": cuit_intermediario_flete,
                 "mercaderiaFumigada": mercaderia_fumigada,
             }
         # ajuste para confirmacion_definitiva_cpe_ferroviaria
-        if transporte["kmRecorrer"]:
+        if "transporte" in self.cpe and dominio:
+            self.AgregarDominio(dominio)
+        elif transporte["kmRecorrer"]:
             self.cpe["transporte"] = transporte
         else:
             self.cpe.update(transporte)
         return True
+
+    @inicializar_y_capturar_excepciones
+    def AgregarDominio(
+        self,
+        dominio,
+        **kwargs
+    ):
+        dominios = self.cpe["transporte"]["dominio"]
+        if not isinstance(dominios, list):
+            self.cpe["transporte"]["dominio"] = [dominios]
+        self.cpe["transporte"]["dominio"].append(dominio)
 
     def AgregarContingencia(
         self,
@@ -538,20 +563,25 @@ class WSCPE(BaseWS):
             self.AnalizarCPE(ret, archivo)
         return True
 
-    @inicializar_y_capturar_excepciones
     def AnalizarCPE(self, ret, archivo="cpe.pdf"):
         "Extrae los resultados de autorización de una carta porte automotor."
-        cab = ret.get("cabecera")
+        cab = ret["cabecera"]
         self.NroCTG = cab.get("nroCTG")
+        self.NroOrden = cab.get("nroOrden")
         self.FechaEmision = cab.get("fechaEmision")
         self.Estado = cab.get("estado")
         self.FechaInicioEstado = cab.get("fechaInicioEstado")
         self.FechaVencimiento = cab.get("fechaVencimiento")
-        self.PDF = ret.get("pdf")  # base64
-        if self.PDF is not None:
-            cpe_bytes = self.PDF
-            with open(archivo, "wb") as fh:
-                fh.write(cpe_bytes)
+        self.PDF = ret.get("pdf", "")  # base64
+        self.Observaciones = cab.get("observaciones", "")
+        transportes = ret.get('transporte', [])
+        self.TarifaReferencia = transportes[0].get('tarifaReferencia') if transportes else None
+
+        cpe_bytes = self.PDF
+        if sys.version_info[0] >= 3 and isinstance(cpe_bytes, string_types):
+            cpe_bytes = cpe_bytes.encode("utf-8")
+        with open(archivo, "wb") as fh:
+            fh.write(cpe_bytes)
 
     @inicializar_y_capturar_excepciones
     def AnularCPE(self, archivo="cpe.pdf"):
@@ -1114,7 +1144,7 @@ class WSCPE(BaseWS):
         ret = response.get("respuesta")
         self.__analizar_errores(ret)
         array = ret.get("grano", [])
-        return [("%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in array]
+        return [(u"%s {codigo} %s {descripcion} %s" % (sep, sep, sep)).format(**it) if sep else it for it in array]
 
     @inicializar_y_capturar_excepciones
     def ConsultarLocalidadesProductor(self, cuit_productor=None, sep="||"):
@@ -1172,11 +1202,23 @@ class WSCPE(BaseWS):
 INSTALL_DIR = WSCPE.InstallDir = get_install_dir()
 
 if __name__ == "__main__":
+
+    if "--register" in sys.argv or "--unregister" in sys.argv:
+        import win32com.server.register
+        win32com.server.register.UseCommandLine(WSCPE)
+        sys.exit(0)
+    elif "/Automate" in sys.argv:
+        # MS seems to like /automate to run the class factories.
+        import win32com.server.localserver
+        #win32com.server.localserver.main()
+        # start the server.
+        win32com.server.localserver.serve([WSCPE._reg_clsid_])
+
     # obteniendo el TA
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     wsaa_url = ""
-    wscpe_url = WSDL[HOMO]
+    wscpe_url = WSDL[True]
 
     CERT = os.getenv("CERT", "reingart.crt")
     PRIVATEKEY = os.getenv("PKEY", "reingart.key")
@@ -1253,7 +1295,7 @@ if __name__ == "__main__":
             cuit_transportista=20120372913,
             fecha_hora_partida=datetime.datetime.now() + datetime.timedelta(days=1),
             # codigo_turno="00",
-            dominio=["AA001SC", "BB111CC"],  # 1 or more repetitions
+            dominio="AB001ST",  # 1 or more repetitions
             km_recorrer=500,
             cuit_chofer=20333333334,
             # tarifa=100.10,
@@ -1261,6 +1303,8 @@ if __name__ == "__main__":
             # cuit_intermediario_flete=20333333334,
             mercaderia_fumigada=True,
         )
+        ok = wscpe.AgregarTransporte(dominio="AD000UV")
+        ok = wscpe.AgregarDominio("AC000TU")
         wscpe.LanzarExcepciones = False
         ok = wscpe.AutorizarCPEAutomotor()
         if wscpe.NroCTG:
@@ -1317,7 +1361,7 @@ if __name__ == "__main__":
             # cuit_pagador_flete=20333333335,
             cuit_transportista=20333333334,
             # cuit_transportista_tramo2=20222222223,
-            nro_vagon=55555555,
+            nro_vagon=55555556,
             nro_precinto=1,
             nro_operativo=1111111111,
             fecha_hora_partida=datetime.datetime.now(),
@@ -1346,7 +1390,7 @@ if __name__ == "__main__":
             print("Nro Orden: ", wscpe.NroOrden)
 
     if "--anular_cpe" in sys.argv:
-        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=1, nro_orden=1)
+        wscpe.AgregarCabecera(tipo_cpe=74, sucursal=211, nro_orden=1)
         wscpe.AnularCPE()
 
     if "--rechazo_cpe" in sys.argv:
@@ -1594,3 +1638,11 @@ if __name__ == "__main__":
 
     if wscpe.Errores:
         print("Error:", wscpe.ErrMsg)
+
+    if "--xml" in sys.argv:
+        import xml.dom.minidom
+        for (xml_data, xml_path) in ((wscpe.XmlRequest, "wscpe_req.xml"), (wscpe.XmlResponse, "wscpe_res.xml")):
+            with open(xml_path, "w") as x:
+                if xml_data:
+                    dom = xml.dom.minidom.parseString(xml_data)
+                    x.write(dom.toprettyxml())

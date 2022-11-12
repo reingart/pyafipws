@@ -20,7 +20,7 @@ from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.28a"
+__version__ = "3.28b"
 
 import datetime
 import os
@@ -29,9 +29,9 @@ import time
 import traceback
 
 # revisar la instalación de pyafip.ws:
-from . import wsfexv1
-from .utils import SimpleXMLElement, SoapClient, SoapFault, date
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from pyafipws import wsfexv1
+from pyafipws.utils import SimpleXMLElement, SoapClient, SoapFault, date
+from pyafipws.utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfexv1.HOMO
@@ -383,7 +383,7 @@ def main():
             return
 
         if "/formato" in sys.argv:
-            from .formatos import formato_dbf 
+            from pyafipws.formatos.formato_dbf import definir_campos
 
             print("Formato:")
             for msg, formato in [
@@ -412,7 +412,7 @@ def main():
             return
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar(
@@ -432,7 +432,7 @@ def main():
             # generar el archivo de prueba para la próxima factura
             f_entrada = open(entrada, "w")
 
-            tipo_cbte = 21  # FC Expo (ver tabla de parámetros)
+            tipo_cbte = 19  # FC Expo (ver tabla de parámetros)
             punto_vta = 7
             # Obtengo el último número de comprobante y le agrego 1
             cbte_nro = int(ws.GetLastCMP(tipo_cbte, punto_vta)) + 1
@@ -445,7 +445,7 @@ def main():
             domicilio_cliente = "Rua 76 km 34.5 Alagoas"
             id_impositivo = "PJ54482221-l"
             moneda_id = "DOL"  # para reales, "DOL" o "PES" (ver tabla de parámetros)
-            moneda_ctz = 19.80
+            moneda_ctz = ws.GetParamCtz(moneda_id)
             obs_comerciales = "Observaciones comerciales"
             obs = "Sin observaciones"
             forma_pago = "30 dias"
@@ -554,6 +554,14 @@ def main():
             print("Vencimiento = ", ws.Vencimiento)
             print(ws.ErrMsg)
 
+            ws.AnalizarXml("XmlResponse")
+            if DEBUG:
+                print(ws.ObtenerTagXml('Id_impositivo'))
+                print(ws.ObtenerTagXml('Cuit_pais_cliente'))
+                print(ws.ObtenerTagXml('Moneda_Id'))
+                print(ws.ObtenerTagXml('Moneda_ctz'))
+                print(ws.ObtenerTagXml('Obs,Motivos_Obs'))
+
             depurar_xml(ws.client)
             escribir_factura(
                 {
@@ -561,10 +569,16 @@ def main():
                     "punto_vta": ws.PuntoVenta,
                     "cbte_nro": ws.CbteNro,
                     "fecha_cbte": ws.FechaCbte,
+                    "id_impositivo": ws.ObtenerTagXml("Id_impositivo"),
+                    "cuit_pais_cliente": ws.ObtenerTagXml("Cuit_pais_cliente"),
+                    "moneda_id": ws.ObtenerTagXml("Moneda_Id"),
+                    "moneda_ctz": ws.ObtenerTagXml("Moneda_ctz"),
                     "imp_total": ws.ImpTotal,
                     "cae": str(ws.CAE),
                     "fch_venc_cae": ws.Vencimiento,
                     "err_msg": ws.ErrMsg,
+                    "motivos_obs": ws.ObtenerTagXml('Obs,Motivos_Obs'),
+
                 },
                 open(salida, "w"),
             )

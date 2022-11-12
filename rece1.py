@@ -20,7 +20,7 @@ from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.38d"
+__version__ = "3.38f"
 
 import datetime
 import os
@@ -377,6 +377,8 @@ def escribir_facturas(encabezados, archivo, agrega=False):
     else:
         for dic in encabezados:
             dic["tipo_reg"] = 0
+            if "caea" in dic:
+                dic["cae"] = dic["caea"]
             archivo.write(escribir(dic, ENCABEZADO))
             if "tributos" in dic:
                 for it in dic["tributos"]:
@@ -411,7 +413,7 @@ def escribir_facturas(encabezados, archivo, agrega=False):
             ("Comprobante Asociado", CMP_ASOC, dic.get("cbtes_asoc", [])),
             ("Datos Opcionales", OPCIONAL, dic.get("opcionales", [])),
             ("Compradores", COMPRADOR, dic.get("compradores", [])),
-            ("Periodo Asociado", PERIODO_ASOC, [dic["periodo_cbtes_asoc"]]),
+            ("Periodo Asociado", PERIODO_ASOC, dic.get('periodo_cbtes_asoc', [])),
         ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
@@ -577,7 +579,7 @@ def main():
                         )
                         comienzo += longitud
                 else:
-                    from .formatos.formato_dbf import definir_campos
+                    from pyafipws.formatos.formato_dbf import definir_campos
 
                     filename = "%s.dbf" % msg.lower()[:8]
                     print("==== %s (%s) ====" % (msg, filename))
@@ -598,6 +600,7 @@ def main():
             proxy=proxy_dict,
             cacert=CACERT,
             wrapper=WRAPPER,
+            timeout=TIMEOUT,
         )
         if DEBUG:
             print(wsaa.DebugLog())
@@ -639,6 +642,7 @@ def main():
             fecha_serv_hasta = fecha
             moneda_id = "PES"
             moneda_ctz = "1.000"
+            caea = 32023696937881
 
             ws.CrearFactura(
                 concepto,
@@ -660,6 +664,7 @@ def main():
                 fecha_serv_hasta,  # --
                 moneda_id,
                 moneda_ctz,
+                caea=caea,
             )
 
             if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):

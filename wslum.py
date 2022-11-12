@@ -78,10 +78,10 @@ import traceback
 import pprint
 from pysimplesoap.client import SoapFault
 from fpdf import Template
-from . import utils
+from pyafipws import utils
 
 # importo funciones compartidas:
-from .utils import (
+from pyafipws.utils import (
     leer,
     escribir,
     leer_dbf,
@@ -823,7 +823,7 @@ def main():
     import csv
     from configparser import SafeConfigParser
 
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     try:
 
@@ -880,7 +880,7 @@ def main():
             print("CACERT", CACERT)
             print("WRAPPER", WRAPPER)
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar(
