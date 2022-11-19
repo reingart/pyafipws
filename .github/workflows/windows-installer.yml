@@ -88,19 +88,17 @@ jobs:
         AFIP_TEST_PRIV_KEY: ${{ secrets.AFIP_TEST_PRIV_KEY }}
         AFIP_TEST_CERT2: ${{ secrets.AFIP_TEST_CERT2 }}
         AFIP_TEST_CERT3: ${{ secrets.AFIP_TEST_CERT3 }}
-        PLATFORM: ${{ matrix.targetplatform }}
       run: |
         "$env:AFIP_TEST_PRIV_KEY" | Out-File -FilePath reingart.key
-        $( if ( "$env:RUNNER_ARCH" -eq "x86" ) { "$env:AFIP_TEST_CERT2" } else { "$env:AFIP_TEST_CERT3" } ) | Out-File -FilePath reingart.crt
+        $( if ( "$env:RUNNER_ARCH" -eq "X64" ) { "$env:AFIP_TEST_CERT2" } else { "$env:AFIP_TEST_CERT3" } ) | Out-File -FilePath reingart.crt
         Get-Content -Path reingart.crt
         Write-Host "RUNNER_ARCH: $env:RUNNER_ARCH"
-        Write-Host "PLATFORM: $env:PLATFORM"
     - name: Copy rece.ini file
       run: |
         copy conf\rece.ini .
     - name: Test WSAA command line interface
       run: |
-        .\wsaa.exe reingart.crt reingart.key wsmtxca
+        .\wsaa.exe --analizar reingart.crt reingart.key wsmtxca
     - name: Register WSAA component
       run: |
         .\wsaa.exe --register
