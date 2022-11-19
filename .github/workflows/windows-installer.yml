@@ -91,6 +91,7 @@ jobs:
       run: |
         "$env:AFIP_TEST_PRIV_KEY" | Out-File -FilePath reingart.key
         $( if ( "$env:RUNNER_ARCH" -eq "x86" ) { "$env:AFIP_TEST_CERT2" } else { "$env:AFIP_TEST_CERT3" } ) | Out-File -FilePath reingart.crt
+        Get-Content -Path reingart.crt
     - name: Copy rece.ini file
       run: |
         copy conf\rece.ini .
