@@ -48,6 +48,10 @@ jobs:
       run: |
         Remove-Item .\dist\lib\tcl -recurse
         Remove-Item .\dist\lib\tk -recurse
+    - name: Copy PowerShell tests into the release artifact
+      run: |
+        mkdir .\dist\tests
+        copy .\tests\powershell\*.* .\dist\tests
     - name: Save repository metadata for release env-vars
       run: |
         echo release_version="${{ matrix.python-version }}".$(git rev-list --count --all) > dist/.env
