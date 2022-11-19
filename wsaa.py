@@ -279,6 +279,7 @@ class WSAA(BaseWS):
     HOMO = HOMO
     WSDL = WSDL
     Version = "%s %s" % (__version__, HOMO and "Homologación" or "")
+    TTL = DEFAULT_TTL
 
     @inicializar_y_capturar_excepciones
     def CreateTRA(self, service="wsfe", ttl=2400):
@@ -454,7 +455,7 @@ class WSAA(BaseWS):
                 # ticket de acceso (TA) vencido, crear un nuevo req. (TRA)
                 if DEBUG:
                     print("Creando TRA...")
-                tra = self.CreateTRA(service=service, ttl=DEFAULT_TTL)
+                tra = self.CreateTRA(service=service, ttl=self.TTL)
                 # firmarlo criptográficamente
                 if DEBUG:
                     print("Firmando TRA...")
@@ -604,6 +605,7 @@ def main():
         # creo el objeto para comunicarme con el ws
         wsaa = WSAA()
         wsaa.LanzarExcepciones = True
+        wsaa.TTL = ttl
 
         print("WSAA Version %s %s" % (WSAA.Version, HOMO), file=sys.stderr)
 
