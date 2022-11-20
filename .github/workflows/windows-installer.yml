@@ -127,8 +127,7 @@ jobs:
         .\tests\test_wsfev1.ps1
     - name: Test RECE1 command line interface tool
       run: |
-        $env:Path += ";$pwd"
-        .\tests\test_rece1.ps1
+        powershell -NoProfile -File .\tests\test_rece1.ps1
 
   pre-release:
     name: "Pre Release"
