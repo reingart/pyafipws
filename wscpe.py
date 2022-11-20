@@ -69,7 +69,7 @@ import traceback
 from pysimplesoap.client import SoapFault
 
 # importo funciones compartidas:
-from utils import (
+from pyafipws.utils import (
     date,
     leer,
     escribir,
