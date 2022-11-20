@@ -89,6 +89,7 @@ jobs:
         AFIP_TEST_CERT2: ${{ secrets.AFIP_TEST_CERT2 }}
         AFIP_TEST_CERT3: ${{ secrets.AFIP_TEST_CERT3 }}
         TARGET_PLATFORM: ${{ matrix.targetplatform }}
+      if: "${{ env.AFIP_TEST_PRIV_KEY != '' }}"
       run: |
         "$env:AFIP_TEST_PRIV_KEY" | Out-File -FilePath reingart.key
         $( if ( "$env:TARGET_PLATFORM" -eq "x64" ) { "$env:AFIP_TEST_CERT2" } else { "$env:AFIP_TEST_CERT3" } ) | Out-File -FilePath reingart.crt
