@@ -439,7 +439,7 @@ class WSAA(BaseWS):
             # creo el nombre para el archivo del TA (según credenciales y ws)
             fn = (
                 "TA-%s.xml"
-                % hashlib.md5((service + crt + key).encode("utf8")).hexdigest()
+                % hashlib.md5((service + os.path.abspath(crt) + os.path.abspath(key)).encode("utf8")).hexdigest()
             )
             if cache:
                 fn = os.path.join(cache, fn)
