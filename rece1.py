@@ -594,8 +594,8 @@ def main():
         wsaa = WSAA()
         ta = wsaa.Autenticar(
             "wsfe",
-            cert,
-            privatekey,
+            os.path.abspath(cert),
+            os.path.abspath(privatekey),
             wsaa_url,
             proxy=proxy_dict,
             cacert=CACERT,
