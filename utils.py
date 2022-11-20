@@ -1104,14 +1104,25 @@ def norm(x, encoding="latin1"):
     return unicodedata.normalize("NFKD", x).encode("ASCII", "ignore")
 
 
+class UTC(datetime.tzinfo):
+    "Python2 datetime.timezone.utc equiv"
+    def utcoffset(self, dt):
+        return datetime.timedelta(0)
+    def dst(self, dt):
+        return self.utcoffset(dt)
+    def tzname(self, dt):
+        return "UTC"
+
+
 def date(fmt=None, timestamp=None):
     "Manejo de fechas (simil PHP)"
     if fmt == "U":  # return timestamp
-        # use universal standard time to avoid timezone differences
-        t = datetime.datetime.utcnow()
+        # use localtime to later convert to UTC timezone
+        t = datetime.datetime.now()
         return int(time.mktime(t.timetuple()))
     if fmt == "c":  # return isoformat
-        d = datetime.datetime.fromtimestamp(timestamp)
+        # use universal standard time to avoid timezone differences
+        d = datetime.datetime.fromtimestamp(timestamp, tz=UTC())
         return d.isoformat()
     if fmt == "Ymd":
         d = datetime.datetime.now()
