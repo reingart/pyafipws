@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarCPEPPendientesDeResolucionReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI0MDk2OTA1NjI1IiBnZW5fdGltZT0iMTYzNjE2MTU5NiIgZXhwX3RpbWU9IjE2MzYyMDQ4NTYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>T5R1kLFhI5tcKlEaf8tP7ndei7MNont1pWAOtM3xAIFj4S862ubKhss5CaHpDKrOhUuGGfV/XBTCvKqEkvV2gF05sLikanoUgkBYzN6G5AqY3DTDi+RV1m70Q+oQkj1OS+J0quCJb92cTZuVSZlWHjyG1yZUAPJCG4yOWlOgDhI=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><perfil>S</perfil></solicitud></ser:ConsultarCPEPPendientesDeResolucionReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1369'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/consultarCPEPPendientesDeResolucion"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>06/11/2021
+        00:25:57 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636169157162ms</elapsedTime><id>20211106122557199pbXEYVAbsfAkFuNxBveIJAdNihiQouom</id></soap:Header><soap:Body><ns2:ConsultarCPEPPendientesDeResolucionResp
+        xmlns:ns2="https://serviciosjava.afip.gob.ar/wscpe/"><respuesta><cartaPorte><nroCTG>10100005470</nroCTG><fechaPartida>2021-11-04T19:29:34</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-03T19:29:35</fechaUltimaModificacion></cartaPorte><cartaPorte><nroCTG>10100005471</nroCTG><fechaPartida>2021-11-05T02:21:49</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-04T02:21:49</fechaUltimaModificacion></cartaPorte><cartaPorte><nroCTG>10100005472</nroCTG><fechaPartida>2021-11-04T05:29:26</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-04T02:41:55</fechaUltimaModificacion></cartaPorte><errores/><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-06T00:25:57</fechaHora></metadata></respuesta></ns2:ConsultarCPEPPendientesDeResolucionResp></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 06 Nov 2021 03:25:57 GMT
+      Set-Cookie:
+      - JSESSIONID=4E50236A3D738A664BC403E5354BDA02; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddfa6b5d7a705957fc955599eb70ce22eec531d514681ce02fdb88d8e8938c794244306f4e38cff416df3c9614d1556b25e;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

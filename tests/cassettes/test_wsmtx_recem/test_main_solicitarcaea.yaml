@@ -1,0 +1,117 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:solicitarCAEARequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMDI2OTI1NTgwIiBnZW5fdGltZT0iMTYyNzk4MTY0OSIgZXhwX3RpbWU9IjE2MjgwMjQ5MDkiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NtdHhjYSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>ob25bv/M4ORD7IEVc/tyb/VzcWXAh2txgVYIo0A6aWt/N2OWBrGCZWFZQ4vAX/yq8N9mWdWjYeBVpLZMUTGGDhTlaFoRkAT0Ivjy4ccy3Dmy9b7Q5aPscpNX5mqQcWqrq9t/kErKott04414qNWQIt6P8E2kC5qqckGbLVdoY34=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><solicitudCAEA><periodo>202108</periodo><orden>1</orden></solicitudCAEA></ser:solicitarCAEARequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1386'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/solicitarCAEA"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Body><ns1:solicitarCAEAResponse
+        xmlns:ns1=\"http://impl.service.wsmtxca.afip.gov.ar/service/\"><arrayErrores><codigoDescripcion><codigo>604</codigo><descripcion>Ya
+        existe un CAEA otorgado para el per\xEDodo solicitado</descripcion></codigoDescripcion></arrayErrores></ns1:solicitarCAEAResponse></soapenv:Body></soapenv:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Tue, 03 Aug 2021 09:20:13 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfcf860391fc745e9541b9b38f99d711d8a00e3043e0b341aac03d171b8d36c974;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarCAEAEntreFechasRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMDI2OTI1NTgwIiBnZW5fdGltZT0iMTYyNzk4MTY0OSIgZXhwX3RpbWU9IjE2MjgwMjQ5MDkiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NtdHhjYSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>ob25bv/M4ORD7IEVc/tyb/VzcWXAh2txgVYIo0A6aWt/N2OWBrGCZWFZQ4vAX/yq8N9mWdWjYeBVpLZMUTGGDhTlaFoRkAT0Ivjy4ccy3Dmy9b7Q5aPscpNX5mqQcWqrq9t/kErKott04414qNWQIt6P8E2kC5qqckGbLVdoY34=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><fechaDesde>2021-08-01</fechaDesde><fechaHasta>2021-08-15</fechaHasta></ser:consultarCAEAEntreFechasRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1406'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/consultarCAEAEntreFechas"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns1:consultarCAEAEntreFechasResponse
+        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><arrayCAEAResponse><CAEAResponse><fechaProceso>2021-08-03</fechaProceso><CAEA>31313542033875</CAEA><periodo>202108</periodo><orden>1</orden><fechaDesde>2021-08-01</fechaDesde><fechaHasta>2021-08-15</fechaHasta><fechaTopeInforme>2021-08-20</fechaTopeInforme></CAEAResponse></arrayCAEAResponse></ns1:consultarCAEAEntreFechasResponse></soapenv:Body></soapenv:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Tue, 03 Aug 2021 09:20:15 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf688f23b140604ca14d7ae4a4a165bd54596df4518179ca08c52e279b2d96f794;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://impl.service.wsmtxca.afip.gov.ar/service/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarCAEARequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMDI2OTI1NTgwIiBnZW5fdGltZT0iMTYyNzk4MTY0OSIgZXhwX3RpbWU9IjE2MjgwMjQ5MDkiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NtdHhjYSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>ob25bv/M4ORD7IEVc/tyb/VzcWXAh2txgVYIo0A6aWt/N2OWBrGCZWFZQ4vAX/yq8N9mWdWjYeBVpLZMUTGGDhTlaFoRkAT0Ivjy4ccy3Dmy9b7Q5aPscpNX5mqQcWqrq9t/kErKott04414qNWQIt6P8E2kC5qqckGbLVdoY34=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><CAEA>31313542033875</CAEA></ser:consultarCAEARequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1341'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://impl.service.wsmtxca.afip.gov.ar/service/consultarCAEA"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsmtxca/services/MTXCAService
+  response:
+    body:
+      string: <?xml version='1.0' encoding='UTF-8'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><ns1:consultarCAEAResponse
+        xmlns:ns1="http://impl.service.wsmtxca.afip.gov.ar/service/"><CAEAResponse><fechaProceso>2021-08-03</fechaProceso><CAEA>31313542033875</CAEA><periodo>202108</periodo><orden>1</orden><fechaDesde>2021-08-01</fechaDesde><fechaHasta>2021-08-15</fechaHasta><fechaTopeInforme>2021-08-20</fechaTopeInforme></CAEAResponse></ns1:consultarCAEAResponse></soapenv:Body></soapenv:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Tue, 03 Aug 2021 09:20:17 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf0a2b2e07847bfb29352133f56f89725dc2de33b22fcfc15e8feddc72059b0fd1;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Servlet/3.0; JBossAS-6
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -17,6 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 from __future__ import print_function
 from __future__ import absolute_import
 
+from future import standard_library
 
 # python 2 compatibility:
 if 'xrange' not in dir(__builtins__):
@@ -68,7 +69,7 @@ import traceback
 from pysimplesoap.client import SoapFault
 
 # importo funciones compartidas:
-from utils import (
+from pyafipws.utils import (
     date,
     leer,
     escribir,

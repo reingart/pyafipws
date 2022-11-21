@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConfirmacionDefinitivaCPEFerroviariaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMzQzNDI4MTM3IiBnZW5fdGltZT0iMTYzODAyMzQ4NyIgZXhwX3RpbWU9IjE2MzgwNjY3NDciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>YWUTp6puj6kciGKdpYsgcAwJpiveAkDeYjthZ5HSbwwyS3i1Lfvm6BjL67VrqyExwXAQFrqSjMSZT5lfgR6mv6EjaS1ylW5H962Bn4BC8yzb2BShaLbAfrDe/frC63TGJ33lfvBczQxOu/UUUV37LkPOO0AORzRlnjf2ldrpT1Y=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><pesoBrutoDescarga>1000</pesoBrutoDescarga><pesoTaraDescarga>10000</pesoTaraDescarga><ramalDescarga><codigo>99</codigo><descripcion>XXXXX</descripcion></ramalDescarga></solicitud></ser:ConfirmacionDefinitivaCPEFerroviariaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1520'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/confirmacionDefinitivaCPEFerroviaria"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>27/11/2021
+        13:58:27 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1638032307953ms</elapsedTime><id>20211127015827975YGhtVLnQKvUiNwLtLfhWhHXtmKeDGvsM</id></soap:Header><soap:Body><soap:Fault><faultcode>soap:Client</faultcode><faultstring>Error
+        en la validacion del esquema XML</faultstring></soap:Fault></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 27 Nov 2021 16:58:27 GMT
+      Set-Cookie:
+      - JSESSIONID=59C3A5DEB2F4D6224FD5CCBC0CC0CEF0; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddf83a88f3df6a60ab81295cf0f767eb62257e50528cc75a2f48a70eddadde9b1b2c127076ee3d01431a1e311ea35c178bb;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 500
+      message: '500'
+version: 1

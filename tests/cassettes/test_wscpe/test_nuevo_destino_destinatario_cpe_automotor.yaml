@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:NuevoDestinoDestinatarioCPEAutomotorReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzNDcxMjM0NTQiIGdlbl90aW1lPSIxNjM3OTg2OTU3IiBleHBfdGltZT0iMTYzODAzMDIxNyIvPgogICAgPG9wZXJhdGlvbiB0eXBlPSJsb2dpbiIgdmFsdWU9ImdyYW50ZWQiPgogICAgICAgIDxsb2dpbiBlbnRpdHk9IjMzNjkzNDUwMjM5IiBzZXJ2aWNlPSJ3c2NwZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>WbKNkmsQ2RdWc0CA1r2PVWq7naTgRPi43GWJ6t2fI0Rk2Li6OriKh8TChrzm/sReKGROd3/rbSt/w98i9Mf+99/relgQOR0aIQgF8Q40KCKAvtLsKjTyxZuRgMeMk8NRLKS3f2ll5rvTzG4aELv4RvmUFqzJdrLX9q6kuHlHEDw=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><cartaPorte><tipoCPE>74</tipoCPE><sucursal>221</sucursal><nroOrden>47</nroOrden></cartaPorte><destino><cuit>20111111112</cuit><esDestinoCampo>true</esDestinoCampo><codProvincia>1</codProvincia><codLocalidad>10216</codLocalidad><planta>1</planta></destino><destinatario><cuit>30000000006</cuit></destinatario><transporte><fechaHoraPartida>2021-11-27T01:50:22.290145</fechaHoraPartida><kmRecorrer>333</kmRecorrer><codigoTurno>00</codigoTurno></transporte></solicitud></ser:NuevoDestinoDestinatarioCPEAutomotorReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1802'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/nuevoDestinoDestinatarioCPEAutomotor"'
+      user-agent:
+      - Python-httplib2/0.19.0 (gzip)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Header><serverTime>27/11/2021
+        01:50:22 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1637988622501ms</elapsedTime><id>20211127015022572fEaIoBfCrZqWySsIlXvcgbMnKuykbLkt</id></soap:Header><soap:Body><ns2:NuevoDestinoDestinatarioCPEAutomotorResp
+        xmlns:ns2=\"https://serviciosjava.afip.gob.ar/wscpe/\"><respuesta><errores><error><codigo>2034</codigo><descripcion>La
+        transici\xF3n desde el estado AC hacia el estado AC es inv\xE1lida</descripcion></error></errores><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-27T01:50:22</fechaHora></metadata></respuesta></ns2:NuevoDestinoDestinatarioCPEAutomotorResp></soap:Body></soap:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 27 Nov 2021 04:50:22 GMT
+      Set-Cookie:
+      - JSESSIONID=3FBD885034291DDEBE7991C2753E36C8; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddfef5a194a8f02a8bcd0a8409b06c9103438d9f5877adce6dede75a7902cee222ce5d48170eb5dd36bbdfea71c4862fd27;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

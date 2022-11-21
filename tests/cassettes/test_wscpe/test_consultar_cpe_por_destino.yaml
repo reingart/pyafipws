@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarCPEPorDestinoReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxMzY5OTM4MjI1IiBnZW5fdGltZT0iMTYzNjM3NzU4NSIgZXhwX3RpbWU9IjE2MzY0MjA4NDUiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>DVE8vB8RuaO+1x/JMTZR80Ie5EkBzqvPjw6rL2FKTMzseUKFqDtLUsr5RiMWDAP/vIbwgrWSsNAEsaWOYCbGWHGDErCvzQKuP4SC0Wd3VC4yYdg4xGt1rGx+++aBBIBj01L7cqi3334T3Pa+U99sDnKd7zaCVsFOCnaTNCTSnRA=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><planta>1938</planta><fechaPartidaDesde>2021-11-05</fechaPartidaDesde><fechaPartidaHasta>2021-11-08</fechaPartidaHasta><tipoCartaPorte>74</tipoCartaPorte></solicitud></ser:ConsultarCPEPorDestinoReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1479'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/consultarCPEPorDestino"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>08/11/2021
+        10:43:06 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636378986188ms</elapsedTime><id>20211108104306746TkxNoKsdOcssPJpnJDEIKeyxAeADJgpQ</id></soap:Header><soap:Body><ns2:ConsultarCPEPorDestinoResp
+        xmlns:ns2="https://serviciosjava.afip.gob.ar/wscpe/"><respuesta><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005471</nroCTG><fechaPartida>2021-11-05T02:21:49</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-04T02:21:49</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005666</nroCTG><fechaPartida>2021-11-07T02:24:07</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T02:24:07</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005667</nroCTG><fechaPartida>2021-11-07T02:27:21</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T02:27:21</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005668</nroCTG><fechaPartida>2021-11-07T02:28:10</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T02:28:11</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005669</nroCTG><fechaPartida>2021-11-07T02:38:46</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T02:38:46</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005670</nroCTG><fechaPartida>2021-11-07T02:42:14</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T02:42:14</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005671</nroCTG><fechaPartida>2021-11-07T02:43:28</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T02:43:29</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005684</nroCTG><fechaPartida>2021-11-07T15:12:24</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T15:12:24</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005685</nroCTG><fechaPartida>2021-11-07T15:17:40</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T15:17:41</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005686</nroCTG><fechaPartida>2021-11-07T15:20:27</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T15:20:28</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005687</nroCTG><fechaPartida>2021-11-07T15:21:34</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T15:21:34</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005688</nroCTG><fechaPartida>2021-11-07T15:22:21</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T15:22:21</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005689</nroCTG><fechaPartida>2021-11-07T15:24:16</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T15:24:16</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005690</nroCTG><fechaPartida>2021-11-07T15:24:44</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T15:24:44</fechaUltimaModificacion></cartaPorte><cartaPorte><tipoCartaPorte>74</tipoCartaPorte><nroCTG>10100005691</nroCTG><fechaPartida>2021-11-07T15:25:41</fechaPartida><estado>AC</estado><fechaUltimaModificacion>2021-11-06T15:25:41</fechaUltimaModificacion></cartaPorte><errores/><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-08T10:43:06</fechaHora></metadata></respuesta></ns2:ConsultarCPEPorDestinoResp></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Mon, 08 Nov 2021 13:43:06 GMT
+      Set-Cookie:
+      - JSESSIONID=C4442A3B61A4886DF7BD988DA091EAE1; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddf087599b736dd8a336b7a45f547afcaed15da305f1940dd36856fa2d86c1f47a2df0a1dd1d88dd1c002886d7be72eecf7;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

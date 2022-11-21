@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarCPEFerroviariaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIyMzcwODU4Nzk5IiBnZW5fdGltZT0iMTYzNjY1OTc4NyIgZXhwX3RpbWU9IjE2MzY3MDMwNDciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>IPDXxt8k+TgVjSpdx2nPNN5yKRxgEEtG/KAeeKOfJL/YXi0eZiheee2fgkDGcXZX+AAZy1PIXSfPiVm2RnOV469PsqzG3DE6T7wpuSE2IsRDE8k0OwFaPR9MXs0ma9Q6osFV1IMaGCjHEHsO6EKEcRtUTYw++bV396X7dMld+lA=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><cuitSolicitante>20267565393</cuitSolicitante><cartaPorte><tipoCPE>75</tipoCPE><sucursal>1</sucursal><nroOrden>1</nroOrden></cartaPorte></solicitud></ser:ConsultarCPEFerroviariaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1463'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/consultarCPEFerroviaria"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Header><serverTime>11/11/2021
+        17:28:02 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636662482683ms</elapsedTime><id>20211111052802723AARcflNRvsWPjYGsvTMrUpFGRTpiCvhq</id></soap:Header><soap:Body><ns2:ConsultarCPEFerroviariaResp
+        xmlns:ns2=\"https://serviciosjava.afip.gob.ar/wscpe/\"><respuesta><errores><error><codigo>800</codigo><descripcion>No
+        existen solicitudes para los par\xE1metros indicados.</descripcion></error></errores><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-11T17:28:02</fechaHora></metadata></respuesta></ns2:ConsultarCPEFerroviariaResp></soap:Body></soap:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Thu, 11 Nov 2021 20:28:02 GMT
+      Set-Cookie:
+      - JSESSIONID=3AA37D2E4D818330689FA6C2CC98CBEF; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddf57ed599419014f9b9a4927addbbd36f556d8c04697a00fe587cb1cb9e76bfa8df8ba47bc88be43a300f0ecca003f5060;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

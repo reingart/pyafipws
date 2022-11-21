@@ -46,6 +46,12 @@ jobs:
     - name: Copy rece.ini file
       run: |
         sudo cp conf/rece.ini rece.ini
+    - name: Copy wslum.ini file
+      run: |
+        sudo cp conf/wslum.ini wslum.ini
+    - name: Copy wsremcarne.ini file
+      run: |
+        sudo cp conf/wsremcarne.ini wsremcarne.ini
     - name: Copy wsltv.ini file
       run: |
         sudo cp conf/wsltv.ini wsltv.ini

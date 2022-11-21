@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:EditarCPEFerroviariaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxMzY5OTM4MjI1IiBnZW5fdGltZT0iMTYzNjM3NzU4NSIgZXhwX3RpbWU9IjE2MzY0MjA4NDUiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>DVE8vB8RuaO+1x/JMTZR80Ie5EkBzqvPjw6rL2FKTMzseUKFqDtLUsr5RiMWDAP/vIbwgrWSsNAEsaWOYCbGWHGDErCvzQKuP4SC0Wd3VC4yYdg4xGt1rGx+++aBBIBj01L7cqi3334T3Pa+U99sDnKd7zaCVsFOCnaTNCTSnRA=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><nroCTG>10100000542</nroCTG><cuitRemitenteComercialVentaPrimaria>20222222223</cuitRemitenteComercialVentaPrimaria><cuitRemitenteComercialVentaSecundaria>20222222223</cuitRemitenteComercialVentaSecundaria><cuitRemitenteComercialVentaSecundaria2>20111111113</cuitRemitenteComercialVentaSecundaria2><cuitCorredorVentaPrimaria>20222222223</cuitCorredorVentaPrimaria><cuitCorredorVentaSecundaria>20222222223</cuitCorredorVentaSecundaria><cuitTransportista>20120372913</cuitTransportista><destino><cuit>20111111112</cuit><esDestinoCampo>true</esDestinoCampo><codProvincia>1</codProvincia><codLocalidad>10216</codLocalidad><planta>1</planta></destino><pesoBruto>1000</pesoBruto><codGrano>31</codGrano></solicitud></ser:EditarCPEFerroviariaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '2015'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/editarCPEFerroviaria"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>11/11/2021
+        00:36:50 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>21ms</elapsedTime><id>20211111123650608uTWCNjWPDnkvuAUGunkSQAZKZMwBeiXO</id></soap:Header><soap:Body><soap:Fault><faultcode>soap:Client</faultcode><faultstring>Error
+        en la autenticacion: Token Vencido. Fecha y Hora de Vencimiento del Token
+        Enviado: 08-11-2021 22:20:45  - Fecha y Hora Actual del Servidor: 11-11-2021
+        00:36:50</faultstring></soap:Fault></soap:Body></soap:Envelope>'
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Thu, 11 Nov 2021 03:36:50 GMT
+      Set-Cookie:
+      - JSESSIONID=39FC6C91926F81DDD09BA20E072DAB75; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddff9ff30101b762a007e85d645f97e497817ed582177ae44712d23920073513bb619dd5448adef689600e23defa8ba729a;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 500
+      message: '500'
+version: 1

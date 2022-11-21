@@ -198,7 +198,7 @@ def autorizar(ws, entrada, salida):
     if DEBUG:
         print("\n".join(["%s='%s'" % (k, v) for k, v in list(ws.factura.items())]))
         print("id:", encabezado["id"])
-    if not DEBUG or input("Facturar?") == "S":
+    if not DEBUG :
         cae = ws.Authorize(encabezado["id"])
         dic = ws.factura
         dic.update(
@@ -248,12 +248,12 @@ def depurar_xml(client):
     f.write(client.xml_request)
     f.close()
     f = open("response-%s.xml" % fecha, "w")
-    f.write(client.xml_response)
+    f.write(client.xml_response.decode())
     f.close()
 
 
 def main():
-    global HOMO, DEBUG, XML, CONFIG_FILE
+    global HOMO, DEBUG, XML, CONFIG_FILE, wsaa
     if "/ayuda" in sys.argv:
         print(LICENCIA)
         print()
@@ -274,7 +274,7 @@ def main():
         print(" /dbf: lee y almacena la información en tablas DBF")
         print()
         print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
-        sys.exit(0)
+        return
 
     if "/debug" in sys.argv:
         DEBUG = True
@@ -290,7 +290,7 @@ def main():
     if config.has_option("WSAA", "URL") and not HOMO:
         wsaa_url = config.get("WSAA", "URL")
     else:
-        wsaa_url = wsaa.WSAAURL
+        wsaa_url = None
     if config.has_option("WSBFE", "URL") and not HOMO:
         wsbfe_url = config.get("WSBFE", "URL")
     else:
@@ -320,7 +320,7 @@ def main():
         if "/dummy" in sys.argv:
             print("Consultando estado de servidores...")
             print(ws.Dummy())
-            sys.exit(0)
+            return
 
         if "/formato" in sys.argv:
             print("Formato:")
@@ -333,7 +333,7 @@ def main():
                         % (clave, comienzo, longitud, tipo)
                     )
                     comienzo += longitud
-            sys.exit(0)
+            return
 
         # obteniendo el TA
         from pyafipws.wsaa import WSAA
@@ -393,25 +393,36 @@ def main():
 
         if "/ult" in sys.argv:
             print("Consultar ultimo numero:")
-            tipo_cbte = int(input("Tipo de comprobante: "))
-            punto_vta = int(input("Punto de venta: "))
+            i = sys.argv.index("/ult")
+            if i + 2 < len(sys.argv):
+                tipo_cbte = int(sys.argv[i + 1])
+                punto_vta = int(sys.argv[i + 2])
+            else:
+                tipo_cbte = int(input("Tipo de comprobante: "))
+                punto_vta = int(input("Punto de venta: "))
             ult_cbte = ws.GetLastCMP(tipo_cbte, punto_vta)
             print("Ultimo numero: ", ult_cbte)
             print("Fecha: ", ws.FechaCbte)
             depurar_xml(ws.client)
-            sys.exit(0)
+            return
 
         if "/id" in sys.argv:
             ult_id = ws.GetLastID()
             print("ID: ", ult_id)
             depurar_xml(ws.client)
-            sys.exit(0)
+            return
 
         if "/get" in sys.argv:
             print("Recuperar comprobante:")
-            tipo_cbte = int(input("Tipo de comprobante: "))
-            punto_vta = int(input("Punto de venta: "))
-            cbte_nro = int(input("Numero de comprobante: "))
+            i = sys.argv.index("/get")
+            if i + 3 < len(sys.argv):
+                tipo_cbte = int(sys.argv[i + 1])
+                punto_vta = int(sys.argv[i + 2])
+                cbte_nro = int(sys.argv[i + 3])
+            else:
+                tipo_cbte = int(input("Tipo de comprobante: "))
+                punto_vta = int(input("Punto de venta: "))
+                cbte_nro = int(input("Numero de comprobante: "))
             cae = ws.GetCMP(tipo_cbte, punto_vta, cbte_nro)
             cbt = {
                 "fecha_cbte": ws.FechaCbte,
@@ -427,7 +438,7 @@ def main():
             for k, v in list(cbt.items()):
                 print("%s = %s" % (k, v))
             depurar_xml(ws.client)
-            sys.exit(0)
+            return
 
         f_entrada = f_salida = None
         try:
@@ -445,7 +456,7 @@ def main():
                 f_salida.close()
             if XML:
                 depurar_xml(ws.client)
-        sys.exit(0)
+        return
 
     except Exception as e:
         print(str(e).encode("ascii", "ignore"))

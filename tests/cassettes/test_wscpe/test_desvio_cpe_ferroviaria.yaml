@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:DesvioCPEFerroviariaReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxMzY5OTM4MjI1IiBnZW5fdGltZT0iMTYzNjM3NzU4NSIgZXhwX3RpbWU9IjE2MzY0MjA4NDUiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>DVE8vB8RuaO+1x/JMTZR80Ie5EkBzqvPjw6rL2FKTMzseUKFqDtLUsr5RiMWDAP/vIbwgrWSsNAEsaWOYCbGWHGDErCvzQKuP4SC0Wd3VC4yYdg4xGt1rGx+++aBBIBj01L7cqi3334T3Pa+U99sDnKd7zaCVsFOCnaTNCTSnRA=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><destino><cuit>20111111112</cuit><codProvincia>1</codProvincia><codLocalidad>10216</codLocalidad><planta>1</planta></destino><transporte><ramal><codigo>99</codigo><descripcion>Ok</descripcion></ramal><fechaHoraPartidaTren>2021-11-12T00:28:59.903070</fechaHoraPartidaTren><kmRecorrer>333</kmRecorrer></transporte></solicitud></ser:DesvioCPEFerroviariaReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1633'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/desvioCPEFerroviaria"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>11/11/2021
+        00:29:01 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636601341142ms</elapsedTime><id>20211111122901163CEDWoXRdDyHlQFknfPyrhSAVqFEozRMG</id></soap:Header><soap:Body><soap:Fault><faultcode>soap:Client</faultcode><faultstring>Error
+        en la validacion del esquema XML</faultstring></soap:Fault></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Thu, 11 Nov 2021 03:29:01 GMT
+      Set-Cookie:
+      - JSESSIONID=E0982D4CDF055D37D3C6335CCBEF06D7; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddf6a0edde74d4c452c07dde6979b42fef04f298405c59a6f5bae8fcfac8d64489cf2567340ad9c28e3b3500f1db6f3bab8;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 500
+      message: '500'
+version: 1

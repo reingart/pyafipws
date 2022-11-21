@@ -1,0 +1,882 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarGruposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest></ser:consultarGruposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1330'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarGruposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:25</fecha></info></S:Header><S:Body><ns2:consultarGruposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarGruposCarneReturn><arrayGruposCarne><codigoDescripcionString><codigo>1</codigo><descripcion>Bovina
+        - media res c/hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>10</codigo><descripcion>Bovina
+        - huesos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11</codigo><descripcion>Bovina
+        - opoter\xE1picos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12</codigo><descripcion>Bovina
+        - otros</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13</codigo><descripcion>Porcina</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2</codigo><descripcion>Bovina
+        - cuarto delantero c/hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3</codigo><descripcion>Bovina
+        - cuarto trasero c/hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>4</codigo><descripcion>Bovina
+        - media res s/hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5</codigo><descripcion>Bovina
+        - cuarto delantero s/hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6</codigo><descripcion>Bovina
+        - cuarto trasero s/hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7</codigo><descripcion>Bovina
+        - menudencias</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8</codigo><descripcion>Bovina
+        - v\xEDsceras</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9</codigo><descripcion>Bovina
+        - grasas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>99</codigo><descripcion>Otros</descripcion></codigoDescripcionString></arrayGruposCarne></consultarGruposCarneReturn></ns2:consultarGruposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:25 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf9507c1a73026914e3f182b4c6100c5ab0b5ebea7e9c97d1fe309f3a183ebf44e;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>1</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:28</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>1.1</codigo><descripcion>Media
+        res con hueso</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:28 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf4aec653ca6f876a9771fc421e9186359ccd27987d602173751704049b7f122a4;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>10</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1361'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:30</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>10.1</codigo><descripcion>Astas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>10.2</codigo><descripcion>Huesos
+        de cabeza</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>10.3</codigo><descripcion>Huesos
+        de manos </descripcion></codigoDescripcionString><codigoDescripcionString><codigo>10.4</codigo><descripcion>Huesos
+        de maxilar</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>10.5</codigo><descripcion>Huesos
+        de patas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>10.6</codigo><descripcion>Machos
+        de astas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>10.8</codigo><descripcion>Otros
+        huesos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>10.7</codigo><descripcion>Pezu\xF1as</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:30 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf673a70a0321b683c21bf8f587c38895c8e88c75b648454f1660aa308aa60d837;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>11</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1361'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:33</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>11.1</codigo><descripcion>Epitelio</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.2</codigo><descripcion>Hiel</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.4</codigo><descripcion>Hipot\xE1lamo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.3</codigo><descripcion>Hip\xF3fisis</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.13</codigo><descripcion>Otros
+        opoter\xE1picos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.6</codigo><descripcion>Paratiroides</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.7</codigo><descripcion>Pineal</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.8</codigo><descripcion>Pr\xF3stata</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.5</codigo><descripcion>P\xE1ncreas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.9</codigo><descripcion>Sangre
+        nonato</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.10</codigo><descripcion>Sarro</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.11</codigo><descripcion>Suprarrenales</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>11.12</codigo><descripcion>Tiroides</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:32 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfdfccb4b386274aa8c868cdd644acc9c553e4ab1869b7a43235b611dc8d4498b4;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>12</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1361'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:35</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>12.1</codigo><descripcion>Caldo
+        de carne</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.2</codigo><descripcion>Caldo
+        de hueso y/o concentrados</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.3</codigo><descripcion>Caldo
+        de pata</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.4</codigo><descripcion>Carne
+        cocida y congelada en tubos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.5</codigo><descripcion>Chorizos
+        - embutidos cocidos (salchich\xF3n)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.6</codigo><descripcion>Chorizos
+        - embutidos frescos (chorizo)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.7</codigo><descripcion>Chorizos
+        - embutidos secos (salame)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.8</codigo><descripcion>Cueros</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.9</codigo><descripcion>Enlatado
+        - pate de foie y de h\xEDgado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.11</codigo><descripcion>Enlatados
+        (corned beef)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.10</codigo><descripcion>Enlatados
+        - picadillo c\xE1rnico</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.12</codigo><descripcion>Esti\xE9rcol</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.13</codigo><descripcion>Extracto</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.14</codigo><descripcion>Gelatina</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.15</codigo><descripcion>Hamburguesas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.16</codigo><descripcion>Mondongo
+        semicocido y congelado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.18</codigo><descripcion>Otros
+        subproductos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>12.17</codigo><descripcion>Sangre</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:35 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf8430c01da4de43e86bc62eca2ba4ddece6b6818d393a0c3e9ddc435198a85e38;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>13</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1361'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:37</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>13.1</codigo><descripcion>Angueta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.2</codigo><descripcion>Bondiola
+        sin hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.36</codigo><descripcion>Bronza</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.37</codigo><descripcion>Cabezas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.3</codigo><descripcion>Carne
+        Chica Porcina</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.38</codigo><descripcion>Carre
+        con Solomillo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.39</codigo><descripcion>Churrasco</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.40</codigo><descripcion>Cinta
+        de Lomo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.4</codigo><descripcion>Coraz\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.5</codigo><descripcion>Corteza</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.6</codigo><descripcion>Costillar
+        con hueso y lomo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.7</codigo><descripcion>Costillar
+        con hueso, lomo y bondiola</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.8</codigo><descripcion>Costillar
+        sin hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.9</codigo><descripcion>Cuadril</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.41</codigo><descripcion>Cuero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.42</codigo><descripcion>Cuero
+        con grasa</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.43</codigo><descripcion>Cuero
+        lonja</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.44</codigo><descripcion>Desperdicio</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.10</codigo><descripcion>Est\xF3mago</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.45</codigo><descripcion>Falda</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.46</codigo><descripcion>Garr\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.47</codigo><descripcion>Grasa</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.48</codigo><descripcion>Hueso
+        de Bondiola</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.49</codigo><descripcion>Huesos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.11</codigo><descripcion>H\xEDgado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.50</codigo><descripcion>Jam\xF3n
+        Tubo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.12</codigo><descripcion>Jam\xF3n
+        con hueso, corte corto</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.13</codigo><descripcion>Jam\xF3n
+        con hueso, corte largo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.14</codigo><descripcion>Jam\xF3n
+        con hueso, corte parma</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.15</codigo><descripcion>Jam\xF3n
+        sin hueso desgrasado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.16</codigo><descripcion>Lengua</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.17</codigo><descripcion>Lomo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.51</codigo><descripcion>Matambre</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.18</codigo><descripcion>Media
+        Res Porcina</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.19</codigo><descripcion>Nalga</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.20</codigo><descripcion>Otros
+        Cortes frescos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.35</codigo><descripcion>Otros
+        resultantes de la faena porcina</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.52</codigo><descripcion>Paleta
+        Tubo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.21</codigo><descripcion>Paleta
+        con hueso con cuero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.22</codigo><descripcion>Paleta
+        sin hueso, sin cuero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.53</codigo><descripcion>Paleta
+        tubo con cuero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.54</codigo><descripcion>Panceta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.23</codigo><descripcion>Panceta
+        con hueso, con cuero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.55</codigo><descripcion>Panceta
+        no piano</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.24</codigo><descripcion>Panceta
+        sin hueso con y sin cuero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.56</codigo><descripcion>Papada</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.25</codigo><descripcion>Pata</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.26</codigo><descripcion>Peceto</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.27</codigo><descripcion>Pechito
+        con hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.57</codigo><descripcion>Pecho
+        Pelado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.28</codigo><descripcion>Productos
+        preparados</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.58</codigo><descripcion>Pulpa
+        Jam\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.59</codigo><descripcion>Pulpa
+        Paleta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.60</codigo><descripcion>Punta
+        de Pecho</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.29</codigo><descripcion>Rabo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.30</codigo><descripcion>Res
+        Porcina</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.61</codigo><descripcion>Ribbs</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.31</codigo><descripcion>Ri\xF1\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.34</codigo><descripcion>Sangre</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.62</codigo><descripcion>Solomillo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.64</codigo><descripcion>Tapa
+        Jam\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.65</codigo><descripcion>Tapa
+        Paleta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.63</codigo><descripcion>Tapa
+        con Cuero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.32</codigo><descripcion>Tocino
+        con y sin hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.33</codigo><descripcion>Tortuga</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>13.66</codigo><descripcion>Unto</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:37 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf18481e7caa269e3f52e6a4782eaa44c8420a45eb33f302bbf6cd94dcdefc0e93;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>2</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:39</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>2.1</codigo><descripcion>Asado
+        a 10 costillas \"plancha\" (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.2</codigo><descripcion>Asado
+        a 10 costillas con vac\xEDo y matambre (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.3</codigo><descripcion>Asado
+        a 13 costillas \"plancha\" (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.4</codigo><descripcion>Asado
+        con vac\xEDo (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.5</codigo><descripcion>Asado
+        exportaci\xF3n (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.6</codigo><descripcion>Bife
+        10 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.7</codigo><descripcion>Bife
+        10 costillas con lomo (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.8</codigo><descripcion>Bife
+        4 costillas con lomo (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.9</codigo><descripcion>Bife
+        ancho 4 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.10</codigo><descripcion>Corte
+        \"chuck and blade\": cogote, aguja, carnaza, paleta y asado 5 \xF3 6 costillas.(con
+        hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.11</codigo><descripcion>Corte
+        \"crops\": cogote, aguja, bife ancho, carnaza de paleta y parte del asado
+        (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.12</codigo><descripcion>Corte
+        \"pony\": aguja, carnaza, de paleta y parte del asado (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.13</codigo><descripcion>Corte
+        \"ribs and ponies\": bife ancho, aguja, carnaza de paleta y parte del asado
+        (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.14</codigo><descripcion>Cuarto
+        delantero (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.15</codigo><descripcion>Cuarto
+        delantero 10 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.16</codigo><descripcion>Cuarto
+        delantero 3 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.17</codigo><descripcion>Cuarto
+        delantero 3 costillas con falda (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.18</codigo><descripcion>Cuarto
+        delantero 4 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.19</codigo><descripcion>Cuarto
+        delantero 5 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.20</codigo><descripcion>Cuarto
+        delantero 8 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.21</codigo><descripcion>Cuarto
+        delantero 9 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.22</codigo><descripcion>Cuarto
+        delantero con vac\xEDo (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.23</codigo><descripcion>Cuarto
+        delantero sin asado (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.24</codigo><descripcion>Garr\xF3n
+        / brazuelo (osobuco)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.27</codigo><descripcion>Otros
+        cortes delanteros con hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.25</codigo><descripcion>Pecho
+        3 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>2.26</codigo><descripcion>Pecho
+        de exportaci\xF3n  (con hueso)</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:39 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf2c10b671510cec4b3b0119ee79b0515af0b35a4848be89a37235892bc0363bea;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>3</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:45</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>3.1</codigo><descripcion>Asado
+        con vac\xEDo (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.2</codigo><descripcion>Bife
+        ancho 4 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.3</codigo><descripcion>Bife
+        angosto con lomo a 4 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.4</codigo><descripcion>Bife
+        angosto y ancho a 8 costillas con lomo (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.5</codigo><descripcion>Bifes
+        angostos con lomo (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.6</codigo><descripcion>Bifes
+        angostos con lomo y cuadril (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.7</codigo><descripcion>Bifes
+        angostos y anchos (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.8</codigo><descripcion>Cuarto
+        trasero 3 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.9</codigo><descripcion>Nalga
+        de afuera, nalga de adentro y tortuguita (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.26</codigo><descripcion>Otros
+        cortes traseros con hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.10</codigo><descripcion>Pierna
+        (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.11</codigo><descripcion>Pierna
+        mocha (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.12</codigo><descripcion>Pierna
+        mocha / mocho (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.21</codigo><descripcion>Pistola
+        10 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.13</codigo><descripcion>Pistola
+        3 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.14</codigo><descripcion>Pistola
+        3 costillas sin garr\xF3n (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.15</codigo><descripcion>Pistola
+        4 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.16</codigo><descripcion>Pistola
+        5 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.17</codigo><descripcion>Pistola
+        5 costillas sin garr\xF3n (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.18</codigo><descripcion>Pistola
+        7 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.19</codigo><descripcion>Pistola
+        7 costillas sin garr\xF3n (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.20</codigo><descripcion>Pistola
+        8 costillas (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.22</codigo><descripcion>Rueda
+        (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.23</codigo><descripcion>Rueda
+        con cuadril / pierna mocha (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.24</codigo><descripcion>Rueda
+        con cuadril sin garr\xF3n / pierna mocha sin garr\xF3n (con hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>3.25</codigo><descripcion>Rueda
+        sin garr\xF3n (con hueso)</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:45 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfb787c776105c3e88d4c19eb3cc9ac0e705c7b34a6a0484e093b58cd250837a7a;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>4</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:47</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>4.1</codigo><descripcion>Media
+        res sin hueso (manta)</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:47 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf74cf7651c8cd1751b586ca1b792b5411911f0160100ab5f43261852e28da0dc2;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>5</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:50</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>5.1</codigo><descripcion>Aguja</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.2</codigo><descripcion>Aguja
+        con cogote</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.3</codigo><descripcion>Aguja
+        con paleta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.4</codigo><descripcion>Asado
+        con vac\xEDo (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.5</codigo><descripcion>Bife
+        ancho con tapa 7 costillas (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.6</codigo><descripcion>Bife
+        ancho sin tapa 4 costillas (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.7</codigo><descripcion>Bife
+        ancho sin tapa 5 costillas (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.8</codigo><descripcion>Bife
+        ancho sin tapa 6 costillas (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.9</codigo><descripcion>Bife
+        ancho sin tapa 7 costillas (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.10</codigo><descripcion>Brazuelo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.11</codigo><descripcion>Brazuelo
+        al rojo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.12</codigo><descripcion>Carnaza
+        de paleta </descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.13</codigo><descripcion>Carnaza
+        de paleta con marucha</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.14</codigo><descripcion>Centro
+        de asado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.15</codigo><descripcion>Centro
+        de carnaza de paleta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.16</codigo><descripcion>Chingolo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.17</codigo><descripcion>Chingolo
+        al rojo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.18</codigo><descripcion>Cogote</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.19</codigo><descripcion>Cogote,
+        aguja y paleta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.20</codigo><descripcion>Corte
+        pony: aguja, carnaza, de paleta y parte asado (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.21</codigo><descripcion>Cuarto
+        delantero a 3 costillas (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.22</codigo><descripcion>Cuarto
+        delantero en manta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.23</codigo><descripcion>Cuarto
+        delantero sin asado (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.24</codigo><descripcion>Falda</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.25</codigo><descripcion>Falda
+        de exportaci\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.26</codigo><descripcion>Falda
+        sin tapa</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.27</codigo><descripcion>Marucha</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.28</codigo><descripcion>Marucha
+        al rojo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.29</codigo><descripcion>Matambre</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.44</codigo><descripcion>Otros
+        cortes delanteros sin hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.30</codigo><descripcion>Pecho
+        a 10 costillas (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.31</codigo><descripcion>Pecho
+        a 10 costillas sin tapa (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.32</codigo><descripcion>Pecho
+        a 10 costillas sin tapa al rojo (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.33</codigo><descripcion>Pecho
+        a 3 costillas sin hueso o en manta (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.34</codigo><descripcion>Pecho
+        a 6 costillas (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.35</codigo><descripcion>Pecho
+        a 6 costillas sin tapa (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.36</codigo><descripcion>Pecho
+        de exportaci\xF3n (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.37</codigo><descripcion>Pecho
+        sin tapa (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.38</codigo><descripcion>Tapa
+        de aguja - asado de carnicero</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.39</codigo><descripcion>Tapa
+        de asado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.40</codigo><descripcion>Tapa
+        de bife ancho</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.41</codigo><descripcion>Tapa
+        de falda</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.42</codigo><descripcion>Tapa
+        de paleta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>5.43</codigo><descripcion>Tapa
+        de pecho</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:50 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf3fda83135500e2383682168a721000cba38de0277259be66c88b55d4f318fddb;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>6</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:52</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>6.1</codigo><descripcion>Asado
+        con vac\xEDo (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.2</codigo><descripcion>Bananita</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.3</codigo><descripcion>Bife
+        angosto 1 costilla con cord\xF3n (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.4</codigo><descripcion>Bife
+        angosto 1 costilla sin cord\xF3n (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.5</codigo><descripcion>Bife
+        angosto 3-4 costillas al rojo (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.6</codigo><descripcion>Bife
+        angosto 3-4 costillas con cord\xF3n (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.7</codigo><descripcion>Bife
+        angosto 3-4 costillas sin cord\xF3n (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.8</codigo><descripcion>Bife
+        de bola de lomo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.9</codigo><descripcion>Bife
+        de vac\xEDo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.10</codigo><descripcion>Bifes
+        angostos y anchos (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.11</codigo><descripcion>Bola
+        de lomo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.12</codigo><descripcion>Bola
+        de lomo sin tapa</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.13</codigo><descripcion>Carnaza
+        de cola o cuadrada</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.14</codigo><descripcion>Carnaza
+        de cola o cuadrada al rojo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.15</codigo><descripcion>Centro
+        de coraz\xF3n de cuadril</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.16</codigo><descripcion>Centro
+        de entra\xF1a</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.17</codigo><descripcion>Centro
+        de nalga de adentro</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.18</codigo><descripcion>Colita
+        de cuadril</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.19</codigo><descripcion>Coraz\xF3n
+        de cuadril</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.20</codigo><descripcion>Corcho
+        de cuadril (pica\xF1a)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.21</codigo><descripcion>Cuadril</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.22</codigo><descripcion>Cuadril
+        con colita de cuadril</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.23</codigo><descripcion>Cuadril
+        con tapa y con colita</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.24</codigo><descripcion>Cuadril
+        sin tapa</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.25</codigo><descripcion>Cuarto
+        trasero en manta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.26</codigo><descripcion>Entra\xF1a
+        fina</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.27</codigo><descripcion>Entra\xF1a
+        fina sin membrana</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.28</codigo><descripcion>Garr\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.29</codigo><descripcion>Garr\xF3n
+        al rojo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.30</codigo><descripcion>Lomo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.31</codigo><descripcion>Lomo
+        de cuadril</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.32</codigo><descripcion>Lomo
+        sin cord\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.33</codigo><descripcion>Lomo
+        sin membrana</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.34</codigo><descripcion>Medall\xF3n
+        de bola de lomo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.35</codigo><descripcion>Media
+        luna de vac\xEDo al rojo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.36</codigo><descripcion>Medialuna
+        de vac\xEDo (falda)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.37</codigo><descripcion>Nalga
+        de adentro (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.38</codigo><descripcion>Nalga
+        de adentro sin tapa (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.39</codigo><descripcion>Nalga
+        de afuera (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.40</codigo><descripcion>Nalga
+        de afuera, nalga de adentro y tortuguita (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.54</codigo><descripcion>Otros
+        cortes traseros sin hueso</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.41</codigo><descripcion>Peceto</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.42</codigo><descripcion>Peceto
+        al rojo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.43</codigo><descripcion>Pierna
+        (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.44</codigo><descripcion>Pierna
+        mocha (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.45</codigo><descripcion>Rueda
+        (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.46</codigo><descripcion>Rueda
+        sin garr\xF3n (sin hueso)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.47</codigo><descripcion>Tapa
+        de bola de lomo </descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.48</codigo><descripcion>Tapa
+        de cuadril (pica\xF1a)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.49</codigo><descripcion>Tapa
+        de nalga</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.50</codigo><descripcion>Tortuguita</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.51</codigo><descripcion>Tortuguita
+        sin bananita</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.52</codigo><descripcion>Vac\xEDo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>6.53</codigo><descripcion>Vac\xEDo
+        sin bife</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:52 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfc1adf40737e3bbcc785f764dcb29268cd103dfb25d4c57d785ed062e49e83c5b;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>7</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:54</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>7.1</codigo><descripcion>Aorta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.2</codigo><descripcion>Carnes
+        chicas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.3</codigo><descripcion>Carnes
+        chicas-carne de cabeza-labio</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.4</codigo><descripcion>Carnes
+        chicas-carne de tragapasto</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.5</codigo><descripcion>Carnes
+        chicas-carne de traquea</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.6</codigo><descripcion>Carnes
+        chicas-nuez de quijada</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.7</codigo><descripcion>Coraz\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.8</codigo><descripcion>Entra\xF1a
+        gruesa</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.9</codigo><descripcion>H\xEDgado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.10</codigo><descripcion>Lengua
+        c/s epitelio</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.11</codigo><descripcion>Membrana
+        del diafragama</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.12</codigo><descripcion>Molleja
+        de cogote</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.13</codigo><descripcion>Molleja
+        de coraz\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.14</codigo><descripcion>Nuez
+        de quijada</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.20</codigo><descripcion>Otras
+        menudencias</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.15</codigo><descripcion>Pulmones</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.16</codigo><descripcion>Rabo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.17</codigo><descripcion>Ri\xF1\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.18</codigo><descripcion>Sesos</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>7.19</codigo><descripcion>Tendones</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:54 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddffc3cac54ff9bda855c0542f564ac1037a1eeff558bf489730584729cfd6bd9a7;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>8</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:56</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>8.1</codigo><descripcion>Bazo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.2</codigo><descripcion>Bonete
+        / redecilla</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.3</codigo><descripcion>Chinchulines</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.4</codigo><descripcion>Cuajo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.5</codigo><descripcion>Librillo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.6</codigo><descripcion>Mondongo</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.14</codigo><descripcion>Otras
+        v\xEDsceras</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.7</codigo><descripcion>Tripa
+        gorda</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.8</codigo><descripcion>Tripa
+        orilla primera</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.9</codigo><descripcion>Tripa
+        orilla segunda</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.10</codigo><descripcion>Tripa
+        salame</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.11</codigo><descripcion>Trip\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.12</codigo><descripcion>Vejiga</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>8.13</codigo><descripcion>V\xEDsceras
+        y Menudencias a granel</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:56 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddfc21386471bb52d84225561d6988d88bad081772c35c2545c66d9d6e97c11ddfb;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>9</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1360'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:26:58</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>9.1</codigo><descripcion>Bolsa
+        de hiel (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.2</codigo><descripcion>Canal
+        pelviano (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.3</codigo><descripcion>Capadura
+        (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.4</codigo><descripcion>Cola
+        sin pelo (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.5</codigo><descripcion>Descarne
+        de cueros (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.6</codigo><descripcion>Desperdicios
+        de cabezas (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.7</codigo><descripcion>Desperdicios
+        de pulm\xF3n (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.8</codigo><descripcion>Desperdicios
+        de suprarrenales (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.9</codigo><descripcion>Desperdicios
+        de tripa (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.10</codigo><descripcion>Ga\xF1ote,
+        pulm\xF3n, tr\xE1quea (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.11</codigo><descripcion>Grasa
+        de cabeza</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.12</codigo><descripcion>Grasa
+        de centro de entra\xF1a</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.24</codigo><descripcion>Grasa
+        de cogote</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.22</codigo><descripcion>Grasa
+        de coraz\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.14</codigo><descripcion>Grasa
+        de h\xEDgado</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.15</codigo><descripcion>Grasa
+        de molleja cogote</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.16</codigo><descripcion>Grasa
+        de molleja coraz\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.18</codigo><descripcion>Grasa
+        de pulm\xF3n</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.17</codigo><descripcion>Grasa
+        de p\xE1ncreas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.19</codigo><descripcion>Grasa
+        de roseta</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.20</codigo><descripcion>Grasa
+        de suprarrenales</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.13</codigo><descripcion>Grasa
+        de tapa</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.21</codigo><descripcion>Grasa
+        de tripa salame</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.23</codigo><descripcion>Grasa
+        ri\xF1onada</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.25</codigo><descripcion>Oreja
+        sin pelo (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.35</codigo><descripcion>Otros
+        grasas</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.26</codigo><descripcion>Pellejo
+        de medula (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.27</codigo><descripcion>Pellejo
+        de tragapasto (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.28</codigo><descripcion>Pichico
+        (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.29</codigo><descripcion>Recortes
+        de cuero (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.30</codigo><descripcion>Recortes
+        de librillo (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.31</codigo><descripcion>Recortes
+        de mondongo (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.32</codigo><descripcion>Tela
+        vacuna (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.33</codigo><descripcion>Tripa
+        ciega (grasa)</descripcion></codigoDescripcionString><codigoDescripcionString><codigo>9.34</codigo><descripcion>Trompa
+        (grasa)</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:26:58 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf8549ebecb689dd52e96173351dd1ace0c7ad217cd714620ea16d4520437aa81c;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"http://ar.gob.afip.wsremcarne/RemCarneService/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:consultarTiposCarneRequest>\n    <authRequest><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIxODg5NzU4NTYyIiBnZW5fdGltZT0iMTYyNjg4ODIwNyIgZXhwX3RpbWU9IjE2MjY5MzE0NjciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NyZW1jYXJuZSIgdWlkPSJTRVJJQUxOVU1CRVI9Q1VJVCAyMDI2NzU2NTM5MywgQ049cmVpbmdhcnQyMDIxIiBhdXRobWV0aG9kPSJjbXMiIHJlZ21ldGhvZD0iMjIiPgogICAgICAgICAgICA8cmVsYXRpb25zPgogICAgICAgICAgICAgICAgPHJlbGF0aW9uIGtleT0iMjAyNjc1NjUzOTMiIHJlbHR5cGU9IjQiLz4KICAgICAgICAgICAgPC9yZWxhdGlvbnM+CiAgICAgICAgPC9sb2dpbj4KICAgIDwvb3BlcmF0aW9uPgo8L3Nzbz4K</token><sign>gRN+XHgktRDF779pQiMUDu/UfT/t00a9GC+n3OJgE7yEkz0xedTF6Ahj5KmpQFN4cxA/n8e3AIF4hStmaYWZL2DhTAnWseS5rJ5sLB6y4XwraZfmpj6NF9olFjAdQqviAWU23ZW3KEaWGrpa+gTT9RZjB7pBoqW4HcIJyhN1q8k=</sign><cuitRepresentada>20267565393</cuitRepresentada></authRequest><codGrupoCarne>99</codGrupoCarne></ser:consultarTiposCarneRequest>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1361'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"http://ar.gob.afip.wsremcarne/RemCarneService/consultarTiposCarne"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wsremcarne/RemCarneService
+  response:
+    body:
+      string: "<?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header><info
+        xmlns=\"https://ar.gob.afip.wsremcarne/RemCarneService/\"><ambiente>Testing
+        - VII - Versi\xF3n BETA sujeta a modificaciones</ambiente><fecha>2021-07-21
+        14:27:00</fecha></info></S:Header><S:Body><ns2:consultarTiposCarneResponse
+        xmlns:ns2=\"http://ar.gob.afip.wsremcarne/RemCarneService/\"><consultarTiposCarneReturn><arrayTiposCarne><codigoDescripcionString><codigo>99.99</codigo><descripcion>Otros
+        Productos no incluidos en las tablas</descripcion></codigoDescripcionString></arrayTiposCarne></consultarTiposCarneReturn></ns2:consultarTiposCarneResponse></S:Body></S:Envelope>"
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=utf-8
+      Date:
+      - Wed, 21 Jul 2021 17:27:00 GMT
+      Set-Cookie:
+      - TS01761d9e=01439f1ddf30e34ac0c49217b6179f68e7e5309ef64f5ba75956fcced726cc613ed57a9a11;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+      X-Powered-By:
+      - Undertow/1
+    status:
+      code: 200
+      message: OK
+version: 1

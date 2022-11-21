@@ -231,7 +231,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
 
     if DEBUG:
         print("\n".join(["%s='%s'" % (k, str(v)) for k, v in list(ws.factura.items())]))
-    if not DEBUG or input("Facturar?") == "S":
+    if not DEBUG :
         if not informar_caea:
             cae = ws.AutorizarComprobante()
             dic = ws.factura
@@ -308,11 +308,14 @@ def escribir_factura(dic, archivo, agrega=False):
 def depurar_xml(client):
     global wsmtxca_xml_dir
     fecha = time.strftime("%Y%m%d%H%M%S")
-    f = open(os.path.join(wsmtxca_xml_dir, "request-%s.xml" % fecha), "w")
+    f = open("request-%s.xml" % fecha, "w")
     f.write(client.xml_request)
     f.close()
-    f = open(os.path.join(wsmtxca_xml_dir, "response-%s.xml" % fecha), "w")
-    f.write(client.xml_response)
+    f = open("response-%s.xml" % fecha, "w")
+    if sys.version_info[0] < 3:
+        f.write(client.xml_response)
+    else:
+        f.write(client.xml_response.decode())
     f.close()
 
 
@@ -337,7 +340,7 @@ def main():
         print(" /dbf: lee y almacena la información en tablas DBF")
         print()
         print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
-        sys.exit(0)
+        return
 
     if "/debug" in sys.argv:
         DEBUG = True
@@ -398,7 +401,7 @@ def main():
             print("AppServerStatus", ws.AppServerStatus)
             print("DbServerStatus", ws.DbServerStatus)
             print("AuthServerStatus", ws.AuthServerStatus)
-            sys.exit(0)
+            return
 
         if "/formato" in sys.argv:
             print("Formato:")
@@ -423,7 +426,7 @@ def main():
                         % (clave, comienzo, longitud, tipo, dec)
                     )
                     comienzo += longitud
-            sys.exit(0)
+            return
 
         # obteniendo el TA
         from pyafipws.wsaa import WSAA
@@ -441,7 +444,7 @@ def main():
             if "--testing" in sys.argv:
                 ws.LoadTestXML("tests/wsmtx_ptosvta_caea_resp.xml")
             print("\n".join(ws.ConsultarPuntosVentaCAEA()))
-            sys.exit(0)
+            return
 
         if "/prueba" in sys.argv:
             # generar el archivo de prueba para la próxima factura
@@ -596,7 +599,7 @@ def main():
                 },
                 open(salida, "w"),
             )
-            sys.exit(0)
+            return
 
         if "/get" in sys.argv:
             print("Recuperar comprobante:")
@@ -634,7 +637,7 @@ def main():
                 open(salida, "w"),
             )
 
-            sys.exit(0)
+            return
 
         if "/solicitarcaea" in sys.argv:
             if len(sys.argv) > sys.argv.index("/solicitarcaea") + 1:
@@ -681,11 +684,15 @@ def main():
                 open(salida, "w"),
             )
 
-            sys.exit(0)
+            return
 
         if "/consultarcaea" in sys.argv:
-            periodo = input("Periodo: ")
-            orden = input("Orden: ")
+            if len(sys.argv) > sys.argv.index("/consultarcaea") + 1:
+                periodo = sys.argv[sys.argv.index("/consultarcaea") + 1]
+                orden = sys.argv[sys.argv.index("/consultarcaea") + 2]
+            else:
+                periodo = input("Periodo (año-mes, ej 201108): ")
+                orden = input("Orden (quincena, 1 u 2): ")
 
             if DEBUG:
                 print("Consultando CAEA para periodo %s orden %s" % (periodo, orden))
@@ -705,10 +712,14 @@ def main():
                 print("FchVigHasta:", ws.FchVigHasta)
                 print("FchTopeInf:", ws.FchTopeInf)
                 print("FchProceso:", ws.FchProceso)
-            sys.exit(0)
+            return
 
         if "/informarcaeanoutilizado" in sys.argv:
-            caea = input("CAEA: ")
+            i = sys.argv.index("/informarcaeanoutilizado")
+            if i + 1 < len(sys.argv):
+                caea = int(sys.argv[i + 1])
+            else:
+                caea = input("CAEA: ")
             if DEBUG:
                 print("Informando CAEA no utilizado: %s" % (caea,))
             ok = ws.InformarCAEANoUtilizado(caea)
@@ -717,11 +728,16 @@ def main():
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-            sys.exit(0)
+            return
 
         if "/informarcaeanoutilizadoptovta" in sys.argv:
-            caea = input("CAEA: ")
-            pto_vta = input("Punto de Venta: ")
+            i = sys.argv.index("/informarcaeanoutilizadoptovta")
+            if i + 2 < len(sys.argv):
+                caea = int(sys.argv[i + 1])
+                pto_vta = int(sys.argv[i + 2])
+            else:
+                caea = input("CAEA: ")
+                pto_vta = input("Punto de Venta: ")
             if DEBUG:
                 print("Informando CAEA no utilizado: %s pto_vta %s" % (caea, pto_vta))
             ok = ws.InformarCAEANoUtilizadoPtoVta(caea, pto_vta)
@@ -730,10 +746,14 @@ def main():
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-            sys.exit(0)
+            return
 
         if "/consultarptosvtacaeanoinformados" in sys.argv:
-            caea = input("CAEA: ")
+            i = sys.argv.index("/consultarptosvtacaeanoinformados")
+            if i + 1 < len(sys.argv):
+                caea = int(sys.argv[i + 1])
+            else:
+                caea = input("CAEA: ")
             if DEBUG:
                 print("Consultando PtosVta CAEA: %s" % (caea))
             ptos_vta = ws.ConsultarPtosVtaCAEANoInformados(caea)
@@ -742,7 +762,7 @@ def main():
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-            sys.exit(0)
+            return
 
         if "/ptosventa" in sys.argv:
 
@@ -750,7 +770,7 @@ def main():
             print(u"\n".join(ws.ConsultarPuntosVentaCAE()))
             print("=== Puntos de Venta CAEA ===")
             print(u"\n".join(ws.ConsultarPuntosVentaCAEA()))
-            sys.exit(0)
+            return
 
         f_entrada = f_salida = None
         try:
@@ -770,7 +790,7 @@ def main():
                 f_salida.close()
             if XML:
                 depurar_xml(ws.client)
-        sys.exit(0)
+        return
 
     except SoapFault as e:
         print(e.faultcode, e.faultstring.encode("ascii", "ignore"))

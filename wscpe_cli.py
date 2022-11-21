@@ -70,16 +70,16 @@ Ver wscpe.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64, datetime
-from utils import date
+from pyafipws.utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-import utils
+import pyafipws.utils
 
 # importo funciones compartidas:
-from utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
-from utils import leer_txt, grabar_txt, leer_dbf, guardar_dbf, N, A, B, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
+from pyafipws.utils import json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir, json_serializer
+from pyafipws.utils import leer_txt, grabar_txt, leer_dbf, guardar_dbf, N, A, B, I, json, BaseWS, inicializar_y_capturar_excepciones, get_install_dir
 
-from wscpe import WSCPE, HOMO
+from pyafipws.wscpe import WSCPE, HOMO
 
 # constantes de configuración (producción/homologación):
 

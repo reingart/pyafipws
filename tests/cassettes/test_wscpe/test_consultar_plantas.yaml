@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:ConsultarPlantasReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSI0MDk2OTA1NjI1IiBnZW5fdGltZT0iMTYzNjE2MTU5NiIgZXhwX3RpbWU9IjE2MzYyMDQ4NTYiLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>T5R1kLFhI5tcKlEaf8tP7ndei7MNont1pWAOtM3xAIFj4S862ubKhss5CaHpDKrOhUuGGfV/XBTCvKqEkvV2gF05sLikanoUgkBYzN6G5AqY3DTDi+RV1m70Q+oQkj1OS+J0quCJb92cTZuVSZlWHjyG1yZUAPJCG4yOWlOgDhI=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><cuit>20267565393</cuit></solicitud></ser:ConsultarPlantasReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1337'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/consultarPlantas"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>05/11/2021
+        23:30:45 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1636165845275ms</elapsedTime><id>20211105113045343PoJoMLDotDWQcKpmcBcWEqnDSSOGNQTE</id></soap:Header><soap:Body><ns2:ConsultarPlantasResp
+        xmlns:ns2="https://serviciosjava.afip.gob.ar/wscpe/"><respuesta><planta><nroPlanta>3091</nroPlanta><codProvincia>5</codProvincia><codLocalidad>287</codLocalidad></planta><planta><nroPlanta>1938</nroPlanta><codProvincia>12</codProvincia><codLocalidad>18641</codLocalidad></planta><errores/><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-05T23:30:45</fechaHora></metadata></respuesta></ns2:ConsultarPlantasResp></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 06 Nov 2021 02:30:45 GMT
+      Set-Cookie:
+      - JSESSIONID=56A97A60BF229576711A8BAF58B2FC0E; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddf073ebc8567f183a01b5a413971fe88563c78a7456aa44ef0f3fe0c0b81e10b949b5a333f9cb8a45a9dea86b217d9502c;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

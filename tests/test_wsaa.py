@@ -103,7 +103,7 @@ def test_login_cms(key_and_cert):
     assert isinstance(cms,str)
 
     
-    assert cms.startswith('MIIG+')
+    assert cms.startswith('MII')
 
     assert chk==True
     assert ta_xml.startswith('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
@@ -160,7 +160,7 @@ def test_wsaa_sign_tra(key_and_cert):
         sign = sign.decode('utf-8')
 
     assert isinstance(sign, str)
-    assert sign.startswith("MIIG+")
+    assert sign.startswith("MII")
 
 
 def test_wsaa_sign_tra_inline(key_and_cert):
@@ -180,10 +180,10 @@ def test_wsaa_sign_tra_inline(key_and_cert):
         sign_2 = sign_2.decode('utf-8')
 
     assert isinstance(sign, str)
-    assert sign.startswith("MIIG+")
+    assert sign.startswith("MII")
 
     assert isinstance(sign_2, str)
-    assert sign_2.startswith("MIIG+")
+    assert sign_2.startswith("MII")
 
 @pytest.mark.vcr
 def test_main():

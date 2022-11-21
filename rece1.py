@@ -306,57 +306,56 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ["%s='%s'" % (k, str(v)) for k, v in list(ws.factura.items())]
                 )
             )
-        if not DEBUG or input("Facturar (S/n)?") == "S":
-            if not informar_caea:
-                cae = ws.CAESolicitar()
-                dic = ws.factura
-            else:
-                cae = ws.CAEARegInformativo()
-                dic = ws.factura
-            print(
-                "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f"
-                % (
-                    TIPO_CBTE.get(dic["tipo_cbte"], dic["tipo_cbte"]),
-                    dic["punto_vta"],
-                    dic["cbt_desde"],
-                    dic["cbt_hasta"],
-                    TIPO_DOC.get(dic["tipo_doc"], dic["tipo_doc"]),
-                    dic["nro_doc"],
-                    float(dic["imp_total"]),
-                    float(dic["imp_iva"] if dic["imp_iva"] is not None else "NaN"),
-                )
-            )
-            dic.update(encabezado)  # preservar la estructura leida
-            dic.update(
-                {
-                    "cae": cae and str(cae) or "",
-                    "fch_venc_cae": ws.Vencimiento and str(ws.Vencimiento) or "",
-                    "resultado": ws.Resultado,
-                    "motivos_obs": ws.Obs,
-                    "err_code": str(ws.ErrCode),
-                    "err_msg": ws.ErrMsg,
-                    "cbt_desde": ws.CbtDesde,
-                    "cbt_hasta": ws.CbtHasta,
-                    "fecha_cbte": ws.FechaCbte,
-                    "reproceso": ws.Reproceso,
-                    "emision_tipo": ws.EmisionTipo,
-                }
-            )
-            dicts.append(dic)
-            print(
-                "NRO:",
+        if not informar_caea:
+            cae = ws.CAESolicitar()
+            dic = ws.factura
+        else:
+            cae = ws.CAEARegInformativo()
+            dic = ws.factura
+        print(
+            "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f"
+            % (
+                TIPO_CBTE.get(dic["tipo_cbte"], dic["tipo_cbte"]),
+                dic["punto_vta"],
                 dic["cbt_desde"],
-                "Resultado:",
-                dic["resultado"],
-                "%s:" % ws.EmisionTipo,
-                dic["cae"],
-                "Obs:",
-                dic["motivos_obs"].encode("ascii", "ignore"),
-                "Err:",
-                dic["err_msg"].encode("ascii", "ignore"),
-                "Reproceso:",
-                dic["reproceso"],
+                dic["cbt_hasta"],
+                TIPO_DOC.get(dic["tipo_doc"], dic["tipo_doc"]),
+                dic["nro_doc"],
+                float(dic["imp_total"]),
+                float(dic["imp_iva"] if dic["imp_iva"] is not None else "NaN"),
             )
+        )
+        dic.update(encabezado)  # preservar la estructura leida
+        dic.update(
+            {
+                "cae": cae and str(cae) or "",
+                "fch_venc_cae": ws.Vencimiento and str(ws.Vencimiento) or "",
+                "resultado": ws.Resultado,
+                "motivos_obs": ws.Obs,
+                "err_code": str(ws.ErrCode),
+                "err_msg": ws.ErrMsg,
+                "cbt_desde": ws.CbtDesde,
+                "cbt_hasta": ws.CbtHasta,
+                "fecha_cbte": ws.FechaCbte,
+                "reproceso": ws.Reproceso,
+                "emision_tipo": ws.EmisionTipo,
+            }
+        )
+        dicts.append(dic)
+        print(
+            "NRO:",
+            dic["cbt_desde"],
+            "Resultado:",
+            dic["resultado"],
+            "%s:" % ws.EmisionTipo,
+            dic["cae"],
+            "Obs:",
+            dic["motivos_obs"].encode("ascii", "ignore"),
+            "Err:",
+            dic["err_msg"].encode("ascii", "ignore"),
+            "Reproceso:",
+            dic["reproceso"],
+        )
     if dicts:
         escribir_facturas(dicts, salida)
 
@@ -451,7 +450,7 @@ def main():
         print(" /dbf: lee y almacena la información en tablas DBF")
         print()
         print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
-        sys.exit(0)
+        return
 
     if "/debug" in sys.argv:
         DEBUG = True
@@ -555,7 +554,7 @@ def main():
             print("AppServerStatus", ws.AppServerStatus)
             print("DbServerStatus", ws.DbServerStatus)
             print("AuthServerStatus", ws.AuthServerStatus)
-            sys.exit(0)
+            return
 
         if "/formato" in sys.argv:
             print("Formato:")
@@ -587,7 +586,7 @@ def main():
                     claves, campos = definir_campos(formato)
                     for campo in campos:
                         print(" * Campo: %s" % (campo,))
-            sys.exit(0)
+            return
 
         # obteniendo el TA
         from pyafipws.wsaa import WSAA
@@ -753,7 +752,7 @@ def main():
                 ],
                 open(salida, "w"),
             )
-            sys.exit(0)
+            return
 
         if "/get" in sys.argv:
             print("Recuperar comprobante:")
@@ -808,7 +807,7 @@ def main():
             )
             escribir_facturas([factura], open(salida, "w"))
 
-            sys.exit(0)
+            return
 
         if "/solicitarcaea" in sys.argv:
             i = sys.argv.index("/solicitarcaea")
@@ -858,7 +857,7 @@ def main():
                 open(salida, "w"),
             )
 
-            sys.exit(0)
+            return
 
         if "/consultarcaea" in sys.argv:
             i = sys.argv.index("/consultarcaea")
@@ -887,13 +886,13 @@ def main():
                 print("FchVigHasta:", ws.FchVigHasta)
                 print("FchTopeInf:", ws.FchTopeInf)
                 print("FchProceso:", ws.FchProceso)
-            sys.exit(0)
+            return
 
         if "/ptosventa" in sys.argv:
 
             print("=== Puntos de Venta ===")
             print(u"\n".join(ws.ParamGetPtosVenta()))
-            sys.exit(0)
+            return
 
         if "/informarcaeanoutilizadoptovta" in sys.argv:
             i = sys.argv.index("/informarcaeanoutilizadoptovta")
@@ -912,7 +911,7 @@ def main():
                 print("Errores:")
                 for error in ws.Errores:
                     print(error)
-            sys.exit(0)
+            return
 
         ws.LanzarExcepciones = False
         f_entrada = f_salida = None
@@ -933,7 +932,7 @@ def main():
                 f_salida.close()
             if XML:
                 depurar_xml(ws.client, RUTA_XML)
-        sys.exit(0)
+        return
 
     except SoapFault as e:
         print("SoapFault:", e.faultcode, e.faultstring.encode("ascii", "ignore"))
@@ -954,7 +953,7 @@ def main():
         ex = traceback.format_exception(
             sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2]
         )
-        open("traceback.txt", "wb").write("\n".join(ex))
+        open("traceback.txt", "w").write("\n".join(ex))
 
         if DEBUG:
             raise

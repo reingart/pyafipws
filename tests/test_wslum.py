@@ -21,7 +21,7 @@ __license__ = "GPL 3.0"
 import os
 import pytest
 from pyafipws.wsaa import WSAA
-from pyafipws.wslum import WSLUM
+from pyafipws.wslum import WSLUM, main
 import sys
 
 __WSDL__ = "https://fwshomo.afip.gov.ar/wslum/LumService?wsdl"
@@ -356,3 +356,65 @@ def test_mostrar_pdf(auth):
     show = wslum.MostrarPDF(archivo="liq.pdf", imprimir=True)
 
     assert show is False 
+
+def test_main(auth):
+    sys.argv = []
+    sys.argv.append("--dummy")
+    sys.argv.append("--xml")
+    main()
+
+def test_main_prueba(auth):
+    sys.argv = []
+    sys.argv.append("--autorizar")
+    sys.argv.append("--prueba")
+    sys.argv.append("--ajuste")
+    sys.argv.append("--debug")
+    main()
+    
+
+def test_main_formato(auth):
+    sys.argv = []
+    sys.argv.append("--formato")
+    main()
+
+def test_main_ult(auth):
+    sys.argv = []
+    sys.argv.append("--ult")
+    sys.argv.append("--debug")
+    main()
+
+def test_main_provincias(auth):
+    sys.argv = []
+    sys.argv.append("--provincias")
+    main()
+
+def test_main_localidades(auth):
+    sys.argv = []
+    sys.argv.append("--localidades")
+    sys.argv.append("1")
+    main()
+
+def test_main_bonificaciones_penalizaciones(auth):
+    sys.argv = []
+    sys.argv.append("--bonificaciones_penalizaciones")
+    main()
+
+def test_main_otros_impuestos(auth):
+    sys.argv = []
+    sys.argv.append("--otros_impuestos")
+    main()
+
+def test_main_consultar(auth):
+    sys.argv = []
+    sys.argv.append("--consultar")
+    sys.argv.append("--debug")
+    main()
+
+
+def test_main_mostrar(auth):
+    sys.argv = []
+    sys.argv.append("--autorizar")
+    sys.argv.append("--prueba")
+    sys.argv.append("--consultar")
+    sys.argv.append("--mostrar")
+    main()

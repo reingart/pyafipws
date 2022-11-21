@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+      xmlns:ser=\"https://serviciosjava.afip.gob.ar/wscpe/\">\n<soapenv:Header/>\n<soapenv:Body>\n
+      \   <ser:AnularCPEReq>\n    <auth><token>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8c3NvIHZlcnNpb249IjIuMCI+CiAgICA8aWQgc3JjPSJDTj13c2FhaG9tbywgTz1BRklQLCBDPUFSLCBTRVJJQUxOVU1CRVI9Q1VJVCAzMzY5MzQ1MDIzOSIgdW5pcXVlX2lkPSIzMzQzNDI4MTM3IiBnZW5fdGltZT0iMTYzODAyMzQ4NyIgZXhwX3RpbWU9IjE2MzgwNjY3NDciLz4KICAgIDxvcGVyYXRpb24gdHlwZT0ibG9naW4iIHZhbHVlPSJncmFudGVkIj4KICAgICAgICA8bG9naW4gZW50aXR5PSIzMzY5MzQ1MDIzOSIgc2VydmljZT0id3NjcGUiIHVpZD0iU0VSSUFMTlVNQkVSPUNVSVQgMjAyNjc1NjUzOTMsIENOPXJlaW5nYXJ0MjAyMSIgYXV0aG1ldGhvZD0iY21zIiByZWdtZXRob2Q9IjIyIj4KICAgICAgICAgICAgPHJlbGF0aW9ucz4KICAgICAgICAgICAgICAgIDxyZWxhdGlvbiBrZXk9IjIwMjY3NTY1MzkzIiByZWx0eXBlPSI0Ii8+CiAgICAgICAgICAgIDwvcmVsYXRpb25zPgogICAgICAgIDwvbG9naW4+CiAgICA8L29wZXJhdGlvbj4KPC9zc28+Cg==</token><sign>YWUTp6puj6kciGKdpYsgcAwJpiveAkDeYjthZ5HSbwwyS3i1Lfvm6BjL67VrqyExwXAQFrqSjMSZT5lfgR6mv6EjaS1ylW5H962Bn4BC8yzb2BShaLbAfrDe/frC63TGJ33lfvBczQxOu/UUUV37LkPOO0AORzRlnjf2ldrpT1Y=</sign><cuitRepresentada>20267565393</cuitRepresentada></auth><solicitud><cartaPorte><tipoCPE>74</tipoCPE><sucursal>221</sucursal><nroOrden>49</nroOrden></cartaPorte></solicitud></ser:AnularCPEReq>\n</soapenv:Body>\n</soapenv:Envelope>"
+    headers:
+      accept-encoding:
+      - gzip, deflate
+      content-length:
+      - '1392'
+      content-type:
+      - text/xml; charset="UTF-8"
+      soapaction:
+      - '"https://serviciosjava.afip.gob.ar/wscpe/anularCPE"'
+      user-agent:
+      - Mozilla/5.0 (Windows NT 6.1; Win64; x64)
+    method: POST
+    uri: https://fwshomo.afip.gov.ar/wscpe/services/soap
+  response:
+    body:
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Header><serverTime>27/11/2021
+        12:58:47 GMT-03:00</serverTime><serverName>vivaldi</serverName><elapsedTime>1638028726904ms</elapsedTime><id>2021112712584738SHITkenDuxkXvDiaFYuxSOoIjfAfJrlM</id></soap:Header><soap:Body><ns2:AnularCPEResp
+        xmlns:ns2="https://serviciosjava.afip.gob.ar/wscpe/"><respuesta><cabecera><tipoCartaPorte>74</tipoCartaPorte><sucursal>221</sucursal><nroOrden>49</nroOrden><nroCTG>10100006835</nroCTG><fechaEmision>2021-11-27T12:58:05</fechaEmision><estado>AN</estado><fechaInicioEstado>2021-11-27T12:58:46</fechaInicioEstado><fechaVencimiento>2021-11-29T00:58:05</fechaVencimiento><observaciones>Notas
+        del transporte</observaciones></cabecera><errores/><metadata><servidor>vivaldi</servidor><fechaHora>2021-11-27T12:58:47</fechaHora></metadata></respuesta></ns2:AnularCPEResp></soap:Body></soap:Envelope>
+    headers:
+      Connection:
+      - close
+      Content-Type:
+      - text/xml;charset=UTF-8
+      Date:
+      - Sat, 27 Nov 2021 15:58:46 GMT
+      Set-Cookie:
+      - JSESSIONID=4C68B173A802BF93E2DE50A5797F64C3; Path=/; Secure; HttpOnly
+      - TS01761d9e=01439f1ddfb281c6379752bf7f83101a2019db59739efea525991329e113bf04bd835b6bb28d2760c9251dc7ef61c40e0f6f9ceee0;
+        Path=/
+      Transfer-Encoding:
+      - chunked
+    status:
+      code: 200
+      message: '200'
+version: 1

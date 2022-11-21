@@ -798,7 +798,7 @@ def main():
     if "--ayuda" in sys.argv:
         print(LICENCIA)
         print(AYUDA)
-        sys.exit(0)
+        return
     if "--formato" in sys.argv:
         print("Formato:")
         for msg, formato in []:
@@ -812,7 +812,7 @@ def main():
                     % (clave, comienzo, longitud, tipo, dec)
                 )
                 comienzo += longitud
-        sys.exit(0)
+        return
 
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import win32com.server.register
@@ -907,7 +907,7 @@ def main():
             print("AppServerStatus", wslum.AppServerStatus)
             print("DbServerStatus", wslum.DbServerStatus)
             print("AuthServerStatus", wslum.AuthServerStatus)
-            ##sys.exit(0)
+            return
 
         if "--autorizar" in sys.argv:
 
@@ -1033,7 +1033,7 @@ def main():
                         f,
                         sort_keys=True,
                         indent=4,
-                        encoding="utf-8",
+                        # encoding="utf-8",
                     )
 
             print(
@@ -1138,7 +1138,7 @@ def main():
                     print(wslum.Traceback, file=sys.stderr)
             print("Ultimo Nro de Comprobante", wslum.NroComprobante)
             print("Errores:", wslum.Errores)
-            sys.exit(0)
+            return
 
         # Recuperar parámetros:
 
@@ -1192,7 +1192,7 @@ def main():
     finally:
         if XML:
             open("wslum_request.xml", "w").write(wslum.client.xml_request)
-            open("wslum_response.xml", "w").write(wslum.client.xml_response)
+            open("wslum_response.xml", "w").write(wslum.client.xml_response.decode("utf-8"))
 
 if __name__ == "__main__":
     main()

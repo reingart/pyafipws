@@ -203,7 +203,7 @@ def autorizar(ws, entrada, salida):
             print("DIF:", detalle["qty"] * detalle["precio"] - detalle["importe"])
 
         print("id:", encabezado["id"])
-    if not DEBUG or not sys.stdout.isatty() or input("Facturar?") == "S":
+    if not DEBUG or not sys.stdout.isatty() :
         ws.LanzarExcepcion = False
         cae = ws.Authorize(id=encabezado["id"])
         dic = ws.factura
@@ -277,7 +277,7 @@ def depurar_xml(client):
     f.write(client.xml_request)
     f.close()
     f = open("response-%s.xml" % fecha, "w")
-    f.write(client.xml_response)
+    f.write(client.xml_response.decode())
     f.close()
 
 
@@ -302,7 +302,7 @@ def main():
         print(" /dbf: lee y almacena la información en tablas DBF")
         print()
         print("Ver rece.ini para parámetros de configuración (URL, certificados, etc.)")
-        sys.exit(0)
+        return
 
     config = abrir_conf(CONFIG_FILE, DEBUG)
     cert = config.get("WSAA", "CERT")
@@ -380,7 +380,7 @@ def main():
             print("AppServerStatus", ws.AppServerStatus)
             print("DbServerStatus", ws.DbServerStatus)
             print("AuthServerStatus", ws.AuthServerStatus)
-            sys.exit(0)
+            return
 
         if "/formato" in sys.argv:
             from pyafipws.formatos.formato_dbf import definir_campos
@@ -406,10 +406,10 @@ def main():
                 else:
                     filename = "%s.dbf" % msg.lower()[:8]
                     print("==== %s (%s) ====" % (msg, filename))
-                    claves, campos = definir_campos(formato)
+                    claves, campos = formato_dbf.definir_campos(formato)
                     for campo in campos:
                         print(" * Campo: %s" % (campo,))
-            sys.exit(0)
+            return
 
         # obteniendo el TA
         from pyafipws.wsaa import WSAA
@@ -531,7 +531,7 @@ def main():
                 },
                 open(salida, "w"),
             )
-            sys.exit(0)
+            return
 
         if "/get" in sys.argv:
             print("Recuperar comprobante:")
@@ -582,7 +582,7 @@ def main():
                 },
                 open(salida, "w"),
             )
-            sys.exit(0)
+            return
 
         if "/ctz" in sys.argv:
             i = sys.argv.index("/ctz")
@@ -593,7 +593,7 @@ def main():
             ctz = ws.GetParamCtz(moneda_id)
             print("Cotizacion: ", ctz)
             print(ws.ErrMsg)
-            sys.exit(0)
+            return
 
         if "/monctz" in sys.argv:
             i = sys.argv.index("/monctz")
@@ -604,7 +604,7 @@ def main():
             ctz = ws.GetParamMonConCotizacion(fecha)
             print("\n".join(ctz))
             print(ws.ErrMsg)
-            sys.exit(0)
+            return
 
         f_entrada = f_salida = None
         try:
@@ -622,7 +622,7 @@ def main():
                 f_salida.close()
             if XML:
                 depurar_xml(ws.client)
-        sys.exit(0)
+        return
 
     except Exception as e:
         print(str(e).encode("ascii", "ignore"))
