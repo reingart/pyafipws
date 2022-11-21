@@ -42,6 +42,7 @@ def test_main_ayuda():
     recex1.main()
 
 
+@pytest.mark.skip
 def test_main_prueba():
     sys.argv = []
     sys.argv.append('/prueba')
