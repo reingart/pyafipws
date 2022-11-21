@@ -3,23 +3,19 @@ pyafipws
 
 PyAfipWs contains Python modules to operate with web services regarding AFIP (Argentina's "IRS") and other government agencies, mainly related to electronic invoicing, several taxes and traceability.
 
-Copyright 2008 - 2016 (C) Mariano Reingart [reingart@gmail.com](mailto:reingart@gmail.com) (creator and maintainter). All rights reserved.
+Copyright 2008 - 2022 (C) Mariano Reingart [reingart@gmail.com](mailto:reingart@gmail.com) (creator and maintainter). All rights reserved.
 
-License: GPLv3+, with "commercial" exception available to include it and distribute with propietary programs
+License: LGPLv3+, with "commercial" exception available to include it and distribute with propietary programs
 
 General Information:
 --------------------
 
  * Main Project Site: https://github.com/reingart/pyafipws (git repository)
- * Mirror (Historic): https://code.google.com/p/pyafipws/ (mercurial repository)
  * User Manual: (http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs (Spanish)
  * Documentation: https://github.com/reingart/pyafipws/wiki (Spanish/English)
  * Commercial Support: http://www.sistemasagiles.com.ar/ (Spanish)
  * Community Site: http://www.pyafipws.com.ar/ (Spanish)
  * Public Forum: http://groups.google.com/group/pyafipws (community support, no-charge "gratis" access)
-
-More information at [Python Argentina Magazine article](http://revista.python.org.ar/2/en/html/pyafip.html) (English) 
-and [JAIIO 2012 paper](http://41jaiio.sadio.org.ar/sites/default/files/15_JSL_2012.pdf) (Spanish)
 
 Project Structure:
 ------------------
@@ -58,8 +54,6 @@ AFIP:
  * [WSLTV][17b]: agriculture (green tobacco - invoice)
  * [WSLUM][17c]: agriculture (milk - invoice)
  * [WSLSP][17d]: agriculture (cattle/livestock - invoice)
- * [wDigDepFiel][18]: customs (faithful depositary)
- * [WSCOC][19]: currency exchange operations autorization
  * [WSCDC][22]: invoice verification
  * [Taxpayers' Registe][26]: database to check sellers and buyers register
 
@@ -78,37 +72,38 @@ Installation Instructions:
 
 ## Quick-Start
 
-On Ubuntu (GNU/Linux), you will need to install httplib2 and openssl binding.
-Then you can download the compressed file, unzip it and use:
+These instructions are for Ubuntu/Debian. In Windows you can use PowerShell.
+
+You can download the compressed file, unzip it: https://github.com/reingart/pyafipws/archive/main.zip
+Then install dependencies and the project itself:
 
 ```
-sudo apt-get install python-httplib2 python-m2crypto
-wget https://github.com/reingart/pyafipws/archive/master.zip
-unzip master.zip
-cd pyafipws-master
-sudo pip install -r requirements.txt
+pip download https://github.com/reingart/pyafipws/archive/main.zip
+python -m zipfile -e main.zip  .
+cd pyafipws-main
+pip install -r requirements.txt --user
+python setup.py install
 ```
-
-**Note:** M2Crypto is optional, the library will use OpenSSL directly (using
-subprocess)
 
 You'll need a digital certificate (.crt) and private key (.key) to authenticate 
 (see [certificate generation][29] for more information and instructions).
 Provisionally, you can use author's testing certificate/key:
 
 ```
-wget https://www.sistemasagiles.com.ar/soft/pyafipws/reingart.zip
-unzip reingart.zip
+wget https://www.sistemasagiles.com.ar/soft/pyafipws/reingart.zip -O reingart.zip
+python -m zipfile -e reingart.zip .
 ```
 
-You should configure `rece.ini` to set up paths and URLs if using other values
-than defaults.
+You should copy and configure `rece.ini` to set up paths and URLs:
+```
+cp conf/*.ini .
+```
 
 Then, you could execute `WSAA` script to authenticate (getting Token and Sign)
 and `WSFEv1` to process an electronic invoice:
 ```
-python wsaa.py
-python wsfev1.py --prueba
+python -m pyafipws.wsaa
+python -m pyafipws.wsfev1 --prueba
 ```
 
 With the last command, you should get the Electronic Autorization Code (CAE) 
@@ -120,16 +115,12 @@ The following commands clone the repository, creates a virtualenv and install
 the packages there (including the latest versions of the dependencies) to avoid
 conflicts with other libraries:
 ```
-sudo apt-get install python-dev swig python-virtualenv mercurial python-pip libssl-dev python-dulwich
-hg clone git+https://github.com/reingart/pyafipws.git --config extensions.hggit=
+git clone https://github.com/reingart/pyafipws.git
 cd pyafipws
-virtualenv venv
-source venv/bin/activate
+python -m venv .venv
+. .venv/bin/activate
 pip install -r requirements.txt
 ```
-
-**Note:** For convenience, development is done using mercurial; 
-You could use [hg-git][30] or git directly. 
 
 ## Dependency installation (development):
 
@@ -137,9 +128,8 @@ For SOAP webservices [PySimpleSOAP](https://github.com/pysimplesoap/pysimplesoap
 needed (spin-off of this library, inspired by the PHP SOAP extension):
 
 ```
-hg clone git+https://github.com/pysimplesoap/pysimplesoap.git --config extensions.hggit=
+git clone https://github.com/pysimplesoap/pysimplesoap.git -b stable_py3k
 cd pysimplesoap
-hg up reingart
 python setup.py install
 ```
 
@@ -149,22 +139,10 @@ For PDF generation, you will need the [PyFPDF](https://github.com/reingart/pyfpd
 (PHP's FPDF library, python port):
 
 ```
-hg clone git+https://github.com/reingart/pyfpdf.git --config extensions.hggit=
+git clone https://github.com/reingart/pyfpdf.git
 cd pyfpdf
 python setup.py install
 ```
-
-For the GUI app, you will need [wxPython](http://www.wxpython.org/):
-```
-sudo apt-get install wxpython
-```
-
-PythonCard is being replaced by [gui2py](https://github.com/reingart/gui2py/):
-```
-pip install gui2py
-```
-
-For the WEB app, you will need [web2py](http://www.web2py.com/).
 
 On Windows, you can see available installers released for evaluation purposes on
 [Download Releases](https://github.com/reingart/pyafipws/releases)
@@ -192,8 +170,6 @@ For more information see the source code installation steps in the
  [17b]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionTabacoVerde
  [17c]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionUnicaMensualLecheria
  [17d]: http://www.sistemasagiles.com.ar/trac/wiki/LiquidacionSectorPecuario
- [18]: http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs#wDigDepFiel:DepositarioFiel
- [19]: http://www.sistemasagiles.com.ar/trac/wiki/ConsultaOperacionesCambiarias
  [20]: http://www.sistemasagiles.com.ar/trac/wiki/RemitoElectronicoCotArba
  [21]: http://www.sistemasagiles.com.ar/trac/wiki/TrazabilidadMedicamentos
  [22]: http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaMTXCAService
@@ -205,4 +181,3 @@ For more information see the source code installation steps in the
  [27]: https://github.com/reingart/openerp_pyafipws
  [28]: https://github.com/tryton-ar/account_invoice_ar
  [29]: http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs#Certificados
- [30]: http://hg-git.github.io/
