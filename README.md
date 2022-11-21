@@ -70,13 +70,19 @@ ANMAT/SEDRONAR/SENASA (SNT):
 Installation Instructions:
 --------------------------
 
+Notes:
+ * Python 3.9 is recommended for new apps: https://www.python.org/downloads/
+ * Python 2.7 is still supported for legacy apps but compatibility will be removed soon
+
+You could see the `.github` directory for detailed workflows and automated commands to build the project.
+
 ## Quick-Start
 
 These instructions are for Ubuntu/Debian. In Windows you can use PowerShell.
 
-You can download the compressed file, unzip it: https://github.com/reingart/pyafipws/archive/main.zip
-Then install dependencies and the project itself:
+You can download the compressed file: https://github.com/reingart/pyafipws/archive/main.zip and unzip it.
 
+Then install dependencies and the project itself:
 ```
 pip download https://github.com/reingart/pyafipws/archive/main.zip
 python -m zipfile -e main.zip  .
@@ -88,7 +94,6 @@ python setup.py install
 You'll need a digital certificate (.crt) and private key (.key) to authenticate 
 (see [certificate generation][29] for more information and instructions).
 Provisionally, you can use author's testing certificate/key:
-
 ```
 wget https://www.sistemasagiles.com.ar/soft/pyafipws/reingart.zip -O reingart.zip
 python -m zipfile -e reingart.zip .
@@ -120,7 +125,14 @@ cd pyafipws
 python -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
+
+Run `python setup_win.py py2exe` to build in windows and "compile" executables.
+See the GitHub Actions for specific steps and more details.
+
+Just execute `pytest` to run automated Python tests.
+For Windows, see `tests/powershell` directory for Pester tests.
 
 ## Dependency installation (development):
 
@@ -133,7 +145,7 @@ cd pysimplesoap
 python setup.py install
 ```
 
-Use "stable" branch reingart (see `requirements.txt` for more information)
+Use "stable_py3k" branch reingart (see `requirements.txt` for more information)
 
 For PDF generation, you will need the [PyFPDF](https://github.com/reingart/pyfpdf)
 (PHP's FPDF library, python port):
