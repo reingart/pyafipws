@@ -10,9 +10,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""M骴ulo para obtener CAE, c骴igo de autorizaci髇 de impresi髇 o electr髇ico, 
-del web service WSFEXv1 de AFIP (Factura Electr髇ica Exportaci髇 Versi髇 1)
-seg鷑 RG2758/2010 (Registros Especiales Aduaneros) y RG3689/14 (servicios)
+"""M贸dulo para obtener CAE, c贸digo de autorizaci贸n de impresi贸n o electr贸nico, 
+del web service WSFEXv1 de AFIP (Factura Electr贸nica Exportaci贸n Versi贸n 1)
+seg煤n RG2758/2010 (Registros Especiales Aduaneros) y RG3689/14 (servicios)
 http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 """
 
@@ -32,7 +32,7 @@ WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 
 
 class WSFEXv1(BaseWS):
-    "Interfaz para el WebService de Factura Electr髇ica Exportaci髇 Versi髇 1"
+    "Interfaz para el WebService de Factura Electr贸nica Exportaci贸n Versi贸n 1"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
                         'AgregarPermiso', 'AgregarCmpAsoc',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
@@ -43,7 +43,7 @@ class WSFEXv1(BaseWS):
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
-                        'GetLastCMP', 'GetLastID',
+                        'GetLastCMP', 'GetLastID', 'GetParamActividades'
                         'Dummy', 'Conectar', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -59,7 +59,7 @@ class WSFEXv1(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s" % (__version__, HOMO and 'Homologaci髇' or '')
+    Version = "%s %s" % (__version__, HOMO and 'Homologaci贸n' or '')
     factura = None
 
     def inicializar(self):
@@ -93,7 +93,7 @@ class WSFEXv1(BaseWS):
             obs_comerciales="", obs_generales="", forma_pago="", incoterms="", 
             idioma_cbte=7, incoterms_ds=None, fecha_pago=None, **kwargs):
         "Creo un objeto factura (interna)"
-        # Creo una factura electronica de exportaci髇 
+        # Creo una factura electronica de exportaci贸n 
 
         fact = {'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
                 'cbte_nro': cbte_nro, 'fecha_cbte': fecha_cbte,
@@ -259,7 +259,7 @@ class WSFEXv1(BaseWS):
     
     @inicializar_y_capturar_excepciones
     def GetLastCMP(self, tipo_cbte, punto_vta):
-        "Recuperar 鷏timo n鷐ero de comprobante emitido"
+        "Recuperar 煤ltimo n煤mero de comprobante emitido"
         ret = self.client.FEXGetLast_CMP(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit,
                   'Cbte_Tipo': tipo_cbte,
@@ -275,7 +275,7 @@ class WSFEXv1(BaseWS):
             
     @inicializar_y_capturar_excepciones
     def GetLastID(self):
-        "Recuperar 鷏timo n鷐ero de transacci髇 (ID)"
+        "Recuperar 煤ltimo n煤mero de transacci贸n (ID)"
         ret = self.client.FEXGetLast_ID(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['FEXGetLast_IDResult']
@@ -346,7 +346,7 @@ class WSFEXv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetParamDstPais(self, sep="|"):
-        "Recuperador de valores referenciales de c骴igos de Pa韘es"
+        "Recuperador de valores referenciales de c贸digos de Pa铆ses"
         ret = self.client.FEXGetPARAM_DST_pais(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['FEXGetPARAM_DST_paisResult']
@@ -369,7 +369,7 @@ class WSFEXv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetParamDstCUIT(self, sep="|"):
-        "Recuperar lista de valores referenciales de CUIT de Pa韘es"
+        "Recuperar lista de valores referenciales de CUIT de Pa铆ses"
         ret = self.client.FEXGetPARAM_DST_CUIT(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['FEXGetPARAM_DST_CUITResult']
@@ -392,12 +392,12 @@ class WSFEXv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetParamTipoCbte(self, sep="|"):
-        "Recuperador de valores referenciales de c骴igos de Tipo de comprobantes"
+        "Recuperador de valores referenciales de c贸digos de Tipo de comprobantes"
         ret = self.client.FEXGetPARAM_Cbte_Tipo(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['FEXGetPARAM_Cbte_TipoResult']
         self.__analizar_errores(result)
-     
+
         ret = []
         for u in result['FEXResultGet']:
             u = u['ClsFEXResponse_Cbte_Tipo']
@@ -408,7 +408,7 @@ class WSFEXv1(BaseWS):
                      'vig_hasta': u.get('Cbte_vig_hasta')}
             except Exception, e:
                 print e
-            
+ 
             ret.append(r)
         if sep:
             return [("\t%(codigo)s\t%(ds)s\t%(vig_desde)s\t%(vig_hasta)s\t"
@@ -418,7 +418,7 @@ class WSFEXv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetParamTipoExpo(self, sep="|"):
-        "Recuperador de valores referenciales de c骴igos de Tipo de exportaci髇"
+        "Recuperador de valores referenciales de c贸digos de Tipo de exportaci贸n"
         ret = self.client.FEXGetPARAM_Tipo_Expo(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['FEXGetPARAM_Tipo_ExpoResult']
@@ -443,7 +443,7 @@ class WSFEXv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetParamIdiomas(self, sep="|"):
-        "Recuperar lista de valores referenciales de c骴igos de Idiomas"
+        "Recuperar lista de valores referenciales de c贸digos de Idiomas"
         ret = self.client.FEXGetPARAM_Idiomas(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
         result = ret['FEXGetPARAM_IdiomasResult']
@@ -492,7 +492,7 @@ class WSFEXv1(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def GetParamCtz(self, moneda_id):
-        "Recuperador de cotizaci髇 de moneda"
+        "Recuperador de cotizaci贸n de moneda"
         ret = self.client.FEXGetPARAM_Ctz(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
             Mon_id=moneda_id,
@@ -555,6 +555,30 @@ class WSFEXv1(BaseWS):
         return [(u"%(nro)s\tBloqueado:%(bloqueado)s\tFchBaja:%(baja)s" % r).replace("\t", sep)
                  for r in ret]
 
+    @inicializar_y_capturar_excepciones
+    def GetParamActividades(self, sep="|"):
+        "Recuperar lista de valores referenciales de c贸digos de Idiomas"
+        ret = self.client.FEXGetPARAM_Actividades(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_ActividadesResult']
+        self.__analizar_errores(result)
+
+        ret = []
+        for u in result.get('FEXResultGet', []):
+            u = u['ClsFEXResponse_ActividadTipo']
+            try:
+                r = {'codigo': u.get('Id'), 'ds': u.get('Desc'),
+                     'orden': u.get('Orden'), }
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t%(orden)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
+
 
 class WSFEX(WSFEXv1):
     "Wrapper para retrocompatibilidad con WSFEX"
@@ -564,7 +588,7 @@ class WSFEX(WSFEXv1):
 
     def __init__(self):
         WSFEXv1.__init__(self)
-        self.Version = "%s %s WSFEXv1" % (__version__, HOMO and 'Homologaci髇' or '')
+        self.Version = "%s %s WSFEXv1" % (__version__, HOMO and 'Homologaci贸n' or '')
 
     def Conectar(self, url="", proxy=""):
         # Ajustar URL de V0 a V1:
@@ -577,7 +601,7 @@ class WSFEX(WSFEXv1):
         return WSFEXv1.Conectar(self, cache=None, wsdl=url, proxy=proxy)
 
 
-# busco el directorio de instalaci髇 (global para que no cambie si usan otra dll)
+# busco el directorio de instalaci贸n (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSFEXv1.InstallDir = get_install_dir()
 
 
@@ -600,9 +624,9 @@ if __name__ == "__main__":
     #    win32com.server.localserver.serve([WSFEXv1._reg_clsid_])
     else:
 
-        # Crear objeto interface Web Service de Factura Electr髇ica de Exportaci髇
+        # Crear objeto interface Web Service de Factura Electr贸nica de Exportaci贸n
         wsfexv1 = WSFEXv1()
-        # Setear token y sing de autorizaci髇 (pasos previos)
+        # Setear token y sing de autorizaci贸n (pasos previos)
 
         # obteniendo el TA para pruebas
         from wsaa import WSAA
@@ -612,7 +636,7 @@ if __name__ == "__main__":
         # CUIT del emisor (debe estar registrado en la AFIP)
         wsfexv1.Cuit = "20267565393"
 
-        # Conectar al Servicio Web de Facturaci髇 (producci髇 u homologaci髇)
+        # Conectar al Servicio Web de Facturaci贸n (producci贸n u homologaci贸n)
         if "--prod" in sys.argv:
             wsdl = "https://servicios1.afip.gov.ar/wsfexv1/service.asmx?WSDL"
         else:
@@ -632,28 +656,28 @@ if __name__ == "__main__":
         if "--prueba" in sys.argv:
             try:
                 # Establezco los valores de la factura a autorizar:
-                tipo_cbte = '--nc' in sys.argv and 21 or 19 # FC/NC Expo (ver tabla de par醡etros)
+                tipo_cbte = '--nc' in sys.argv and 21 or 19 # FC/NC Expo (ver tabla de par谩metros)
                 punto_vta = 7
-                # Obtengo el 鷏timo n鷐ero de comprobante y le agrego 1
+                # Obtengo el 煤ltimo n煤mero de comprobante y le agrego 1
                 cbte_nro = int(wsfexv1.GetLastCMP(tipo_cbte, punto_vta)) + 1
                 fecha_cbte = datetime.datetime.now().strftime("%Y%m%d")
-                tipo_expo = 2 # tipo de exportaci髇 (ver tabla de par醡etros)
+                tipo_expo = 2 # tipo de exportaci贸n (ver tabla de par谩metros)
                 permiso_existente = (tipo_cbte not in (20, 21) and tipo_expo==1) and "S" or ""
                 print "permiso_existente", permiso_existente
-                dst_cmp = 203 # pa韘 destino
+                dst_cmp = 203 # pa铆s destino
                 cliente = "Joao Da Silva"
                 cuit_pais_cliente = "50000000016"
-                domicilio_cliente = u"R鷄 寻76 km 34.5 Alagoas"
+                domicilio_cliente = u"R煤a 脩掳76 km 34.5 Alagoas"
                 id_impositivo = "PJ54482221-l"
-                moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de par醡etros)
+                moneda_id = "DOL" # para reales, "DOL" o "PES" (ver tabla de par谩metros)
                 moneda_ctz = "60.2980" # wsfexv1.GetParamCtz('DOL') <- no funciona
                 obs_comerciales = "Observaciones comerciales"
                 obs = "Sin observaciones"
                 forma_pago = "30 dias"
                 fecha_pago = fecha_cbte
-                incoterms = "FOB" # (ver tabla de par醡etros)
+                incoterms = "FOB" # (ver tabla de par谩metros)
                 incoterms_ds = "Flete a Bordo" 
-                idioma_cbte = 1 # (ver tabla de par醡etros)
+                idioma_cbte = 1 # (ver tabla de par谩metros)
                 imp_total = "250.00"
                 
                 # Creo una factura (internamente, no se llama al WebService):
@@ -669,9 +693,9 @@ if __name__ == "__main__":
                 ds = "Producto Tipo 1 Exportacion MERCOSUR ISO 9001"
                 qty = 2
                 precio = "150.00"
-                umed = 1 # Ver tabla de par醡etros (unidades de medida)
+                umed = 1 # Ver tabla de par谩metros (unidades de medida)
                 bonif = "50.00"
-                imp_total = "250.00" # importe total final del art韈ulo
+                imp_total = "250.00" # importe total final del art铆culo
                 # lo agrego a la factura (internamente, no se llama al WebService):
                 ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
                 ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
@@ -680,7 +704,7 @@ if __name__ == "__main__":
                 # Agrego un permiso (ver manual para el desarrollador)
                 if permiso_existente:
                     id = "99999AAXX999999A"
-                    dst = 225 # pa韘 destino de la mercaderia
+                    dst = 225 # pa铆s destino de la mercaderia
                     ok = wsfexv1.AgregarPermiso(id, dst)
 
                 # Agrego un comprobante asociado (solo para N/C o N/D)
@@ -691,12 +715,12 @@ if __name__ == "__main__":
                     cbteasoc_cuit = 20111111111
                     wsfexv1.AgregarCmpAsoc(cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit)
                     
-                ##id = "99000000000100" # n鷐ero propio de transacci髇
-                # obtengo el 鷏timo ID y le adiciono 1 
+                ##id = "99000000000100" # n煤mero propio de transacci贸n
+                # obtengo el 煤ltimo ID y le adiciono 1 
                 # (advertencia: evitar overflow y almacenar!)
                 id = long(wsfexv1.GetLastID()) + 1
 
-                # Llamo al WebService de Autorizaci髇 para obtener el CAE
+                # Llamo al WebService de Autorizaci贸n para obtener el CAE
                 cae = wsfexv1.Authorize(id)
 
                 print "Comprobante", tipo_cbte, wsfexv1.CbteNro
@@ -779,13 +803,18 @@ if __name__ == "__main__":
                 print "||%(id)s||%(ds)s||%(vig_desde)s||%(vig_hasta)s||" % u
             umeds = dict([(u.get('id', ""),u.get('ds', "")) for u in umedidas])
 
-            print u"=== C骴igo Pais Destino ==="
+            print u"=== C贸digo Pais Destino ==="
             ret = wsfexv1.GetParamDstPais(sep=False)    
             for r in ret:
                 print "||%(codigo)s||%(ds)s||" % r
 
             print u"=== CUIT Pais Destino ==="
             ret = wsfexv1.GetParamDstCUIT(sep=False)    
+            for r in ret:
+                print "||%(codigo)s||%(ds)s||" % r
+                
+            print u"=== Actividades ==="
+            ret = wsfexv1.GetParamActividades(sep=False)
             for r in ret:
                 print "||%(codigo)s||%(ds)s||" % r
             
