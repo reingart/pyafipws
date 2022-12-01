@@ -34,7 +34,7 @@ WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 class WSFEXv1(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Exportación Versión 1"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
-                        'AgregarPermiso', 'AgregarCmpAsoc',
+                        'AgregarPermiso', 'AgregarCmpAsoc', 'AgregarActividad'
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT', 'GetParamIdiomas',
@@ -150,6 +150,12 @@ class WSFEXv1(BaseWS):
             'cbte_nro': cbte_nro, 'cbte_cuit': cbte_cuit})
         return True
 
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        act = { 'actividad_id': actividad_id }
+        self.factura['actividades'].append(act)
+        return True
+
     @inicializar_y_capturar_excepciones
     def Authorize(self, id):
         "Autoriza la factura cargada en memoria"
@@ -200,7 +206,11 @@ class WSFEXv1(BaseWS):
                         'Pro_precio_uni': d['precio'],
                         'Pro_bonificacion': d['bonif'],
                         'Pro_total_item': d['importe'],
-                     }} for d in f['detalles']],                    
+                     }} for d in f['detalles']],
+                'Actividades': f['actividades'] and [
+                    {'Actividad': {
+                        'Id': a['actividad_id'],
+                     }} for a in f['actividades']] or None,
             })
 
         result = ret['FEXAuthorizeResult']
@@ -700,7 +710,8 @@ if __name__ == "__main__":
                 ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
                 ok = wsfexv1.AgregarItem(codigo, ds, qty, umed, precio, imp_total, bonif)
                 ok = wsfexv1.AgregarItem(codigo, ds, 0, 99, 0, -float(imp_total), 0)
-
+                ok = wsfexv1.AgregarActividad(1234)
+ 
                 # Agrego un permiso (ver manual para el desarrollador)
                 if permiso_existente:
                     id = "99999AAXX999999A"
