@@ -49,6 +49,7 @@ class WSMTXCA(BaseWS):
                         'ConsultarCondicionesIVA',
                         'ConsultarMonedas',
                         'ConsultarUnidadesMedida',
+			'ConsultarActividadesVigentes',
                         'ConsultarTiposTributo', 'ConsultarTiposDatosAdicionales',
                         'ConsultarCotizacionMoneda',
                         'ConsultarPuntosVentaCAE',
@@ -999,6 +1000,14 @@ class WSMTXCA(BaseWS):
         return [" ".join([("%s=%s" % (k, v)) for k, v in p['puntoVenta'].items()])
                  for p in ret['arrayPuntosVenta']]
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarActividadesVigentes(self):
+        "Este método permite consultar las actividades vigentes para el contribuyente"
+        ret = self.client.consultarActividadesVigentes(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        return ["%(codigo)s: %(orden)s %(descripcion)s" % p['actividad']
+                 for p in ret['arrayActividades']]
 
 
 def main():
@@ -1220,6 +1229,7 @@ def main():
         print wsmtxca.ConsultarUnidadesMedida()
         print wsmtxca.ConsultarTiposTributo()
         print wsmtxca.ConsultarTiposDatosAdicionales()
+	print wsmtxca.ConsultarActividadesVigentes()
 
     if "--puntosventa" in sys.argv:
         print wsmtxca.ConsultarPuntosVentaCAE()
