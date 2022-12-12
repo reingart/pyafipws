@@ -35,7 +35,7 @@ class WSMTXCA(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Mercado Interno WSMTXCA"
     _public_methods_ = ['CrearFactura', 'EstablecerCampoFactura', 'AgregarIva', 'AgregarItem', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'EstablecerCampoItem', 'AgregarOpcional',
-                        'AgregarPeriodoComprobantesAsociados',
+                        'AgregarPeriodoComprobantesAsociados', 'AgregarActividad'
                         'AutorizarComprobante', 'CAESolicitar', 'AutorizarAjusteIVA',
                         'SolicitarCAEA', 'ConsultarCAEA', 'ConsultarCAEAEntreFechas', 
                         'InformarComprobanteCAEA', 'InformarAjusteIVACAEA',
@@ -136,6 +136,7 @@ class WSMTXCA(BaseWS):
                 'iva': [],
                 'detalles': [],
                 'opcionales': [],
+		'actividades': [],
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
@@ -236,6 +237,12 @@ class WSMTXCA(BaseWS):
         self.factura['opcionales'].append(op)
         return True
 
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividades a una factura (interna)"
+        act = { 'actividad_id': actividad_id}
+        self.factura['actividades'].append(act)
+        return True
+
     
     @inicializar_y_capturar_excepciones
     def AutorizarComprobante(self):
@@ -301,6 +308,9 @@ class WSMTXCA(BaseWS):
                 'c5': dato.get('valor5'),
                 'c6': dato.get('valor6'),
                 }} for dato in f['opcionales']] or None,
+	    'arrayActividades': f['actividades'] and [{'actividad': {
+                'codigo': dato['actividad_id'],
+                }} for dato in f['actividades']] or None,
             }
                 
         ret = self.client.autorizarComprobante(
@@ -1041,7 +1051,7 @@ def main():
     if "--prueba" in sys.argv:
         ##print wsmtxca.client.help("autorizarComprobante").encode("latin1")
         try:
-            tipo_cbte = 201
+            tipo_cbte = 1
             punto_vta = 4000
             cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(tipo_cbte, punto_vta)
             fecha = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -1114,6 +1124,9 @@ def main():
 
             if '--rg4540' in sys.argv:
                 wsmtxca.AgregarPeriodoComprobantesAsociados('2020-01-01', '2020-01-31')
+		
+	    if '--rg5259' in sys.argv:
+                wsmtxca.AgregarActividad(960990)
 
             print wsmtxca.factura
             
