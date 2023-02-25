@@ -367,7 +367,7 @@ def main():
 
     if "--csv" in sys.argv:
         csv_reader = csv.reader(
-            open("tests/entrada.csv", "rU"), dialect="excel", delimiter=","
+            open("tests/entrada.csv", "r"), dialect="excel", delimiter=","
         )
         csv_writer = csv.writer(open("salida.csv", "w"), dialect="excel", delimiter=",")
         encabezado = next(csv_reader)

@@ -1,11 +1,14 @@
 pytest==4.6.11; python_version <= '2.7'
-pytest==6.2.3; python_version > '3'
+pytest==7.2.0; python_version > '3'
 pytest-html==1.22.1; python_version <= '2.7'
-pytest-html==3.1.1; python_version > '3'
-pytest-vcr==1.0.2
-pytest-cov==2.12.1
-pytest-freezegun==0.4.2
+pytest-html==3.2.0; python_version > '3'
+pytest-vcr==1.0.2; python_version <= '2.7'
+pytest-cov==2.12.1; python_version <= '2.7'
+pytest-freezegun==0.4.2; python_version <= '2.7'
+pytest-vcr==1.0.2; python_version > '3'
+pytest-cov==4.0.0; python_version > '3'
+pytest-freezegun==0.4.2; python_version > '3'
 pytest-mock==2.0.0; python_version <= '2.7'
-pytest-mock==3.6.1; python_version > '2.7'
+pytest-mock==3.10.0; python_version > '2.7'
 pywin32==304; sys_platform == "win32" and python_version > '3'
 py2exe==0.11.1.1; sys_platform == "win32" and python_version > '3'
