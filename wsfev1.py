@@ -1629,8 +1629,9 @@ def main():
         # print(u"\n".join(wsfev1.ParamGetTiposPaises()))
         print("=== Puntos de Venta ===")
         print(u"\n".join(wsfev1.ParamGetPtosVenta()))
-        print("=== Actividades ===")
-        print(u'\n'.join(wsfev1.ParamGetActividades()))
+        if '--rg5259' in sys.argv:
+            print("=== Actividades ===")
+            print(u'\n'.join(wsfev1.ParamGetActividades()))
 
     if "--cotizacion" in sys.argv:
         print(wsfev1.ParamGetCotizacion("DOL"))

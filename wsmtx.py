@@ -1771,7 +1771,8 @@ def main():
         print(wsmtxca.ConsultarUnidadesMedida())
         print(wsmtxca.ConsultarTiposTributo())
         print(wsmtxca.ConsultarTiposDatosAdicionales())
-        print(wsmtxca.ConsultarActividadesVigentes())
+        if '--rg5259' in sys.argv:
+            print(wsmtxca.ConsultarActividadesVigentes())
 
     if "--puntosventa" in sys.argv:
         print(wsmtxca.ConsultarPuntosVentaCAE())
