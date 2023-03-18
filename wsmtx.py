@@ -225,6 +225,7 @@ class WSMTXCA(BaseWS):
             "iva": [],
             "detalles": [],
             "opcionales": [],
+            "actividades": [],
         }
         if fecha_serv_desde:
             fact["fecha_serv_desde"] = fecha_serv_desde
