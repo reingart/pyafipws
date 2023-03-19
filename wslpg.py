@@ -27,7 +27,7 @@ from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.34a"
+__version__ = "3.35b"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -110,10 +110,10 @@ import pprint
 import warnings
 from pysimplesoap.client import SoapFault
 from fpdf import Template
-from . import utils
+from pyafipws import utils
 
 # importo funciones compartidas:
-from .utils import (
+from pyafipws.utils import (
     leer,
     escribir,
     leer_dbf,
@@ -348,10 +348,10 @@ CERTIFICACION = [
     ("servicios_otros", 7, I, 3),
     ("servicios_forma_de_pago", 20, A),
     # campos para cgAutorizarRetiroTransferencia (WSLPGv1.6):
-    ("cuit_receptor", 11, N),
-    ("fecha", 10, A),  # no usado WSLPGv1.8
-    ("nro_carta_porte_a_utilizar", 9, N),  # obligatorio para retiro
-    ("cee_carta_porte_a_utilizar", 14, N),  # no usado WSLPGv1.8
+    ('cuit_receptor', 11, N),
+    ('fecha', 10, A),                           # no usado WSLPGv1.8
+    ('nro_carta_porte_a_utilizar', 13, N),       # obligatorio para retiro
+    ('cee_carta_porte_a_utilizar', 10, N),      # no usado WSLPGv1.8
     # para cgAutorizarPreexistente (WSLPGv1.6):
     ("tipo_certificado_deposito_preexistente", 1, N),  # "R": Retiro "T": Tra.
     ("nro_certificado_deposito_preexistente", 12, N),
@@ -386,18 +386,18 @@ CERTIFICACION = [
     ("servicios_otras_percepciones", 10, I, 2),
 ]
 
-CTG = [  # para cgAutorizarDeposito (WSLPGv1.6)
-    ("tipo_reg", 1, A),  # C: CTG
-    ("nro_ctg", 8, N),
-    ("nro_carta_porte", 9, N),
-    ("porcentaje_secado_humedad", 5, I, 2),
-    ("importe_secado", 10, I, 2),
-    ("peso_neto_merma_secado", 10, I, 2),
-    ("tarifa_secado", 10, I, 2),
-    ("importe_zarandeo", 10, I, 2),
-    ("peso_neto_merma_zarandeo", 10, I, 2),
-    ("tarifa_zarandeo", 10, I, 2),
-    ("peso_neto_confirmado_definitivo", 10, I, 2),
+CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
+    ('tipo_reg', 1, A), # C: CTG
+    ('nro_ctg', 12, A),
+    ('nro_carta_porte', 13, A),
+    ('porcentaje_secado_humedad', 5, I, 2),
+    ('importe_secado', 10, I, 2),
+    ('peso_neto_merma_secado', 10, I, 2),
+    ('tarifa_secado', 10, I, 2),
+    ('importe_zarandeo', 10, I, 2),
+    ('peso_neto_merma_zarandeo', 10, I, 2),
+    ('tarifa_zarandeo', 10, I, 2),
+    ('peso_neto_confirmado_definitivo', 10, I, 2),
 ]
 
 DET_MUESTRA_ANALISIS = [  # para cgAutorizarDeposito (WSLPGv1.6)
@@ -624,7 +624,7 @@ class WSLPG(BaseWS):
 
             try:
                 # intento abrir el diccionario persistente de localidades
-                from . import wslpg_datos
+                from pyafipws import wslpg_datos
 
                 localidades_db = os.path.join(self.cache, "localidades.dat")
                 # verificar que puede escribir en el dir, sino abrir solo lectura
@@ -3118,7 +3118,7 @@ class WSLPG(BaseWS):
     def BuscarLocalidades(self, cod_prov, cod_localidad=None, consultar=True):
         "Devuelve la localidad o la consulta en AFIP (uso interno)"
         # si no se especifíca cod_localidad, es util para reconstruir la cache
-        from . import wslpg_datos as datos
+        from pyafipws import wslpg_datos as datos
 
         if not str(cod_localidad) in datos.LOCALIDADES and consultar:
             d = self.ConsultarLocalidadesPorProvincia(cod_prov, sep=None)
@@ -3446,7 +3446,7 @@ class WSLPG(BaseWS):
                     elif isinstance(v, datetime.datetime):
                         f.set(k, str(v))
 
-                from . import wslpg_datos as datos
+                from pyafipws import wslpg_datos as datos
 
                 campania = int(liq.get("campania_ppal") or 0)
                 f.set("campania_ppal", datos.CAMPANIAS.get(campania, campania))
@@ -3948,7 +3948,7 @@ def main():
     import csv
     from configparser import SafeConfigParser
 
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     try:
 
@@ -4009,7 +4009,7 @@ def main():
             print("WRAPPER", WRAPPER)
             print("timeout:", TIMEOUT)
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar(
@@ -5362,7 +5362,7 @@ def main():
 
         if "--shelve" in sys.argv:
             print("# Construyendo BD de Localidades por Provincias")
-            from . import wslpg_datos as datos
+            from pyafipws import wslpg_datos as datos
 
             for cod_prov, desc_prov in list(
                 wslpg.ConsultarProvincias(sep=None).items()

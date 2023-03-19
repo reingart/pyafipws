@@ -71,7 +71,7 @@ import traceback
 from io import StringIO
 from decimal import Decimal
 from fpdf import Template
-from . import utils
+from pyafipws import utils
 
 
 class FEPDF(object):
@@ -1660,7 +1660,7 @@ class FEPDF(object):
 
     @utils.inicializar_y_capturar_excepciones_simple
     def GenerarQR(self):
-        from .pyqr import PyQR
+        from pyafipws.pyqr import PyQR
 
         # instanciar el objeto para codigos QR y crear un archivo temporal:
         pyqr = PyQR()
@@ -1722,7 +1722,7 @@ def main():
         # start the server.
         win32com.server.localserver.serve([FEPDF._reg_clsid_])
     else:
-        from .utils import SafeConfigParser
+        from pyafipws.utils import SafeConfigParser
 
         DEBUG = "--debug" in sys.argv
         utils.safe_console()
@@ -1748,11 +1748,11 @@ def main():
 
         if "--formato" in sys.argv:
             if "--dbf" in sys.argv:
-                from .formatos import formato_dbf
+                from pyafipws.formatos import formato_dbf
 
                 formato_dbf.ayuda()
             else:
-                from .formatos import formato_txt
+                from pyafipws.formatos import formato_txt
 
                 formato_txt.ayuda()
             sys.exit(0)
@@ -1772,14 +1772,14 @@ def main():
 
         if "--cargar" in sys.argv:
             if "--dbf" in sys.argv:
-                from .formatos import formato_dbf
+                from pyafipws.formatos import formato_dbf
 
                 conf_dbf = dict(config.items("DBF"))
                 if DEBUG:
                     print("conf_dbf", conf_dbf)
                 regs = list(formato_dbf.leer(conf_dbf).values())
             elif "--json" in sys.argv:
-                from .formatos import formato_json
+                from pyafipws.formatos import formato_json
 
                 if "--entrada" in sys.argv:
                     entrada = sys.argv[sys.argv.index("--entrada") + 1]
@@ -1789,7 +1789,7 @@ def main():
                     print("entrada", entrada)
                 regs = formato_json.leer(entrada)
             else:
-                from .formatos import formato_txt
+                from pyafipws.formatos import formato_txt
 
                 if "--entrada" in sys.argv:
                     entrada = sys.argv[sys.argv.index("--entrada") + 1]
@@ -2028,14 +2028,14 @@ def main():
             reg["datos"] = fepdf.datos
             reg["err_code"] = "OK"
             if "--dbf" in sys.argv:
-                from .formatos import formato_dbf
+                from pyafipws.formatos import formato_dbf
 
                 conf_dbf = dict(config.items("DBF"))
                 if DEBUG:
                     print("conf_dbf", conf_dbf)
                 regs = formato_dbf.escribir([reg], conf_dbf)
             elif "--json" in sys.argv:
-                from .formatos import formato_json
+                from pyafipws.formatos import formato_json
 
                 archivo = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG:
@@ -2045,7 +2045,7 @@ def main():
                 else:
                     regs = formato_json.escribir([reg], archivo)
             else:
-                from .formatos import formato_txt
+                from pyafipws.formatos import formato_txt
 
                 archivo = conf_fact.get("entrada", "entrada.txt")
                 if DEBUG:

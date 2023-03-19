@@ -22,13 +22,13 @@ from builtins import str
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.15d"
+__version__ = "3.16a"
 
 import datetime
 import decimal
 import os
 import sys
-from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from pyafipws.utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 LANZAR_EXCEPCIONES = True
@@ -47,6 +47,7 @@ class WSMTXCA(BaseWS):
         "EstablecerCampoItem",
         "AgregarOpcional",
         "AgregarPeriodoComprobantesAsociados",
+        "AgregarActividad",
         "AutorizarComprobante",
         "CAESolicitar",
         "AutorizarAjusteIVA",
@@ -67,6 +68,7 @@ class WSMTXCA(BaseWS):
         "ConsultarCondicionesIVA",
         "ConsultarMonedas",
         "ConsultarUnidadesMedida",
+        "ConsultarActividadesVigentes",
         "ConsultarTiposTributo",
         "ConsultarTiposDatosAdicionales",
         "ConsultarCotizacionMoneda",
@@ -223,6 +225,7 @@ class WSMTXCA(BaseWS):
             "iva": [],
             "detalles": [],
             "opcionales": [],
+            "actividades": [],
         }
         if fecha_serv_desde:
             fact["fecha_serv_desde"] = fecha_serv_desde
@@ -360,6 +363,13 @@ class WSMTXCA(BaseWS):
         return True
 
     @inicializar_y_capturar_excepciones
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividades a una factura (interna)"
+        act = { 'actividad_id': actividad_id}
+        self.factura['actividades'].append(act)
+        return True
+
+    @inicializar_y_capturar_excepciones
     def AutorizarComprobante(self):
         f = self.factura
         # contruyo la estructura a convertir en XML:
@@ -466,6 +476,16 @@ class WSMTXCA(BaseWS):
                     }
                 }
                 for dato in f["opcionales"]
+            ]
+            or None,
+            "arrayActividades": f["actividades"]
+            and [
+                {
+                    "actividad": {
+                        "codigo": act["actividad_id"],
+                    }
+                }
+                for act in f["actividades"]
             ]
             or None,
         }
@@ -1436,6 +1456,15 @@ class WSMTXCA(BaseWS):
             for p in ret["arrayPuntosVenta"]
         ]
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarActividadesVigentes(self):
+        "Este método permite consultar las actividades vigentes para el contribuyente"
+        ret = self.client.consultarActividadesVigentes(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            )
+        return ["%(codigo)s: %(orden)s %(descripcion)s" % p['actividad']
+                 for p in ret['arrayActividades']]
+
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -1444,7 +1473,7 @@ def main():
     DEBUG = "--debug" in sys.argv
 
     # obteniendo el TA para pruebas
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     ta = WSAA().Autenticar("wsmtxca", "reingart.crt", "reingart.key")
 
@@ -1469,7 +1498,7 @@ def main():
     if "--prueba" in sys.argv:
         ##print wsmtxca.client.help("autorizarComprobante").encode("latin1")
         try:
-            tipo_cbte = 201
+            tipo_cbte = 1
             punto_vta = 4000
             cbte_nro = wsmtxca.ConsultarUltimoComprobanteAutorizado(
                 tipo_cbte, punto_vta
@@ -1583,6 +1612,9 @@ def main():
 
             if "--rg4540" in sys.argv:
                 wsmtxca.AgregarPeriodoComprobantesAsociados("2020-01-01", "2020-01-31")
+
+            if '--rg5259' in sys.argv:
+                wsmtxca.AgregarActividad(960990)
 
             print(wsmtxca.factura)
 
@@ -1740,6 +1772,8 @@ def main():
         print(wsmtxca.ConsultarUnidadesMedida())
         print(wsmtxca.ConsultarTiposTributo())
         print(wsmtxca.ConsultarTiposDatosAdicionales())
+        if '--rg5259' in sys.argv:
+            print(wsmtxca.ConsultarActividadesVigentes())
 
     if "--puntosventa" in sys.argv:
         print(wsmtxca.ConsultarPuntosVentaCAE())

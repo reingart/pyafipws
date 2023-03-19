@@ -21,7 +21,7 @@ import sys
 
 try:  
     rev = subprocess.check_output(['git', 'rev-list', '--count', '--all'],
-                                  stderr=subprocess.PIPE).strip()
+                                  stderr=subprocess.PIPE).strip().decode("ascii")
 except:
     rev = 0
 
@@ -31,24 +31,24 @@ HOMO = True
 
 # build a one-click-installer for windows:
 import py2exe
-from .nsis import build_installer, Target
+from pyafipws.nsis import build_installer, Target
 
 # modulos a compilar y empaquetar (comentar si no se desea incluir):
 
 #import pyafipws
 #import pyrece
-from . import wsaa
-from . import wsfev1, rece1, rg3685
+from pyafipws import wsaa
+from pyafipws import wsfev1, rece1, rg3685
 #import wsfexv1, recex1
 #import wsbfev1, receb1
 #import wsmtx, recem
 #import wsct, recet
 #import wsfecred
 #import ws_sr_padron
-from . import pyfepdf
+#from pyafipws import pyfepdf
 #import pyemail
 #import pyi25
-from . import pyqr
+#from pyafipws import pyqr
 #import ws_sire
 #import wsctg
 #import wslpg
@@ -128,6 +128,12 @@ if 'pyi25' in globals() or 'pyfepdf' in globals() or 'pyqr' in globals():
 
 includes.append("dbf")
 
+# cryptography:
+includes.append("cffi")
+
+# win32 COM
+includes.extend(["win32com.server.policy"])
+
 # optional modules:
 # required modules for shelve support (not detected by py2exe by default):
 for mod in ['socks', 'dbhash', 'gdbm', 'dbm', 'dumbdbm', 'anydbm']:
@@ -182,60 +188,25 @@ kwargs['windows'] = []
 import platform
 __version__ += "-" + platform.architecture()[0]
 
-# legacy webservices & utilities:
-if 'pyafipws' in globals():
-    kwargs['com_server'] += ["pyafipws"]
-    kwargs['console'] += ['rece.py', 'receb.py', 'recex.py', 'wsaa.py', 'wsfex.py', 'wsbfe.py']
-
-# visual application
-if 'pyrece' in globals():
-    # find pythoncard resources, to add as 'data_files'
-    pycard_resources=[]
-    for filename in os.listdir('.'):
-        if filename.find('.rsrc.')>-1:
-            pycard_resources+=[filename]
-
-    kwargs['console'] += [
-        Target(module=pyrece, script="pyrece.py", dest_base="pyrece_consola"),
-        ]
-    kwargs['windows'] += [
-        Target(module=pyrece, script='pyrece.py'),
-        ]
-    data_files += [
-        WX_DLL, 
-        ("plantillas", ["plantillas/logo.png", "plantillas/factura.csv", ]),
-        ("datos", ["datos/facturas.csv", "datos/facturas.json", "datos/facturas.txt", "datos/facturas.xlsx", ])
-        ]
-    if os.path.exists("logo-pyafipws.png"):
-        data_files.append((".", ['logo-pyafipws.png', 'logo-sistemasagiles.png']))
-    data_files.append((".", pycard_resources))
-
-    __version__ += "+pyrece_" + pyrece.__version__
-    HOMO &= pyrece.HOMO
-
 
 # new webservices:
 if 'wsaa' in globals():
-    kwargs['com_server'] += [Target(module=wsaa, modules='wsaa', create_exe=not wsaa.TYPELIB, create_dll=not wsaa.TYPELIB)]
-    kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa-cli")]
+    kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa_com")]
+    kwargs['console'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
     if wsaa.TYPELIB:
-        kwargs['windows'] += [Target(module=wsaa, script="wsaa.py", dest_base="wsaa")]
         data_files.append(("typelib", ["typelib/wsaa.tlb"]))
         
     __version__ += "+wsaa_" + wsaa.__version__
     HOMO &= wsaa.HOMO
 
 if 'wsfev1' in globals():
-    kwargs['com_server'] += [
-        Target(module=wsfev1, modules="wsfev1", create_exe=not wsfev1.TYPELIB, create_dll=not wsfev1.TYPELIB)
-        ]
+    kwargs['windows'] += [Target(module=wsfev1, script="wsfev1.py", dest_base="wsfev1_com")]
     kwargs['console'] += [
-        Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1_cli"), 
+        Target(module=wsfev1, script='wsfev1.py', dest_base="wsfev1"),
         Target(module=rece1, script='rece1.py'), 
-        Target(module=rg3685, script='rg3685.py'), 
+        #Target(module=rg3685, script='rg3685.py'), 
         ]             
     if wsfev1.TYPELIB:
-        kwargs['windows'] += [Target(module=wsaa, script="wsfev1.py", dest_base="wsfev1")]
         data_files.append(("typelib", ["typelib/wsfev1.tlb"]))
     __version__ += "+wsfev1_" + wsfev1.__version__
     HOMO &= wsfev1.HOMO
@@ -368,11 +339,6 @@ if 'pyqr' in globals():
     data_files += [
         ]
     __version__ += "+pyqr_" + pyqr.__version__
-
-if 'designer' in globals():
-    kwargs['windows'] += [
-        Target(module=designer, script="designer.py", dest_base="designer"),
-        ]
         
 if 'wsctg' in globals():
     kwargs['com_server'] += [
@@ -629,13 +595,9 @@ if 'sired' in globals():
 kwargs['cmdclass'] = {"py2exe": build_installer}
 
 # add certification authorities (newer versions of httplib2)
-try:
-    import httplib2
-    if httplib2.__version__ >= "0.9":
-        data_files += [("httplib2", 
-            [os.path.join(os.path.dirname(httplib2.__file__), "cacerts.txt")])]
-except ImportError:
-    pass
+import httplib2
+data_files += [("httplib2",
+    [os.path.join(os.path.dirname(httplib2.__file__), "cacerts.txt")])]
 
 # add certification authorities (newer versions of httplib2)
 try:

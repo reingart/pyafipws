@@ -28,7 +28,7 @@ import datetime
 import decimal
 import os
 import sys
-from .utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from pyafipws.utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False
 LANZAR_EXCEPCIONES = True  # valor por defecto: True
@@ -665,7 +665,7 @@ def main():
         # Setear token y sing de autorización (pasos previos)
 
         # obteniendo el TA para pruebas
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         ta = WSAA().Autenticar("wsbfe", "reingart.crt", "reingart.key")
         wsbfev1.SetTicketAcceso(ta)

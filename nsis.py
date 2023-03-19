@@ -27,7 +27,7 @@ __license__ = "LGPL-3.0-or-later"
 
 import os
 import sys
-from py2exe.build_exe import py2exe
+from py2exe.distutils_buildexe import py2exe
 
 
 nsi_base_script = r"""\
@@ -152,7 +152,7 @@ register_com_server_dll = """\
     RegDLL "$INSTDIR\%s"
 """
 register_com_server_exe = """\
-    ExecWait '%s /register' 
+    ExecWait '%s --register'
 """
 register_com_server_tlb = """\
     ExecWait '%s --register' 
@@ -161,7 +161,7 @@ unregister_com_server_dll = """\
     UnRegDLL "$INSTDIR\%s"
 """
 unregister_com_server_exe = """\
-    ExecWait '%s /unregister' 
+    ExecWait '%s --unregister'
 """
 unregister_com_server_tlb = """\
     ExecWait '%s --unregister' 
@@ -190,18 +190,16 @@ class build_installer(py2exe):
         # First, let py2exe do it's work.
         py2exe.run(self)
 
-        lib_dir = self.lib_dir
+        windows_exe_files = [target.dest_base + ".exe" for target in self.distribution.windows if not target.dest_base.endswith("_com")]
         dist_dir = self.dist_dir
-        comserver_files = self.comserver_files
+        comserver_files = [target.dest_base + ".exe" for target in self.distribution.windows if target.dest_base.endswith("_com")]
         metadata = self.distribution.metadata
 
         # create the Installer, using the files py2exe has created.
         script = NSISScript(
             metadata,
-            lib_dir,
             dist_dir,
-            self.windows_exe_files,
-            self.lib_files,
+            windows_exe_files,
             comserver_files,
         )
         print("*** creating the nsis script***")
@@ -215,13 +213,10 @@ class NSISScript(object):
     def __init__(
         self,
         metadata,
-        lib_dir,
         dist_dir,
         windows_exe_files=[],
-        lib_files=[],
         comserver_files=[],
     ):
-        self.lib_dir = lib_dir
         self.dist_dir = dist_dir
         if not self.dist_dir[-1] in "\\/":
             self.dist_dir += "\\"
@@ -230,28 +225,18 @@ class NSISScript(object):
         self.version = metadata.get_version()
         self.copyright = metadata.get_author()
         self.url = metadata.get_url()
-        self.windows_exe_files = [self.chop(p) for p in windows_exe_files]
-        self.lib_files = [self.chop(p) for p in lib_files]
+        self.windows_exe_files = [p for p in windows_exe_files]
         self.comserver_files_exe = [
-            self.chop(p) for p in comserver_files if p.lower().endswith(".exe")
+            p for p in comserver_files if p.lower().endswith(".exe")
         ]
         self.comserver_files_dll = [
-            self.chop(p) for p in comserver_files if p.lower().endswith(".dll")
+            p for p in comserver_files if p.lower().endswith(".dll")
         ]
         self.comserver_files_tlb = []
         if not self.comserver_files_exe and self.windows_exe_files:
             for file in self.windows_exe_files:
                 if file in ("wsaa.exe", "wsfev1.exe"):
                     self.comserver_files_tlb.append(file)
-
-    def chop(self, pathname):
-        global install_vcredist
-        # print pathname, self.dist_dir
-        # assert pathname.startswith(self.dist_dir)
-        if "Microsoft.VC90.CRT.manifest" in pathname:
-            # clean redistributable instructions (DLL files already included)
-            install_vcredist = ""
-        return pathname[len(self.dist_dir) :]
 
     def create(self, pathname="base.nsi"):
         self.pathname = pathname

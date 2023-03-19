@@ -71,20 +71,21 @@ Ver rece.ini para parámetros de configuración (URL, certificados, etc.)"
 from collections import OrderedDict
 import datetime
 import os, sys, time, base64
-from .utils import date
+from pyafipws.utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-from . import utils
+from pyafipws import utils
 
 # importo funciones compartidas:
-from .utils import (
+from pyafipws.utils import (
     json,
     BaseWS,
     inicializar_y_capturar_excepciones,
     get_install_dir,
     json_serializer,
+    safe_console,
 )
-from .utils import (
+from pyafipws.utils import (
     leer,
     escribir,
     leer_dbf,
@@ -1137,6 +1138,7 @@ REGISTROS = {
 
 
 def main():
+    safe_console()
     global HOMO, DEBUG, XML, CONFIG_FILE
     if "--ayuda" in sys.argv:
         print(LICENCIA)
@@ -1195,7 +1197,7 @@ def main():
             print("wsfecred_url:", wsfecred_url)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsfecred", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
@@ -1229,12 +1231,12 @@ def main():
 
         if "--ctasctes" in sys.argv:
             try:
-                argv = dict(enumerate(sys.argv[sys.argv.index("--ctasctes") :]))
-                cuit_contraparte = argv.get(1)
+                argv = dict(enumerate(sys.argv[sys.argv.index("--ctasctes"):]))
+                cuit_contraparte = argv.get(1) or None
                 rol = argv.get(2, "Emisor")
-                fecha_desde = argv.get(3)
-                fecha_hasta = argv.get(4)
-                fecha_tipo = argv.get(5, "Emision")
+                fecha_desde = argv.get(3) or None
+                fecha_hasta = argv.get(4) or None
+                fecha_tipo= argv.get(5, "Emision")
             except (IndexError, ValueError) as ex:
                 raise RuntimeError("Revise los parámetros: %s" % ex)
             ret = wsfecred.ConsultarCtasCtes(

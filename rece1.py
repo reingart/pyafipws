@@ -20,7 +20,7 @@ from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.38d"
+__version__ = "3.38f"
 
 import datetime
 import os
@@ -30,9 +30,9 @@ import traceback
 import warnings
 
 # revisar la instalación de pyafip.ws:
-from . import wsfev1
-from .utils import SimpleXMLElement, SoapClient, SoapFault, date
-from .utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
+from pyafipws import wsfev1
+from pyafipws.utils import SimpleXMLElement, SoapClient, SoapFault, date
+from pyafipws.utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, abrir_conf
 
 
 HOMO = wsfev1.HOMO
@@ -306,57 +306,56 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ["%s='%s'" % (k, str(v)) for k, v in list(ws.factura.items())]
                 )
             )
-        if not DEBUG :
-            if not informar_caea:
-                cae = ws.CAESolicitar()
-                dic = ws.factura
-            else:
-                cae = ws.CAEARegInformativo()
-                dic = ws.factura
-            print(
-                "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f"
-                % (
-                    TIPO_CBTE.get(dic["tipo_cbte"], dic["tipo_cbte"]),
-                    dic["punto_vta"],
-                    dic["cbt_desde"],
-                    dic["cbt_hasta"],
-                    TIPO_DOC.get(dic["tipo_doc"], dic["tipo_doc"]),
-                    dic["nro_doc"],
-                    float(dic["imp_total"]),
-                    float(dic["imp_iva"] if dic["imp_iva"] is not None else "NaN"),
-                )
-            )
-            dic.update(encabezado)  # preservar la estructura leida
-            dic.update(
-                {
-                    "cae": cae and str(cae) or "",
-                    "fch_venc_cae": ws.Vencimiento and str(ws.Vencimiento) or "",
-                    "resultado": ws.Resultado,
-                    "motivos_obs": ws.Obs,
-                    "err_code": str(ws.ErrCode),
-                    "err_msg": ws.ErrMsg,
-                    "cbt_desde": ws.CbtDesde,
-                    "cbt_hasta": ws.CbtHasta,
-                    "fecha_cbte": ws.FechaCbte,
-                    "reproceso": ws.Reproceso,
-                    "emision_tipo": ws.EmisionTipo,
-                }
-            )
-            dicts.append(dic)
-            print(
-                "NRO:",
+        if not informar_caea:
+            cae = ws.CAESolicitar()
+            dic = ws.factura
+        else:
+            cae = ws.CAEARegInformativo()
+            dic = ws.factura
+        print(
+            "Procesando %s %04d %08d %08d %s %s $ %0.2f IVA: $ %0.2f"
+            % (
+                TIPO_CBTE.get(dic["tipo_cbte"], dic["tipo_cbte"]),
+                dic["punto_vta"],
                 dic["cbt_desde"],
-                "Resultado:",
-                dic["resultado"],
-                "%s:" % ws.EmisionTipo,
-                dic["cae"],
-                "Obs:",
-                dic["motivos_obs"].encode("ascii", "ignore"),
-                "Err:",
-                dic["err_msg"].encode("ascii", "ignore"),
-                "Reproceso:",
-                dic["reproceso"],
+                dic["cbt_hasta"],
+                TIPO_DOC.get(dic["tipo_doc"], dic["tipo_doc"]),
+                dic["nro_doc"],
+                float(dic["imp_total"]),
+                float(dic["imp_iva"] if dic["imp_iva"] is not None else "NaN"),
             )
+        )
+        dic.update(encabezado)  # preservar la estructura leida
+        dic.update(
+            {
+                "cae": cae and str(cae) or "",
+                "fch_venc_cae": ws.Vencimiento and str(ws.Vencimiento) or "",
+                "resultado": ws.Resultado,
+                "motivos_obs": ws.Obs,
+                "err_code": str(ws.ErrCode),
+                "err_msg": ws.ErrMsg,
+                "cbt_desde": ws.CbtDesde,
+                "cbt_hasta": ws.CbtHasta,
+                "fecha_cbte": ws.FechaCbte,
+                "reproceso": ws.Reproceso,
+                "emision_tipo": ws.EmisionTipo,
+            }
+        )
+        dicts.append(dic)
+        print(
+            "NRO:",
+            dic["cbt_desde"],
+            "Resultado:",
+            dic["resultado"],
+            "%s:" % ws.EmisionTipo,
+            dic["cae"],
+            "Obs:",
+            dic["motivos_obs"].encode("ascii", "ignore"),
+            "Err:",
+            dic["err_msg"].encode("ascii", "ignore"),
+            "Reproceso:",
+            dic["reproceso"],
+        )
     if dicts:
         escribir_facturas(dicts, salida)
 
@@ -378,6 +377,8 @@ def escribir_facturas(encabezados, archivo, agrega=False):
     else:
         for dic in encabezados:
             dic["tipo_reg"] = 0
+            if "caea" in dic:
+                dic["cae"] = dic["caea"]
             archivo.write(escribir(dic, ENCABEZADO))
             if "tributos" in dic:
                 for it in dic["tributos"]:
@@ -412,7 +413,7 @@ def escribir_facturas(encabezados, archivo, agrega=False):
             ("Comprobante Asociado", CMP_ASOC, dic.get("cbtes_asoc", [])),
             ("Datos Opcionales", OPCIONAL, dic.get("opcionales", [])),
             ("Compradores", COMPRADOR, dic.get("compradores", [])),
-            ("Periodo Asociado", PERIODO_ASOC, [dic["periodo_cbtes_asoc"]]),
+            ("Periodo Asociado", PERIODO_ASOC, dic.get('periodo_cbtes_asoc', [])),
         ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
@@ -578,7 +579,7 @@ def main():
                         )
                         comienzo += longitud
                 else:
-                    from .formatos.formato_dbf import definir_campos
+                    from pyafipws.formatos.formato_dbf import definir_campos
 
                     filename = "%s.dbf" % msg.lower()[:8]
                     print("==== %s (%s) ====" % (msg, filename))
@@ -588,7 +589,7 @@ def main():
             return
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar(
@@ -599,6 +600,7 @@ def main():
             proxy=proxy_dict,
             cacert=CACERT,
             wrapper=WRAPPER,
+            timeout=TIMEOUT,
         )
         if DEBUG:
             print(wsaa.DebugLog())
@@ -640,6 +642,7 @@ def main():
             fecha_serv_hasta = fecha
             moneda_id = "PES"
             moneda_ctz = "1.000"
+            caea = 32023696937881
 
             ws.CrearFactura(
                 concepto,
@@ -661,6 +664,7 @@ def main():
                 fecha_serv_hasta,  # --
                 moneda_id,
                 moneda_ctz,
+                caea=caea,
             )
 
             if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):
@@ -949,7 +953,7 @@ def main():
         ex = traceback.format_exception(
             sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2]
         )
-        open("traceback.txt", "wb").write("\n".join(ex))
+        open("traceback.txt", "w").write("\n".join(ex))
 
         if DEBUG:
             raise

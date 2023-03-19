@@ -226,7 +226,7 @@ def main():
         win32com.server.register.UseCommandLine(PyEmail)
     elif "py2exe" in sys.argv:
         from distutils.core import setup
-        from .nsis import build_installer, Target
+        from pyafipws.nsis import build_installer, Target
         import py2exe
 
         setup(

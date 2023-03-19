@@ -7,7 +7,7 @@
 import "unknwn.idl","oaidl.idl"; 
 
 [
-	uuid(95392BD9-54C3-4334-A045-A069BAF7FB97),
+	uuid(50596DAF-5374-4548-BFC3-44CA335A4016),
 	helpstring("PyAfipWs WSAA interface"),
 	pointer_default(unique),
 	dual,
@@ -89,15 +89,15 @@ interface IWSAA : IDispatch
 };  //end interface def
 
 [
-	uuid(30E9C94B-7385-4534-9A80-DF50FD169253),
-	version(2.11),
-	helpstring("PyAfipWs WSAA 2.11 Type Library"),
+	uuid(6E4B43FD-0ABB-4627-AA4E-2AD08BD3D212),
+	version(2.12),
+	helpstring("PyAfipWs WSAA 2.12 Type Library"),
 ] library PyAfipWsWSAALib
 {
 	importlib("stdole32.tlb");
 
 	[
-		uuid(FC5FDFC3-1F41-4E4D-A346-5459DE1CE973),
+		uuid(51342E57-9681-4610-AF2B-686267470930),
 		helpstring("WSAA Component Class")
 	] coclass WSAA
 	{

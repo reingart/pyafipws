@@ -25,7 +25,7 @@ from builtins import str
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.02c"
+__version__ = "3.03a"
 
 LICENCIA = """
 wsremcarne.py: Interfaz para generar Remito Electrónico Cárnico AFIP v3.0
@@ -72,13 +72,13 @@ Ver wsremcarne.ini para parámetros de configuración (URL, certificados, etc.)"
 """
 
 import os, sys, time, base64
-from .utils import date
+from pyafipws.utils import date
 import traceback
 from pysimplesoap.client import SoapFault
-from . import utils
+from pyafipws import utils
 
 # importo funciones compartidas:
-from .utils import (
+from pyafipws.utils import (
     json,
     BaseWS,
     inicializar_y_capturar_excepciones,
@@ -104,74 +104,23 @@ ENCABEZADO = []
 
 class WSRemCarne(BaseWS):
     "Interfaz para el WebService de Remito Electronico Carnico (Version 3)"
-    _public_methods_ = [
-        "Conectar",
-        "Dummy",
-        "SetTicketAcceso",
-        "DebugLog",
-        "GenerarRemito",
-        "EmitirRemito",
-        "AutorizarRemito",
-        "AnularRemito",
-        "ConsultarRemito",
-        "InformarContingencia",
-        "ModificarViaje",
-        "RegistrarRecepcion",
-        "ConsultarUltimoRemitoEmitido",
-        "CrearRemito",
-        "AgregarViaje",
-        "AgregarVehiculo",
-        "AgregarMercaderia",
-        "AgregarDatosAutorizacion",
-        "AgregarContingencia",
-        "ConsultarTiposCarne",
-        "ConsultarTiposCategoriaEmisor",
-        "ConsultarTiposCategoriaReceptor",
-        "ConsultarTiposComprobante",
-        "ConsultarTiposContingencia",
-        "ConsultarTiposEstado",
-        "ConsultarCodigosDomicilio",
-        "ConsultarGruposCarne",
-        "ConsultarPuntosEmision",
-        "SetParametros",
-        "SetParametro",
-        "GetParametro",
-        "AnalizarXml",
-        "ObtenerTagXml",
-        "LoadTestXML",
-    ]
-    _public_attrs_ = [
-        "XmlRequest",
-        "XmlResponse",
-        "Version",
-        "Traceback",
-        "Excepcion",
-        "LanzarExcepciones",
-        "Token",
-        "Sign",
-        "Cuit",
-        "AppServerStatus",
-        "DbServerStatus",
-        "AuthServerStatus",
-        "CodRemito",
-        "TipoComprobante",
-        "PuntoEmision",
-        "NroRemito",
-        "CodAutorizacion",
-        "FechaVencimiento",
-        "FechaEmision",
-        "Estado",
-        "Resultado",
-        "QR",
-        "ErrCode",
-        "ErrMsg",
-        "Errores",
-        "ErroresFormato",
-        "Observaciones",
-        "Obs",
-        "Evento",
-        "Eventos",
-    ]
+    _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
+                        'GenerarRemito', 'EmitirRemito', 'AutorizarRemito', 'AnularRemito', 'ConsultarRemito',
+                        'InformarContingencia', 'ModificarViaje', 'RegistrarRecepcion',  'ConsultarUltimoRemitoEmitido',
+                        'CrearRemito', 'AgregarViaje', 'AgregarVehiculo', 'AgregarMercaderia',
+                        'AgregarDatosAutorizacion', 'AgregarContingencia',
+                        'ConsultarTiposCarne', 'ConsultarTiposCategoriaEmisor', 'ConsultarTiposCategoriaReceptor',
+                        'ConsultarTiposComprobante', 'ConsultarTiposContingencia', 'ConsultarTiposEstado',
+                        'ConsultarCodigosDomicilio', 'ConsultarGruposCarne', 'ConsultarPuntosEmision',
+                        'ConsultarReceptoresValidos',
+                        'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
+                        ]
+    _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
+                      'Token', 'Sign', 'Cuit', 'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
+                      'CodRemito', 'TipoComprobante', 'PuntoEmision',
+                      'NroRemito', 'CodAutorizacion', 'FechaVencimiento', 'FechaEmision', 'Estado', 'Resultado', 'QR',
+                      'ErrCode', 'ErrMsg', 'Errores', 'ErroresFormato', 'Observaciones', 'Obs', 'Evento', 'Eventos',
+                     ]
     _reg_progid_ = "WSRemCarne"
     _reg_clsid_ = "{71DB0CB9-2ED7-4226-A1E6-C3FA7FB18F41}"
 
@@ -670,6 +619,19 @@ class WSRemCarne(BaseWS):
             for it in lista
         ]
 
+    @inicializar_y_capturar_excepciones
+    def ConsultarReceptoresValidos(self, cuit_titular, sep="||"):
+        "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
+        res = self.client.consultarReceptoresValidos(
+                            authRequest={
+                                'token': self.Token, 'sign': self.Sign,
+                                'cuitRepresentada': self.Cuit, },
+                            arrayReceptores=[{"receptores": {"cuitReceptor": cuit_titular}}],
+                            )
+        ret = res['consultarReceptoresValidosReturn']
+        self.Resultado = ret["resultado"]
+        return True
+
 
 # busco el directorio de instalación (global para que no cambie si usan otra dll)
 if not hasattr(sys, "frozen"):
@@ -742,7 +704,7 @@ def main():
             print("wsremcarne_url:", wsremcarne_url)
 
         # obteniendo el TA
-        from .wsaa import WSAA
+        from pyafipws.wsaa import WSAA
 
         wsaa = WSAA()
         ta = wsaa.Autenticar("wsremcarne", CERT, PRIVATEKEY, wsaa_url, debug=DEBUG)
@@ -936,6 +898,14 @@ def main():
             cuit = input("Cuit Titular Domicilio: ")
             ret = wsremcarne.ConsultarCodigosDomicilio(cuit)
             print("\n".join(ret))
+
+        if '--receptores' in sys.argv:
+            try:
+                cuit = int(sys.argv[-1])
+            except:
+                cuit = raw_input("Cuit Receptor: ")
+            ret = wsremcarne.ConsultarReceptoresValidos(cuit)
+            print("Resultado:", wsremcarne.Resultado)
 
         if wsremcarne.Errores or wsremcarne.ErroresFormato:
             print("Errores:", wsremcarne.Errores, wsremcarne.ErroresFormato)

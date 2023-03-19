@@ -1,0 +1,166 @@
+# This workflow will install Python dependencies, build EXE and run some tests in Windows
+# For more information see: https://github.com/py2exe/py2exe/blob/master/.github/workflows/CI.yml
+
+name: Windows Installer
+
+on: [push]
+
+jobs:
+  compile:
+
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+        targetplatform: [x86, x64]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        architecture : ${{ matrix.targetplatform }}
+    - name: Upgrade the package manager and related libraries
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools wheel
+        python -m pip install --upgrade cachetools pefile
+    - name: Install production dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Install development dependencies
+      run: |
+        pip install -r requirements-dev.txt
+    - name: Remove python2 library conflicts with py2exe
+      run: |
+        python -c "import aenum, os; os.unlink(os.path.join(os.path.dirname(aenum.__file__), '_py2.py'))"
+    - name: Install package
+      run: |
+        python setup.py install
+    - name: Build executables
+      run: |
+        python setup_win.py py2exe
+    - name: Remove uneeded libs (TK)
+      run: |
+        Remove-Item .\dist\lib\tcl -recurse
+        Remove-Item .\dist\lib\tk -recurse
+    - name: Copy PowerShell tests into the release artifact
+      run: |
+        mkdir .\dist\tests
+        copy .\tests\powershell\*.* .\dist\tests
+    - name: Save repository metadata for release env-vars
+      run: |
+        echo release_version="${{ matrix.python-version }}".$(git rev-list --count --all) > dist/.env
+        echo git_short_hash=$(git rev-parse --short head) >> dist/.env
+        echo git_branch=$(git branch --show-current) >> dist/.env
+        echo workflow trigger: "${{ github.ref }}" - "${{ github.ref_name }}"
+        type dist/.env
+    - name: Deploy distribution binaries
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-${{ matrix.targetplatform }}
+        path: |
+          dist/
+
+  test:
+    name: "Full End-2-End test"
+    needs: compile
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        targetplatform: [x86, x64]
+    steps:
+    - name: Download distribution binaries
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-${{ matrix.targetplatform }}
+    - name: Download certificate and private key
+      run: |
+        Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -OutFile reingart2019.zip
+        Expand-Archive reingart2019.zip -DestinationPath .
+    - name: Replace certificate and private key from secrets
+      shell: pwsh
+      env:
+        AFIP_TEST_PRIV_KEY: ${{ secrets.AFIP_TEST_PRIV_KEY }}
+        AFIP_TEST_CERT2: ${{ secrets.AFIP_TEST_CERT2 }}
+        AFIP_TEST_CERT3: ${{ secrets.AFIP_TEST_CERT3 }}
+        TARGET_PLATFORM: ${{ matrix.targetplatform }}
+      if: "${{ env.AFIP_TEST_PRIV_KEY != '' }}"
+      run: |
+        "$env:AFIP_TEST_PRIV_KEY" | Out-File -FilePath reingart.key
+        $( if ( "$env:TARGET_PLATFORM" -eq "x64" ) { "$env:AFIP_TEST_CERT2" } else { "$env:AFIP_TEST_CERT3" } ) | Out-File -FilePath reingart.crt
+        Get-Content -Path reingart.crt
+        Write-Host "TARGET_PLATFORM: $env:TARGET_PLATFORM"
+    - name: Copy rece.ini file
+      run: |
+        copy conf\rece.ini .
+    - name: Test WSAA command line interface
+      run: |
+        .\wsaa.exe --analizar reingart.crt reingart.key wsmtxca 300
+    - name: Register WSAA component
+      run: |
+        .\wsaa.exe --register
+        Get-Content -Path $Env:APPDATA\wsaa.log -ErrorAction SilentlyContinue
+    - name: Register WSAA component (debug)
+      continue-on-error: true
+      run: |
+        reg export "HKEY_CLASSES_ROOT\CLSID\{51342E57-9681-4610-AF2B-686267470930}" wsaa.reg
+        type wsaa.reg
+    - name: Register WSFEv1 component
+      run: |
+        .\wsfev1.exe --register
+        Get-Content -Path $Env:APPDATA\wsfev1.log -ErrorAction SilentlyContinue
+    - name: Register WSFEv1 component (debug)
+      continue-on-error: true
+      run: |
+        reg export "HKEY_CLASSES_ROOT\CLSID\{FA1BB90B-53D1-4FDA-8D1F-DEED2700E739}" wsfev1.reg
+        type wsfev1.reg
+    - name: Test WSAA COM server automation
+      run: |
+        .\tests\test_wsaa.ps1
+    - name: Test WSFEv1 COM server automation
+      run: |
+        .\tests\test_wsfev1.ps1
+    - name: Test RECE1 command line interface tool
+      run: |
+        $env:Path += ";$pwd"
+        . .\tests\test_rece1.ps1
+
+  pre-release:
+    name: "Pre Release"
+    needs: compile
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Download distribution binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-x86
+          path: dist-32
+      - name: Create ZIP archive
+        run: |
+          zip dist-32.zip -r dist-32
+      - name: Download distribution binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-x64
+          path: dist-64
+      - name: Create ZIP archive
+        run: |
+          zip dist-64.zip -r dist-64
+      - name: Set release env-vars
+        run: |
+          cat dist-64/.env >> $GITHUB_ENV
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ (github.ref_name != 'main') && 'beta' || 'latest' }}
+          prerelease: ${{ (github.ref != 'main') }}
+          title: "Dev Build ${{ env.release_version }} ${{ env.git_branch }} @ ${{ env.git_short_hash }}"
+          files: |
+            dist-32.zip
+            dist-64.zip

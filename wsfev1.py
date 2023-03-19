@@ -31,13 +31,13 @@ from past.builtins import basestring
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.25c"
+__version__ = "3.26a"
 
 import datetime
 import decimal
 import os
 import sys
-from .utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
+from pyafipws.utils import verifica, inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 
 HOMO = False  # solo homologación
 TYPELIB = False  # usar librería de tipos (TLB)
@@ -59,6 +59,7 @@ class WSFEv1(BaseWS):
         "AgregarOpcional",
         "AgregarComprador",
         "AgregarPeriodoComprobantesAsociados",
+        "AgregarActividad",
         "CompUltimoAutorizado",
         "CompConsultar",
         "CAEASolicitar",
@@ -80,6 +81,7 @@ class WSFEv1(BaseWS):
         "ParamGetTiposPaises",
         "ParamGetCotizacion",
         "ParamGetPtosVenta",
+        "ParamGetActividades",
         "AnalizarXml",
         "ObtenerTagXml",
         "LoadTestXML",
@@ -134,13 +136,13 @@ class WSFEv1(BaseWS):
     ]
 
     _reg_progid_ = "WSFEv1"
-    _reg_clsid_ = "{CA0E604D-E3D7-493A-8880-F6CDD604185E}"
+    _reg_clsid_ = "{FA1BB90B-53D1-4FDA-8D1F-DEED2700E739}"
+    _reg_class_spec_ = "pyafipws.wsfev1.WSFEv1"
 
     if TYPELIB:
-        _typelib_guid_ = '{C7190CBC-FB36-4370-9190-BA46F861F539}'
-        _typelib_version_ = 1, 18
-        _com_interfaces_ = ["IWSFEv1"]
-        ##_reg_class_spec_ = "wsfev1.WSFEv1"
+        _typelib_guid_ = '{8AE2BD1D-A216-4E98-95DB-24A11225EF67}'
+        _typelib_version_ = 1, 26
+        _com_interfaces_ = ['IWSFEv1']
 
     # Variables globales para BaseWS:
     HOMO = HOMO
@@ -247,6 +249,7 @@ class WSFEv1(BaseWS):
             "iva": [],
             "opcionales": [],
             "compradores": [],
+            "actividades": [],
         }
         if fecha_serv_desde:
             fact["fecha_serv_desde"] = fecha_serv_desde
@@ -322,6 +325,12 @@ class WSFEv1(BaseWS):
         "Agrego un comprador a una factura (interna) RG 4109-E bienes muebles"
         comp = {"doc_tipo": doc_tipo, "doc_nro": doc_nro, "porcentaje": porcentaje}
         self.factura["compradores"].append(comp)
+        return True
+
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        op = { 'actividad_id': actividad_id }
+        self.factura['actividades'].append(op)
         return True
 
     def ObtenerCampoFactura(self, *campos):
@@ -442,6 +451,15 @@ class WSFEv1(BaseWS):
                                     }
                                 }
                                 for comprador in f["compradores"]
+                            ]
+                            or None,
+                            "Actividades": [
+                                {
+                                    "Actividad": {
+                                        'Id': actividad['actividad_id'],
+                                    }
+                                }
+                                for actividad in f["actividades"]
                             ]
                             or None,
                         }
@@ -609,8 +627,21 @@ class WSFEv1(BaseWS):
                         }
                         for comprador in f["compradores"]
                     ],
+                    "Actividades": [
+                        {
+                            "Actividad": {
+                                "Id": actividad["actividad_id"],
+                            }
+                        }
+                        for actividad in f["actividades"]
+                    ],
                 }
-                verifica(verificaciones, resultget.copy(), difs)
+                copia = resultget.copy()
+                # TODO: ordenar / convertir opcionales (por ahora no se verifican)
+                del verificaciones['Opcionales']
+                if 'Opcionales' in copia:
+                    del copia['Opcionales']
+                verifica(verificaciones, copia, difs)
                 if difs:
                     print("Diferencias:", difs)
                     self.log("Diferencias: %s" % difs)
@@ -678,6 +709,12 @@ class WSFEv1(BaseWS):
                             "porcentaje": comp["Comprador"]["Porcentaje"],
                         }
                         for comp in resultget.get("Compradores", [])
+                    ],
+                    "actividades": [
+                        {
+                            "actividad_id": act["Actividad"]["Id"],
+                        }
+                        for act in resultget.get("Actividades", [])
                     ],
                     "cae": resultget.get("CodAutorizacion"),
                     "resultado": resultget.get("Resultado"),
@@ -821,6 +858,15 @@ class WSFEv1(BaseWS):
                                     }
                                 }
                                 for opcional in f["opcionales"]
+                            ]
+                            or None,
+                            "Actividades": [
+                                {
+                                    "Actividad": {
+                                        "Id": actividad["actividad_id"],
+                                    }
+                                }
+                                for actividad in f["actividades"]
                             ]
                             or None,
                         }
@@ -1253,6 +1299,16 @@ class WSFEv1(BaseWS):
             for p in res.get("ResultGet", [])
         ]
 
+    @inicializar_y_capturar_excepciones
+    def ParamGetActividades(self, sep="|"):
+        "Recuperador de valores referenciales de códigos de Actividades"
+        ret = self.client.FEParamGetActividades(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetActividades']
+        return [(u"%(Id)s\t%(Orden)s\t%(Desc)s" % p['ActividadesTipo']).replace("\t", sep)
+                 for p in res['ResultGet']]
+
 
 def p_assert_eq(a, b):
     print(a, a == b and "==" or "!=", b)
@@ -1298,7 +1354,7 @@ def main():
         return
 
     # obteniendo el TA para pruebas
-    from .wsaa import WSAA
+    from pyafipws.wsaa import WSAA
 
     ta = WSAA().Autenticar("wsfe", "reingart.crt", "reingart.key", debug=True)
     wsfev1.SetTicketAcceso(ta)
@@ -1444,6 +1500,9 @@ def main():
             if "--rg4540" in sys.argv:
                 wsfev1.AgregarPeriodoComprobantesAsociados("20200101", "20200131")
 
+            if '--rg5259' in sys.argv:
+                wsfev1.AgregarActividad(960990)
+
             # agregar la factura creada internamente para solicitud múltiple:
             if "--multiple" in sys.argv:
                 wsfev1.AgregarFacturaX()
@@ -1570,6 +1629,9 @@ def main():
         # print(u"\n".join(wsfev1.ParamGetTiposPaises()))
         print("=== Puntos de Venta ===")
         print(u"\n".join(wsfev1.ParamGetPtosVenta()))
+        if '--rg5259' in sys.argv:
+            print("=== Actividades ===")
+            print(u'\n'.join(wsfev1.ParamGetActividades()))
 
     if "--cotizacion" in sys.argv:
         print(wsfev1.ParamGetCotizacion("DOL"))
