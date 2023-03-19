@@ -98,6 +98,12 @@ jobs:
     - name: Copy rece.ini file
       run: |
         copy conf\rece.ini .
+    - name: Upload Cert
+      uses: actions/upload-artifact@v3
+      with:
+        name: cert-${{ matrix.targetplatform }}
+        path: |
+          reingart.*
     - name: Test WSAA command line interface
       run: |
         .\wsaa.exe --analizar reingart.crt reingart.key wsmtxca 300
