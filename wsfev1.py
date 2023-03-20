@@ -59,6 +59,7 @@ class WSFEv1(BaseWS):
         "AgregarOpcional",
         "AgregarComprador",
         "AgregarPeriodoComprobantesAsociados",
+        "AgregarActividad",
         "CompUltimoAutorizado",
         "CompConsultar",
         "CAEASolicitar",
@@ -80,6 +81,7 @@ class WSFEv1(BaseWS):
         "ParamGetTiposPaises",
         "ParamGetCotizacion",
         "ParamGetPtosVenta",
+        "ParamGetActividades",
         "AnalizarXml",
         "ObtenerTagXml",
         "LoadTestXML",
@@ -247,6 +249,7 @@ class WSFEv1(BaseWS):
             "iva": [],
             "opcionales": [],
             "compradores": [],
+            "actividades": [],
         }
         if fecha_serv_desde:
             fact["fecha_serv_desde"] = fecha_serv_desde
@@ -322,6 +325,12 @@ class WSFEv1(BaseWS):
         "Agrego un comprador a una factura (interna) RG 4109-E bienes muebles"
         comp = {"doc_tipo": doc_tipo, "doc_nro": doc_nro, "porcentaje": porcentaje}
         self.factura["compradores"].append(comp)
+        return True
+
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        op = { 'actividad_id': actividad_id }
+        self.factura['actividades'].append(op)
         return True
 
     def ObtenerCampoFactura(self, *campos):
@@ -442,6 +451,15 @@ class WSFEv1(BaseWS):
                                     }
                                 }
                                 for comprador in f["compradores"]
+                            ]
+                            or None,
+                            "Actividades": [
+                                {
+                                    "Actividad": {
+                                        'Id': actividad['actividad_id'],
+                                    }
+                                }
+                                for actividad in f["actividades"]
                             ]
                             or None,
                         }
@@ -609,6 +627,14 @@ class WSFEv1(BaseWS):
                         }
                         for comprador in f["compradores"]
                     ],
+                    "Actividades": [
+                        {
+                            "Actividad": {
+                                "Id": actividad["actividad_id"],
+                            }
+                        }
+                        for actividad in f["actividades"]
+                    ],
                 }
                 copia = resultget.copy()
                 # TODO: ordenar / convertir opcionales (por ahora no se verifican)
@@ -683,6 +709,12 @@ class WSFEv1(BaseWS):
                             "porcentaje": comp["Comprador"]["Porcentaje"],
                         }
                         for comp in resultget.get("Compradores", [])
+                    ],
+                    "actividades": [
+                        {
+                            "actividad_id": act["Actividad"]["Id"],
+                        }
+                        for act in resultget.get("Actividades", [])
                     ],
                     "cae": resultget.get("CodAutorizacion"),
                     "resultado": resultget.get("Resultado"),
@@ -826,6 +858,15 @@ class WSFEv1(BaseWS):
                                     }
                                 }
                                 for opcional in f["opcionales"]
+                            ]
+                            or None,
+                            "Actividades": [
+                                {
+                                    "Actividad": {
+                                        "Id": actividad["actividad_id"],
+                                    }
+                                }
+                                for actividad in f["actividades"]
                             ]
                             or None,
                         }
@@ -1258,6 +1299,16 @@ class WSFEv1(BaseWS):
             for p in res.get("ResultGet", [])
         ]
 
+    @inicializar_y_capturar_excepciones
+    def ParamGetActividades(self, sep="|"):
+        "Recuperador de valores referenciales de códigos de Actividades"
+        ret = self.client.FEParamGetActividades(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetActividades']
+        return [(u"%(Id)s\t%(Orden)s\t%(Desc)s" % p['ActividadesTipo']).replace("\t", sep)
+                 for p in res['ResultGet']]
+
 
 def p_assert_eq(a, b):
     print(a, a == b and "==" or "!=", b)
@@ -1449,6 +1500,9 @@ def main():
             if "--rg4540" in sys.argv:
                 wsfev1.AgregarPeriodoComprobantesAsociados("20200101", "20200131")
 
+            if '--rg5259' in sys.argv:
+                wsfev1.AgregarActividad(960990)
+
             # agregar la factura creada internamente para solicitud múltiple:
             if "--multiple" in sys.argv:
                 wsfev1.AgregarFacturaX()
@@ -1575,6 +1629,9 @@ def main():
         # print(u"\n".join(wsfev1.ParamGetTiposPaises()))
         print("=== Puntos de Venta ===")
         print(u"\n".join(wsfev1.ParamGetPtosVenta()))
+        if '--rg5259' in sys.argv:
+            print("=== Actividades ===")
+            print(u'\n'.join(wsfev1.ParamGetActividades()))
 
     if "--cotizacion" in sys.argv:
         print(wsfev1.ParamGetCotizacion("DOL"))
