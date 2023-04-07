@@ -1,8 +1,9 @@
-import subprocess
+import os
 
 def get_dependecies() -> list:
-    # The subprocess.Popen is used for backward compatibility with python 2.7
-    freeze = subprocess.Popen("pip freeze", shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    g = freeze[0].decode("utf-8").split("\r\n")
-    dependencies = [">=".join(x.split("==")) for x in g]
+    # get the current top level file location
+    requirements_path = os.path.join(os.path.abspath(os.getcwd()), "requirements.txt")
+    if os.path.isfile(requirements_path):
+        with open(requirements_path) as f:
+            dependencies = [">=".join(x.split("==")) for x in f.read().splitlines()]
     return dependencies
