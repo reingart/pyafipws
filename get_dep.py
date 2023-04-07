@@ -1,7 +1,6 @@
 import os
 
 def get_dependecies() -> list:
-    # get the current top level file location
     requirements_path = os.path.join(os.path.abspath(os.getcwd()), "requirements.txt")
     if os.path.isfile(requirements_path):
         with open(requirements_path) as f:
