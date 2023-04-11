@@ -18,7 +18,7 @@ def get_dependecies():
                     # index 3 holds the name of the module
                     chunks = x.split("/")
                     dependencies[dependencies.index(x)] = x.replace(
-                        blob, chunks[3] + " @ " + chunks[0]
+                        blob, chunks[3] + " @ " + blob
                     )
                     break
         return dependencies
