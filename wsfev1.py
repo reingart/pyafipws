@@ -25,7 +25,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.26a"
+__version__ = "1.27c"
 
 import datetime
 import decimal
@@ -47,6 +47,7 @@ class WSFEv1(BaseWS):
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar', 
                         'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
                         'AgregarComprador', 'AgregarPeriodoComprobantesAsociados',
+                        'AgregarActividad',
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
                         'CAEASinMovimientoInformar',
@@ -62,6 +63,7 @@ class WSFEv1(BaseWS):
                         'ParamGetTiposPaises',
                         'ParamGetCotizacion', 
                         'ParamGetPtosVenta',
+                        'ParamGetActividades',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro', 
                         'EstablecerCampoFactura', 'ObtenerCampoFactura',
@@ -153,6 +155,7 @@ class WSFEv1(BaseWS):
                 'iva': [],
                 'opcionales': [],
                 'compradores': [],
+                'actividades': [],
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
@@ -211,6 +214,12 @@ class WSFEv1(BaseWS):
         comp = { 'doc_tipo': doc_tipo, 'doc_nro': doc_nro,
                  'porcentaje': porcentaje }
         self.factura['compradores'].append(comp)
+        return True
+
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        op = { 'actividad_id': actividad_id }
+        self.factura['actividades'].append(op)
         return True
 
     def ObtenerCampoFactura(self, *campos):
@@ -299,6 +308,10 @@ class WSFEv1(BaseWS):
                             'DocNro': comprador['doc_nro'],
                             'Porcentaje': comprador['porcentaje'],
                             }} for comprador in f['compradores']] or None,
+                    'Actividades': [ 
+                        {'Actividad': {
+                            'Id': actividad['actividad_id'],
+                            }} for actividad in f['actividades']] or None,
                     }
                 }]
             })
@@ -437,6 +450,10 @@ class WSFEv1(BaseWS):
                             'DocNro': comprador['doc_nro'],
                             'Porcentaje': comprador['porcentaje'],
                             }} for comprador in f['compradores']],
+                    'Actividades': [ 
+                        {'Actividad': {
+                            'Id': actividad['actividad_id'],
+                            }} for actividad in f['actividades']],
                     }
                 copia = resultget.copy()
                 # TODO: ordenar / convertir opcionales (por ahora no se verifican)
@@ -507,6 +524,11 @@ class WSFEv1(BaseWS):
                             'porcentaje': comp['Comprador']['Porcentaje'],
                             }
                         for comp in resultget.get('Compradores', [])],
+                    'actividades': [ 
+                            {
+                            'actividad_id': obs['Actividad']['Id'],
+                            }
+                        for obs in resultget.get('Actividades', [])],    
                     'cae': resultget.get('CodAutorizacion'),
                     'resultado': resultget.get('Resultado'),
                     'fch_venc_cae': resultget.get('FchVto'),
@@ -623,6 +645,10 @@ class WSFEv1(BaseWS):
                             'Id': opcional['opcional_id'],
                             'Valor': opcional['valor'],
                             }} for opcional in f['opcionales']] or None,
+                    'Actividades': [ 
+                        {'Actividad': {
+                            'Id': actividad['actividad_id'],
+                            }} for actividad in f['actividades']] or None,
                     }
                 } for f in self.facturas]
             })
@@ -820,6 +846,10 @@ class WSFEv1(BaseWS):
                             'Id': opcional['opcional_id'],
                             'Valor': opcional['valor'],
                             }} for opcional in f['opcionales']] or None,
+                    'Actividades': [ 
+                        {'Actividad': {
+                            'Id': actividad['actividad_id'],
+                            }} for actividad in f['actividades']] or None,
                     'CAEA': f['caea'],
                     'CbteFchHsGen': f.get('fecha_hs_gen'),
                     }
@@ -983,7 +1013,16 @@ class WSFEv1(BaseWS):
         return [(u"%(Nro)s\tEmisionTipo:%(EmisionTipo)s\tBloqueado:%(Bloqueado)s\tFchBaja:%(FchBaja)s" % p['PtoVenta']).replace("\t", sep)
                  for p in res.get('ResultGet', [])]
 
-        
+    @inicializar_y_capturar_excepciones
+    def ParamGetActividades(self, sep="|"):
+        "Recuperador de valores referenciales de cï¿½digos de Actividades"
+        ret = self.client.FEParamGetActividades(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            )
+        res = ret['FEParamGetActividadesResult']
+        return [(u"%(Id)s\t%(Orden)s\t%(Desc)s" % p['ActividadesTipo']).replace("\t", sep)
+                 for p in res['ResultGet']]
+
 def p_assert_eq(a,b):
     print a, a==b and '==' or '!=', b
 
@@ -1150,7 +1189,10 @@ def main():
             if '--rg4540' in sys.argv:
                 wsfev1.AgregarPeriodoComprobantesAsociados('20200101', '20200131')
 
-            # agregar la factura creada internamente para solicitud múltiple:
+            if '--rg5259' in sys.argv:
+                wsfev1.AgregarActividad(960990)
+
+            # agregar la factura creada internamente para solicitud mï¿½ltiple:
             if "--multiple" in sys.argv:
                 wsfev1.AgregarFacturaX()
                 
@@ -1269,6 +1311,8 @@ def main():
         print u'\n'.join(wsfev1.ParamGetTiposPaises())
         print "=== Puntos de Venta ==="
         print u'\n'.join(wsfev1.ParamGetPtosVenta())
+        print "=== Actividades ==="
+        print u'\n'.join(wsfev1.ParamGetActividades())
 
     if "--cotizacion" in sys.argv:
         print wsfev1.ParamGetCotizacion('DOL')
