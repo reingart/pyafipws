@@ -19,7 +19,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10a"
+__version__ = "1.11a"
 
 import datetime
 import decimal
@@ -34,7 +34,7 @@ WSDL="https://wswhomo.afip.gov.ar/wsfexv1/service.asmx?WSDL"
 class WSFEXv1(BaseWS):
     "Interfaz para el WebService de Factura Electrónica Exportación Versión 1"
     _public_methods_ = ['CrearFactura', 'AgregarItem', 'Authorize', 'GetCMP',
-                        'AgregarPermiso', 'AgregarCmpAsoc',
+                        'AgregarPermiso', 'AgregarCmpAsoc', 'AgregarActividad',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamTipoExpo', 
                         'GetParamIdiomas', 'GetParamUMed', 'GetParamIncoterms', 
                         'GetParamDstPais','GetParamDstCUIT', 'GetParamIdiomas',
@@ -43,7 +43,7 @@ class WSFEXv1(BaseWS):
                         'GetParamPtosVenta', 'GetParamCtz', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
-                        'GetLastCMP', 'GetLastID',
+                        'GetLastCMP', 'GetLastID', 'GetParamActividades',
                         'Dummy', 'Conectar', 'SetTicketAcceso']
     _public_attrs_ = ['Token', 'Sign', 'Cuit', 
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus', 
@@ -116,6 +116,7 @@ class WSFEXv1(BaseWS):
                 'cbtes_asoc': [],
                 'permisos': [],
                 'detalles': [],
+                'actividades': [],
             }
         self.factura = fact
 
@@ -148,6 +149,12 @@ class WSFEXv1(BaseWS):
         self.factura['cbtes_asoc'].append({
             'cbte_tipo': cbte_tipo, 'cbte_punto_vta': cbte_punto_vta, 
             'cbte_nro': cbte_nro, 'cbte_cuit': cbte_cuit})
+        return True
+
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        act = { 'actividad_id': actividad_id }
+        self.factura['actividades'].append(act)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -200,7 +207,11 @@ class WSFEXv1(BaseWS):
                         'Pro_precio_uni': d['precio'],
                         'Pro_bonificacion': d['bonif'],
                         'Pro_total_item': d['importe'],
-                     }} for d in f['detalles']],                    
+                     }} for d in f['detalles']],
+                'Actividades': f['actividades'] and [
+                    {'Actividad': {
+                        'Id': a['actividad_id'],
+                    }} for a in f['actividades']] or None,
             })
 
         result = ret['FEXAuthorizeResult']
@@ -555,6 +566,29 @@ class WSFEXv1(BaseWS):
         return [(u"%(nro)s\tBloqueado:%(bloqueado)s\tFchBaja:%(baja)s" % r).replace("\t", sep)
                  for r in ret]
 
+    @inicializar_y_capturar_excepciones
+    def GetParamActividades(self, sep="|"):
+        "Recuperar lista de valores referenciales de códigos de Idiomas"
+        ret = self.client.FEXGetPARAM_Actividades(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_ActividadesResult']
+        self.__analizar_errores(result)
+     
+        ret = []
+        for u in result.get('FEXResultGet', []):
+            u = u['ClsFEXResponse_ActividadTipo']
+            try:
+                r = {'codigo': u.get('Id'), 'ds': u.get('Desc'),
+                     'orden': u.get('Orden'), }
+            except Exception, e:
+                print e
+            
+            ret.append(r)
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t%(orden)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
 
 class WSFEX(WSFEXv1):
     "Wrapper para retrocompatibilidad con WSFEX"
@@ -690,7 +724,9 @@ if __name__ == "__main__":
                     cbteasoc_nro = 1234
                     cbteasoc_cuit = 20111111111
                     wsfexv1.AgregarCmpAsoc(cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit)
-                    
+
+                ok = wsfexv1.AgregarActividad(1234)
+
                 ##id = "99000000000100" # número propio de transacción
                 # obtengo el último ID y le adiciono 1 
                 # (advertencia: evitar overflow y almacenar!)
@@ -785,10 +821,15 @@ if __name__ == "__main__":
                 print "||%(codigo)s||%(ds)s||" % r
 
             print u"=== CUIT Pais Destino ==="
-            ret = wsfexv1.GetParamDstCUIT(sep=False)    
+            ret = wsfexv1.GetParamDstCUIT(sep=False)
             for r in ret:
                 print "||%(codigo)s||%(ds)s||" % r
-            
+
+            print u"=== Actividades ==="
+            ret = wsfexv1.GetParamActividades(sep=False)    
+            for r in ret:
+                print "||%(codigo)s||%(ds)s||" % r
+
         if "--ctz" in sys.argv:
             print wsfexv1.GetParamCtz('DOL')
             
