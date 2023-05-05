@@ -49,6 +49,7 @@ XML_FORMAT = {
             'numero_remito': str,
 
             'ape': str,
+            'permiso_existente': str,
             'incoterms': str,
             'detalleincoterms': str,
             'destinocmp': int,
@@ -196,6 +197,13 @@ MAP_ENC = {
     "fecha_serv_desde": 'fechaservdesde',
     "fecha_serv_hasta": 'fechaservhasta',
     "fecha_venc_pago": 'fechavencpago',
+
+    "tipo_expo": "concepto",
+    "incoterms": "incoterms",
+    "incoterms_ds": "detalleincoterms",
+    "pais_dst_cmp": "destinocmp",
+    "idioma_cbte": "idioma",
+    "permiso_existente": "permiso_existente",
 
     "obs_generales": "otrosdatosgenerales",
     "obs_comerciales": "otrosdatoscomerciales",
