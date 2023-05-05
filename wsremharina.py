@@ -17,7 +17,7 @@ del servicio web RemHarinaService versión 2.0 de AFIP (RG4514/19)
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2018-2019 Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06a"
+__version__ = "1.07c"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -151,20 +151,23 @@ class WSRemHarina(BaseWS):
 
     @inicializar_y_capturar_excepciones
     def CrearRemito(self, tipo_comprobante, punto_emision, tipo_movimiento,
-                    cuit_titular, es_entrega_mostrador=None, importe_cot=None,
+                    cuit_titular, es_entrega_mostrador=None, es_mercaderia_consignacion=None,
+                    importe_cot=None,
                     tipo_emisor=None, ruca_est_emisor=None,
                     cod_rem_redestinar=None,
-                    cod_remito=None, estado=None,
+                    cod_remito=None, estado=None, observaciones=None,
                     **kwargs):
         "Inicializa internamente los datos de un remito para autorizar"
         self.remito = {'tipoCmp': tipo_comprobante, 'puntoEmision': punto_emision, 'tipoEmisor': tipo_emisor,
                        'cuitTitular': cuit_titular, 
                        'tipoMovimiento': tipo_movimiento, 
                        'esEntregaMostrador': es_entrega_mostrador,  # S o N
+                       'esMercaderiaEnConsignacion': es_mercaderia_consignacion, # S o N
                        'importeCot': importe_cot,
                        'estado': estado, 'codRemito': cod_remito,
                        'codRemRedestinado': cod_rem_redestinar,
                        'rucaEstEmisor': ruca_est_emisor,
+                       'observaciones': observaciones,
                        'arrayMercaderia': [], 'arrayContingencias': [],
                       }
         return True
@@ -250,11 +253,11 @@ class WSRemHarina(BaseWS):
     @inicializar_y_capturar_excepciones
     def AgregarMercaderia(self, orden, cod_tipo, cod_tipo_emb, cantidad_emb, cod_tipo_unidad, cant_unidad, 
                           peso_neto_kg=None, peso_neto_rec_kg=None, peso_neto_per_kg=None,
-                          peso_neto_red_kg=None, peso_neto_rei_kg=None, **kwargs):
+                          peso_neto_red_kg=None, peso_neto_rei_kg=None, cod_comer=None, desc_comer=None, **kwargs):
         "Agrega la información referente a la mercadería del remito electrónico harinero"
         mercaderia = dict(orden=orden,  
-                          codTipo=cod_tipo, codTipoEmb=cod_tipo_emb,
-                          cantidadEmb=cantidad_emb, 
+                          codTipo=cod_tipo, codComer=cod_comer, descComer=desc_comer,
+                          codTipoEmb=cod_tipo_emb, cantidadEmb=cantidad_emb, 
                           codTipoUnidad=cod_tipo_unidad, cantidadUnidad=cant_unidad,
                           pesoNetoKg=peso_neto_kg, 
                           pesoNetoRecKg=peso_neto_rec_kg, pesoNetoPerKg=peso_neto_per_kg,
