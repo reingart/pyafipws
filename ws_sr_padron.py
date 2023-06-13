@@ -18,7 +18,7 @@ Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2017-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.04f"
+__version__ = "1.05a"
 
 import csv
 import datetime
@@ -54,7 +54,7 @@ class WSSrPadronA4(BaseWS):
         'monotributo', 'integrante_soc', 'empleador',
         'actividad_monotributo', 'cat_iva', 'domicilios',
         'tipo_doc', 'nro_doc',
-        'tipo_persona', 'estado', 'impuestos', 'actividades',
+        'tipo_persona', 'estado', 'es_sucesion', 'impuestos', 'actividades',
         'direccion', 'localidad', 'provincia', 'cod_postal',
         ]
 
@@ -78,6 +78,7 @@ class WSSrPadronA4(BaseWS):
         self.tipo_persona = ""                      # FISICA o JURIDICA
         self.tipo_doc = self.nro_doc = 0
         self.estado = ""                            # ACTIVO
+        self.es_sucesion = ""
         self.denominacion = ""
         self.direccion = self.localidad = self.provincia = self.cod_postal = ""
         self.domicilios = []
@@ -217,6 +218,7 @@ class WSSrPadronA5(WSSrPadronA4):
         self.nro_doc = data.get("idPersona")
         self.cuit = self.nro_doc
         self.estado = data.get("estadoClave")
+        self.es_sucesion = data.get("esSucesion")
         if not "razonSocial" in data:
             self.denominacion = ", ".join([data.get("apellido", ""),
                                           data.get("nombre", "")])
@@ -351,6 +353,7 @@ def main():
         print "Denominacion:", padron.denominacion
         print "Tipo:", padron.tipo_persona, padron.tipo_doc, padron.nro_doc
         print "Estado:", padron.estado
+        print "Es Sucesion:", padron.es_sucesion
         print "Direccion:", padron.direccion
         print "Localidad:", padron.localidad
         print "Provincia:", padron.provincia
