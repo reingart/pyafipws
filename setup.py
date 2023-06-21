@@ -71,7 +71,7 @@ setup(
     author_email="reingart@gmail.com",
     url="https://github.com/reingart/pyafipws",
     license="LGPL-3.0-or-later",
-    install_requires=get_dependecies()
+    install_requires=get_dependecies(),
     options=opts,
     data_files=data_files,
     classifiers=[
