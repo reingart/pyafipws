@@ -1094,10 +1094,11 @@ def main():
             for r in ret:
                 print("||%(codigo)s||%(ds)s||" % r)
 
-            print("=== Actividades ===")
-            ret = wsfexv1.GetParamActividades(sep=False)
-            for r in ret:
-                print("||%(codigo)s||%(ds)s||" % r)
+            if "--rg5259" in sys.argv:
+                print("=== Actividades ===")
+                ret = wsfexv1.GetParamActividades(sep=False)
+                for r in ret:
+                    print("||%(codigo)s||%(ds)s||" % r)
 
         if "--ctz" in sys.argv:
             print(wsfexv1.GetParamCtz("DOL"))
