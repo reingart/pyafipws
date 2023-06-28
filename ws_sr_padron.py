@@ -23,8 +23,8 @@ standard_library.install_aliases()
 from builtins import next
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017-2022 Mariano Reingart"
-__license__ = "GPL 3.0"
+__copyright__ = "Copyright (C) 2017-2023 Mariano Reingart"
+__license__ = "LGPL-3.0-or-later"
 __version__ = "3.05a"
 
 import csv
@@ -55,7 +55,6 @@ CONFIG_FILE = "rece.ini"
 
 
 class WSSrPadronA4(BaseWS):
-<<<<<<< HEAD
     "Interfaz para el WebService de Consulta Padrón Contribuyentes Alcance 4"
     _public_methods_ = [
         "Consultar",
