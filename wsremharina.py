@@ -23,9 +23,9 @@ from builtins import str
 from builtins import input
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2018-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2018-2023 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.06a"
+__version__ = "3.07c"
 
 LICENCIA = """
 wsremhairna.py: Interfaz para generar Remito Electrónico Harinero AFIP v2.0
@@ -104,23 +104,78 @@ ENCABEZADO = []
 
 class WSRemHarina(BaseWS):
     "Interfaz para el WebService de Remito Electronico Carnico (Version 3)"
-    _public_methods_ = ['Conectar', 'Dummy', 'SetTicketAcceso', 'DebugLog',
-                        'GenerarRemito', 'EmitirRemito', 'AutorizarRemito', 'AnularRemito', 'ConsultarRemito',
-                        'InformarContingencia', 'ModificarViaje', 'RegistrarRecepcion',  'ConsultarUltimoRemitoEmitido',
-                        'CrearRemito', 'AgregarViaje', 'AgregarVehiculo', 'AgregarMercaderia',
-                        'AgregarReceptor', 'AgregarDepositario', 'AgregarTransportista',
-                        'AgregarDatosAutorizacion', 'AgregarContingencia',
-                        'ConsultarTiposMercaderia', 'ConsultarTiposEmbalaje', 'ConsultarTiposUnidades', 'ConsultarTiposComprobante',
-                        'ConsultarPaises', 'ConsultarReceptoresValidos',
-                        'ConsultarTiposEstado', 'ConsultarTiposContingencia', 'ConsultarCodigosDomicilio', 'ConsultarPuntosEmision',
-                        'SetParametros', 'SetParametro', 'GetParametro', 'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
-                        ]
-    _public_attrs_ = ['XmlRequest', 'XmlResponse', 'Version', 'Traceback', 'Excepcion', 'LanzarExcepciones',
-                      'Token', 'Sign', 'Cuit', 'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
-                      'CodRemito', 'TipoComprobante', 'PuntoEmision',
-                      'NroRemito', 'CodAutorizacion', 'FechaVencimiento', 'FechaEmision', 'Estado', 'Resultado', 'QR',
-                      'ErrCode', 'ErrMsg', 'Errores', 'ErroresFormato', 'Observaciones', 'Obs', 'Evento', 'Eventos',
-                     ]
+    _public_methods_ = [
+        "Conectar",
+        "Dummy",
+        "SetTicketAcceso",
+        "DebugLog",
+        "GenerarRemito",
+        "EmitirRemito",
+        "AutorizarRemito",
+        "AnularRemito",
+        "ConsultarRemito",
+        "InformarContingencia",
+        "ModificarViaje",
+        "RegistrarRecepcion",
+        "ConsultarUltimoRemitoEmitido",
+        "CrearRemito",
+        "AgregarViaje",
+        "AgregarVehiculo",
+        "AgregarMercaderia",
+        "AgregarReceptor",
+        "AgregarDepositario",
+        "AgregarTransportista",
+        "AgregarDatosAutorizacion",
+        "AgregarContingencia",
+        "ConsultarTiposMercaderia",
+        "ConsultarTiposEmbalaje",
+        "ConsultarTiposUnidades",
+        "ConsultarTiposComprobante",
+        "ConsultarPaises",
+        "ConsultarReceptoresValidos",
+        "ConsultarTiposEstado",
+        "ConsultarTiposContingencia",
+        "ConsultarCodigosDomicilio",
+        "ConsultarPuntosEmision",
+        "SetParametros",
+        "SetParametro",
+        "GetParametro",
+        "AnalizarXml",
+        "ObtenerTagXml",
+        "LoadTestXML",
+    ]
+    _public_attrs_ = [
+        "XmlRequest",
+        "XmlResponse",
+        "Version",
+        "Traceback",
+        "Excepcion",
+        "LanzarExcepciones",
+        "Token",
+        "Sign",
+        "Cuit",
+        "AppServerStatus",
+        "DbServerStatus",
+        "AuthServerStatus",
+        "CodRemito",
+        "TipoComprobante",
+        "PuntoEmision",
+        "NroRemito",
+        "CodAutorizacion",
+        "FechaVencimiento",
+        "FechaEmision",
+        "Estado",
+        "Resultado",
+        "QR",
+        "ErrCode",
+        "ErrMsg",
+        "Errores",
+        "ErroresFormato",
+        "Observaciones",
+        "Obs",
+        "Evento",
+        "Eventos",
+    ]
     _reg_progid_ = "WSRemHarina"
     _reg_clsid_ = "{72BFB9B9-0FD9-497C-8C62-5D41F7029377}"
 
@@ -183,12 +238,14 @@ class WSRemHarina(BaseWS):
         tipo_movimiento,
         cuit_titular,
         es_entrega_mostrador=None,
+        es_mercaderia_consignacion=None,
         importe_cot=None,
         tipo_emisor=None,
         ruca_est_emisor=None,
         cod_rem_redestinar=None,
         cod_remito=None,
         estado=None,
+        observaciones=None,
         **kwargs
     ):
         "Inicializa internamente los datos de un remito para autorizar"
@@ -199,11 +256,13 @@ class WSRemHarina(BaseWS):
             "cuitTitular": cuit_titular,
             "tipoMovimiento": tipo_movimiento,
             "esEntregaMostrador": es_entrega_mostrador,  # S o N
+            "esMercaderiaEnConsignacion": es_mercaderia_consignacion,  # S o N
             "importeCot": importe_cot,
             "estado": estado,
             "codRemito": cod_remito,
             "codRemRedestinado": cod_rem_redestinar,
             "rucaEstEmisor": ruca_est_emisor,
+            "observaciones": observaciones,
             "arrayMercaderia": [],
             "arrayContingencias": [],
         }
@@ -326,12 +385,16 @@ class WSRemHarina(BaseWS):
         peso_neto_per_kg=None,
         peso_neto_red_kg=None,
         peso_neto_rei_kg=None,
+        cod_comer=None,
+        desc_comer=None,
         **kwargs
     ):
         "Agrega la información referente a la mercadería del remito electrónico harinero"
         mercaderia = dict(
             orden=orden,
             codTipo=cod_tipo,
+            codComer=cod_comer,
+            descComer=desc_comer,
             codTipoEmb=cod_tipo_emb,
             cantidadEmb=cantidad_emb,
             codTipoUnidad=cod_tipo_unidad,
@@ -398,15 +461,16 @@ class WSRemHarina(BaseWS):
             self.CodRemito = ret.get("codRemito")
             self.TipoComprobante = ret.get("tipoComprobante")
             self.PuntoEmision = ret.get("puntoEmision")
-            datos_aut = ret.get("datosAutAFIP")
+            out = ret.get("remitoOutput")
+            datos_aut = out.get("datosAutAFIP")
             if datos_aut:
                 self.NroRemito = datos_aut.get("nroRemito")
                 self.CodAutorizacion = datos_aut.get("codAutorizacion")
                 self.FechaEmision = datos_aut.get("fechaEmision")
                 self.FechaVencimiento = datos_aut.get("fechaVencimiento")
-            self.Estado = ret.get("estado", ret.get("estadoRemito"))
+            self.Estado = out.get("estado", ret.get("estadoRemito"))
             self.Resultado = ret.get("resultado")
-            self.QR = ret.get("qr") or ""
+            self.QR = out.get("qr") or ""
             if archivo:
                 f = open(archivo, "wb")
                 f.write(self.QR)
@@ -724,12 +788,14 @@ class WSRemHarina(BaseWS):
     def ConsultarReceptoresValidos(self, cuit_titular, sep="||"):
         "Obtener el código de depositos que tiene habilitados para operar el cuit informado"
         res = self.client.consultarReceptoresValidos(
-                            authRequest={
-                                'token': self.Token, 'sign': self.Sign,
-                                'cuitRepresentada': self.Cuit, },
-                            arrayReceptores=[{"receptores": {"cuitReceptor": cuit_titular}}],
-                            )
-        ret = res['consultarReceptoresValidosReturn']
+            authRequest={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            arrayReceptores=[{"receptores": {"cuitReceptor": cuit_titular}}],
+        )
+        ret = res["consultarReceptoresValidosReturn"]
         self.Resultado = ret["resultado"]
         return True
 
@@ -1032,7 +1098,7 @@ def main():
             ret = wsremharina.ConsultarPuntosEmision()
             print("\n".join(ret))
 
-        if '--receptores' in sys.argv:
+        if "--receptores" in sys.argv:
             try:
                 cuit = int(sys.argv[-1])
             except:

@@ -25,9 +25,9 @@ from builtins import range
 from past.builtins import basestring
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2013-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2022 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.35b"
+__version__ = "3.35e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -160,11 +160,11 @@ ENCABEZADO = [
     ("nro_ing_bruto_corredor", 15, N),
     ("comision_corredor", 5, I, 2),  # 3.2
     ("fecha_precio_operacion", 10, A),  # 26/02/2013
-    ("precio_ref_tn", 8, I, 3),  # 4.3
+    ("precio_ref_tn", 17, I, 3),  # 4.3
     ("cod_grado_ref", 2, A),
     ("cod_grado_ent", 2, A),
     ("factor_ent", 6, I, 3),  # 3.3
-    ("precio_flete_tn", 7, I, 2),  # 5.2
+    ("precio_flete_tn", 17, I, 2),  # 5.2
     ("cont_proteico", 6, I, 3),  # 3.3
     ("alic_iva_operacion", 5, I, 2),  # 3.2
     ("campania_ppal", 4, N),
@@ -237,7 +237,7 @@ RETENCION = [
     ("tipo_reg", 1, A),  # 2: Retencion
     ("codigo_concepto", 2, A),
     ("detalle_aclaratorio", 30, A),
-    ("base_calculo", 10, I, 2),  # 8.2
+    ("base_calculo", 17, I, 2),  # 8.2
     ("alicuota", 6, I, 2),  # 3.2
     ("nro_certificado_retencion", 14, N),
     ("fecha_certificado_retencion", 10, A),
@@ -252,17 +252,17 @@ DEDUCCION = [
     ("dias_almacenaje", 4, N),
     ("reservado1", 6, I, 3),
     ("comision_gastos_adm", 5, I, 2),  # 3.2
-    ("base_calculo", 10, I, 2),  # 8.2
+    ("base_calculo", 17, I, 2),  # 8.2
     ("alicuota", 6, I, 2),  # 3.2
     ("importe_iva", 17, I, 2),  # 17.2
     ("importe_deduccion", 17, I, 2),  # 17.2
-    ("precio_pkg_diario", 11, I, 8),  # 3.8, ajustado WSLPGv1.2
+    ("precio_pkg_diario", 17, I, 8),  # 3.8, ajustado WSLPGv1.2
 ]
 
 PERCEPCION = [
     ("tipo_reg", 1, A),  # P: Percepcion
     ("detalle_aclaratoria", 50, A),  # max 50 por WSLPGv1.8
-    ("base_calculo", 10, I, 2),  # 8.2
+    ("base_calculo", 17, I, 2),  # 8.2
     ("alicuota", 6, I, 2),  # 3.2
     ("importe_final", 19, I, 2),  # 17.2 (LPG WSLPGv1.16)
 ]
@@ -348,10 +348,10 @@ CERTIFICACION = [
     ("servicios_otros", 7, I, 3),
     ("servicios_forma_de_pago", 20, A),
     # campos para cgAutorizarRetiroTransferencia (WSLPGv1.6):
-    ('cuit_receptor', 11, N),
-    ('fecha', 10, A),                           # no usado WSLPGv1.8
-    ('nro_carta_porte_a_utilizar', 13, N),       # obligatorio para retiro
-    ('cee_carta_porte_a_utilizar', 10, N),      # no usado WSLPGv1.8
+    ("cuit_receptor", 11, N),
+    ("fecha", 10, A),  # no usado WSLPGv1.8
+    ("nro_carta_porte_a_utilizar", 13, N),  # obligatorio para retiro
+    ("cee_carta_porte_a_utilizar", 10, N),  # no usado WSLPGv1.8
     # para cgAutorizarPreexistente (WSLPGv1.6):
     ("tipo_certificado_deposito_preexistente", 1, N),  # "R": Retiro "T": Tra.
     ("nro_certificado_deposito_preexistente", 12, N),
@@ -386,18 +386,18 @@ CERTIFICACION = [
     ("servicios_otras_percepciones", 10, I, 2),
 ]
 
-CTG = [                             # para cgAutorizarDeposito (WSLPGv1.6)
-    ('tipo_reg', 1, A), # C: CTG
-    ('nro_ctg', 12, A),
-    ('nro_carta_porte', 13, A),
-    ('porcentaje_secado_humedad', 5, I, 2),
-    ('importe_secado', 10, I, 2),
-    ('peso_neto_merma_secado', 10, I, 2),
-    ('tarifa_secado', 10, I, 2),
-    ('importe_zarandeo', 10, I, 2),
-    ('peso_neto_merma_zarandeo', 10, I, 2),
-    ('tarifa_zarandeo', 10, I, 2),
-    ('peso_neto_confirmado_definitivo', 10, I, 2),
+CTG = [  # para cgAutorizarDeposito (WSLPGv1.6)
+    ("tipo_reg", 1, A),  # C: CTG
+    ("nro_ctg", 12, A),
+    ("nro_carta_porte", 13, A),
+    ("porcentaje_secado_humedad", 5, I, 2),
+    ("importe_secado", 10, I, 2),
+    ("peso_neto_merma_secado", 10, I, 2),
+    ("tarifa_secado", 10, I, 2),
+    ("importe_zarandeo", 10, I, 2),
+    ("peso_neto_merma_zarandeo", 10, I, 2),
+    ("tarifa_zarandeo", 10, I, 2),
+    ("peso_neto_confirmado_definitivo", 10, I, 2),
 ]
 
 DET_MUESTRA_ANALISIS = [  # para cgAutorizarDeposito (WSLPGv1.6)
@@ -4593,7 +4593,7 @@ def main():
 
             if "--lsg" in sys.argv:
                 print("Anulando COE LSG", coe)
-                ret = wslpg.AnularLiquidacionSecundaria(coe)
+                ret = wslpg.AnularLiquidacionSecundaria(pto_emision, nro_orden, coe)
             if "--cg" in sys.argv:
                 print("Anulando COE CG", coe)
                 ret = wslpg.AnularCertificacion(coe)
