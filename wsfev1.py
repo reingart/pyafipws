@@ -29,7 +29,7 @@ from builtins import range
 from past.builtins import basestring
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2023 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
 __version__ = "3.26a"
 
