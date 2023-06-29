@@ -156,6 +156,7 @@ jobs:
         run: |
           cat dist-64/.env >> $GITHUB_ENV
       - uses: "marvinpinto/action-automatic-releases@latest"
+        if: github.actor != 'dependabot[bot]'
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: ${{ (github.ref_name != 'main') && 'beta' || 'latest' }}

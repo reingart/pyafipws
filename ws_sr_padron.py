@@ -23,9 +23,9 @@ standard_library.install_aliases()
 from builtins import next
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017 Mariano Reingart"
-__license__ = "GPL 3.0"
-__version__ = "3.04e"
+__copyright__ = "Copyright (C) 2017-2023 Mariano Reingart"
+__license__ = "LGPL-3.0-or-later"
+__version__ = "3.05a"
 
 import csv
 import datetime
@@ -42,6 +42,7 @@ from pyafipws.utils import (
     abrir_conf,
     norm,
     SoapFault,
+    safe_console,
 )
 from configparser import SafeConfigParser
 from pyafipws.padron import TIPO_CLAVE, PROVINCIAS
@@ -97,6 +98,7 @@ class WSSrPadronA4(BaseWS):
         "nro_doc",
         "tipo_persona",
         "estado",
+        "es_sucesion",
         "impuestos",
         "actividades",
         "direccion",
@@ -125,6 +127,7 @@ class WSSrPadronA4(BaseWS):
         self.tipo_persona = ""  # FISICA o JURIDICA
         self.tipo_doc = self.nro_doc = 0
         self.estado = ""  # ACTIVO
+        self.es_sucesion = ""
         self.denominacion = ""
         self.direccion = self.localidad = self.provincia = self.cod_postal = ""
         self.domicilios = []
@@ -274,6 +277,7 @@ class WSSrPadronA5(WSSrPadronA4):
         self.nro_doc = data.get("idPersona")
         self.cuit = self.nro_doc
         self.estado = data.get("estadoClave")
+        self.es_sucesion = data.get("esSucesion")
         if not "razonSocial" in data:
             self.denominacion = ", ".join(
                 [data.get("apellido", ""), data.get("nombre", "")]
@@ -320,6 +324,7 @@ def main():
     global CONFIG_FILE
 
     DEBUG = "--debug" in sys.argv
+    safe_console()
 
     if "--constancia" in sys.argv:
         padron = WSSrPadronA5()
@@ -427,6 +432,7 @@ def main():
         print("Denominacion:", padron.denominacion)
         print("Tipo:", padron.tipo_persona, padron.tipo_doc, padron.nro_doc)
         print("Estado:", padron.estado)
+        print("Es Sucesion:", padron.es_sucesion)
         print("Direccion:", padron.direccion)
         print("Localidad:", padron.localidad)
         print("Provincia:", padron.provincia)

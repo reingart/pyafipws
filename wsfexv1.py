@@ -21,9 +21,9 @@ from __future__ import absolute_import
 from builtins import str
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2023 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.10a"
+__version__ = "3.11a"
 
 import datetime
 import decimal
@@ -44,6 +44,7 @@ class WSFEXv1(BaseWS):
         "GetCMP",
         "AgregarPermiso",
         "AgregarCmpAsoc",
+        "AgregarActividad",
         "GetParamMon",
         "GetParamTipoCbte",
         "GetParamTipoExpo",
@@ -67,6 +68,7 @@ class WSFEXv1(BaseWS):
         "GetParametro",
         "GetLastCMP",
         "GetLastID",
+        "GetParamActividades",
         "Dummy",
         "Conectar",
         "SetTicketAcceso",
@@ -192,6 +194,7 @@ class WSFEXv1(BaseWS):
             "cbtes_asoc": [],
             "permisos": [],
             "detalles": [],
+            "actividades": [],
         }
         self.factura = fact
 
@@ -235,6 +238,12 @@ class WSFEXv1(BaseWS):
                 "cbte_cuit": cbte_cuit,
             }
         )
+        return True
+
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        act = {"actividad_id": actividad_id}
+        self.factura["actividades"].append(act)
         return True
 
     @inicializar_y_capturar_excepciones
@@ -304,6 +313,16 @@ class WSFEXv1(BaseWS):
                     }
                     for d in f["detalles"]
                 ],
+                "Actividades": f["actividades"]
+                and [
+                    {
+                        "Actividad": {
+                            "Id": a["actividad_id"],
+                        }
+                    }
+                    for a in f["actividades"]
+                ]
+                or None,
             },
         )
 
@@ -748,22 +767,56 @@ class WSFEXv1(BaseWS):
         res = ret["FEXGetPARAM_PtoVentaResult"].get("FEXResultGet")
         ret = []
         for pu in res:
-            u = pu["ClsFEXResponse_PtoVenta"]
+            p = pu["ClsFEXResponse_PtoVenta"]
             try:
                 r = {
-                    "nro": u.get("Pve_Nro"),
-                    "baja": u.get("Pve_FchBaj"),
-                    "bloqueado": u.get("Pve_Bloqueado"),
+                    "nro": p.get("Pve_Nro"),
+                    "baja": p.get("Pve_FchBaj"),
+                    "bloqueado": p.get("Pve_Bloqueado"),
                 }
             except Exception as e:
                 print(e)
             ret.append(r)
         return [
-            (u"%(nro)s\tBloqueado:%(bloqueado)s\tFchBaja:%(baja)s" % r).replace(
+            ("%(nro)s\tBloqueado:%(bloqueado)s\tFchBaja:%(baja)s" % r).replace(
                 "\t", sep
             )
             for r in ret
         ]
+
+    @inicializar_y_capturar_excepciones
+    def GetParamActividades(self, sep="|"):
+        "Recuperar lista de valores referenciales de códigos de Idiomas"
+        ret = self.client.FEXGetPARAM_Actividades(
+            Auth={
+                "Token": self.Token,
+                "Sign": self.Sign,
+                "Cuit": self.Cuit,
+            }
+        )
+        result = ret["FEXGetPARAM_ActividadesResult"]
+        self.__analizar_errores(result)
+
+        ret = []
+        for u in result.get("FEXResultGet", []):
+            u = u["ClsFEXResponse_ActividadTipo"]
+            try:
+                r = {
+                    "codigo": u.get("Id"),
+                    "ds": u.get("Desc"),
+                    "orden": u.get("Orden"),
+                }
+            except Exception as e:
+                print(e)
+
+            ret.append(r)
+        if sep:
+            return [
+                ("\t%(codigo)s\t%(ds)s\t%(orden)s\t" % it).replace("\t", sep)
+                for it in ret
+            ]
+        else:
+            return ret
 
 
 class WSFEX(WSFEXv1):
@@ -936,6 +989,8 @@ def main():
                         cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit
                     )
 
+                ok = wsfexv1.AgregarActividad(1234)
+
                 ##id = "99000000000100" # número propio de transacción
                 # obtengo el último ID y le adiciono 1
                 # (advertencia: evitar overflow y almacenar!)
@@ -1038,6 +1093,12 @@ def main():
             ret = wsfexv1.GetParamDstCUIT(sep=False)
             for r in ret:
                 print("||%(codigo)s||%(ds)s||" % r)
+
+            if "--rg5259" in sys.argv:
+                print("=== Actividades ===")
+                ret = wsfexv1.GetParamActividades(sep=False)
+                for r in ret:
+                    print("||%(codigo)s||%(ds)s||" % r)
 
         if "--ctz" in sys.argv:
             print(wsfexv1.GetParamCtz("DOL"))
