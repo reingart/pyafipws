@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28b"
+__version__ = "1.28c"
 
 import datetime
 import os
@@ -50,7 +50,7 @@ http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 # definición del formato del archivo de intercambio:
 
 if not '--pyfepdf' in sys.argv:
-    TIPOS_REG = '0', '1', '2', '3'
+    TIPOS_REG = '0', '1', '2', '3', 'A'
     ENCABEZADO = [
         ('tipo_reg', 1, N), # 0: encabezado
         ('fecha_cbte', 8, A),
@@ -106,6 +106,12 @@ if not '--pyfepdf' in sys.argv:
         ('cbte_tipo', 3, N), ('cbte_punto_vta', 4, N),
         ('cbte_nro', 8, N), ('cbte_cuit', 11, N), 
         ]
+
+    ACTIVIDAD = [
+        ('tipo_reg', 1, A), # A: actividad
+        ('actividad_id', 6, N),
+        ]
+
 else:
     print "!" * 78
     print "importando formato segun pyfepdf"
@@ -128,6 +134,7 @@ def autorizar(ws, entrada, salida):
     detalles = []
     permisos = []
     cbtasocs = []
+    actividades = []
     encabezado = []
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, encabezado), ('Permisos', PERMISO, permisos), ('Comprobante Asociado', CMP_ASOC, cbtasocs), ('Detalles', DETALLE, detalles)]
@@ -149,6 +156,9 @@ def autorizar(ws, entrada, salida):
             elif str(linea[0])==TIPOS_REG[3]:
                 cbtasoc = leer(linea, CMP_ASOC)
                 cbtasocs.append(cbtasoc)
+            elif str(linea[0])==TIPOS_REG[4]:
+                acrividad = leer(linea, ACTIVIDAD)
+                actividades.append(acrividad)
             else:
                 print "Tipo de registro incorrecto:", linea[0]
 
@@ -172,6 +182,8 @@ def autorizar(ws, entrada, salida):
         ws.AgregarPermiso(**permiso)
     for cbtasoc in cbtasocs:
         ws.AgregarCmpAsoc(**cbtasoc)
+    for actividad in actividades:
+        ws.AgregarActividad(**actividad)
 
     if DEBUG:
         #print f.to_dict()
@@ -314,7 +326,7 @@ if __name__ == "__main__":
         if '/formato' in sys.argv:
             from formatos.formato_dbf import definir_campos
             print "Formato:"
-            for msg, formato in [('Encabezado', ENCABEZADO), ('Detalle', DETALLE), ('Permiso', PERMISO), ('Comprobante Asociado', CMP_ASOC)]:
+            for msg, formato in [('Encabezado', ENCABEZADO), ('Detalle', DETALLE), ('Permiso', PERMISO), ('Comprobante Asociado', CMP_ASOC), ('Actividades', ACTIVIDAD)]:
                 if not '/dbf' in sys.argv:
                     comienzo = 1
                     print "== %s ==" % msg
