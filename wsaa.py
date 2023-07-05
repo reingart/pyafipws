@@ -54,6 +54,8 @@ try:
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.primitives.asymmetric import rsa
     from cryptography.hazmat.bindings.openssl.binding import Binding
+    from cryptography.hazmat.primitives.serialization import pkcs7
+
 
 except ImportError:
     ex = exception_info()
@@ -116,7 +118,6 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
         _lib = Binding.lib
         _ffi = Binding.ffi
         # Crear un buffer desde el texto
-        bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
 
         # Leer privatekey y cert
         if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
@@ -136,42 +137,28 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
             cert = open(cert).read()
             if isinstance(cert, str):
                 cert = cert.encode("utf-8")
-        cert = x509.load_pem_x509_certificate(cert, default_backend())
+        cert = x509.load_pem_x509_certificate(cert)
 
-        try:
-            # Firmar el texto (tra) usando cryptography (openssl bindings para python)
-            p7 = _lib.PKCS7_sign(
-                cert._x509, private_key._evp_pkey, _ffi.NULL, bio_in, 0
-            )
-        finally:
-            # Liberar memoria asignada
-            _lib.BIO_free(bio_in)
-        # Se crea un buffer nuevo porque la firma lo consume
-        bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
-        try:
-            # Crear buffer de salida
-            bio_out = _lib.BIO_new(_lib.BIO_s_mem())
-            try:
-                # Instanciar un SMIME
-                _lib.SMIME_write_PKCS7(bio_out, p7, bio_in, 0)
 
-                # Tomar datos para la salida
-                result_buffer = _ffi.new("char**")
-                buffer_length = _lib.BIO_get_mem_data(bio_out, result_buffer)
-                output = _ffi.buffer(result_buffer[0], buffer_length)[:]
-            finally:
-                _lib.BIO_free(bio_out)
-        finally:
-            _lib.BIO_free(bio_in)
+        p7 = pkcs7.PKCS7SignatureBuilder().set_data(
+                tra
+        ).add_signer(
+            cert, private_key, hashes.SHA256()
+        ).sign(
+            serialization.Encoding.SMIME, [pkcs7.PKCS7Options.Binary]
+        )
 
         # Generar p7 en formato mail y recortar headers
-        msg = email.message_from_string(output.decode("utf8"))
+        msg = email.message_from_string(p7.decode("utf8"))
         for part in msg.walk():
             filename = part.get_filename()
-            if filename == "smime.p7m":
+            if filename == "smime.p7s":
                 # Es la parte firmada?
                 # Devolver CMS
                 return part.get_payload(decode=False)
+        else:
+            raise RuntimeError("Part not found")
+
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
