@@ -115,7 +115,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
 
     if Binding:
 
-      # Leer privatekey y cert
+        # Leer privatekey y cert
         if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
             privatekey = open(privatekey).read()
             if isinstance(privatekey, str):
