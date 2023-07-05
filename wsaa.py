@@ -114,7 +114,8 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
         tra = tra.encode("utf8")
 
     if Binding:
-        # Leer privatekey y cert
+
+      # Leer privatekey y cert
         if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
             privatekey = open(privatekey).read()
             if isinstance(privatekey, str):
@@ -186,6 +187,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
                 return part.get_payload(decode=False)
         else:
             raise RuntimeError("Part not found")
+
     else:
         # Firmar el texto (tra) usando OPENSSL directamente
         try:
