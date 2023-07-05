@@ -145,7 +145,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
         ).add_signer(
             cert, private_key, hashes.SHA256()
         ).sign(
-            serialization.Encoding.SMIME, [pkcs7.PKCS7Options.DetachedSignature]
+            serialization.Encoding.SMIME, [pkcs7.PKCS7Options.Binary]
         )
 
         # Generar p7 en formato mail y recortar headers
