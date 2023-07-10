@@ -253,37 +253,13 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
     if isinstance(tra, str):
         tra = tra.encode("utf8")
 
-    if sys.version_info.major == 2:
-        sign_tra_old(tra, cert, privatekey, passphrase)
-
-    
-
+    if Binding:
+        if sys.version_info.major == 2:
+            sign_tra_old(tra, cert, privatekey, passphrase)
+        
+        sign_tra_new(tra, cert, privatekey, passphrase)
     else:
-        # Firmar el texto (tra) usando OPENSSL directamente
-        try:
-            out = Popen(
-                [
-                    openssl_exe(),
-                    "smime",
-                    "-sign",
-                    "-signer",
-                    cert,
-                    "-inkey",
-                    privatekey,
-                    "-outform",
-                    "DER",
-                    "-nodetach",
-                ],
-                stdin=PIPE,
-                stdout=PIPE,
-                stderr=PIPE,
-            ).communicate(tra)[0]
-            return b64encode(out)
-        except OSError as e:
-            if e.errno == 2:
-                warnings.warn("El ejecutable de OpenSSL no esta disponible en el PATH")
-            raise
-
+        sign_tra_openssl(tra, cert, privatekey, passphrase)
 
 def openssl_exe():
     try:
