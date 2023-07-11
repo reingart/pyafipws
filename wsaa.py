@@ -255,11 +255,10 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
 
     if Binding:
         if sys.version_info.major == 2:
-            sign_tra_old(tra, cert, privatekey, passphrase)
-        
-        sign_tra_new(tra, cert, privatekey, passphrase)
+            return sign_tra_old(tra, cert, privatekey, passphrase)
+        return sign_tra_new(tra, cert, privatekey, passphrase)
     else:
-        sign_tra_openssl(tra, cert, privatekey, passphrase)
+        return sign_tra_openssl(tra, cert, privatekey, passphrase)
 
 def openssl_exe():
     try:
