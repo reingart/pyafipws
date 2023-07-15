@@ -47,7 +47,7 @@ from pyafipws.utils import (
 )
 
 try:
-    from cryptography import x509
+    from cryptography import __version__ as cryptography_version, x509
     from cryptography.x509.oid import NameOID
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.backends import default_backend
@@ -149,75 +149,71 @@ def sign_tra_new(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
         raise RuntimeError("Part not found")
 
 
-
 def sign_tra_old(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
-    """Legacy method for signing python 2.7 digital transactions on python 2.7 
-    and python 3 versions that don't support cryptography version >39
-    """
-    if Binding:
+    "Legacy method for signing python 2.7 digital transactions on python 2.7"
 
-        # Leer privatekey y cert
-        if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
-            privatekey = open(privatekey).read()
-            if isinstance(privatekey, str):
-                privatekey = privatekey.encode("utf-8")
+    # Leer privatekey y cert
+    if not privatekey.startswith(b"-----BEGIN RSA PRIVATE KEY-----"):
+        privatekey = open(privatekey).read()
+        if isinstance(privatekey, str):
+            privatekey = privatekey.encode("utf-8")
 
-        if not passphrase:
-            password = None
-        else:
-            password = passphrase
-        private_key = serialization.load_pem_private_key(
-            privatekey, password, default_backend()
+    if not passphrase:
+        password = None
+    else:
+        password = passphrase
+    private_key = serialization.load_pem_private_key(
+        privatekey, password, default_backend()
+    )
+
+    if not cert.startswith(b"-----BEGIN CERTIFICATE-----"):
+        cert = open(cert).read()
+        if isinstance(cert, str):
+            cert = cert.encode("utf-8")
+    cert = x509.load_pem_x509_certificate(cert)
+    
+    _lib = Binding.lib
+    _ffi = Binding.ffi
+    # Crear un buffer desde el texto
+    # Se crea un buffer nuevo porque la firma lo consume
+    bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
+
+    try:
+        # Firmar el texto (tra) usando cryptography (openssl bindings para python)
+        p7 = _lib.PKCS7_sign(
+            cert._x509, private_key._evp_pkey, _ffi.NULL, bio_in, 0
         )
-
-        if not cert.startswith(b"-----BEGIN CERTIFICATE-----"):
-            cert = open(cert).read()
-            if isinstance(cert, str):
-                cert = cert.encode("utf-8")
-        cert = x509.load_pem_x509_certificate(cert)
-        
-        _lib = Binding.lib
-        _ffi = Binding.ffi
-        # Crear un buffer desde el texto
-        # Se crea un buffer nuevo porque la firma lo consume
-        bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
-
+    finally:
+        # Liberar memoria asignada
+        _lib.BIO_free(bio_in)
+    # Se crea un buffer nuevo porque la firma lo consume
+    bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
+    try:
+        # Crear buffer de salida
+        bio_out = _lib.BIO_new(_lib.BIO_s_mem())
         try:
-            # Firmar el texto (tra) usando cryptography (openssl bindings para python)
-            p7 = _lib.PKCS7_sign(
-                cert._x509, private_key._evp_pkey, _ffi.NULL, bio_in, 0
-            )
-        finally:
-            # Liberar memoria asignada
-            _lib.BIO_free(bio_in)
-        # Se crea un buffer nuevo porque la firma lo consume
-        bio_in = _lib.BIO_new_mem_buf(tra, len(tra))
-        try:
-            # Crear buffer de salida
-            bio_out = _lib.BIO_new(_lib.BIO_s_mem())
-            try:
-                # Instanciar un SMIME
-                _lib.SMIME_write_PKCS7(bio_out, p7, bio_in, 0)
+            # Instanciar un SMIME
+            _lib.SMIME_write_PKCS7(bio_out, p7, bio_in, 0)
 
-                # Tomar datos para la salida
-                result_buffer = _ffi.new("char**")
-                buffer_length = _lib.BIO_get_mem_data(bio_out, result_buffer)
-                p7 = _ffi.buffer(result_buffer[0], buffer_length)[:]
-            finally:
-                _lib.BIO_free(bio_out)
+            # Tomar datos para la salida
+            result_buffer = _ffi.new("char**")
+            buffer_length = _lib.BIO_get_mem_data(bio_out, result_buffer)
+            p7 = _ffi.buffer(result_buffer[0], buffer_length)[:]
         finally:
-            _lib.BIO_free(bio_in)
+            _lib.BIO_free(bio_out)
+    finally:
+        _lib.BIO_free(bio_in)
 
-        # Generar p7 en formato mail y recortar headers
-        msg = email.message_from_string(p7.decode("utf8"))
-        for part in msg.walk():
-            filename = part.get_filename()
-            if filename and filename.startswith("smime.p7"):
-                # Es la parte firmada?
-                # Devolver CMS
-                return part.get_payload(decode=False)
-        else:
-            raise RuntimeError("Part not found")
+    # Generar p7 en formato mail y recortar headers
+    msg = email.message_from_string(p7.decode("utf8"))
+    for part in msg.walk():
+        filename = part.get_filename()
+        if filename and filename.startswith("smime.p7"):
+            # Es la parte firmada?
+            # Devolver CMS
+            return part.get_payload(decode=False)
+    else:
+        raise RuntimeError("Part not found")
 
 
 def sign_tra_openssl(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
@@ -254,11 +250,12 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
         tra = tra.encode("utf8")
 
     if Binding:
-        if sys.version_info.major == 2:
+        if sys.version_info.major == 2 or int(cryptography_version[0:2]) < 39:
             return sign_tra_old(tra, cert, privatekey, passphrase)
         return sign_tra_new(tra, cert, privatekey, passphrase)
     else:
         return sign_tra_openssl(tra, cert, privatekey, passphrase)
+
 
 def openssl_exe():
     try:
