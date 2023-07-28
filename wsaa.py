@@ -65,6 +65,10 @@ except ImportError:
     from subprocess import Popen, PIPE
     from base64 import b64encode
 
+if "pytest" in sys.modules:
+    from subprocess import Popen, PIPE
+    from base64 import b64encode
+
 # Constantes (si se usa el script de linea de comandos)
 WSDL = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"  # El WSDL correspondiente al WSAA
 CERT = "reingart.crt"  # El certificado X.509 obtenido de Seg. Inf.

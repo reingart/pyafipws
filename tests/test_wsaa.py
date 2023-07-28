@@ -20,7 +20,7 @@ import pytest
 import os
 import sys
 import base64
-from pyafipws.wsaa import WSAA, call_wsaa
+from pyafipws.wsaa import WSAA, call_wsaa, sign_tra_openssl
 from pyafipws.wsaa import main
 from past.builtins import basestring
 from builtins import str
@@ -161,6 +161,21 @@ def test_wsaa_sign_tra(key_and_cert):
 
     assert isinstance(sign, str)
     assert sign.startswith("MII")
+
+def test_wsaa_sign_openssl(key_and_cert):
+    wsaa = WSAA()
+
+    tra = wsaa.CreateTRA("wsfe").encode()
+    sign = sign_tra_openssl(tra, key_and_cert[1], key_and_cert[0])
+
+    # check if the commanmd line input is a byte data
+    assert isinstance(sign, bytes)
+
+    if isinstance(sign, bytes):
+        sign = sign.decode("utf8")
+        
+    assert sign.startswith("MII")
+
 
 
 def test_wsaa_sign_tra_inline(key_and_cert):
