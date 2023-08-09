@@ -254,7 +254,7 @@ def sign_tra(tra, cert=CERT, privatekey=PRIVATEKEY, passphrase=""):
         tra = tra.encode("utf8")
 
     if Binding:
-        if sys.version_info.major == 2 or int(cryptography_version[0:2]) < 39:
+        if sys.version_info.major == 2 or int(cryptography_version.split(".")[0]) < 39:
             return sign_tra_old(tra, cert, privatekey, passphrase)
         return sign_tra_new(tra, cert, privatekey, passphrase)
     else:
