@@ -102,6 +102,9 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
         gui.Button(label=u'Procesar', name=u'procesar', left='20', top='394', 
                    tooltip="Presentar el remito en ARBA",
                    width='85', default=True, fgcolor=u'#4C4C4C', )
+        gui.CheckBox(label=u'Auto:', name=u'auto', height='24',
+                     left='320', top='396', width='73',
+                     tooltip=u'procesar automaticamente', )
         gui.Button(label=u'Mover Procesados', name=u'mover', left='112', 
                    top='394', width='166', fgcolor=u'#4C4C4C', )
 
@@ -134,6 +137,7 @@ def grabar_clave(evt):
 cot = COT()
 
 def listar_archivos(evt=None):
+    print("listando...", datetime.datetime.now())
     # cargar listado de archivos a procesar (y su correspondiente respuesta):
     lv = panel['archivos']
     lv.clear()
@@ -156,15 +160,23 @@ def listar_archivos(evt=None):
             xml = os.path.splitext(fn)[0] + ".xml"
             if not os.path.exists(os.path.join(carpeta, xml)):
                 xml = ""
+            elif panel['auto'].value:
+                continue
             lv.items[fn] = {'txt': txt, 'xml': xml}
 
-def procesar_archivos(evt):
+def procesar_archivos(evt=None):
+    print("procesando...", datetime.datetime.now())
     # establezco la barra de progreso con la cantidad de archivos:
     panel['gauge'].max = len(panel['archivos'].items)
     # recorro los archivos a procesar:
     for i, item in enumerate(panel['archivos'].items):
         panel['gauge'].value = i + 1
         procesar_archivo(item, enviar=True)
+
+    if panel['auto'].value:
+        print("re-agendando...", datetime.datetime.now())
+        gui.call_later(5000, listar_archivos)
+        gui.call_later(10000, procesar_archivos)
 
 def cargar_archivo(evt):
     # obtengo y proceso el archivo seleccionado:
@@ -207,10 +219,10 @@ def procesar_archivo(item, enviar=False):
         with open(xml, "w") as f:
             f.write(cot.XmlResponse)
 
-    if cot.Excepcion and enviar:
+    if cot.Excepcion and enviar and not panel['auto'].value:
         gui.alert(cot.Traceback, cot.Excepcion)
      
-    if cot.TipoError and enviar:
+    if cot.TipoError and enviar and not panel['auto'].value:
         gui.alert(cot.MensajeError, "Error %s: %s" % (cot.TipoError, cot.CodigoError))
 
     # actualizo los datos devueltos en el listado    
