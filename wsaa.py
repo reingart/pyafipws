@@ -55,6 +55,8 @@ try:
     from cryptography.hazmat.primitives.asymmetric import rsa
     from cryptography.hazmat.bindings.openssl.binding import Binding
     from cryptography.hazmat.primitives.serialization import pkcs7
+    from subprocess import Popen, PIPE
+    from base64 import b64encode
 
 except ImportError:
     ex = exception_info()
@@ -62,10 +64,6 @@ except ImportError:
     warnings.warn(ex["msg"])  # revisar instalación y DLLs de OpenSSL
     Binding = None
     # utilizar alternativa (ejecutar proceso por separado)
-    from subprocess import Popen, PIPE
-    from base64 import b64encode
-
-if "pytest" in sys.modules:
     from subprocess import Popen, PIPE
     from base64 import b64encode
 
