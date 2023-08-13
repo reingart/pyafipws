@@ -73,6 +73,12 @@ jobs:
         name: dist-${{ matrix.targetplatform }}
         path: |
           dist/
+    - name: Deploy PyAfipWs Installer
+      uses: actions/upload-artifact@v3
+      with:
+        name: PyAfipWs-Installer-${{ matrix.targetplatform }}
+        path: |
+          **/PyAfipWs-*-full.exe
 
   test:
     name: "Full End-2-End test"
