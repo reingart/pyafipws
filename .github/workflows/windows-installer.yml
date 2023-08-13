@@ -44,6 +44,14 @@ jobs:
     - name: Build executables
       run: |
         python setup_win.py py2exe
+    - name: Install NSIS for building Installers
+      run: |
+        curl -L https://sourceforge.net/projects/nsis/files/latest/download -o NSISInstaller.exe
+        Start-Process -FilePath "NSISInstaller.exe" -ArgumentList "/S" -Wait
+        del "NSISInstaller.exe"
+    - name: Build PyAfipWs Installer
+      run: |
+        makensis.exe base.nsi
     - name: Remove uneeded libs (TK)
       run: |
         Remove-Item .\dist\lib\tcl -recurse
