@@ -6,7 +6,7 @@ cryptography==3.3.2; python_version <= '2.7'
 cryptography==41.0.1; python_version > '3'
 fpdf>=1.7.2
 dbf>=0.88.019
-Pillow<=9.5.0; 
+Pillow<=9.5.0; platform_machine!='x86_64'
 Pillow>=2.0.0; platform_machine!='x86_64'
 tabulate==0.8.5
 certifi>=2020.4.5.1
