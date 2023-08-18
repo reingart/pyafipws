@@ -548,7 +548,7 @@ class WebClient(object):
         boundary = choose_boundary()
         buf = StringIO()
         for key, value in list(vars.items()):
-            if not isinstance(value, file):
+            if isinstance(value, str):
                 buf.write("--%s\r\n" % boundary)
                 buf.write('Content-Disposition: form-data; name="%s"' % key)
                 buf.write("\r\n\r\n" + value + "\r\n")
@@ -576,8 +576,6 @@ class WebClient(object):
         "Perform a GET/POST request and return the response"
 
         location = self.location
-        if isinstance(location, str):
-            location = location.encode("utf8")
         # extend the base URI with additional components
         if args:
             location += "/".join(args)

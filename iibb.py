@@ -22,7 +22,8 @@ __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
 __version__ = "3.01b"
 
-import md5, os, sys, tempfile, traceback
+import os, sys, tempfile, traceback
+from hashlib import md5
 from pysimplesoap.simplexml import SimpleXMLElement
 
 from pyafipws.utils import WebClient
@@ -122,21 +123,20 @@ class IIBB(object):
             self.xml.contribuyentes.contribuyente.cuitContribuyente = cuit_contribuyente
 
             xml = self.xml.as_xml()
-            self.CodigoHash = md5.md5(xml).hexdigest()
+            self.CodigoHash = md5(xml.encode('utf-8')).hexdigest()
             nombre = "DFEServicioConsulta_%s.xml" % self.CodigoHash
 
             # guardo el xml en el archivo a enviar y luego lo re-abro:
-            archivo = open(os.path.join(tempfile.gettempdir(), nombre), "w")
-            archivo.write(xml)
-            archivo.close()
-            archivo = open(os.path.join(tempfile.gettempdir(), nombre), "r")
+            with open(os.path.join(tempfile.gettempdir(), nombre), "w") as archivo:
+                archivo.write(xml)
 
             if not self.testing:
-                response = self.client(
-                    user=self.Usuario, password=self.Password, file=archivo
-                )
+                with open(os.path.join(tempfile.gettempdir(), nombre), "r") as archivo:
+                    response = self.client(
+                        user=self.Usuario, password=self.Password, file=archivo)
             else:
-                response = open(self.testing).read()
+                with open(self.testing).read() as archivo:
+                    response = archivo
             self.XmlResponse = response
             self.xml = SimpleXMLElement(response)
             if "tipoError" in self.xml:
@@ -144,7 +144,6 @@ class IIBB(object):
                 self.CodigoError = str(self.xml.codigoError)
                 self.MensajeError = (
                     str(self.xml.mensajeError)
-                    .decode("latin1")
                     .encode("ascii", "replace")
                 )
             if "numeroComprobante" in self.xml:
