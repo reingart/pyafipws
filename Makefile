@@ -24,10 +24,10 @@ get-auth:
 	curl -o reingart.zip https://www.sistemasagiles.com.ar/soft/pyafipws/reingart.zip
 	python -m zipfile -e reingart.zip .
 
-sample-invoice:
+access-ticket:
 	python -m pyafipws.wsaa
 
-sign-cert:
+sample-invoice:
 	python -m pyafipws.wsfev1 --prueba
 
 # Use "git clean -n" to see the files to be cleaned
