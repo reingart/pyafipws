@@ -23,7 +23,10 @@ __license__ = "LGPL-3.0-or-later"
 __version__ = "3.01b"
 
 import os, sys, tempfile, traceback
-from hashlib import md5
+try:
+    from hashlib import md5
+except ImportError:
+    from md5 import md5
 from pysimplesoap.simplexml import SimpleXMLElement
 
 from pyafipws.utils import WebClient
@@ -135,8 +138,8 @@ class IIBB(object):
                     response = self.client(
                         user=self.Usuario, password=self.Password, file=archivo)
             else:
-                with open(self.testing).read() as archivo:
-                    response = archivo
+                with open(self.testing) as archivo:
+                    response = archivo.read()
             self.XmlResponse = response
             self.xml = SimpleXMLElement(response)
             if "tipoError" in self.xml:
