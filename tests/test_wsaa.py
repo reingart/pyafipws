@@ -20,7 +20,7 @@ import pytest
 import os
 import sys
 import base64
-from pyafipws.wsaa import WSAA, call_wsaa
+from pyafipws.wsaa import WSAA, call_wsaa, sign_tra_openssl
 from pyafipws.wsaa import main
 from past.builtins import basestring
 from builtins import str
@@ -37,52 +37,53 @@ pytestmark = [pytest.mark.dontusefix]
 #fixture for key and certificate
 @pytest.fixture
 def key_and_cert():
-    KEY='reingart.key'
-    CERT='reingart.crt'
-    return [KEY,CERT]
+    KEY = 'reingart.key'
+    CERT = 'reingart.crt'
+    return [KEY, CERT]
 
 
 def test_analizar_certificado(key_and_cert):
     """Test analizar datos en certificado."""
-    wsaa=WSAA()
+    wsaa = WSAA()
     wsaa.AnalizarCertificado(key_and_cert[1])
     assert wsaa.Identidad
     assert wsaa.Caducidad
     assert wsaa.Emisor
 
+
 def test_crear_clave_privada():
     """Test crear clave RSA."""
-    wsaa=WSAA()
+    wsaa = WSAA()
     chk = wsaa.CrearClavePrivada()
-    assert chk==True
+    assert chk == True
 
 
 def test_crear_pedido_certificado():
     """Crea CSM para solicitar certificado."""
-    wsaa=WSAA()
+    wsaa = WSAA()
     chk1 = wsaa.CrearClavePrivada()
     chk2 = wsaa.CrearPedidoCertificado()
-    assert chk1==True
-    assert chk2==True
+    assert chk1 == True
+    assert chk2 == True
 
 
 def test_expirado():
     """Revisar si el TA se encuentra vencido."""
-    wsaa=WSAA()
-    #checking for expired certificate
+    wsaa = WSAA()
+    # checking for expired certificate
     script_dir = os.path.dirname(__file__)
     file_path = os.path.join(script_dir, 'xml/expired_ta.xml')
-    chk=wsaa.AnalizarXml(xml=open(file_path, "r").read())
-    chk2=wsaa.Expirado()
+    chk = wsaa.AnalizarXml(xml=open(file_path, "r").read())
+    chk2 = wsaa.Expirado()
 
-    #checking for a valid certificate,i.e. which will 
-    #have expiration time 12 hrs(43200 secs) from generation
-    fec=str(date("c", date("U") + 43200))
-    chk3=wsaa.Expirado(fecha=fec)
+    # checking for a valid certificate,i.e. which will 
+    # have expiration time 12 hrs(43200 secs) from generation
+    fec = str(date("c", date("U") + 43200))
+    chk3 = wsaa.Expirado(fecha=fec)
 
-    assert chk==True
-    assert chk2==True
-    assert chk3==False
+    assert chk == True
+    assert chk2 == True
+    assert chk3 == False
 
 
 @pytest.mark.vcr
@@ -90,22 +91,21 @@ def test_login_cms(key_and_cert):
     """comprobando si LoginCMS está funcionando correctamente"""
     wsaa = WSAA()
 
-    tra=wsaa.CreateTRA(service="wsfe",ttl=DEFAULT_TTL)
-    cms=wsaa.SignTRA(tra,key_and_cert[1],key_and_cert[0])
-    chk=wsaa.Conectar(cache=None, wsdl=WSDL,cacert=CACERT,proxy=None)
+    tra = wsaa.CreateTRA(service="wsfe", ttl=DEFAULT_TTL)
+    cms = wsaa.SignTRA(tra, key_and_cert[1], key_and_cert[0])
+    chk = wsaa.Conectar(cache=None, wsdl=WSDL, cacert=CACERT, proxy=None)
     ta_xml = wsaa.LoginCMS(cms)
 
     ta = SimpleXMLElement(ta_xml)
 
-    if not isinstance(cms,str):
+    if not isinstance(cms, str):
         cms = cms.decode('utf-8')
 
-    assert isinstance(cms,str)
-
-    
+    assert isinstance(cms, str)
+   
     assert cms.startswith('MII')
 
-    assert chk==True
+    assert chk == True
     assert ta_xml.startswith('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
     assert ta.credentials.token
     assert ta.credentials.sign
@@ -156,11 +156,26 @@ def test_wsaa_sign_tra(key_and_cert):
     tra = wsaa.CreateTRA("wsfe")
     sign = wsaa.SignTRA(tra, key_and_cert[1], key_and_cert[0])
 
-    if not isinstance(sign,str):
+    if not isinstance(sign, str):
         sign = sign.decode('utf-8')
 
     assert isinstance(sign, str)
     assert sign.startswith("MII")
+
+def test_wsaa_sign_openssl(key_and_cert):
+    wsaa = WSAA()
+
+    tra = wsaa.CreateTRA("wsfe").encode()
+    sign = sign_tra_openssl(tra, key_and_cert[1], key_and_cert[0])
+
+    # check if the commanmd line input is a byte data
+    assert isinstance(sign, bytes)
+
+    if isinstance(sign, bytes):
+        sign = sign.decode("utf8")
+        
+    assert sign.startswith("MII")
+
 
 
 def test_wsaa_sign_tra_inline(key_and_cert):
@@ -173,10 +188,10 @@ def test_wsaa_sign_tra_inline(key_and_cert):
         tra, open(key_and_cert[1]).read(), open(key_and_cert[0]).read()
     )
 
-    if not isinstance(sign,str):
+    if not isinstance(sign, str):
         sign = sign.decode('utf-8')
 
-    if not isinstance(sign_2,str):
+    if not isinstance(sign_2, str):
         sign_2 = sign_2.decode('utf-8')
 
     assert isinstance(sign, str)
@@ -184,6 +199,7 @@ def test_wsaa_sign_tra_inline(key_and_cert):
 
     assert isinstance(sign_2, str)
     assert sign_2.startswith("MII")
+
 
 @pytest.mark.vcr
 def test_main():
@@ -202,22 +218,25 @@ def test_main_crear_pedido_cert():
     sys.argv.append(" ")
     main()
 
+
 @pytest.mark.vcr
 def test_main_analizar():
     sys.argv = []
     sys.argv.append("--analizar")
     main()
 
+
 @pytest.mark.vcr
 def test_CallWSAA(key_and_cert):
     wsaa = WSAA()
-    tra=wsaa.CreateTRA(service="wsfe",ttl=DEFAULT_TTL)
-    cms=wsaa.SignTRA(tra,key_and_cert[1],key_and_cert[0])
-    assert wsaa.CallWSAA(cms,WSDL)
+    tra = wsaa.CreateTRA(service="wsfe", ttl=DEFAULT_TTL)
+    cms = wsaa.SignTRA(tra, key_and_cert[1], key_and_cert[0])
+    assert wsaa.CallWSAA(cms, WSDL)
+
 
 @pytest.mark.vcr
 def test_call_wsaa(key_and_cert):
     wsaa = WSAA()
-    tra=wsaa.CreateTRA(service="wsfe",ttl=DEFAULT_TTL)
-    cms=wsaa.SignTRA(tra,key_and_cert[1],key_and_cert[0])
-    assert call_wsaa(cms,WSDL)
+    tra = wsaa.CreateTRA(service="wsfe", ttl=DEFAULT_TTL)
+    cms = wsaa.SignTRA(tra, key_and_cert[1], key_and_cert[0])
+    assert call_wsaa(cms, WSDL)
