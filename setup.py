@@ -13,7 +13,6 @@ __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2008-2021 Mariano Reingart"
 
 from distutils.core import setup
-from get_dep import get_dependecies
 import glob
 import os
 import subprocess
@@ -71,7 +70,7 @@ setup(
     author_email="reingart@gmail.com",
     url="https://github.com/reingart/pyafipws",
     license="LGPL-3.0-or-later",
-    install_requires=get_dependecies(),
+    install_requires=open('requirements.txt').readlines(),
     options=opts,
     data_files=data_files,
     classifiers=[
