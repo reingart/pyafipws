@@ -130,7 +130,7 @@ class IIBB(object):
             nombre = "DFEServicioConsulta_%s.xml" % self.CodigoHash
 
             # guardo el xml en el archivo a enviar y luego lo re-abro:
-            with open(os.path.join(tempfile.gettempdir(), nombre), "w") as archivo:
+            with open(os.path.join(tempfile.gettempdir(), nombre), "wb") as archivo:
                 archivo.write(xml)
 
             if not self.testing:
