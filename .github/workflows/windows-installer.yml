@@ -44,6 +44,17 @@ jobs:
     - name: Build executables
       run: |
         python setup_win.py py2exe
+    - name: Download Visual Studio Redistributable (32bits)
+      if: matrix.targetplatform == 'x86'
+      run: |
+        curl -L https://aka.ms/vs/17/release/vc_redist.x86.exe -o vcredist.exe
+    - name: Download Visual Studio 22 Redistributable (64bits)
+      if: matrix.targetplatform != 'x86'
+      run: |
+        curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vcredist.exe
+    - name: Copy Visual Studio Redistributable
+      run: |
+        copy vcredist.exe .\dist\
     - name: Install NSIS for building Installers
       run: |
         curl -L https://sourceforge.net/projects/nsis/files/latest/download -o NSISInstaller.exe
@@ -60,17 +71,6 @@ jobs:
       run: |
         mkdir .\dist\tests
         copy .\tests\powershell\*.* .\dist\tests
-    - name: Download Visual Studio Redistributable (32bits)
-      if: matrix.targetplatform == 'x86'
-      run: |
-        curl -L https://aka.ms/vs/17/release/vc_redist.x86.exe -o vcredist.exe
-    - name: Download Visual Studio 22 Redistributable (64bits)
-      if: matrix.targetplatform != 'x86'
-      run: |
-        curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vcredist.exe
-    - name: Copy Visual Studio Redistributable
-      run: |
-        copy vcredist.exe .\dist\
     - name: Save repository metadata for release env-vars
       run: |
         echo release_version="${{ matrix.python-version }}".$(git rev-list --count --all) > dist/.env
