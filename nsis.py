@@ -172,10 +172,10 @@ install_vcredist = r"""
     StrCmp $0 "Microsoft Visual C++ 2008 Redistributable - x86 9.0.21022"  vcredist_ok vcredist_install
  
     vcredist_install:
-    File "vcredist_x86.exe" 	
+    File "vcredist.exe"
     DetailPrint "Installing Microsoft Visual C++ 2008 Redistributable"
-    ExecWait '"$INSTDIR\vcredist_x86.exe" /q' $0
-    Delete $INSTDIR\vcredist_x86.exe
+    ExecWait '"$INSTDIR\vcredist.exe" /q' $0
+    Delete $INSTDIR\vcredist.exe
     vcredist_ok:
     
 """
