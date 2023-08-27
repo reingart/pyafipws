@@ -44,6 +44,14 @@ jobs:
     - name: Build executables
       run: |
         python setup_win.py py2exe
+    - name: Install NSIS for building Installers
+      run: |
+        curl -L https://sourceforge.net/projects/nsis/files/latest/download -o NSISInstaller.exe
+        Start-Process -FilePath "NSISInstaller.exe" -ArgumentList "/S" -Wait
+        del "NSISInstaller.exe"
+    - name: Build PyAfipWs Installer
+      run: |
+        makensis.exe base.nsi
     - name: Remove uneeded libs (TK)
       run: |
         Remove-Item .\dist\lib\tcl -recurse
@@ -52,6 +60,17 @@ jobs:
       run: |
         mkdir .\dist\tests
         copy .\tests\powershell\*.* .\dist\tests
+    - name: Download Visual Studio Redistributable (32bits)
+      if: matrix.targetplatform == 'x86'
+      run: |
+        curl -L https://aka.ms/vs/17/release/vc_redist.x86.exe -o vcredist.exe
+    - name: Download Visual Studio 22 Redistributable (64bits)
+      if: matrix.targetplatform != 'x86'
+      run: |
+        curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vcredist.exe
+    - name: Copy Visual Studio Redistributable
+      run: |
+        copy vcredist.exe .\dist\
     - name: Save repository metadata for release env-vars
       run: |
         echo release_version="${{ matrix.python-version }}".$(git rev-list --count --all) > dist/.env
@@ -65,6 +84,12 @@ jobs:
         name: dist-${{ matrix.targetplatform }}
         path: |
           dist/
+    - name: Deploy PyAfipWs Installer
+      uses: actions/upload-artifact@v3
+      with:
+        name: PyAfipWs-Installer-${{ matrix.targetplatform }}
+        path: |
+          **/PyAfipWs-*-full.exe
 
   test:
     name: "Full End-2-End test"
