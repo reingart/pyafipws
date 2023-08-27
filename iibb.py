@@ -147,7 +147,6 @@ class IIBB(object):
                 self.CodigoError = str(self.xml.codigoError)
                 self.MensajeError = (
                     str(self.xml.mensajeError)
-                    .encode("ascii", "replace")
                 )
             if "numeroComprobante" in self.xml:
                 self.NumeroComprobante = str(self.xml.numeroComprobante)
