@@ -161,6 +161,16 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
+      - name: Download 64Bit Installer
+        uses: actions/download-artifact@v3
+        with:
+          name: PyAfipWs-Installer-x64
+          path: PyAfipWs-Installer-x64.exe
+      - name: Download 32bit Installer
+        uses: actions/download-artifact@v3
+        with:
+          name: PyAfipWs-Installer-x86
+          path: PyAfipWs-Installer-x86.exe
       - name: Download distribution binaries
         uses: actions/download-artifact@v3
         with:
@@ -188,5 +198,7 @@ jobs:
           prerelease: ${{ (github.ref != 'main') }}
           title: "Dev Build ${{ env.release_version }} ${{ env.git_branch }} @ ${{ env.git_short_hash }}"
           files: |
+            PyAfipWs-Installer-x64.exe
+            PyAfipWs-Installer-x86.exe
             dist-32.zip
             dist-64.zip
