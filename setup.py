@@ -71,21 +71,21 @@ setup(
     url="https://github.com/reingart/pyafipws",
     license="LGPL-3.0-or-later",
     install_requires=[
-        "httplib2==0.9.2; python_version <= '2.7'"
-        "httplib2>=0.20.4; python_version > '3'"
-        "pysimplesoap==1.08.14; python_version <= '2.7'"
-        "pysimplesoap @ git+https://github.com/pysimplesoap/pysimplesoap.git@py311#pysimplesoap",
-        "cryptography==3.3.2; python_version <= '2.7'"
-        "cryptography>=3.4.7; python_version > '3'"
-        "fpdf>=1.7.2"
-        "dbf>=0.88.019"
-        "Pillow>=2.0.0"
-        "tabulate>=0.8.5"
-        "certifi>=2020.4.5.1"
-        "qrcode>=6.1"
-        "future>=0.18.2"
-        "pywin32==304; sys_platform == 'win32' and python_version > '3'",
-        "py2exe==0.11.1.1; sys_platform == 'win32' and python_version > '3'"
+        "httplib2==0.9.2;python_version <= '2.7'",
+        "httplib2>=0.20.4;python_version > '3'",
+        "pysimplesoap==1.08.14;python_version <= '2.7'",
+        "pysimplesoap @ git+https://github.com/pysimplesoap/pysimplesoap.git@py311#pysimplesoap;",
+        "cryptography==3.3.2;python_version <= '2.7'",
+        "cryptography>=3.4.7;python_version > '3'",
+        "fpdf>=1.7.2",
+        "dbf>=0.88.019",
+        "Pillow>=2.0.0",
+        "tabulate>=0.8.5",
+        "certifi>=2020.4.5.1",
+        "qrcode>=6.1",
+        "future>=0.18.2",
+        "pywin32==304;sys_platform == 'win32' and python_version > '3'",
+        "py2exe==0.11.1.1;sys_platform == 'win32' and python_version > '3'"
     ],
     options=opts,
     data_files=data_files,
