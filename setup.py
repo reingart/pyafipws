@@ -84,9 +84,10 @@ setup(
         "certifi>=2020.4.5.1",
         "qrcode>=6.1",
         "future>=0.18.2",
-        "pywin32==304;sys_platform == 'win32' and python_version > '3'",
-        "py2exe==0.11.1.1;sys_platform == 'win32' and python_version > '3'"
     ],
+    extras_require={
+        "opt": ["pywin32==304;sys_platform == 'win32' and python_version > '3'"]
+    },
     options=opts,
     data_files=data_files,
     classifiers=[
