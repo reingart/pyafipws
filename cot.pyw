@@ -103,7 +103,7 @@ with gui.Window(name='mywin', title=u'COT: Remito Electr\xf3nico ARBA',
                    tooltip="Presentar el remito en ARBA",
                    width='85', default=True, fgcolor=u'#4C4C4C', )
         gui.CheckBox(label=u'Auto:', name=u'auto', height='24',
-                     left='320', top='396', width='73',
+                     left='320', top='396', width='73', value=True,
                      tooltip=u'procesar automaticamente', )
         gui.Button(label=u'Mover Procesados', name=u'mover', left='112', 
                    top='394', width='166', fgcolor=u'#4C4C4C', )
