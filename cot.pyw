@@ -174,9 +174,11 @@ def procesar_archivos(evt=None):
         procesar_archivo(item, enviar=True)
 
     if panel['auto'].value:
+        mover_archivos()
         print("re-agendando...", datetime.datetime.now())
         gui.call_later(5000, listar_archivos)
         gui.call_later(10000, procesar_archivos)
+
 
 def cargar_archivo(evt):
     # obtengo y proceso el archivo seleccionado:
@@ -267,7 +269,7 @@ def filtro_fecha(evt):
 
 def mover_archivos(evt=None):
     carpeta = panel['carpeta'].text
-    if carpeta != "datos":
+    if carpeta != "datos" and evt:
         gui.alert("No se puede mover archivos de carpeta %s" % carpeta)
         
     i = 0
@@ -284,7 +286,8 @@ def mover_archivos(evt=None):
                     i += 1
                 except Exception, e:
                     gui.alert(unicode(e), "No se puede mover %s" % fn)
-    gui.alert("Se movieron: %s archivos" % i)
+    if evt:
+        gui.alert("Se movieron: %s archivos" % i)
     listar_archivos()
 
 
