@@ -42,30 +42,18 @@ kwargs["packages"] = ["pyafipws", "pyafipws.formatos"]
 opts = {}
 data_files = [("pyafipws/plantillas", glob.glob("plantillas/*"))]
 
-
-long_desc = (
-    "Interfases, herramientas y aplicativos para Servicios Web"
-    "AFIP (Factura Electrónica, Granos, Aduana, etc.), "
-    "ANMAT (Trazabilidad de Medicamentos), "
-    "RENPRE (Trazabilidad de Precursores Químicos), "
-    "ARBA (Remito Electrónico)"
-)
-
 # convert the README and format in restructured text (only when registering)
-if "sdist" in sys.argv and os.path.exists("README.md") and sys.platform == "linux2":
-    try:
-        cmd = ["pandoc", "--from=markdown", "--to=rst", "README.md"]
-        long_desc = subprocess.check_output(cmd).decode("utf8")
-        open("README.rst", "w").write(long_desc.encode("utf8"))
-    except Exception as e:
-        warnings.warn("Exception when converting the README format: %s" % e)
-
+# from docs https://packaging.python.org/en/latest/guides/making-a-pypi-friendly-readme/
+from pathlib import Path
+parent_dir = Path(__file__).parent
+long_desc = (parent_dir / "README.md").read_text()
 
 setup(
     name="PyAfipWs",
     version=__version__,
     description=desc,
     long_description=long_desc,
+    long_description_content_type="text/markdown",
     author="Mariano Reingart",
     author_email="reingart@gmail.com",
     url="https://github.com/reingart/pyafipws",
