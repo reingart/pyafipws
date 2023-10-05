@@ -107,6 +107,8 @@ class PyQR(object):
         nro_doc_rec=20000000001,
         tipo_cod_aut="E",
         cod_aut=70417054367476,
+        color_relleno="black",
+        color_fondo="white",
     ):
         "Generar una imágen con el código QR"
         # basado en: https://www.afip.gob.ar/fe/qr/especificaciones.asp
@@ -139,7 +141,7 @@ class PyQR(object):
         qr.add_data(url)
         qr.make(fit=True)
 
-        img = qr.make_image(fill_color="black", back_color="white")
+        img = qr.make_image(fill_color=color_relleno, back_color=color_fondo)
 
         img.save(self.Archivo, self.Extension.upper())
 
