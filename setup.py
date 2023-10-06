@@ -44,9 +44,8 @@ data_files = [("pyafipws/plantillas", glob.glob("plantillas/*"))]
 
 # convert the README and format in restructured text (only when registering)
 # from docs https://packaging.python.org/en/latest/guides/making-a-pypi-friendly-readme/
-from pathlib import Path
-parent_dir = Path(__file__).parent
-long_desc = (parent_dir / "README.md").read_text()
+parent_dir = os.getcwd()
+long_desc = open(os.path.join(parent_dir, "README.md")).read()
 
 setup(
     name="PyAfipWs",
