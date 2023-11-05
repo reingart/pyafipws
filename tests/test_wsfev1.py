@@ -10,6 +10,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+from unittest.mock import Mock
 from pyafipws.wsaa import WSAA
 from pyafipws.wsfev1 import WSFEv1, main
 from builtins import str
@@ -38,7 +39,6 @@ CACHE = ""
 
 
 pytestmark =[pytest.mark.vcr, pytest.mark.freeze_time('2021-07-01')]
-
 
 def test_dummy(auth):
     wsfev1 = auth
@@ -222,6 +222,60 @@ def test_reproceso_nota_debito(auth):
     test_autorizar_comprobante(auth, tipo_cbte, cbte_nro, servicios=False)
     assert (wsfev1.Reproceso == "S")
 
+def test_agregar_actividad():
+    """Test Agrego actividad a una factura (interna)"""
+    wsfev1 = WSFEv1()
+    wsfev1.CrearFactura()
+    wsfev1.AgregarActividad(960990)
+    assert wsfev1.factura["actividades"][0]["actividad_id"] == 960990
+
+
+def test_param_get_actividades():
+    """Test the response values from activity code from the web service"""
+    def simulate_wsfev1_client():
+        mock = Mock()
+
+        mock_response = {
+            "FEParamGetActividadesResult": {
+                "ResultGet": [
+                    {
+                        "ActividadesTipo": {
+                            "Id": 1,
+                            "Orden": 10,
+                            "Desc": "Activity 1",
+                        }
+                    },
+                    {
+                        "ActividadesTipo": {
+                            "Id": 2,
+                            "Orden": 20,
+                            "Desc": "Activity 2",
+                        }
+                    },
+                ]
+            }
+        }
+
+        mock.FEParamGetActividades.return_value = mock_response
+
+        return mock
+
+
+    wsfev1 = WSFEv1()
+    wsfev1.Cuit = "sdfsdf"
+    wsfev1.client = simulate_wsfev1_client()
+                        
+    # call the ParamGetActividades where the client
+    # will be instantiated by the mock
+    items = wsfev1.ParamGetActividades()
+
+    expected_result = [
+        "1|10|Activity 1",
+        "2|20|Activity 2",
+    ]
+
+    # Check the methods return the expected result
+    assert items == expected_result
 
 def test_main(auth):
     sys.argv = []
