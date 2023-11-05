@@ -61,6 +61,7 @@ setup(
         "httplib2==0.9.2;python_version <= '2.7'",
         "httplib2>=0.20.4;python_version > '3'",
         "pysimplesoap==1.08.14;python_version <= '2.7'",
+        "pysimplesoap==1.8.22;python_version > '3'",
         "cryptography==3.3.2;python_version <= '2.7'",
         "cryptography>=3.4.7;python_version > '3'",
         "fpdf>=1.7.2",
@@ -70,9 +71,6 @@ setup(
         "certifi>=2020.4.5.1",
         "qrcode>=6.1",
         "future>=0.18.2",
-    ],
-    dependency_links=[
-        "git+https://github.com/pysimplesoap/pysimplesoap.git@py311#pysimplesoap; python_version > '3'",
     ],
     extras_require={
         "opt": ["pywin32==304;sys_platform == 'win32' and python_version > '3'"]
