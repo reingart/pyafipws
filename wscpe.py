@@ -29,9 +29,9 @@ if 'xrange' not in dir(__builtins__):
 
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2021- Mariano Reingart"
+__copyright__ = "Copyright (C) 2023- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06c"
+__version__ = "1.07a"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -157,6 +157,8 @@ class WSCPE(BaseWS):
         "AutorizarCPEFerroviaria",
         "DesvioCPEAutomotor",
         "EditarCPEAutomotor",
+        "EditarCPEConfirmadaAutomotorDg",
+        "EditarCPEConfirmadaFerroviariaDg",
         "EditarCPEFerroviaria",
         "ConsultarPlantas",
         "SetParametros",
@@ -873,6 +875,9 @@ class WSCPE(BaseWS):
         peso_bruto=None,
         cod_grano=None,
         dominio=None,
+        tarifa=None,
+        km_recorrer=None,
+        observaciones=None,
         archivo="cpe.pdf",
         **kwargs
     ):
@@ -891,6 +896,80 @@ class WSCPE(BaseWS):
             "dominio": dominio,
         })
         response = self.client.editarCPEAutomotor(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def EditarCPEConfirmadaAutomotorDg(
+        self,
+        nro_ctg=None,
+        cuit_remitente_comercial=None,
+        cuit_comisionista=None,
+        cuit_corredor=None,
+        observaciones=None,
+        **kwargs
+    ):
+        """Modificar datos de una CP Automotor Derivados Granarios."""
+        self.cpe.update({
+            "nroCTG": nro_ctg,
+            "observaciones": observaciones,
+        })
+        if cuit_remitente_comercial:
+            self.cpe["intervinientes"]["cuitRemitenteComercial"] = cuit_remitente_comercial
+        if cuit_comisionista:
+            self.cpe["intervinientes"]["cuitComisionista"] = cuit_comisionista
+        if cuit_corredor:
+            self.cpe["intervinientes"]["cuitCorredor"] = cuit_corredor
+
+        response = self.client.editarCPEConfirmadaAutomotorDg(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            solicitud=self.cpe,
+        )
+        ret = response.get("respuesta")
+        if ret:
+            self.__analizar_errores(ret)
+        if "cabecera" in ret:
+            self.AnalizarCPE(ret, archivo)
+        return True
+
+    @inicializar_y_capturar_excepciones
+    def EditarCPEConfirmadaFerroviariaDg(
+        self,
+        nro_ctg=None,
+        cuit_remitente_comercial=None,
+        cuit_comisionista=None,
+        cuit_corredor=None,
+        observaciones=None,
+        **kwargs
+    ):
+        """Modificar datos de una CP Automotor Derivados Granarios."""
+        self.cpe.update({
+            "nroCTG": nro_ctg,
+            "observaciones": observaciones,
+        })
+        if cuit_remitente_comercial:
+            self.cpe["intervinientes"]["cuitRemitenteComercial"] = cuit_remitente_comercial
+        if cuit_comisionista:
+            self.cpe["intervinientes"]["cuitComisionista"] = cuit_comisionista
+        if cuit_corredor:
+            self.cpe["intervinientes"]["cuitCorredor"] = cuit_corredor
+
+        response = self.client.editarCPEConfirmadaFerroviariaDg(
             auth={
                 "token": self.Token,
                 "sign": self.Sign,
@@ -1298,7 +1377,7 @@ if __name__ == "__main__":
             km_recorrer=500,
             cuit_chofer=20333333334,
             # tarifa=100.10,
-            # cuit_pagador_flete=20333333334,
+            cuit_pagador_flete=20333333334,
             # cuit_intermediario_flete=20333333334,
             mercaderia_fumigada=True,
         )
@@ -1557,6 +1636,18 @@ if __name__ == "__main__":
             peso_bruto=1000,
             cod_grano=31,
             dominio=["AA001ST"],
+            km_recorrer=1000,
+            tarifa=100.01,
+            observaciones="Notas"
+        )
+
+    if "--editar_cpe_confirmada_automotor_dg" in sys.argv:
+        wscpe.EditarCPEConfirmadaAutomotorDg(
+            nro_ctg=10100000542,
+            cuit_corredor=20222222223,
+            cuit_remitente_comercial=20222222223,
+            cuit_comisionista=20222222223,
+            observaciones="Notas"
         )
 
     if "--consultar_cpe_automotor" in sys.argv:
