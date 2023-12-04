@@ -17,7 +17,7 @@ para transporte ferroviario y automotor RG 5017/2021
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2021- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.06b"
+__version__ = "1.07b"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.0.0
@@ -460,7 +460,7 @@ if __name__ == '__main__':
             )]
             dic["transporte"] = [dict(
                     cuit_transportista=20120372913,
-                    dominio="AB000ST",
+                    dominio="AD000ST",
                     fecha_hora_partida=(datetime.datetime.now() + datetime.timedelta(days=1)).isoformat()[:-7],
                     km_recorrer=500,
                     cuit_chofer='20333333334',
@@ -542,6 +542,9 @@ if __name__ == '__main__':
                     peso_bruto=datos_carga.get("peso_bruto"),
                     cod_grano=datos_carga.get("cod_grano"),
                     dominio=transporte.get("dominio"),
+                    tarifa=transporte.get("tarifa"),
+                    km_recorrer=transporte.get("km_recorrer"),
+                    observaciones=cabecera.get("observaciones"),
                 )
             else:
                 ok = wscpe.EditarCPEFerroviaria(
