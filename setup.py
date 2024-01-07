@@ -42,34 +42,39 @@ kwargs["packages"] = ["pyafipws", "pyafipws.formatos"]
 opts = {}
 data_files = [("pyafipws/plantillas", glob.glob("plantillas/*"))]
 
-
-long_desc = (
-    "Interfases, herramientas y aplicativos para Servicios Web"
-    "AFIP (Factura Electrónica, Granos, Aduana, etc.), "
-    "ANMAT (Trazabilidad de Medicamentos), "
-    "RENPRE (Trazabilidad de Precursores Químicos), "
-    "ARBA (Remito Electrónico)"
-)
-
 # convert the README and format in restructured text (only when registering)
-if "sdist" in sys.argv and os.path.exists("README.md") and sys.platform == "linux2":
-    try:
-        cmd = ["pandoc", "--from=markdown", "--to=rst", "README.md"]
-        long_desc = subprocess.check_output(cmd).decode("utf8")
-        open("README.rst", "w").write(long_desc.encode("utf8"))
-    except Exception as e:
-        warnings.warn("Exception when converting the README format: %s" % e)
-
+# from docs https://packaging.python.org/en/latest/guides/making-a-pypi-friendly-readme/
+parent_dir = os.getcwd()
+long_desc = open(os.path.join(parent_dir, "README.md")).read()
 
 setup(
     name="PyAfipWs",
     version=__version__,
     description=desc,
     long_description=long_desc,
+    long_description_content_type="text/markdown",
     author="Mariano Reingart",
     author_email="reingart@gmail.com",
     url="https://github.com/reingart/pyafipws",
     license="LGPL-3.0-or-later",
+    install_requires=[
+        "httplib2==0.9.2;python_version <= '2.7'",
+        "httplib2>=0.20.4;python_version > '3'",
+        "pysimplesoap==1.08.14;python_version <= '2.7'",
+        "pysimplesoap==1.8.22;python_version > '3'",
+        "cryptography==3.3.2;python_version <= '2.7'",
+        "cryptography>=3.4.7;python_version > '3'",
+        "fpdf>=1.7.2",
+        "dbf>=0.88.019",
+        "Pillow>=2.0.0",
+        "tabulate>=0.8.5",
+        "certifi>=2020.4.5.1",
+        "qrcode>=6.1",
+        "future>=0.18.2",
+    ],
+    extras_require={
+        "opt": ["pywin32==304;sys_platform == 'win32' and python_version > '3'"]
+    },
     options=opts,
     data_files=data_files,
     classifiers=[

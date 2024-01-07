@@ -1,0 +1,71 @@
+# This workflow will build pyafipws package and deploy on pypi. 
+# For more information see: https://github.com/py2exe/py2exe/blob/master/.github/workflows/CI.yml
+
+name: Deploy to PyPi
+
+on:
+  workflow_run:
+    workflows: ["python-package", "windows-installer"]
+    types:
+      - completed
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, 3.11]
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set Up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Build PyAfipWs Package
+      run: |
+        mkdir ./dist
+        pip install wheel
+        python setup.py bdist_wheel sdist
+    - name: Publish Package
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
+  
+  
+  test:
+    name: "Test Deployed PyAfipWs Package"
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.9, 3.11]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install PyAfipWs from PyPi
+        run: |
+          pip install -i https://test.pypi.org/simple/ PyAfipWs
+      - name: Download certificate and private key
+        run: |
+          wget  "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -O reingart2019.zip
+          unzip reingart2019.zip
+      - name: Test WSAA servers
+        run: |
+          python -m pyafipws.wsaa
+      - name: Test WSFEV1
+        run: |
+          python -m pyafipws.wsfev1 --dummy
