@@ -1,6 +1,6 @@
 httplib2>=0.12.0
 git+https://github.com/pysimplesoap/pysimplesoap.git@stable_py3k#pysimplesoap
-m2crypto>=0.18
+m2crypto>=0.40.1
 fpdf>=1.7.2
 dbf>=0.88.019
 Pillow>=2.0.0
