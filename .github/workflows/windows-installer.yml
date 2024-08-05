@@ -134,6 +134,14 @@ jobs:
       run: |
         Import-Module Pester
         Invoke-Pester .\tests\powershell\test_pyi25.ps1
+    - name: Register PyQR component
+      run: |
+        python register_pyqr.py
+        Get-Content -Path $Env:APPDATA\pyqr.log -ErrorAction SilentlyContinue
+    - name: Test PyQR COM server automation
+      run: |
+        Import-Module Pester
+        Invoke-Pester .\tests\powershell\test_pyqr.ps1
     - name: Test WSAA command line interface
       run: |
         .\wsaa.exe --analizar reingart.crt reingart.key wsmtxca 300
