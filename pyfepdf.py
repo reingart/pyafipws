@@ -13,9 +13,9 @@
 "Módulo para generar PDF de facturas electrónicas"
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2011-2018 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10c"
+__version__ = "1.10d"
 
 DEBUG = False
 HOMO = False
@@ -694,13 +694,13 @@ class FEPDF:
                                     umed_ds = self.umeds_ds.get(int(it['umed']))
                                     s = f.split_multicell(umed_ds, 'Item.Umed_ds01')
                                     f.set('Item.Umed_ds%02d' % li, s[0])
-                            # solo discriminar IVA en A/M (mostrar tasa en B)
+                            # solo discriminar IVA en A/M y B Ley 27743
                             if letra_fact in ('A', 'M', 'B'):
                                 if it.get('iva_id') is not None:
                                     f.set('Item.IvaId%02d' % li, it['iva_id'])
                                     if it['iva_id']:
                                         f.set('Item.AlicuotaIva%02d' % li, self.fmt_iva(it['iva_id']))
-                            if letra_fact in ('A', 'M'):
+                            if letra_fact in ('A', 'M', 'B'):
                                 if it.get('imp_iva') is not None:
                                     f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
                             if it.get('despacho') is not None:

@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33a"
+__version__ = "1.33c"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -351,7 +351,7 @@ class PyRece(gui.Controller):
     def on_menu_ayuda_mensajesXML_click(self, event):
         self.verifica_ws(dummy=False)
         self.components.txtEstado.value = u"XmlRequest:\n%s\n\nXmlResponse:\n%s" % (
-            self.ws.XmlRequest, self.ws.XmlResponse)
+            self.ws.XmlRequest.decode("latin1", "ignore"), self.ws.XmlResponse.decode("latin1", "ignore"))
         self.component.size = (592, 517)
 
     def on_menu_ayuda_estado_click(self, event):
@@ -663,7 +663,7 @@ class PyRece(gui.Controller):
                             tipo = kargs[k % 'tipo']
                             pto_vta = kargs[k % 'pto_vta']
                             nro = kargs[k % 'nro']
-                            if id:
+                            if tipo:
                                 self.ws.AgregarCmpAsoc(tipo, pto_vta, nro)
                         else:
                             break
