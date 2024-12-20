@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.10d"
+__version__ = "1.11a"
 
 DEBUG = False
 HOMO = False
@@ -590,6 +590,8 @@ class FEPDF:
                 if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
                     motivos_ds += msg_no_iva
 
+            consumidor_final = "Consumidor" in fact.get('categoria', '').upper()
+
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
 
             for copia in range(1, num_copias+1):
@@ -697,10 +699,11 @@ class FEPDF:
                             # solo discriminar IVA en A/M y B Ley 27743
                             if letra_fact in ('A', 'M', 'B'):
                                 if it.get('iva_id') is not None:
-                                    f.set('Item.IvaId%02d' % li, it['iva_id'])
-                                    if it['iva_id']:
-                                        f.set('Item.AlicuotaIva%02d' % li, self.fmt_iva(it['iva_id']))
-                            if letra_fact in ('A', 'M', 'B'):
+                                    if letra_fact != "B" or consumidor_final:
+                                        f.set('Item.IvaId%02d' % li, it['iva_id'])
+                                        if it['iva_id']:
+                                            f.set('Item.AlicuotaIva%02d' % li, self.fmt_iva(it['iva_id']))
+                            if letra_fact in ('A', 'M'):
                                 if it.get('imp_iva') is not None:
                                     f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
                             if it.get('despacho') is not None:
@@ -806,6 +809,11 @@ class FEPDF:
                                 f.set('Item.AlicuotaIVA',"")
                             f.set('NETO.L',"")
                             f.set('IVA.L',"")
+                            # Facturas B Ley 27743
+                            if letra_fact == "B" and consumidor_final:
+                                f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
+                                f.set('IVA.L', "IVA Contenido:")
+                                f.set('LeyendaIVA', "Regimen de Transparencia Fiscal al Consumidor (Ley 27.743)")
                             f.set('LeyendaIVA', "")
                             for p in self.ivas_ds.values():
                                 f.set('IVA%s.L' % p, "")
