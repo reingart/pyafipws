@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11a"
+__version__ = "1.11b"
 
 DEBUG = False
 HOMO = False
@@ -590,7 +590,7 @@ class FEPDF:
                 if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
                     motivos_ds += msg_no_iva
 
-            consumidor_final = "Consumidor" in fact.get('categoria', '').upper()
+            consumidor_final = "FINAL" in fact.get('categoria', fact.get('id_impositivo', '')).upper()
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
 
@@ -673,6 +673,7 @@ class FEPDF:
                     li = 0
                     k = 0
                     subtotal = Decimal("0.00")
+                    iva_liq = Decimal("0.00")
                     for it in li_items:
                         k = k + 1
                         if k > hoja * (lineas_max - 1):
@@ -703,6 +704,15 @@ class FEPDF:
                                         f.set('Item.IvaId%02d' % li, it['iva_id'])
                                         if it['iva_id']:
                                             f.set('Item.AlicuotaIva%02d' % li, self.fmt_iva(it['iva_id']))
+                                            imp_it_iva = Decimal(it['imp_iva'] or "0.00")
+                                            if not imp_it_iva and it['importe']:
+                                                p = self.ivas_ds[int(it['iva_id'])]
+                                                importe_it = Decimal(it['importe'])
+                                                if p == int(p):
+                                                    imp_it_bruto = importe_it / (Decimal(p) / Decimal(100) + Decimal(1)) 
+                                                    imp_it_iva = importe_it - imp_it_bruto
+			                    iva_liq += imp_it_iva
+
                             if letra_fact in ('A', 'M'):
                                 if it.get('imp_iva') is not None:
                                     f.set('Item.ImporteIva%02d' % li, self.fmt_pre(it['imp_iva']))
@@ -811,10 +821,15 @@ class FEPDF:
                             f.set('IVA.L',"")
                             # Facturas B Ley 27743
                             if letra_fact == "B" and consumidor_final:
-                                f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
-                                f.set('IVA.L', "IVA Contenido:")
+                                if fact.get('impto_liq', fact.get('imp_iva')):
+                                    iva_liq = fact.get('impto_liq', fact.get('imp_iva'))
+                                    f.set('IVA.L', "IVA Contenido:")
+                                else:
+                                    f.set('IVA.L', "IVA Contenido (*est.):")
+                                f.set('IVALIQ', self.fmt_imp(iva_liq))                                
                                 f.set('LeyendaIVA', "Regimen de Transparencia Fiscal al Consumidor (Ley 27.743)")
-                            f.set('LeyendaIVA', "")
+                            else:
+                                f.set('LeyendaIVA', "")
                             for p in self.ivas_ds.values():
                                 f.set('IVA%s.L' % p, "")
                                 f.set('NETO%s.L' % p,"")
