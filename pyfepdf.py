@@ -28,7 +28,7 @@ from past.utils import old_div
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.11a"
+__version__ = "3.11b"
 
 DEBUG = False
 HOMO = False
@@ -1180,7 +1180,7 @@ class FEPDF(object):
                     motivos_ds += msg_no_iva
 
             # Facturas B Ley 27743
-            consumidor_final = "CONSUMIDOR" in fact.get('categoria', '').upper()
+            consumidor_final = "FINAL" in fact.get('categoria', fact.get('id_impositivo', '')).upper()
 
             copias = {1: "Original", 2: "Duplicado", 3: "Triplicado"}
 
@@ -1295,6 +1295,7 @@ class FEPDF(object):
                     li = 0
                     k = 0
                     subtotal = Decimal("0.00")
+                    iva_liq = Decimal("0.00")
                     for it in li_items:
                         k = k + 1
                         if k > hoja * (lineas_max - 1):
@@ -1329,6 +1330,15 @@ class FEPDF(object):
                                                 "Item.AlicuotaIva%02d" % li,
                                                 self.fmt_iva(it["iva_id"]),
                                             )
+                                            imp_it_iva = Decimal(it['imp_iva'] or "0.00")
+                                            if not imp_it_iva and it['importe']:
+                                                p = self.ivas_ds[int(it['iva_id'])]
+                                                importe_it = Decimal(it['importe'])
+                                                if p == int(p):
+                                                    imp_it_bruto = importe_it / (Decimal(p) / Decimal(100) + Decimal(1))
+                                                    imp_it_iva = importe_it - imp_it_bruto
+                                           iva_liq += imp_it_iva
+
                             if letra_fact in ("A", "M"):
                                 if it.get("imp_iva") is not None:
                                     f.set(
@@ -1470,8 +1480,12 @@ class FEPDF(object):
                             f.set("LeyendaIVA", "")
                             # Facturas B Ley 27743
                             if letra_fact == "B" and consumidor_final:
-                                f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
-                                f.set('IVA.L', "IVA Contenido:")
+                                if fact.get('impto_liq', fact.get('imp_iva')):
+                                    iva_liq = fact.get('impto_liq', fact.get('imp_iva'))
+                                    f.set('IVA.L', "IVA Contenido:")
+                                else:
+                                    f.set('IVA.L', "IVA Contenido (*est.):")
+                                f.set('IVALIQ', self.fmt_imp(iva_liq))
                                 f.set('LeyendaIVA', "Regimen de Transparencia Fiscal al Consumidor (Ley 27.743)")
                             for p in list(self.ivas_ds.values()):
                                 f.set("IVA%s.L" % p, "")
