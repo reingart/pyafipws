@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11b"
+__version__ = "1.11c"
 
 DEBUG = False
 HOMO = False
@@ -590,7 +590,8 @@ class FEPDF:
                 if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
                     motivos_ds += msg_no_iva
 
-            consumidor_final = "FINAL" in fact.get('categoria', fact.get('id_impositivo', '')).upper()
+            cat_iva_rg = fact.get('categoria', fact.get('id_impositivo', '')).upper()
+            consumidor_final = ("CONS" in cat_iva_rg and "FINAL" in cat_iva_rg) or ("EXENTO" in cat_iva_rg)
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
 
