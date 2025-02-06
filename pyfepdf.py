@@ -28,7 +28,7 @@ from past.utils import old_div
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2011-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.11b"
+__version__ = "3.11c"
 
 DEBUG = False
 HOMO = False
@@ -1180,7 +1180,8 @@ class FEPDF(object):
                     motivos_ds += msg_no_iva
 
             # Facturas B Ley 27743
-            consumidor_final = "FINAL" in fact.get('categoria', fact.get('id_impositivo', '')).upper()
+            cat_iva_rg = fact.get('categoria', fact.get('id_impositivo', '')).upper()
+            consumidor_final = ("CONS" in cat_iva_rg and "FINAL" in cat_iva_rg) or ("EXENTO" in cat_iva_rg)
 
             copias = {1: "Original", 2: "Duplicado", 3: "Triplicado"}
 
