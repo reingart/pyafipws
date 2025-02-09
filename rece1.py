@@ -135,6 +135,11 @@ PERIODO_ASOC = [
     ('fecha_hasta', 8, N),
     ]
 
+ACTIVIDAD = [
+    ('tipo_reg', 1, A), # A: actividad
+    ('actividad_id', 6, A),
+    ]
+
 # Constantes (tablas de parámetros):
 
 TIPO_CBTE = {1: "FAC A", 2: "N/D A", 3: "N/C A", 6: "FAC B", 7: "N/D B",
@@ -157,6 +162,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         opcionales = []
         compradores = []
         periodos_asoc = []
+        actividades = []
         if DEBUG: print "Leyendo DBF..."
 
         formatos = [('Encabezado', ENCABEZADO, encabezados), 
@@ -166,6 +172,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
                     ('Datos Opcionales', OPCIONAL, opcionales),
                     ('Compradores', COMPRADOR, compradores),
                     ('Periodo Asociado', PERIODO_ASOC, periodos_asoc),
+                    ('Actividades', ACTIVIDAD, actividades),
                     ]
         dic = leer_dbf(formatos, conf_dbf)
         
@@ -189,6 +196,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             for periodo in periodos_asoc:
                 if periodo.get("id") == encabezado.get("id"):
                     encabezado["periodo_cbtes_asoc"] = periodo
+            for actividad in actividades:
+                if actividad.get("id") == encabezado.get("id"):
+                    encabezado.setdefault("actividades", []).append(actividad)
             if encabezado.get("id") is None and len(encabezados) > 1:
                 # compatibilidad hacia atrás, descartar si hay más de 1 factura
                 warnings.warn("Para múltiples registros debe usar campo id!")
@@ -222,6 +232,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             elif str(linea[0])=='8':
                 periodo = leer(linea, PERIODO_ASOC)
                 encabezado["periodo_cbtes_asoc"] = periodo
+            elif str(linea[0])=='9':
+                actividad = leer(linea, ACTIVIDAD)
+                encabezado.setdefault("actividades", []).append(actividad)
             else:
                 print "Tipo de registro incorrecto:", linea[0]
 
@@ -251,6 +264,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         opcionales = encabezado.get('opcionales', [])
         compradores = encabezado.get('compradores', [])
         periodo_asoc = encabezado.get('periodo_cbtes_asoc', [])
+        actividades = encabezado.get('actividades', [])
 
         ws.CrearFactura(**encabezado)
         for tributo in tributos:
@@ -265,6 +279,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             ws.AgregarComprador(**comprador)
         if periodo_asoc:
             ws.AgregarPeriodoComprobantesAsociados(**periodo_asoc)
+        for actividad in actividades:
+            ws.AgregarActividad(**actividad)
 
         if DEBUG:
             print '\n'.join(["%s='%s'" % (k,str(v)) for k,v in ws.factura.items()])
@@ -343,6 +359,10 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                 it = dic['periodo_cbtes_asoc']
                 it['tipo_reg'] = 8
                 archivo.write(escribir(it, PERIODO_ASOC))
+            if 'actividades' in dic:
+                for it in dic['actividades']:
+                    it['tipo_reg'] = "A"
+                    archivo.write(escribir(it, ACTIVIDAD))
 
     if '/dbf' in sys.argv:
         formatos = [('Encabezado', ENCABEZADO, encabezados), 
@@ -352,6 +372,7 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                     ('Datos Opcionales', OPCIONAL, dic.get("opcionales", [])),
                     ('Compradores', COMPRADOR, dic.get("compradores", [])),
                     ('Periodo Asociado', PERIODO_ASOC, dic.get('periodo_cbtes_asoc', [])),
+                    ('Actividades', PERIODO_ASOC, dic.get('actividades', [])),
                     ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
@@ -475,6 +496,7 @@ if __name__ == "__main__":
                                  ('Opcionales', OPCIONAL),
                                  ('Compradores', COMPRADOR),
                                  ('Periodo Cbte Asoc', PERIODO_ASOC),
+                                 ('Actividades', ACTIVIDAD),
                                 ]:
                 if not '/dbf' in sys.argv:
                     comienzo = 1
