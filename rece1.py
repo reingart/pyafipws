@@ -20,7 +20,7 @@ from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.38f"
+__version__ = "3.39a"
 
 import datetime
 import os
@@ -88,6 +88,8 @@ ENCABEZADO = [
     ("tipo_cbte", 3, N),
     ("punto_vta", 5, N),
     ('fecha_hs_gen', 14, A),  # CAEA: yyyymmddhhmiss generacion p/ contingencia
+    ('cancela_misma_moneda_ext', 1, A), # opcional S o N
+    ('condicion_iva_receptor_id', 4, N),
 ]
 
 # DETALLE = [
@@ -665,6 +667,8 @@ def main():
             moneda_id = "PES"
             moneda_ctz = "1.000"
             caea = 32023696937881
+            cancela_misma_moneda_ext = 'N'
+            condicion_iva_receptor_id = 1
 
             ws.CrearFactura(
                 concepto,
@@ -687,6 +691,8 @@ def main():
                 moneda_id,
                 moneda_ctz,
                 caea=caea,
+                condicion_iva_receptor_id=condicion_iva_receptor_id,
+                cancela_misma_moneda_ext=cancela_misma_moneda_ext,
             )
 
             if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):

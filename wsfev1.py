@@ -222,6 +222,8 @@ class WSFEv1(BaseWS):
         moneda_ctz="1.0000",
         caea=None,
         fecha_hs_gen=None,
+        cancela_misma_moneda_ext=None,
+        condicion_iva_receptor_id=0,
         **kwargs
     ):
         "Creo un objeto factura (interna)"
@@ -245,6 +247,8 @@ class WSFEv1(BaseWS):
             "moneda_ctz": moneda_ctz,
             "concepto": concepto,
             "fecha_hs_gen": fecha_hs_gen,
+            'cancela_misma_moneda_ext': cancela_misma_moneda_ext,
+            'condicion_iva_receptor_id': condicion_iva_receptor_id,
             "cbtes_asoc": [],
             "tributos": [],
             "iva": [],
