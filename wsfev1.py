@@ -29,9 +29,9 @@ from builtins import range
 from past.builtins import basestring
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2023 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.27c"
+__version__ = "3.28a"
 
 import datetime
 import decimal
@@ -269,6 +269,8 @@ class WSFEv1(BaseWS):
             "caea",
             "fch_venc_cae",
             "fecha_hs_gen",
+            "cancela_misma_moneda_ext",
+            "condicion_iva_receptor_id",
         ):
             self.factura[campo] = valor
             return True
@@ -384,6 +386,8 @@ class WSFEv1(BaseWS):
                             "FchVtoPago": f.get("fecha_venc_pago"),
                             "MonId": f["moneda_id"],
                             "MonCotiz": f["moneda_ctz"],
+                            "CanMisMonExt": f.get("cancela_misma_moneda_ext"),
+                            "CondicionIVAReceptorId": f["condicion_iva_receptor_id"],
                             "PeriodoAsoc": {
                                 "FchDesde": f["periodo_cbtes_asoc"].get("fecha_desde"),
                                 "FchHasta": f["periodo_cbtes_asoc"].get("fecha_hasta"),
@@ -1438,6 +1442,9 @@ def main():
                 caea = wsfev1.CAEAConsultar(periodo, orden)
                 wsfev1.EstablecerCampoFactura("caea", caea)
                 wsfev1.EstablecerCampoFactura("fecha_hs_gen", "yyyymmddhhmiss")
+
+            assert wsfev1.EstablecerCampoFactura("cancela_misma_moneda_ext", "N")
+            assert wsfev1.EstablecerCampoFactura("condicion_iva_receptor_id", "1")
 
             # comprobantes asociados (notas de crédito / débito)
             if tipo_cbte in (2, 3, 7, 8, 12, 13, 202, 203, 208, 213):
