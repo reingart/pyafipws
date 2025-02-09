@@ -64,6 +64,7 @@ class WSFEv1(BaseWS):
                         'ParamGetCotizacion', 
                         'ParamGetPtosVenta',
                         'ParamGetActividades',
+                        'ParamGetCondicionIvaReceptor',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro', 
                         'EstablecerCampoFactura', 'ObtenerCampoFactura',
@@ -1028,6 +1029,17 @@ class WSFEv1(BaseWS):
         return [(u"%(Id)s\t%(Orden)s\t%(Desc)s" % p['ActividadesTipo']).replace("\t", sep)
                  for p in res['ResultGet']]
 
+    @inicializar_y_capturar_excepciones
+    def ParamGetCondicionIvaReceptor(self, clase_cmp="A", sep="|"):
+        "Recuperador de valores referenciales de los identificadores de la condición frente al IVA del receptor"
+        ret = self.client.FEParamGetCondicionIvaReceptor(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            ClaseCmp=clase_cmp,
+            )
+        res = ret['FEParamGetCondicionIvaReceptorResult']
+        return [(u"%(Id)s\t%(Desc)s\t%(Cmp_Clase)s" % p['CondicionIvaReceptor']).replace("\t", sep)
+                 for p in res['ResultGet']]
+
 def p_assert_eq(a,b):
     print a, a==b and '==' or '!=', b
 
@@ -1320,7 +1332,13 @@ def main():
         print "=== Puntos de Venta ==="
         print u'\n'.join(wsfev1.ParamGetPtosVenta())
         print "=== Actividades ==="
-        print u'\n'.join(wsfev1.ParamGetActividades())
+        try:
+            print u'\n'.join(wsfev1.ParamGetActividades())
+        except:
+            pass
+        for clase_cmp in "A", "M", "B", "C":
+            print "=== Condicion Iva Receptor %s ===" % clase_cmp
+            print u'\n'.join(wsfev1.ParamGetCondicionIvaReceptor(clase_cmp))
 
     if "--cotizacion" in sys.argv:
         print wsfev1.ParamGetCotizacion('DOL')
