@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.38f"
+__version__ = "1.39a"
 
 import datetime
 import os
@@ -80,6 +80,8 @@ ENCABEZADO = [
     ('fecha_serv_hasta', 8, A), # opcional solo conceptos 2 y 3
     ('tipo_cbte', 3, N), ('punto_vta', 5, N),
     ('fecha_hs_gen', 14, A), # CAEA: yyyymmddhhmiss generación p/ contingencia
+    ('cancela_misma_moneda_ext', 1, A), # opcional S o N
+    ('condicion_iva_receptor_id', 4, N),
     ]
                    
 #DETALLE = [
@@ -550,13 +552,18 @@ if __name__ == "__main__":
             # Fechas del período del servicio facturado (solo si concepto = 1?)
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
+            cancela_misma_moneda_ext = 'N'
+            condicion_iva_receptor_id = 1
             caea = 32023696937881
 
             ws.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
                 cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
                 imp_iva, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
                 fecha_serv_desde, fecha_serv_hasta, #--
-                moneda_id, moneda_ctz, caea=caea)
+                moneda_id, moneda_ctz, caea=caea,
+                condicion_iva_receptor_id=condicion_iva_receptor_id,
+                cancela_misma_moneda_ext=cancela_misma_moneda_ext,
+            )
             
             if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):
                 tipo = 201

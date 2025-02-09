@@ -130,14 +130,15 @@ class WSFEv1(BaseWS):
         self.AuthServerStatus = result.get('AuthServer')
         return True
 
-    # los siguientes métodos no están decorados para no limpiar propiedades
+    # los siguientes mótodos no estón decorados para no limpiar propiedades
 
     def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
             cbt_desde=0, cbt_hasta=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago=None, 
             fecha_serv_desde=None, fecha_serv_hasta=None, #--
-            moneda_id="PES", moneda_ctz="1.0000", caea=None, fecha_hs_gen=None, **kwargs
-            ):
+            moneda_id="PES", moneda_ctz="1.0000", caea=None, fecha_hs_gen=None,
+            cancela_misma_moneda_ext=None, condicion_iva_receptor_id=0,
+            **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
         fact = {'tipo_doc': tipo_doc, 'nro_doc':  nro_doc,
@@ -150,6 +151,8 @@ class WSFEv1(BaseWS):
                 'fecha_venc_pago': fecha_venc_pago,
                 'moneda_id': moneda_id, 'moneda_ctz': moneda_ctz,
                 'concepto': concepto, 'fecha_hs_gen': fecha_hs_gen,
+                'cancela_misma_moneda_ext': cancela_misma_moneda_ext,
+                'condicion_iva_receptor_id': condicion_iva_receptor_id,
                 'cbtes_asoc': [],
                 'tributos': [],
                 'iva': [],
