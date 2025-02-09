@@ -23,9 +23,9 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2019 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.27c"
+__version__ = "1.28a"
 
 import datetime
 import decimal
@@ -165,7 +165,7 @@ class WSFEv1(BaseWS):
         return True
 
     def EstablecerCampoFactura(self, campo, valor):
-        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae', 'fecha_hs_gen'):
+        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae', 'fecha_hs_gen', 'cancela_misma_moneda_ext', 'condicion_iva_receptor_id'):
             self.factura[campo] = valor
             return True
         else:
@@ -267,7 +267,9 @@ class WSFEv1(BaseWS):
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
-                    'MonCotiz': f['moneda_ctz'],                
+                    'MonCotiz': f['moneda_ctz'],
+                    'CanMisMonExt': f.get('cancela_misma_moneda_ext'),
+                    'CondicionIVAReceptorId': f['condicion_iva_receptor_id'],
                     'PeriodoAsoc': {
                         'FchDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
                         'FchHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
@@ -1124,6 +1126,9 @@ def main():
                 caea = wsfev1.CAEAConsultar(periodo, orden)
                 wsfev1.EstablecerCampoFactura("caea", caea)
                 wsfev1.EstablecerCampoFactura("fecha_hs_gen", "yyyymmddhhmiss")
+
+            assert wsfev1.EstablecerCampoFactura("cancela_misma_moneda_ext", "N")
+            assert wsfev1.EstablecerCampoFactura("condicion_iva_receptor_id", "1")
 
             # comprobantes asociados (notas de crédito / débito)
             if tipo_cbte in (2, 3, 7, 8, 12, 13, 202, 203, 208, 213):
