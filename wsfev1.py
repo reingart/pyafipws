@@ -138,7 +138,7 @@ class WSFEv1(BaseWS):
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago=None, 
             fecha_serv_desde=None, fecha_serv_hasta=None, #--
             moneda_id="PES", moneda_ctz="1.0000", caea=None, fecha_hs_gen=None,
-            cancela_misma_moneda_ext=None, condicion_iva_receptor_id=0,
+            cancela_misma_moneda_ext=None, condicion_iva_receptor_id=None,
             **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
@@ -152,8 +152,6 @@ class WSFEv1(BaseWS):
                 'fecha_venc_pago': fecha_venc_pago,
                 'moneda_id': moneda_id, 'moneda_ctz': moneda_ctz,
                 'concepto': concepto, 'fecha_hs_gen': fecha_hs_gen,
-                'cancela_misma_moneda_ext': cancela_misma_moneda_ext,
-                'condicion_iva_receptor_id': condicion_iva_receptor_id,
                 'cbtes_asoc': [],
                 'tributos': [],
                 'iva': [],
@@ -164,6 +162,9 @@ class WSFEv1(BaseWS):
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
         if caea: fact['caea'] = caea
+
+        if cancela_misma_moneda_ext is not None: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id is not None: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
 
         self.factura = fact
         return True
@@ -273,7 +274,7 @@ class WSFEv1(BaseWS):
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CanMisMonExt': f.get('cancela_misma_moneda_ext'),
-                    'CondicionIVAReceptorId': f['condicion_iva_receptor_id'],
+                    'CondicionIVAReceptorId': f.get('condicion_iva_receptor_id'),
                     'PeriodoAsoc': {
                         'FchDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
                         'FchHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
