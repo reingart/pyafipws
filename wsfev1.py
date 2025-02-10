@@ -1000,11 +1000,11 @@ class WSFEv1(BaseWS):
                  for p in res['ResultGet']]
 
     @inicializar_y_capturar_excepciones
-    def ParamGetCotizacion(self, moneda_id):
+    def ParamGetCotizacion(self, moneda_id, fecha=None):
         "Recuperador de cotización de moneda"
         ret = self.client.FEParamGetCotizacion(
             Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
-            MonId=moneda_id,
+            MonId=moneda_id, FchCotiz=fecha,
             )
         self.__analizar_errores(ret)
         res = ret['FEParamGetCotizacionResult']['ResultGet']
