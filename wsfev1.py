@@ -224,7 +224,7 @@ class WSFEv1(BaseWS):
         caea=None,
         fecha_hs_gen=None,
         cancela_misma_moneda_ext=None,
-        condicion_iva_receptor_id=0,
+        condicion_iva_receptor_id=None,
         **kwargs
     ):
         "Creo un objeto factura (interna)"
@@ -248,8 +248,6 @@ class WSFEv1(BaseWS):
             "moneda_ctz": moneda_ctz,
             "concepto": concepto,
             "fecha_hs_gen": fecha_hs_gen,
-            'cancela_misma_moneda_ext': cancela_misma_moneda_ext,
-            'condicion_iva_receptor_id': condicion_iva_receptor_id,
             "cbtes_asoc": [],
             "tributos": [],
             "iva": [],
@@ -263,6 +261,11 @@ class WSFEv1(BaseWS):
             fact["fecha_serv_hasta"] = fecha_serv_hasta
         if caea:
             fact["caea"] = caea
+
+        if cancela_misma_moneda_ext is not None:
+            fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id is not None:
+            fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
 
         self.factura = fact
         return True
@@ -392,7 +395,7 @@ class WSFEv1(BaseWS):
                             "MonId": f["moneda_id"],
                             "MonCotiz": f["moneda_ctz"],
                             "CanMisMonExt": f.get("cancela_misma_moneda_ext"),
-                            "CondicionIVAReceptorId": f["condicion_iva_receptor_id"],
+                            "CondicionIVAReceptorId": f.get("condicion_iva_receptor_id"),
                             "PeriodoAsoc": {
                                 "FchDesde": f["periodo_cbtes_asoc"].get("fecha_desde"),
                                 "FchHasta": f["periodo_cbtes_asoc"].get("fecha_hasta"),
