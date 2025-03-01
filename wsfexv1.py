@@ -17,9 +17,9 @@ http://www.sistemasagiles.com.ar/trac/wiki/FacturaElectronicaExportacion
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.11a"
+__version__ = "1.12a"
 
 import datetime
 import decimal
@@ -91,7 +91,9 @@ class WSFEXv1(BaseWS):
             nombre_cliente="", cuit_pais_cliente="", domicilio_cliente="",
             id_impositivo="", moneda_id="PES", moneda_ctz=1.0,
             obs_comerciales="", obs_generales="", forma_pago="", incoterms="", 
-            idioma_cbte=7, incoterms_ds=None, fecha_pago=None, **kwargs):
+            idioma_cbte=7, incoterms_ds=None, fecha_pago=None,
+            cancela_misma_moneda_ext=None,
+            **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
 
@@ -118,6 +120,7 @@ class WSFEXv1(BaseWS):
                 'detalles': [],
                 'actividades': [],
             }
+        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
         self.factura = fact
 
         return True
@@ -182,7 +185,8 @@ class WSFEXv1(BaseWS):
                 'Domicilio_cliente': f['domicilio_cliente'],
                 'Id_impositivo': f['id_impositivo'],
                 'Moneda_Id': f['moneda_id'],
-                'Moneda_ctz': f['moneda_ctz'],                
+                'Moneda_ctz': f['moneda_ctz'],
+                'CanMisMonExt': f.get('cancela_misma_moneda_ext'),
                 'Obs_comerciales': f['obs_comerciales'],
                 'Imp_total': f['imp_total'],
                 'Obs': f['obs_generales'],
@@ -696,7 +700,8 @@ if __name__ == "__main__":
                         cliente, cuit_pais_cliente, domicilio_cliente, 
                         id_impositivo, moneda_id, moneda_ctz, 
                         obs_comerciales, obs, forma_pago, incoterms, 
-                        idioma_cbte, incoterms_ds, fecha_pago)
+                        idioma_cbte, incoterms_ds, fecha_pago,
+                        cancela_misma_moneda_ext="N")
                 
                 # Agrego un item:
                 codigo = "PRO1"

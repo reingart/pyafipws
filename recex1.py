@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2011 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28c"
+__version__ = "1.29a"
 
 import datetime
 import os
@@ -82,6 +82,7 @@ if not '--pyfepdf' in sys.argv:
         ('err_code', 100, A),
         ('err_msg', 1000, A),
         ('fecha_pago', 8, A),
+        ('cancela_misma_moneda_ext', 1, A), # opcional S o N
         ]
 
     DETALLE = [
@@ -384,7 +385,7 @@ if __name__ == "__main__":
                     cliente, cuit_pais_cliente, domicilio_cliente, 
                     id_impositivo, moneda_id, moneda_ctz, 
                     obs_comerciales, obs, forma_pago, incoterms, 
-                    idioma_cbte, incoterms_ds)
+                    idioma_cbte, incoterms_ds, cancela_misma_moneda_ext="N")
             
             # Agrego un item:
             codigo = "PRO1"
