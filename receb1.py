@@ -13,9 +13,9 @@
 "Módulo de Intefase para archivos de texto (bono fiscal version 1)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2009 Mariano Reingart"
+__copyright__ = "Copyright (C) 2009-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.19a"
+__version__ = "1.20a"
 
 import datetime
 import os
@@ -65,6 +65,8 @@ ENCABEZADO = [
     ('cae', 14, N), ('fecha_vto', 8, A), 
     ('resultado', 1, A), ('obs', 2, A), ('reproceso', 1, A),
     ('id', 15, N),
+    ('cancela_misma_moneda_ext', 1, A), # opcional S o N
+    ('condicion_iva_receptor_id', 4, N),
     ]
 
 DETALLE = [
@@ -300,7 +302,9 @@ if __name__ == "__main__":
                 punto_vta=punto_vta, cbte_nro=ult_cbte,
                 imp_moneda_id='PES', imp_moneda_ctz=1, 
                 fecha_cbte=fecha,
-                imp_neto="390.00", impto_liq="81.90"
+                imp_neto="390.00", impto_liq="81.90",
+                cancela_misma_moneda_ext="N",
+                condicion_iva_receptor_id="1",
                 )            
             ws.AgregarItem(umed=7, ncm='7308.10.00', sec='', ds='prueba', qty=2.0, precio=100.0, bonif=0.0, iva_id=5, imp_total="242.00")
             ws.AgregarItem(umed=7, ncm='7308.20.00', sec='', ds='prueba 2', qty=4.0, precio=50.0, bonif=10.0, iva_id=5, imp_total="229.90")

@@ -16,9 +16,9 @@ a fin de gestionar los Bonos en la Secretaría de Industria según RG 2557
 """
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2013-2016 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.08a"
 
 import datetime
 import decimal
@@ -37,9 +37,9 @@ class WSBFEv1(BaseWS):
                         'Authorize', 'GetCMP', 'AgregarOpcional',
                         'GetParamMon', 'GetParamTipoCbte', 'GetParamUMed', 
                         'GetParamTipoIVA', 'GetParamNCM', 'GetParamZonas',
-                        'GetParamTipoDoc',
+                        'GetParamTipoDoc', 'GetParamCondicionIvaReceptor',
                         'Dummy', 'Conectar', 'GetLastCMP', 'GetLastID',
-                        'GetParamCtz', 'LoadTestXML',
+                        'GetParamCtz', 'GetCotizacion', 'LoadTestXML',
                         'AnalizarXml', 'ObtenerTagXml', 'DebugLog', 
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
                         'Dummy', 'Conectar', 'SetTicketAcceso']
@@ -92,7 +92,9 @@ class WSBFEv1(BaseWS):
             imp_total=0.0, imp_neto=0.0, impto_liq=0.0,
             imp_tot_conc=0.0, impto_liq_rni=0.00, imp_op_ex=0.00,
             imp_perc=0.00, imp_iibb=0.00, imp_perc_mun=0.00, imp_internos=0.00,
-            imp_moneda_id=0, imp_moneda_ctz=1.0, fecha_venc_pago=None, **kwargs):
+            imp_moneda_id=0, imp_moneda_ctz=1.0, fecha_venc_pago=None,
+            cancela_misma_moneda_ext=None, condicion_iva_receptor_id=None,
+            **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura para bonos fiscales electrónicos
 
@@ -111,6 +113,8 @@ class WSBFEv1(BaseWS):
                 'iva': [],
                 'detalles': [],
             }
+        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
         self.factura = fact
         return True
     
@@ -170,6 +174,8 @@ class WSBFEv1(BaseWS):
                 'Imp_iibb': f['imp_iibb'],
                 'Imp_internos': f['imp_internos'],
                 'Fecha_vto_pago': f['fecha_venc_pago'],
+                'CanMisMonExt': f.get('cancela_misma_moneda_ext'),
+                'CondicionIVAReceptorId': f.get('condicion_iva_receptor_id'),
                 'Items': [
                     {'Item': {
                         'Pro_codigo_ncm': d['ncm'],
@@ -432,6 +438,25 @@ class WSBFEv1(BaseWS):
                 pass
         return ['%(id)s: %(ds)s (%(vig_desde)s - %(vig_hasta)s)' % p for p in zonas]
 
+    def GetParamCondicionIvaReceptor(self, clase_cmp="A"):
+        "Recuperador de valores referenciales de códigos de Condición de IVA del receptor"
+        ret = self.client.BFEGetPARAM_CondicionIvaReceptor(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, },
+            ClaseCmp=clase_cmp,
+            )
+        result = ret['BFEGetPARAM_CondicionIvaReceptorResult']
+        self.__analizar_errores(result)
+        conds = []
+        for t in result['BFEResultGet']:
+            t = t['ClsBFEResponse_CondicionIvaReceptor']
+            try:
+                conds = {'id': t.get('Id'), 'ds': t.get('Desc'),
+                        'cmp_clase': t.get('Cmp_Clase')}
+                conds.append(tipo)
+            except Exception, e:
+                pass
+        return ['%(id)s: %(ds)s' % p for p in conds]
+
     @inicializar_y_capturar_excepciones
     def GetParamCtz(self, moneda_id):
         "Recuperador de cotización de moneda"
@@ -443,6 +468,22 @@ class WSBFEv1(BaseWS):
         res = ret['BFEGetPARAM_CtzResult'].get('BFEResultGet')
         if res:
             ctz = str(res.get('Mon_ctz',""))
+        else:
+            ctz = ''
+        return ctz
+
+    @inicializar_y_capturar_excepciones
+    def GetCotizacion(self, moneda_id, fecha):
+        "Recuperador de cotización de moneda para una fecha"
+        ret = self.client.BFEGetCotizacion(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            MonId=moneda_id,
+            FchCotiz=fecha,
+            )
+        self.__analizar_errores(ret['BFEGetCotizacionResult'])
+        res = ret['BFEGetCotizacionResult'].get('BFEResultGet')
+        if res:
+            ctz = str(res.get('MonCotiz',""))
         else:
             ctz = ''
         return ctz
@@ -539,7 +580,10 @@ if __name__ == "__main__":
                     imp_total, imp_neto, impto_liq,
                     imp_tot_conc, impto_liq_rni, imp_op_ex,
                     imp_perc, imp_iibb, imp_perc_mun, imp_internos,
-                    imp_moneda_id, imp_moneda_ctz, fecha_venc_pago)
+                    imp_moneda_id, imp_moneda_ctz, fecha_venc_pago,
+                    cancela_misma_moneda_ext="N",
+                    condicion_iva_receptor_id="1",
+                    )
                 
                 # Agrego un item:
                 ncm = '7308.10.00'
@@ -657,7 +701,12 @@ if __name__ == "__main__":
 
             print u"=== Códigos NCM ==="
             print u'\n'.join(wsbfev1.GetParamNCM())
+
+            for clase_cmp in "A", "M", "B", "C":
+                print "=== Condicion Iva Receptor %s ===" % clase_cmp
+                print u'\n'.join(wsbfev1.GetParamCondicionIvaReceptor(clase_cmp))
             
         if "--ctz" in sys.argv:
-            print wsbfev1.GetParamCtz('DOL')
+            fecha = datetime.datetime.now().strftime("%Y%m%d")
+            print wsbfev1.GetCotizacion('DOL', fecha)
 
