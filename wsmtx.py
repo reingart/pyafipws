@@ -16,9 +16,9 @@ productos) según RG2904 (opción A con detalle) y RG2926/10 (CAE anticipado).
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2015 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.16b"
+__version__ = "1.17a"
 
 import datetime
 import decimal
@@ -51,6 +51,7 @@ class WSMTXCA(BaseWS):
                         'ConsultarUnidadesMedida', "ConsultarActividadesVigentes",
                         'ConsultarTiposTributo', 'ConsultarTiposDatosAdicionales',
                         'ConsultarCotizacionMoneda',
+                        'CondicionIvaReceptor',
                         'ConsultarPuntosVentaCAE',
                         'ConsultarPuntosVentaCAEA',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
@@ -113,7 +114,7 @@ class WSMTXCA(BaseWS):
             imp_subtotal=None, imp_trib=None, imp_op_ex=None, fecha_cbte=None, fecha_venc_pago=None, 
             fecha_serv_desde=None, fecha_serv_hasta=None, #--
             moneda_id=None, moneda_ctz=None, observaciones=None, caea=None, fch_venc_cae=None,
-            fecha_hs_gen=None,
+            fecha_hs_gen=None, cancela_misma_moneda_ext=None, condicion_iva_receptor_id=None,
             **kwargs
             ):
         "Creo un objeto factura (interna)"
@@ -139,6 +140,8 @@ class WSMTXCA(BaseWS):
             }
         if fecha_serv_desde: fact['fecha_serv_desde'] = fecha_serv_desde
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
+        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
         if caea: fact['caea'] = caea
         if fch_venc_cae: fact['fch_venc_cae'] = fch_venc_cae
         
@@ -146,7 +149,7 @@ class WSMTXCA(BaseWS):
         return True
 
     def EstablecerCampoFactura(self, campo, valor):
-        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae', 'fecha_hs_gen'):
+        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae', 'fecha_hs_gen', 'cancela_misma_moneda_ext', 'condicion_iva_receptor_id'):
             self.factura[campo] = valor
             return True
         else:
@@ -264,6 +267,8 @@ class WSMTXCA(BaseWS):
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
             'fechaHoraGen': f.get('fecha_hs_gen'),
+            'cancelaEnMismaMonedaExtranjera': f.get('cancela_misma_moneda_ext'),
+            'condicionIVAReceptor': f.get('condicion_iva_receptor_id'),
             'periodoComprobantesAsociados': {
                 'fechaDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
                 'fechaHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
@@ -388,6 +393,8 @@ class WSMTXCA(BaseWS):
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
             'fechaHoraGen': f.get('fecha_hs_gen'),
+            'cancelaEnMismaMonedaExtranjera': f.get('cancela_misma_moneda_ext'),
+            'condicionIVAReceptor': f.get('condicion_iva_receptor_id'),
             'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
@@ -565,6 +572,8 @@ class WSMTXCA(BaseWS):
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'cancelaEnMismaMonedaExtranjera': f.get('cancela_misma_moneda_ext'),
+            'condicionIVAReceptor': f.get('condicion_iva_receptor_id'),
             'periodoComprobantesAsociados': {
                 'fechaDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
                 'fechaHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
@@ -688,6 +697,8 @@ class WSMTXCA(BaseWS):
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'cancelaEnMismaMonedaExtranjera': f.get('cancela_misma_moneda_ext'),
+            'condicionIVAReceptor': f.get('condicion_iva_receptor_id'),
             'arrayComprobantesAsociados': f['cbtes_asoc'] and [{'comprobanteAsociado': {
                 'codigoTipoComprobante': cbte_asoc['tipo'], 
                 'numeroPuntoVenta': cbte_asoc['pto_vta'], 
@@ -841,6 +852,8 @@ class WSMTXCA(BaseWS):
                         'fechaVencimientoPago': f.get('fecha_venc_pago'),
                         'codigoMoneda': f['moneda_id'],
                         'cotizacionMoneda': str(decimal.Decimal(str(f['moneda_ctz']))),
+                        'cancelaEnMismaMonedaExtranjera': f.get('cancela_misma_moneda_ext'),
+                        'condicionIVAReceptor': f.get('condicion_iva_receptor_id'),
                         'arrayItems': [
                             {'item': {
                                 'unidadesMtx': it['u_mtx'],
@@ -964,11 +977,12 @@ class WSMTXCA(BaseWS):
                  for p in ret['arrayTiposDatosAdicionales']]
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCotizacionMoneda(self, moneda_id):
+    def ConsultarCotizacionMoneda(self, moneda_id, fecha=None):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarCotizacionMoneda(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
             codigoMoneda=moneda_id,
+            fechaCotizacion=fecha,
             )
         self.__analizar_errores(ret)
         if 'cotizacionMoneda' in ret:
@@ -1020,6 +1034,16 @@ class WSMTXCA(BaseWS):
             )
         return ["%(codigo)s: %(orden)s %(descripcion)s" % p['actividad']
                  for p in ret['arrayActividades']]
+
+    @inicializar_y_capturar_excepciones
+    def CondicionIvaReceptor(self, tipo_cbte=6, sep="|"):
+        "Recuperador de valores referenciales de los identificadores de la condición frente al IVA del receptor"
+        ret = self.client.consultarCondicionesIVAReceptor(
+            authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
+            consultaCondicionesIVAReceptorRequest={'codigoTipoComprobante': tipo_cbte},
+            )
+        return ["%(codigo)s: %(descripcion)s" % p['codigoDescripcion']
+                 for p in ret['arrayCondicionesIVAReceptor']]
 
 
 def main():
@@ -1129,6 +1153,9 @@ def main():
 
             if '--rg5259' in sys.argv:
                 wsmtxca.AgregarActividad(960990)
+
+            assert wsmtxca.EstablecerCampoFactura("cancela_misma_moneda_ext", "N")
+            assert wsmtxca.EstablecerCampoFactura("condicion_iva_receptor_id", "1")
 
             print wsmtxca.factura
             
@@ -1249,8 +1276,14 @@ def main():
     if "--puntosventa" in sys.argv:
         print wsmtxca.ConsultarPuntosVentaCAE()
 
+    if "--condicion-iva" in sys.argv:
+        for tipo_cbte in 1, 2, 6:
+            print "=== Condicion Iva Receptor %s ===" % tipo_cbte
+            print u'\n'.join(wsmtxca.CondicionIvaReceptor(tipo_cbte))
+
     if "--cotizacion" in sys.argv:
-        print wsmtxca.ConsultarCotizacionMoneda('DOL')
+        fecha = datetime.datetime.now().strftime("%Y-%m-%d")
+        print wsmtxca.ConsultarCotizacionMoneda('DOL', fecha)
         
     if "--solicitar-caea" in sys.argv:
         periodo = sys.argv[sys.argv.index("--solicitar-caea")+1]
