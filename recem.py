@@ -13,9 +13,9 @@
 "Módulo de Intefase para archivos de texto (MATRIX mercado interno con detalle)"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011 Mariano Reingart"
+__copyright__ = "Copyright (C) 2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.34a"
+__version__ = "1.35a"
 
 import datetime
 import os
@@ -82,6 +82,8 @@ if not '--pyfepdf' in sys.argv:
         ('emision_tipo', 4, A),
         ('observaciones', 1000, A),  # observaciones (opcional)
         ('tipo_cbte', 3, N), ('punto_vta', 5, N),
+        ('cancela_misma_moneda_ext', 1, A), # opcional S o N
+        ('condicion_iva_receptor_id', 4, N),
         ]
 
     DETALLE = [
@@ -401,12 +403,17 @@ if __name__ == "__main__":
             fecha_serv_desde = fecha; fecha_serv_hasta = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
+            cancela_misma_moneda_ext = 'N'
+            condicion_iva_receptor_id = 1
 
             ws.CrearFactura(concepto, tipo_doc, nro_doc, tipo_cbte, punto_vta,
                 cbt_desde, cbt_hasta, imp_total, imp_tot_conc, imp_neto,
                 imp_subtotal, imp_trib, imp_op_ex, fecha_cbte, fecha_venc_pago, 
                 fecha_serv_desde, fecha_serv_hasta, #--
-                moneda_id, moneda_ctz, obs)
+                moneda_id, moneda_ctz, obs,
+                condicion_iva_receptor_id=condicion_iva_receptor_id,
+                cancela_misma_moneda_ext=cancela_misma_moneda_ext,
+            )
             
             if tipo_cbte not in (1, 2, 6, 7, 201):
                 tipo = 1
