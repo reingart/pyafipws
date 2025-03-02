@@ -65,7 +65,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: report.html
+        name: report.html-${{ matrix.runs-on }}
         path: report.html
 
     - name: Coverage Report
@@ -75,5 +75,5 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: Coverage_Report
+        name: Coverage_Report-${{ matrix.runs-on }}
         path: htmlcov
