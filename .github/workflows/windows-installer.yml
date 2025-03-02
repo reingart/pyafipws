@@ -100,7 +100,7 @@ jobs:
         targetplatform: [x86, x64]
     steps:
     - name: Download distribution binaries
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: dist-${{ matrix.targetplatform }}
     - name: Download certificate and private key
@@ -162,17 +162,17 @@ jobs:
 
     steps:
       - name: Download 64Bit Installer
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: PyAfipWs-Installer-x64
           path: PyAfipWs-Installer-x64.exe
       - name: Download 32bit Installer
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: PyAfipWs-Installer-x86
           path: PyAfipWs-Installer-x86.exe
       - name: Download distribution binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: dist-x86
           path: dist-32
@@ -180,7 +180,7 @@ jobs:
         run: |
           zip dist-32.zip -r dist-32
       - name: Download distribution binaries
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: dist-x64
           path: dist-64
