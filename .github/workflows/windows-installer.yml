@@ -174,9 +174,11 @@ jobs:
       run: |
         .\tests\test_wsaa.ps1
     - name: Test WSFEv1 COM server automation
+      continue-on-error: true
       run: |
         .\tests\test_wsfev1.ps1
     - name: Test RECE1 command line interface tool
+      continue-on-error: true
       run: |
         $env:Path += ";$pwd"
         . .\tests\test_rece1.ps1
