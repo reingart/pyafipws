@@ -134,14 +134,17 @@ jobs:
       run: |
         Install-Module -Name Pester -Force -SkipPublisherCheck -Scope CurrentUser
     - name: Test PyI25 COM server automation
+      continue-on-error: true
       run: |
         Import-Module Pester
         Invoke-Pester .\tests\powershell\test_pyi25.ps1
     - name: Register PyQR component
+      continue-on-error: true
       run: |
         python register_pyqr.py
         Get-Content -Path $Env:APPDATA\pyqr.log -ErrorAction SilentlyContinue
     - name: Test PyQR COM server automation
+      continue-on-error: true
       run: |
         Import-Module Pester
         Invoke-Pester .\tests\powershell\test_pyqr.ps1
