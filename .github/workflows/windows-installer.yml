@@ -44,6 +44,9 @@ jobs:
     - name: Build executables
       run: |
         python setup_win.py py2exe
+    - name: List dist folder contents
+      run: |
+        dir .\dist
     - name: Download Visual Studio Redistributable (32bits)
       if: matrix.targetplatform == 'x86'
       run: |
@@ -123,6 +126,22 @@ jobs:
     - name: Copy rece.ini file
       run: |
         copy conf\rece.ini .
+    - name: Install Pester
+      shell: powershell
+      run: |
+        Install-Module -Name Pester -Force -SkipPublisherCheck -Scope CurrentUser
+    - name: Test PyI25 COM server automation
+      run: |
+        Import-Module Pester
+        Invoke-Pester .\tests\powershell\test_pyi25.ps1
+    - name: Register PyQR component
+      run: |
+        python register_pyqr.py
+        Get-Content -Path $Env:APPDATA\pyqr.log -ErrorAction SilentlyContinue
+    - name: Test PyQR COM server automation
+      run: |
+        Import-Module Pester
+        Invoke-Pester .\tests\powershell\test_pyqr.ps1
     - name: Test WSAA command line interface
       run: |
         .\wsaa.exe --analizar reingart.crt reingart.key wsmtxca 300

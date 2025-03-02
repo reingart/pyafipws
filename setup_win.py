@@ -19,13 +19,7 @@ import subprocess
 import warnings
 import sys
 
-try:  
-    rev = subprocess.check_output(['git', 'rev-list', '--count', '--all'],
-                                  stderr=subprocess.PIPE).strip().decode("ascii")
-except:
-    rev = 0
-
-__version__ = "%s.%s.%s" % (sys.version_info[0:2] + (rev, ))
+__version__ = "3.10.0000"
 
 HOMO = True
 
@@ -186,7 +180,7 @@ kwargs['windows'] = []
 
 # add 32bit or 64bit tag to the installer name
 import platform
-__version__ += "-" + platform.architecture()[0]
+
 
 
 # new webservices:
@@ -196,7 +190,6 @@ if 'wsaa' in globals():
     if wsaa.TYPELIB:
         data_files.append(("typelib", ["typelib/wsaa.tlb"]))
         
-    __version__ += "+wsaa_" + wsaa.__version__
     HOMO &= wsaa.HOMO
 
 if 'wsfev1' in globals():
@@ -208,7 +201,7 @@ if 'wsfev1' in globals():
         ]             
     if wsfev1.TYPELIB:
         data_files.append(("typelib", ["typelib/wsfev1.tlb"]))
-    __version__ += "+wsfev1_" + wsfev1.__version__
+
     HOMO &= wsfev1.HOMO
 
 if 'wsfexv1' in globals():
@@ -219,7 +212,7 @@ if 'wsfexv1' in globals():
         Target(module=wsfexv1, script='wsfexv1.py', dest_base="wsfexv1_cli"), 
         Target(module=recex1, script='recex1.py'), 
         ]
-    __version__ += "+wsfexv1_" + wsfexv1.__version__
+    
     HOMO &= wsfexv1.HOMO
 
 if 'wsbfev1' in globals():
@@ -230,7 +223,7 @@ if 'wsbfev1' in globals():
         Target(module=wsbfev1, script='wsbfev1.py', dest_base="wsbfev1_cli"), 
         Target(module=receb1, script='receb1.py'), 
         ]
-    __version__ += "+wsbfev1_" + wsbfev1.__version__
+    
     HOMO &= wsbfev1.HOMO
 
 if 'wsmtx' in globals():
@@ -241,7 +234,7 @@ if 'wsmtx' in globals():
         Target(module=wsmtx, script='wsmtx.py', dest_base="wsmtx_cli"), 
         Target(module=recem, script='recem.py'), 
         ]             
-    __version__ += "+wsmtx_" + wsmtx.__version__
+    
     HOMO &= wsmtx.HOMO
 
 if 'wsct' in globals():
@@ -252,7 +245,7 @@ if 'wsct' in globals():
         Target(module=wsct, script='wsct.py', dest_base="wsct_cli"), 
         Target(module=recet, script='recet.py'), 
         ]
-    __version__ += "+wsct_" + wsct.__version__
+    
     HOMO &= wsct.HOMO
 
 if 'wsfecred' in globals():
@@ -264,7 +257,7 @@ if 'wsfecred' in globals():
         ]
     data_files += [
         ]
-    __version__ += "+wsfecred_" + wsfecred.__version__
+    
     HOMO &= wsfecred.HOMO
 
 if 'ws_sire' in globals():
@@ -276,7 +269,7 @@ if 'ws_sire' in globals():
         ]
     data_files += [
         ]
-    __version__ += "+sire_" + ws_sire.__version__
+    
     HOMO &= ws_sire.HOMO
 
 if 'pyfepdf' in globals():
@@ -295,7 +288,7 @@ if 'pyfepdf' in globals():
                         "plantillas/factura.csv",
                         "plantillas/recibo.csv"]),
         ]
-    __version__ += "+pyfepdf_" + pyfepdf.__version__
+    
     HOMO &= pyfepdf.HOMO
 
 if 'pyemail' in globals():
@@ -310,7 +303,7 @@ if 'pyemail' in globals():
         ]
     data_files += [
         ]
-    __version__ += "+pyemail_" + pyemail.__version__
+    
 
 if 'pyi25' in globals():
     kwargs['com_server'] += [
@@ -324,7 +317,7 @@ if 'pyi25' in globals():
         ]
     data_files += [
         ]
-    __version__ += "+pyi25_" + pyi25.__version__
+    
 
 if 'pyqr' in globals():
     kwargs['com_server'] += [
@@ -338,7 +331,7 @@ if 'pyqr' in globals():
         ]
     data_files += [
         ]
-    __version__ += "+pyqr_" + pyqr.__version__
+    
         
 if 'wsctg' in globals():
     kwargs['com_server'] += [
@@ -347,7 +340,7 @@ if 'wsctg' in globals():
     kwargs['console'] += [
         Target(module=wsctg, script='wsctg.py', dest_base="wsctg_cli"),
         ]
-    __version__ += "+wsctgv4_" + wsctg.__version__
+    
     HOMO &= wsctg.HOMO
 
 if 'wslpg' in globals():
@@ -368,7 +361,7 @@ if 'wslpg' in globals():
             "plantillas/liquidacion_wslpg_ajuste_debcred.png",
             ]),
         ]
-    __version__ += "+wslpg_" + wslpg.__version__
+   
     HOMO &= wslpg.HOMO
 
 if 'wsltv' in globals():
@@ -383,7 +376,7 @@ if 'wsltv' in globals():
         ("plantillas", [ 
             ]),
         ]
-    __version__ += "+wsltv_" + wsltv.__version__
+   
     HOMO &= wsltv.HOMO
 
 if 'wslum' in globals():
@@ -396,7 +389,7 @@ if 'wslum' in globals():
     data_files += [
         ("conf", ["conf/wslum.ini"]),
         ]
-    __version__ += "+wslum_" + wslum.__version__
+   
     HOMO &= wslum.HOMO
 
 if 'wslsp' in globals():
@@ -409,7 +402,7 @@ if 'wslsp' in globals():
     data_files += [
         ("conf", ["conf/wslsp.ini"]),
         ]
-    __version__ += "+wslsp_" + wslsp.__version__
+  
     HOMO &= wslsp.HOMO
 
 if 'wsremcarne' in globals():
@@ -422,7 +415,7 @@ if 'wsremcarne' in globals():
     data_files += [
         ("conf", ["conf/wsremcarne.ini"]),
         ]
-    __version__ += "+wsremcarne_" + wsremcarne.__version__
+   
     HOMO &= wsremcarne.HOMO
 
 if 'wsremharina' in globals():
@@ -435,7 +428,7 @@ if 'wsremharina' in globals():
     data_files += [
         ("conf", ["conf/wsremharina.ini"]),
         ]
-    __version__ += "+wsremharina_" + wsremharina.__version__
+   
     HOMO &= wsremharina.HOMO
 
 if 'wsremazucar' in globals():
@@ -448,7 +441,7 @@ if 'wsremazucar' in globals():
     data_files += [
         ("conf", ["conf/wsremazucar.ini"]),
         ]
-    __version__ += "+wsremazucar_" + wsremazucar.__version__
+   
     HOMO &= wsremazucar.HOMO
 
 if 'wscoc' in globals():
@@ -458,7 +451,7 @@ if 'wscoc' in globals():
     kwargs['console'] += [
         Target(module=wscoc, script='wscoc.py', dest_base="wscoc_cli"),
         ]
-    __version__ += "+wscoc_" + wscoc.__version__
+   
     HOMO &= wscoc.HOMO
 
 if 'wscdc' in globals():
@@ -468,7 +461,7 @@ if 'wscdc' in globals():
     kwargs['console'] += [
         Target(module=wscdc, script='wscdc.py', dest_base="wscdc_cli"),
         ]
-    __version__ += "+wscdc_" + wscdc.__version__
+   
     HOMO &= wscdc.HOMO
 
 if 'ws_sr_padron' in globals():
@@ -478,7 +471,7 @@ if 'ws_sr_padron' in globals():
     kwargs['console'] += [
         Target(module=ws_sr_padron, script='ws_sr_padron.py', dest_base="ws_sr_padron_cli"),
         ]
-    __version__ += "+ws_sr_padron_" + ws_sr_padron.__version__
+  
     HOMO &= ws_sr_padron.HOMO
 
 if 'cot' in globals():
@@ -497,7 +490,7 @@ if 'cot' in globals():
         "datos/TB_20111111112_000000_20101229_000001.txt", 
         "datos/TB_20111111112_000000_20101229_000001.xml",
         ]), ("conf", ["conf/arba.crt"])]
-    __version__ += "+cot_" + cot.__version__
+  
     HOMO &= cot.HOMO
 
 if 'iibb' in globals():
@@ -508,7 +501,7 @@ if 'iibb' in globals():
         Target(module=iibb, script='iibb.py', dest_base="iibb_cli")
         ]
     data_files += [("conf", ["conf/arba.crt"])]
-    __version__ += "+iibb_" + iibb.__version__
+  
     HOMO &= iibb.HOMO
     
 if 'trazamed' in globals():
@@ -521,7 +514,7 @@ if 'trazamed' in globals():
     if trazamed.TYPELIB:
         kwargs['windows'] += [Target(module=trazamed, script="trazamed.py", dest_base="trazamed")]
         data_files.append((".", ["trazamed.tlb"]))
-    __version__ += "+trazamed_"  + trazamed.__version__
+   
     HOMO &= trazamed.HOMO
 
 if 'trazaprodmed' in globals():
@@ -531,7 +524,7 @@ if 'trazaprodmed' in globals():
     kwargs['console'] += [
         Target(module=trazaprodmed, script='trazaprodmed.py', dest_base="trazaprodmed_cli"), 
         ]
-    __version__ += "+trazaprodmed_"  + trazaprodmed.__version__
+   
     HOMO &= trazaprodmed.HOMO
 
 if 'trazarenpre' in globals():
@@ -544,7 +537,7 @@ if 'trazarenpre' in globals():
     if trazarenpre.TYPELIB:
         kwargs['windows'] += [Target(module=trazarenpre, script="trazarenpre.py", dest_base="trazarenpre")]
         data_files.append((".", ["trazarenpre.tlb"]))
-    __version__ += "+trazarenpre_" + trazarenpre.__version__
+   
     HOMO &= trazarenpre.HOMO
 
 if 'trazafito' in globals():
@@ -554,7 +547,7 @@ if 'trazafito' in globals():
     kwargs['console'] += [
         Target(module=trazafito, script='trazafito.py', dest_base="trazafito_cli"), 
         ]
-    __version__ += "+trazafito_" + trazafito.__version__
+   
     HOMO &= trazafito.HOMO
 
 if 'trazavet' in globals():
@@ -564,7 +557,7 @@ if 'trazavet' in globals():
     kwargs['console'] += [
         Target(module=trazavet, script='trazavet.py', dest_base="trazavet_cli"), 
         ]
-    __version__ += "+trazavet_" + trazavet.__version__
+   
     HOMO &= trazavet.HOMO
 
 if 'padron' in globals():
@@ -579,7 +572,7 @@ if 'padron' in globals():
         data_files += [(".", [
             "padron.db", 
             ])]
-    __version__ += "+padron_" + padron.__version__
+   
     #HOMO &= padron.HOMO
 
 if 'sired' in globals():
@@ -589,7 +582,7 @@ if 'sired' in globals():
     kwargs['console'] += [
         Target(module=sired, script='sired.py', dest_base="sired_cli"), 
         ]
-    __version__ += "+sired_" + sired.__version__
+   
 
 # custom installer:
 kwargs['cmdclass'] = {"py2exe": build_installer}
@@ -607,7 +600,7 @@ except ImportError:
     pass
 
 # agrego tag de homologación (testing - modo evaluación):
-__version__ += "-homo" if HOMO else "-full"
+
 
 # agrego ejemplos
 ##if HOMO:
