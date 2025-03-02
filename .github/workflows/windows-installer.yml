@@ -101,7 +101,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        targetplatform: [x86, x64]
+        targetplatform: [x64]
     steps:
     - uses: actions/checkout@v2
       with:
@@ -112,8 +112,8 @@ jobs:
         name: dist-${{ matrix.targetplatform }}
     - name: Download certificate and private key
       run: |
-        Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2021.zip" -OutFile reingart2019.zip
-        Expand-Archive reingart2019.zip -DestinationPath .
+        Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart.zip" -OutFile reingart.zip
+        Expand-Archive reingart.zip -DestinationPath .
     - name: Replace certificate and private key from secrets
       shell: pwsh
       env:
