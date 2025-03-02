@@ -1338,7 +1338,7 @@ class FEPDF(object):
                                                 if p == int(p):
                                                     imp_it_bruto = importe_it / (Decimal(p) / Decimal(100) + Decimal(1))
                                                     imp_it_iva = importe_it - imp_it_bruto
-                                           iva_liq += imp_it_iva
+                                            iva_liq += imp_it_iva
 
                             if letra_fact in ("A", "M"):
                                 if it.get("imp_iva") is not None:
