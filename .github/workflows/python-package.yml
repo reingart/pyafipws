@@ -62,18 +62,18 @@ jobs:
       run: |
         pytest --html=report.html --self-contained-html
     - name: Upload test report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: report.html
+        name: report.html-${{ matrix.python-version }}
         path: report.html
 
     - name: Coverage Report
       run: |
         pytest --cov-config=.coveragerc --cov-report=html --cov=pyafipws tests/
     - name: Upload coverage report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       if: ${{ always() }}
       with:
-        name: Coverage_Report
+        name: Coverage_Report-${{ matrix.python-version }}
         path: htmlcov
