@@ -102,6 +102,9 @@ jobs:
       matrix:
         targetplatform: [x86, x64]
     steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0    
     - name: Download distribution binaries
       uses: actions/download-artifact@v4.1.7
       with:
