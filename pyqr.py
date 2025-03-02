@@ -154,6 +154,7 @@ INSTALL_DIR = PyQR.InstallDir = get_install_dir()
 
 
 def main():
+    url = None
     if "--register" in sys.argv or "--unregister" in sys.argv:
         import pythoncom
         if TYPELIB:
