@@ -92,7 +92,7 @@ jobs:
       with:
         name: PyAfipWs-Installer-${{ matrix.targetplatform }}
         path: |
-          **/PyAfipWs-*-full.exe
+          **/PyAfipWs-*.exe
 
   test:
     name: "Full End-2-End test"
