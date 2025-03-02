@@ -79,13 +79,13 @@ jobs:
         echo workflow trigger: "${{ github.ref }}" - "${{ github.ref_name }}"
         type dist/.env
     - name: Deploy distribution binaries
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-${{ matrix.targetplatform }}
         path: |
           dist/
     - name: Deploy PyAfipWs Installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: PyAfipWs-Installer-${{ matrix.targetplatform }}
         path: |
