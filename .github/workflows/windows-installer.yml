@@ -112,7 +112,7 @@ jobs:
         name: dist-${{ matrix.targetplatform }}
     - name: Download certificate and private key
       run: |
-        Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart.zip" -OutFile reingart.zip
+        Invoke-WebRequest -Uri "https://www.sistemasagiles.com.ar/soft/pyafipws/reingart2023.zip" -OutFile reingart.zip
         Expand-Archive reingart.zip -DestinationPath .
     - name: Replace certificate and private key from secrets
       shell: pwsh
