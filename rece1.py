@@ -20,7 +20,7 @@ from builtins import str
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2010-2021 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.38f"
+__version__ = "3.39a"
 
 import datetime
 import os
@@ -88,6 +88,8 @@ ENCABEZADO = [
     ("tipo_cbte", 3, N),
     ("punto_vta", 5, N),
     ('fecha_hs_gen', 14, A),  # CAEA: yyyymmddhhmiss generacion p/ contingencia
+    ('cancela_misma_moneda_ext', 1, A), # opcional S o N
+    ('condicion_iva_receptor_id', 4, N),
 ]
 
 # DETALLE = [
@@ -144,6 +146,11 @@ PERIODO_ASOC = [
     ("fecha_hasta", 8, N),
 ]
 
+ACTIVIDAD = [
+    ('tipo_reg', 1, A), # A: actividad
+    ('actividad_id', 6, A),
+    ]
+
 # Constantes (tablas de parámetros):
 
 TIPO_CBTE = {
@@ -181,6 +188,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         opcionales = []
         compradores = []
         periodos_asoc = []
+        actividades = []
         if DEBUG:
             print("Leyendo DBF...")
 
@@ -192,6 +200,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             ("Datos Opcionales", OPCIONAL, opcionales),
             ("Compradores", COMPRADOR, compradores),
             ("Periodo Asociado", PERIODO_ASOC, periodos_asoc),
+            ('Actividades', ACTIVIDAD, actividades),
         ]
         dic = leer_dbf(formatos, conf_dbf)
 
@@ -215,6 +224,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             for periodo in periodos_asoc:
                 if periodo.get("id") == encabezado.get("id"):
                     encabezado["periodo_cbtes_asoc"] = periodo
+            for actividad in actividades:
+                if actividad.get("id") == encabezado.get("id"):
+                    encabezado.setdefault("actividades", []).append(actividad)
             if encabezado.get("id") is None and len(encabezados) > 1:
                 # compatibilidad hacia atrás, descartar si hay más de 1 factura
                 warnings.warn("Para múltiples registros debe usar campo id!")
@@ -250,6 +262,9 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             elif str(linea[0]) == "8":
                 periodo = leer(linea, PERIODO_ASOC)
                 encabezado["periodo_cbtes_asoc"] = periodo
+            elif str(linea[0])=='9':
+                actividad = leer(linea, ACTIVIDAD)
+                encabezado.setdefault("actividades", []).append(actividad)
             else:
                 print("Tipo de registro incorrecto:", linea[0])
 
@@ -285,6 +300,7 @@ def autorizar(ws, entrada, salida, informar_caea=False):
         opcionales = encabezado.get("opcionales", [])
         compradores = encabezado.get("compradores", [])
         periodo_asoc = encabezado.get("periodo_cbtes_asoc", [])
+        actividades = encabezado.get('actividades', [])
 
         ws.CrearFactura(**encabezado)
         for tributo in tributos:
@@ -299,6 +315,8 @@ def autorizar(ws, entrada, salida, informar_caea=False):
             ws.AgregarComprador(**comprador)
         if periodo_asoc:
             ws.AgregarPeriodoComprobantesAsociados(**periodo_asoc)
+        for actividad in actividades:
+            ws.AgregarActividad(**actividad)
 
         if DEBUG:
             print(
@@ -404,6 +422,10 @@ def escribir_facturas(encabezados, archivo, agrega=False):
                 it = dic["periodo_cbtes_asoc"]
                 it["tipo_reg"] = 8
                 archivo.write(escribir(it, PERIODO_ASOC))
+            if 'actividades' in dic:
+                for it in dic['actividades']:
+                    it['tipo_reg'] = "A"
+                    archivo.write(escribir(it, ACTIVIDAD))
 
     if "/dbf" in sys.argv:
         formatos = [
@@ -414,6 +436,7 @@ def escribir_facturas(encabezados, archivo, agrega=False):
             ("Datos Opcionales", OPCIONAL, dic.get("opcionales", [])),
             ("Compradores", COMPRADOR, dic.get("compradores", [])),
             ("Periodo Asociado", PERIODO_ASOC, dic.get('periodo_cbtes_asoc', [])),
+            ('Actividades', PERIODO_ASOC, dic.get('actividades', [])),
         ]
         guardar_dbf(formatos, agrega, conf_dbf)
 
@@ -566,6 +589,7 @@ def main():
                 ("Opcionales", OPCIONAL),
                 ("Compradores", COMPRADOR),
                 ("Periodo Cbte Asoc", PERIODO_ASOC),
+                ('Actividades', ACTIVIDAD),
             ]:
                 if not "/dbf" in sys.argv:
                     comienzo = 1
@@ -643,6 +667,8 @@ def main():
             moneda_id = "PES"
             moneda_ctz = "1.000"
             caea = 32023696937881
+            cancela_misma_moneda_ext = 'N'
+            condicion_iva_receptor_id = 1
 
             ws.CrearFactura(
                 concepto,
@@ -665,6 +691,8 @@ def main():
                 moneda_id,
                 moneda_ctz,
                 caea=caea,
+                condicion_iva_receptor_id=condicion_iva_receptor_id,
+                cancela_misma_moneda_ext=cancela_misma_moneda_ext,
             )
 
             if tipo_cbte not in (1, 2, 6, 7, 201, 206, 211):

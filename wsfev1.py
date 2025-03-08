@@ -29,9 +29,9 @@ from builtins import range
 from past.builtins import basestring
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2023 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.27c"
+__version__ = "3.28a"
 
 import datetime
 import decimal
@@ -82,6 +82,7 @@ class WSFEv1(BaseWS):
         "ParamGetCotizacion",
         "ParamGetPtosVenta",
         "ParamGetActividades",
+        "ParamGetCondicionIvaReceptor",
         "AnalizarXml",
         "ObtenerTagXml",
         "LoadTestXML",
@@ -222,6 +223,8 @@ class WSFEv1(BaseWS):
         moneda_ctz="1.0000",
         caea=None,
         fecha_hs_gen=None,
+        cancela_misma_moneda_ext=None,
+        condicion_iva_receptor_id=None,
         **kwargs
     ):
         "Creo un objeto factura (interna)"
@@ -259,6 +262,11 @@ class WSFEv1(BaseWS):
         if caea:
             fact["caea"] = caea
 
+        if cancela_misma_moneda_ext is not None:
+            fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id is not None:
+            fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
+
         self.factura = fact
         return True
 
@@ -269,6 +277,8 @@ class WSFEv1(BaseWS):
             "caea",
             "fch_venc_cae",
             "fecha_hs_gen",
+            "cancela_misma_moneda_ext",
+            "condicion_iva_receptor_id",
         ):
             self.factura[campo] = valor
             return True
@@ -384,6 +394,8 @@ class WSFEv1(BaseWS):
                             "FchVtoPago": f.get("fecha_venc_pago"),
                             "MonId": f["moneda_id"],
                             "MonCotiz": f["moneda_ctz"],
+                            "CanMisMonExt": f.get("cancela_misma_moneda_ext"),
+                            "CondicionIVAReceptorId": f.get("condicion_iva_receptor_id"),
                             "PeriodoAsoc": {
                                 "FchDesde": f["periodo_cbtes_asoc"].get("fecha_desde"),
                                 "FchHasta": f["periodo_cbtes_asoc"].get("fecha_hasta"),
@@ -1275,11 +1287,11 @@ class WSFEv1(BaseWS):
         ]
 
     @inicializar_y_capturar_excepciones
-    def ParamGetCotizacion(self, moneda_id):
+    def ParamGetCotizacion(self, moneda_id, fecha=None):
         "Recuperador de cotización de moneda"
         ret = self.client.FEParamGetCotizacion(
             Auth={"Token": self.Token, "Sign": self.Sign, "Cuit": self.Cuit},
-            MonId=moneda_id,
+            MonId=moneda_id, FchCotiz=fecha,
         )
         self.__analizar_errores(ret)
         res = ret["FEParamGetCotizacionResult"]["ResultGet"]
@@ -1311,6 +1323,17 @@ class WSFEv1(BaseWS):
             ("%(Id)s\t%(Orden)s\t%(Desc)s" % p["ActividadesTipo"]).replace("\t", sep)
             for p in res["ResultGet"]
         ]
+
+    @inicializar_y_capturar_excepciones
+    def ParamGetCondicionIvaReceptor(self, clase_cmp="A", sep="|"):
+        "Recuperador de valores referenciales de los identificadores de la condición frente al IVA del receptor"
+        ret = self.client.FEParamGetCondicionIvaReceptor(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            ClaseCmp=clase_cmp,
+            )
+        res = ret['FEParamGetCondicionIvaReceptorResult']
+        return [(u"%(Id)s\t%(Desc)s\t%(Cmp_Clase)s" % p['CondicionIvaReceptor']).replace("\t", sep)
+                 for p in res['ResultGet']]
 
 
 def p_assert_eq(a, b):
@@ -1438,6 +1461,9 @@ def main():
                 caea = wsfev1.CAEAConsultar(periodo, orden)
                 wsfev1.EstablecerCampoFactura("caea", caea)
                 wsfev1.EstablecerCampoFactura("fecha_hs_gen", "yyyymmddhhmiss")
+
+            assert wsfev1.EstablecerCampoFactura("cancela_misma_moneda_ext", "N")
+            assert wsfev1.EstablecerCampoFactura("condicion_iva_receptor_id", "1")
 
             # comprobantes asociados (notas de crédito / débito)
             if tipo_cbte in (2, 3, 7, 8, 12, 13, 202, 203, 208, 213):
@@ -1635,6 +1661,9 @@ def main():
         if '--rg5259' in sys.argv:
             print("=== Actividades ===")
             print(u'\n'.join(wsfev1.ParamGetActividades()))
+        for clase_cmp in "A", "M", "B", "C":
+            print("=== Condicion Iva Receptor %s ===" % clase_cmp)
+            print(u'\n'.join(wsfev1.ParamGetCondicionIvaReceptor(clase_cmp)))
 
     if "--cotizacion" in sys.argv:
         print(wsfev1.ParamGetCotizacion("DOL"))
