@@ -16,9 +16,9 @@ Resolución Conjunta General 3971 y Resolución 566/2016.
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017 Mariano Reingart"
+__copyright__ = "Copyright (C) 2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.02c"
+__version__ = "1.03c"
 
 import datetime
 import decimal
@@ -115,6 +115,7 @@ class WSCT(BaseWS):
             imp_subtotal=None, imp_trib=None, imp_op_ex=None, imp_reintegro=None, 
             fecha_cbte=None, id_impositivo="", cod_pais=None, domicilio="", cod_relacion="",
             moneda_id=None, moneda_ctz=None, observaciones=None,
+            cancela_misma_moneda_ext=None,
             **kwargs
             ):
         "Creo un objeto factura (interna)"
@@ -141,7 +142,9 @@ class WSCT(BaseWS):
                 'adicionales': [],
                 'formas_pago': [],
             }
-        
+
+        if cancela_misma_moneda_ext is not None: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+
         self.factura = fact
         return True
 
@@ -248,7 +251,8 @@ class WSCT(BaseWS):
             'importeOtrosTributos': f['tributos']  and f['imp_trib'] or None, 
             'importeExento': f['imp_op_ex'], 'importeReintegro': f['imp_reintegro'],
             'fechaEmision': f['fecha_cbte'],
-            'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f['moneda_ctz'],
+            'codigoMoneda': f['moneda_id'], 'cotizacionMoneda': f.get('moneda_ctz'),
+            'cancelaEnMismaMonedaExtranjera': f.get('cancela_misma_moneda_ext'),
             'observaciones': f['observaciones'],
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
@@ -398,8 +402,9 @@ class WSCT(BaseWS):
                         'importeOtrosTributos': f['tributos'] and decimal.Decimal(str(f['imp_trib'])) or None,
                         'importeSubtotal': f['imp_subtotal'],
                         'importeReintegro': f['imp_reintegro'],
-                        'codigoMoneda': f['moneda_id'],
+                        'codigoMoneda': f.get('moneda_id'),
                         'cotizacionMoneda': str(decimal.Decimal(str(f['moneda_ctz']))),
+
                         'arrayItems': [
                             {'item': {
                                 'tipo': it['tipo'],
@@ -528,11 +533,11 @@ class WSCT(BaseWS):
                  for p in ret['arrayTiposTributo']]
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCotizacion(self, moneda_id):
+    def ConsultarCotizacion(self, moneda_id, fecha_cotizacion=None):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarCotizacion(
             authRequest={'token': self.Token, 'sign': self.Sign, 'cuitRepresentada': self.Cuit},
-            codigoMoneda=moneda_id,
+            codigoMoneda=moneda_id, FchCotiz=fecha_cotizacion,
             )
         self.__analizar_errores(ret)
         if 'cotizacionMoneda' in ret:
@@ -713,7 +718,8 @@ def main():
                               cbte_nro, imp_total, imp_tot_conc, imp_neto,
                               imp_subtotal, imp_trib, imp_op_ex, imp_reintegro,
                               fecha_cbte, id_impositivo, cod_pais, domicilio,
-                              cod_relacion, moneda_id, moneda_ctz, obs)            
+                              cod_relacion, moneda_id, moneda_ctz, obs,
+                              cancela_misma_moneda_ext='N')
             
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
