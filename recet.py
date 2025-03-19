@@ -15,7 +15,7 @@
 __author__ = "Mariano Reingart (reingart@gmail.com)"
 __copyright__ = "Copyright (C) 2017 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.01d"
+__version__ = "1.02a"
 
 import datetime
 import json
@@ -38,7 +38,7 @@ CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
 recet.py: Interfaz de texto para generar Facturas Electrónica Turismo
-Copyright (C) 2017 Mariano Reingart reingart@gmail.com
+Copyright (C) 2025 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -82,6 +82,7 @@ ENCABEZADO = [
     ('reproceso', 1, A),
     ('emision_tipo', 4, A),
     ('observaciones', 1000, A),  # observaciones (opcional)
+    ('cancela_misma_moneda_ext', 1, A), # opcional S o N
     ]
 
 DETALLE = [
@@ -413,13 +414,15 @@ if __name__ == "__main__":
             fecha_cbte = fecha
             moneda_id = 'PES'; moneda_ctz = '1.000'
             obs = "Observaciones Comerciales, libre"
+            cancela_misma_moneda_ext = 'N'
 
             ws.CrearFactura(tipo_doc, nro_doc, tipo_cbte, punto_vta,
                               cbte_nro, imp_total, imp_tot_conc, imp_neto,
                               imp_subtotal, imp_trib, imp_op_ex, imp_reintegro,
                               fecha_cbte, id_impositivo, cod_pais, domicilio,
-                              cod_relacion, moneda_id, moneda_ctz, obs)            
-            
+                              cod_relacion, moneda_id, moneda_ctz, obs,
+                              cancela_misma_moneda_ext=cancela_misma_moneda_ext)
+
             tributo_id = 99
             desc = 'Impuesto Municipal Matanza'
             base_imp = "100.00"
