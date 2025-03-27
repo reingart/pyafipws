@@ -134,7 +134,7 @@ class WSFEv1(BaseWS):
             cbt_desde=0, cbt_hasta=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
             imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago=None,
             fecha_serv_desde=None, fecha_serv_hasta=None, #--
-            moneda_id="PES", moneda_ctz="1.0000", caea=None, fecha_hs_gen=None, **kwargs
+            moneda_id="PES", moneda_ctz="1.0000",  cond_iva_receptor=1, caea=None, fecha_hs_gen=None, **kwargs
             ):
 
         "Creo un objeto factura (interna)"
@@ -148,6 +148,7 @@ class WSFEv1(BaseWS):
                 'fecha_cbte': fecha_cbte,
                 'fecha_venc_pago': fecha_venc_pago,
                 'moneda_id': moneda_id, 'moneda_ctz': moneda_ctz,
+                'cond_iva_receptor': cond_iva_receptor,
                 'concepto': concepto, 'fecha_hs_gen': fecha_hs_gen,
                 'cbtes_asoc': [],
                 'tributos': [],
@@ -254,6 +255,7 @@ class WSFEv1(BaseWS):
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
+                    'CondicionIVAReceptorId': f['cond_iva_receptor'],
                     'CbtesAsoc': f['cbtes_asoc'] and [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -392,6 +394,7 @@ class WSFEv1(BaseWS):
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
                     'MonCotiz': float(f['moneda_ctz']),
+                    'CondicionIVAReceptorId': f['cond_iva_receptor'],
                     'CbtesAsoc': [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -455,6 +458,7 @@ class WSFEv1(BaseWS):
                     'fecha_venc_pago': resultget.get('FchVtoPago'),
                     'moneda_id': resultget.get('MonId'),
                     'moneda_ctz': resultget.get('MonCotiz'),
+                    'cond_iva_receptor': resultget.get('CondicionIVAReceptorId'),
                     'cbtes_asoc': [
                         {
                             'tipo': cbte_asoc['CbteAsoc']['Tipo'],
@@ -574,6 +578,7 @@ class WSFEv1(BaseWS):
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
+                    'CondicionIVAReceptorId': f['cond_iva_receptor'],
                     'CbtesAsoc': [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -763,6 +768,7 @@ class WSFEv1(BaseWS):
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
+                    'CondicionIVAReceptorId': f['cond_iva_receptor'],
                     'CbtesAsoc': [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -1220,6 +1226,7 @@ def main():
         p_assert_eq(wsfev1.ObtenerTagXml('CbteFch'), wsfev1.FechaCbte)
         p_assert_eq(wsfev1.ObtenerTagXml('MonId'), "PES")
         p_assert_eq(wsfev1.ObtenerTagXml('MonCotiz'), "1")
+        p_assert_eq(wsfev1.ObtenerTagXml('CondicionIVAReceptorId'), "1")
         p_assert_eq(wsfev1.ObtenerTagXml('DocTipo'), "80")
         p_assert_eq(wsfev1.ObtenerTagXml('DocNro'), "30500010912")
 
