@@ -26,9 +26,9 @@ from builtins import object
 from past.utils import old_div
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2011-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.11c"
+__version__ = "3.12c"
 
 DEBUG = False
 HOMO = False

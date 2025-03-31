@@ -161,8 +161,14 @@ class WSBFEv1(BaseWS):
         imp_moneda_id=0,
         imp_moneda_ctz=1.0,
         fecha_venc_pago=None,
+        cancela_misma_moneda_ext="N",
+        condicion_iva_receptor_id="1",
         **kwargs
     ):
+        
+        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
+        
         "Creo un objeto factura (interna)"
         # Creo una factura para bonos fiscales electrónicos
 
@@ -260,6 +266,8 @@ class WSBFEv1(BaseWS):
                 "Imp_iibb": f["imp_iibb"],
                 "Imp_internos": f["imp_internos"],
                 "Fecha_vto_pago": f["fecha_venc_pago"],
+                "CanMisMonExt": f.get("cancela_misma_moneda_ext"),
+                "CondicionIVAReceptorId": f.get("condicion_iva_receptor_id"),
                 "Items": [
                     {
                         "Item": {
@@ -731,6 +739,8 @@ def main():
                     imp_moneda_id,
                     imp_moneda_ctz,
                     fecha_venc_pago,
+                    cancela_misma_moneda_ext=None, 
+                    condicion_iva_receptor_id=None,
                 )
 
                 # Agrego un item:

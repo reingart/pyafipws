@@ -19,9 +19,9 @@ from builtins import input
 from past.builtins import basestring
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2009-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2009-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.19a"
+__version__ = "3.20a"
 
 import datetime
 import os
@@ -81,6 +81,8 @@ ENCABEZADO = [
     ("obs", 2, A),
     ("reproceso", 1, A),
     ("id", 15, N),
+    ('cancela_misma_moneda_ext', 1, A), # opcional S o N
+    ('condicion_iva_receptor_id', 4, N),
 ]
 
 DETALLE = [
@@ -362,6 +364,8 @@ def main():
                 fecha_cbte=fecha,
                 imp_neto="390.00",
                 impto_liq="81.90",
+                cancela_misma_moneda_ext="N",
+                condicion_iva_receptor_id="1",
             )
             ws.AgregarItem(
                 umed=7,

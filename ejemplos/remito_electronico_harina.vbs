@@ -1,7 +1,7 @@
 '
 ' Ejemplo de Uso de Interfaz PyAfipWs para Windows Script Host
 ' (Visual Basic / Visual Fox y lenguages con soporte ActiveX simil OCX)
-' con Web Service Autenticación / Remito Electrónico Harina AFIP
+' con Web Service Autenticaciï¿½n / Remito Electrï¿½nico Harina AFIP
 ' 2018(C) Mariano Reingart <reingart@gmail.com>
 ' Licencia: GPLv3
 '  Requerimientos: scripts wsaa.py y wsfev1.py registrados (ver instaladores)
@@ -10,12 +10,12 @@
 '  http://www.sistemasagiles.com.ar/trac/wiki/PyAfipWs
 '  http://www.sistemasagiles.com.ar/trac/wiki/ManualPyAfipWs
 
-' Crear el objeto WSAA (Web Service de Autenticación y Autorización) AFIP
+' Crear el objeto WSAA (Web Service de Autenticaciï¿½n y Autorizaciï¿½n) AFIP
 Set WSAA = Wscript.CreateObject("WSAA")
 Wscript.Echo "InstallDir", WSAA.InstallDir, WSAA.Version
 
 ' Solicitar Ticket de Acceso
-wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms" ' Homologación!
+wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms" ' Homologaciï¿½n!
 scriptdir = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)
 proxy = ""   ' en caso de ser necesario: "usuario:clave@servidor:puerto"
 wrapper = "" ' usar "pycurl" como transporte alternativo en caso de inconvenientes con SSL
@@ -41,7 +41,7 @@ wsdl = "https://fwshomo.afip.gov.ar/wsremharina/RemHarinaService?wsdl"
 timeout = 30    ' tiempo de espera predeterminado
 WSRemHarina.Conectar cache, wsdl, proxy, wrapper, cacert, timeout
 
-' Consultar último comprobante autorizado en AFIP
+' Consultar ï¿½ltimo comprobante autorizado en AFIP
 tipo_comprobante = 993
 punto_emision = 1
 ult = 1
@@ -62,7 +62,7 @@ If ult = 0 Then
     if WSRemHarina.Excepcion <> "" Then Wscript.Echo WSRemHarina.Excepcion, "Excepcion:"
 End If
 
-' Calculo el próximo número de comprobante:
+' Calculo el prï¿½ximo nï¿½mero de comprobante:
 If ult = "" Then
     nro_remito = 0                ' no hay comprobantes emitidos
 Else
@@ -150,12 +150,12 @@ ok = WSRemHarina.AgregarMercaderia(orden, cod_tipo, cod_tipo_emb, cantidad_emb, 
 ' WSRemHarina.AgregarContingencias(tipo=1, observacion="anulacion")
 
 ' Solicito CodRemito:
-id_req = Int(DateDiff("s","24-Sep-23 00:00:00", Now))     ' usar un numero interno único / clave primaria (id_remito)
+id_req = Int(DateDiff("s","24-Sep-23 00:00:00", Now))     ' usar un numero interno ï¿½nico / clave primaria (id_remito)
 archivo = "qr.png"
 ok = WSRemHarina.GenerarRemito(id_req, archivo)
 
 If not ok Then
-    ' Imprimo pedido y respuesta XML para depuración (errores de formato)
+    ' Imprimo pedido y respuesta XML para depuraciï¿½n (errores de formato)
     Wscript.Echo "Traceback", WSRemHarina.Traceback
     Wscript.Echo "XmlResponse", WSRemHarina.XmlResponse
     Wscript.Echo "XmlRequest", WSRemHarina.XmlRequest

@@ -18,9 +18,9 @@ from builtins import input
 from builtins import str
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2017-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2017-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.01d"
+__version__ = "3.02d"
 
 import datetime
 import json
@@ -43,7 +43,7 @@ CONFIG_FILE = "rece.ini"
 
 LICENCIA = """
 recet.py: Interfaz de texto para generar Facturas Electrónica Turismo
-Copyright (C) 2017 Mariano Reingart reingart@gmail.com
+Copyright (C) 2015 Mariano Reingart reingart@gmail.com
 
 Este progarma es software libre, se entrega ABSOLUTAMENTE SIN GARANTIA
 y es bienvenido a redistribuirlo bajo la licencia GPLv3.
@@ -87,6 +87,7 @@ ENCABEZADO = [
     ("reproceso", 1, A),
     ("emision_tipo", 4, A),
     ("observaciones", 1000, A),  # observaciones (opcional)
+    ('cancela_misma_moneda_ext', 1, A), # opcional S o N
 ]
 
 DETALLE = [
@@ -461,6 +462,7 @@ def main():
             moneda_id = "PES"
             moneda_ctz = "1.000"
             obs = "Observaciones Comerciales, libre"
+            cancela_misma_moneda_ext = 'N'
 
             ws.CrearFactura(
                 tipo_doc,
@@ -483,6 +485,7 @@ def main():
                 moneda_id,
                 moneda_ctz,
                 obs,
+                cancela_misma_moneda_ext=cancela_misma_moneda_ext
             )
 
             tributo_id = 99

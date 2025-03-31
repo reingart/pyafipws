@@ -25,9 +25,9 @@ from builtins import range
 from past.builtins import basestring
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2013-2022 Mariano Reingart"
+__copyright__ = "Copyright (C) 2013-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.35e"
+__version__ = "3.36e"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
