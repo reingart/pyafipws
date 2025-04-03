@@ -89,6 +89,8 @@ ENCABEZADO = [
     ('cat_iva', 2, N),
     ('tipo_cbte', 3, N), ('punto_vta', 5, N),   # FCE
     ('tipo_cod_aut', 1, A),
+    ('cancela_misma_moneda_ext', 1, A), # opcional S o N
+    ('condicion_iva_receptor_id', 4, N),
     ]
 
 DETALLE = [

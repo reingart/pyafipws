@@ -13,9 +13,9 @@
 "Aplicativo AdHoc Para generación de Facturas Electrónicas"
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2009-2017 Mariano Reingart"
+__copyright__ = "Copyright (C) 2009-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.33c"
+__version__ = "1.34a"
 
 from datetime import datetime
 from decimal import Decimal, getcontext, ROUND_DOWN
@@ -558,7 +558,8 @@ class PyRece(gui.Controller):
                               'moneda_id', 'moneda_ctz'):
                         encabezado[k] = kargs[k]
                             
-                    for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta'):
+                    for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta',
+                              'cancela_misma_moneda_ext', 'condicion_iva_receptor_id'):
                         if k in kargs:
                             encabezado[k] = kargs.get(k)
                     
@@ -638,7 +639,7 @@ class PyRece(gui.Controller):
                               'nombre_cliente', 'cuit_pais_cliente', 'domicilio_cliente',
                               'id_impositivo', 'moneda_id', 'moneda_ctz',
                               'obs_comerciales', 'obs_generales', 'forma_pago', 'incoterms', 
-                              'idioma_cbte', 'incoterms_ds'):
+                              'idioma_cbte', 'incoterms_ds', 'cancela_misma_moneda_ext'):
                         encabezado[k] = kargs.get(k)
                     
                     self.ws.CrearFactura(**encabezado)
@@ -818,8 +819,9 @@ class PyRece(gui.Controller):
                               'imp_iva', 'imp_trib', 'imp_op_ex', 'fecha_cbte', 
                               'moneda_id', 'moneda_ctz'):
                         encabezado[k] = kargs[k]
-                            
-                    for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta'):
+
+                    for k in ('fecha_venc_pago', 'fecha_serv_desde', 'fecha_serv_hasta',
+                              'cancela_misma_moneda_ext','condicion_iva_receptor_id'):
                         if k in kargs:
                             encabezado[k] = kargs.get(k)
                     
