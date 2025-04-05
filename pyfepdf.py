@@ -590,8 +590,13 @@ class FEPDF:
                 if not f.has_key('leyenda_credito_fiscal') and motivos_ds:
                     motivos_ds += msg_no_iva
 
+            # determinar condicion de iva para "Regimen de Transparecia Fiscal al Consumidor" RG5614/24
             cat_iva_rg = fact.get('categoria', fact.get('id_impositivo', '')).upper()
-            consumidor_final = ("CONS" in cat_iva_rg and "FINAL" in cat_iva_rg) or ("EXENTO" in cat_iva_rg)
+            condicion_iva_receptor_id = fact.get('condicion_iva_receptor_id')
+            if condicion_iva_receptor_id is None:
+                consumidor_final = ("CONS" in cat_iva_rg and "FINAL" in cat_iva_rg) or ("EXENTO" in cat_iva_rg)
+            else:
+                consumidor_final = int(condicion_iva_receptor_id) in (5, 4)
 
             copias = {1: 'Original', 2: 'Duplicado', 3: 'Triplicado'}
 
@@ -1142,6 +1147,10 @@ if __name__ == '__main__':
             # completo campos extra del encabezado:
             ok = fepdf.EstablecerParametro("localidad_cliente", "Hurlingham")
             ok = fepdf.EstablecerParametro("provincia_cliente", "Buenos Aires")
+
+            # ejemplo RG5616
+            ok = fepdf.EstablecerParametro("condicion_iva_receptor_id", "5")
+            ok = fepdf.EstablecerParametro("cancela_misma_moneda_ext", "N")
 
             # imprimir leyenda "Comprobante Autorizado" (constatar con WSCDC!)
             ok = fepdf.EstablecerParametro("resultado", "A")
