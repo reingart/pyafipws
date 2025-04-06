@@ -806,11 +806,12 @@ class FEPDF:
                         f.set('IMP_INTERNOS', self.fmt_imp(fact.get('imp_internos')))
 
                         # mostrar u ocultar el IVA discriminado si es clase A/B:
+                        f.set('Ley27743.Contenido.L',"")
+                        f.set('Ley27743.Contenido1.L',"")
                         if letra_fact in ('A', 'M'):
                             f.set('NETO', self.fmt_imp(fact['imp_neto']))
                             f.set('IVALIQ', self.fmt_imp(fact.get('impto_liq', fact.get('imp_iva'))))
                             f.set('LeyendaIVA',"")
-                            
                             # limpio etiquetas y establezco subtotal de iva liq.
                             for p in self.ivas_ds.values():
                                 f.set('IVA%s.L' % p, "")
@@ -827,12 +828,17 @@ class FEPDF:
                             f.set('IVA.L',"")
                             # Facturas B Ley 27743
                             if letra_fact == "B" and consumidor_final:
+                                f.set('Ley27743.Contenido.L',"IVA Contenido")
+                                f.set('Ley27743.Contenido1.L',"'Otros Imp. Nacionales Indirectos")
                                 if fact.get('impto_liq', fact.get('imp_iva')):
                                     iva_liq = fact.get('impto_liq', fact.get('imp_iva'))
                                     f.set('IVA.L', "IVA Contenido:")
                                 else:
                                     f.set('IVA.L', "IVA Contenido (*est.):")
                                 f.set('IVALIQ', self.fmt_imp(iva_liq))                                
+                                f.set('Ley27743.IVA', self.fmt_imp(iva_liq))
+                                f.set('Ley27743.IVALIQ', self.fmt_imp(iva_liq))
+                                f.set('Ley27743.IMP_TRIB', self.fmt_imp(fact.get('imp_trib')))
                                 f.set('LeyendaIVA', "Regimen de Transparencia Fiscal al Consumidor (Ley 27.743)")
                             else:
                                 f.set('LeyendaIVA', "")
