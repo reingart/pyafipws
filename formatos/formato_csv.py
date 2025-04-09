@@ -129,8 +129,8 @@ def aplanar(regs):
                     'cbte_asoc_tipo_%s' % li: cbte_asoc['cbte_tipo'],
                     'cbte_asoc_pto_vta_%s' % li: cbte_asoc['cbte_punto_vta'],
                     'cbte_asoc_nro_%s' % li: cbte_asoc['cbte_nro'],
-                    'cbte_asoc_cuit_%s' % li: cbte_asoc['cbte_cuit'],
-                    'cbte_asoc_fecha_%s' % li: cbte_asoc['cbte_fecha'],
+                    'cbte_asoc_cuit_%s' % li: cbte_asoc.get('cbte_cuit'),
+                    'cbte_asoc_fecha_%s' % li: cbte_asoc.get('cbte_fecha'),
                     })
 
         filas.append(fila)
