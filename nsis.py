@@ -265,6 +265,7 @@ class NSISScript:
             'unregister_com_servers_dll': ''.join([unregister_com_server_dll % comserver for comserver in self.comserver_files_dll]),
             'unregister_com_servers_exe': ''.join([unregister_com_server_tlb % comserver for comserver in self.comserver_files_tlb]),
         })
+        ofi.close()
 
     def compile(self, pathname="base.nsi"):
         os.startfile(pathname, 'compile')
