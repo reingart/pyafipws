@@ -143,7 +143,7 @@ class WSCT(BaseWS):
                 'formas_pago': [],
             }
 
-        if cancela_misma_moneda_ext is not None: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
 
         self.factura = fact
         return True
