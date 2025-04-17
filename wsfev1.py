@@ -61,6 +61,7 @@ class WSFEv1(BaseWS):
                         'ParamGetTiposPaises',
                         'ParamGetCotizacion',
                         'ParamGetPtosVenta',
+                        'ParamGetCondicionIvaReceptor',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
                         'EstablecerCampoFactura', 'ObtenerCampoFactura',
@@ -130,11 +131,32 @@ class WSFEv1(BaseWS):
 
     # los siguientes m�todos no est�n decorados para no limpiar propiedades
 
-    def CrearFactura(self, concepto=1, tipo_doc=80, nro_doc="", tipo_cbte=1, punto_vta=0,
-            cbt_desde=0, cbt_hasta=0, imp_total=0.00, imp_tot_conc=0.00, imp_neto=0.00,
-            imp_iva=0.00, imp_trib=0.00, imp_op_ex=0.00, fecha_cbte="", fecha_venc_pago=None,
-            fecha_serv_desde=None, fecha_serv_hasta=None, #--
-            moneda_id="PES", moneda_ctz="1.0000", caea=None, fecha_hs_gen=None, **kwargs
+    def CrearFactura(
+            self,
+            concepto=1,
+            tipo_doc=80,
+            nro_doc="",
+            tipo_cbte=1,
+            punto_vta=0,
+            cbt_desde=0,
+            cbt_hasta=0,
+            imp_total=0.00,
+            imp_tot_conc=0.00,
+            imp_neto=0.00,
+            imp_iva=0.00,
+            imp_trib=0.00,
+            imp_op_ex=0.00,
+            fecha_cbte="",
+            fecha_venc_pago=None,
+            fecha_serv_desde=None,
+            fecha_serv_hasta=None, #--
+            moneda_id="PES",
+            moneda_ctz="1.0000",
+            caea=None,
+            fecha_hs_gen=None,
+            cancela_misma_moneda_ext=None,
+            condicion_iva_receptor_id=None,
+            **kwargs
             ):
 
         "Creo un objeto factura (interna)"
@@ -161,12 +183,23 @@ class WSFEv1(BaseWS):
             fact['fecha_serv_hasta'] = fecha_serv_hasta
         if caea:
             fact['caea'] = caea
-
+        if cancela_misma_moneda_ext is not None:
+            fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id is not None:
+            fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
         self.factura = fact
         return True
 
     def EstablecerCampoFactura(self, campo, valor):
-        if campo in self.factura or campo in ('fecha_serv_desde', 'fecha_serv_hasta', 'caea', 'fch_venc_cae', 'fecha_hs_gen'):
+        if campo in self.factura or campo in (
+            'fecha_serv_desde',
+            'fecha_serv_hasta',
+            'caea',
+            'fch_venc_cae',
+            'fecha_hs_gen',
+            'cancela_misma_moneda_ext',
+            'condicion_iva_receptor_id'
+        ):
             self.factura[campo] = valor
             return True
         else:
@@ -254,6 +287,8 @@ class WSFEv1(BaseWS):
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
+                    "CanMisMonExt": f.get("cancela_misma_moneda_ext"),
+                    "CondicionIVAReceptorId": f.get("condicion_iva_receptor_id"),
                     'CbtesAsoc': f['cbtes_asoc'] and [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -959,6 +994,16 @@ class WSFEv1(BaseWS):
         return [("%(Nro)s\tEmisionTipo:%(EmisionTipo)s\tBloqueado:%(Bloqueado)s\tFchBaja:%(FchBaja)s" % p['PtoVenta']).replace("\t", sep)
                 for p in res.get('ResultGet', [])]
 
+    @inicializar_y_capturar_excepciones
+    def ParamGetCondicionIvaReceptor(self, clase_cmp="A", sep="|"):
+        "Recuperador de valores referenciales de los identificadores de la condición frente al IVA del receptor"
+        ret = self.client.FEParamGetCondicionIvaReceptor(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit},
+            ClaseCmp=clase_cmp,
+            )
+        res = ret['FEParamGetCondicionIvaReceptorResult']
+        return [(u"%(Id)s\t%(Desc)s\t%(Cmp_Clase)s" % p['CondicionIvaReceptor']).replace("\t", sep)
+                    for p in res['ResultGet']]
 
 def p_assert_eq(a, b):
     print(a, a == b and '==' or '!=', b)
@@ -1067,6 +1112,9 @@ def main():
                 caea = wsfev1.CAEAConsultar(periodo, orden)
                 wsfev1.EstablecerCampoFactura("caea", caea)
                 wsfev1.EstablecerCampoFactura("fecha_hs_gen", "yyyymmddhhmiss")
+            
+            assert wsfev1.EstablecerCampoFactura("cancela_misma_moneda_ext", "N")
+            assert wsfev1.EstablecerCampoFactura("condicion_iva_receptor_id", "1")
 
             # comprobantes asociados (notas de crédito / débito)
             if tipo_cbte in (2, 3, 7, 8, 12, 13, 203, 208, 213):
@@ -1250,6 +1298,10 @@ def main():
         print('\n'.join(wsfev1.ParamGetTiposPaises()))
         print("=== Puntos de Venta ===")
         print('\n'.join(wsfev1.ParamGetPtosVenta()))
+
+        for clase_cmp in "A", "M", "B", "C":
+            print("=== Condicion Iva Receptor %s ===" % clase_cmp)
+            print(u'\n'.join(wsfev1.ParamGetCondicionIvaReceptor(clase_cmp)))
 
     if "--cotizacion" in sys.argv:
         print(wsfev1.ParamGetCotizacion('DOL'))
