@@ -21,9 +21,9 @@ from __future__ import absolute_import
 from builtins import str
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011-2023 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.11a"
+__version__ = "3.12a"
 
 import datetime
 import decimal
@@ -163,6 +163,7 @@ class WSFEXv1(BaseWS):
         idioma_cbte=7,
         incoterms_ds=None,
         fecha_pago=None,
+        cancela_misma_moneda_ext=None,
         **kwargs
     ):
         "Creo un objeto factura (interna)"
@@ -196,6 +197,9 @@ class WSFEXv1(BaseWS):
             "detalles": [],
             "actividades": [],
         }
+
+        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+
         self.factura = fact
 
         return True
@@ -246,6 +250,12 @@ class WSFEXv1(BaseWS):
         self.factura["actividades"].append(act)
         return True
 
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        act = { 'actividad_id': actividad_id }
+        self.factura['actividades'].append(act)
+        return True
+
     @inicializar_y_capturar_excepciones
     def Authorize(self, id):
         "Autoriza la factura cargada en memoria"
@@ -278,6 +288,7 @@ class WSFEXv1(BaseWS):
                 "Id_impositivo": f["id_impositivo"],
                 "Moneda_Id": f["moneda_id"],
                 "Moneda_ctz": f["moneda_ctz"],
+                'CanMisMonExt': f.get('cancela_misma_moneda_ext'),
                 "Obs_comerciales": f["obs_comerciales"],
                 "Imp_total": f["imp_total"],
                 "Obs": f["obs_generales"],
@@ -818,6 +829,29 @@ class WSFEXv1(BaseWS):
         else:
             return ret
 
+    @inicializar_y_capturar_excepciones
+    def GetParamActividades(self, sep="|"):
+        "Recuperar lista de valores referenciales de c�digos de Idiomas"
+        ret = self.client.FEXGetPARAM_Actividades(
+            Auth={'Token': self.Token, 'Sign': self.Sign, 'Cuit': self.Cuit, })
+        result = ret['FEXGetPARAM_ActividadesResult']
+        self.__analizar_errores(result)
+     
+        ret = []
+        for u in result.get('FEXResultGet', []):
+            u = u['ClsFEXResponse_ActividadTipo']
+            try:
+                r = {'codigo': u.get('Id'), 'ds': u.get('Desc'),
+                     'orden': u.get('Orden'), }
+            except Exception as e:
+                print(e)
+            
+            ret.append(r)
+        if sep:
+            return [("\t%(codigo)s\t%(ds)s\t%(orden)s\t"
+                      % it).replace("\t", sep) for it in ret]
+        else:
+            return ret
 
 class WSFEX(WSFEXv1):
     "Wrapper para retrocompatibilidad con WSFEX"
@@ -953,7 +987,7 @@ def main():
                     incoterms,
                     idioma_cbte,
                     incoterms_ds,
-                    fecha_pago,
+                    fecha_pago,cancela_misma_moneda_ext="N",
                 )
 
                 # Agrego un item:
@@ -989,7 +1023,11 @@ def main():
                         cbteasoc_tipo, cbteasoc_pto_vta, cbteasoc_nro, cbteasoc_cuit
                     )
 
-                ok = wsfexv1.AgregarActividad(1234)
+                    ##id = "99000000000100" # n�mero propio de transacci�n
+                    # obtengo el �ltimo ID y le adiciono 1 
+                    # (advertencia: evitar overflow y almacenar!)
+                    id = long(wsfexv1.GetLastID()) + 1
+                    ok = wsfexv1.AgregarActividad(1234)
 
                 ##id = "99000000000100" # número propio de transacción
                 # obtengo el último ID y le adiciono 1

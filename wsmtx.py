@@ -20,9 +20,9 @@ from __future__ import absolute_import
 from builtins import str
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2010-2023 Mariano Reingart"
+__copyright__ = "Copyright (C) 2010-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.16b"
+__version__ = "3.17b"
 
 import datetime
 import decimal
@@ -196,6 +196,8 @@ class WSMTXCA(BaseWS):
         caea=None,
         fch_venc_cae=None,
         fecha_hs_gen=None,
+        cancela_misma_moneda_ext=None, 
+        condicion_iva_receptor_id=None,
         **kwargs
     ):
         "Creo un objeto factura (interna)"
@@ -246,6 +248,8 @@ class WSMTXCA(BaseWS):
             "caea",
             "fch_venc_cae",
             "fecha_hs_gen",
+            "cancela_misma_moneda_ext", 
+            "condicion_iva_receptor_id",
         ):
             self.factura[campo] = valor
             return True
@@ -394,6 +398,8 @@ class WSMTXCA(BaseWS):
             "fechaServicioDesde": f.get("fecha_serv_desde"),
             "fechaServicioHasta": f.get("fecha_serv_hasta"),
             "fechaHoraGen": f.get("fecha_hs_gen"),
+            "cancelaEnMismaMonedaExtranjera": f.get("cancela_misma_moneda_ext"),
+            "condicionIVAReceptor": f.get("condicion_iva_receptor_id"),
             "periodoComprobantesAsociados": {
                 "fechaDesde": f["periodo_cbtes_asoc"].get("fecha_desde"),
                 "fechaHasta": f["periodo_cbtes_asoc"].get("fecha_hasta"),
@@ -577,6 +583,8 @@ class WSMTXCA(BaseWS):
             "fechaServicioDesde": f.get("fecha_serv_desde"),
             "fechaServicioHasta": f.get("fecha_serv_hasta"),
             "fechaHoraGen": f.get("fecha_hs_gen"),
+            "cancelaEnMismaMonedaExtranjera": f.get("cancela_misma_moneda_ext"),
+            "condicionIVAReceptor": f.get("condicion_iva_receptor_id"),
             "arrayComprobantesAsociados": f["cbtes_asoc"]
             and [
                 {
@@ -811,6 +819,8 @@ class WSMTXCA(BaseWS):
             "fechaVencimientoPago": f.get("fecha_venc_pago"),
             "fechaServicioDesde": f.get("fecha_serv_desde"),
             "fechaServicioHasta": f.get("fecha_serv_hasta"),
+            "cancelaEnMismaMonedaExtranjera": f.get("cancela_misma_moneda_ext"),
+            "condicionIVAReceptor": f.get("condicion_iva_receptor_id"),
             "periodoComprobantesAsociados": {
                 "fechaDesde": f["periodo_cbtes_asoc"].get("fecha_desde"),
                 "fechaHasta": f["periodo_cbtes_asoc"].get("fecha_hasta"),
@@ -992,6 +1002,8 @@ class WSMTXCA(BaseWS):
             "fechaVencimientoPago": f.get("fecha_venc_pago"),
             "fechaServicioDesde": f.get("fecha_serv_desde"),
             "fechaServicioHasta": f.get("fecha_serv_hasta"),
+            "cancelaEnMismaMonedaExtranjera": f.get("cancela_misma_moneda_ext"),
+            "condicionIVAReceptor": f.get("condicion_iva_receptor_id"),
             "arrayComprobantesAsociados": f["cbtes_asoc"]
             and [
                 {
@@ -1199,6 +1211,8 @@ class WSMTXCA(BaseWS):
                     "fechaVencimientoPago": f.get("fecha_venc_pago").isoformat(),
                     "codigoMoneda": f["moneda_id"],
                     "cotizacionMoneda": str(decimal.Decimal(str(f["moneda_ctz"]))),
+                    "cancelaEnMismaMonedaExtranjera": f.get("cancela_misma_moneda_ext"),
+                    "condicionIVAReceptor": f.get("condicion_iva_receptor_id"),
                     "arrayItems": [
                         {
                             "item": {
@@ -1480,6 +1494,16 @@ class WSMTXCA(BaseWS):
             for p in ret["arrayActividades"]
         ]
 
+    @inicializar_y_capturar_excepciones
+    def CondicionIvaReceptor(self, tipo_cbte=6, sep="|"):
+        "Recuperador de valores referenciales de los identificadores de la condici�n frente al IVA del receptor"
+        ret = self.client.consultarCondicionesIVAReceptor(
+            authRequest={"token": self.Token, "sign": self.Sign, "cuitRepresentada": self.Cuit},
+            consultaCondicionesIVAReceptorRequest={"codigoTipoComprobante": tipo_cbte},
+            )
+        return ["%(codigo)s: %(descripcion)s" % p["codigoDescripcion"]
+                 for p in ret["arrayCondicionesIVAReceptor"]]
+
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -1630,6 +1654,9 @@ def main():
 
             if "--rg5259" in sys.argv:
                 wsmtxca.AgregarActividad(960990)
+
+            assert wsmtxca.EstablecerCampoFactura("cancela_misma_moneda_ext", "N")
+            assert wsmtxca.EstablecerCampoFactura("condicion_iva_receptor_id", "1")
 
             print(wsmtxca.factura)
 
@@ -1792,6 +1819,11 @@ def main():
 
     if "--puntosventa" in sys.argv:
         print(wsmtxca.ConsultarPuntosVentaCAE())
+
+    if "--condicion-iva" in sys.argv:
+        for tipo_cbte in 1, 2, 6:
+            print("=== Condicion Iva Receptor %s ===" % tipo_cbte)
+            print(u'\n'.join(wsmtxca.CondicionIvaReceptor(tipo_cbte)))
 
     if "--cotizacion" in sys.argv:
         print(wsmtxca.ConsultarCotizacionMoneda("DOL"))

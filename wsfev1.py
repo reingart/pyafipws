@@ -267,6 +267,9 @@ class WSFEv1(BaseWS):
         if condicion_iva_receptor_id is not None:
             fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
 
+        if cancela_misma_moneda_ext is not None: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id is not None: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
+
         self.factura = fact
         return True
 
@@ -342,6 +345,12 @@ class WSFEv1(BaseWS):
         "Agrego actividad a una factura (interna)"
         act = {"actividad_id": actividad_id}
         self.factura["actividades"].append(act)
+        return True
+
+    def AgregarActividad(self, actividad_id=0, **kwarg):
+        "Agrego actividad a una factura (interna)"
+        op = { 'actividad_id': actividad_id }
+        self.factura['actividades'].append(op)
         return True
 
     def ObtenerCampoFactura(self, *campos):

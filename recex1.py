@@ -18,7 +18,7 @@ from builtins import input
 from builtins import str
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
 __version__ = "3.28c"
 
@@ -89,6 +89,7 @@ if not '--pyfepdf' in sys.argv:
         ("err_code", 100, A),
         ("err_msg", 1000, A),
         ("fecha_pago", 8, A),
+        ('cancela_misma_moneda_ext', 1, A), # opcional S o N
     ]
 
     DETALLE = [
@@ -489,6 +490,7 @@ def main():
                 incoterms,
                 idioma_cbte,
                 incoterms_ds,
+                cancela_misma_moneda_ext="N"
             )
 
             # Agrego un item:
