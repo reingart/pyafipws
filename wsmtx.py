@@ -572,6 +572,7 @@ class WSMTXCA(BaseWS):
             'fechaVencimientoPago': f.get('fecha_venc_pago'),
             'fechaServicioDesde': f.get('fecha_serv_desde'),
             'fechaServicioHasta': f.get('fecha_serv_hasta'),
+            'fechaHoraGen': f.get('fecha_hs_gen'),
             'cancelaEnMismaMonedaExtranjera': f.get('cancela_misma_moneda_ext'),
             'condicionIVAReceptor': f.get('condicion_iva_receptor_id'),
             'periodoComprobantesAsociados': {
