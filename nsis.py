@@ -304,6 +304,7 @@ class NSISScript(object):
                 ),
             }
         )
+        ofi.close()
 
     def compile(self, pathname="base.nsi"):
         os.startfile(pathname, "compile")
