@@ -102,8 +102,8 @@ ESTADO_CPE = {
 
 # constantes de configuración (producción/homologación):
 WSDL = [
-    "https://serviciosjava.afip.gob.ar/wscpe/services/soap?wsdl",
-    "https://fwshomo.afip.gov.ar/wscpe/services/soap?wsdl",
+    "https://cpea-ws.afip.gob.ar/wscpe/services/soap?wsdl",
+    "https://cpea-ws-qaext.afip.gob.ar/wscpe/services/soap?wsdl"
 ]
 
 # Seteado para ambiente de homologacion/debug.
