@@ -166,9 +166,6 @@ class WSBFEv1(BaseWS):
         **kwargs
     ):
         
-        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
-        if condicion_iva_receptor_id: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
-        
         "Creo un objeto factura (interna)"
         # Creo una factura para bonos fiscales electrónicos
 
@@ -199,6 +196,10 @@ class WSBFEv1(BaseWS):
             "detalles": [],
         }
         self.factura = fact
+
+        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
+
         return True
 
     def AgregarItem(
