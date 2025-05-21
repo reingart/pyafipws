@@ -250,12 +250,6 @@ class WSFEXv1(BaseWS):
         self.factura["actividades"].append(act)
         return True
 
-    def AgregarActividad(self, actividad_id=0, **kwarg):
-        "Agrego actividad a una factura (interna)"
-        act = { 'actividad_id': actividad_id }
-        self.factura['actividades'].append(act)
-        return True
-
     @inicializar_y_capturar_excepciones
     def Authorize(self, id):
         "Autoriza la factura cargada en memoria"
