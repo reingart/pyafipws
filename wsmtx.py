@@ -237,6 +237,10 @@ class WSMTXCA(BaseWS):
             fact["caea"] = caea
         if fch_venc_cae:
             fact["fch_venc_cae"] = fch_venc_cae
+        if cancela_misma_moneda_ext:
+            fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id:
+             fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
 
         self.factura = fact
         return True
