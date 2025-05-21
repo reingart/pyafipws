@@ -20,9 +20,9 @@ from __future__ import absolute_import
 from builtins import str
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2017-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.02c"
+__version__ = "3.03c"
 
 import datetime
 import decimal
@@ -195,6 +195,7 @@ class WSCT(BaseWS):
         moneda_id=None,
         moneda_ctz=None,
         observaciones=None,
+        cancela_misma_moneda_ext=None,
         **kwargs
     ):
         "Creo un objeto factura (interna)"
@@ -227,6 +228,8 @@ class WSCT(BaseWS):
             "adicionales": [],
             "formas_pago": [],
         }
+
+        if cancela_misma_moneda_ext is not None: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
 
         self.factura = fact
         return True
@@ -368,7 +371,8 @@ class WSCT(BaseWS):
             "importeReintegro": f["imp_reintegro"],
             "fechaEmision": f["fecha_cbte"],
             "codigoMoneda": f["moneda_id"],
-            "cotizacionMoneda": f["moneda_ctz"],
+            "cotizacionMoneda": f.get["moneda_ctz"],
+            "cancelaEnMismaMonedaExtranjera": f.get("cancela_misma_moneda_ext"),
             "observaciones": f["observaciones"],
             "fechaVencimientoPago": f.get("fecha_venc_pago"),
             "fechaServicioDesde": f.get("fecha_serv_desde"),
@@ -573,7 +577,7 @@ class WSCT(BaseWS):
                     or None,
                     "importeSubtotal": f["imp_subtotal"],
                     "importeReintegro": f["imp_reintegro"],
-                    "codigoMoneda": f["moneda_id"],
+                    "codigoMoneda": f.get["moneda_id"],
                     "cotizacionMoneda": str(decimal.Decimal(str(f["moneda_ctz"]))),
                     "arrayItems": [
                         {
@@ -770,7 +774,7 @@ class WSCT(BaseWS):
         ]
 
     @inicializar_y_capturar_excepciones
-    def ConsultarCotizacion(self, moneda_id):
+    def ConsultarCotizacion(self, moneda_id, fecha_cotizacion=None):
         "Este método permite consultar los tipos de comprobantes habilitados en este WS"
         ret = self.client.consultarCotizacion(
             authRequest={
@@ -778,7 +782,7 @@ class WSCT(BaseWS):
                 "sign": self.Sign,
                 "cuitRepresentada": self.Cuit,
             },
-            codigoMoneda=moneda_id,
+            codigoMoneda=moneda_id,FchCotiz=fecha_cotizacion,
         )
         self.__analizar_errores(ret)
         if "cotizacionMoneda" in ret:
@@ -1047,6 +1051,7 @@ def main():
                 moneda_id,
                 moneda_ctz,
                 obs,
+                cancela_misma_moneda_ext='N',
             )
 
             tributo_id = 99

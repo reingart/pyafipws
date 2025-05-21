@@ -18,9 +18,9 @@ from builtins import input
 from builtins import str
 
 __author__ = "Mariano Reingart (reingart@gmail.com)"
-__copyright__ = "Copyright (C) 2011-2021 Mariano Reingart"
+__copyright__ = "Copyright (C) 2011-2025 Mariano Reingart"
 __license__ = "LGPL-3.0-or-later"
-__version__ = "3.34a"
+__version__ = "3.35a"
 
 import datetime
 import os
@@ -88,6 +88,8 @@ if not "--pyfepdf" in sys.argv:
         ("observaciones", 1000, A),  # observaciones (opcional)
         ("tipo_cbte", 3, N),
         ("punto_vta", 5, N),
+        ('cancela_misma_moneda_ext', 1, A), # opcional S o N
+        ('condicion_iva_receptor_id', 4, N),
     ]
 
     DETALLE = [
@@ -475,6 +477,8 @@ def main():
             moneda_id = "PES"
             moneda_ctz = "1.000"
             obs = "Observaciones Comerciales, libre"
+            cancela_misma_moneda_ext = 'N'
+            condicion_iva_receptor_id = 1
 
             ws.CrearFactura(
                 concepto,
@@ -497,6 +501,8 @@ def main():
                 moneda_id,
                 moneda_ctz,
                 obs,
+                condicion_iva_receptor_id=condicion_iva_receptor_id,
+                cancela_misma_moneda_ext=cancela_misma_moneda_ext,
             )
 
             if tipo_cbte not in (1, 2, 6, 7, 201):
