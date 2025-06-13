@@ -257,11 +257,6 @@ class WSFEv1(BaseWS):
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CondicionIVAReceptorId': f['cond_iva_receptor'],
-                    'Actividades': f['act_codigos'] and [
-                        {'Actividad': {
-                            'Id': actividad_id,
-                        }}
-                        for actividad_id in f['act_codigos']] or None,
                     'CbtesAsoc': f['cbtes_asoc'] and [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -298,6 +293,12 @@ class WSFEv1(BaseWS):
                             'DocNro': comprador['doc_nro'],
                             'Porcentaje': comprador['porcentaje'],
                         }} for comprador in f['compradores']] or None,
+                    **({'Actividades': [
+                        {'Actividad': {
+                            'Id': actividad_id,
+                        }}
+                        for actividad_id in f['act_codigos']
+                    ]} if f['act_codigos'] else {})
                 }
                 }]
             })
@@ -401,11 +402,6 @@ class WSFEv1(BaseWS):
                     'MonId': f['moneda_id'],
                     'MonCotiz': float(f['moneda_ctz']),
                     'CondicionIVAReceptorId': f['cond_iva_receptor'],
-                    'Actividades': f['act_codigos'] and [
-                        {'Actividad': {
-                            'Id': actividad_id,
-                        }}
-                        for actividad_id in f['act_codigos']] or None,
                     'CbtesAsoc': [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -442,6 +438,12 @@ class WSFEv1(BaseWS):
                             'DocNro': comprador['doc_nro'],
                             'Porcentaje': comprador['porcentaje'],
                         }} for comprador in f['compradores']],
+                    **({'Actividades': [
+                        {'Actividad': {
+                            'Id': actividad_id,
+                        }}
+                        for actividad_id in f['act_codigos']
+                    ]} if f['act_codigos'] else {})
                 }
                 verifica(verificaciones, resultget.copy(), difs)
                 if difs:
@@ -593,11 +595,6 @@ class WSFEv1(BaseWS):
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CondicionIVAReceptorId': f['cond_iva_receptor'],
-                    'Actividades': f['act_codigos'] and [
-                        {'Actividad': {
-                            'Id': actividad_id,
-                        }}
-                        for actividad_id in f['act_codigos']] or None,
                     'CbtesAsoc': [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -628,6 +625,12 @@ class WSFEv1(BaseWS):
                             'Id': opcional['opcional_id'],
                             'Valor': opcional['valor'],
                         }} for opcional in f['opcionales']] or None,
+                    **({'Actividades': [
+                        {'Actividad': {
+                            'Id': actividad_id,
+                        }}
+                        for actividad_id in f['act_codigos']
+                    ]} if f['act_codigos'] else {})
                 }
                 } for f in self.facturas]
             })
@@ -788,11 +791,6 @@ class WSFEv1(BaseWS):
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CondicionIVAReceptorId': f['cond_iva_receptor'],
-                    'Actividades': f['act_codigos'] and [
-                        {'Actividad': {
-                            'Id': actividad_id,
-                        }}
-                        for actividad_id in f['act_codigos']] or None,
                     'CbtesAsoc': [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
@@ -828,6 +826,12 @@ class WSFEv1(BaseWS):
                             }} for opcional in f['opcionales']] or None,
                     'CAEA': f['caea'],
                     'CbteFchHsGen': f.get('fecha_hs_gen'),
+                    **({'Actividades': [
+                        {'Actividad': {
+                            'Id': actividad_id,
+                        }}
+                        for actividad_id in f['act_codigos']
+                    ]} if f['act_codigos'] else {})
                     }
                 }]
             })
