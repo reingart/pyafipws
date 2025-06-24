@@ -16,9 +16,9 @@ Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017-2022 Mariano Reingart"
+__copyright__ = "Copyright (C) 2017-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.06a"
 
 import csv
 import datetime
