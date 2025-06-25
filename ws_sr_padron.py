@@ -10,15 +10,15 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-"""Módulo para acceder a los datos de un contribuyente registrado en el Padrón
-de AFIP (WS-SR-PADRON de AFIP). Consulta a Padrón Alcance 4 version 1.1
-Consulta de Padrón Constancia Inscripción Alcance 5 version 2.0
+"""MÃ³dulo para acceder a los datos de un contribuyente registrado en el PadrÃ³n
+de AFIP (WS-SR-PADRON de AFIP). Consulta a PadrÃ³n Alcance 4 version 1.1
+Consulta de PadrÃ³n Constancia InscripciÃ³n Alcance 5 version 2.0
 """
 
 __author__ = "Mariano Reingart <reingart@gmail.com>"
-__copyright__ = "Copyright (C) 2017-2022 Mariano Reingart"
+__copyright__ = "Copyright (C) 2017-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.05a"
+__version__ = "1.06a"
 
 import csv
 import datetime
@@ -40,11 +40,11 @@ CONFIG_FILE = "rece.ini"
 
 
 class WSSrPadronA4(BaseWS):
-    "Interfaz para el WebService de Consulta Padrón Contribuyentes Alcance 4"
+    "Interfaz para el WebService de Consulta PadrÃ³n Contribuyentes Alcance 4"
     _public_methods_ = ['Consultar',
                         'AnalizarXml', 'ObtenerTagXml', 'LoadTestXML',
                         'SetParametros', 'SetTicketAcceso', 'GetParametro',
-                        'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso']
+                        'Dummy', 'Conectar', 'DebugLog', 'SetTicketAcceso', "ObtenerCampoImpuesto"]
     _public_attrs_ = ['Token', 'Sign', 'Cuit',
         'AppServerStatus', 'DbServerStatus', 'AuthServerStatus',
         'XmlRequest', 'XmlResponse', 'Version', 'InstallDir', 
@@ -64,7 +64,7 @@ class WSSrPadronA4(BaseWS):
     # Variables globales para BaseWS:
     HOMO = HOMO
     WSDL = WSDL
-    Version = "%s %s" % (__version__, HOMO and 'Homologación' or '')
+    Version = "%s %s" % (__version__, HOMO and 'HomologaciÃ³n' or '')
     Reprocesar = True  # recuperar automaticamente CAE emitidos
     LanzarExcepciones = LANZAR_EXCEPCIONES
     factura = None
@@ -156,7 +156,7 @@ class WSSrPadronA4(BaseWS):
         return True
 
     def analizar_datos(self, cat_mt):
-        # intenta determinar situación de IVA:
+        # intenta determinar situaciÃ³n de IVA:
         if 32 in self.impuestos:
             self.imp_iva = "EX"
         elif 33 in self.impuestos:
@@ -169,7 +169,7 @@ class WSSrPadronA4(BaseWS):
         self.actividad_monotributo = cat_mt.get("descripcionCategoria") if cat_mt else ""
         self.integrante_soc = ""
         self.empleador = "S" if 301 in self.impuestos else "N"
-        # intenta determinar categoría de IVA (confirmar)
+        # intenta determinar categorÃ­a de IVA (confirmar)
         if self.imp_iva in ('AC', 'S'):
             self.cat_iva = 1  # RI
         elif self.imp_iva == 'EX':
@@ -182,7 +182,7 @@ class WSSrPadronA4(BaseWS):
 
 
 class WSSrPadronA5(WSSrPadronA4):
-    "Interfaz para el WebService de Consulta Padrón Constancia de Inscripción Alcance 5"
+    "Interfaz para el WebService de Consulta PadrÃ³n Constancia de InscripciÃ³n Alcance 5"
 
     _reg_progid_ = "WSSrPadronA5"
     _reg_clsid_ = "{DF7447DD-EEF3-4E6B-A93B-F969B5075EC8}"
@@ -239,7 +239,7 @@ class WSSrPadronA5(WSSrPadronA4):
         self.domicilio = "%s - %s (%s) - %s" % (
                             self.direccion, self.localidad, 
                             self.cod_postal, self.provincia,)
-        # extraer datos impositivos (inscripción / opción) para unificarlos:
+        # extraer datos impositivos (inscripciÃ³n / opciÃ³n) para unificarlos:
         data_mt = ret.get("datosMonotributo", {})
         data_rg = ret.get("datosRegimenGeneral", {})
         # analizo impuestos:
@@ -249,11 +249,23 @@ class WSSrPadronA5(WSSrPadronA4):
         self.actividades = [act["idActividad"] for act in actividades]
         cat_mt = data_mt.get("categoriaMonotributo", {})
         self.analizar_datos(cat_mt)
+        self.impuestos_detallados = impuestos
+
         return not self.errores
+
+    @inicializar_y_capturar_excepciones
+    def ObtenerCampoImpuesto(self, id_impuesto, campo):
+        "Devuelve el detalle de un campo del impuesto"
+        for impuesto in self.impuestos_detallados:
+            id_imp = impuesto.get("idImpuesto", "")
+            if id_impuesto == id_imp:
+                return impuesto.get(campo, "")
+
+        return ""
 
 
 def main():
-    "Función principal de pruebas (obtener CAE)"
+    "FunciÃ³n principal de pruebas (obtener CAE)"
     import os, time
     global CONFIG_FILE
 
@@ -275,8 +287,8 @@ def main():
         key = config.get('WSAA', 'PRIVATEKEY')
         cuit = config.get(SECTION, 'CUIT')
     else:
-        crt, key = "reingart.crt", "reingart.key"
-        cuit = "20267565393"
+        crt, key = "inreingartwsass.crt", "inreingartwsass.key"
+        cuit = "20471277534"
     url_wsaa = url_ws = None
     if config.has_option('WSAA','URL'):
         url_wsaa = config.get('WSAA', 'URL')
@@ -328,7 +340,7 @@ def main():
                     if e.faultstring != "No existe persona con ese Id":
                         raise
                 print 'ok' if ok else "error", padron.Excepcion
-                # domicilio posiblemente esté en Latin1, normalizar
+                # domicilio posiblemente estÃ³ en Latin1, normalizar
                 csv_writer.writerow([norm(getattr(padron, campo, ""))
                                      for campo in columnas])
         sys.exit(0)
@@ -336,7 +348,7 @@ def main():
     try:
 
         if "--prueba" in sys.argv:
-            id_persona = "20000000516"
+            id_persona = "20201731594"
         else:
             id_persona = len(sys.argv)>1 and sys.argv[1] or "20267565393"
 
@@ -364,6 +376,14 @@ def main():
         print "MT", padron.monotributo, padron.actividad_monotributo
         print "Empleador", padron.empleador
 
+        #agrego ObtenerCampoImpuesto
+        for id_impuesto in padron.impuestos:
+            print "Id Impuesto: ", id_impuesto
+            print "Descripcion Impuesto: ", padron.ObtenerCampoImpuesto(id_impuesto, "descripcion")
+            print "Motivo: ", padron.ObtenerCampoImpuesto(id_impuesto, "motivo")
+            print "Estado Impuesto: ", padron.ObtenerCampoImpuesto(id_impuesto, "estadoImpuesto")
+            print "Periodo: ", padron.ObtenerCampoImpuesto(id_impuesto, "periodo")
+
         if padron.Excepcion:
             print "Excepcion:", padron.Excepcion
             # ver padron.errores para el detalle
@@ -374,7 +394,7 @@ def main():
         print padron.XmlResponse
 
 
-# busco el directorio de instalación (global para que no cambie si usan otra dll)
+# busco el directorio de instalaciÃ³n (global para que no cambie si usan otra dll)
 INSTALL_DIR = WSSrPadronA4.InstallDir = WSSrPadronA5.InstallDir = get_install_dir()
 
 
