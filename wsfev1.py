@@ -617,7 +617,9 @@ class WSFEv1(BaseWS):
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
-                    'MonCotiz': f['moneda_ctz'],                
+                    'MonCotiz': f['moneda_ctz'],
+                    'CanMisMonExt': f.get('cancela_misma_moneda_ext'),
+                    'CondicionIVAReceptorId': f.get('condicion_iva_receptor_id'),
                     'PeriodoAsoc': {
                         'FchDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
                         'FchHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),
@@ -815,7 +817,9 @@ class WSFEv1(BaseWS):
                     'FchServHasta': f.get('fecha_serv_hasta'),
                     'FchVtoPago': f.get('fecha_venc_pago'),
                     'MonId': f['moneda_id'],
-                    'MonCotiz': f['moneda_ctz'],                
+                    'MonCotiz': f['moneda_ctz'],
+                    'CanMisMonExt': f.get('cancela_misma_moneda_ext'),
+                    'CondicionIVAReceptorId': f.get('condicion_iva_receptor_id'),
                     'PeriodoAsoc': {
                         'FchDesde': f['periodo_cbtes_asoc'].get('fecha_desde'),
                         'FchHasta': f['periodo_cbtes_asoc'].get('fecha_hasta'),

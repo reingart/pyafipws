@@ -30,8 +30,8 @@ ta = WSAA.LoginCMS(cms)
 
 ON ERROR DO errhand2;
 
-*-- Crear objeto interface Web Service de Factura Electrónica
-WSFE = CREATEOBJECT("WSFEv1") 
+*-- Crear objeto interface Web Service de Factura Electr�nica
+WSFE = CREATEOBJECT("WSFE") 
 
 ? WSFE.Version
 ? WSFE.InstallDir
@@ -107,6 +107,10 @@ id = 5 && 21%
 base_im = "100.00"
 importe = "21.00"
 ok = WSFE.AgregarIva(id, base_imp, importe)
+
+*-- Agrego RG 5616
+ok = WSFE.EstablecerCampoFactura("cancela_misma_moneda_ext", "N")
+ok = WSFE.EstablecerCampoFactura("condicion_iva_receptor_id", "5")
 
 **-- Solicito CAE:
 

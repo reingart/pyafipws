@@ -1,7 +1,7 @@
 Attribute VB_Name = "Modulo1"
 ' Ejemplo de Uso de Interface COM con Web Service Factura Electrónica Mercado Interno AFIP
 ' Según RG2485 y RG2904 Artículo 4 Opción B (sin detalle, Version 1)
-' 2010 (C) Mariano Reingart <reingart@gmail.com>
+' 2025 (C) Mariano Reingart <reingart@gmail.com>
 ' Licencia: GPLv3
 
 Sub Main()
@@ -11,110 +11,94 @@ Sub Main()
     
     ' Crear objeto interface Web Service Autenticación y Autorización
     Set WSAA = CreateObject("WSAA")
-    Debug.Print WSAA.Version
-    If WSAA.Version < "2.04" Then
-        MsgBox "Debe instalar una versión más actualizada de PyAfipWs WSAA!"
-        End
+    
+    ' inicializo las variables:
+    token = ""
+    sign = ""
+    
+    ' busco un ticket de acceso previamente almacenado:
+    If Dir("ta.xml") <> "" Then
+        ' leo el xml almacenado del archivo
+        Open "ta.xml" For Input As #1
+        Line Input #1, ta_xml
+        Close #1
+        ' analizo el ticket de acceso previo:
+        ok = WSAA.AnalizarXml(ta_xml)
+        If Not WSAA.Expirado() Then
+            ' puedo reusar el ticket de acceso:
+            token = WSAA.ObtenerTagXml("token")
+            sign = WSAA.ObtenerTagXml("sign")
+        End If
     End If
-
-    ' deshabilito errores no manejados (version 2.04 o superior)
-    WSAA.LanzarExcepciones = False
+    
+    ' Si no reuso un ticket de acceso, solicito uno nuevo:
+    If token = "" Or sign = "" Then
+        ' Generar un Ticket de Requerimiento de Acceso (TRA)
+        tra = WSAA.CreateTRA("wsfe", 43200) ' 3600*12hs
         
-    ' Generar un Ticket de Requerimiento de Acceso (TRA) para WSFEv1
-    ttl = 36000 ' tiempo de vida = 10hs hasta expiración
-    tra = WSAA.CreateTRA("wsfe", ttl)
-    ControlarExcepcion WSAA
-    Debug.Print tra
+        Path = WSAA.InstallDir + "\"
+        
+        ' Especificar la ubicacion de los archivos certificado y clave privada
+        cert = "reingart.crt" ' certificado de prueba
+        clave = "reingart.key" ' clave privada de prueba
+        ' Generar el mensaje firmado (CMS)
+        cms = WSAA.SignTRA(tra, Path + cert, Path + clave)
+        If cms <> "" Then
+            ' Llamar al web service para autenticar (cambiar URL para produccion):
+            wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
+            ok = WSAA.Conectar("", wsdl)
+            ta_xml = WSAA.LoginCMS(cms)
+            If ta_xml <> "" Then
+                ' guardo el ticket de acceso en el archivo
+                Open "ta.xml" For Output As #1
+                Print #1, ta_xml
+                Close #1
+            End If
+            token = WSAA.token
+            sign = WSAA.sign
+        End If
+        ' reviso que no haya errores:
+        Debug.Print "Excepcion:", WSAA.Excepcion
+        If WSAA.Excepcion <> "" Then
+            Debug.Print WSAA.Traceback
+        End If
     
-    ' Especificar la ubicacion de los archivos certificado y clave privada
-    Path = WSAA.InstallDir + "\"    ' para ruta actual, usar CurDir()
-    ' Certificado: certificado es el firmado por la AFIP
-    ' ClavePrivada: la clave privada usada para crear el certificado
-    Certificado = "reingart.crt" ' certificado de prueba
-    ClavePrivada = "reingart.key" ' clave privada de prueba
-    
-    ' Generar el mensaje firmado (CMS)
-    cms = WSAA.SignTRA(tra, Path + Certificado, Path + ClavePrivada)
-    ControlarExcepcion WSAA
-    Debug.Print cms
-    
-    ' Conectarse con el webservice de autenticación:
-    cache = ""
-    proxy = "" '"usuario:clave@localhost:8000"
-    wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
-    cacert = WSAA.InstallDir & "\conf\afip_ca_info.crt" ' certificado de la autoridad de certificante
-    wsdl = "https://wsaahomo.afip.gov.ar/ws/services/LoginCms?wsdl"
-    ok = WSAA.Conectar(cache, wsdl, proxy, wrapper, cacert) ' Homologación
-    ControlarExcepcion WSAA
-    
-    ' Llamar al web service para autenticar:
-    ta = WSAA.LoginCMS(cms)
-    ControlarExcepcion WSAA
-
+    End If
     ' Imprimir el ticket de acceso, ToKen y Sign de autorización
     Debug.Print ta
-    Debug.Print "Token:", WSAA.Token
-    Debug.Print "Sign:", WSAA.Sign
+    Debug.Print "Token:", token
+    Debug.Print "Sign:", sign
     
-    ' Una vez obtenido, se puede usar el mismo token y sign por 10 horas
+    ' Una vez obtenido, se puede usar el mismo token y sign por 24 horas
     ' (este período se puede cambiar)
-    ' revisar WSAA.Expirado() y en dicho caso tramitar nuevo TA
     
-    ' Crear objeto interface Web Service de Factura Electrónica de Mercado Interno
+    ' Crear objeto interface Web Service de Factura Electrónica Mercado Interno
     Set WSFEv1 = CreateObject("WSFEv1")
-    Debug.Print WSFEv1.Version
-    If WSAA.Version < "1.12" Then
-        MsgBox "Debe instalar una versión mas actualizada de PyAfipWs WSFEv1!"
-        End
-    End If
-    'Debug.Print WSFEv1.InstallDir
-    
     ' Setear tocken y sing de autorización (pasos previos)
-    WSFEv1.Token = WSAA.Token
-    WSFEv1.Sign = WSAA.Sign
+    WSFEv1.token = token
+    WSFEv1.sign = sign
     
     ' CUIT del emisor (debe estar registrado en la AFIP)
     WSFEv1.Cuit = "20267565393"
     
-    ' deshabilito errores no manejados
-    WSFEv1.LanzarExcepciones = False
-    
     ' Conectar al Servicio Web de Facturación
-    proxy = "" ' "usuario:clave@localhost:8000"
-    wsdl = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
-    cache = "" 'Path
-    wrapper = "" ' libreria http (httplib2, urllib2, pycurl)
-    cacert = WSAA.InstallDir & "\conf\afip_ca_info.crt" ' certificado de la autoridad de certificante (solo pycurl)
-    
-    ok = WSFEv1.Conectar(cache, wsdl, proxy, wrapper, cacert) ' homologación
-    Debug.Print WSFEv1.Version
-    ControlarExcepcion WSFEv1
-    
-    ' mostrar bitácora de depuración:
-    Debug.Print WSFEv1.DebugLog
-    
+    wsdl = "" ' "file:///C:/pyafipws/wsfev1_wsdl.xml"
+    ok = WSFEv1.Conectar("", wsdl) ' produccion
     ' Llamo a un servicio nulo, para obtener el estado del servidor (opcional)
     WSFEv1.Dummy
     ControlarExcepcion WSFEv1
     Debug.Print "appserver status", WSFEv1.AppServerStatus
     Debug.Print "dbserver status", WSFEv1.DbServerStatus
     Debug.Print "authserver status", WSFEv1.AuthServerStatus
-       
-    ' Establezco los valores de la factura a autorizar:
-    tipo_cbte = 6
-    punto_vta = 4004
-    cbte_nro = WSFEv1.CompUltimoAutorizado(tipo_cbte, punto_vta)
-    ControlarExcepcion WSFEv1
-    For Each v In WSFEv1.errores
-        Debug.Print v
-    Next
-    Debug.Print WSFEv1.errmsg
-    Debug.Print WSFEv1.errcode
-    If cbte_nro = "" Then
-        cbte_nro = 0                ' no hay comprobantes emitidos
-    Else
-        cbte_nro = CLng(cbte_nro)   ' convertir a entero largo
-    End If
+    
+
+    
+    TipoCamioAfip = WSFEv1.ParamGetCotizacion("DOL", "20250403")
+    Debug.Print WSFEv1.XmlRequest
+    Debug.Print WSFEv1.XmlResponse
+    MsgBox TipoCambioAfip
+    
+    cbte_nro = CInt(WSFEv1.CompUltimoAutorizado(tipo_cbte, punto_vta)) + 1
     fecha = Format(Date, "yyyymmdd")
     concepto = 1
     tipo_doc = 80: nro_doc = "33693450239"
@@ -187,6 +171,10 @@ Sub Main()
     
     ' Habilito reprocesamiento automático (predeterminado):
     WSFEv1.Reprocesar = True
+    
+    ' Agrego RG 5616
+    ok = WSFEv1.EstablecerCampoFactura("cancela_misma_moneda_ext", "N")
+    ok = WSFEv1.EstablecerCampoFactura("condicion_iva_receptor_id", "5")
 
     ' Solicito CAE:
     CAE = WSFEv1.CAESolicitar()
