@@ -25,7 +25,7 @@ Más info: http://www.sistemasagiles.com.ar/trac/wiki/ProyectoWSFEv1
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2010-2025 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.28a"
+__version__ = "1.28c"
 
 import datetime
 import decimal
@@ -163,8 +163,8 @@ class WSFEv1(BaseWS):
         if fecha_serv_hasta: fact['fecha_serv_hasta'] = fecha_serv_hasta
         if caea: fact['caea'] = caea
 
-        if cancela_misma_moneda_ext is not None: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
-        if condicion_iva_receptor_id is not None: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
+        if cancela_misma_moneda_ext: fact['cancela_misma_moneda_ext'] = cancela_misma_moneda_ext
+        if condicion_iva_receptor_id: fact['condicion_iva_receptor_id'] = condicion_iva_receptor_id
 
         self.factura = fact
         return True
@@ -1007,7 +1007,7 @@ class WSFEv1(BaseWS):
             MonId=moneda_id, FchCotiz=fecha,
             )
         self.__analizar_errores(ret)
-        res = ret['FEParamGetCotizacionResult']['ResultGet']
+        res = ret['FEParamGetCotizacionResult'].get('ResultGet')
         return str(res.get('MonCotiz',""))
         
     @inicializar_y_capturar_excepciones
@@ -1342,7 +1342,11 @@ def main():
             print u'\n'.join(wsfev1.ParamGetCondicionIvaReceptor(clase_cmp))
 
     if "--cotizacion" in sys.argv:
-        print wsfev1.ParamGetCotizacion('DOL')
+        try:
+            fecha = sys.argv[sys.argv.index("--cotizacion")+1]
+        except IndexError:
+            fecha = None
+        print wsfev1.ParamGetCotizacion('DOL', fecha)
 
     if "--comptox" in sys.argv:
         print wsfev1.CompTotXRequest()
