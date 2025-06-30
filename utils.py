@@ -157,10 +157,12 @@ def inicializar_y_capturar_excepciones(func):
                     retry -= 1
                     return func(self, *args, **kwargs)
                 except socket.error, e:
-                    if e[0] not in (10054, 10053):
+                    if e[0] not in (10054, 10053) and retry < self.reintentos:
                         # solo reintentar si el error es de conexión
                         # (10054, 'Connection reset by peer')
                         # (10053, 'Software caused connection abort')
+                        if DEBUG: print "Error", e[0]
+                        self.log("Socket error %r" % (e, ))
                         raise
                     else:
                         if DEBUG: print e, "Reintentando..."
@@ -225,6 +227,7 @@ class BaseWS:
         self.Excepcion = self.Traceback = ""
         self.XmlRequest = self.XmlResponse = ""
 
+    @inicializar_y_capturar_excepciones
     def Conectar(self, cache=None, wsdl=None, proxy="", wrapper=None, cacert=None, timeout=30, soap_server=None):
         "Conectar cliente soap del web service"
         try:
