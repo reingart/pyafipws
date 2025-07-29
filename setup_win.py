@@ -21,7 +21,7 @@ import sys
 
 __version__ = "3.10.0000"
 
-HOMO = True
+HOMO = False
 
 # build a one-click-installer for windows:
 import py2exe
@@ -33,8 +33,8 @@ from pyafipws.nsis import build_installer, Target
 #import pyrece
 from pyafipws import wsaa
 from pyafipws import wsfev1, rece1, rg3685
-#import wsfexv1, recex1
-#import wsbfev1, receb1
+import wsfexv1, recex1
+import wsbfev1, receb1
 #import wsmtx, recem
 #import wsct, recet
 #import wsfecred
@@ -53,7 +53,7 @@ from pyafipws import wsfev1, rece1, rg3685
 #import wsremharina
 #import wsremazucar
 #import wscoc
-#import wscdc
+import wscdc
 #import cot
 #import iibb
 #import trazamed

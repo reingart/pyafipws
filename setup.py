@@ -28,7 +28,7 @@ except:
 
 __version__ = "%s.%s.%s" % (sys.version_info[0:2] + (rev,))
 
-HOMO = True
+HOMO = False    
 
 import setuptools
 
