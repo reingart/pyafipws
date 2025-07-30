@@ -31,7 +31,7 @@ if 'xrange' not in dir(__builtins__):
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2023- Mariano Reingart"
 __license__ = "LGPL 3.0"
-__version__ = "1.07a"
+__version__ = "1.08a"
 
 LICENCIA = """
 wscpe.py: Interfaz para generar Carta de Porte Electrónica AFIP v1.5.0
@@ -303,6 +303,7 @@ class WSCPE(BaseWS):
         planta=None,
         cod_provincia_productor=None,
         cod_localidad_productor=None,
+        nro_renspa_productor = None,
         **kwargs
     ):
         """Inicializa internamente los datos de origen para una cpe."""
@@ -314,6 +315,7 @@ class WSCPE(BaseWS):
         productor = {
             "codProvincia": cod_provincia_productor,
             "codLocalidad": cod_localidad_productor,
+            "nroRenspa": nro_renspa_productor,
         }
         origen = {}
         if planta:
@@ -1267,6 +1269,23 @@ class WSCPE(BaseWS):
                 ("%s {nroPlanta} %s {codProvincia} %s {codLocalidad} %s" % (sep, sep, sep, sep)).format(**it)
                 if sep else it for it in array
             ]
+        
+    @inicializar_y_capturar_excepciones
+    def ConsultarRenspa(self, cuit, cod_provincia=1, sep="||"):
+        """Permite la consulta del numero de renspa"""
+        response = self.client.consultarRenspa(
+            auth={
+                "token": self.Token,
+                "sign": self.Sign,
+                "cuitRepresentada": self.Cuit,
+            },
+            cuit=cuit,
+            codProvincia=cod_provincia,
+        )
+        ret = response.get("respuesta")
+        self.nroRenspa = ret.get('nroRenspa')
+        self.__analizar_errores(ret)
+        return self.nroRenspa is not None and str(self.nroRenspa) or ''
 
     @inicializar_y_capturar_excepciones
     def Dummy(self):
@@ -1337,7 +1356,8 @@ if __name__ == "__main__":
             # cod_provincia_operador=12,
             # cod_localidad_operador=7717,
             cod_provincia_productor=1,
-            cod_localidad_productor=14310
+            cod_localidad_productor=14310,
+            nro_renspa_productor="1",
         )
         ok = wscpe.AgregarDestino(
             planta=1938,
@@ -1713,6 +1733,10 @@ if __name__ == "__main__":
 
     if "--localidades_productor" in sys.argv:
         ret = wscpe.ConsultarLocalidadesProductor(cuit_productor=CUIT)
+        print("\n".join(ret))
+
+    if "--consultar_renspa" in sys.argv:
+        ret = wscpe.ConsultarRenspa(cuit=CUIT)
         print("\n".join(ret))
 
     if "--plantas" in sys.argv:
