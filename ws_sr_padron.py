@@ -314,8 +314,19 @@ class WSSrPadronA5(WSSrPadronA4):
         self.actividades = [act["idActividad"] for act in actividades]
         cat_mt = data_mt.get("categoriaMonotributo", {})
         self.analizar_datos(cat_mt)
-        return not self.errores
+        self.impuestos_detallados = impuestos
 
+        return not self.errores
+    
+    @inicializar_y_capturar_excepciones
+    def ObtenerCampoImpuesto(self, id_impuesto, campo):
+        "Devuelve el detalle de un campo del impuesto"
+        for impuesto in self.impuestos_detallados:
+            id_imp = impuesto.get("idImpuesto", "")
+            if id_impuesto == id_imp:
+                return impuesto.get(campo, "")
+
+        return ""
 
 def main():
     "Función principal de pruebas (obtener CAE)"
@@ -415,7 +426,7 @@ def main():
     try:
 
         if "--prueba" in sys.argv:
-            id_persona = "20000000516"
+            id_persona = "20201731594"
         else:
             id_persona = len(sys.argv) > 1 and sys.argv[1] or "20267565393"
 
@@ -442,6 +453,14 @@ def main():
         print("IVA", padron.imp_iva)
         print("MT", padron.monotributo, padron.actividad_monotributo)
         print("Empleador", padron.empleador)
+
+        #Agrego Impuestos Detallados
+        for id_impuesto in padron.impuestos:
+            print("Id Impuesto: ", id_impuesto)
+            print("Descripcion Impuesto: ", padron.ObtenerCampoImpuesto(id_impuesto, "descripcion"))
+            print("Motivo: ", padron.ObtenerCampoImpuesto(id_impuesto, "motivo"))
+            print("Estado Impuesto: ", padron.ObtenerCampoImpuesto(id_impuesto, "estadoImpuesto"))
+            print("Periodo: ", padron.ObtenerCampoImpuesto(id_impuesto, "periodo"))
 
         if padron.Excepcion:
             print("Excepcion:", padron.Excepcion)
