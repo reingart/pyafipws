@@ -17,7 +17,7 @@ Liquidación Primaria Electrónica de Granos del web service WSLPG de AFIP
 __author__ = "Mariano Reingart <reingart@gmail.com>"
 __copyright__ = "Copyright (C) 2013-2022 Mariano Reingart"
 __license__ = "GPL 3.0"
-__version__ = "1.35e"
+__version__ = "1.35f"
 
 LICENCIA = """
 wslpg.py: Interfaz para generar Código de Operación Electrónica para
@@ -340,6 +340,7 @@ CERTIFICACION = [
     ('fecha', 10, A),                           # no usado WSLPGv1.8
     ('nro_carta_porte_a_utilizar', 13, N),       # obligatorio para retiro
     ('cee_carta_porte_a_utilizar', 10, N),      # no usado WSLPGv1.8
+    ('nro_ctg', 12, N),                         # actualización 1.24
     # para cgAutorizarPreexistente (WSLPGv1.6):
     ('tipo_certificado_deposito_preexistente', 1, N),  # "R": Retiro "T": Tra.
     ('nro_certificado_deposito_preexistente', 12, N),
@@ -1714,6 +1715,7 @@ class WSLPG(BaseWS):
             fecha=None, 
             nro_carta_porte_a_utilizar=None,
             cee_carta_porte_a_utilizar=None,
+            nro_ctg=None,
             **kwargs):
         self.certificacion['retiroTransferencia'] = dict(
                 nroActDepositario=nro_act_depositario,
@@ -1721,6 +1723,7 @@ class WSLPG(BaseWS):
                 fecha=fecha,
                 nroCartaPorteAUtilizar=nro_carta_porte_a_utilizar or None,
                 ceeCartaPorteAUtilizar=cee_carta_porte_a_utilizar or None,
+                nroCTG=nro_ctg or None,
                 certificadoDeposito=[],        # <!--0 or more repetitions:-->
                 )
         return True
@@ -2015,6 +2018,7 @@ class WSLPG(BaseWS):
             self.params_out['nro_act_depositario'] = rt.get('nroActDepositario')
             self.params_out['cuit_receptor'] = rt.get('cuitReceptor')
             self.params_out['nro_carta_porte_a_utilizar'] = rt.get('nroCartaPorteAUtilizar')
+            self.params_out['nro_ctg'] = rt.get('nroCTG')
             # sub estructuras:
             self.params_out['certificados'] = []
             cert = rt.get("certificadoDeposito")
@@ -4273,6 +4277,7 @@ if __name__ == '__main__':
                             fecha="2014-11-26", 
                             nro_carta_porte_a_utilizar="530305323",
                             cee_carta_porte_a_utilizar="123456789012",
+                            nro_ctg="123456789013",
                             )
                     dic.update(rt)
                     cert = dict(
