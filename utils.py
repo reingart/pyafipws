@@ -211,7 +211,25 @@ def inicializar_y_capturar_excepciones_simple(func):
                 return False
     return capturar_errores_wrapper
 
-
+def inicializar_y_capturar_excepciones_basico(func):
+    "Decorador para inicializar y capturar errores (versión básica indep.)"
+    @functools.wraps(func)
+    def capturar_errores_wrapper(self, *args, **kwargs):
+        self.inicializar()
+        try:
+            return func(self, *args, **kwargs)
+        except:
+            ex = exception_info()
+            self.Excepcion = ex['name']
+            self.Traceback = ex['msg']
+            if self.client:
+                self.Response = self.client.response
+                self.Request = self.client.request
+            if self.LanzarExcepciones:
+                raise
+            else:
+                return False
+    return capturar_errores_wrapper
 class BaseWS:
     "Infraestructura basica para interfaces webservices de AFIP"
 
@@ -465,6 +483,9 @@ class WebClient:
         self.cookies = None
         self.method = "POST"
         self.referer = None
+        self.extra_headers = {}
+        self.request = ""
+        self.response = ""
 
     def multipart_encode(self, vars):
         "Enconde form data (vars dict)"
@@ -509,11 +530,17 @@ class WebClient:
         elif self.enctype == "application/x-www-form-urlencoded":
             body = urlencode(vars)
             content_type = self.enctype
+        elif self.enctype == "application/json":
+            body = vars.get('json_body') or ""
+            content_type = self.enctype
         else:
             body = None
             
         # add headers according method, cookies, etc.:
-        headers={}        
+        headers = self.extra_headers.copy()
+        # allow passing custom HTTP headers (e.g. Authorization) without affecting existing behavior
+        if isinstance(headers, dict):
+            headers.update(headers)
         if self.method == "POST":
             headers.update({
                 'Content-type': content_type,
@@ -535,6 +562,7 @@ class WebClient:
             location, self.method, body=body, headers=headers )
         self.response = response
         self.content = content
+        self.request = "%s %s" % (self.method, location) + '\n'.join(["%s: %s" % (k,v) for k,v in headers.items()]) + "\n%s" % body
 
         if self.trace: 
             print 
