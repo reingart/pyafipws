@@ -44,7 +44,8 @@ WSDL = "https://wswhomo.afip.gov.ar/wsfev1/service.asmx?WSDL"
 class WSFEv1(BaseWS):
     "Interfaz para el WebService de Factura Electr�nica Version 1 - 2.10"
     _public_methods_ = ['CrearFactura', 'AgregarIva', 'CAESolicitar',
-                        'AgregarTributo', 'AgregarCmpAsoc', 'AgregarOpcional',
+                        'AgregarTributo', 'AgregarCmpAsoc', 
+                        "AgregarPeriodoComprobantesAsociados", 'AgregarOpcional',
                         'AgregarComprador',
                         'CompUltimoAutorizado', 'CompConsultar',
                         'CAEASolicitar', 'CAEAConsultar', 'CAEARegInformativo',
@@ -173,6 +174,17 @@ class WSFEv1(BaseWS):
             return True
         else:
             return False
+        
+    def AgregarPeriodoComprobantesAsociados(
+        self, fecha_desde=None, fecha_hasta=None, **kwargs
+    ):
+        "Agrego el perído de comprobante asociado a una factura (interna)"
+        p_cmp_asoc = {
+            "fecha_desde": fecha_desde,
+            "fecha_hasta": fecha_hasta,
+        }
+        self.factura["periodo_cbtes_asoc"] = p_cmp_asoc
+        return True
 
     def AgregarCmpAsoc(self, tipo=1, pto_vta=0, nro=0, cuit=None, fecha=None, **kwarg):
         "Agrego un comprobante asociado a una factura (interna)"
@@ -257,6 +269,12 @@ class WSFEv1(BaseWS):
                     'MonId': f['moneda_id'],
                     'MonCotiz': f['moneda_ctz'],
                     'CondicionIVAReceptorId': f['cond_iva_receptor'],
+                    "PeriodoAsoc": {
+                        "FchDesde": f["periodo_cbtes_asoc"].get("fecha_desde"),
+                        "FchHasta": f["periodo_cbtes_asoc"].get("fecha_hasta"),
+                    }
+                    if "periodo_cbtes_asoc" in f
+                    else None,
                     'CbtesAsoc': f['cbtes_asoc'] and [
                         {'CbteAsoc': {
                             'Tipo': cbte_asoc['tipo'],
