@@ -142,6 +142,25 @@ class WSFEv1(BaseWS):
             **kwargs):
         "Creo un objeto factura (interna)"
         # Creo una factura electronica de exportación 
+        
+        # v1.28e solucion a error de windows 11 kb5094126 y kb5094127
+        if cbt_hasta in ("", None):
+            cbt_hasta =  0
+            self.log("El parametro cbt_hasta es vacio o nulo: " + str(cbt_hasta))
+
+        if cbt_desde in ("", None):
+            cbt_desde = 0
+            self.log("El parametro cbt_desde es vacio o nulo: " + str(cbt_desde))
+
+        try:
+            self.log("Convirtiendo parametro cbt_desde y cbt_hasta a numerico: " + str(cbt_desde))
+            cbt_desde = str(int(cbt_desde)) 
+            cbt_hasta = str(int(cbt_hasta)) 
+        except Exception as e:
+            self.Traceback = "Error de validacion: el campo 'cbt_desde' o 'cbt_hasta'tiene un valor invalido " + "Desde: " + str(cbt_desde) + " Hasta: " + str(cbt_hasta) + " Excepcion: " + str(e) 
+            self.log(self.Traceback)
+            return False
+
         fact = {'tipo_doc': tipo_doc, 'nro_doc':  nro_doc,
                 'tipo_cbte': tipo_cbte, 'punto_vta': punto_vta,
                 'cbt_desde': cbt_desde, 'cbt_hasta': cbt_hasta,
