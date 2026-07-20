@@ -825,7 +825,7 @@ def main():
         win32com.server.register.UseCommandLine(WSRemHarina)
         sys.exit(0)
 
-    from configparser import SafeConfigParser
+    from pyafipws.utils import SafeConfigParser
 
     try:
 

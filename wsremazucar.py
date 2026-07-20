@@ -756,7 +756,7 @@ def main():
         win32com.server.register.UseCommandLine(WSRemAzucar)
         sys.exit(0)
 
-    from configparser import SafeConfigParser
+    from pyafipws.utils import SafeConfigParser
 
     try:
 

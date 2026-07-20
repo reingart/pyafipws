@@ -44,7 +44,7 @@ from pyafipws.utils import (
     SoapFault,
     safe_console,
 )
-from configparser import SafeConfigParser
+from pyafipws.utils import SafeConfigParser
 from pyafipws.padron import TIPO_CLAVE, PROVINCIAS
 
 
