@@ -24,7 +24,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 import sys, os
 import smtplib
-from configparser import SafeConfigParser
+from pyafipws.utils import SafeConfigParser
 
 pytestmark = [pytest.mark.dontusefix]
 

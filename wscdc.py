@@ -28,7 +28,7 @@ __license__ = "LGPL-3.0-or-later"
 __version__ = "3.03a"
 
 import sys, os, time
-from configparser import SafeConfigParser
+from pyafipws.utils import SafeConfigParser
 from pyafipws.utils import inicializar_y_capturar_excepciones, BaseWS, get_install_dir
 from pyafipws.utils import leer, escribir, leer_dbf, guardar_dbf, N, A, I, json
 
