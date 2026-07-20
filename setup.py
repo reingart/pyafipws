@@ -64,7 +64,7 @@ setup(
         "pysimplesoap==1.8.22;python_version > '3'",
         "cryptography==3.3.2;python_version <= '2.7'",
         "cryptography>=3.4.7;python_version > '3'",
-        "fpdf>=1.7.2",
+        "fpdf2>=2.7.8",
         "dbf>=0.88.019",
         "Pillow>=2.0.0",
         "tabulate>=0.8.5",
