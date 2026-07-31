@@ -1051,7 +1051,7 @@ def main():
         sys.exit(0)
 
     import csv
-    from configparser import SafeConfigParser
+    from configparser import ConfigParser as SafeConfigParser
 
     try:
 

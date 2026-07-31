@@ -303,7 +303,7 @@ if __name__ == '__main__':
                 comienzo += longitud
         sys.exit(0)
 
-    from ConfigParser import SafeConfigParser
+    from configparser import ConfigParser as SafeConfigParser
 
     try:
     
